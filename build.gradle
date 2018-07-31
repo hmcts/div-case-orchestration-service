@@ -1,0 +1,180 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.9.RELEASE'
+    }
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+plugins {
+    id 'application'
+    id 'checkstyle'
+    id 'org.springframework.boot' version '1.5.9.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.3.RELEASE'
+    id 'org.owasp.dependencycheck' version '1.4.5.1'
+    id 'org.sonarqube' version '2.5'
+    id 'com.github.ben-manes.versions' version '0.17.0'
+    id 'jacoco'
+    id 'pmd'
+}
+
+group = 'uk.gov.hmcts.reform.divorce'
+version = '0.0.2'
+sourceCompatibility = 1.8
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': project.name,
+                'Implementation-Version': project.version
+    }
+
+    archiveName 'div-validation-service.jar'
+}
+
+mainClassName = 'uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication'
+
+compileJava {
+    options.compilerArgs << '-parameters' << '-Xlint:deprecation'
+}
+
+compileTestJava {
+    options.compilerArgs << '-Xlint:deprecation'
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+
+    maven {
+        url 'https://artifactory.reform.hmcts.net/artifactory/libs-release'
+    }
+}
+
+checkstyle {
+    toolVersion = '7.2'
+    configFile = project(':').file('checkstyle.xml')
+    configProperties = ["suppressionFile": project(':').file('suppressions.xml')]
+}
+
+// make build fail on Checkstyle issues (https://github.com/gradle/gradle/issues/881)
+tasks.withType(Checkstyle).each { checkstyleTask ->
+    checkstyleTask.doLast {
+        reports.all { report ->
+            def outputFile = report.destination
+            if (outputFile.exists() && outputFile.text.contains("<error ")) {
+                throw new GradleException("There were checkstyle warnings! For more info check $outputFile")
+            }
+        }
+    }
+}
+
+// https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
+dependencyCheck {
+    // Specifies if the build should be failed if a CVSS score above a specified level is identified.
+    // range of 0-10 fails the build, anything greater and it doesn't fail the build
+    failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'true' ? 0 : 11
+    suppressionFile = 'dependency-check-suppressions.xml'
+}
+
+def versions = [
+        springfoxSwagger                : '2.7.0',
+        commonsLang3                    : '3.7',
+        commonsIo                       : '2.5',
+        serviceTokenGeneratorSpring     : '1.0.5',
+        reformsJavaLogging              : '1.2.0',
+        reformsJavaLoggingSpring        : '1.2.0',
+        reformsJavaLoggingHttpComponents: '1.2.1',
+        lombok                          : '1.16.16',
+        powerMock                       : '1.7.3',
+        puppyCrawl                      : '7.6',
+        logstashLogBackEncoder          : '4.8',
+        jacksonCore                     : '2.9.4',
+        camelcore                       : '2.19.1'
+]
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.boot:spring-boot-actuator-docs')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile group: 'com.microsoft.azure', name: 'applicationinsights-web', version: "1.0.8"
+    compile group: 'org.apache.camel', name:'camel-servlet-starter', version: versions.camelcore
+    compile group: 'org.apache.camel', name:'camel-jackson-starter', version: versions.camelcore
+    compile group: 'org.apache.camel', name:'camel-swagger-java-starter', version: versions.camelcore
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jacksonCore
+    compile group: 'com.puppycrawl.tools', name: 'checkstyle', version: versions.puppyCrawl
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jacksonCore
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
+    compile group: 'commons-io', name: 'commons-io', version: versions.commonsIo
+    compile group: 'uk.gov.hmcts.auth.provider.service', name: 'service-token-generator-spring', version: versions.serviceTokenGeneratorSpring
+    compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: versions.reformsJavaLoggingSpring
+    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: versions.reformsJavaLoggingHttpComponents
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springFoxSwagger
+    compile group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: versions.logstashLogBackEncoder
+    compile group: 'org.apache.camel', name: 'camel-spring-boot-starter', version: versions.camelcore
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: versions.powerMock
+    testCompile group: 'org.powermock', name: 'powermock-api-mockito-common', version: versions.powerMock
+    testCompile group: 'org.powermock', name: 'powermock-api-mockito', version: versions.powerMock
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('org.springframework.security:spring-security-test')
+    runtime('org.springframework.boot:spring-boot-devtools')
+}
+
+pmd {
+    toolVersion = "5.8.1"
+    ignoreFailures = true
+    sourceSets = [sourceSets.main, sourceSets.test]
+    reportsDir = file("$project.buildDir/reports/pmd")
+    ruleSetFiles = files("ruleset.xml")
+}
+
+def sonarExclusions = [
+        '**uk/gov/hmcts/reform/divorce/orchestration/domain/**/*',
+        '**uk/gov/hmcts/reform/divorce/orchestration/exception/*',
+        '**uk/gov/hmcts/reform/divorce/orchestration/**/config/**/*',
+        '**uk/gov/hmcts/reform/divorce/orchestration/OrchestrationServiceApplication.java'
+]
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "DivorceOrchestrationService"
+        property "sonar.projectName", "Divorce :: DivorceOrhcestrationService"
+        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
+        property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/apiTest.exec"
+        property "sonar.exclusions", sonarExclusions.join(", ")
+    }
+}
+
+
+task developAddRelaseSuffix() {
+    version = "${version}-SNAPSHOT"
+}
+
+jacocoTestReport {
+    executionData(test)
+
+    reports {
+        xml {
+            enabled true
+        }
+
+        html {
+            enabled true
+        }
+    }
+}
+
+def debug = System.getProperty("debug")
+run {
+    if (debug == 'true') {
+        jvmArgs = ['-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5010']
+    }
+}

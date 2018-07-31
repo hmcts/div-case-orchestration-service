@@ -1,0 +1,66 @@
+server:
+  port: ${VALIDATION_SERVICE_PORT:8989}
+
+http:
+  connect:
+    timeout: 60000
+    request:
+      timeout: 60000
+
+info:
+  app:
+    name: ${spring.application.name}
+
+documentation:
+  swagger:
+    enabled: true
+
+spring:
+  resources:
+    static-locations:
+
+# GENERAL SPRING BOOT ACTUATOR CONFIG
+# Context path for Spring Boot Actuator endpoints
+# Allow actuator endpoints to be accessed without requiring authentication
+# Enable default health indicators
+# Enable disk space health check
+management:
+  context-path: /status
+  info:
+    defaults:
+      enabled: true
+    security:
+      enabled: false
+  health:
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+  security:
+    enabled: false
+
+
+# HEALTH ENDPOINT CONFIG
+# Enable the health endpoint
+# Enable sensitive health information
+# Defines the URL of the health check to ${management.context-path}/health
+# Caching period in milliseconds of health endpoint
+# METRICS ENDPOINT CONFIG
+# Enable the metrics endpoint
+# Enable sensitive metrics information
+endpoints:
+  health:
+    enabled: true
+    sensitive: false
+    id: health
+    time-to-live: 1000
+  metrics:
+    enabled: true
+    sensitive: false
+
+logging:
+  level:
+    org.springframework.web: ERROR
+    uk.gov.hmcts.reform.divorce.validationservice: DEBUG
+  pattern:
+    console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"

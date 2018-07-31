@@ -1,0 +1,21 @@
+#!groovy
+
+properties([
+        [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/div-validation-service.git'],
+        pipelineTriggers([[$class: 'GitHubPushTrigger']])
+])
+
+@Library("Infrastructure")
+
+def type = "java"
+
+def product = "divorce"
+
+def app = "orch-service"
+
+withPipeline(type, product, app) {
+    after('checkout') {
+       echo 'divorce-orchestration-service checked out'
+    }
+    enableSlackNotifications('#div-dev')
+}
