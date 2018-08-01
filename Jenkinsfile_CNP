@@ -17,5 +17,5 @@ withPipeline(type, product, app) {
     after('checkout') {
        echo 'divorce-case-orchestration-service checked out'
     }
-    enableSlackNotifications('#div-dev')
+    // enableSlackNotifications('#div-dev')
 }
