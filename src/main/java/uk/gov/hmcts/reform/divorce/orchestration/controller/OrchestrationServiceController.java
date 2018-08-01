@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class OrchestrationServiceController {
 
-    @PostMapping("/version/1/validate")
+    @PostMapping("/version/1/orchestrate")
     public String call() {
-        return "called callback service";
+        return "Orchestration";
     }
 }

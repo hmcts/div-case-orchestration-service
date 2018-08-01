@@ -1,5 +1,5 @@
 server:
-  port: ${VALIDATION_SERVICE_PORT:8989}
+  port: ${CASE_ORCHESTRATION_SERVICE_URL:8910}
 
 http:
   connect:
@@ -11,18 +11,15 @@ info:
   app:
     name: ${spring.application.name}
 
-evidence-management-api:
-  service:
-    stub:
-      enabled: false
+spring:
+  application:
+    name: div-cos
+  resources:
+    static-locations:
 
 documentation:
   swagger:
     enabled: true
-
-spring:
-  resources:
-    static-locations:
 
 # GENERAL SPRING BOOT ACTUATOR CONFIG
 # Context path for Spring Boot Actuator endpoints
@@ -30,43 +27,25 @@ spring:
 # Enable default health indicators
 # Enable disk space health check
 management:
-  context-path: /status
-  info:
-    defaults:
-      enabled: true
-    security:
-      enabled: false
-  health:
-    defaults:
-      enabled: true
-    diskspace:
-      enabled: true
-  security:
-    enabled: false
-
-
-# HEALTH ENDPOINT CONFIG
-# Enable the health endpoint
-# Enable sensitive health information
-# Defines the URL of the health check to ${management.context-path}/health
-# Caching period in milliseconds of health endpoint
-# METRICS ENDPOINT CONFIG
-# Enable the metrics endpoint
-# Enable sensitive metrics information
-endpoints:
-  health:
-    enabled: true
-    sensitive: false
-    id: health
-    time-to-live: 1000
-  metrics:
-    enabled: true
-    sensitive: false
-
+  endpoint:
+    health:
+      show-details: "ALWAYS"
+      cache:
+        time-to-live: 4000
+  endpoints:
+    web:
+      base-path: /
+      path-mapping:
+        health: health
+      exposure:
+        include: info, health, metrics
 
 logging:
   level:
     org.springframework.web: ERROR
-    uk.gov.hmcts.reform.divorce.validationservice: DEBUG
+    uk.gov.hmcts.reform.divorce.orchestration: DEBUG
   pattern:
     console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"
+
+azure:
+  app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:false}

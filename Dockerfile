@@ -1,6 +1,6 @@
 FROM openjdk:8-jre-alpine
 
-COPY build/install/div-validation-service /opt/app/
+COPY build/install/div-case-orchestration-service /opt/app/
 
 WORKDIR /opt/app
 
@@ -8,4 +8,4 @@ HEALTHCHECK --interval=100s --timeout=100s --retries=10 CMD http_proxy="" wget -
 
 EXPOSE 4007
 
-ENTRYPOINT ["/opt/app/bin/div-validation-service"]
+ENTRYPOINT ["/opt/app/bin/div-case-orchestration-service"]

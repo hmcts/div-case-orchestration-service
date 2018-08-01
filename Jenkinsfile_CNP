@@ -1,7 +1,7 @@
 #!groovy
 
 properties([
-        [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/div-validation-service.git'],
+        [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/div-case-orchestration-service.git'],
         pipelineTriggers([[$class: 'GitHubPushTrigger']])
 ])
 
@@ -11,11 +11,11 @@ def type = "java"
 
 def product = "divorce"
 
-def app = "orch-service"
+def app = "cos"
 
 withPipeline(type, product, app) {
     after('checkout') {
-       echo 'divorce-orchestration-service checked out'
+       echo 'divorce-case-orchestration-service checked out'
     }
     enableSlackNotifications('#div-dev')
 }

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.router;
 
-import com.microsoft.applicationinsights.TelemetryClient;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -12,16 +11,10 @@ import javax.ws.rs.core.MediaType;
 /**
  * Router responsible to receive callback events generated from
  * <code>CCD</code> to invoke right work flow and route the requests.
- *
- * @author Ganesh Raja
- * @since 0.1
  */
 @Component
 public class CallbackRouter extends RouteBuilder {
 
-    /**
-     * Configure router
-     */
     @Override
     public void configure() {
 

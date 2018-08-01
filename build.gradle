@@ -1,10 +1,12 @@
 buildscript {
     ext {
-        springBootVersion = '1.5.9.RELEASE'
+        springBootVersion = '2.0.2.RELEASE'
     }
     repositories {
         mavenLocal()
         jcenter()
+
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -14,26 +16,26 @@ buildscript {
 plugins {
     id 'application'
     id 'checkstyle'
-    id 'org.springframework.boot' version '1.5.9.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.3.RELEASE'
-    id 'org.owasp.dependencycheck' version '1.4.5.1'
-    id 'org.sonarqube' version '2.5'
     id 'com.github.ben-manes.versions' version '0.17.0'
+    id 'io.spring.dependency-management' version '1.0.5.RELEASE'
     id 'jacoco'
+    id 'org.owasp.dependencycheck' version '3.2.1'
+    id 'org.sonarqube' version '2.5'
+    id 'org.springframework.boot' version '2.0.2.RELEASE'
     id 'pmd'
 }
 
 group = 'uk.gov.hmcts.reform.divorce'
-version = '0.0.2'
+version = '0.0.1'
 sourceCompatibility = 1.8
 
-jar {
+bootJar {
     manifest {
         attributes 'Implementation-Title': project.name,
                 'Implementation-Version': project.version
     }
 
-    archiveName 'div-validation-service.jar'
+    archiveName 'div-case-orchestration-service.jar'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication'
@@ -50,9 +52,10 @@ repositories {
     mavenLocal()
     jcenter()
 
-    maven {
-        url 'https://artifactory.reform.hmcts.net/artifactory/libs-release'
-    }
+    maven { url 'https://artifactory.reform.hmcts.net/artifactory/libs-release' }
+    maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
+    maven { url "http://repo.maven.apache.org/maven2" }
+    maven { url 'https://repo.spring.io/libs-milestone' }
 }
 
 checkstyle {
@@ -82,49 +85,49 @@ dependencyCheck {
 }
 
 def versions = [
-        springfoxSwagger                : '2.7.0',
-        commonsLang3                    : '3.7',
+        camelcore                       : '2.22.0',
         commonsIo                       : '2.5',
-        serviceTokenGeneratorSpring     : '1.0.5',
-        reformsJavaLogging              : '1.2.0',
-        reformsJavaLoggingSpring        : '1.2.0',
-        reformsJavaLoggingHttpComponents: '1.2.1',
-        lombok                          : '1.16.16',
-        powerMock                       : '1.7.3',
-        puppyCrawl                      : '7.6',
-        logstashLogBackEncoder          : '4.8',
+        commonsLang3                    : '3.7',
+        springfoxSwagger                : '2.7.0',
         jacksonCore                     : '2.9.4',
-        camelcore                       : '2.19.1'
+        lombok                          : '1.16.16',
+        puppyCrawl                      : '7.6',
+        reformsJavaLogging              : '3.0.1',
+        serviceTokenGenerator           : '1.0.0'
 ]
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator')
-    compile('org.springframework.boot:spring-boot-actuator-docs')
     compile('org.springframework.boot:spring-boot-starter-web')
-    compile group: 'com.microsoft.azure', name: 'applicationinsights-web', version: "1.0.8"
-    compile group: 'org.apache.camel', name:'camel-servlet-starter', version: versions.camelcore
-    compile group: 'org.apache.camel', name:'camel-jackson-starter', version: versions.camelcore
-    compile group: 'org.apache.camel', name:'camel-swagger-java-starter', version: versions.camelcore
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jacksonCore
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jacksonCore
     compile group: 'com.puppycrawl.tools', name: 'checkstyle', version: versions.puppyCrawl
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jacksonCore
+    compile group: 'commons-io', name: 'commons-io', version: versions.commonsIo
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
-    compile group: 'commons-io', name: 'commons-io', version: versions.commonsIo
-    compile group: 'uk.gov.hmcts.auth.provider.service', name: 'service-token-generator-spring', version: versions.serviceTokenGeneratorSpring
-    compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
-    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: versions.reformsJavaLoggingSpring
-    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: versions.reformsJavaLoggingHttpComponents
-    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springFoxSwagger
-    compile group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: versions.logstashLogBackEncoder
+    compile group: 'org.apache.camel', name:'camel-jackson-starter', version: versions.camelcore
+    compile group: 'org.apache.camel', name:'camel-servlet-starter', version: versions.camelcore
     compile group: 'org.apache.camel', name: 'camel-spring-boot-starter', version: versions.camelcore
+    compile group: 'org.apache.camel', name:'camel-swagger-java-starter', version: versions.camelcore
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
+
+    compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformsJavaLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: versions.reformsJavaLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: versions.reformsJavaLogging
+    compile (group: 'uk.gov.hmcts.reform', name:'service-auth-provider-client', version: versions.serviceTokenGenerator)
+        {
+            exclude group: 'io.reactivex', module: 'io.reactivex'
+            exclude group: 'io.reactivex', module: 'rxnetty'
+            exclude group: 'io.reactivex', module: 'rxnetty-contexts'
+            exclude group: 'io.reactivex', module: 'rxnetty-servo'
+        }
+    
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: versions.powerMock
-    testCompile group: 'org.powermock', name: 'powermock-api-mockito-common', version: versions.powerMock
-    testCompile group: 'org.powermock', name: 'powermock-api-mockito', version: versions.powerMock
+
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.springframework.security:spring-security-test')
+
     runtime('org.springframework.boot:spring-boot-devtools')
 }
 
@@ -151,11 +154,6 @@ sonarqube {
         property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/apiTest.exec"
         property "sonar.exclusions", sonarExclusions.join(", ")
     }
-}
-
-
-task developAddRelaseSuffix() {
-    version = "${version}-SNAPSHOT"
 }
 
 jacocoTestReport {

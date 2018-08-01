@@ -6,7 +6,7 @@ import org.apache.camel.Processor;
 /**
  * Callback rest processor.
  */
-public class RestTemplateProcessor implements Processor{
+public class RestTemplateProcessor implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {

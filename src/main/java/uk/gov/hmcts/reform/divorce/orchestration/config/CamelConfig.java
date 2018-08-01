@@ -8,7 +8,7 @@ public class CamelConfig {
 
     @Bean
     ServletRegistrationBean servletRegistrationBean() {
-        ServletRegistrationBean servlet = new ServletRegistrationBean(new CamelHttpTransportServlet(), "/api"+"/*");
+        ServletRegistrationBean servlet = new ServletRegistrationBean(new CamelHttpTransportServlet(), "/api" + "/*");
         servlet.setName("CamelServlet");
         return servlet;
     }

@@ -1,6 +1,6 @@
-# Divorce Validation Service
+# Divorce Case Orchestration Service
 
-This application validates the case data based on the validation rules supplied.
+This application orchestrates a workflow based on the requested business requirement.
 
 ## Getting started
 
