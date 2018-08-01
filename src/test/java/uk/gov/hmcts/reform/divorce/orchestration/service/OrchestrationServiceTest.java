@@ -23,7 +23,7 @@ public class OrchestrationServiceTest {
     }
 
     @Test
-    public void givenCoreCaseData_whenInvalidD8LegalProcess_thenFailValidation() {
+    public void givenCoreCaseData_whenOrchestrate_then() {
         assertTrue(true);
     }
 

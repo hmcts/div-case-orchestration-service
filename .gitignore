@@ -4,6 +4,7 @@
 .gradle
 
 # Generated
+bin
 build
 classes
 out
@@ -13,3 +14,9 @@ out
 *.iml
 *.iws
 .idea
+
+# VSCode
+.vscode
+.settings
+.classpath
+.project
