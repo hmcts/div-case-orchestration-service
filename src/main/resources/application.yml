@@ -1,6 +1,28 @@
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:8910}
 
+idam:
+  api:
+    url: ${IDAM_API_BASEURL:http://localhost:4503}
+
+case:
+  formatter:
+    service:
+      api:
+        baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://localhost:4011}
+
+case:
+  validation:
+    service:
+      api:
+        baseurl: ${CASE_VALIDATION_SERVICE_API_BASEURL:http://localhost:4008}
+
+document:
+  generator:
+    service:
+      api:
+        baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://localhost:4007}
+
 http:
   connect:
     timeout: 60000

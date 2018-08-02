@@ -91,7 +91,9 @@ def versions = [
         lombok                          : '1.16.16',
         puppyCrawl                      : '7.6',
         reformsJavaLogging              : '3.0.1',
-        serviceTokenGenerator           : '1.0.0'
+        serviceTokenGenerator           : '1.0.0',
+        feignHttpClient                 : '9.5.1',
+        reformSpringBootAutoConfigure   : '1.1.0'
 ]
 
 dependencies {
@@ -102,6 +104,17 @@ dependencies {
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
     compile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
+
+    compile (group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
+            {
+                exclude group: 'io.reactivex', module: 'io.reactivex'
+                exclude group: 'io.reactivex', module: 'rxnetty'
+                exclude group: 'io.reactivex', module: 'rxnetty-contexts'
+                exclude group: 'io.reactivex', module: 'rxnetty-servo'
+            }
+
+    compile group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
+    compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: versions.reformSpringBootAutoConfigure
 
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformsJavaLogging
