@@ -32,7 +32,7 @@ public class SwaggerConfiguration implements WebMvcConfigurer {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Orchestration Service")
+                .title("Case Orchestration Service")
                 .description("Given a case data this service will validate against the business rules ")
                 .build();
     }

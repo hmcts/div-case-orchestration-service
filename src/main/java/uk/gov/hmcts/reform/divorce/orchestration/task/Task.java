@@ -4,4 +4,5 @@ package uk.gov.hmcts.reform.divorce.orchestration.task;
 public interface Task {
 
     Payload execute(Payload in) throws TaskException;
+
 }

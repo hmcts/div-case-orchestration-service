@@ -9,7 +9,7 @@ properties([
 
 def type = "java"
 
-def product = "divorce"
+def product = "div"
 
 def app = "cos"
 

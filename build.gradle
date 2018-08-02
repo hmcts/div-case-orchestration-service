@@ -85,7 +85,6 @@ dependencyCheck {
 }
 
 def versions = [
-        camelcore                       : '2.22.0',
         commonsIo                       : '2.5',
         commonsLang3                    : '3.7',
         springfoxSwagger                : '2.7.0',
@@ -102,10 +101,6 @@ dependencies {
     compile group: 'commons-io', name: 'commons-io', version: versions.commonsIo
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
-    compile group: 'org.apache.camel', name:'camel-jackson-starter', version: versions.camelcore
-    compile group: 'org.apache.camel', name:'camel-servlet-starter', version: versions.camelcore
-    compile group: 'org.apache.camel', name: 'camel-spring-boot-starter', version: versions.camelcore
-    compile group: 'org.apache.camel', name:'camel-swagger-java-starter', version: versions.camelcore
     compile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
 
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
