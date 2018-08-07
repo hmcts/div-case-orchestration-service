@@ -1,1 +1,1 @@
-vault_section = "test"
+vault_env = "test"

@@ -12,4 +12,5 @@ public class GeneratedDocumentInfo {
     private String documentType;
     private String mimeType;
     private String createdOn;
+    private String fileName;
 }

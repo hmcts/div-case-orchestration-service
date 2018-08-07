@@ -7,9 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.divorce.orchestration.domian.model.ccd.CCDCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domian.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domian.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CCDCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.service.PetitionIssuedCallBackService;
 
 import java.util.Collections;
@@ -39,8 +39,7 @@ public class CcdCallBackControllerUTest {
 
         final CCDCallbackResponse expected = CCDCallbackResponse.builder().build();
 
-        when(petitionIssuedCallBackService.issuePetition(caseData, authToken)).thenReturn(expected);
-
+        when(petitionIssuedCallBackService.issuePetition(caseDetails, authToken)).thenReturn(expected);
 
         ResponseEntity<CCDCallbackResponse> actual = classUnderTest.petitionIssued(authToken, createEvent);
 

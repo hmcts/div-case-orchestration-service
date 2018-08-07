@@ -79,7 +79,7 @@ public class ServiceContextConfiguration {
 
     @Bean
     public CoreCaseDataApi getCoreCaseDataApi(
-        @Value("${core_case_data.api.url}") final String coreCaseDataApiUrl){
+        @Value("${core_case_data.api.url}") final String coreCaseDataApiUrl) {
         return Feign.builder()
             .requestInterceptor(requestInterceptor())
             .encoder(new JacksonEncoder())
@@ -90,14 +90,15 @@ public class ServiceContextConfiguration {
 
     @Bean
     public Decoder feignDecoder() {
-        MappingJackson2HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter(customObjectMapper());
+        MappingJackson2HttpMessageConverter jacksonConverter =
+            new MappingJackson2HttpMessageConverter(customObjectMapper());
         jacksonConverter.setSupportedMediaTypes(ImmutableList.of(MediaType.APPLICATION_JSON));
 
         ObjectFactory<HttpMessageConverters> objectFactory = () -> new HttpMessageConverters(jacksonConverter);
         return new ResponseEntityDecoder(new SpringDecoder(objectFactory));
     }
 
-    private ObjectMapper customObjectMapper(){
+    private ObjectMapper customObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JSR310Module());
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);

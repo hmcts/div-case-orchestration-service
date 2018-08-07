@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.divorce.orchestration.domian.model.ccd.CCDCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domian.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CCDCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.service.PetitionIssuedCallBackService;
 
 import javax.ws.rs.core.MediaType;
@@ -30,12 +30,12 @@ public class CcdCallBackController {
             + "attached to the case",
             response = CCDCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")
-    })
+        }
+    )
     public ResponseEntity<CCDCallbackResponse> petitionIssued(
         @RequestHeader(value = "Authorization") String authorizationToken,
         @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) {
         return ResponseEntity.ok(
-            petitionIssuedCallBackService.issuePetition(caseDetailsRequest.getCaseDetails().getCaseData(),
-                authorizationToken));
+            petitionIssuedCallBackService.issuePetition(caseDetailsRequest.getCaseDetails(), authorizationToken));
     }
 }

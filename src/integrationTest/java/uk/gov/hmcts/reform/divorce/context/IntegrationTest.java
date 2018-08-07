@@ -16,7 +16,7 @@ public abstract class IntegrationTest {
     private static final String CASE_WORKER_USERNAME = "CASE_WORKER_USER_NAME";
     private static final String CASE_WORKER_PASSWORD = "CASE_WORKER_PASSWORD";
 
-    private UserDetails userDetails = null;
+    private UserDetails userDetails;
 
     @Value("${case.orchestration.service.base.uri}")
     protected String serverUrl;
@@ -37,7 +37,7 @@ public abstract class IntegrationTest {
     }
 
     protected synchronized UserDetails getUserDetails() {
-        if(userDetails == null) {
+        if (userDetails == null) {
             final String username = CASE_WORKER_USERNAME;
             final String emailAddress = username + "@notifications.service.gov.uk";
             final String password = CASE_WORKER_PASSWORD;

@@ -9,12 +9,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseValidationClient;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CCDCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domian.model.ccd.CCDCallbackResponse;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,9 +32,22 @@ public class PetitionIssuedCallBackServiceImplUTest {
         (String)ReflectionTestUtils.getField(PetitionIssuedCallBackServiceImpl.class, "FORM_ID");
     private static final String MINI_PETITION_TEMPLATE_NAME =
         (String)ReflectionTestUtils.getField(PetitionIssuedCallBackServiceImpl.class, "MINI_PETITION_TEMPLATE_NAME");
+    private static final String CASE_DETAILS_JSON_KEY =
+        (String)ReflectionTestUtils.getField(PetitionIssuedCallBackServiceImpl.class, "CASE_DETAILS_JSON_KEY");
+    private static final String DOCUMENT_TYPE_PETITION =
+        (String)ReflectionTestUtils.getField(PetitionIssuedCallBackServiceImpl.class, "DOCUMENT_TYPE_PETITION");
+    private static final String MINI_PETITION_FILE_NAME_FORMAT =
+        (String)ReflectionTestUtils.getField(PetitionIssuedCallBackServiceImpl.class, "MINI_PETITION_FILE_NAME_FORMAT");
 
     private static final String AUTH_TOKEN = "someToken";
+    private static final String CASE_ID = "12345";
     private static final Map<String, Object> CASE_DATA = Collections.emptyMap();
+
+    private static final CaseDetails CASE_DETAILS =
+        CaseDetails.builder()
+            .caseData(CASE_DATA)
+            .caseId(CASE_ID)
+            .build();
 
     private static final ValidationRequest VALIDATION_REQUEST =
         ValidationRequest.builder()
@@ -45,9 +59,16 @@ public class PetitionIssuedCallBackServiceImplUTest {
     private static final GenerateDocumentRequest GENERATE_DOCUMENT_REQUEST =
         GenerateDocumentRequest.builder()
             .template(MINI_PETITION_TEMPLATE_NAME)
-                    .values(CASE_DATA)
-                    .build();
-    private static final GeneratedDocumentInfo GENERATE_DOCUMENT_INFO = GeneratedDocumentInfo.builder().build();
+            .values(Collections.singletonMap(CASE_DETAILS_JSON_KEY, CASE_DETAILS))
+            .build();
+
+    private static final GeneratedDocumentInfo GENERATE_DOCUMENT_INFO =
+        GeneratedDocumentInfo.builder()
+            .documentType(DOCUMENT_TYPE_PETITION)
+            .fileName(MINI_PETITION_FILE_NAME_FORMAT == null ? null :
+                String.format(MINI_PETITION_FILE_NAME_FORMAT, CASE_ID))
+            .build();
+
     private static final DocumentUpdateRequest DOCUMENT_UPDATE_REQUEST =
         DocumentUpdateRequest.builder()
             .documents(Collections.singletonList(GENERATE_DOCUMENT_INFO))
@@ -79,7 +100,7 @@ public class PetitionIssuedCallBackServiceImplUTest {
 
         when(caseValidationClient.validate(VALIDATION_REQUEST)).thenReturn(validationResponse);
 
-        CCDCallbackResponse actual = classUnderTest.issuePetition(CASE_DATA, AUTH_TOKEN);
+        CCDCallbackResponse actual = classUnderTest.issuePetition(CASE_DETAILS, AUTH_TOKEN);
 
         assertEquals(CASE_DATA, actual.getData());
         assertEquals(errors, actual.getErrors());
@@ -95,7 +116,7 @@ public class PetitionIssuedCallBackServiceImplUTest {
             .thenReturn(GENERATE_DOCUMENT_INFO);
         when(caseFormatterClient.addDocuments(DOCUMENT_UPDATE_REQUEST)).thenReturn(FORMATTED_CASE_DATA);
 
-        CCDCallbackResponse actual = classUnderTest.issuePetition(CASE_DATA, AUTH_TOKEN);
+        CCDCallbackResponse actual = classUnderTest.issuePetition(CASE_DETAILS, AUTH_TOKEN);
 
         assertEquals(actual.getData(), FORMATTED_CASE_DATA);
 

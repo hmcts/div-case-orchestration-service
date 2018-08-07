@@ -1,9 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
-import uk.gov.hmcts.reform.divorce.orchestration.domian.model.ccd.CCDCallbackResponse;
-
-import java.util.Map;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CCDCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 
 public interface PetitionIssuedCallBackService {
-    CCDCallbackResponse issuePetition(Map<String, Object> caseData, String authToken);
+    CCDCallbackResponse issuePetition(CaseDetails caseDetails, String authToken);
 }

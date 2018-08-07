@@ -25,7 +25,6 @@ plugins {
     id 'org.springframework.boot' version '2.0.2.RELEASE'
     id 'pmd'
     id 'info.solidsoft.pitest' version '1.3.0'
-
 }
 
 group = 'uk.gov.hmcts.reform.divorce'
@@ -262,8 +261,8 @@ def sonarExclusions = [
 
 sonarqube {
     properties {
-        property "sonar.projectKey", "DivorceOrchestrationService"
-        property "sonar.projectName", "Divorce :: DivorceOrhcestrationService"
+        property "sonar.projectKey", "div-orchestration-service"
+        property "sonar.projectName", "Divorce :: div-orchestration-service"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
         property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/apiTest.exec"
         property "sonar.exclusions", sonarExclusions.join(", ")

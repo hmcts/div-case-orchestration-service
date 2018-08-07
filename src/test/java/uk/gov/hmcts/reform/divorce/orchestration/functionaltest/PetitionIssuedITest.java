@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,14 +17,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CCDCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domian.model.ccd.CCDCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domian.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domian.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.PetitionIssuedCallBackServiceImpl;
 
 import java.util.Collections;
@@ -54,16 +53,25 @@ public class PetitionIssuedITest {
     private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
+    private static final String MINI_PETITION_TEMPLATE_NAME =
+        (String)ReflectionTestUtils.getField(PetitionIssuedCallBackServiceImpl.class, "MINI_PETITION_TEMPLATE_NAME");
+    private static final String CASE_DETAILS_JSON_KEY =
+        (String)ReflectionTestUtils.getField(PetitionIssuedCallBackServiceImpl.class, "CASE_DETAILS_JSON_KEY");
+    private static final String DOCUMENT_TYPE_PETITION =
+        (String)ReflectionTestUtils.getField(PetitionIssuedCallBackServiceImpl.class, "DOCUMENT_TYPE_PETITION");
+    private static final String MINI_PETITION_FILE_NAME_FORMAT =
+        (String)ReflectionTestUtils.getField(PetitionIssuedCallBackServiceImpl.class, "MINI_PETITION_FILE_NAME_FORMAT");
+
     private static final String USER_TOKEN = "Some JWT Token";
+    private static final String CASE_ID = "12345";
 
     private static final String FORM_ID =
         (String)ReflectionTestUtils.getField(PetitionIssuedCallBackServiceImpl.class, "FORM_ID");
-    private static final String MINI_PETITION_TEMPLATE_NAME =
-        (String)ReflectionTestUtils.getField(PetitionIssuedCallBackServiceImpl.class, "MINI_PETITION_TEMPLATE_NAME");
 
     private static final Map<String, Object> CASE_DATA = Collections.emptyMap();
     private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
         .caseData(CASE_DATA)
+        .caseId(CASE_ID)
         .build();
 
     private static final CreateEvent CREATE_EVENT = CreateEvent.builder()
@@ -85,7 +93,7 @@ public class PetitionIssuedITest {
     @Test
     public void givenCreateEventIsNull_whenPetitionIssued_thenReturnBadRequest() throws Exception {
         webClient.perform(post(API_URL)
-            .header(HttpHeaders.AUTHORIZATION, USER_TOKEN)
+            .header(AUTHORIZATION, USER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
@@ -109,7 +117,7 @@ public class PetitionIssuedITest {
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(CREATE_EVENT))
-            .header(HttpHeaders.AUTHORIZATION, USER_TOKEN)
+            .header(AUTHORIZATION, USER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadGateway())
@@ -140,7 +148,7 @@ public class PetitionIssuedITest {
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(CREATE_EVENT))
-            .header(HttpHeaders.AUTHORIZATION, USER_TOKEN)
+            .header(AUTHORIZATION, USER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -154,14 +162,21 @@ public class PetitionIssuedITest {
         final GenerateDocumentRequest generateDocumentRequest =
             GenerateDocumentRequest.builder()
                 .template(MINI_PETITION_TEMPLATE_NAME)
-                .values(CASE_DATA)
+                .values(Collections.singletonMap(CASE_DETAILS_JSON_KEY, CASE_DETAILS))
                 .build();
 
-        final GeneratedDocumentInfo generatedDocumentInfo = GeneratedDocumentInfo.builder().build();
+        final GeneratedDocumentInfo generatedDocumentInfo =
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_PETITION)
+                .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, CASE_ID))
+                .build();
+
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
                 .documents(Collections.singletonList(generatedDocumentInfo))
-                .caseData(CASE_DATA).build();
+                .caseData(CASE_DATA)
+                .build();
+
         final Map<String, Object> formattedCaseData = Collections.emptyMap();
 
         stubValidationServerEndpoint(HttpStatus.OK,
@@ -172,7 +187,7 @@ public class PetitionIssuedITest {
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(CREATE_EVENT))
-            .header(HttpHeaders.AUTHORIZATION, USER_TOKEN)
+            .header(AUTHORIZATION, USER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())

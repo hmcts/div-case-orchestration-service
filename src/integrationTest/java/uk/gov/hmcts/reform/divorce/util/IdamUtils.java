@@ -36,14 +36,14 @@ public class IdamUtils {
         return RestAssured.given()
             .header("Content-Type", "application/json")
             .header(HttpHeaders.AUTHORIZATION, authorisation)
-            .get(idamUserBaseUrl+ "/details")
+            .get(idamUserBaseUrl + "/details")
             .body()
             .path("id").toString();
     }
 
     public String generateUserTokenWithNoRoles(String emailAddress, String password) {
         String userLoginDetails = String.join(":", emailAddress, password);
-        final String authHeader = "Basic " + new String(Base64.getEncoder().encode((userLoginDetails).getBytes()));
+        final String authHeader = "Basic " + new String(Base64.getEncoder().encode(userLoginDetails.getBytes()));
 
         final String token = RestAssured.given()
                 .header("Authorization", authHeader)
