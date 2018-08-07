@@ -3,12 +3,15 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneratio
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Value;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Map;
 
-@Value
+@Data
+@Builder
 @ApiModel(description = "Request body model for Document Generation Request")
 public class GenerateDocumentRequest {
     @ApiModelProperty(value = "Name of the template", required = true)

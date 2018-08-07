@@ -16,7 +16,7 @@ public interface CaseFormatterClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "caseformatter/version/1/add-documents",
+        value = "/caseformatter/version/1/add-documents",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> addDocuments(
