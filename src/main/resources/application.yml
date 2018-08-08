@@ -1,17 +1,21 @@
-server:
-  port: ${CASE_ORCHESTRATION_SERVICE_URL:8910}
+info:
+  app:
+    name: ${spring.application.name}
 
-idam:
-  api:
-    url: ${IDAM_API_BASEURL:http://localhost:4503}
+spring:
+  application:
+    name: div-cos
+  resources:
+    static-locations:
+
+server:
+  port: ${CASE_ORCHESTRATION_SERVICE_URL:4013}
 
 case:
   formatter:
     service:
       api:
         baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://localhost:4011}
-
-case:
   validation:
     service:
       api:
@@ -28,16 +32,6 @@ http:
     timeout: 60000
     request:
       timeout: 60000
-
-info:
-  app:
-    name: ${spring.application.name}
-
-spring:
-  application:
-    name: div-cos
-  resources:
-    static-locations:
 
 documentation:
   swagger:
