@@ -66,11 +66,11 @@ data "vault_generic_secret" "div-doc-s2s-auth-secret" {
 resource "azurerm_key_vault_secret" "ccd-submission-s2s-auth-secret" {
   name      = "ccd-submission-s2s-auth-secret"
   value     = "${data.vault_generic_secret.ccd-submission-s2s-auth-secret.data["value"]}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
+  vault_uri = "${local.vaultUri}"
 }
 
 resource "azurerm_key_vault_secret" "div-doc-s2s-auth-secret" {
   name      = "div-doc-s2s-auth-secret"
   value     = "${data.vault_generic_secret.div-doc-s2s-auth-secret.data["value"]}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
+  vault_uri = "${local.vaultUri}"
 }
