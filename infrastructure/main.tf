@@ -8,14 +8,8 @@ locals {
   validation_service_baseurl  = "http://div-vs-${local.local_env}.service.core-compute-${local.local_env}.internal"
 
   previewVaultName          = "${var.product}-${var.component}"
-  nonPreviewVaultName       = "${var.product}-${var.component}-${var.env}"
-  vaultName                 = "${var.env == "preview" ? local.previewVaultName : local.nonPreviewVaultName}"
-
-  nonPreviewVaultUri        = "${module.key-vault.key_vault_uri}"
-  previewVaultUri           = "https://div-${var.component}-aat.vault.azure.net/"
-  vaultUri                  = "${var.env == "preview"? local.previewVaultUri : local.nonPreviewVaultUri}"
-
-}
+  vaultUri                  = "${module.key-vault.key_vault_uri}"
+ }
 
 module "div-cos" {
   source                      = "git@github.com:hmcts/moj-module-webapp.git"
@@ -66,11 +60,11 @@ data "vault_generic_secret" "div-doc-s2s-auth-secret" {
 resource "azurerm_key_vault_secret" "ccd-submission-s2s-auth-secret" {
   name      = "ccd-submission-s2s-auth-secret"
   value     = "${data.vault_generic_secret.ccd-submission-s2s-auth-secret.data["value"]}"
-  vault_uri = "${local.vaultUri}"
+  vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
 resource "azurerm_key_vault_secret" "div-doc-s2s-auth-secret" {
   name      = "div-doc-s2s-auth-secret"
   value     = "${data.vault_generic_secret.div-doc-s2s-auth-secret.data["value"]}"
-  vault_uri = "${local.vaultUri}"
+  vault_uri = "${module.key-vault.key_vault_uri}"
 }
