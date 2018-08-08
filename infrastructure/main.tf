@@ -7,7 +7,7 @@ locals {
   document_generator_baseurl  = "http://div-dgs-${local.local_env}.service.core-compute-${local.local_env}.internal"
   validation_service_baseurl  = "http://div-vs-${local.local_env}.service.core-compute-${local.local_env}.internal"
 
-  previewVaultName          = "${var.product}-${var.component}"
+  vaultName          = "${var.product}-${var.component}"
   vaultUri                  = "${module.key-vault.key_vault_uri}"
  }
 
