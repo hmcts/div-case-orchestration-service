@@ -4,11 +4,11 @@ public interface TaskContext {
 
     void setTaskFailed(boolean status);
 
-   boolean getStatus();
+    boolean getStatus();
 
-   void setTransientObject(String key, Object jsonNode);
+    void setTransientObject(String key, Object jsonNode);
 
-   Object getTransientObject(String key);
+    Object getTransientObject(String key);
 
 }
 

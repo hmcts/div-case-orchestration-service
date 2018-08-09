@@ -14,23 +14,15 @@ import java.util.Map;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@FeignClient(name = "formatter-service-client", url = "${case.formatter.service.api.baseurl}")
-public interface CaseFormatterClient {
+@FeignClient(name = "maintenance-service-client", url = "${case.maintenance.service.api.baseurl}")
+public interface CaseMaintenanceClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/caseformatter/version/1/add-documents",
+        value = "/casemaintenance/version/1/submit",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
-    Map<String, Object> addDocuments(
-        @RequestBody DocumentUpdateRequest documentUpdateRequest);
-
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/caseformatter/version/1/to-ccd-format",
-        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
-    )
-    Map<String, Object> transformToCCDFormat(
-        @RequestBody Map<String, Object> transformToCCDFormat,
+    Map<String, Object> submitCase(
+        @RequestBody Map<String, Object> submitCase,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
 }

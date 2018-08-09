@@ -20,6 +20,10 @@ case:
     service:
       api:
         baseurl: ${CASE_VALIDATION_SERVICE_API_BASEURL:http://localhost:4008}
+  maintenance:
+    service:
+      api:
+        baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://localhost:4010}
 
 document:
   generator:
