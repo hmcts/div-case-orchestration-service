@@ -33,5 +33,13 @@ withPipeline(type, product, component) {
        echo 'divorce-case-orchestration-service checked out'
     }
 
+    after('functionalTest:aat') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    }
+
+    after('functionalTest:preview') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    }
+
      enableSlackNotifications('#div-dev')
 }

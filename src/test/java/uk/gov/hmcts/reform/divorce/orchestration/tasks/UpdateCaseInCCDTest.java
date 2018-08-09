@@ -18,16 +18,20 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SubmitCaseToCCDTest {
+public class UpdateCaseInCCDTest {
 
     @Mock
     CaseMaintenanceClient caseMaintenanceClient;
 
     @InjectMocks
-    SubmitCaseToCCD submitCaseToCCD;
+    UpdateCaseInCCD updateCaseInCCD;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -38,16 +42,19 @@ public class SubmitCaseToCCDTest {
         context = new DefaultTaskContext();
 
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        context.setTransientObject(CASE_EVENT_ID_JSON_KEY, TEST_EVENT_ID);
     }
 
     @Test
-    public void executeShouldCallCaseMaintenanceClientSubmitEndpoint() throws Exception {
+    public void executeShouldCallCaseMaintenanceClientUpdateEndpoint() throws Exception {
         Map<String, Object> resultData = Collections.singletonMap("Hello", "World");
 
-        when(caseMaintenanceClient.submitCase(testData, AUTH_TOKEN)).thenReturn(resultData);
+        when(caseMaintenanceClient.updateCase(testData, AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID))
+                .thenReturn(resultData);
 
-        assertEquals(resultData, submitCaseToCCD.execute(context, testData));
+        assertEquals(resultData, updateCaseInCCD.execute(context, testData));
 
-        verify(caseMaintenanceClient).submitCase(testData, AUTH_TOKEN);
+        verify(caseMaintenanceClient).updateCase(testData, AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID);
     }
 }

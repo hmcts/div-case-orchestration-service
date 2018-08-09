@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D_8_DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DOC_URL;
@@ -81,7 +80,7 @@ public class CaseDataFormatterTest {
         when(caseFormatterClient.addDocuments(any())).thenReturn(payload);
 
         //when
-        Map<String, Object> response = caseDataFormatter.execute(context, payload, AUTH_TOKEN, caseDetails);
+        Map<String, Object> response = caseDataFormatter.execute(context, payload);
 
         //then
         assertNotNull(response);

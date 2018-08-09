@@ -8,6 +8,7 @@ bin
 build
 classes
 out
+target
 
 # IntelliJ
 *.ipr
