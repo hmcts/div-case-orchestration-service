@@ -48,8 +48,7 @@ public class IdamPinGenerator implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context,
-                                       Map<String, Object> caseData,
-                                       Object... params) {
+                                       Map<String, Object> caseData) {
         Pin pin = idamClient.createPin(PinRequest.builder()
                         .firstName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_FIRST_NAME, "")))
                         .lastName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_LAST_NAME, "")))

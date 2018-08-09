@@ -8,12 +8,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
@@ -24,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
 @Slf4j
@@ -34,43 +39,24 @@ public class OrchestrationController {
     @Autowired
     private CaseOrchestrationService orchestrationService;
 
-    @PostMapping(path = "/submit")
-    @ApiOperation(value = "Handles submit from called from petition frontend")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Submit was successful and case was created in CCD",
-                    response = CcdCallbackResponse.class),
-            @ApiResponse(code = 400, message = "Bad Request")
-                                    })
-    public ResponseEntity<Map<String, Object>> submit(
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken,
-            @RequestBody @ApiParam("Divorce Session") Map<String, Object> payLoad) {
-        Map<String, Object> response = null;
-
-        try {
-            response = orchestrationService.submit(payLoad, authorizationToken);
-        } catch (WorkflowException e) {
-            log.error(e.getMessage());
-        }
-
-        return ResponseEntity.ok(response);
-    }
-
     @PostMapping(path = "/petition-issued")
     @ApiOperation(value = "Handles Issue callback from CCD")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Callback was processed successFully or in case of an error message is "
                     + "attached to the case",
                     response = CcdCallbackResponse.class),
-            @ApiResponse(code = 400, message = "Bad Request")
-                                    })
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
+            })
     public ResponseEntity<CcdCallbackResponse> petitionIssuedCallback(
             @RequestHeader(value = "Authorization") String authorizationToken,
             @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) {
-        Map<String, Object> response = null;
+        Map<String, Object> response;
         try {
             response = orchestrationService.ccdCallbackHandler(caseDetailsRequest, authorizationToken);
         } catch (WorkflowException e) {
             log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
         if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
@@ -86,20 +72,71 @@ public class OrchestrationController {
                         .build());
     }
 
-    private List<String> getErrors(Map<String, Object> response) {
-        ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
-        return validationResponse.getErrors();
+    @PostMapping(path = "/submit")
+    @ApiOperation(value = "Handles submit called from petition frontend")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Submit was successful and case was created in CCD",
+                    response = CaseResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request")
+            })
+    public ResponseEntity<CaseResponse> submit(
+            @RequestHeader(value = "Authorization") String authorizationToken,
+            @RequestBody @ApiParam("Divorce Session") Map<String, Object> payload) {
+        Map<String, Object> response;
+        try {
+            response = orchestrationService.submit(payload, authorizationToken);
+        } catch (WorkflowException exception) {
+            log.error(exception.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        if (response.containsKey(VALIDATION_ERROR_KEY)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        return ResponseEntity.ok(
+                CaseResponse.builder()
+                        .caseId(response.get(ID).toString())
+                        .status(SUCCESS_STATUS)
+                        .build());
+    }
+
+    @PostMapping(path = "/updateCase/{caseId}/{eventId}")
+    @ApiOperation(value = "Handles update called from petition frontend")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
+                    response = CaseResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request")
+            })
+    public ResponseEntity<CaseResponse> update(
+            @RequestHeader(value = "Authorization") String authorizationToken,
+            @PathVariable String caseId,
+            @PathVariable String eventId,
+            @RequestBody @ApiParam("Divorce Session") Map<String, Object> payload) {
+        Map<String, Object> response;
+        try {
+            response = orchestrationService.update(payload, authorizationToken, caseId, eventId);
+        } catch (WorkflowException exception) {
+            log.error(exception.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return ResponseEntity.ok(
+                CaseResponse.builder()
+                        .caseId(response.get(ID).toString())
+                        .status(SUCCESS_STATUS)
+                        .build());
     }
 
     @PostMapping(path = "/authenticate-respondent")
     @ApiOperation(value = "Authenticates the respondent")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Respondent Authenticated"),
-        @ApiResponse(code = 401, message = "User Not Authenticated"),
-        @ApiResponse(code = 400, message = "Bad Request")
-        })
+            @ApiResponse(code = 200, message = "Respondent Authenticated"),
+            @ApiResponse(code = 401, message = "User Not Authenticated"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
     public ResponseEntity<Void> authenticateRespondent(
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken) {
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken) {
         Boolean authenticateRespondent = null;
 
         try {
@@ -113,5 +150,10 @@ public class OrchestrationController {
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    private List<String> getErrors(Map<String, Object> response) {
+        ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
+        return validationResponse.getErrors();
     }
 }
