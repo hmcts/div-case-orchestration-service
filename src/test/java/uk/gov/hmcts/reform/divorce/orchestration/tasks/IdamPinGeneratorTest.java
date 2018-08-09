@@ -25,11 +25,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USERID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class IdamPinGeneratorTest {
@@ -63,15 +65,13 @@ public class IdamPinGeneratorTest {
                 .build();
 
         context = new DefaultTaskContext();
-
-
     }
 
     @Test
     public void executeShouldReturnUpdatedPayloadForValidCase() throws TaskException {
         //given
         when(idamClient.createPin(any(), anyString())).thenReturn(pin);
-        authenticateUserResponse = AuthenticateUserResponse.builder().code("test.code").build();
+        authenticateUserResponse = AuthenticateUserResponse.builder().code(TEST_CODE).build();
         when(idamClient.authenticateUser(anyString(), anyString(), any(), any()))
                 .thenReturn(authenticateUserResponse);
         tokenExchangeResponse = TokenExchangeResponse.builder().accessToken(AUTH_TOKEN).build();
@@ -79,7 +79,7 @@ public class IdamPinGeneratorTest {
                 .thenReturn(tokenExchangeResponse);
 
         //when
-        Map<String, Object> response = idamPinGenerator.execute(context, payload, AUTH_TOKEN, caseDetails);
+        Map<String, Object> response = idamPinGenerator.execute(context, payload);
 
         //then
         assertNotNull(response);

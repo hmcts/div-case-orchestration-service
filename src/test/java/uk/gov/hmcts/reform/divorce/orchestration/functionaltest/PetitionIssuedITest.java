@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -39,6 +40,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FORM_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_FILE_NAME_FORMAT;
@@ -50,6 +52,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @PropertySource(value = "classpath:application.yml")
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class PetitionIssuedITest {
     private static final String API_URL = "/petition-issued";
     private static final String VALIDATION_CONTEXT_PATH = "/version/1/validate";
@@ -114,8 +117,7 @@ public class PetitionIssuedITest {
                 .header(AUTHORIZATION, USER_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadGateway())
-                .andExpect(content().string(containsString(errorMessage)));
+                .andExpect(status().is5xxServerError());
     }
 
     // @Test - TODO
@@ -158,7 +160,7 @@ public class PetitionIssuedITest {
         final GenerateDocumentRequest generateDocumentRequest =
                 GenerateDocumentRequest.builder()
                         .template(MINI_PETITION_TEMPLATE_NAME)
-                        .values(Collections.singletonMap(CASE_DETAILS_JSON_KEY, CASE_DETAILS))
+                        .values(Collections.singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
                         .build();
 
         final GeneratedDocumentInfo generatedDocumentInfo =

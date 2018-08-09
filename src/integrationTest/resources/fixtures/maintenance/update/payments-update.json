@@ -1,0 +1,15 @@
+{
+  "eventData" : {
+    "payment" : {
+      "PaymentChannel" : "card",
+      "PaymentTransactionId" : "111222333",
+      "PaymentReference" : "DIV1$$$0000000f-ffff-00f0-000f-fff000f0f0f0$$$AA00$$$X0165",
+      "PaymentDate" : "01012001",
+      "PaymentAmount" : "55000",
+      "PaymentStatus" : "success",
+      "PaymentFeeId" : "X0165",
+      "PaymentSiteId" : "AA00"
+    }
+  },
+  "eventId" : "paymentMade"
+}
