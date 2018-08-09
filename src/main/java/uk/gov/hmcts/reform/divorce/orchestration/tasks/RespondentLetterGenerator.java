@@ -9,11 +9,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ACCESS_CODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.INVITATION_FILE_NAME_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
@@ -30,20 +33,19 @@ public class RespondentLetterGenerator implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context,
-                                       Map<String, Object> caseData,
-                                       Object... params) {
-        CaseDetails caseDetails = (CaseDetails) params[1];
+                                       Map<String, Object> caseData) throws TaskException {
+        CaseDetails caseDetails = (CaseDetails) context.getTransientObject(CASE_DETAILS_JSON_KEY);
         GeneratedDocumentInfo aosInvitation =
                 documentGeneratorClient.generatePDF(
                         GenerateDocumentRequest.builder()
                                 .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
                                 .values(ImmutableMap.of(
-                                        CASE_DETAILS_JSON_KEY, caseDetails,
+                                        DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails,
                                         ACCESS_CODE, caseData.remove(PIN)
                                         )
                                 )
                                 .build(),
-                        String.valueOf(params[0])
+                        String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY))
                 );
 
         aosInvitation.setDocumentType(DOCUMENT_TYPE_INVITATION);

@@ -28,10 +28,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DOC_U
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_FILE_NAME_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class PetitionGeneratorTest {
@@ -64,7 +67,8 @@ public class PetitionGeneratorTest {
                 .build();
 
         context = new DefaultTaskContext();
-
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
     }
 
     @Test
@@ -73,7 +77,7 @@ public class PetitionGeneratorTest {
         when(documentGeneratorClient.generatePDF(any(), anyString())).thenReturn(petition);
 
         //when
-        Map<String, Object> response = petitionGenerator.execute(context, payload, AUTH_TOKEN, caseDetails);
+        Map<String, Object> response = petitionGenerator.execute(context, payload);
 
         //then
         assertNotNull(response);
