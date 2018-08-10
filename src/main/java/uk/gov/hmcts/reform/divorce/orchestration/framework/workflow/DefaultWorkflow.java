@@ -21,7 +21,9 @@ public class DefaultWorkflow<T> implements Workflow<T> {
         try {
             for (Task<T> task: tasks) {
                 payLoad = task.execute(context,payLoad);
-                if (context.getStatus()) break;
+                if (context.getStatus()) { 
+                    break;
+                }
             }
         } catch (TaskException e) {
             throw new WorkflowException(e.getMessage());
@@ -37,8 +39,8 @@ public class DefaultWorkflow<T> implements Workflow<T> {
 
         for (Map.Entry entry: entrySet) {
             String key = (String) entry.getKey();
-            if (key.endsWith("_Error"))  {
-               errors.put(key, entry.getValue());
+            if (key.endsWith("_Error")) {
+                errors.put(key, entry.getValue());
             }
         }
         return errors;

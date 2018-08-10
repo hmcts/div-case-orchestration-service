@@ -118,7 +118,7 @@ public class PetitionIssuedCallBackServiceImplUTest {
 
         CCDCallbackResponse actual = classUnderTest.issuePetition(CASE_DETAILS, AUTH_TOKEN);
 
-        assertEquals(actual.getData(), FORMATTED_CASE_DATA);
+        assertEquals(FORMATTED_CASE_DATA, actual.getData());
 
         verify(caseValidationClient).validate(VALIDATION_REQUEST);
         verify(documentGeneratorClient).generatePDF(GENERATE_DOCUMENT_REQUEST, AUTH_TOKEN);

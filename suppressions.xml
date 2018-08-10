@@ -7,4 +7,5 @@
 <suppressions>
     <!--<suppress checks="JavadocMethod" files=".*Test.java"/>-->
     <suppress checks=".*" files=".*Connections.java"/>
+    <suppress checks=".*" files=".*SampleWorkflow.java"/>
 </suppressions>

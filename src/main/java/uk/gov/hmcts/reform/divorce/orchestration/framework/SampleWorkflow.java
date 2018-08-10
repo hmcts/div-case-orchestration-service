@@ -32,9 +32,7 @@ public class SampleWorkflow {
 
         log.info(simpleOutput);
     }
-
 }
-
 
 @Slf4j
 class ValidateTask implements Task<CaseDetails> {

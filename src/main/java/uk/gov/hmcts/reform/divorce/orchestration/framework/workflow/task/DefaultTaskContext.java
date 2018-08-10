@@ -18,7 +18,7 @@ public class DefaultTaskContext implements TaskContext {
 
     @Override
     public void setTaskFailed(boolean status) {
-       this.status = status;
+        this.status = status;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class DefaultTaskContext implements TaskContext {
 
     @Override
     public void setTransientObject(String key, Object jsonNode) {
-         transientObjects.put(key, jsonNode);
+        transientObjects.put(key, jsonNode);
     }
 
     @Override

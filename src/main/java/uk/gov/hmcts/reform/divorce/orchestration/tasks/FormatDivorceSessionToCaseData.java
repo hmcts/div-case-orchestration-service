@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import java.util.Map;
 
 @Component
-public class FormatDivorceSessionDataToCaseData implements Task<Map<String, Object>> {
+public class FormatDivorceSessionToCaseData implements Task<Map<String, Object>> {
 
     @Autowired
     private CaseFormatterClient caseFormatterClient;
