@@ -19,7 +19,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> submit(Map<String, Object> payLoad, String authToken) throws WorkflowException {
         payLoad = submitToCCDWorkflow.run(payLoad, authToken);
-        log.info("Case ID is: {}", payLoad.get("id"));
-        return payLoad;
+
+        if (submitToCCDWorkflow.errors().isEmpty()) {
+            log.info("Case ID is: {}", payLoad.get("id"));
+            return payLoad;
+        } else {
+            return submitToCCDWorkflow.errors();
+        }
     }
 }

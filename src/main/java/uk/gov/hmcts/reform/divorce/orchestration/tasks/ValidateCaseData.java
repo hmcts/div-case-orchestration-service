@@ -32,6 +32,7 @@ public class ValidateCaseData implements Task<Map<String, Object>> {
             context.setTaskFailed(true);
             context.setTransientObject(this.getClass().getName() + "_Error", validationResponse);
         }
+
         return caseData;
     }
 }
