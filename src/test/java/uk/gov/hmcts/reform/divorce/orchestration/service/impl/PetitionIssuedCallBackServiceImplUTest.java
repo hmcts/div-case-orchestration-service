@@ -146,7 +146,7 @@ public class PetitionIssuedCallBackServiceImplUTest {
     }
 
     @Test
-    public void givenCaseDataValid_whenIssuePetition_thenProceedAsExpected() {
+    public void givenCaseDataValid_whenIssuePetitionAndAosInvitation_thenProceedAsExpected() {
         when(caseValidationClient.validate(VALIDATION_REQUEST)).thenReturn(VALIDATION_VALID_RESPONSE);
         when(documentGeneratorClient.generatePDF(GENERATE_DOCUMENT_REQUEST, AUTH_TOKEN))
             .thenReturn(GENERATE_DOCUMENT_INFO);
@@ -164,5 +164,36 @@ public class PetitionIssuedCallBackServiceImplUTest {
         verify(documentGeneratorClient).generatePDF(GENERATE_AOS_INVITATION_REQUEST, AUTH_TOKEN);
         verify(caseFormatterClient).addDocuments(DOCUMENT_UPDATE_REQUEST);
         verify(idamClient).createPin(PIN_GENERATION_REQUEST, AUTH_TOKEN);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void givenCaseDataValid_whenIssuePetitionFails_thenAbortWithErrors() {
+        when(caseValidationClient.validate(VALIDATION_REQUEST)).thenReturn(VALIDATION_VALID_RESPONSE);
+        when(documentGeneratorClient.generatePDF(GENERATE_DOCUMENT_REQUEST, AUTH_TOKEN))
+                .thenThrow(new RuntimeException());
+
+        classUnderTest.issuePetitionAndAosLetter(CASE_DETAILS, AUTH_TOKEN);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void givenCaseDataValid_whenIdamPinGenerationFails_thenAbortWithErrors() {
+        when(caseValidationClient.validate(VALIDATION_REQUEST)).thenReturn(VALIDATION_VALID_RESPONSE);
+        when(documentGeneratorClient.generatePDF(GENERATE_DOCUMENT_REQUEST, AUTH_TOKEN))
+                .thenReturn(GENERATE_DOCUMENT_INFO);
+        when(idamClient.createPin(PIN_GENERATION_REQUEST, AUTH_TOKEN)).thenThrow(new RuntimeException());
+
+        classUnderTest.issuePetitionAndAosLetter(CASE_DETAILS, AUTH_TOKEN);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void givenCaseDataValid_whenAosLetterFailsFails_thenAbortWithErrors() {
+        when(caseValidationClient.validate(VALIDATION_REQUEST)).thenReturn(VALIDATION_VALID_RESPONSE);
+        when(documentGeneratorClient.generatePDF(GENERATE_DOCUMENT_REQUEST, AUTH_TOKEN))
+                .thenReturn(GENERATE_DOCUMENT_INFO);
+        when(idamClient.createPin(PIN_GENERATION_REQUEST, AUTH_TOKEN)).thenReturn(Pin.builder().pin(TEST_PIN).userId(TEST_USERID).expiryDate(TEST_EXPIRY).build());
+        when(documentGeneratorClient.generatePDF(GENERATE_AOS_INVITATION_REQUEST, AUTH_TOKEN))
+                .thenThrow(new RuntimeException());
+
+        classUnderTest.issuePetitionAndAosLetter(CASE_DETAILS, AUTH_TOKEN);
     }
 }

@@ -67,13 +67,6 @@ public class PetitionIssuedCallBackServiceImpl implements PetitionIssuedCallBack
                     .build();
         }
 
-        Pin pin = idamClient.createPin(PinRequest.builder()
-                        .firstName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_FIRST_NAME, "")))
-                        .lastName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_LAST_NAME, "")))
-                        .build(),
-                authToken);
-
-        caseData.put(RESPONDENT_LETTER_HOLDER_ID, pin.getUserId());
 
         GeneratedDocumentInfo miniPetition =
                 documentGeneratorClient.generatePDF(
@@ -88,6 +81,14 @@ public class PetitionIssuedCallBackServiceImpl implements PetitionIssuedCallBack
         miniPetition.setDocumentType(DOCUMENT_TYPE_PETITION);
         miniPetition.setFileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, caseDetails.getCaseId()));
 
+        Pin pin = idamClient.createPin(PinRequest.builder()
+                        .firstName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_FIRST_NAME, "")))
+                        .lastName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_LAST_NAME, "")))
+                        .build(),
+                authToken);
+
+        caseData.put(RESPONDENT_LETTER_HOLDER_ID, pin.getUserId());
+
         GeneratedDocumentInfo aosinvitation =
                 documentGeneratorClient.generatePDF(
                         GenerateDocumentRequest.builder()
@@ -99,7 +100,6 @@ public class PetitionIssuedCallBackServiceImpl implements PetitionIssuedCallBack
 
         aosinvitation.setDocumentType(DOCUMENT_TYPE_INVITATION);
         aosinvitation.setFileName(String.format(INVITATION_FILE_NAME_FORMAT, caseDetails.getCaseId()));
-
 
         return CCDCallbackResponse.builder()
                 .data(
