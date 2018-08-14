@@ -2,6 +2,10 @@ variable "product" {
   default = "div"
 }
 
+variable "raw_product" {
+   default = "div"
+}
+
 variable "component" {
   default = "cos"
 }

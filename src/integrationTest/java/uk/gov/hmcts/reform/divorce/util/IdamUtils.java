@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.divorce.util;
 
 import io.restassured.RestAssured;
+import io.restassured.parsing.Parser;
+import io.restassured.response.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 
@@ -11,46 +13,107 @@ public class IdamUtils {
     @Value("${auth.idam.client.baseUrl}")
     private String idamUserBaseUrl;
 
-    public void createCaseWorkerCourtAdminUserInIdam(String username, String emailAddress, String password) {
-        String payload = "{\"email\":\"" + emailAddress + "\", \"forename\":\"" + username
-            + "\",\"surname\":\"User\",\"password\":\"" + password + "\", \"levelOfAccess\":1, "
-            + "\"roles\": [\"caseworker-divorce\", \"caseworker-divorce-courtadmin\", \"caseworker\", \"citizen\"], "
-            + "\"userGroup\": {\"code\": \"caseworker\"}}";
+    @Value("${auth.idam.client.redirectUri}")
+    private String idamRedirectUri;
+
+    @Value("${auth.idam.client.secret}")
+    private String idamSecret;
+
+
+    public void createDivorceCaseworkerUserInIdam(String username, String password) {
+        String body = "{\n" +
+                "  \"email\": \"" + username + "\",\n" +
+                "  \"forename\": \"test\",\n" +
+                "  \"password\": \"" + password + "\",\n" +
+                "  \"roles\": [\n" +
+                "    {\n" +
+                "      \"code\": \"" + "caseworker-divorce-courtadmin" + "\"\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"surname\": \"test\",\n" +
+                "  \"userGroup\": {\n" +
+                "    \"code\": \"caseworker\"\n" +
+                "  }\n" +
+                "}";
 
         RestAssured.given()
-            .header("Content-Type", "application/json")
-            .body(payload)
-            .post(idamCreateUrl());
+                .header("Content-Type", "application/json")
+                .relaxedHTTPSValidation()
+                .body(body)
+                .post(idamCreateUrl());
+    }
+
+    public void createUserInIdam(String username, String password) {
+        String body = "{\n" +
+                "  \"email\": \"" + username + "\",\n" +
+                "  \"forename\": \"test\",\n" +
+                "  \"id\": \"test\",\n" +
+                "  \"password\": \"" + password + "\",\n" +
+                "  \"roles\": [\n" +
+                "    {\n" +
+                "      \"code\": \"" + "citizen" + "\"\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"surname\": \"test\",\n" +
+                "  \"userGroup\": {\n" +
+                "    \"code\": \"divorce-private-beta\"\n" +
+                "  }\n" +
+                "}";
+
+        RestAssured.given()
+                .header("Content-Type", "application/json")
+                .relaxedHTTPSValidation()
+                .body(body)
+                .post(idamCreateUrl());
+    }
+
+    public String getUserId(String jwt) {
+        Response response = RestAssured.given()
+                .header("Authorization", jwt)
+                .relaxedHTTPSValidation()
+                .get(idamUserBaseUrl + "/details");
+
+        return response.getBody().path("id").toString();
+    }
+
+    public String generateUserTokenWithNoRoles(String username, String password) {
+        String userLoginDetails = String.join(":", username, password);
+        final String authHeader = "Basic " + new String(Base64.getEncoder().encode((userLoginDetails).getBytes()));
+
+        Response response = RestAssured.given()
+                .header("Authorization", authHeader)
+                .relaxedHTTPSValidation()
+                .post(idamCodeUrl());
+
+        if (response.getStatusCode() >= 300) {
+            throw new IllegalStateException("Token generation failed with code: " + response.getStatusCode() + " body: " + response.getBody().prettyPrint());
+        }
+
+        response = RestAssured.given()
+                .relaxedHTTPSValidation()
+                .post(idamTokenUrl(response.getBody().path("code")));
+
+        String token = response.getBody().path("access_token");
+        return "Bearer " + token;
     }
 
     private String idamCreateUrl() {
         return idamUserBaseUrl + "/testing-support/accounts";
     }
 
-    private String loginUrl() {
-        return idamUserBaseUrl + "/oauth2/authorize?response_type=token&client_id=divorce&redirect_uri="
-                            + "https://www.preprod.ccd.reform.hmcts.net/oauth2redirect";
+    private String idamCodeUrl() {
+        return idamUserBaseUrl + "/oauth2/authorize"
+                + "?response_type=code"
+                + "&client_id=divorce"
+                + "&redirect_uri=" + idamRedirectUri;
     }
 
-    public String getUserId(String authorisation) {
-        return RestAssured.given()
-            .header("Content-Type", "application/json")
-            .header(HttpHeaders.AUTHORIZATION, authorisation)
-            .get(idamUserBaseUrl + "/details")
-            .body()
-            .path("id").toString();
-    }
-
-    public String generateUserTokenWithNoRoles(String emailAddress, String password) {
-        String userLoginDetails = String.join(":", emailAddress, password);
-        final String authHeader = "Basic " + new String(Base64.getEncoder().encode(userLoginDetails.getBytes()));
-
-        final String token = RestAssured.given()
-                .header("Authorization", authHeader)
-                .post(loginUrl())
-                .body()
-                .path("access-token");
-
-        return "Bearer " + token;
+    private String idamTokenUrl(String code) {
+        return idamUserBaseUrl + "/oauth2/token"
+                + "?code=" + code
+                + "&client_id=divorce"
+                + "&client_secret=" + idamSecret
+                + "&redirect_uri=" + idamRedirectUri
+                + "&grant_type=authorization_code";
     }
 }

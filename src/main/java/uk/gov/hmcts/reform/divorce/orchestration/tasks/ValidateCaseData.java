@@ -7,24 +7,28 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.Validat
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FORM_ID;
+
 @Component
 public class ValidateCaseData implements Task<Map<String, Object>> {
-
-    private static final String FORM_ID = "case-progression";
+    private final CaseValidationClient caseValidationClient;
 
     @Autowired
-    private CaseValidationClient caseValidationClient;
+    public ValidateCaseData(CaseValidationClient caseValidationClient) {
+        this.caseValidationClient = caseValidationClient;
+    }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    public Map<String, Object> execute(TaskContext context,
+                                       Map<String, Object> payLoad,
+                                       Object... params)  {
         ValidationResponse validationResponse =
             caseValidationClient.validate(
                 ValidationRequest.builder()
-                    .data(caseData)
+                    .data(payLoad)
                     .formId(FORM_ID)
                     .build());
 
@@ -33,6 +37,6 @@ public class ValidateCaseData implements Task<Map<String, Object>> {
             context.setTransientObject(this.getClass().getName() + "_Error", validationResponse);
         }
 
-        return caseData;
+        return payLoad;
     }
 }
