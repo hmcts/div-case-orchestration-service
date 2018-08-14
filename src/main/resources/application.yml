@@ -25,6 +25,13 @@ case:
       api:
         baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://localhost:4010}
 
+idam:
+  api:
+    url: https://preprod-idamapi.reform.hmcts.net:3511/
+    port: 4503
+    health:
+      context-path: /health
+
 document:
   generator:
     service:

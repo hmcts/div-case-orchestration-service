@@ -9,6 +9,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseValidationClient;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
+import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CCDCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
@@ -77,6 +78,9 @@ public class PetitionIssuedCallBackServiceImplUTest {
 
     @Mock
     private CaseValidationClient caseValidationClient;
+
+    @Mock
+    private IdamClient idamClient;
 
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
