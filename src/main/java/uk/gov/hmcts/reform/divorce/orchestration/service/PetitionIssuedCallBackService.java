@@ -4,5 +4,5 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CCDCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 
 public interface PetitionIssuedCallBackService {
-    CCDCallbackResponse issuePetition(CaseDetails caseDetails, String authToken);
+    CCDCallbackResponse issuePetitionAndAosLetter(CaseDetails caseDetails, String authToken);
 }

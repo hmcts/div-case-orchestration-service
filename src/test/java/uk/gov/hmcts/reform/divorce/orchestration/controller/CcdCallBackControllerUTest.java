@@ -39,7 +39,7 @@ public class CcdCallBackControllerUTest {
 
         final CCDCallbackResponse expected = CCDCallbackResponse.builder().build();
 
-        when(petitionIssuedCallBackService.issuePetition(caseDetails, authToken)).thenReturn(expected);
+        when(petitionIssuedCallBackService.issuePetitionAndAosLetter(caseDetails, authToken)).thenReturn(expected);
 
         ResponseEntity<CCDCallbackResponse> actual = classUnderTest.petitionIssued(authToken, createEvent);
 

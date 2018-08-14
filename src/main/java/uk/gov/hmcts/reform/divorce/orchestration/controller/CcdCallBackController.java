@@ -36,6 +36,6 @@ public class CcdCallBackController {
         @RequestHeader(value = "Authorization") String authorizationToken,
         @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) {
         return ResponseEntity.ok(
-            petitionIssuedCallBackService.issuePetition(caseDetailsRequest.getCaseDetails(), authorizationToken));
+            petitionIssuedCallBackService.issuePetitionAndAosLetter(caseDetailsRequest.getCaseDetails(), authorizationToken));
     }
 }

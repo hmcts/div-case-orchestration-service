@@ -26,12 +26,16 @@ import java.util.Map;
 public class PetitionIssuedCallBackServiceImpl implements PetitionIssuedCallBackService {
     private static final String FORM_ID = "case-progression";
     private static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
-    private static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
     private static final String CASE_DETAILS_JSON_KEY = "caseDetails";
     private static final String DOCUMENT_TYPE_PETITION = "petition";
     private static final String MINI_PETITION_FILE_NAME_FORMAT = "d8petition%s";
     private static final String DOCUMENT_TYPE_INVITATION = "aosinvitation";
+    private static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
     private static final String INVITATION_FILE_NAME_FORMAT = "aosinvitation%s";
+    private static final String D_8_PETITIONER_FIRST_NAME = "D8PetitionerFirstName";
+    private static final String D_8_PETITIONER_LAST_NAME = "D8PetitionerLastName";
+    private static final String ACCESS_CODE = "access_code";
+    private static final String RESPONDENT_LETTER_HOLDER_ID = "respondentLetterHolderId";
 
     @Autowired
     private CaseValidationClient caseValidationClient;
@@ -46,7 +50,7 @@ public class PetitionIssuedCallBackServiceImpl implements PetitionIssuedCallBack
     private IdamClient idamClient;
 
     @Override
-    public CCDCallbackResponse issuePetition(CaseDetails caseDetails, String authToken) {
+    public CCDCallbackResponse issuePetitionAndAosLetter(CaseDetails caseDetails, String authToken) {
         Map<String, Object> caseData = caseDetails.getCaseData();
         ValidationResponse validationResponse =
                 caseValidationClient.validate(
@@ -64,12 +68,12 @@ public class PetitionIssuedCallBackServiceImpl implements PetitionIssuedCallBack
         }
 
         Pin pin = idamClient.createPin(PinRequest.builder()
-                        .firstName(String.valueOf(caseData.getOrDefault("D8PetitionerFirstName", "")))
-                        .lastName(String.valueOf(caseData.getOrDefault("D8PetitionerLastName", "")))
+                        .firstName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_FIRST_NAME, "")))
+                        .lastName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_LAST_NAME, "")))
                         .build(),
                 authToken);
 
-        caseData.put("respondentLetterHolderId", pin.getUserId());
+        caseData.put(RESPONDENT_LETTER_HOLDER_ID, pin.getUserId());
 
         GeneratedDocumentInfo miniPetition =
                 documentGeneratorClient.generatePDF(
@@ -88,7 +92,7 @@ public class PetitionIssuedCallBackServiceImpl implements PetitionIssuedCallBack
                 documentGeneratorClient.generatePDF(
                         GenerateDocumentRequest.builder()
                                 .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
-                                .values(ImmutableMap.of(CASE_DETAILS_JSON_KEY, caseDetails, "access_code", pin.getPin()))
+                                .values(ImmutableMap.of(CASE_DETAILS_JSON_KEY, caseDetails, ACCESS_CODE, pin.getPin()))
                                 .build(),
                         authToken
                 );
