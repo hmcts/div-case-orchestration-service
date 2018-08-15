@@ -18,7 +18,7 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(description = "The response to a callback from ccd")
 @Builder
-public class CCDCallbackResponse {
+public class CcdCallbackResponse {
     @ApiModelProperty(value = "The entire case data to be returned with updated fields")
     @JsonProperty("case_data")
     private Map<String, Object> data;
