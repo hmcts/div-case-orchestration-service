@@ -13,13 +13,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import java.util.Collections;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
+
 @Component
 public class PetitionGenerator implements Task<Map<String, Object>> {
-    private static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
-    private static final String CASE_DETAILS_JSON_KEY = "caseDetails";
-    private static final String DOCUMENT_TYPE_PETITION = "petition";
-    private static final String MINI_PETITION_FILE_NAME_FORMAT = "d8petition%s";
-
     @Autowired
     private DocumentGeneratorClient documentGeneratorClient;
 

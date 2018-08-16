@@ -18,11 +18,13 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseOrchestrationServiceImplTest {
     public static final String TEST_CASE_ID = "test.case.id";
     public static final String TEST_STATE = "test.state";
+    public static final String TEST_PIN = "abcd1234";
     private static String TEST_TOKEN = "test.token";
     private static String TEST_EVENT_ID = "test.event.id";
     private static String AUTH_TOKEN = "test.auth.token";
@@ -44,6 +46,7 @@ public class CaseOrchestrationServiceImplTest {
     public void setUp(){
         createEventRequest = CreateEvent.builder().caseDetails(CaseDetails.builder().caseData(new HashMap<>()).caseId(TEST_CASE_ID).state(TEST_STATE).build()).eventId(TEST_EVENT_ID).token(TEST_TOKEN).build();
         expectedPayload = new HashMap<>();
+        expectedPayload.put(PIN, TEST_PIN);
     }
 
     @Test
@@ -56,6 +59,7 @@ public class CaseOrchestrationServiceImplTest {
 
         //then
         assertEquals(expectedPayload,actual);
+        assertEquals(expectedPayload.get(PIN), TEST_PIN);
     }
 
     @After

@@ -13,15 +13,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
+
 @Component
 public class RespondentLetterGenerator implements Task<Map<String, Object>> {
-    private static final String CASE_DETAILS_JSON_KEY = "caseDetails";
-    private static final String DOCUMENT_TYPE_INVITATION = "aosinvitation";
-    private static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
-    private static final String INVITATION_FILE_NAME_FORMAT = "aosinvitation%s";
-    private static final String ACCESS_CODE = "access_code";
-    public static final String PIN = "pin";
-
     @Autowired
     private DocumentGeneratorClient documentGeneratorClient;
 

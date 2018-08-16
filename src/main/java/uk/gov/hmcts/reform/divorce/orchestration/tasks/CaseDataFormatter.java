@@ -12,11 +12,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_TEMPLATE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
+
 @Component
 public class CaseDataFormatter implements Task<Map<String, Object>> {
-    private static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
-    private static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
-
     @Autowired
     private CaseFormatterClient caseFormatterClient;
 
@@ -25,7 +25,8 @@ public class CaseDataFormatter implements Task<Map<String, Object>> {
         return caseFormatterClient.addDocuments(
                 DocumentUpdateRequest.builder()
                         .caseData(caseData)
-                        .documents(ImmutableList.of((GeneratedDocumentInfo) caseData.get(MINI_PETITION_TEMPLATE_NAME), (GeneratedDocumentInfo) caseData.get(RESPONDENT_INVITATION_TEMPLATE_NAME)))
+                        .documents(ImmutableList.of((GeneratedDocumentInfo) caseData.get(MINI_PETITION_TEMPLATE_NAME),
+                                (GeneratedDocumentInfo) caseData.get(RESPONDENT_INVITATION_TEMPLATE_NAME)))
                         .build());
     }
 }

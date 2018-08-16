@@ -11,11 +11,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FORM_ID;
+
 @Component
 public class ValidateCaseData implements Task<Map<String, Object>> {
-
-    private static final String FORM_ID = "case-progression";
-
     @Autowired
     private CaseValidationClient caseValidationClient;
 

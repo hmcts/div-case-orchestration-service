@@ -11,10 +11,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
+
 @Slf4j
 @Service
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
-    public static final String ID = "id";
     @Autowired
     private SubmitToCCDWorkflow submitToCCDWorkflow;
 
