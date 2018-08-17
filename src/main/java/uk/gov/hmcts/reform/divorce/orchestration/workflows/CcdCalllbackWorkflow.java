@@ -25,6 +25,9 @@ public class CcdCalllbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
     @Autowired
     private IdamPinGenerator idamPinGenerator;
 
+    @Autowired
+    private CaseDataFormatter caseDataFormatter;
+
     public Map<String, Object> run(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException {
         Map<String, Object> payLoad = caseDetailsRequest.getCaseDetails().getCaseData();
 
@@ -36,7 +39,8 @@ public class CcdCalllbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
             validateCaseData,
                 petitionGenerator,
                 idamPinGenerator,
-                respondentLetterGenerator
+                respondentLetterGenerator,
+                caseDataFormatter
         }, payLoad);
     }
 }

@@ -22,11 +22,17 @@ public class CaseDataFormatter implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+        GeneratedDocumentInfo miniPetition = (GeneratedDocumentInfo) caseData.get(MINI_PETITION_TEMPLATE_NAME);
+        GeneratedDocumentInfo respondentInvitation = (GeneratedDocumentInfo) caseData.get(RESPONDENT_INVITATION_TEMPLATE_NAME);
+
+        caseData.remove(MINI_PETITION_TEMPLATE_NAME);
+        caseData.remove(RESPONDENT_INVITATION_TEMPLATE_NAME);
+
         return caseFormatterClient.addDocuments(
                 DocumentUpdateRequest.builder()
                         .caseData(caseData)
-                        .documents(ImmutableList.of((GeneratedDocumentInfo) caseData.get(MINI_PETITION_TEMPLATE_NAME),
-                                (GeneratedDocumentInfo) caseData.get(RESPONDENT_INVITATION_TEMPLATE_NAME)))
+                        .documents(ImmutableList.of(miniPetition,
+                                respondentInvitation))
                         .build());
     }
 }

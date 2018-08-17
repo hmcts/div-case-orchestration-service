@@ -74,13 +74,17 @@ public class PetitionIssueTest extends IntegrationTest {
     @Test
     public void givenValidCaseData_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
         Response cosResponse = issuePetition(getUserDetails().getAuthToken(),
-            "ccd-callback-petition-issued.json");
+            "ccd-callback-aos-invitation.json");
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertGeneratedDocumentExists(cosResponse, getUserDetails().getAuthToken());
     }
 
     private Response issuePetition(String userToken, String fileName) throws Exception {
+        System.setProperty("http.proxyHost", "proxyout.reform.hmcts.net");
+        System.setProperty("http.proxyPort", "8080");
+        System.setProperty("https.proxyHost", "proxyout.reform.hmcts.net");
+        System.setProperty("https.proxyPort", "8080");
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 
@@ -88,11 +92,12 @@ public class PetitionIssueTest extends IntegrationTest {
             headers.put(HttpHeaders.AUTHORIZATION, userToken);
         }
 
+        String json = ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + fileName);
         return
             RestUtil.postToRestService(
                 serverUrl + contextPath,
                 headers,
-                fileName == null ? null : ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + fileName)
+                fileName == null ? null : json
             );
     }
 

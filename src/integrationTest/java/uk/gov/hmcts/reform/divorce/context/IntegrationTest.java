@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.divorce.util.IdamUtils;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
-    private static final String CASE_WORKER_USERNAME = "CASE_WORKER_USER_NAME";
-    private static final String CASE_WORKER_PASSWORD = "CASE_WORKER_PASSWORD";
+    private static final String CASE_WORKER_USERNAME = "robreallywantsccdaccess@mailinator.com";
+    private static final String CASE_WORKER_PASSWORD = "Passw0rd";
 
     private UserDetails userDetails;
 
@@ -38,17 +38,16 @@ public abstract class IntegrationTest {
     protected synchronized UserDetails getUserDetails() {
         if (userDetails == null) {
             final String username = CASE_WORKER_USERNAME;
-            final String emailAddress = username + "@notifications.service.gov.uk";
             final String password = CASE_WORKER_PASSWORD;
 
-            idamTestSupportUtil.createCaseWorkerCourtAdminUserInIdam(username, emailAddress, password);
-            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(emailAddress, password);
+            idamTestSupportUtil.createDivorceCaseworkerUserInIdam(username, password);
+            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
 
             final String userId = idamTestSupportUtil.getUserId(authToken);
 
             userDetails = UserDetails.builder()
                 .username(username)
-                .emailAddress(emailAddress)
+                .emailAddress(username)
                 .password(password)
                 .authToken(authToken)
                 .id(userId)

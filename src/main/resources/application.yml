@@ -27,7 +27,7 @@ case:
 
 idam:
   api:
-    url: https://preprod-idamapi.reform.hmcts.net:3511/
+    url: https://idam-api.aat.platform.hmcts.net/
     port: 4503
     health:
       context-path: /health
