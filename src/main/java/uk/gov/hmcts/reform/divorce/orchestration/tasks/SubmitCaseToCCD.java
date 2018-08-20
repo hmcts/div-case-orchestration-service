@@ -3,25 +3,19 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.ThreadSafeStatefulTask;
 
 import java.util.Map;
 
 @Component
-public class SubmitCaseToCCD implements Task<Map<String, Object>> {
+public class SubmitCaseToCCD extends ThreadSafeStatefulTask<Map<String, Object>, String> {
 
     @Autowired
     private CaseMaintenanceClient caseMaintenanceClient;
 
-    private String authToken;
-
-    public void setup(String authToken) {
-        this.authToken = authToken;
-    }
-
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        return caseMaintenanceClient.submitCase(caseData, authToken);
+        return caseMaintenanceClient.submitCase(caseData, getState());
     }
 }
