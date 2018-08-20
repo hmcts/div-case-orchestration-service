@@ -12,17 +12,17 @@ import java.util.Map;
 @Component
 public class FormatDivorceSessionToCaseData implements Task<Map<String, Object>> {
 
+    private final CaseFormatterClient caseFormatterClient;
+
     @Autowired
-    private CaseFormatterClient caseFormatterClient;
-
-    private String authToken;
-
-    public void setup(String authToken) {
-        this.authToken = authToken;
+    public FormatDivorceSessionToCaseData(CaseFormatterClient caseFormatterClient) {
+        this.caseFormatterClient = caseFormatterClient;
     }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> sessionData) throws TaskException {
-        return caseFormatterClient.transformToCCDFormat(sessionData, authToken);
+    public Map<String, Object> execute(TaskContext context,
+                                       Map<String, Object> sessionData,
+                                       Object... params) throws TaskException {
+        return caseFormatterClient.transformToCCDFormat(sessionData, String.valueOf(params[0]));
     }
 }

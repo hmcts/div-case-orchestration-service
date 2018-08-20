@@ -21,20 +21,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class PetitionGenerator implements Task<Map<String, Object>> {
+    private final DocumentGeneratorClient documentGeneratorClient;
+
     @Autowired
-    private DocumentGeneratorClient documentGeneratorClient;
-
-    private String authToken;
-
-    private CaseDetails caseDetails;
-
-    public void setup(String authToken, CaseDetails caseDetails) {
-        this.authToken = authToken;
-        this.caseDetails = caseDetails;
+    public PetitionGenerator(DocumentGeneratorClient documentGeneratorClient) {
+        this.documentGeneratorClient = documentGeneratorClient;
     }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData, Object... params) throws TaskException {
+        CaseDetails caseDetails = (CaseDetails) params[1];
         GeneratedDocumentInfo miniPetition =
                 documentGeneratorClient.generatePDF(
                         GenerateDocumentRequest.builder()
@@ -42,9 +38,8 @@ public class PetitionGenerator implements Task<Map<String, Object>> {
                                 .values(Collections.singletonMap(CASE_DETAILS_JSON_KEY,
                                         caseDetails))
                                 .build(),
-                        authToken
+                        String.valueOf(params[0])
                 );
-
 
         miniPetition.setDocumentType(DOCUMENT_TYPE_PETITION);
         miniPetition.setFileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, caseDetails.getCaseId()));

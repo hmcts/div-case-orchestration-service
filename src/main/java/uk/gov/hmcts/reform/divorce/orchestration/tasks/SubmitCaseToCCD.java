@@ -11,17 +11,16 @@ import java.util.Map;
 @Component
 public class SubmitCaseToCCD implements Task<Map<String, Object>> {
 
+    private final CaseMaintenanceClient caseMaintenanceClient;
+
     @Autowired
-    private CaseMaintenanceClient caseMaintenanceClient;
-
-    private String authToken;
-
-    public void setup(String authToken) {
-        this.authToken = authToken;
+    public SubmitCaseToCCD(CaseMaintenanceClient caseMaintenanceClient) {
+        this.caseMaintenanceClient = caseMaintenanceClient;
     }
 
+
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        return caseMaintenanceClient.submitCase(caseData, authToken);
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData, Object... params) {
+        return caseMaintenanceClient.submitCase(caseData, String.valueOf(params[0]));
     }
 }

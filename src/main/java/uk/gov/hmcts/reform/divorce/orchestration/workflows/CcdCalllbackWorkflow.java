@@ -16,27 +16,31 @@ import java.util.Map;
 
 @Component
 public class CcdCalllbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
-    @Autowired
-    private ValidateCaseData validateCaseData;
+    private final ValidateCaseData validateCaseData;
+
+    private final PetitionGenerator petitionGenerator;
+
+    private final RespondentLetterGenerator respondentLetterGenerator;
+
+    private final IdamPinGenerator idamPinGenerator;
+
+    private final CaseDataFormatter caseDataFormatter;
 
     @Autowired
-    private PetitionGenerator petitionGenerator;
-
-    @Autowired
-    private RespondentLetterGenerator respondentLetterGenerator;
-
-    @Autowired
-    private IdamPinGenerator idamPinGenerator;
-
-    @Autowired
-    private CaseDataFormatter caseDataFormatter;
+    public CcdCalllbackWorkflow(ValidateCaseData validateCaseData,
+                                PetitionGenerator petitionGenerator,
+                                RespondentLetterGenerator respondentLetterGenerator,
+                                IdamPinGenerator idamPinGenerator,
+                                CaseDataFormatter caseDataFormatter) {
+        this.validateCaseData = validateCaseData;
+        this.petitionGenerator = petitionGenerator;
+        this.respondentLetterGenerator = respondentLetterGenerator;
+        this.idamPinGenerator = idamPinGenerator;
+        this.caseDataFormatter = caseDataFormatter;
+    }
 
     public Map<String, Object> run(CreateEvent caseDetailsRequest,
                                    String authToken) throws WorkflowException {
-
-        petitionGenerator.setup(authToken, caseDetailsRequest.getCaseDetails());
-        idamPinGenerator.setup(authToken);
-        respondentLetterGenerator.setup(authToken, caseDetailsRequest.getCaseDetails());
 
         return this.execute(
                 new Task[]{
@@ -46,6 +50,8 @@ public class CcdCalllbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
                     respondentLetterGenerator,
                     caseDataFormatter
                 },
-                caseDetailsRequest.getCaseDetails().getCaseData());
+                caseDetailsRequest.getCaseDetails().getCaseData(),
+                authToken,
+                caseDetailsRequest.getCaseDetails());
     }
 }

@@ -15,15 +15,19 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class ValidateCaseData implements Task<Map<String, Object>> {
+    private final CaseValidationClient caseValidationClient;
+
     @Autowired
-    private CaseValidationClient caseValidationClient;
+    public ValidateCaseData(CaseValidationClient caseValidationClient) {
+        this.caseValidationClient = caseValidationClient;
+    }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> payLoad, Object... params) throws TaskException {
         ValidationResponse validationResponse =
             caseValidationClient.validate(
                 ValidationRequest.builder()
-                    .data(caseData)
+                    .data(payLoad)
                     .formId(FORM_ID)
                     .build());
 
@@ -32,6 +36,6 @@ public class ValidateCaseData implements Task<Map<String, Object>> {
             context.setTransientObject(this.getClass().getName() + "_Error", validationResponse);
         }
 
-        return caseData;
+        return payLoad;
     }
 }

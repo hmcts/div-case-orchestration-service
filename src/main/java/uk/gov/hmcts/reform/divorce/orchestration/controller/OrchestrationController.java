@@ -14,11 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
+import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
+
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
 @Slf4j
 @RestController
@@ -58,16 +62,28 @@ public class OrchestrationController {
     public ResponseEntity<CcdCallbackResponse> petitionIssuedCallback(
             @RequestHeader(value = "Authorization") String authorizationToken,
             @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) {
-        Map<String, Object> payload = null;
+        Map<String, Object> response = null;
         try {
-            payload = orchestrationService.ccdCallbackHandler(caseDetailsRequest, authorizationToken);
+            response = orchestrationService.ccdCallbackHandler(caseDetailsRequest, authorizationToken);
         } catch (WorkflowException e) {
             log.error(e.getMessage());
         }
 
+        if(response.containsKey(VALIDATION_ERROR_KEY)){
+            return ResponseEntity.ok(
+                    CcdCallbackResponse.builder()
+                            .errors(getErrors(response))
+                            .build());
+        }
+
         return ResponseEntity.ok(
                 CcdCallbackResponse.builder()
-                        .data(payload)
+                        .data(response)
                         .build());
+    }
+
+    private List<String> getErrors(Map<String, Object> response) {
+        ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
+        return validationResponse.getErrors();
     }
 }

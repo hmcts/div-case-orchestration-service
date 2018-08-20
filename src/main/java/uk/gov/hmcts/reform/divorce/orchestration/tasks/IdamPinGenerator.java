@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
@@ -18,22 +17,19 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class IdamPinGenerator implements Task<Map<String, Object>> {
-    @Autowired
-    private IdamClient idamClient;
+    private final IdamClient idamClient;
 
-    private String authToken;
-
-    public void setup(String authToken) {
-        this.authToken = authToken;
+    public IdamPinGenerator(IdamClient idamClient) {
+        this.idamClient = idamClient;
     }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData, Object... params) throws TaskException {
         Pin pin = idamClient.createPin(PinRequest.builder()
                         .firstName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_FIRST_NAME, "")))
                         .lastName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_LAST_NAME, "")))
                         .build(),
-                authToken);
+                String.valueOf(params[0]));
 
         caseData.put(PIN, pin.getPin());
         caseData.put(RESPONDENT_LETTER_HOLDER_ID, pin.getUserId());

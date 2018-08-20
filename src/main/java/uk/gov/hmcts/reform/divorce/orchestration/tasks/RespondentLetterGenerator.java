@@ -23,21 +23,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class RespondentLetterGenerator implements Task<Map<String, Object>> {
+    private final DocumentGeneratorClient documentGeneratorClient;
+
     @Autowired
-    private DocumentGeneratorClient documentGeneratorClient;
-
-    private String authToken;
-
-    private CaseDetails caseDetails;
-
-    public void setup(String authToken, CaseDetails caseDetails) {
-        this.authToken = authToken;
-        this.caseDetails = caseDetails;
+    public RespondentLetterGenerator(DocumentGeneratorClient documentGeneratorClient) {
+        this.documentGeneratorClient = documentGeneratorClient;
     }
 
     @Override
     public Map<String, Object> execute(TaskContext context,
-                                       Map<String, Object> caseData) throws TaskException {
+                                       Map<String, Object> caseData,
+                                       Object... params) throws TaskException {
+        CaseDetails caseDetails = (CaseDetails) params[1];
         GeneratedDocumentInfo aosinvitation =
                 documentGeneratorClient.generatePDF(
                         GenerateDocumentRequest.builder()
@@ -48,7 +45,7 @@ public class RespondentLetterGenerator implements Task<Map<String, Object>> {
                                         )
                                 )
                                 .build(),
-                        authToken
+                        String.valueOf(params[0])
                 );
 
         aosinvitation.setDocumentType(DOCUMENT_TYPE_INVITATION);
