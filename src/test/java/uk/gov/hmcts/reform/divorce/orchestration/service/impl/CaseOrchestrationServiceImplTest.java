@@ -43,14 +43,24 @@ public class CaseOrchestrationServiceImplTest {
 
 
     @Before
-    public void setUp(){
-        createEventRequest = CreateEvent.builder().caseDetails(CaseDetails.builder().caseData(new HashMap<>()).caseId(TEST_CASE_ID).state(TEST_STATE).build()).eventId(TEST_EVENT_ID).token(TEST_TOKEN).build();
+    public void setUp() {
+        createEventRequest = CreateEvent.builder()
+                .caseDetails(
+                        CaseDetails.builder()
+                                .caseData(new HashMap<>())
+                                .caseId(TEST_CASE_ID)
+                                .state(TEST_STATE)
+                                .build())
+                .eventId(TEST_EVENT_ID)
+                .token(TEST_TOKEN)
+                .build();
         expectedPayload = new HashMap<>();
         expectedPayload.put(PIN, TEST_PIN);
     }
 
     @Test
-    public void ccdCallbackHandlerShouldReturnValidCaseDataForValidRequest() throws WorkflowException {
+    public void ccdCallbackHandlerShouldReturnValidCaseDataForValidRequest()
+            throws WorkflowException {
         //given
         when(ccdCallbackWorkflow.run(createEventRequest, AUTH_TOKEN)).thenReturn(expectedPayload);
 
@@ -58,12 +68,12 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> actual = service.ccdCallbackHandler(createEventRequest, AUTH_TOKEN);
 
         //then
-        assertEquals(expectedPayload,actual);
+        assertEquals(expectedPayload, actual);
         assertEquals(expectedPayload.get(PIN), TEST_PIN);
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         createEventRequest = null;
         expectedPayload = null;
     }
