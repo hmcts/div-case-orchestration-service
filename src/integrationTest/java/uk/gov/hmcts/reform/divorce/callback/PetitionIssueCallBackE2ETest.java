@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.Response;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +16,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+
 public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     private static final String SUBMIT_COMPLETE_CASE = "submit-complete-case.json";
     private static final String PAYMENT_MADE = "payment-made.json";
@@ -28,7 +30,8 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     @Qualifier("documentGeneratorTokenGenerator")
     private AuthTokenGenerator divDocAuthTokenGenerator;
 
-    @Test
+    //TODO
+    //@Test
     public void submittingCaseAndIssuePetitionOnCcdShouldGeneratePDF() {
         //submit case
         CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE);
