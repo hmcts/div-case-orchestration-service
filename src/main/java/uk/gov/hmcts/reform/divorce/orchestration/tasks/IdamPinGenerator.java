@@ -11,7 +11,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 
 @Component
 public class IdamPinGenerator implements Task<Map<String, Object>> {
