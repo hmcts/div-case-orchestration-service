@@ -32,6 +32,7 @@ module "div-cos" {
     CASE_VALIDATION_SERVICE_API_BASEURL             = "${local.validation_service_baseurl}"
     DOCUMENT_GENERATOR_SERVICE_API_BASEURL          = "${local.document_generator_baseurl}"
     CASE_MAINTENANCE_SERVICE_API_BASEURL            = "${local.case_maintenance_service_baseurl}"
+    IDAM_API_URL                                    = "${var.idam_api_baseurl}"
   }
 }
 
@@ -68,5 +69,15 @@ resource "azurerm_key_vault_secret" "ccd-submission-s2s-auth-secret" {
 resource "azurerm_key_vault_secret" "div-doc-s2s-auth-secret" {
   name      = "div-doc-s2s-auth-secret"
   value     = "${data.vault_generic_secret.div-doc-s2s-auth-secret.data["value"]}"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+data "vault_generic_secret" "auth-idam-client-secret" {
+  path = "secret/${var.vault_section}/ccidam/idam-api/oauth2/client-secrets/divorce"
+}
+
+resource "azurerm_key_vault_secret" "auth-idam-client-secret" {
+  name      = "auth-idam-client-secret"
+  value     = "${data.vault_generic_secret.auth-idam-client-secret.data["value"]}"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
