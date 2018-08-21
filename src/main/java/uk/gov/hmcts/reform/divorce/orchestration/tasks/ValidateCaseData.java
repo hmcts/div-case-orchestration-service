@@ -21,18 +21,22 @@ public class ValidateCaseData implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        ValidationResponse validationResponse =
-            caseValidationClient.validate(
-                ValidationRequest.builder()
-                    .data(caseData)
-                    .formId(FORM_ID)
-                    .build());
+        try {
+            ValidationResponse validationResponse =
+                    caseValidationClient.validate(
+                            ValidationRequest.builder()
+                                    .data(caseData)
+                                    .formId(FORM_ID)
+                                    .build());
 
-        if (!validationResponse.isValid()) {
-            context.setTaskFailed(true);
-            context.setTransientObject(this.getClass().getName() + "_Error", validationResponse);
+            if (!validationResponse.isValid()) {
+                context.setTaskFailed(true);
+                context.setTransientObject(this.getClass().getName() + "_Error", validationResponse);
+            }
+
+            return caseData;
+        } catch (Exception exception) {
+            throw new TaskException(exception.getMessage());
         }
-
-        return caseData;
     }
 }

@@ -23,6 +23,10 @@ public class FormatDivorceSessionToCaseData implements Task<Map<String, Object>>
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> sessionData) throws TaskException {
-        return caseFormatterClient.transformToCCDFormat(sessionData, authToken);
+        try {
+            return caseFormatterClient.transformToCCDFormat(sessionData, authToken);
+        } catch (Exception exception) {
+            throw new TaskException(exception.getMessage());
+        }
     }
 }

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow;
 
 import lombok.Data;
+import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -15,12 +16,16 @@ public class DefaultWorkflow<T> implements Workflow<T> {
     private DefaultTaskContext context;
 
     @Override
-    public T execute(Task[] tasks, T payLoad) throws WorkflowException {
-
+    public T execute(Task[] tasks, T payload, Pair... pairs) throws WorkflowException {
         context = new DefaultTaskContext();
+
+        for (Pair pair : pairs) {
+            context.setTransientObject(pair.getKey().toString(), pair.getValue());
+        }
+
         try {
             for (Task<T> task: tasks) {
-                payLoad = task.execute(context,payLoad);
+                payload = task.execute(context, payload);
                 if (context.getStatus()) { 
                     break;
                 }
@@ -29,7 +34,7 @@ public class DefaultWorkflow<T> implements Workflow<T> {
             throw new WorkflowException(e.getMessage());
         }
 
-        return payLoad;
+        return payload;
     }
 
     @Override
@@ -43,8 +48,7 @@ public class DefaultWorkflow<T> implements Workflow<T> {
                 errors.put(key, entry.getValue());
             }
         }
+
         return errors;
     }
-
-
 }

@@ -10,21 +10,20 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import java.util.Map;
 
 @Component
-public class SubmitCaseToCCD implements Task<Map<String, Object>> {
+public class UpdateCaseInCCD implements Task<Map<String, Object>> {
 
     @Autowired
     private CaseMaintenanceClient caseMaintenanceClient;
 
-    private String authToken;
-
-    public void setup(String authToken) {
-        this.authToken = authToken;
-    }
-
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         try {
-            return caseMaintenanceClient.submitCase(caseData, authToken);
+            return caseMaintenanceClient.updateCase(
+                    caseData,
+                    (String) context.getTransientObject("authToken"),
+                    (String) context.getTransientObject("caseId"),
+                    (String) context.getTransientObject("eventId")
+            );
         } catch (Exception exception) {
             throw new TaskException(exception.getMessage());
         }

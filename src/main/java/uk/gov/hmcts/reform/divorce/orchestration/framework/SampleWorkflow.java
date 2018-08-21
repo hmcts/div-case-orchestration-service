@@ -38,17 +38,17 @@ public class SampleWorkflow {
 class ValidateTask implements Task<CaseDetails> {
 
     @Override
-    public CaseDetails execute(TaskContext context, CaseDetails payLoad) throws TaskException {
-        if (payLoad.getCaseId().equals("1")) {
+    public CaseDetails execute(TaskContext context, CaseDetails payload) throws TaskException {
+        if (payload.getCaseId().equals("1")) {
             log.info("Validation success ");
             context.setTransientObject("validationurl", "http://www.valid.url");
-            payLoad.setState("VALID");
+            payload.setState("VALID");
         }else {
             log.info("Validation failed");
-            payLoad.setState("FAILED");
+            payload.setState("FAILED");
             context.setTaskFailed(true);
         }
-        return payLoad;
+        return payload;
     }
 }
 
@@ -56,9 +56,9 @@ class ValidateTask implements Task<CaseDetails> {
 class CCDClient implements Task<CaseDetails> {
 
     @Override
-    public CaseDetails execute(TaskContext context, CaseDetails payLoad) throws TaskException {
+    public CaseDetails execute(TaskContext context, CaseDetails payload) throws TaskException {
         log.info("sent case to ccd. ");
-        payLoad.setState("SENT " + context.getTransientObject("validationurl"));
-        return payLoad;
+        payload.setState("SENT " + context.getTransientObject("validationurl"));
+        return payload;
     }
 }

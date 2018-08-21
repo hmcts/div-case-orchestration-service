@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
+
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -10,21 +10,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import java.util.Map;
 
 @Component
-public class SubmitCaseToCCD implements Task<Map<String, Object>> {
+public class ValidateCaseDataForCallback implements Task<Map<String, Object>> {
 
     @Autowired
-    private CaseMaintenanceClient caseMaintenanceClient;
+    private ValidateCaseData validateCaseData;
 
-    private String authToken;
-
-    public void setup(String authToken) {
-        this.authToken = authToken;
-    }
-
+    @SuppressWarnings("unchecked")
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseDetails) throws TaskException {
         try {
-            return caseMaintenanceClient.submitCase(caseData, authToken);
+            validateCaseData.execute(context, (Map<String, Object>) caseDetails.get("case_data"));
+            return caseDetails;
         } catch (Exception exception) {
             throw new TaskException(exception.getMessage());
         }
