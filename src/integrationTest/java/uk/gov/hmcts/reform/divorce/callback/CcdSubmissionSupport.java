@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
 import java.util.Map;
 
-public class CcdSubmissionSupport extends IntegrationTest {
+public abstract class CcdSubmissionSupport extends IntegrationTest {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/issue-petition/";
 
     @Autowired
