@@ -69,7 +69,7 @@ public class OrchestrationController {
             log.error(e.getMessage());
         }
 
-        if(response.containsKey(VALIDATION_ERROR_KEY)){
+        if (response.containsKey( VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(
                     CcdCallbackResponse.builder()
                             .errors(getErrors(response))

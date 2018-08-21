@@ -22,18 +22,22 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final SubmitCaseToCCD submitCaseToCCD;
 
     @Autowired
-    public SubmitToCCDWorkflow(FormatDivorceSessionToCaseData formatDivorceSessionToCaseData, ValidateCaseData validateCaseData, SubmitCaseToCCD submitCaseToCCD) {
+    public SubmitToCCDWorkflow(FormatDivorceSessionToCaseData formatDivorceSessionToCaseData,
+                               ValidateCaseData validateCaseData,
+                               SubmitCaseToCCD submitCaseToCCD) {
         this.formatDivorceSessionToCaseData = formatDivorceSessionToCaseData;
         this.validateCaseData = validateCaseData;
         this.submitCaseToCCD = submitCaseToCCD;
     }
 
     public Map<String, Object> run(Map<String, Object> payLoad, String authToken) throws WorkflowException {
-        return this.execute(new Task[] {
-            formatDivorceSessionToCaseData,
-            validateCaseData,
-            submitCaseToCCD
-        }, payLoad
-         , authToken);
+        return this.execute(
+                new Task[]{
+                    formatDivorceSessionToCaseData,
+                    validateCaseData,
+                    submitCaseToCCD
+                },
+                payLoad,
+                authToken);
     }
 }
