@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Optional;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
+@Builder
 public class UserDetails {
 
     private final String id;

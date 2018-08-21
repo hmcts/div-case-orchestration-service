@@ -8,7 +8,7 @@ locals {
   validation_service_baseurl        = "http://div-vs-${local.local_env}.service.core-compute-${local.local_env}.internal"
   case_maintenance_service_baseurl  = "http://div-cms-${local.local_env}.service.core-compute-${local.local_env}.internal"
 
-  vaultName          = "${var.product}-${var.component}"
+  vaultName                 = "${var.product}-${var.component}"
   vaultUri                  = "${module.key-vault.key_vault_uri}"
  }
 
