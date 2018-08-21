@@ -15,4 +15,5 @@ public class OrchestrationConstants {
     public static final String INVITATION_FILE_NAME_FORMAT = "aosinvitation%s";
     public static final String ACCESS_CODE = "access_code";
     public static final String FORM_ID = "case-progression";
+    public static final String VALIDATION_ERROR_KEY = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData_Error";
 }

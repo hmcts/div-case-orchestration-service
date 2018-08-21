@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.ThreadSafeStatefulTask;
 
 import java.util.Map;
 
@@ -17,17 +16,20 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 
 @Component
-public class IdamPinGenerator extends ThreadSafeStatefulTask<Map<String, Object>, String> {
-    @Autowired
-    private IdamClient idamClient;
+public class IdamPinGenerator implements Task<Map<String, Object>> {
+    private final IdamClient idamClient;
+
+    public IdamPinGenerator(IdamClient idamClient) {
+        this.idamClient = idamClient;
+    }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData, Object... params) throws TaskException {
         Pin pin = idamClient.createPin(PinRequest.builder()
                         .firstName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_FIRST_NAME, "")))
                         .lastName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_LAST_NAME, "")))
                         .build(),
-                getState());
+                String.valueOf(params[0]));
 
         caseData.put(PIN, pin.getPin());
         caseData.put(RESPONDENT_LETTER_HOLDER_ID, pin.getUserId());

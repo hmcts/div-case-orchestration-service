@@ -3,19 +3,26 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.ThreadSafeStatefulTask;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
 
 @Component
-public class FormatDivorceSessionToCaseData extends ThreadSafeStatefulTask<Map<String, Object>, String> {
+public class FormatDivorceSessionToCaseData implements Task<Map<String, Object>> {
+
+    private final CaseFormatterClient caseFormatterClient;
 
     @Autowired
-    private CaseFormatterClient caseFormatterClient;
+    public FormatDivorceSessionToCaseData(CaseFormatterClient caseFormatterClient) {
+        this.caseFormatterClient = caseFormatterClient;
+    }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> sessionData) {
-        return caseFormatterClient.transformToCCDFormat(sessionData, getState());
+    public Map<String, Object> execute(TaskContext context,
+                                       Map<String, Object> sessionData,
+                                       Object... params) throws TaskException {
+        return caseFormatterClient.transformToCCDFormat(sessionData, String.valueOf(params[0]));
     }
 }

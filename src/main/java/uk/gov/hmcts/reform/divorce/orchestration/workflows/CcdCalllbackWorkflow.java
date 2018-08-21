@@ -16,38 +16,42 @@ import java.util.Map;
 
 @Component
 public class CcdCalllbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
-    @Autowired
-    private ValidateCaseData validateCaseData;
+    private final ValidateCaseData validateCaseData;
+
+    private final PetitionGenerator petitionGenerator;
+
+    private final RespondentLetterGenerator respondentLetterGenerator;
+
+    private final IdamPinGenerator idamPinGenerator;
+
+    private final CaseDataFormatter caseDataFormatter;
 
     @Autowired
-    private PetitionGenerator petitionGenerator;
+    public CcdCalllbackWorkflow(ValidateCaseData validateCaseData,
+                                PetitionGenerator petitionGenerator,
+                                RespondentLetterGenerator respondentLetterGenerator,
+                                IdamPinGenerator idamPinGenerator,
+                                CaseDataFormatter caseDataFormatter) {
+        this.validateCaseData = validateCaseData;
+        this.petitionGenerator = petitionGenerator;
+        this.respondentLetterGenerator = respondentLetterGenerator;
+        this.idamPinGenerator = idamPinGenerator;
+        this.caseDataFormatter = caseDataFormatter;
+    }
 
-    @Autowired
-    private RespondentLetterGenerator respondentLetterGenerator;
+    public Map<String, Object> run(CreateEvent caseDetailsRequest,
+                                   String authToken) throws WorkflowException {
 
-    @Autowired
-    private IdamPinGenerator idamPinGenerator;
-
-    @Autowired
-    private CaseDataFormatter caseDataFormatter;
-
-    public Map<String, Object> run(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException {
-        Map<String, Object> payLoad = caseDetailsRequest.getCaseDetails().getCaseData();
-
-        petitionGenerator.setState(PetitionGenerator.PetitionGenerateRequest.builder()
-            .authToken(authToken).caseDetails(caseDetailsRequest.getCaseDetails())
-            .build());
-        idamPinGenerator.setState(authToken);
-        respondentLetterGenerator.setState(RespondentLetterGenerator.AosInvitationRequest.builder()
-            .authToken(authToken).caseDetails(caseDetailsRequest.getCaseDetails())
-            .build());
-
-        return this.execute(new Task[] {
-            validateCaseData,
-                petitionGenerator,
-                idamPinGenerator,
-                respondentLetterGenerator,
-                caseDataFormatter
-        }, payLoad);
+        return this.execute(
+                new Task[]{
+                    validateCaseData,
+                    petitionGenerator,
+                    idamPinGenerator,
+                    respondentLetterGenerator,
+                    caseDataFormatter
+                },
+                caseDetailsRequest.getCaseDetails().getCaseData(),
+                authToken,
+                caseDetailsRequest.getCaseDetails());
     }
 }

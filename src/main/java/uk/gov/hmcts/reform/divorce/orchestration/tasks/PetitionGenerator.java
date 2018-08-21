@@ -1,15 +1,14 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import lombok.Builder;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.ThreadSafeStatefulTask;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Collections;
 import java.util.Map;
@@ -19,38 +18,34 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_FILE_NAME_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_TEMPLATE_NAME;
 
+
 @Component
-public class PetitionGenerator
-    extends ThreadSafeStatefulTask<Map<String, Object>, PetitionGenerator.PetitionGenerateRequest> {
+public class PetitionGenerator implements Task<Map<String, Object>> {
+    private final DocumentGeneratorClient documentGeneratorClient;
 
     @Autowired
-    private DocumentGeneratorClient documentGeneratorClient;
+    public PetitionGenerator(DocumentGeneratorClient documentGeneratorClient) {
+        this.documentGeneratorClient = documentGeneratorClient;
+    }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData, Object... params) throws TaskException {
+        CaseDetails caseDetails = (CaseDetails) params[1];
         GeneratedDocumentInfo miniPetition =
                 documentGeneratorClient.generatePDF(
                         GenerateDocumentRequest.builder()
                                 .template(MINI_PETITION_TEMPLATE_NAME)
                                 .values(Collections.singletonMap(CASE_DETAILS_JSON_KEY,
-                                        getState().caseDetails))
+                                        caseDetails))
                                 .build(),
-                        getState().authToken
+                        String.valueOf(params[0])
                 );
 
-
         miniPetition.setDocumentType(DOCUMENT_TYPE_PETITION);
-        miniPetition.setFileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, getState().caseDetails.getCaseId()));
+        miniPetition.setFileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, caseDetails.getCaseId()));
 
         caseData.put(MINI_PETITION_TEMPLATE_NAME,miniPetition);
 
         return caseData;
-    }
-
-    @Data
-    @Builder
-    public class PetitionGenerateRequest {
-        private CaseDetails caseDetails;
-        private String authToken;
     }
 }

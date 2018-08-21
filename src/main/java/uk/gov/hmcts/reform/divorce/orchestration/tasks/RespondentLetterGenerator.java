@@ -1,16 +1,15 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.Builder;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.ThreadSafeStatefulTask;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
 
@@ -21,37 +20,40 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
 
+
 @Component
-public class RespondentLetterGenerator extends ThreadSafeStatefulTask<Map<String, Object>,
-    RespondentLetterGenerator.AosInvitationRequest> {
+public class RespondentLetterGenerator implements Task<Map<String, Object>> {
+    private final DocumentGeneratorClient documentGeneratorClient;
 
     @Autowired
-    private DocumentGeneratorClient documentGeneratorClient;
+    public RespondentLetterGenerator(DocumentGeneratorClient documentGeneratorClient) {
+        this.documentGeneratorClient = documentGeneratorClient;
+    }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        GeneratedDocumentInfo aosInvitation =
+    public Map<String, Object> execute(TaskContext context,
+                                       Map<String, Object> caseData,
+                                       Object... params) throws TaskException {
+        CaseDetails caseDetails = (CaseDetails) params[1];
+        GeneratedDocumentInfo aosinvitation =
                 documentGeneratorClient.generatePDF(
                         GenerateDocumentRequest.builder()
                                 .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
-                                .values(ImmutableMap.of(CASE_DETAILS_JSON_KEY,
-                                    getState().caseDetails, ACCESS_CODE, caseData.get(PIN)))
+                                .values(ImmutableMap.of(
+                                        CASE_DETAILS_JSON_KEY, caseDetails,
+                                        ACCESS_CODE, caseData.get(PIN)
+                                        )
+                                )
                                 .build(),
-                        getState().authToken
+                        String.valueOf(params[0])
                 );
 
-        aosInvitation.setDocumentType(DOCUMENT_TYPE_INVITATION);
-        aosInvitation.setFileName(String.format(INVITATION_FILE_NAME_FORMAT, getState().caseDetails.getCaseId()));
+        aosinvitation.setDocumentType(DOCUMENT_TYPE_INVITATION);
+        aosinvitation.setFileName(String.format(INVITATION_FILE_NAME_FORMAT,
+                caseDetails.getCaseId()));
 
-        caseData.put(RESPONDENT_INVITATION_TEMPLATE_NAME,aosInvitation);
+        caseData.put(RESPONDENT_INVITATION_TEMPLATE_NAME, aosinvitation);
 
         return caseData;
-    }
-
-    @Data
-    @Builder
-    public class AosInvitationRequest {
-        private CaseDetails caseDetails;
-        private String authToken;
     }
 }

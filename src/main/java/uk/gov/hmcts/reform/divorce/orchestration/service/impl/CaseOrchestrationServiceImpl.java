@@ -23,7 +23,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private CcdCalllbackWorkflow ccdCallbackWorkflow;
 
     @Override
-    public Map<String, Object> submit(Map<String, Object> payLoad, String authToken) throws WorkflowException {
+    public Map<String, Object> submit(Map<String, Object> payLoad,
+                                      String authToken) throws WorkflowException {
         payLoad = submitToCCDWorkflow.run(payLoad, authToken);
 
         if (submitToCCDWorkflow.errors().isEmpty()) {
@@ -35,7 +36,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException {
+    public Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest,
+                                                  String authToken) throws WorkflowException {
         Map<String, Object> payLoad = ccdCallbackWorkflow.run(caseDetailsRequest, authToken);
 
         if (ccdCallbackWorkflow.errors().isEmpty()) {

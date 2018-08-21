@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface Workflow<T> {
 
-    T execute(Task[] tasks, T payLoad) throws WorkflowException;
+    T execute(Task[] tasks, T payLoad, Object... params) throws WorkflowException;
 
     Map<String, Object> errors();
 }

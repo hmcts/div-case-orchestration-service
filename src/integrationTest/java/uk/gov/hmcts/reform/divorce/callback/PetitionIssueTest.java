@@ -65,14 +65,7 @@ public class PetitionIssueTest extends IntegrationTest {
         assertEquals(HttpStatus.BAD_REQUEST.value(), cosResponse.getStatusCode());
     }
 
-//    @Test - TODO
-    public void givenEventIsNull_whenRetrievePetition_thenReturnBadRequest() throws Exception {
-        Response cosResponse = issuePetition(getUserDetails().getAuthToken(), null);
-
-        assertEquals(HttpStatus.BAD_REQUEST.value(), cosResponse.getStatusCode());
-    }
-
-//    @Test - TODO
+    @Test
     public void givenInvalidCaseData_whenRetrievePetition_thenReturnValidationError() throws Exception {
         Response cosResponse = issuePetition(getUserDetails().getAuthToken(),
             "invalid-ccd-callback-petition-issued.json");
