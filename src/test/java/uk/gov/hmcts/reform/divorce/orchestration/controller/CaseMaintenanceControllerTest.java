@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,10 +27,19 @@ public class CaseMaintenanceControllerTest {
     @InjectMocks
     private CaseMaintenanceController caseMaintenanceController;
 
+    private String authToken;
+    private String caseId;
+    private String eventId;
+
+    @Before
+    public void setup() {
+        authToken = "authToken";
+        caseId = "1234567890";
+        eventId = "eventId";
+    }
+
     @Test
     public void whenSubmit_thenReturnPayload() throws Exception {
-        final String authToken = "authToken";
-
         final Map<String, Object> caseData = Collections.emptyMap();
         final Map<String, Object> expectedData = new HashMap<>();
         expectedData.put("hello", "world");
@@ -44,13 +54,40 @@ public class CaseMaintenanceControllerTest {
 
     @Test
     public void whenSubmit_givenException_thenReturnPayload() throws Exception {
-        final String authToken = "authToken";
-
         final Map<String, Object> caseData = Collections.emptyMap();
 
         when(caseMaintenanceService.submit(caseData, authToken)).thenThrow(new WorkflowException("An Error"));
 
         ResponseEntity<Map<String, Object>> response = caseMaintenanceController.submit(authToken, caseData);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(caseData, response.getBody());
+    }
+
+    @Test
+    public void whenUpdate_thenReturnPayload() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final Map<String, Object> expectedData = new HashMap<>();
+        expectedData.put("hello", "world");
+
+        when(caseMaintenanceService.update(caseData, authToken, caseId, eventId)).thenReturn(expectedData);
+
+        ResponseEntity<Map<String, Object>> response = caseMaintenanceController
+                .update(authToken, caseId, eventId, caseData);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedData, response.getBody());
+    }
+
+    @Test
+    public void whenUpdate_givenException_thenReturnPayload() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+
+        when(caseMaintenanceService.update(caseData, authToken, caseId, eventId))
+                .thenThrow(new WorkflowException("An Error"));
+
+        ResponseEntity<Map<String, Object>> response = caseMaintenanceController
+                .update(authToken, caseId, eventId, caseData);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(caseData, response.getBody());

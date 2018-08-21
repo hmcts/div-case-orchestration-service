@@ -9,6 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,15 +26,22 @@ public class CaseMaintenanceServiceImplTest {
     @Mock
     private SubmitToCCDWorkflow submitToCCDWorkflow;
 
+    @Mock
+    private UpdateToCCDWorkflow updateToCCDWorkflow;
+
     @InjectMocks
     private CaseMaintenanceServiceImpl caseMaintenanceService;
 
     private String authToken;
+    private String caseId;
+    private String eventId;
     private Map<String, Object> testData;
 
     @Before
     public void setup() {
         authToken = "authToken";
+        caseId = "1234567890";
+        eventId = "eventId";
         testData = new HashMap<>();
         testData.put("id", "test-id");
     }
@@ -70,5 +78,40 @@ public class CaseMaintenanceServiceImplTest {
         caseMaintenanceService.submit(testData, authToken);
 
         verify(submitToCCDWorkflow).run(testData, authToken);
+    }
+
+    @Test
+    public void givenCaseDataValid_whenUpdate_thenReturnPayload() throws Exception {
+        when(updateToCCDWorkflow.run(testData, authToken, caseId, eventId)).thenReturn(testData);
+        when(updateToCCDWorkflow.errors()).thenReturn(Collections.emptyMap());
+
+        assertEquals(testData, caseMaintenanceService.update(testData, authToken, caseId, eventId));
+
+        verify(updateToCCDWorkflow).run(testData, authToken, caseId, eventId);
+        verify(updateToCCDWorkflow).errors();
+    }
+
+    @Test
+    public void givenCaseDataInvalid_whenUpdate_thenReturnListOfErrors() throws Exception {
+        when(updateToCCDWorkflow.run(testData, authToken, caseId, eventId)).thenReturn(testData);
+
+        Map<String, Object> errors = new HashMap<>();
+        errors.put("new_Error", "An Error");
+        when(updateToCCDWorkflow.errors()).thenReturn(errors);
+
+        assertEquals(errors, caseMaintenanceService.update(testData, authToken, caseId, eventId));
+
+        verify(updateToCCDWorkflow).run(testData, authToken, caseId, eventId);
+        verify(updateToCCDWorkflow, times(2)).errors();
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void givenCaseDataValid_whenUpdateFails_thenThrowWorkflowException() throws Exception {
+        when(updateToCCDWorkflow.run(testData, authToken, caseId, eventId))
+                .thenThrow(new WorkflowException("An Error"));
+
+        caseMaintenanceService.update(testData, authToken, caseId, eventId);
+
+        verify(updateToCCDWorkflow).run(testData, authToken, caseId, eventId);
     }
 }

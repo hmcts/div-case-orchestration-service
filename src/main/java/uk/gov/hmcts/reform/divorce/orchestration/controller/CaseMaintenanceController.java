@@ -56,9 +56,9 @@ public class CaseMaintenanceController {
         @ApiResponse(code = 400, message = "Bad Request")
         })
     public ResponseEntity<Map<String, Object>> update(
+        @RequestHeader(value = "Authorization") String authorizationToken,
         @PathVariable String caseId,
         @PathVariable String eventId,
-        @RequestHeader(value = "Authorization") String authorizationToken,
         @RequestBody @ApiParam("Divorce Session") Map<String, Object> payload) {
         try {
             payload = caseMaintenanceService.update(payload, authorizationToken, caseId, eventId);

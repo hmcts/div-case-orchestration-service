@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow;
 
-import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -10,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-@Data
 public class DefaultWorkflow<T> implements Workflow<T> {
 
     private DefaultTaskContext context;
