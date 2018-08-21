@@ -50,15 +50,17 @@ public class DefaultWorkflowTest {
         assertEquals("12", defaultWorkflow.execute(tasks, payload));
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void executeShouldThrowExceptionWithNoTasks() throws Exception {
         Task[] tasks = null;
         defaultWorkflow.execute(tasks, payload);
     }
 
-    @Test(expected=WorkflowException.class)
+    @Test(expected = WorkflowException.class)
     public void executeShouldThrowExceptionWhenATaskExceptionIsThrown() throws Exception {
-        Task[] tasks = new Task[] { (context, payload) -> { throw new TaskException("Error"); }};
+        Task[] tasks = new Task[] { (context, payload) -> {
+            throw new TaskException("Error"); }
+        };
         defaultWorkflow.execute(tasks, payload);
     }
 
@@ -91,7 +93,7 @@ public class DefaultWorkflowTest {
         };
 
         Task[] tasks = new Task[] {
-                taskOne, taskTwo
+            taskOne, taskTwo
         };
 
         defaultWorkflow.execute(tasks, payload);

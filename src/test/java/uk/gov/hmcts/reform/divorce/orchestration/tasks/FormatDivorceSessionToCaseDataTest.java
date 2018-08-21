@@ -50,7 +50,7 @@ public class FormatDivorceSessionToCaseDataTest {
         verify(caseFormatterClient).transformToCCDFormat(testData, authToken);
     }
 
-    @Test(expected=TaskException.class)
+    @Test(expected = TaskException.class)
     public void executeShouldThrowTaskExceptionWhenTransformToCCDFormatThrowsException() throws Exception {
         when(caseFormatterClient.transformToCCDFormat(testData, authToken)).thenThrow(new RuntimeException());
 

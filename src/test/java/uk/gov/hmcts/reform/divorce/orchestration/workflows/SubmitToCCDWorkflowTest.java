@@ -62,7 +62,7 @@ public class SubmitToCCDWorkflowTest {
         verify(submitCaseToCCD).execute(context, testData);
     }
 
-    @Test(expected=WorkflowException.class)
+    @Test(expected = WorkflowException.class)
     public void runShouldThrowWorkflowExceptionWhenTaskExceptionIsThrown() throws Exception {
         when(formatDivorceSessionToCaseData.execute(context, testData)).thenThrow(new TaskException("An Error"));
 

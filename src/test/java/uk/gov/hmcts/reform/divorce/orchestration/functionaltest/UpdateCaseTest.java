@@ -49,7 +49,11 @@
 //    private static final String API_URL = String.format("/updateCase/%s/%s", CASE_ID, EVENT_ID);
 //
 //    private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
-//    private static final String UPDATE_CONTEXT_PATH = String.format("/casemaintenance/version/1/updateCase/%s/$s", CASE_ID, EVENT_ID);
+//    private static final String UPDATE_CONTEXT_PATH = String.format(
+//        "/casemaintenance/version/1/updateCase/%s/$s",
+//        CASE_ID,
+//        EVENT_ID
+//    );
 //
 //    private static final Map<String, Object> CASE_DATA = Collections.emptyMap();
 //

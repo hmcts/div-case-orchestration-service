@@ -50,7 +50,7 @@ public class SubmitCaseToCCDTest {
         verify(caseMaintenanceClient).submitCase(testData, authToken);
     }
 
-    @Test(expected=TaskException.class)
+    @Test(expected = TaskException.class)
     public void executeShouldThrowTaskExceptionWhenTransformToCCDFormatThrowsException() throws Exception {
         when(caseMaintenanceClient.submitCase(testData, authToken)).thenThrow(new RuntimeException());
 

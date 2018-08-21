@@ -6,21 +6,13 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseValidationClient;
-import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CCDCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
+
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
@@ -71,7 +63,7 @@ public class CaseMaintenanceServiceImplTest {
         verify(submitToCCDWorkflow, times(2)).errors();
     }
 
-    @Test(expected=WorkflowException.class)
+    @Test(expected = WorkflowException.class)
     public void givenCaseDataValid_whenSubmitFails_thenThrowWorkflowException() throws Exception {
         when(submitToCCDWorkflow.run(testData, authToken)).thenThrow(new WorkflowException("An Error"));
 

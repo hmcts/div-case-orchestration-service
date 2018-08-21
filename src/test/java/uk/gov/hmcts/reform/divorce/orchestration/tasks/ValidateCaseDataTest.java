@@ -14,7 +14,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -76,7 +79,7 @@ public class ValidateCaseDataTest {
         verify(caseValidationClient).validate(validationRequest);
     }
 
-    @Test(expected=TaskException.class)
+    @Test(expected = TaskException.class)
     public void executeShouldThrowExceptionWhenValidationClientThrowsException() throws Exception {
         when(caseValidationClient.validate(validationRequest)).thenThrow(new RuntimeException());
 

@@ -7,7 +7,12 @@ import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CCDCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -46,15 +51,15 @@ public class CaseMaintenanceController {
     @PostMapping(path = "/updateCase/{caseId}/{eventId}")
     @ApiOperation(value = "Handles update called from petition frontend")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
-                    response = CCDCallbackResponse.class),
-            @ApiResponse(code = 400, message = "Bad Request")
-    })
+        @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
+                response = CCDCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")
+        })
     public ResponseEntity<Map<String, Object>> update(
-            @PathVariable String caseId,
-            @PathVariable String eventId,
-            @RequestHeader(value = "Authorization") String authorizationToken,
-            @RequestBody @ApiParam("Divorce Session") Map<String, Object> payload) {
+        @PathVariable String caseId,
+        @PathVariable String eventId,
+        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestBody @ApiParam("Divorce Session") Map<String, Object> payload) {
         try {
             payload = caseMaintenanceService.update(payload, authorizationToken, caseId, eventId);
         } catch (WorkflowException e) {

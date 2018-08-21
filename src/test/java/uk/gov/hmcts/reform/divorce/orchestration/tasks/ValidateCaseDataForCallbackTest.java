@@ -49,7 +49,7 @@ public class ValidateCaseDataForCallbackTest {
         verify(validateCaseData).execute(context, testData);
     }
 
-    @Test(expected=TaskException.class)
+    @Test(expected = TaskException.class)
     public void executeShouldThrowTaskExceptionWhenTransformToCCDFormatThrowsException() throws Exception {
         when(validateCaseData.execute(context, testData)).thenThrow(new TaskException("An Error"));
 
