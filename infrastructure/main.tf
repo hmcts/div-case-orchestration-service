@@ -73,7 +73,7 @@ resource "azurerm_key_vault_secret" "div-doc-s2s-auth-secret" {
 }
 
 data "vault_generic_secret" "auth-idam-client-secret" {
-  path = "secret/${var.vault_section}/ccidam/idam-api/oauth2/client-secrets/divorce"
+  path = "secret/${var.vault_env}/ccidam/idam-api/oauth2/client-secrets/divorce"
 }
 
 resource "azurerm_key_vault_secret" "auth-idam-client-secret" {
