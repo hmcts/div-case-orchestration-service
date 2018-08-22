@@ -18,11 +18,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 @Service
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
-    @Autowired
-    private SubmitToCCDWorkflow submitToCCDWorkflow;
+    private final SubmitToCCDWorkflow submitToCCDWorkflow;
+
+    private final CcdCalllbackWorkflow ccdCallbackWorkflow;
 
     @Autowired
-    private CcdCalllbackWorkflow ccdCallbackWorkflow;
+    public CaseOrchestrationServiceImpl(SubmitToCCDWorkflow submitToCCDWorkflow,
+                                        CcdCalllbackWorkflow ccdCallbackWorkflow) {
+        this.submitToCCDWorkflow = submitToCCDWorkflow;
+        this.ccdCallbackWorkflow = ccdCallbackWorkflow;
+    }
+
 
     @Autowired
     private AuthenticateRespondentWorkflow authenticateRespondentWorkflow;

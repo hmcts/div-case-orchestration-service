@@ -20,7 +20,9 @@ public class SubmitCaseToCCD implements Task<Map<String, Object>> {
 
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData, Object... params) {
+    public Map<String, Object> execute(TaskContext context,
+                                       Map<String, Object> caseData,
+                                       Object... params) {
         return caseMaintenanceClient.submitCase(caseData, String.valueOf(params[0]));
     }
 }

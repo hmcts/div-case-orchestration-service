@@ -27,7 +27,7 @@ case:
 
 idam:
   api:
-    url: https://idam-api.aat.platform.hmcts.net/
+    url: ${IDAM_API_URL:http://localhost:4502}
     port: 4503
     health:
       context-path: /health

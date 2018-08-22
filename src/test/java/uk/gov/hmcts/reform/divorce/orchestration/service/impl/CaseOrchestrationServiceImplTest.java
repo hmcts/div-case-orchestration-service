@@ -4,7 +4,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -18,23 +17,24 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseOrchestrationServiceImplTest {
-    public static final String TEST_CASE_ID = "test.case.id";
-    public static final String TEST_STATE = "test.state";
-    public static final String TEST_PIN = "abcd1234";
-    private static String TEST_TOKEN = "test.token";
-    private static String TEST_EVENT_ID = "test.event.id";
-    private static String AUTH_TOKEN = "test.auth.token";
+
     @Mock
     private SubmitToCCDWorkflow submitToCCDWorkflow;
 
     @Mock
     private CcdCalllbackWorkflow ccdCallbackWorkflow;
 
-    @InjectMocks
     private CaseOrchestrationServiceImpl service;
 
     private CreateEvent createEventRequest;
@@ -44,6 +44,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Before
     public void setUp() {
+        service = new CaseOrchestrationServiceImpl(submitToCCDWorkflow, ccdCallbackWorkflow);
         createEventRequest = CreateEvent.builder()
                 .caseDetails(
                         CaseDetails.builder()

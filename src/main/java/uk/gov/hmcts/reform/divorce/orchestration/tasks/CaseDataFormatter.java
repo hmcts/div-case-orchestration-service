@@ -17,8 +17,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class CaseDataFormatter implements Task<Map<String, Object>> {
+    private final CaseFormatterClient caseFormatterClient;
+
     @Autowired
-    private CaseFormatterClient caseFormatterClient;
+    public CaseDataFormatter(CaseFormatterClient caseFormatterClient) {
+        this.caseFormatterClient = caseFormatterClient;
+    }
 
     @Override
     public Map<String, Object> execute(TaskContext context,

@@ -20,17 +20,17 @@ public class CcdCalllbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final PetitionGenerator petitionGenerator;
 
-    private final RespondentLetterGenerator respondentLetterGenerator;
-
     private final IdamPinGenerator idamPinGenerator;
+
+    private final RespondentLetterGenerator respondentLetterGenerator;
 
     private final CaseDataFormatter caseDataFormatter;
 
     @Autowired
     public CcdCalllbackWorkflow(ValidateCaseData validateCaseData,
                                 PetitionGenerator petitionGenerator,
-                                RespondentLetterGenerator respondentLetterGenerator,
                                 IdamPinGenerator idamPinGenerator,
+                                RespondentLetterGenerator respondentLetterGenerator,
                                 CaseDataFormatter caseDataFormatter) {
         this.validateCaseData = validateCaseData;
         this.petitionGenerator = petitionGenerator;
@@ -41,7 +41,6 @@ public class CcdCalllbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     public Map<String, Object> run(CreateEvent caseDetailsRequest,
                                    String authToken) throws WorkflowException {
-
         return this.execute(
                 new Task[]{
                     validateCaseData,

@@ -24,7 +24,6 @@ public class IdamUtils {
         String body = "{\n" +
                 "  \"email\": \"" + username + "\",\n" +
                 "  \"forename\": \"test\",\n" +
-                "  \"id\": \"test\",\n" +
                 "  \"password\": \"" + password + "\",\n" +
                 "  \"roles\": [\n" +
                 "    {\n" +

@@ -20,7 +20,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
 
-
 @Component
 public class RespondentLetterGenerator implements Task<Map<String, Object>> {
     private final DocumentGeneratorClient documentGeneratorClient;
