@@ -8,14 +8,29 @@ properties([
 @Library("Infrastructure")
 
 def type = "java"
-
 def product = "div"
+def component = "cos"
 
-def app = "cos"
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+    [ $class: 'AzureKeyVaultSecret',
+      secretType: 'Secret',
+      name: secretName,
+      version: '',
+      envVariable: envVar
+    ]
+}
 
-withPipeline(type, product, app) {
+List<LinkedHashMap<String, Object>> secrets = [
+        secret("ccd-submission-s2s-auth-secret", "AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY"),
+        secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
+]
+
+withPipeline(type, product, component) {
+    loadVaultSecrets(secrets)
+
     after('checkout') {
        echo 'divorce-case-orchestration-service checked out'
     }
-    // enableSlackNotifications('#div-dev')
+
+     enableSlackNotifications('#div-dev')
 }

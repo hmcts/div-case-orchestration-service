@@ -1,0 +1,138 @@
+{
+  "event_id": "uploadDocument",
+  "case_details": {
+    "id": 999999999,
+    "state": "awaitingAdminCheck",
+    "case_data": {
+      "D8ScreenHasMarriageBroken": "YES",
+      "D8ScreenHasRespondentAddress": "YES",
+      "D8ScreenHasMarriageCert": "YES",
+      "D8ScreenHasPrinter": "YES",
+      "D8DivorceWho": "wife",
+      "D8MarriageIsSameSexCouple": "YES",
+      "D8MarriageDate": "2001-02-02",
+      "D8PetitionerNameDifferentToMarriageCert": "YES",
+      "D8PetitionerEmail": "simulate-delivered@notifications.service.gov.uk",
+      "D8PetitionerPhoneNumber": "01234567890",
+      "D8PetitionerFirstName": "John",
+      "D8PetitionerLastName": "Smith",
+      "D8DerivedPetitionerCurrentFullName": "John Smith",
+      "D8PetitionerNameChangedHow": [
+        "marriageCertificate"
+      ],
+      "D8PetitionerContactDetailsConfidential": "share",
+      "D8PetitionerHomeAddress": {
+        "PostCode": "SW9 9PE"
+      },
+      "D8DerivedPetitionerHomeAddress": "82 Landor Road\nLondon\nSW9 9PE",
+      "D8PetitionerCorrespondenceAddress": {
+        "PostCode": "SW9 9PE"
+      },
+      "D8DerivedPetitionerCorrespondenceAddr": "82 Landor Road\nLondon\nSW9 9PE",
+      "D8PetitionerCorrespondenceUseHomeAddress": "YES",
+      "D8RespondentFirstName": "Jane",
+      "D8RespondentLastName": "Jamed",
+      "D8DerivedRespondentCurrentName": "Jane Jamed",
+      "D8RespondentHomeAddress": {
+        "PostCode": "SW9 9PE"
+      },
+      "D8DerivedRespondentHomeAddress": "82 Landor Road\nLondon\nSW9 9PE",
+      "D8RespondentCorrespondenceAddress": {
+        "PostCode": "SW9 9PE"
+      },
+      "D8DerivedRespondentCorrespondenceAddr": "82 Landor Road\nLondon\nSW9 9PE",
+      "D8RespondentCorrespondenceUseHomeAddress": "No",
+      "D8LivingArrangementsLiveTogether": "YES",
+      "D8LegalProceedings": "YES",
+      "D8LegalProceedingsRelated": [
+        "children"
+      ],
+      "D8LegalProceedingsDetails": "The legal proceeding details",
+      "D8ReasonForDivorce": "unreasonable-behaviour",
+      "D8DerivedStatementOfCase": "My wife is having an affair this week.",
+      "D8ReasonForDivorceBehaviourDetails": "My wife is having an affair this week.",
+      "D8ReasonForDivorceAdulteryIsNamed": "NO",
+      "D8FinancialOrder": "YES",
+      "D8FinancialOrderFor": [
+        "petitioner",
+        "children"
+      ],
+      "D8HelpWithFeesNeedHelp": "NO",
+      "D8DivorceCostsClaim": "YES",
+      "D8DivorceClaimFrom": [
+        "respondent"
+      ],
+      "D8JurisdictionConnection": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "D8JurisdictionPetitionerDomicile": "NO",
+      "D8JurisdictionPetitionerResidence": "NO",
+      "D8JurisdictionRespondentDomicile": "NO",
+      "D8JurisdictionRespondentResidence": "NO",
+      "D8JurisdictionHabituallyResLast6Months": "NO",
+      "D8ResidualJurisdictionEligible": "YES",
+      "D8DocumentsUploaded": [
+        {
+          "id": null,
+          "value": {
+            "DocumentType": "other",
+            "DocumentLink": {
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/7f63ca9b-c361-49ab-aa8c-8fbdb6bc2936"
+            },
+            "DocumentDateAdded": "2017-12-11",
+            "DocumentComment": "",
+            "DocumentFileName": "govuklogo.png",
+            "DocumentEmailContent": ""
+          }
+        },
+        {
+          "id": null,
+          "value": {
+            "DocumentType": "other",
+            "DocumentLink": {
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/560f4bd1-fcf2-4dc5-80d1-d7e00d861683"
+            },
+            "DocumentDateAdded": "2017-12-11",
+            "DocumentComment": "",
+            "DocumentFileName": "d8-eng.pdf",
+            "DocumentEmailContent": ""
+          }
+        }
+      ],
+      "D8DivorceUnit": "eastMidlands",
+      "D8ReasonForDivorceShowAdultery": "YES",
+      "D8ReasonForDivorceShowUnreasonableBehavi": "YES",
+      "D8ReasonForDivorceShowTwoYearsSeparation": "YES",
+      "D8ReasonForDivorceShowDesertion": "YES",
+      "D8ReasonForDivorceLimitReasons": "NO",
+      "D8ReasonForDivorceEnableAdultery": "YES",
+      "D8ClaimsCostsAppliedForFees": "NO",
+      "D8ReasonForDivorceClaimingAdultery": "NO",
+      "D8MarriageCanDivorce": "YES",
+      "D8MarriagePetitionerName": "John Doe",
+      "D8MarriageRespondentName": "Jenny Benny",
+      "D8Connections": {
+        "A": "The Petitioner and the Respondent are habitually resident in England and Wales",
+        "B": "The Petitioner and the Respondent were last habitually resident, insofar as one of them still resides there",
+        "C": "The Respondent is habitually resident in England and Wales",
+        "D": "The Petitioner is habitually resident in England and Wales and has resided there for at least a year immediately prior to the presentation of the petition",
+        "E": "The Petitioner is domiciled and habitually resident in England and Wales and has resided there for at least six months immediately prior to the petition",
+        "F": "The Petitioner and Respondent are both domiciled in England and Wales",
+        "G": "The courts of England and Wales have residual jurisdiction, meaning either: no other court in any EU Member State has jurisdiction and either the Petitioner or the Respondent is domiciled in England and Wales; or (for same sex couples only) the Petitioner or the Respondent married each other in England and Wales, no other court in any EU Member State has jurisdiction, and it would be in the interests of justice for the court to assume jurisdiction in this case"
+      },
+      "D8ConnectionSummary": "Manual",
+      "D8ReasonForDivorceHasMarriage": "YES",
+      "D8ReasonForDivorceShowFiveYearsSeparatio": "YES",
+      "D8ReasonForDivorceClaiming5YearSeparatio": "NO",
+      "D8Cohort": "onlineSubmissionPrivateBeta",
+      "D8InferredPetitionerGender": "female",
+      "D8InferredRespondentGender": "female"
+    }
+  }
+}

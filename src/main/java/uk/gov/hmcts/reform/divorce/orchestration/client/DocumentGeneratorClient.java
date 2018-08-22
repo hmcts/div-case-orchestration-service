@@ -21,6 +21,6 @@ public interface DocumentGeneratorClient {
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     GeneratedDocumentInfo generatePDF(
-        @RequestBody GenerateDocumentRequest validationRequest,
+        @RequestBody GenerateDocumentRequest generateDocumentRequest,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
 }
