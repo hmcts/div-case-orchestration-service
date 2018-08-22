@@ -7,6 +7,7 @@ locals {
   document_generator_baseurl        = "http://div-dgs-${local.local_env}.service.core-compute-${local.local_env}.internal"
   validation_service_baseurl        = "http://div-vs-${local.local_env}.service.core-compute-${local.local_env}.internal"
   case_maintenance_service_baseurl  = "http://div-cms-${local.local_env}.service.core-compute-${local.local_env}.internal"
+  petitioner_fe_baseurl             = "https://div-pfe-${local.local_env}.service.core-compute-${local.local_env}.internal"
 
   previewVaultName = "${var.raw_product}-aat"
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
@@ -34,6 +35,8 @@ module "div-cos" {
     DOCUMENT_GENERATOR_SERVICE_API_BASEURL          = "${local.document_generator_baseurl}"
     CASE_MAINTENANCE_SERVICE_API_BASEURL            = "${local.case_maintenance_service_baseurl}"
     IDAM_API_URL                                    = "${var.idam_api_baseurl}"
+    IDAM_API_REDIRECT_URL                           = "${local.petitioner_fe_baseurl}/authenticated"
+    AUTH2_CLIENT_SECRET                             = "${data.azurerm_key_vault_secret.idam-secret.value}"
   }
 }
 
@@ -57,13 +60,18 @@ resource "azurerm_key_vault_secret" "auth-idam-client-secret" {
   vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
-resource "azurerm_key_vault_secret" "auth-idam-citizen-user" {
-  name      = "idam-citizen-user"
+resource "azurerm_key_vault_secret" "auth-idam-citizen-username" {
+  name      = "idam-citizen-username"
   vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
 resource "azurerm_key_vault_secret" "auth-idam-citizen-password" {
   name      = "idam-citizen-password"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
+}
+
+resource "azurerm_key_vault_secret" "idam-secret" {
+  name      = "idam-secret"
   vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 

@@ -73,7 +73,7 @@ public class IdamUtils {
                 .relaxedHTTPSValidation()
                 .get(idamUserBaseUrl + "/details");
 
-        return response.getBody().path("id");
+        return response.getBody().path("id").toString();
     }
 
     public String generateUserTokenWithNoRoles(String username, String password) {

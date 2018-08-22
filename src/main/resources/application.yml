@@ -35,6 +35,11 @@ idam:
     health:
       context-path: /health
 
+auth2:
+  client:
+    id: divorce
+    secret: dummy
+
 document:
   generator:
     service:
