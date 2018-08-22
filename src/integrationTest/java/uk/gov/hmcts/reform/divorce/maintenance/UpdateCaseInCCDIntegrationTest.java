@@ -22,7 +22,7 @@ public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
 
     private static final String UPDATE_EVENT_ID = "paymentMade";
     private static final String CASE_ID_KEY = "id";
-    private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/";
+    private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/upload/";
 
     @Autowired
     private CcdClientSupport ccdClientSupport;
@@ -31,13 +31,13 @@ public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
     private String contextPath;
 
     @Test
-    public void givenDivorceSession_whenSubmitIsCalled_caseIdIsReturned() throws Exception {
+    public void givenDivorceSession_whenUpdateIsCalled_caseIdIsReturned() throws Exception {
         String caseId = ccdClientSupport.submitCase(
-                ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "submit/basic-divorce-session.json", Map.class),
+                ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "submit-case-data.json", Map.class),
                 getUserDetails()
         ).getId().toString();
 
-        Response updateResponse = updateCase(getUserDetails().getAuthToken(), caseId, "update/payments-update.json");
+        Response updateResponse = updateCase(getUserDetails().getAuthToken(), caseId, "payments-update.json");
 
         assertEquals(HttpStatus.OK.value(), updateResponse.getStatusCode());
         assertNotEquals("0", updateResponse.path(CASE_ID_KEY));
