@@ -22,7 +22,7 @@ public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
 
     private static final String UPDATE_EVENT_ID = "paymentMade";
     private static final String CASE_ID_KEY = "id";
-    private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/upload/";
+    private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/update/";
 
     @Autowired
     private CcdClientSupport ccdClientSupport;
