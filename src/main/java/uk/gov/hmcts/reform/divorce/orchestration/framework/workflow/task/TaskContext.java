@@ -9,7 +9,6 @@ public interface TaskContext {
     void setTransientObject(String key, Object data);
 
     Object getTransientObject(String key);
-
 }
 
 

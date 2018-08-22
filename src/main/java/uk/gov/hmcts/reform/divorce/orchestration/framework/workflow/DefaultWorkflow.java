@@ -11,10 +11,9 @@ import java.util.Set;
 
 @Data
 public class DefaultWorkflow<T> implements Workflow<T> {
-
     private DefaultTaskContext context;
 
-
+    @SuppressWarnings("unchecked")
     @Override
     public T execute(Task[] tasks, T payLoad, Object... params) throws WorkflowException {
 

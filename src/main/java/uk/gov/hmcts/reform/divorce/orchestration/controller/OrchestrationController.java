@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,9 +20,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.Validat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
@@ -30,7 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class OrchestrationController {
 
     @Autowired
-    CaseOrchestrationService orchestrationService;
+    private CaseOrchestrationService orchestrationService;
 
     @PostMapping(path = "/submit")
     @ApiOperation(value = "Handles submit from called from petition frontend")
@@ -69,7 +71,7 @@ public class OrchestrationController {
             log.error(e.getMessage());
         }
 
-        if(response.containsKey(VALIDATION_ERROR_KEY)){
+        if(response != null && response.containsKey(VALIDATION_ERROR_KEY)){
             return ResponseEntity.ok(
                     CcdCallbackResponse.builder()
                             .errors(getErrors(response))
@@ -85,5 +87,30 @@ public class OrchestrationController {
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();
+    }
+
+    @PostMapping(path = "/authenticate-respondent")
+    @ApiOperation(value = "Authenticates the respondent")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Respondent Authenticated",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 401, message = "User Not Authenticated"),
+        @ApiResponse(code = 400, message = "Bad Request")
+    })
+    public ResponseEntity<Void> authenticateRespondent(
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken) {
+        Boolean authenticateRespondent = null;
+
+        try {
+            authenticateRespondent = orchestrationService.authenticateRespondent(authorizationToken);
+        } catch (WorkflowException e) {
+            log.error(e.getMessage());
+        }
+
+        if(authenticateRespondent != null && authenticateRespondent){
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

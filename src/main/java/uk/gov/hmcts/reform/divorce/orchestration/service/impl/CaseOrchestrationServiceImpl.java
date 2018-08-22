@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AuthenticateRespondent;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCalllbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 
@@ -21,6 +23,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Autowired
     private CcdCalllbackWorkflow ccdCallbackWorkflow;
+
+    @Autowired
+    private AuthenticateRespondentWorkflow authenticateRespondentWorkflow;
 
     @Override
     public Map<String, Object> submit(Map<String, Object> payLoad,
@@ -46,5 +51,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         } else {
             return ccdCallbackWorkflow.errors();
         }
+    }
+
+    @Override
+    public Boolean authenticateRespondent(String authToken) throws WorkflowException {
+        return authenticateRespondentWorkflow.run(authToken);
     }
 }
