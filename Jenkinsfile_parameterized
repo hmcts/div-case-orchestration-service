@@ -4,7 +4,7 @@
 properties([
         parameters([
                 string(name: 'PRODUCT_NAME', defaultValue: 'divorce', description: 'Divorce'),
-                string(name: 'APP', defaultValue: 'cos', description: 'Default Case Orchestration Service'),
+                string(name: 'COMPONENT', defaultValue: 'cos', description: 'Default Case Orchestration Service'),
                 string(name: 'TYPE', defaultValue: 'java', description: ''),
                 string(name: 'ENVIRONMENT', defaultValue: 'saat', description: 'Environment where code should be build and deployed'),
                 choice(name: 'SUBSCRIPTION', choices: 'sandbox\nnonprod\nprod', description: 'Azure subscriptions available to build in')
@@ -13,6 +13,21 @@ properties([
         pipelineTriggers([[$class: 'GitHubPushTrigger']])
 ])
 
-withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.ENVIRONMENT, params.SUBSCRIPTION) {
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+        [ $class: 'AzureKeyVaultSecret',
+          secretType: 'Secret',
+          name: secretName,
+          version: '',
+          envVariable: envVar
+        ]
+}
 
+List<LinkedHashMap<String, Object>> secrets = [
+        secret("ccd-submission-s2s-auth-secret", "AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY"),
+        secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
+        secret("idam-secret", "AUTH_IDAM_CLIENT_SECRET")
+]
+
+withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.ENVIRONMENT, params.SUBSCRIPTION) {
+        loadVaultSecrets(secrets)
 }

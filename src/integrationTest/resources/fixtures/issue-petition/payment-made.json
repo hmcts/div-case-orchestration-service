@@ -1,0 +1,18 @@
+{
+    "createdDate":"2018-06-22",
+    "Payments":[
+        {
+            "value":{
+                "PaymentChannel":"card",
+                "PaymentTransactionId":"111222333",
+                "PaymentReference":"111222333",
+                "PaymentDate":"2001-02-02",
+                "PaymentAmount":"55000",
+                "PaymentStatus":"success",
+                "PaymentFeeId":"X0165",
+                "PaymentSiteId":"AA00"
+            }
+        }
+    ],
+    "D8Cohort":"onlineSubmissionPrivateBeta"
+}
