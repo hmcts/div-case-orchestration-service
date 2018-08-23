@@ -1,3 +1,4 @@
+//local
 locals {
   aseName                     = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
   local_env                   = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
