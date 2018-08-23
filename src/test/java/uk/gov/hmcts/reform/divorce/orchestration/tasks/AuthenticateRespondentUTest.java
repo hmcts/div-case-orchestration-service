@@ -70,14 +70,28 @@ public class AuthenticateRespondentUTest {
     }
 
     @Test
+    public void givenRolesAreEmptyOrBlank_whenExecute_thenReturnFalse() {
+        Mockito.when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN))
+            .thenReturn(
+                UserDetails.builder()
+                    .roles(Arrays.asList(
+                        "",
+                        " "
+                    ))
+                    .build());
+
+        assertFalse(classUnderTest.execute(TASK_CONTEXT, PAYLOAD, AUTH_TOKEN));
+    }
+
+    @Test
     public void givenRolesContainsLetterHolderRole_whenExecute_thenReturnTrue() {
         Mockito.when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN))
             .thenReturn(
                 UserDetails.builder()
                     .roles(Arrays.asList(
+                        "letter-12345",
                         "letter-holder",
-                        "letter-loa1",
-                        "letter-12345"
+                        "letter-loa1"
                     ))
                     .build());
 

@@ -254,19 +254,21 @@ pmd {
 
 def sonarExclusions = [
         '**uk/gov/hmcts/reform/divorce/orchestration/domain/**/*',
+        '**uk/gov/hmcts/reform/divorce/orchestration/domain/model/**/*',
         '**uk/gov/hmcts/reform/divorce/orchestration/exception/*',
         '**uk/gov/hmcts/reform/divorce/orchestration/**/config/**/*',
-        '**uk/gov/hmcts/reform/divorce/orchestration/OrchestrationServiceApplication.java',
-        '**uk/gov/hmcts/reform/divorce/orchestration/**/*'
+        '**uk/gov/hmcts/reform/divorce/orchestration/OrchestrationServiceApplication.java'
 ]
 
 sonarqube {
     properties {
-        property "sonar.projectKey", "div-orchestration-service"
-        property "sonar.projectName", "Divorce :: div-orchestration-service"
-        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
-        property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/apiTest.exec"
         property "sonar.exclusions", sonarExclusions.join(", ")
+        property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/apiTest.exec"
+        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
+        property "sonar.projectKey", "div-case-orchestration-service"
+        property "sonar.projectName", "Divorce :: div-case-orchestration-service"
+        property "sonar.pitest.mode", "reuseReport"
+        property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     }
 }
 
