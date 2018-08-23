@@ -84,10 +84,6 @@ public class PetitionIssueTest extends IntegrationTest {
     }
 
     private Response issuePetition(String userToken, String fileName) throws Exception {
-        System.setProperty("http.proxyHost", "proxyout.reform.hmcts.net");
-        System.setProperty("http.proxyPort", "8080");
-        System.setProperty("https.proxyHost", "proxyout.reform.hmcts.net");
-        System.setProperty("https.proxyPort", "8080");
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 
@@ -114,9 +110,9 @@ public class PetitionIssueTest extends IntegrationTest {
             cosResponse.path(D8_MINI_PETITION_DOCUMENT_FILENAME_PATH));
 
 
-        String aosinvitationUri = cosResponse.path(D8_AOS_INVITATION_DOCUMENT_BINARY_URL_PATH);
+        String aosInvitationUri = cosResponse.path(D8_AOS_INVITATION_DOCUMENT_BINARY_URL_PATH);
 
-        assertNotNull(aosinvitationUri);
+        assertNotNull(aosInvitationUri);
         assertNotNull(cosResponse.path(D8_AOS_INVITATION_DOCUMENT_URL_PATH));
         assertEquals(AOS_INVITATION, cosResponse.path(D8_AOS_INVITATION_DOCUMENT_TYPE_PATH));
         assertEquals(String.format(D8_AOS_INVITATION_FILE_NAME_FORMAT, CASE_ID),
