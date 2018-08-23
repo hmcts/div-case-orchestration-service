@@ -3,7 +3,7 @@ output "vaultName" {
 }
 
 output "vaultUri" {
-  value = "${local.vaultUri}"
+  value = "${local.vaultName}"
 }
 
 output "idam_s2s_url" {
