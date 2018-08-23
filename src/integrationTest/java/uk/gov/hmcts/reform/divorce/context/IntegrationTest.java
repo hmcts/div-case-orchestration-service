@@ -16,10 +16,12 @@ import java.util.UUID;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
-    private static final String CASE_WORKER_USERNAME = "robreallywantsccdaccess@mailinator.com";
-    private static final String CASE_WORKER_PASSWORD = "Passw0rd";
+    private static final String CASE_WORKER_USERNAME = "CASE_WORKER_USER";
+    private static final String CASE_WORKER_PASSWORD = "CASE_WORKER_PASSWORD";
     private static final String CITIZEN_ROLE = "citizen";
-    private static final String CASEWORKER_ROLE = "caseworker-divorce-courtadmin";
+    private static final String CASEWORKER_DIVORCE_ROLE = "caseworker-divorce";
+    private static final String CASEWORKER_DIVORCE_COURTADMIN_ROLE = "caseworker-divorce-courtadmin";
+    private static final String CASEWORKER_ROLE = "caseworker";
 
     private UserDetails caseWorkerUser;
 
@@ -38,7 +40,8 @@ public abstract class IntegrationTest {
 
     protected synchronized UserDetails createCaseWorkerUser() {
         if (caseWorkerUser == null) {
-            caseWorkerUser = getUserDetails(CASE_WORKER_USERNAME, CASE_WORKER_PASSWORD, CASEWORKER_ROLE, CITIZEN_ROLE);
+            caseWorkerUser = getUserDetails(CASE_WORKER_USERNAME, CASE_WORKER_PASSWORD,
+                CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_ROLE, CITIZEN_ROLE);
         }
 
         return caseWorkerUser;
