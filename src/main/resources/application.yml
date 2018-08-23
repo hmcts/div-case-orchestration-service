@@ -27,10 +27,19 @@ case:
 
 idam:
   api:
-    url: ${IDAM_API_URL:http://localhost:4503}
+    url: ${IDAM_API_URL:http://localhost:4502}
+    redirect-url: ${IDAM_API_REDIRECT_URL:http://localhost:8080/authenticated}
     port: 4503
     health:
       context-path: /health
+  citizen:
+    username: dummy
+    password: dummy
+
+auth2:
+  client:
+    id: divorce
+    secret: dummy
 
 document:
   generator:

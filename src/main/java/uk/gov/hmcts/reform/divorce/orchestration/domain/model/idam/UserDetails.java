@@ -18,6 +18,7 @@ public class UserDetails {
 
     private final String forename;
     private final String surname;
+    private String authToken;
     private final List<String> roles;
 
     @JsonIgnore

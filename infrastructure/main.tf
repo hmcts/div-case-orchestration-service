@@ -7,10 +7,12 @@ locals {
   document_generator_baseurl        = "http://div-dgs-${local.local_env}.service.core-compute-${local.local_env}.internal"
   validation_service_baseurl        = "http://div-vs-${local.local_env}.service.core-compute-${local.local_env}.internal"
   case_maintenance_service_baseurl  = "http://div-cms-${local.local_env}.service.core-compute-${local.local_env}.internal"
+  petitioner_fe_baseurl             = "https://div-pfe-${local.local_env}.service.core-compute-${local.local_env}.internal"
 
-  vaultName                 = "${var.product}-${var.component}"
-  vaultUri                  = "${module.key-vault.key_vault_uri}"
- }
+  previewVaultName = "${var.raw_product}-aat"
+  nonPreviewVaultName = "${var.raw_product}-${var.env}"
+  vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
+}
 
 module "div-cos" {
   source                      = "git@github.com:hmcts/moj-module-webapp.git"
@@ -33,51 +35,39 @@ module "div-cos" {
     DOCUMENT_GENERATOR_SERVICE_API_BASEURL          = "${local.document_generator_baseurl}"
     CASE_MAINTENANCE_SERVICE_API_BASEURL            = "${local.case_maintenance_service_baseurl}"
     IDAM_API_URL                                    = "${var.idam_api_baseurl}"
+    IDAM_API_REDIRECT_URL                           = "${local.petitioner_fe_baseurl}/authenticated"
+    AUTH2_CLIENT_SECRET                             = "${data.azurerm_key_vault_secret.auth-idam-client-secret.value}"
+    IDAM_CITIZEN_USERNAME                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-username.value}"
+    IDAM_CITIZEN_PASSWORD                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-password.value}"
   }
 }
 
-provider "vault" {
-  address = "https://vault.reform.hmcts.net:6200"
+data "azurerm_key_vault" "div_key_vault" {
+  name = "${local.vaultName}"
+  resource_group_name = "${local.vaultName}"
 }
 
-module "key-vault" {
-  source              = "git@github.com:hmcts/moj-module-key-vault?ref=master"
-  name                = "${local.vaultName}"
-  product             = "${var.product}"
-  env                 = "${var.env}"
-  tenant_id           = "${var.tenant_id}"
-  object_id           = "${var.jenkins_AAD_objectId}"
-  resource_group_name = "${module.div-cos.resource_group_name}"
-  # dcd_cc-dev group object ID
-  product_group_object_id = "1c4f0704-a29e-403d-b719-b90c34ef14c9"
-}
-
-data "vault_generic_secret" "ccd-submission-s2s-auth-secret" {
-  path = "secret/${var.vault_env}/ccidam/service-auth-provider/api/microservice-keys/divorceCcdSubmission"
-}
-
-data "vault_generic_secret" "div-doc-s2s-auth-secret" {
-  path = "secret/${var.vault_env}/ccidam/service-auth-provider/api/microservice-keys/divorceDocumentGenerator"
-}
-
-resource "azurerm_key_vault_secret" "ccd-submission-s2s-auth-secret" {
+data "azurerm_key_vault_secret" "ccd-submission-s2s-auth-secret" {
   name      = "ccd-submission-s2s-auth-secret"
-  value     = "${data.vault_generic_secret.ccd-submission-s2s-auth-secret.data["value"]}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
-resource "azurerm_key_vault_secret" "div-doc-s2s-auth-secret" {
+data "azurerm_key_vault_secret" "div-doc-s2s-auth-secret" {
   name      = "div-doc-s2s-auth-secret"
-  value     = "${data.vault_generic_secret.div-doc-s2s-auth-secret.data["value"]}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
-data "vault_generic_secret" "auth-idam-client-secret" {
-  path = "secret/${var.vault_env}/ccidam/idam-api/oauth2/client-secrets/divorce"
+data "azurerm_key_vault_secret" "auth-idam-client-secret" {
+  name      = "idam-secret"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
-resource "azurerm_key_vault_secret" "auth-idam-client-secret" {
-  name      = "auth-idam-client-secret"
-  value     = "${data.vault_generic_secret.auth-idam-client-secret.data["value"]}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
+data "azurerm_key_vault_secret" "auth-idam-citizen-username" {
+  name      = "idam-citizen-username"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "auth-idam-citizen-password" {
+  name      = "idam-citizen-password"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }

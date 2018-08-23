@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.Response;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -28,8 +29,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     @Qualifier("documentGeneratorTokenGenerator")
     private AuthTokenGenerator divDocAuthTokenGenerator;
 
-    //TODO
-    //@Test
+    @Test
     public void submittingCaseAndIssuePetitionOnCcdShouldGeneratePDF() {
         //submit case
         CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE);

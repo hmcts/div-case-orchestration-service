@@ -23,7 +23,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 List<LinkedHashMap<String, Object>> secrets = [
         secret("ccd-submission-s2s-auth-secret", "AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY"),
         secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
-        secret("auth-idam-client-secret", "AUTH_IDAM_CLIENT_SECRET")
+        secret("idam-secret", "AUTH_IDAM_CLIENT_SECRET")
 ]
 
 withPipeline(type, product, component) {
