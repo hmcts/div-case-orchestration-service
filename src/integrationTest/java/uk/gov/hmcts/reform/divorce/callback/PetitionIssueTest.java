@@ -110,9 +110,9 @@ public class PetitionIssueTest extends IntegrationTest {
             cosResponse.path(D8_MINI_PETITION_DOCUMENT_FILENAME_PATH));
 
 
-        String aosInvitationUri = cosResponse.path(D8_AOS_INVITATION_DOCUMENT_BINARY_URL_PATH);
+        String aosinvitationUri = cosResponse.path(D8_AOS_INVITATION_DOCUMENT_BINARY_URL_PATH);
 
-        assertNotNull(aosInvitationUri);
+        assertNotNull(aosinvitationUri);
         assertNotNull(cosResponse.path(D8_AOS_INVITATION_DOCUMENT_URL_PATH));
         assertEquals(AOS_INVITATION, cosResponse.path(D8_AOS_INVITATION_DOCUMENT_TYPE_PATH));
         assertEquals(String.format(D8_AOS_INVITATION_FILE_NAME_FORMAT, CASE_ID),

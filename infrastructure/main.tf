@@ -1,17 +1,5 @@
 locals {
-  aseName                     = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
-  local_env                   = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
-
-  idam_s2s_url                      = "http://rpe-service-auth-provider-${local.local_env}.service.core-compute-${local.local_env}.internal"
-  case_formatter_baseurl            = "http://div-cfs-${local.local_env}.service.core-compute-${local.local_env}.internal"
-  document_generator_baseurl        = "http://div-dgs-${local.local_env}.service.core-compute-${local.local_env}.internal"
-  validation_service_baseurl        = "http://div-vs-${local.local_env}.service.core-compute-${local.local_env}.internal"
-  case_maintenance_service_baseurl  = "http://div-cms-${local.local_env}.service.core-compute-${local.local_env}.internal"
-  petitioner_fe_baseurl             = "https://div-pfe-${local.local_env}.service.core-compute-${local.local_env}.internal"
-
-  previewVaultName = "${var.raw_product}-aat"
-  nonPreviewVaultName = "${var.raw_product}-${var.env}"
-  vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
+  aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
 }
 
 module "div-cos" {
@@ -38,7 +26,7 @@ module "div-cos" {
     IDAM_API_REDIRECT_URL                           = "${local.petitioner_fe_baseurl}/authenticated"
     AUTH2_CLIENT_SECRET                             = "${data.azurerm_key_vault_secret.auth-idam-client-secret.value}"
     IDAM_CITIZEN_USERNAME                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-username.value}"
-    IDAM_CITIZEN_PASSWORD                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-password.value}"
+    IDAM_CITIZEN_PASSWORD                           = "${data.azurerm_key_vault_secret.auth-idam-client-secret.value}"
   }
 }
 
