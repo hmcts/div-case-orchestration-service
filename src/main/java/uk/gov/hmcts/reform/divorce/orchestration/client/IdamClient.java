@@ -20,7 +20,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @FeignClient(name = "idam-api", url = "${idam.api.url}")
 public interface IdamClient {
-    
+
     @RequestMapping(method = RequestMethod.POST, value = "/pin")
     Pin createPin(@RequestBody PinRequest request,
                   @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation);
