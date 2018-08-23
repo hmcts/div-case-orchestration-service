@@ -20,43 +20,19 @@ public class IdamUtils {
     private String idamSecret;
 
 
-    public void createDivorceCaseworkerUserInIdam(String username, String password) {
+    public void createUser(String username, String password, String role) {
         String body = "{\n" +
                 "  \"email\": \"" + username + "\",\n" +
                 "  \"forename\": \"test\",\n" +
                 "  \"password\": \"" + password + "\",\n" +
                 "  \"roles\": [\n" +
                 "    {\n" +
-                "      \"code\": \"" + "caseworker-divorce-courtadmin" + "\"\n" +
+                "      \"code\": \"" + role + "\"\n" +
                 "    }\n" +
                 "  ],\n" +
                 "  \"surname\": \"test\",\n" +
                 "  \"userGroup\": {\n" +
                 "    \"code\": \"caseworker\"\n" +
-                "  }\n" +
-                "}";
-
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .relaxedHTTPSValidation()
-                .body(body)
-                .post(idamCreateUrl());
-    }
-
-    public void createUserInIdam(String username, String password) {
-        String body = "{\n" +
-                "  \"email\": \"" + username + "\",\n" +
-                "  \"forename\": \"test\",\n" +
-                "  \"id\": \"test\",\n" +
-                "  \"password\": \"" + password + "\",\n" +
-                "  \"roles\": [\n" +
-                "    {\n" +
-                "      \"code\": \"" + "citizen" + "\"\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"surname\": \"test\",\n" +
-                "  \"userGroup\": {\n" +
-                "    \"code\": \"divorce-private-beta\"\n" +
                 "  }\n" +
                 "}";
 
@@ -73,7 +49,7 @@ public class IdamUtils {
                 .relaxedHTTPSValidation()
                 .get(idamUserBaseUrl + "/details");
 
-        return response.getBody().path("id");
+        return response.getBody().path("id").toString();
     }
 
     public String generateUserTokenWithNoRoles(String username, String password) {

@@ -67,7 +67,7 @@ public class PetitionIssueTest extends IntegrationTest {
 
     @Test
     public void givenInvalidCaseData_whenRetrievePetition_thenReturnValidationError() throws Exception {
-        Response cosResponse = issuePetition(getUserDetails().getAuthToken(),
+        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
             "invalid-ccd-callback-petition-issued.json");
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
@@ -76,18 +76,14 @@ public class PetitionIssueTest extends IntegrationTest {
 
     @Test
     public void givenValidCaseData_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
-        Response cosResponse = issuePetition(getUserDetails().getAuthToken(),
+        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
             "ccd-callback-aos-invitation.json");
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertGeneratedDocumentsExists(cosResponse, getUserDetails().getAuthToken());
+        assertGeneratedDocumentsExists(cosResponse, createCaseWorkerUser().getAuthToken());
     }
 
     private Response issuePetition(String userToken, String fileName) throws Exception {
-        System.setProperty("http.proxyHost", "proxyout.reform.hmcts.net");
-        System.setProperty("http.proxyPort", "8080");
-        System.setProperty("https.proxyHost", "proxyout.reform.hmcts.net");
-        System.setProperty("https.proxyPort", "8080");
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 

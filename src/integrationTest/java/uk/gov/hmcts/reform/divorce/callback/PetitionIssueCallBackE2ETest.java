@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.Response;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -60,7 +58,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         Response documentManagementResponse =
             EvidenceManagementUtil.readDataFromEvidenceManagement(documentUri,
                 divDocAuthTokenGenerator.generate(),
-                getUserDetails().getAuthToken());
+                createCaseWorkerUser().getAuthToken());
 
         assertEquals(HttpStatus.OK.value(), documentManagementResponse.statusCode());
     }

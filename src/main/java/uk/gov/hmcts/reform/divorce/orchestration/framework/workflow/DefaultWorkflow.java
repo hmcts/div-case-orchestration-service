@@ -11,13 +11,11 @@ import java.util.Set;
 
 @Data
 public class DefaultWorkflow<T> implements Workflow<T> {
-    private DefaultTaskContext context;
+    private DefaultTaskContext context = new DefaultTaskContext();
 
     @SuppressWarnings("unchecked")
     @Override
     public T execute(Task[] tasks, T payLoad, Object... params) throws WorkflowException {
-
-        context = new DefaultTaskContext();
         try {
             for (Task<T> task: tasks) {
                 payLoad = task.execute(context, payLoad, params);
@@ -45,6 +43,4 @@ public class DefaultWorkflow<T> implements Workflow<T> {
         }
         return errors;
     }
-
-
 }

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AuthenticateRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCalllbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
@@ -22,16 +21,16 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     private final CcdCalllbackWorkflow ccdCallbackWorkflow;
 
+    private final AuthenticateRespondentWorkflow authenticateRespondentWorkflow;
+
     @Autowired
     public CaseOrchestrationServiceImpl(SubmitToCCDWorkflow submitToCCDWorkflow,
-                                        CcdCalllbackWorkflow ccdCallbackWorkflow) {
-        this.submitToCCDWorkflow = submitToCCDWorkflow;
-        this.ccdCallbackWorkflow = ccdCallbackWorkflow;
+                                        CcdCalllbackWorkflow ccdCallbackWorkflow,
+                                        AuthenticateRespondentWorkflow authenticateRespondentWorkflow) {
+        this.submitToCCDWorkflow            = submitToCCDWorkflow;
+        this.ccdCallbackWorkflow            = ccdCallbackWorkflow;
+        this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
     }
-
-
-    @Autowired
-    private AuthenticateRespondentWorkflow authenticateRespondentWorkflow;
 
     @Override
     public Map<String, Object> submit(Map<String, Object> payLoad,

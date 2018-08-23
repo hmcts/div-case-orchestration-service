@@ -42,7 +42,7 @@ public class OrchestrationController {
             @ApiResponse(code = 400, message = "Bad Request")
                                     })
     public ResponseEntity<Map<String, Object>> submit(
-            @RequestHeader(value = "Authorization") String authorizationToken,
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken,
             @RequestBody @ApiParam("Divorce Session") Map<String, Object> payLoad) {
         try {
             payLoad = orchestrationService.submit(payLoad, authorizationToken);

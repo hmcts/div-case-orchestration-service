@@ -27,7 +27,7 @@ case:
 
 idam:
   api:
-    url: ${IDAM_API_URL:http://localhost:4502}
+    url: ${IDAM_API_URL:http://localhost:4503}
     port: 4503
     health:
       context-path: /health
