@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.divorce.util;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.springframework.beans.factory.annotation.Value;
+import uk.gov.hmcts.reform.divorce.model.RegisterUserRequest;
+import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.model.UserGroup;
 
 import java.util.Base64;
 
@@ -18,24 +21,21 @@ public class IdamUtils {
     private String idamSecret;
 
 
-    public void createUser(String username, String password, String role) {
-        String body = "{\n"
-            + "  \"email\": \"" + username + "\",\n"
-            + "  \"forename\": \"test\",\n"
-            + "  \"password\": \"" + password + "\",\n"
-            + "  \"roles\": [\n"
-            + "       \"" + role + "\", \"citizen\"\n"
-            + "  ],\n"
-            + "  \"surname\": \"test\",\n"
-            + "  \"userGroup\": {\n"
-            + "    \"code\": \"caseworker\"\n"
-            + "  }\n"
-            + "}";
+    public void createUser(String username, String password, String... roles) {
+        RegisterUserRequest registerUserRequest =
+            RegisterUserRequest.builder()
+                .email(username)
+                .forename("test")
+                .surname("test")
+                .password(password)
+                .roles(roles)
+                .userGroup(UserGroup.builder().code("caseworker").build())
+            .build();
 
         RestAssured.given()
                 .header("Content-Type", "application/json")
                 .relaxedHTTPSValidation()
-                .body(body)
+                .body(ResourceLoader.objectToJson(registerUserRequest))
                 .post(idamCreateUrl());
     }
 

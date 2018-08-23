@@ -38,7 +38,7 @@ public abstract class IntegrationTest {
 
     protected synchronized UserDetails createCaseWorkerUser() {
         if (caseWorkerUser == null) {
-            caseWorkerUser = getUserDetails(CASE_WORKER_USERNAME, CASE_WORKER_PASSWORD, CASEWORKER_ROLE);
+            caseWorkerUser = getUserDetails(CASE_WORKER_USERNAME, CASE_WORKER_PASSWORD, CASEWORKER_ROLE, CITIZEN_ROLE);
         }
 
         return caseWorkerUser;
@@ -58,7 +58,7 @@ public abstract class IntegrationTest {
         return getUserDetails(username, password, role);
     }
 
-    private synchronized UserDetails getUserDetails(String username, String password, String role) {
+    private synchronized UserDetails getUserDetails(String username, String password, String... role) {
         idamTestSupportUtil.createUser(username, password, role);
 
         final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
