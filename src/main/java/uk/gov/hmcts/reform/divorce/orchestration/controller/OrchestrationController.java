@@ -44,13 +44,15 @@ public class OrchestrationController {
     public ResponseEntity<Map<String, Object>> submit(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken,
             @RequestBody @ApiParam("Divorce Session") Map<String, Object> payLoad) {
+        Map<String, Object> response = null;
+
         try {
-            payLoad = orchestrationService.submit(payLoad, authorizationToken);
+            response = orchestrationService.submit(payLoad, authorizationToken);
         } catch (WorkflowException e) {
             log.error(e.getMessage());
         }
 
-        return ResponseEntity.ok(payLoad);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping(path = "/petition-issued")
@@ -71,7 +73,7 @@ public class OrchestrationController {
             log.error(e.getMessage());
         }
 
-        if(response != null && response.containsKey(VALIDATION_ERROR_KEY)){
+        if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(
                     CcdCallbackResponse.builder()
                             .errors(getErrors(response))
@@ -96,7 +98,7 @@ public class OrchestrationController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 401, message = "User Not Authenticated"),
         @ApiResponse(code = 400, message = "Bad Request")
-    })
+        })
     public ResponseEntity<Void> authenticateRespondent(
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken) {
         Boolean authenticateRespondent = null;
@@ -107,7 +109,7 @@ public class OrchestrationController {
             log.error(e.getMessage());
         }
 
-        if(authenticateRespondent != null && authenticateRespondent){
+        if (authenticateRespondent != null && authenticateRespondent) {
             return ResponseEntity.ok().build();
         }
 

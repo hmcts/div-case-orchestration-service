@@ -32,7 +32,7 @@ public class AuthenticateRespondent implements Task<Boolean> {
     private boolean isLetterHolderRole(String role) {
         return StringUtils.isNotBlank(role)
             && role.startsWith("letter")
-            && !role.equals("letter-holder")
+            && !"letter-holder".equals(role)
             && !role.endsWith("loa1");
     }
 }

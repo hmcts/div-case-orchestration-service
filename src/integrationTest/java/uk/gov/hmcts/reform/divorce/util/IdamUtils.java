@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.divorce.util;
 
 import io.restassured.RestAssured;
-import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 
 import java.util.Base64;
 
@@ -21,20 +19,20 @@ public class IdamUtils {
 
 
     public void createUser(String username, String password, String role) {
-        String body = "{\n" +
-                "  \"email\": \"" + username + "\",\n" +
-                "  \"forename\": \"test\",\n" +
-                "  \"password\": \"" + password + "\",\n" +
-                "  \"roles\": [\n" +
-                "    {\n" +
-                "      \"code\": \"" + role + "\"\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"surname\": \"test\",\n" +
-                "  \"userGroup\": {\n" +
-                "    \"code\": \"caseworker\"\n" +
-                "  }\n" +
-                "}";
+        String body = "{\n"
+            + "  \"email\": \"" + username + "\",\n"
+            + "  \"forename\": \"test\",\n"
+            + "  \"password\": \"" + password + "\",\n"
+            + "  \"roles\": [\n"
+            + "    {\n"
+            + "      \"code\": \"" + role + "\"\n"
+            + "    }\n"
+            + "  ],\n"
+            + "  \"surname\": \"test\",\n"
+            + "  \"userGroup\": {\n"
+            + "    \"code\": \"caseworker\"\n"
+            + "  }\n"
+            + "}";
 
         RestAssured.given()
                 .header("Content-Type", "application/json")
@@ -62,7 +60,8 @@ public class IdamUtils {
                 .post(idamCodeUrl());
 
         if (response.getStatusCode() >= 300) {
-            throw new IllegalStateException("Token generation failed with code: " + response.getStatusCode() + " body: " + response.getBody().prettyPrint());
+            throw new IllegalStateException("Token generation failed with code: " + response.getStatusCode()
+                + " body: " + response.getBody().prettyPrint());
         }
 
         response = RestAssured.given()

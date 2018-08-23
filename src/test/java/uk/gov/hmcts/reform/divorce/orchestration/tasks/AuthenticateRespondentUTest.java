@@ -22,7 +22,7 @@ public class AuthenticateRespondentUTest {
     private static final TaskContext TASK_CONTEXT = new DefaultTaskContext();
     private static final String AUTH_TOKEN = "some token";
     private static final String BEARER_AUTH_TOKEN = "Bearer some token";
-    private static Boolean PAYLOAD = null;
+    private static Boolean PAYLOAD = false;
 
     @Mock
     private IdamClient idamClient;

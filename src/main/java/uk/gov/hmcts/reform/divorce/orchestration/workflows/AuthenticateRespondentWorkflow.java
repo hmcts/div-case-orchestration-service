@@ -18,7 +18,7 @@ public class AuthenticateRespondentWorkflow extends DefaultWorkflow<Boolean> {
 
     public Boolean run(String authToken) throws WorkflowException {
         return this.execute(new Task[] {
-                authenticateRespondent,
+            authenticateRespondent,
         }, null, authToken);
     }
 }

@@ -25,12 +25,12 @@ public class AuthenticateRespondentWorkflowUTest {
     private AuthenticateRespondentWorkflow classUnderTest;
 
     @Before
-    public void setup(){
+    public void setup() {
         ReflectionTestUtils.setField(classUnderTest, "context", defaultTaskContext);
     }
 
     @Test
-    public void whenRun_thenProceedAsExpected () throws Exception {
+    public void whenRun_thenProceedAsExpected() throws Exception {
         final boolean expected = true;
 
         Mockito.when(authenticateRespondent.execute(defaultTaskContext, null, AUTH_TOKEN)).thenReturn(expected);
