@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -7,6 +8,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -80,6 +82,28 @@ public class OrchestrationController {
                 CcdCallbackResponse.builder()
                         .data(response)
                         .build());
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Retrieves a divorce case draft")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "A draft exists. The draft content is in the response body"),
+            @ApiResponse(code = 404, message = "Draft does not exist")})
+    public ResponseEntity<JsonNode> retrieveDraft(
+            @RequestHeader("Authorization") @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
+            final String authorizationToken) {
+        Map<String, Object> response = null;
+        try {
+            response = orchestrationService.getDraft(authorizationToken);
+        } catch (WorkflowException e) {
+            log.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+        JsonNode draft = (JsonNode) response.get("draft");
+        if (draft == null || response.containsKey( VALIDATION_ERROR_KEY)) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(draft);
     }
 
     private List<String> getErrors(Map<String, Object> response) {

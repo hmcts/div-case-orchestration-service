@@ -23,4 +23,11 @@ public interface CaseMaintenanceClient {
     Map<String, Object> submitCase(
         @RequestBody Map<String, Object> submitCase,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
+
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/casemaintenance/version/1/retrieveCase"
+    )
+    Map<String, Object> retrievePetition(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
 }
