@@ -33,4 +33,13 @@ public interface CaseFormatterClient {
     Map<String, Object> transformToCCDFormat(
         @RequestBody Map<String, Object> transformToCCDFormat,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/caseformatter/version/1/to-divorce-format",
+            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> transformToDivorceFormat(
+            @RequestBody Map<String, Object> transformToDivorceFormat,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
 }

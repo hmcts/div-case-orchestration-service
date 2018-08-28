@@ -10,7 +10,12 @@ public interface CaseOrchestrationService {
     /**
      * Submit case.
      */
-    Map<String, Object> submit(Map<String, Object> divorceSession, String authToken) throws WorkflowException;
+    Map<String, Object> submit(Map<String, Object> divorceSession, String authToken)
+            throws WorkflowException;
 
-    Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException;
+    Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest, String authToken)
+            throws WorkflowException;
+
+    Map<String, Object> ccdRetrieveCaseDetailsHandler(boolean checkCcd, String authorizationToken)
+            throws WorkflowException;
 }
