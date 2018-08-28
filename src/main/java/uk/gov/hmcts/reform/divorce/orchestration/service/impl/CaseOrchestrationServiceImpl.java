@@ -7,7 +7,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCalllbackWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.DraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 
 import java.util.Map;
@@ -21,15 +22,19 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     private final CcdCalllbackWorkflow ccdCallbackWorkflow;
 
-    private final DraftWorkflow draftWorkflow;
+    private final RetrieveDraftWorkflow retrieveDraftWorkflow;
+
+    private final SaveDraftWorkflow saveDraftWorkflow;
 
     @Autowired
     public CaseOrchestrationServiceImpl(SubmitToCCDWorkflow submitToCCDWorkflow,
                                         CcdCalllbackWorkflow ccdCallbackWorkflow,
-                                        DraftWorkflow draftWorkflow) {
+                                        RetrieveDraftWorkflow retrieveDraftWorkflow,
+                                        SaveDraftWorkflow saveDraftWorkflow) {
         this.submitToCCDWorkflow = submitToCCDWorkflow;
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
-        this.draftWorkflow = draftWorkflow;
+        this.retrieveDraftWorkflow = retrieveDraftWorkflow;
+        this.saveDraftWorkflow = saveDraftWorkflow;
     }
 
 
@@ -61,15 +66,28 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> getDraft(String authToken) throws WorkflowException {
-        Map<String, Object> payLoad = draftWorkflow.run(authToken);
-        if (draftWorkflow.errors().isEmpty()) {
+        Map<String, Object> payLoad = retrieveDraftWorkflow.run(authToken);
+        if (retrieveDraftWorkflow.errors().isEmpty()) {
             String caseOrDraft = (payLoad != null && payLoad.get(ID) != null)
                     ? "case with ID: " + payLoad.get(ID) : "draft";
             log.info("Get draft returns a {}", caseOrDraft);
             return payLoad;
         } else {
             log.error("Workflow Error retrieving draft");
-            return draftWorkflow.errors();
+            return retrieveDraftWorkflow.errors();
         }
+    }
+
+    @Override
+    public Map<String, Object> saveDraft(Map<String, Object> payLoad, String authToken) throws WorkflowException {
+        payLoad = saveDraftWorkflow.run(payLoad, authToken);
+
+        if (saveDraftWorkflow.errors().isEmpty()) {
+            log.info("Draft saved");
+            return payLoad;
+        } else {
+            return saveDraftWorkflow.errors();
+        }
+
     }
 }

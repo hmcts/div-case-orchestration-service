@@ -11,12 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class DraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final RetrieveDraft retrieveDraft;
 
     @Autowired
-    public DraftWorkflow(RetrieveDraft retrieveDraft) {
+    public RetrieveDraftWorkflow(RetrieveDraft retrieveDraft) {
         this.retrieveDraft = retrieveDraft;
     }
 

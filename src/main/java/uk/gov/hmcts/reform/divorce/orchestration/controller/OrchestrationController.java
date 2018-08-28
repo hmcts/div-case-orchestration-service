@@ -7,12 +7,15 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
@@ -22,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 
 import java.util.List;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
@@ -84,7 +88,7 @@ public class OrchestrationController {
                         .build());
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON)
+    @GetMapping(path = "/draft", produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Retrieves a divorce case draft")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "A draft exists. The draft content is in the response body"),
@@ -104,6 +108,32 @@ public class OrchestrationController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(draft);
+    }
+
+    @PutMapping(path = "/draft", consumes = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Saves or updates a draft to draft store")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Draft saved")})
+    public ResponseEntity<Map<String, Object>> saveDraft(
+            @RequestHeader(HttpHeaders.AUTHORIZATION)
+            @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
+                final String authorizationToken,
+            @RequestBody
+            @ApiParam(value = "The case draft", required = true)
+            @NotNull Map<String, Object> payLoad,
+            @RequestParam(value = "divorceFormat", required = false)
+            @ApiParam(value = "Boolean flag indicting the data is in divorce format")
+                final Boolean divorceFormat) {
+
+        log.debug("Received request to save a draft");
+
+        try {
+            payLoad = orchestrationService.saveDraft(payLoad, authorizationToken);
+        } catch (WorkflowException e) {
+            log.error(e.getMessage());
+        }
+
+        return ResponseEntity.ok(payLoad);
     }
 
     private List<String> getErrors(Map<String, Object> response) {

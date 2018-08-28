@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import java.util.Map;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Component
 @FeignClient(name = "maintenance-service-client", url = "${case.maintenance.service.api.baseurl}")
 public interface CaseMaintenanceClient {
 
@@ -22,6 +24,15 @@ public interface CaseMaintenanceClient {
     )
     Map<String, Object> submitCase(
         @RequestBody Map<String, Object> submitCase,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
+
+    @RequestMapping(
+            method = RequestMethod.PUT,
+            value = "/casemaintenance/version/1/draft",
+            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> saveDraft(
+        @RequestBody Map<String, Object> draft,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
 
     @RequestMapping(
