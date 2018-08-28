@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCalllbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
@@ -61,7 +62,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> ccdRetrieveCaseDetailsHandler(boolean checkCcd,
                                                              String authToken) throws WorkflowException {
-        return retrieveAosCaseWorkflow.run(checkCcd,
-                authToken);
+//        return retrieveAosCaseWorkflow.run(checkCcd,
+//                authToken);
+        Map<String, Object> stubResponse = new HashMap<>();
+        stubResponse.put("testKey","testValue");
+        return stubResponse;
     }
 }
