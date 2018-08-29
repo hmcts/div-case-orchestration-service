@@ -40,20 +40,18 @@ public class CaseDataFormatterTest {
     private Map<String, Object> payload;
     private CaseDetails caseDetails;
     private TaskContext context;
-    private GeneratedDocumentInfo aosinvitation;
-    private GeneratedDocumentInfo petition;
 
     @Before
     public void setUp() {
         caseDataFormatter = new CaseDataFormatter(caseFormatterClient);
 
-        petition =
+        GeneratedDocumentInfo petition =
                 GeneratedDocumentInfo.builder()
                         .fileName(TEST_FILENAME)
                         .url(TEST_DOC_URL)
                         .build();
 
-        aosinvitation =
+        GeneratedDocumentInfo aosinvitation =
                 GeneratedDocumentInfo.builder()
                         .fileName(TEST_FILENAME)
                         .url(TEST_DOC_URL)

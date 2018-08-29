@@ -41,8 +41,6 @@ public class IdamPinGeneratorTest {
     private CaseDetails caseDetails;
     private TaskContext context;
     private Pin pin;
-    private TokenExchangeResponse tokenExchangeResponse;
-    private AuthenticateUserResponse authenticateUserResponse;
 
     @Before
     public void setUp() {
@@ -71,10 +69,13 @@ public class IdamPinGeneratorTest {
     public void executeShouldReturnUpdatedPayloadForValidCase() throws TaskException {
         //given
         when(idamClient.createPin(any(), anyString())).thenReturn(pin);
-        authenticateUserResponse = AuthenticateUserResponse.builder().code("test.code").build();
+        AuthenticateUserResponse authenticateUserResponse = AuthenticateUserResponse
+                                                            .builder()
+                                                            .code("test.code")
+                                                            .build();
         when(idamClient.authenticateUser(anyString(), anyString(), any(), any()))
                 .thenReturn(authenticateUserResponse);
-        tokenExchangeResponse = TokenExchangeResponse.builder().accessToken(AUTH_TOKEN).build();
+        TokenExchangeResponse tokenExchangeResponse = TokenExchangeResponse.builder().accessToken(AUTH_TOKEN).build();
         when(idamClient.exchangeCode(anyString(), anyString(), any(), any(), any()))
                 .thenReturn(tokenExchangeResponse);
 
