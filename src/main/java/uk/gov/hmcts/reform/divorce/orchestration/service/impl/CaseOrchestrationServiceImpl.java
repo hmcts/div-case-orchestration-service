@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,6 +63,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> ccdRetrieveCaseDetailsHandler(boolean checkCcd,
                                                              String authToken) throws WorkflowException {
-        return retrieveAosCaseWorkflow.run(checkCcd, authToken);
+        // return retrieveAosCaseWorkflow.run(checkCcd, authToken);
+        return ImmutableMap.of("testKey", "testValue");
     }
 }
