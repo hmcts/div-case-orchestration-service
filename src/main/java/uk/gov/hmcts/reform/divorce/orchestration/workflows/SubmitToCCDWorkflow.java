@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCaseToCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
@@ -21,13 +22,17 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final SubmitCaseToCCD submitCaseToCCD;
 
+    private final DeleteDraft deleteDraft;
+
     @Autowired
     public SubmitToCCDWorkflow(FormatDivorceSessionToCaseData formatDivorceSessionToCaseData,
                                ValidateCaseData validateCaseData,
-                               SubmitCaseToCCD submitCaseToCCD) {
+                               SubmitCaseToCCD submitCaseToCCD,
+                               DeleteDraft deleteDraft) {
         this.formatDivorceSessionToCaseData = formatDivorceSessionToCaseData;
         this.validateCaseData = validateCaseData;
         this.submitCaseToCCD = submitCaseToCCD;
+        this.deleteDraft = deleteDraft;
     }
 
     public Map<String, Object> run(Map<String, Object> payLoad, String authToken) throws WorkflowException {
@@ -35,6 +40,7 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
                 new Task[]{
                     formatDivorceSessionToCaseData,
                     validateCaseData,
+                    deleteDraft,
                     submitCaseToCCD
                 },
                 payLoad,
