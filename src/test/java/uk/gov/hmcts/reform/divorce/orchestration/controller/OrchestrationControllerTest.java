@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -13,13 +14,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -47,6 +46,18 @@ public class OrchestrationControllerTest {
         when(service.ccdCallbackHandler(createEvent, authToken)).thenReturn(new HashMap<>());
 
         ResponseEntity<CcdCallbackResponse> actual = controller.petitionIssuedCallback(authToken, createEvent);
+
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test
+    public void whenAosRetrieveCase_thenReturnExpectedCase() throws WorkflowException {
+        final String authToken = "authtoken";
+        final Map<String, Object> expected = ImmutableMap.of("testKey", "testValue");
+        when(service.ccdRetrieveCaseDetailsHandler(true, authToken)).thenReturn(expected);
+
+        ResponseEntity<Map<String, Object>> actual = controller.retrieveAosCase(authToken, true);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());

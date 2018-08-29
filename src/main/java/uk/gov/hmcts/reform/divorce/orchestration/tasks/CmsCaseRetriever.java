@@ -24,6 +24,6 @@ public class CmsCaseRetriever implements Task<Map<String, Object>> {
                                        Object... params) throws TaskException {
         return caseMaintenanceClient.retrieveAosCase(
                 Boolean.valueOf(params[1].toString()),
-                String.valueOf(params[1]));
+                String.valueOf(params[0]));
     }
 }

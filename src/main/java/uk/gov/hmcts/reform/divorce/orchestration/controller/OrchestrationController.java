@@ -93,11 +93,11 @@ public class OrchestrationController {
                             })
     public ResponseEntity<Map<String, Object>> retrieveAosCase(
             @RequestHeader(value = "Authorization") String authorizationToken,
-            @RequestParam @ApiParam("checkCcd") boolean ccheckCcd) {
+            @RequestParam @ApiParam("checkCcd") boolean checkCcd) {
         Map<String, Object> response = null;
         try {
             response =
-                    orchestrationService.ccdRetrieveCaseDetailsHandler(ccheckCcd,
+                    orchestrationService.ccdRetrieveCaseDetailsHandler(checkCcd,
                             authorizationToken);
         } catch (WorkflowException e) {
             log.error(e.getMessage());

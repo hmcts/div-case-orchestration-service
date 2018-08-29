@@ -62,9 +62,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> ccdRetrieveCaseDetailsHandler(boolean checkCcd,
                                                              String authToken) throws WorkflowException {
-        //return retrieveAosCaseWorkflow.run(checkCcd, authToken);
-        Map<String, Object> stubResponse = new HashMap<>();
-        stubResponse.put("testKey","testValue");
-        return stubResponse;
+        return retrieveAosCaseWorkflow.run(checkCcd, authToken);
     }
 }

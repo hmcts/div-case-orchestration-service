@@ -77,6 +77,21 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(expectedPayload.get(PIN), TEST_PIN);
     }
 
+    @Test
+    public void ccdRetrieveCaseShouldReturnValidCaseDataForValidRequest()
+            throws WorkflowException {
+        //given
+        when(retrieveAosCaseWorkflow.run(true, AUTH_TOKEN)).thenReturn(expectedPayload);
+
+        //when
+        Map<String, Object> actual = service.ccdRetrieveCaseDetailsHandler(true, AUTH_TOKEN);
+
+        //then
+        assertEquals(expectedPayload, actual);
+        assertEquals(expectedPayload.get(PIN), TEST_PIN);
+    }
+
+
     @After
     public void tearDown() {
         createEventRequest = null;
