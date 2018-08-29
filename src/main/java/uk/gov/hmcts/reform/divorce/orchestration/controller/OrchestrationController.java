@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,6 +30,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DELETE_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SAVE_DRAFT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
 @Slf4j
@@ -129,15 +132,33 @@ public class OrchestrationController {
             @ApiParam(value = "Boolean flag indicting the data is in divorce format")
                 final Boolean divorceFormat) {
 
-        log.debug("Received request to save a draft");
-
         try {
             payLoad = orchestrationService.saveDraft(payLoad, authorizationToken, notificationEmail);
         } catch (WorkflowException e) {
             log.error(e.getMessage());
+            payLoad.put(SAVE_DRAFT_ERROR_KEY, e);
         }
 
         return ResponseEntity.ok(payLoad);
+    }
+
+    @DeleteMapping(path = "/drafts")
+    @ApiOperation(value = "Deletes a divorce case draft")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "The divorce draft has been deleted successfully")})
+    public ResponseEntity<Map<String, Object>> deleteDraft(@RequestHeader("Authorization")
+                                            @ApiParam(value = "JWT authorisation token issued by IDAM",
+                                                    required = true) final String authorizationToken) {
+
+        Map<String, Object> response = null;
+        try {
+            response  = orchestrationService.deleteDraft(authorizationToken);
+        } catch (WorkflowException e) {
+            log.error(e.getMessage());
+            response.put(DELETE_ERROR_KEY, e);
+        }
+
+        return ResponseEntity.ok(response);
     }
 
     private List<String> getErrors(Map<String, Object> response) {
