@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DELETE_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SAVE_DRAFT_ERROR_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -105,5 +106,27 @@ public class OrchestrationControllerTest {
         ResponseEntity<Map<String, Object>> response = controller.saveDraft(AUTH_TOKEN, payload, userEmail, true);
 
         assertEquals(safeDraftError, response.getBody().get(SAVE_DRAFT_ERROR_KEY));
+    }
+
+    @Test
+    public void whenDeleteDraft_thenDeleteDraftServiceIsCalled() throws WorkflowException {
+        Map<String, Object> payload =  mock(Map.class);
+        when(service.deleteDraft(AUTH_TOKEN)).thenReturn(payload);
+        ResponseEntity<Map<String, Object>> response = controller.deleteDraft(AUTH_TOKEN);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(payload, response.getBody());
+
+        verify(service).deleteDraft(AUTH_TOKEN);
+    }
+
+    @Test
+    public void givenWorkflowError_whenDeleteDraft_thenReturnError() throws WorkflowException {
+        WorkflowException deleteDraftError = new WorkflowException("Workflow failed");
+
+        when(service.deleteDraft(AUTH_TOKEN)).thenThrow(deleteDraftError);
+        ResponseEntity<Map<String, Object>> response = controller.deleteDraft(AUTH_TOKEN);
+
+        assertEquals(deleteDraftError, response.getBody().get(DELETE_ERROR_KEY));
     }
 }

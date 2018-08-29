@@ -47,6 +47,9 @@ public class CaseOrchestrationServiceImplTest {
     @Mock
     private SaveDraftWorkflow saveDraftWorkflow;
 
+    @Mock
+    private DeleteDraftWorkflow deleteDraftWorkflow;
+
     @InjectMocks
     private CaseOrchestrationServiceImpl service;
 
@@ -124,6 +127,24 @@ public class CaseOrchestrationServiceImplTest {
         when(saveDraftWorkflow.errors()).thenReturn(expectedErrors);
 
         assertEquals(expectedErrors,service.saveDraft(payload, AUTH_TOKEN, TEST_USER_EMAIL));
+    }
+
+    @Test
+    public void givenUserWithADraft_whenDeleteDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
+        Map<String, Object> testExpectedPayload = mock(Map.class);
+        when(deleteDraftWorkflow.run(AUTH_TOKEN)).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload,service.deleteDraft(AUTH_TOKEN));
+    }
+
+    @Test
+    public void givenErrorOnDraftWorkflow_whenDeleteDraft_thenReturnErrors() throws WorkflowException {
+        Map<String, Object> expectedErrors = mock(Map.class);
+        Map<String, Object> workflowResponsePayload = mock(Map.class);
+
+        when(deleteDraftWorkflow.run(AUTH_TOKEN)).thenReturn(workflowResponsePayload);
+        when(deleteDraftWorkflow.errors()).thenReturn(expectedErrors);
+
+        assertEquals(expectedErrors, service.deleteDraft(AUTH_TOKEN));
     }
 
     @After
