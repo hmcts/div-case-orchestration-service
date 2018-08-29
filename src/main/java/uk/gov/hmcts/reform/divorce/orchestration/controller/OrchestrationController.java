@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 
 import java.util.List;
 import java.util.Map;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
 
@@ -110,7 +111,7 @@ public class OrchestrationController {
         return ResponseEntity.ok(draft);
     }
 
-    @PutMapping(path = "/draft", consumes = MediaType.APPLICATION_JSON)
+    @PutMapping(path = "/drafts", consumes = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Saves or updates a draft to draft store")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Draft saved")})
@@ -121,6 +122,9 @@ public class OrchestrationController {
             @RequestBody
             @ApiParam(value = "The case draft", required = true)
             @NotNull Map<String, Object> payLoad,
+            @RequestParam(value = "notificationEmail", required = false)
+            @ApiParam(value = "The email address that will receive the notification that the draft has been saved")
+            @Email final String notificationEmail,
             @RequestParam(value = "divorceFormat", required = false)
             @ApiParam(value = "Boolean flag indicting the data is in divorce format")
                 final Boolean divorceFormat) {
@@ -128,7 +132,7 @@ public class OrchestrationController {
         log.debug("Received request to save a draft");
 
         try {
-            payLoad = orchestrationService.saveDraft(payLoad, authorizationToken);
+            payLoad = orchestrationService.saveDraft(payLoad, authorizationToken, notificationEmail);
         } catch (WorkflowException e) {
             log.error(e.getMessage());
         }

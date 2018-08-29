@@ -17,4 +17,6 @@ public class OrchestrationConstants {
     public static final String FORM_ID = "case-progression";
     public static final String VALIDATION_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData_Error";
+    public static final String EMAIL_ERROR_KEY
+            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
 }

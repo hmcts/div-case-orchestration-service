@@ -24,13 +24,14 @@ public class SaveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
         this.emailNotification = emailNotification;
     }
 
-    public Map<String, Object> run(Map<String, Object> payLoad, String authToken) throws WorkflowException {
+    public Map<String, Object> run(Map<String, Object> payLoad, String authToken, String notificationEmail) throws WorkflowException {
         return this.execute(
                 new Task[]{
                     saveToDraftStore,
                     emailNotification
                 },
                 payLoad,
-                authToken);
+                authToken,
+                notificationEmail);
     }
 }

@@ -23,6 +23,6 @@ public class EmailNotification  implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> draft,
                                        Object... params) {
-        return emailService.sendEmail(String.valueOf(params[0]));
+        return emailService.sendSaveDraftConfirmationEmail(String.valueOf(params[1]));
     }
 }

@@ -16,5 +16,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> getDraft(String authToken) throws WorkflowException;
 
-    Map<String,Object> saveDraft(Map<String, Object> payLoad, String authorizationToken) throws WorkflowException;
+    Map<String,Object> saveDraft(Map<String, Object> payLoad,
+                                 String authorizationToken,
+                                 String notificationEmail) throws WorkflowException;
 }
