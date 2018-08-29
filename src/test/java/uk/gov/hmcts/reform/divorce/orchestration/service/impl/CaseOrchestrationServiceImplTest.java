@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCalllbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
@@ -43,6 +44,9 @@ public class CaseOrchestrationServiceImplTest {
     @Mock
     private SaveDraftWorkflow saveDraftWorkflow;
 
+    @Mock
+    private DeleteDraftWorkflow deleteDraftWorkflow;
+
     private CaseOrchestrationServiceImpl service;
 
     private CreateEvent createEventRequest;
@@ -55,7 +59,8 @@ public class CaseOrchestrationServiceImplTest {
         service = new CaseOrchestrationServiceImpl(submitToCCDWorkflow,
                                                     ccdCallbackWorkflow,
                                                     retrieveDraftWorkflow,
-                                                    saveDraftWorkflow);
+                                                    saveDraftWorkflow,
+                                                    deleteDraftWorkflow);
         createEventRequest = CreateEvent.builder()
                 .caseDetails(
                         CaseDetails.builder()

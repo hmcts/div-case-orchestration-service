@@ -28,7 +28,7 @@ public interface CaseMaintenanceClient {
 
     @RequestMapping(
             method = RequestMethod.PUT,
-            value = "/casemaintenance/version/1/draft",
+            value = "/casemaintenance/version/1/drafts",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> saveDraft(
@@ -40,5 +40,12 @@ public interface CaseMaintenanceClient {
         value = "/casemaintenance/version/1/retrieveCase"
     )
     Map<String, Object> retrievePetition(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
+
+    @RequestMapping(
+            method = RequestMethod.DELETE,
+            value = "/casemaintenance/version/1/drafts"
+    )
+    Map<String, Object> deleteDraft(
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
 }

@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCalllbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
@@ -26,15 +27,19 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     private final SaveDraftWorkflow saveDraftWorkflow;
 
+    private final DeleteDraftWorkflow deleteDraftWorkflow;
+
     @Autowired
     public CaseOrchestrationServiceImpl(SubmitToCCDWorkflow submitToCCDWorkflow,
                                         CcdCalllbackWorkflow ccdCallbackWorkflow,
                                         RetrieveDraftWorkflow retrieveDraftWorkflow,
-                                        SaveDraftWorkflow saveDraftWorkflow) {
+                                        SaveDraftWorkflow saveDraftWorkflow,
+                                        DeleteDraftWorkflow deleteDraftWorkflow) {
         this.submitToCCDWorkflow = submitToCCDWorkflow;
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
         this.retrieveDraftWorkflow = retrieveDraftWorkflow;
         this.saveDraftWorkflow = saveDraftWorkflow;
+        this.deleteDraftWorkflow = deleteDraftWorkflow;
     }
 
 
@@ -66,12 +71,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> getDraft(String authToken) throws WorkflowException {
-        Map<String, Object> payLoad = retrieveDraftWorkflow.run(authToken);
+        Map<String, Object> response = retrieveDraftWorkflow.run(authToken);
         if (retrieveDraftWorkflow.errors().isEmpty()) {
-            String caseOrDraft = (payLoad != null && payLoad.get(ID) != null)
-                    ? "case with ID: " + payLoad.get(ID) : "draft";
+            String caseOrDraft = (response != null && response.get(ID) != null)
+                    ? "case with ID: " + response.get(ID) : "draft";
             log.info("Get draft returns a {}", caseOrDraft);
-            return payLoad;
+            return response;
         } else {
             log.error("Workflow Error retrieving draft");
             return retrieveDraftWorkflow.errors();
@@ -82,14 +87,26 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> saveDraft(Map<String, Object> payLoad,
                                          String authToken,
                                          String notificationEmail) throws WorkflowException {
-        payLoad = saveDraftWorkflow.run(payLoad, authToken, notificationEmail);
+        Map<String, Object> response = saveDraftWorkflow.run(payLoad, authToken, notificationEmail);
 
         if (saveDraftWorkflow.errors().isEmpty()) {
             log.info("Draft saved");
-            return payLoad;
+            return response;
         } else {
             return saveDraftWorkflow.errors();
         }
 
+    }
+
+    @Override
+    public Map<String, Object> deleteDraft(String authToken) throws WorkflowException {
+        Map<String, Object> response = deleteDraftWorkflow.run(authToken);
+        if (deleteDraftWorkflow.errors().isEmpty()) {
+            log.info("Draft deleted");
+            return response;
+        } else {
+            log.error("Workflow Error deleting draft");
+            return deleteDraftWorkflow.errors();
+        }
     }
 }

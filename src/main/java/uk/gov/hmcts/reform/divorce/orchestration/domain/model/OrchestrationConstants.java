@@ -19,4 +19,9 @@ public class OrchestrationConstants {
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData_Error";
     public static final String EMAIL_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
+    public static final String SAVE_DRAFT_ERROR_KEY
+            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.SaveToDraftStore_Error";
+    public static final String DELETE_ERROR_KEY
+            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft_Error";
+
 }
