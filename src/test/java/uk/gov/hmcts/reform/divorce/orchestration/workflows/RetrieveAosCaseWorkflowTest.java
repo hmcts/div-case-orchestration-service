@@ -16,7 +16,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CmsCaseRetriever;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
