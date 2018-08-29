@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SAVE_DRAFT_ERROR_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OrchestrationControllerTest {
@@ -97,12 +98,12 @@ public class OrchestrationControllerTest {
 
     @Test
     public void givenWorkflowError_whenSaveDraft_thenReturnError() throws WorkflowException {
-        Map<String, Object> payload =  mock(Map.class);
+        Map<String, Object> payload =  new HashMap<>();
         final String userEmail = "test@email.com";
-        when(service.saveDraft(payload, AUTH_TOKEN, userEmail)).thenThrow(new WorkflowException("Workflow failed"));
-
+        WorkflowException safeDraftError = new WorkflowException("Workflow failed");
+        when(service.saveDraft(payload, AUTH_TOKEN, userEmail)).thenThrow(safeDraftError);
         ResponseEntity<Map<String, Object>> response = controller.saveDraft(AUTH_TOKEN, payload, userEmail, true);
 
-        assertNotEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(safeDraftError, response.getBody().get(SAVE_DRAFT_ERROR_KEY));
     }
 }
