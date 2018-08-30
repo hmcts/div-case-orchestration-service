@@ -12,4 +12,5 @@ public class TestConstants {
     public static String TEST_EVENT_ID = "test.event.id";
     public static String AUTH_TOKEN = "test.auth.token";
     public static final String TEST_USERID = "test.userid";
+    public static final String TEST_USER_EMAIL = "test@email.com";
 }
