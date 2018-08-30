@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.Validat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.Email;
@@ -150,7 +151,7 @@ public class OrchestrationController {
                                             @ApiParam(value = "JWT authorisation token issued by IDAM",
                                                     required = true) final String authorizationToken) {
 
-        Map<String, Object> response = null;
+        Map<String, Object> response = new LinkedHashMap<>();
         try {
             response  = orchestrationService.deleteDraft(authorizationToken);
         } catch (WorkflowException e) {

@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -26,6 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 
 
@@ -47,6 +50,7 @@ public class CaseOrchestrationServiceImplTest {
     @Mock
     private DeleteDraftWorkflow deleteDraftWorkflow;
 
+    @InjectMocks
     private CaseOrchestrationServiceImpl service;
 
     private CreateEvent createEventRequest;
@@ -56,11 +60,6 @@ public class CaseOrchestrationServiceImplTest {
 
     @Before
     public void setUp() {
-        service = new CaseOrchestrationServiceImpl(submitToCCDWorkflow,
-                                                    ccdCallbackWorkflow,
-                                                    retrieveDraftWorkflow,
-                                                    saveDraftWorkflow,
-                                                    deleteDraftWorkflow);
         createEventRequest = CreateEvent.builder()
                 .caseDetails(
                         CaseDetails.builder()
@@ -87,6 +86,65 @@ public class CaseOrchestrationServiceImplTest {
         //then
         assertEquals(expectedPayload, actual);
         assertEquals(expectedPayload.get(PIN), TEST_PIN);
+    }
+
+    @Test
+    public void givenDraftInWorkflowResponse_whenGetDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
+        Map<String, Object> testExpectedPayload = mock(Map.class);
+
+        when(retrieveDraftWorkflow.run(AUTH_TOKEN)).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload,service.getDraft(AUTH_TOKEN));
+    }
+
+    @Test
+    public void givenErrorOnDraftWorkflow_whenGetDraft_thenReturnErrors() throws WorkflowException {
+        Map<String, Object> expectedErrors = mock(Map.class);
+        Map<String, Object> workflowResponsePayload = mock(Map.class);
+
+        when(retrieveDraftWorkflow.run(AUTH_TOKEN)).thenReturn(workflowResponsePayload);
+        when(retrieveDraftWorkflow.errors()).thenReturn(expectedErrors);
+
+        assertEquals(expectedErrors, service.getDraft(AUTH_TOKEN));
+    }
+
+    @Test
+    public void whenSaveDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
+        Map<String, Object> payload = mock(Map.class);
+        Map<String, Object> testExpectedPayload = mock(Map.class);
+
+        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, TEST_USER_EMAIL)).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload,service.saveDraft(payload, AUTH_TOKEN, TEST_USER_EMAIL));
+    }
+
+    @Test
+    public void givenErrorOnDraftWorkflow_whenSaveDraft_thenReturnErrors() throws WorkflowException {
+        Map<String, Object> expectedErrors = mock(Map.class);
+        Map<String, Object> payload = mock(Map.class);
+        Map<String, Object> workflowResponsePayload = mock(Map.class);
+
+
+        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, TEST_USER_EMAIL)).thenReturn(workflowResponsePayload);
+        when(saveDraftWorkflow.errors()).thenReturn(expectedErrors);
+
+        assertEquals(expectedErrors,service.saveDraft(payload, AUTH_TOKEN, TEST_USER_EMAIL));
+    }
+
+    @Test
+    public void givenUserWithADraft_whenDeleteDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
+        Map<String, Object> testExpectedPayload = mock(Map.class);
+        when(deleteDraftWorkflow.run(AUTH_TOKEN)).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload,service.deleteDraft(AUTH_TOKEN));
+    }
+
+    @Test
+    public void givenErrorOnDraftWorkflow_whenDeleteDraft_thenReturnErrors() throws WorkflowException {
+        Map<String, Object> expectedErrors = mock(Map.class);
+        Map<String, Object> workflowResponsePayload = mock(Map.class);
+
+        when(deleteDraftWorkflow.run(AUTH_TOKEN)).thenReturn(workflowResponsePayload);
+        when(deleteDraftWorkflow.errors()).thenReturn(expectedErrors);
+
+        assertEquals(expectedErrors, service.deleteDraft(AUTH_TOKEN));
     }
 
     @After
