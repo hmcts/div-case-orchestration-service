@@ -18,7 +18,8 @@ public interface CaseOrchestrationService {
 
     Map<String,Object> saveDraft(Map<String, Object> payLoad,
                                  String authorizationToken,
-                                 String notificationEmail) throws WorkflowException;
+                                 String notificationEmail,
+                                 boolean divorceFormat) throws WorkflowException;
 
     Map<String,Object> deleteDraft(String authorizationToken) throws WorkflowException;
 }

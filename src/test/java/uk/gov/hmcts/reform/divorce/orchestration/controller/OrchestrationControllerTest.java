@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DELETE_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SAVE_DRAFT_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OrchestrationControllerTest {
@@ -60,20 +62,28 @@ public class OrchestrationControllerTest {
 
     @Test
     public void givenUserWithoutDraft_whenRetrieveDraft_thenNotFoundResponseReturned() throws WorkflowException {
-        Map<String, Object> workflowMap = new HashMap<>();
-        when(service.getDraft(AUTH_TOKEN)).thenReturn(workflowMap);
-        ResponseEntity<JsonNode> actual = controller.retrieveDraft(AUTH_TOKEN);
+
+        ResponseEntity<Map<String, Object>> actual = controller.retrieveDraft(AUTH_TOKEN);
+
+        assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
+    }
+
+    @Test
+    public void givenAnErrorOdDraft_whenRetrieveDraft_thenNotFoundResponseReturned() throws WorkflowException {
+        final Map<String, Object> draftServiceResponse = new LinkedHashMap<>();
+        draftServiceResponse.put(VALIDATION_ERROR_KEY,"Workflow error");
+        when(service.getDraft(AUTH_TOKEN)).thenReturn(draftServiceResponse);
+
+        ResponseEntity<Map<String, Object>> actual = controller.retrieveDraft(AUTH_TOKEN);
 
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
     }
 
     @Test
     public void givenUserSavedDraft_whenRetrieveDraft_thenUserSaveDraftIsReturned() throws WorkflowException {
-        Map<String, Object> workflowMap = new HashMap<>();
-        final JsonNode expectedObject = mock(JsonNode.class);
-        workflowMap.put(DRAFT_KEY, expectedObject);
-        when(service.getDraft(AUTH_TOKEN)).thenReturn(workflowMap);
-        ResponseEntity<JsonNode> actual = controller.retrieveDraft(AUTH_TOKEN);
+        final Map<String, Object> expectedObject = mock(Map.class);
+        when(service.getDraft(AUTH_TOKEN)).thenReturn(expectedObject);
+        ResponseEntity<Map<String, Object>> actual = controller.retrieveDraft(AUTH_TOKEN);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expectedObject, actual.getBody());
@@ -83,7 +93,7 @@ public class OrchestrationControllerTest {
     public void givenWorkflowError_whenRetrieveDraft_thenHandleError() throws WorkflowException {
 
         when(service.getDraft(AUTH_TOKEN)).thenThrow(new WorkflowException("Workflow failed"));
-        ResponseEntity<JsonNode> actual = controller.retrieveDraft(AUTH_TOKEN);
+        ResponseEntity<Map<String, Object>> actual = controller.retrieveDraft(AUTH_TOKEN);
     }
 
     @Test
@@ -94,7 +104,7 @@ public class OrchestrationControllerTest {
         ResponseEntity<Map<String, Object>> response = controller.saveDraft(AUTH_TOKEN, payload, userEmail, true);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(service).saveDraft(payload, AUTH_TOKEN, userEmail);
+        verify(service).saveDraft(payload, AUTH_TOKEN, userEmail, true);
     }
 
     @Test
@@ -102,7 +112,7 @@ public class OrchestrationControllerTest {
         Map<String, Object> payload =  new HashMap<>();
         final String userEmail = "test@email.com";
         WorkflowException safeDraftError = new WorkflowException("Workflow failed");
-        when(service.saveDraft(payload, AUTH_TOKEN, userEmail)).thenThrow(safeDraftError);
+        when(service.saveDraft(payload, AUTH_TOKEN, userEmail, true)).thenThrow(safeDraftError);
         ResponseEntity<Map<String, Object>> response = controller.saveDraft(AUTH_TOKEN, payload, userEmail, true);
 
         assertEquals(safeDraftError, response.getBody().get(SAVE_DRAFT_ERROR_KEY));

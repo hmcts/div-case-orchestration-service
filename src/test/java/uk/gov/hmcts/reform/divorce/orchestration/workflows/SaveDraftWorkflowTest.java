@@ -42,26 +42,30 @@ public class SaveDraftWorkflowTest {
         Map<String, Object> payload = mock(Map.class);
         Map<String, Object> draftSavedPayload = mock(Map.class);
         Map<String, Object> emailNotificationPayload = mock(Map.class);
+        final boolean divorceFormat = true;
 
-        when(saveToDraftStore.execute(Mockito.any(TaskContext.class), eq(payload), eq(AUTH_TOKEN), eq(TEST_USER_EMAIL)))
+        when(saveToDraftStore.execute(Mockito.any(TaskContext.class), eq(payload), eq(AUTH_TOKEN),
+                eq(TEST_USER_EMAIL),eq(divorceFormat)))
                 .thenReturn(draftSavedPayload);
         when(emailNotification.execute(Mockito.any(TaskContext.class), eq(draftSavedPayload),
-                eq(AUTH_TOKEN), eq(TEST_USER_EMAIL))).thenReturn(emailNotificationPayload);
+                eq(AUTH_TOKEN), eq(TEST_USER_EMAIL), eq(divorceFormat))).thenReturn(emailNotificationPayload);
 
-        assertEquals(emailNotificationPayload, target.run(payload, AUTH_TOKEN, TEST_USER_EMAIL));
+        assertEquals(emailNotificationPayload, target.run(payload, AUTH_TOKEN, TEST_USER_EMAIL, divorceFormat));
 
         verify(saveToDraftStore).execute(Mockito.any(TaskContext.class),
-                eq(payload), eq(AUTH_TOKEN), eq(TEST_USER_EMAIL));
+                eq(payload), eq(AUTH_TOKEN), eq(TEST_USER_EMAIL), eq(divorceFormat));
         verify(emailNotification).execute(Mockito.any(TaskContext.class), eq(draftSavedPayload),
-                eq(AUTH_TOKEN), eq(TEST_USER_EMAIL));
+                eq(AUTH_TOKEN), eq(TEST_USER_EMAIL),eq(divorceFormat));
     }
 
     @Test
     public void givenAError_whenExecuteSaveDraftWorkflow_thenStopExecution() throws WorkflowException {
         final Map<String, Object> payload = mock(Map.class);
         final Map<String, Object> draftSavedPayload = mock(Map.class);
+        final boolean divorceFormat = true;
 
-        when(saveToDraftStore.execute(Mockito.any(TaskContext.class), eq(payload), eq(AUTH_TOKEN), eq(TEST_USER_EMAIL)))
+        when(saveToDraftStore.execute(Mockito.any(TaskContext.class), eq(payload), eq(AUTH_TOKEN),
+                eq(TEST_USER_EMAIL), eq(divorceFormat)))
                 .then(new Answer<Object>() {
                     @Override
                     public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -70,10 +74,10 @@ public class SaveDraftWorkflowTest {
                         return draftSavedPayload;
                     }
                 });
-        target.run(payload, AUTH_TOKEN, TEST_USER_EMAIL);
+        target.run(payload, AUTH_TOKEN, TEST_USER_EMAIL, divorceFormat);
 
         verify(saveToDraftStore).execute(Mockito.any(TaskContext.class), eq(payload),
-                eq(AUTH_TOKEN), eq(TEST_USER_EMAIL));
-        verify(emailNotification, never()).execute(Mockito.any(TaskContext.class), any(), any(), any());
+                eq(AUTH_TOKEN), eq(TEST_USER_EMAIL), eq(divorceFormat));
+        verify(emailNotification, never()).execute(Mockito.any(TaskContext.class), any(), any(), any(),any());
     }
 }

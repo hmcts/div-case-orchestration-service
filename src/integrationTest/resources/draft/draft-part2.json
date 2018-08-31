@@ -1,0 +1,27 @@
+{
+  "jurisdictionPath": [
+    "JurisdictionHabitualResidence",
+    "JurisdictionInterstitial"
+  ],
+  "jurisdictionConnection": [
+    "A",
+    "C"
+  ],
+  "connections": {
+    "A": "The Petitioner and the Respondent are habitually resident in England and Wales",
+    "C": "The Respondent is habitually resident in England and Wales"
+  },
+  "jurisdictionPetitionerResidence": "Yes",
+  "jurisdictionRespondentResidence": "Yes",
+  "jurisdictionConfidentLegal": "Yes",
+  "jurisdictionConnectionFirst": "A",
+  "petitionerContactDetailsConfidential": "keep",
+  "petitionerFirstName": "test",
+  "petitionerLastName": "user",
+  "respondentFirstName": "wife",
+  "respondentLastName": "test",
+  "marriagePetitionerName": "user test",
+  "marriageRespondentName": "wife test",
+  "petitionerNameDifferentToMarriageCertificate": "No",
+  "petitionerPhoneNumber": ""
+}
