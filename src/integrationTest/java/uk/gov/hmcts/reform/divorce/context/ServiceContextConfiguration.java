@@ -28,6 +28,8 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.authorisation.generators.ServiceAuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.divorce.support.ccd.CcdClientSupport;
+import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
+import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
 import uk.gov.hmcts.reform.divorce.util.IdamUtils;
 
 @Lazy
@@ -42,6 +44,11 @@ public class ServiceContextConfiguration {
     @Bean
     public CcdClientSupport getCcdClientSupport() {
         return new CcdClientSupport();
+    }
+
+    @Bean
+    public DraftsSubmissionSupport getDraftSubmissionSupport(){
+        return new DraftsSubmissionSupport();
     }
 
     @Bean("ccdSubmissionTokenGenerator")
@@ -86,6 +93,17 @@ public class ServiceContextConfiguration {
             .decoder(feignDecoder())
             .contract(new SpringMvcContract())
             .target(CoreCaseDataApi.class, coreCaseDataApiUrl);
+    }
+
+    @Bean
+    public CosApiClient getCosApiClient(
+            @Value("${core.orchestration.api.url}") final String cosApiClientUrl) {
+        return Feign.builder()
+                .requestInterceptor(requestInterceptor())
+                .encoder(new JacksonEncoder())
+                .decoder(feignDecoder())
+                .contract(new SpringMvcContract())
+                .target(CosApiClient.class, cosApiClientUrl);
     }
 
     @Bean

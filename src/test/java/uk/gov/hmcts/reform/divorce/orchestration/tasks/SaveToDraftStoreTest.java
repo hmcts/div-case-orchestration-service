@@ -15,6 +15,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SaveToDraftStoreTest {
@@ -30,11 +31,28 @@ public class SaveToDraftStoreTest {
         TaskContext context = mock(TaskContext.class);
         Map<String, Object> payload  = mock(Map.class);
         Map<String, Object> expectedResponse  = mock(Map.class);
+        final boolean divorceFormat = true;
 
-        when(caseMaintenanceClient.saveDraft(payload, AUTH_TOKEN)).thenReturn(expectedResponse);
+        when(caseMaintenanceClient.saveDraft(payload, AUTH_TOKEN, divorceFormat)).thenReturn(expectedResponse);
 
-        Assert.assertEquals(expectedResponse, target.execute(context, payload, AUTH_TOKEN));
+        Assert.assertEquals(expectedResponse, target.execute(context, payload, AUTH_TOKEN, TEST_USER_EMAIL,
+                divorceFormat));
 
-        verify(caseMaintenanceClient).saveDraft(payload, AUTH_TOKEN);
+        verify(caseMaintenanceClient).saveDraft(payload, AUTH_TOKEN, divorceFormat);
+    }
+
+    @Test
+    public void givenUserTokenWithDivorceFormatFalse_whenExecuteSaveDraftTask_thenDraftIsSentToCMS() {
+        TaskContext context = mock(TaskContext.class);
+        Map<String, Object> payload  = mock(Map.class);
+        Map<String, Object> expectedResponse  = mock(Map.class);
+        final boolean divorceFormat = false;
+
+        when(caseMaintenanceClient.saveDraft(payload, AUTH_TOKEN, divorceFormat)).thenReturn(expectedResponse);
+
+        Assert.assertEquals(expectedResponse, target.execute(context, payload, AUTH_TOKEN, TEST_USER_EMAIL,
+                divorceFormat));
+
+        verify(caseMaintenanceClient).saveDraft(payload, AUTH_TOKEN, divorceFormat);
     }
 }

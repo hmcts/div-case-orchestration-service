@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
@@ -33,7 +34,8 @@ public interface CaseMaintenanceClient {
     )
     Map<String, Object> saveDraft(
         @RequestBody Map<String, Object> draft,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
+        @RequestParam(value = "divorceFormat") boolean divorceFormat);
 
     @RequestMapping(
         method = RequestMethod.GET,

@@ -8,15 +8,19 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RetrieveDraftTest {
+    private static final String CASE_DATA_KEY = "case_data";
 
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
@@ -25,12 +29,26 @@ public class RetrieveDraftTest {
     private RetrieveDraft target;
 
     @Test
+    public void givenUserTokenWithoutDraft_whenExecuteRetrieveTask_thenReturnErrorInResponse() {
+        TaskContext context = mock(TaskContext.class);
+        Map<String, Object> payload  = mock(Map.class);
+        Map<String, Object> emptyResponse  = mock(Map.class);
+
+        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(emptyResponse);
+
+        Map<String, Object> response = target.execute(context, payload, AUTH_TOKEN);
+        assertTrue(response.containsKey(VALIDATION_ERROR_KEY));
+    }
+
+    @Test
     public void givenUserToken_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMS() {
         TaskContext context = mock(TaskContext.class);
         Map<String, Object> payload  = mock(Map.class);
         Map<String, Object> expectedResponse  = mock(Map.class);
+        Map<String, Object> clientResponse  = new LinkedHashMap<>();
+        clientResponse.put(CASE_DATA_KEY, expectedResponse);
 
-        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(expectedResponse);
+        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(clientResponse);
 
         assertEquals(expectedResponse,target.execute(context, payload, AUTH_TOKEN));
     }
