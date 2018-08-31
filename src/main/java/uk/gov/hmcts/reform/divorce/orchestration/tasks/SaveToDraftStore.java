@@ -23,6 +23,6 @@ public class SaveToDraftStore implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> draft,
                                        Object... params) {
-        return caseMaintenanceClient.saveDraft(draft, String.valueOf(params[0]));
+        return caseMaintenanceClient.saveDraft(draft, String.valueOf(params[0]), (Boolean)params[2]);
     }
 }

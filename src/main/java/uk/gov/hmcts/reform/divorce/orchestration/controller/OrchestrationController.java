@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -27,6 +26,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Slf4j
 @RestController
-@RequestMapping(consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+@RequestMapping(produces = MediaType.APPLICATION_JSON)
 public class OrchestrationController {
 
     @Autowired
@@ -62,7 +62,7 @@ public class OrchestrationController {
         return ResponseEntity.ok(payLoad);
     }
 
-    @PostMapping(path = "/petition-issued")
+    @PostMapping(path = "/petition-issued", consumes = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles Issue callback from CCD")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Callback was processed successFully or in case of an error message is "
@@ -98,21 +98,20 @@ public class OrchestrationController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "A draft exists. The draft content is in the response body"),
             @ApiResponse(code = 404, message = "Draft does not exist")})
-    public ResponseEntity<JsonNode> retrieveDraft(
+    public ResponseEntity<Map<String, Object>> retrieveDraft(
             @RequestHeader("Authorization") @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
             final String authorizationToken) {
-        Map<String, Object> response = null;
+        Map<String, Object> response;
         try {
             response = orchestrationService.getDraft(authorizationToken);
         } catch (WorkflowException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            log.error("Error retrieving draft" , e);
+            throw new RuntimeException(e);
         }
-        JsonNode draft = (JsonNode) response.get("draft");
-        if (draft == null || response.containsKey( VALIDATION_ERROR_KEY)) {
+        if (response == null  || response.isEmpty() || response.containsKey( VALIDATION_ERROR_KEY)) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(draft);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping(path = "/drafts", consumes = MediaType.APPLICATION_JSON)
@@ -134,9 +133,9 @@ public class OrchestrationController {
                 final Boolean divorceFormat) {
 
         try {
-            payLoad = orchestrationService.saveDraft(payLoad, authorizationToken, notificationEmail);
+            payLoad = orchestrationService.saveDraft(payLoad, authorizationToken, notificationEmail, divorceFormat);
         } catch (WorkflowException e) {
-            log.error(e.getMessage());
+            log.error("Error saving draft", e);
             payLoad.put(SAVE_DRAFT_ERROR_KEY, e);
         }
 
@@ -155,7 +154,7 @@ public class OrchestrationController {
         try {
             response  = orchestrationService.deleteDraft(authorizationToken);
         } catch (WorkflowException e) {
-            log.error(e.getMessage());
+            log.error("Error deleting draft", e);
             response.put(DELETE_ERROR_KEY, e);
         }
 
