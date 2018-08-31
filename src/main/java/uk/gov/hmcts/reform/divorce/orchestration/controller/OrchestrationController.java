@@ -129,14 +129,15 @@ public class OrchestrationController {
             @ApiParam(value = "The email address that will receive the notification that the draft has been saved")
             @Email final String notificationEmail) {
 
+        Map<String, Object> response = null;
         try {
-            payload = orchestrationService.saveDraft(payload, authorizationToken, notificationEmail);
+            response = orchestrationService.saveDraft(payload, authorizationToken, notificationEmail);
         } catch (WorkflowException e) {
             log.error("Error saving draft", e);
-            payload.put(SAVE_DRAFT_ERROR_KEY, e);
+            response.put(SAVE_DRAFT_ERROR_KEY, e);
         }
 
-        return ResponseEntity.ok(payload);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping(path = "/drafts")

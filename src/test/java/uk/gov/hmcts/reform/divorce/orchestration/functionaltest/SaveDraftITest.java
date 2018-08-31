@@ -15,7 +15,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +24,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -35,18 +34,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @PropertySource(value = "classpath:application.yml")
 @AutoConfigureMockMvc
-public class RetrieveDraftITest {
-    private static final String API_URL = "/draft";
-    private static final String CMS_CONTEXT_PATH = "/casemaintenance/version/1/retrieveCase";
+public class SaveDraftITest {
+    private static final String API_URL = "/drafts";
+    private static final String CMS_CONTEXT_PATH = "/casemaintenance/version/1/drafts?divorceFormat=true";
 
     private static final String USER_TOKEN = "Some JWT Token";
-    private static final String CASE_ID = "12345";
 
-    private static final Map<String, Object> CASE_DATA = new HashMap<>();
-    private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
-            .caseData(CASE_DATA)
-            .caseId(CASE_ID)
-            .build();
+    private static final Map<String, String> CASE_DATA = new HashMap<>();
+    private static final Map<String, Object> CASE_DETAILS = new HashMap<>();
+    private static final String EMAIL_CONTEXT_PATH = "https://api.notifications.service.gov.uk";
 
 
     @Autowired
@@ -55,25 +51,33 @@ public class RetrieveDraftITest {
     @ClassRule
     public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
 
+    @ClassRule
+    public static WireMockClassRule emailServiceServer = new WireMockClassRule(9999);
+
+
 
 
 
     @Test
-    public void givenJWTTokenIsNull_whenRetrieveDraft_thenReturnBadRequest()
+    public void givenJWTTokenIsNull_whenSaveDraft_thenReturnBadRequest()
             throws Exception {
-        webClient.perform(get(API_URL)
+        webClient.perform(put(API_URL)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void givenThereIsAConnectionError_whenRetrieveDraft_thenReturnBadGateway()
+    public void givenThereIsAConnectionError_whenSaveDraft_thenReturnBadGateway()
             throws Exception {
         final String errorMessage = "some error message";
 
         stubCmsServerEndpoint(HttpStatus.BAD_GATEWAY, errorMessage);
 
-        webClient.perform(get(API_URL)
+        CASE_DATA.put("deaftProperty1", "value1");
+        CASE_DETAILS.put("case_data", CASE_DATA);
+
+        webClient.perform(put(API_URL)
+                .content(convertObjectToJsonString(CASE_DETAILS))
                 .header(AUTHORIZATION, USER_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadGateway())
@@ -81,40 +85,41 @@ public class RetrieveDraftITest {
     }
 
     @Test
-    public void givenNoDraftInDraftStore_whenRetrieveraft_thenReturnNotFound()
-            throws Exception {
-
-        stubCmsServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DETAILS));
-
-        webClient.perform(get(API_URL)
-                .header(AUTHORIZATION, USER_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string(""));
-    }
-
-    @Test
-    public void givenEverythingWorksAsExpected_whenCmsCalled_thenReturnDraft()
+    public void givenEverythingWorksAsExpected_whenCmsCalled_thenSaveDraft()
             throws Exception {
 
         CASE_DATA.put("deaftProperty1", "value1");
-        CASE_DATA.put("deaftProperty2", "value2");
+        CASE_DETAILS.put("case_data", CASE_DATA);
 
         stubCmsServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DETAILS));
 
-        webClient.perform(get(API_URL)
+        stubEmailServerEndpoint(HttpStatus.OK, "Success");
+
+        webClient.perform(put(API_URL)
+                .content(convertObjectToJsonString(CASE_DETAILS))
                 .header(AUTHORIZATION, USER_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(CASE_DATA)));
+                .andExpect(content().string("{}"));
     }
 
     private void stubCmsServerEndpoint(HttpStatus status, String body)
             throws Exception {
-        cmsServiceServer.stubFor(WireMock.get(CMS_CONTEXT_PATH)
+        cmsServiceServer.stubFor(WireMock.put(CMS_CONTEXT_PATH)
                 .willReturn(aResponse()
                         .withStatus(status.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                         .withBody(body)));
     }
+
+    private void stubEmailServerEndpoint(HttpStatus status, String body)
+            throws Exception {
+        emailServiceServer.stubFor(WireMock.put(EMAIL_CONTEXT_PATH)
+                .willReturn(aResponse()
+                        .withStatus(status.value())
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                        .withBody(body)));
+    }
+
 }
+
