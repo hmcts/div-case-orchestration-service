@@ -21,9 +21,9 @@ public class DraftsSubmissionSupport {
         return cosApiClient.getDraft(userDetails.getAuthToken());
     }
 
-    public void saveDraft(UserDetails userDetails, String fileName, boolean divorceFormat){
+    public void saveDraft(UserDetails userDetails, String fileName){
         JsonNode  draftResource = ResourceLoader.loadJsonToObject(fileName, JsonNode.class);
-        cosApiClient.saveDraft(userDetails.getAuthToken(), draftResource, divorceFormat);
+        cosApiClient.saveDraft(userDetails.getAuthToken(), draftResource, userDetails.getEmailAddress());
     }
 
     public void deleteDraft(UserDetails userDetails){

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -20,7 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,7 +29,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class OrchestrationControllerTest {
 
-    private static final String DRAFT_KEY = "draft";
     private static final String AUTH_TOKEN = "authtoken";
 
     @Mock
@@ -69,9 +66,19 @@ public class OrchestrationControllerTest {
     }
 
     @Test
-    public void givenAnErrorOdDraft_whenRetrieveDraft_thenNotFoundResponseReturned() throws WorkflowException {
+    public void givenAnErrorOnDraft_whenRetrieveDraft_thenErrorResponseReturned() throws WorkflowException {
         final Map<String, Object> draftServiceResponse = new LinkedHashMap<>();
         draftServiceResponse.put(VALIDATION_ERROR_KEY,"Workflow error");
+        when(service.getDraft(AUTH_TOKEN)).thenReturn(draftServiceResponse);
+
+        ResponseEntity<Map<String, Object>> actual = controller.retrieveDraft(AUTH_TOKEN);
+
+        assertEquals(draftServiceResponse, actual.getBody());
+    }
+
+    @Test
+    public void givenAnErrorOdDraft_whenRetrieveDraft_thenNotFoundResponseReturned() throws WorkflowException {
+        final Map<String, Object> draftServiceResponse = new LinkedHashMap<>();
         when(service.getDraft(AUTH_TOKEN)).thenReturn(draftServiceResponse);
 
         ResponseEntity<Map<String, Object>> actual = controller.retrieveDraft(AUTH_TOKEN);
@@ -101,10 +108,10 @@ public class OrchestrationControllerTest {
         Map<String, Object> payload =  mock(Map.class);
         final String userEmail = "test@email.com";
 
-        ResponseEntity<Map<String, Object>> response = controller.saveDraft(AUTH_TOKEN, payload, userEmail, true);
+        ResponseEntity<Map<String, Object>> response = controller.saveDraft(AUTH_TOKEN, payload, userEmail);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(service).saveDraft(payload, AUTH_TOKEN, userEmail, true);
+        verify(service).saveDraft(payload, AUTH_TOKEN, userEmail);
     }
 
     @Test
@@ -112,8 +119,8 @@ public class OrchestrationControllerTest {
         Map<String, Object> payload =  new HashMap<>();
         final String userEmail = "test@email.com";
         WorkflowException safeDraftError = new WorkflowException("Workflow failed");
-        when(service.saveDraft(payload, AUTH_TOKEN, userEmail, true)).thenThrow(safeDraftError);
-        ResponseEntity<Map<String, Object>> response = controller.saveDraft(AUTH_TOKEN, payload, userEmail, true);
+        when(service.saveDraft(payload, AUTH_TOKEN, userEmail)).thenThrow(safeDraftError);
+        ResponseEntity<Map<String, Object>> response = controller.saveDraft(AUTH_TOKEN, payload, userEmail);
 
         assertEquals(safeDraftError, response.getBody().get(SAVE_DRAFT_ERROR_KEY));
     }
