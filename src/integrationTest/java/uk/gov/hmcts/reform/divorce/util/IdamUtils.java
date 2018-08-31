@@ -85,7 +85,11 @@ public class IdamUtils {
                 .post(idamCodeUrl());
 
         if (response.getStatusCode() >= 300) {
-            throw new IllegalStateException("Token generation failed with code: " + response.getStatusCode() + " body: " + response.getBody().prettyPrint());
+            throw new IllegalStateException(
+                    "Token generation failed with code: "
+                    + response.getStatusCode()
+                    + " body: "
+                    + response.getBody().prettyPrint());
         }
 
         response = RestAssured.given()
