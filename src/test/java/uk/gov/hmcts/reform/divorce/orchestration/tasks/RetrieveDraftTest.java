@@ -29,15 +29,14 @@ public class RetrieveDraftTest {
     private RetrieveDraft target;
 
     @Test
-    public void givenUserTokenWithoutDraft_whenExecuteRetrieveTask_thenReturnErrorInResponse() {
+    public void givenUserTokenWithoutDraft_whenExecuteRetrieveTask_thenReturnEmptyResponse() {
         TaskContext context = mock(TaskContext.class);
         Map<String, Object> payload  = mock(Map.class);
         Map<String, Object> emptyResponse  = mock(Map.class);
 
         when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(emptyResponse);
 
-        Map<String, Object> response = target.execute(context, payload, AUTH_TOKEN);
-        assertTrue(response.containsKey(VALIDATION_ERROR_KEY));
+        assertTrue(target.execute(context, payload, AUTH_TOKEN).isEmpty());
     }
 
     @Test

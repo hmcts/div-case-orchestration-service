@@ -33,11 +33,7 @@ public class RetrieveDraft implements Task<Map<String, Object>> {
             return (Map<String, Object>) cmsContent.get(CASE_DATA_KEY);
         } else {
             context.setTaskFailed(true);
-            return new LinkedHashMap<String, Object>() {
-                {
-                    put(VALIDATION_ERROR_KEY, "Draft not found");
-                }
-            };
+            return new LinkedHashMap<>();
         }
 
     }

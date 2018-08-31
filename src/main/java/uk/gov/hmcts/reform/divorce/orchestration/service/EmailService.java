@@ -66,7 +66,8 @@ public class EmailService {
             );
             log.info("Sending email success. Reference ID: {}", emailToSend.getReferenceId());
         } catch (NotificationClientException e) {
-            log.warn("Failed to send email. Reference ID: {}. Reason:", emailToSend.getReferenceId(), e);
+            log.warn("Failed to send email. Reference ID: {}. Reason: {}", emailToSend.getReferenceId(),
+                    e.getMessage(), e);
             response.put(EMAIL_ERROR_KEY, e);
         }
 

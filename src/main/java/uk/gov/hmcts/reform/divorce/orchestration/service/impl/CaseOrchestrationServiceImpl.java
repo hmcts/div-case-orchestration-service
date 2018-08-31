@@ -86,9 +86,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> saveDraft(Map<String, Object> payLoad,
                                          String authToken,
-                                         String notificationEmail,
-                                         boolean divorceFormat) throws WorkflowException {
-        Map<String, Object> response = saveDraftWorkflow.run(payLoad, authToken, notificationEmail, divorceFormat);
+                                         String notificationEmail) throws WorkflowException {
+        Map<String, Object> response = saveDraftWorkflow.run(payLoad, authToken, notificationEmail);
 
         if (saveDraftWorkflow.errors().isEmpty()) {
             log.info("Draft saved");

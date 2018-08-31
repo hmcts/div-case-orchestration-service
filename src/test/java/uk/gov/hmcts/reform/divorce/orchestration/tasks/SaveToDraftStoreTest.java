@@ -31,28 +31,11 @@ public class SaveToDraftStoreTest {
         TaskContext context = mock(TaskContext.class);
         Map<String, Object> payload  = mock(Map.class);
         Map<String, Object> expectedResponse  = mock(Map.class);
-        final boolean divorceFormat = true;
 
-        when(caseMaintenanceClient.saveDraft(payload, AUTH_TOKEN, divorceFormat)).thenReturn(expectedResponse);
+        when(caseMaintenanceClient.saveDraft(payload, AUTH_TOKEN, true)).thenReturn(expectedResponse);
 
-        Assert.assertEquals(expectedResponse, target.execute(context, payload, AUTH_TOKEN, TEST_USER_EMAIL,
-                divorceFormat));
+        Assert.assertEquals(expectedResponse, target.execute(context, payload, AUTH_TOKEN, TEST_USER_EMAIL));
 
-        verify(caseMaintenanceClient).saveDraft(payload, AUTH_TOKEN, divorceFormat);
-    }
-
-    @Test
-    public void givenUserTokenWithDivorceFormatFalse_whenExecuteSaveDraftTask_thenDraftIsSentToCMS() {
-        TaskContext context = mock(TaskContext.class);
-        Map<String, Object> payload  = mock(Map.class);
-        Map<String, Object> expectedResponse  = mock(Map.class);
-        final boolean divorceFormat = false;
-
-        when(caseMaintenanceClient.saveDraft(payload, AUTH_TOKEN, divorceFormat)).thenReturn(expectedResponse);
-
-        Assert.assertEquals(expectedResponse, target.execute(context, payload, AUTH_TOKEN, TEST_USER_EMAIL,
-                divorceFormat));
-
-        verify(caseMaintenanceClient).saveDraft(payload, AUTH_TOKEN, divorceFormat);
+        verify(caseMaintenanceClient).saveDraft(payload, AUTH_TOKEN, true);
     }
 }

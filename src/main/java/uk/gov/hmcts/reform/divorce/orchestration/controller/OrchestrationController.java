@@ -108,7 +108,7 @@ public class OrchestrationController {
             log.error("Error retrieving draft" , e);
             throw new RuntimeException(e);
         }
-        if (response == null  || response.isEmpty() || response.containsKey( VALIDATION_ERROR_KEY)) {
+        if (response.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(response);
@@ -124,22 +124,19 @@ public class OrchestrationController {
                 final String authorizationToken,
             @RequestBody
             @ApiParam(value = "The case draft", required = true)
-            @NotNull Map<String, Object> payLoad,
+            @NotNull Map<String, Object> payload,
             @RequestParam(value = "notificationEmail", required = false)
             @ApiParam(value = "The email address that will receive the notification that the draft has been saved")
-            @Email final String notificationEmail,
-            @RequestParam(value = "divorceFormat", required = false)
-            @ApiParam(value = "Boolean flag indicting the data is in divorce format")
-                final Boolean divorceFormat) {
+            @Email final String notificationEmail) {
 
         try {
-            payLoad = orchestrationService.saveDraft(payLoad, authorizationToken, notificationEmail, divorceFormat);
+            payload = orchestrationService.saveDraft(payload, authorizationToken, notificationEmail);
         } catch (WorkflowException e) {
             log.error("Error saving draft", e);
-            payLoad.put(SAVE_DRAFT_ERROR_KEY, e);
+            payload.put(SAVE_DRAFT_ERROR_KEY, e);
         }
 
-        return ResponseEntity.ok(payLoad);
+        return ResponseEntity.ok(payload);
     }
 
     @DeleteMapping(path = "/drafts")

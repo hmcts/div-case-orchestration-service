@@ -26,8 +26,7 @@ public class SaveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     public Map<String, Object> run(Map<String, Object> payLoad,
                                    String authToken,
-                                   String notificationEmail,
-                                   boolean divorceFormat) throws WorkflowException {
+                                   String notificationEmail) throws WorkflowException {
         return this.execute(
                 new Task[]{
                     saveToDraftStore,
@@ -35,7 +34,6 @@ public class SaveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
                 },
                 payLoad,
                 authToken,
-                notificationEmail,
-                divorceFormat);
+                notificationEmail);
     }
 }

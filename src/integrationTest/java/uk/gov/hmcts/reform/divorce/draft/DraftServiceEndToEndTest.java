@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
+import uk.gov.hmcts.reform.divorce.util.DateUtil;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
 import java.util.Map;
@@ -20,12 +21,15 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
     private static final String SAVE_DRAFT_FILE = "draft/save-draft.json";
     private static final String DRAFT_PART_1_FILE = "draft/draft-part1.json";
+    private static final String DRAFT_PART_1_RESPONSE_FILE = "draft/draft-part1-response.json";
     private static final String DRAFT_PART_2_FILE = "draft/draft-part2.json";
+    private static final String DRAFT_PART_2_RESPONSE_FILE = "draft/draft-part2-response.json";
     private static final String DRAFT__WITH_DIVORCE_FORMAT_FILE = "draft/draft-with-divorce-format.json";
     private static final String NO_VALID_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib" +
             "mFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
-    private static final String PETITIONER_EMAIL_KEY ="D8PetitionerEmail";
+    private static final String PETITIONER_EMAIL_KEY = "D8PetitionerEmail";
+    private static final String CREATED_DATE__KEY = "createdDate";
 
     @Autowired
     private DraftsSubmissionSupport draftsSubmissionSupport;
@@ -61,7 +65,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         try {
             draftsSubmissionSupport.saveDraft(UserDetails.builder()
                     .authToken(NO_VALID_TOKEN)
-                    .build(), SAVE_DRAFT_FILE, false);
+                    .build(), SAVE_DRAFT_FILE);
             fail("Not authenticated error expected");
         } catch (FeignException error) {
             assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
@@ -91,32 +95,17 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     }
 
     @Test
-    public void givenUser_whenSaveDraftWithDivorceFormat_thenCaseIsSavedInDraftStore() {
-        draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE, true);
+    public void givenUser_whenSaveDraft_thenCaseIsSavedInDraftStore() {
+        draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
-        final  Map<String, Object>  expectedDraft = getDraftResourceWithDivordeFormat(user,
-                DRAFT__WITH_DIVORCE_FORMAT_FILE);
-
-        Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user);
-
-        assertEquals(expectedDraft, userDraft);
-    }
-
-    @Test
-    public void givenUser_whenSaveDraftWithoutDivorceFormat_thenCaseIsSavedInDraftStore() {
-        draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE, false);
-        final  Map<String, Object>  expectedDraft = ResourceLoader.loadJsonToObject(SAVE_DRAFT_FILE,  Map.class);
-
-        Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user);
-
-        assertEquals(expectedDraft, userDraft);
+        assertUserDraft(DRAFT__WITH_DIVORCE_FORMAT_FILE, user);
     }
 
     @Test
     public void givenUserWithDraft_whenDeleteDraft_thenDraftIsDeleted() {
-        draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE, false);
+        draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
-        assertUserDraft(SAVE_DRAFT_FILE, user);
+        assertUserDraft(DRAFT__WITH_DIVORCE_FORMAT_FILE, user);
 
         draftsSubmissionSupport.deleteDraft(user);
 
@@ -130,23 +119,23 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
     @Test
     public void givenUserWithDraft_whenUpdateDraft_thenDraftIsUpdated() {
-        draftsSubmissionSupport.saveDraft(user, DRAFT_PART_1_FILE, false);
-        assertUserDraft(DRAFT_PART_1_FILE, user);
+        draftsSubmissionSupport.saveDraft(user, DRAFT_PART_1_FILE);
+        assertUserDraft(DRAFT_PART_1_RESPONSE_FILE, user);
 
-        draftsSubmissionSupport.saveDraft(user, DRAFT_PART_2_FILE, false);
-        assertUserDraft(DRAFT_PART_2_FILE, user);
+        draftsSubmissionSupport.saveDraft(user, DRAFT_PART_2_FILE);
+        assertUserDraft(DRAFT_PART_2_RESPONSE_FILE, user);
     }
 
     private void assertUserDraft(String draftFile, UserDetails user ){
-        final  Map<String, Object>  expectedDraft = ResourceLoader.loadJsonToObject(draftFile,  Map.class);
+        final  Map<String, Object>  expectedDraft = getDraftResponseResource(draftFile,user);
         Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user);
-
         assertEquals(expectedDraft, userDraft);
     }
 
-    private Map<String, Object> getDraftResourceWithDivordeFormat(UserDetails user, String file) {
+    private Map<String, Object> getDraftResponseResource(String file, UserDetails user) {
         Map<String, Object>  expectedDraft = ResourceLoader.loadJsonToObject(file,
                 Map.class);
+        expectedDraft.put(CREATED_DATE__KEY, DateUtil.parseCurrentDate());
         expectedDraft.put(PETITIONER_EMAIL_KEY, user.getEmailAddress());
         return expectedDraft;
     }
