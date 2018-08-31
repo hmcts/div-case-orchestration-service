@@ -26,7 +26,7 @@ public class EmailNotification  implements Task<Map<String, Object>> {
                                        Map<String, Object> draft,
                                        Object... params) {
         String emailAddress = String.valueOf(params[1]);
-        if (StringUtils.isNotBlank(emailAddress)) {
+        if (StringUtils.isNotBlank(emailAddress) && "null" != emailAddress) {
             return emailService.sendSaveDraftConfirmationEmail(emailAddress);
         }
         return new LinkedHashMap<>();
