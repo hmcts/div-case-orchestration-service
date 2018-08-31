@@ -8,6 +8,8 @@ public class TestConstants {
     public static final String TEST_FILENAME = "test.filename";
     public static final String TEST_DOC_TYPE = "test.doc.type";
     public static final String D_8_DOCUMENTS_GENERATED = "D8DocumentsGenerated";
+    public static final String D_8_SCREEN_HAS_MARRIAGE_BROKEN = "D8ScreenHasMarriageBroken";
+    public static final String YES = "YES";
     public static String TEST_TOKEN = "test.token";
     public static String TEST_EVENT_ID = "test.event.id";
     public static String AUTH_TOKEN = "test.auth.token";

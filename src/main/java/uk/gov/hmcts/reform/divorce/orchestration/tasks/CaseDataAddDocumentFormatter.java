@@ -16,11 +16,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
 
 @Component
-public class CaseDataFormatter implements Task<Map<String, Object>> {
+public class CaseDataAddDocumentFormatter implements Task<Map<String, Object>> {
     private final CaseFormatterClient caseFormatterClient;
 
     @Autowired
-    public CaseDataFormatter(CaseFormatterClient caseFormatterClient) {
+    public CaseDataAddDocumentFormatter(CaseFormatterClient caseFormatterClient) {
         this.caseFormatterClient = caseFormatterClient;
     }
 

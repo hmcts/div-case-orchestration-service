@@ -7,10 +7,12 @@ import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
@@ -38,7 +40,7 @@ public class OrchestrationController {
             @ApiResponse(code = 200, message = "Submit was successful and case was created in CCD",
                     response = CcdCallbackResponse.class),
             @ApiResponse(code = 400, message = "Bad Request")
-                                    })
+                            })
     public ResponseEntity<Map<String, Object>> submit(
             @RequestHeader(value = "Authorization") String authorizationToken,
             @RequestBody @ApiParam("Divorce Session") Map<String, Object> payLoad) {
@@ -58,7 +60,7 @@ public class OrchestrationController {
                     + "attached to the case",
                     response = CcdCallbackResponse.class),
             @ApiResponse(code = 400, message = "Bad Request")
-                                    })
+                            })
     public ResponseEntity<CcdCallbackResponse> petitionIssuedCallback(
             @RequestHeader(value = "Authorization") String authorizationToken,
             @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) {
@@ -69,7 +71,7 @@ public class OrchestrationController {
             log.error(e.getMessage());
         }
 
-        if (response.containsKey( VALIDATION_ERROR_KEY)) {
+        if (response.containsKey(VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(
                     CcdCallbackResponse.builder()
                             .errors(getErrors(response))
@@ -80,6 +82,28 @@ public class OrchestrationController {
                 CcdCallbackResponse.builder()
                         .data(response)
                         .build());
+    }
+
+    @GetMapping(path = "/retrieve-aos-case")
+    @ApiOperation(value = "Provides case details to front end")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Case details fetched successfully",
+                    response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request")
+                            })
+    public ResponseEntity<Map<String, Object>> retrieveAosCase(
+            @RequestHeader(value = "Authorization") String authorizationToken,
+            @RequestParam @ApiParam("checkCcd") boolean checkCcd) {
+        Map<String, Object> response = null;
+        try {
+            response =
+                    orchestrationService.ccdRetrieveCaseDetailsHandler(checkCcd,
+                            authorizationToken);
+        } catch (WorkflowException e) {
+            log.error(e.getMessage());
+        }
+
+        return ResponseEntity.ok(response);
     }
 
     private List<String> getErrors(Map<String, Object> response) {

@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataFormatter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataAddDocumentFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.IdamPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
@@ -50,7 +50,7 @@ public class CcdCalllbackWorkflowTest {
     private IdamPinGenerator idamPinGenerator;
 
     @Mock
-    private CaseDataFormatter caseDataFormatter;
+    private CaseDataAddDocumentFormatter caseDataAddDocumentFormatter;
 
     private CreateEvent createEventRequest;
     private Map<String, Object> payload;
@@ -65,7 +65,7 @@ public class CcdCalllbackWorkflowTest {
                         petitionGenerator,
                         idamPinGenerator,
                         respondentLetterGenerator,
-                        caseDataFormatter);
+                        caseDataAddDocumentFormatter);
 
         payload = new HashMap<>();
         payload.put("D8ScreenHasMarriageBroken", "YES");
@@ -96,7 +96,7 @@ public class CcdCalllbackWorkflowTest {
         when(petitionGenerator.execute(context, payload, AUTH_TOKEN, caseDetails)).thenReturn(payload);
         when(idamPinGenerator.execute(context, payload, AUTH_TOKEN, caseDetails)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload, AUTH_TOKEN, caseDetails)).thenReturn(payload);
-        when(caseDataFormatter.execute(context, payload, AUTH_TOKEN, caseDetails)).thenReturn(payload);
+        when(caseDataAddDocumentFormatter.execute(context, payload, AUTH_TOKEN, caseDetails)).thenReturn(payload);
 
         //When
         Map<String, Object> response = ccdCalllbackWorkflow.run(createEventRequest, AUTH_TOKEN);
