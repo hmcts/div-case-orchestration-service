@@ -55,9 +55,6 @@ public class RetrieveDraftITest {
     @ClassRule
     public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
 
-
-
-
     @Test
     public void givenJWTTokenIsNull_whenRetrieveDraft_thenReturnBadRequest()
             throws Exception {
