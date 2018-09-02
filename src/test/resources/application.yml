@@ -29,7 +29,7 @@ uk:
   gov:
     notify:
       api:
-        key: divorce_preprod_live_key-b86e6469-4927-4f50-a029-6ddb523330cf-***REMOVED***
+        key: ***REMOVED***
       email:
         templates: "{SAVE_DRAFT:'9fbb6bdb-1043-440a-b082-5ea71b5c2609', APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c'}"
         template:
