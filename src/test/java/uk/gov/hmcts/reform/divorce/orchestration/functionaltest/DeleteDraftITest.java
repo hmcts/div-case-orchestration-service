@@ -36,16 +36,11 @@ public class DeleteDraftITest {
 
     private static final String USER_TOKEN = "Some JWT Token";
 
-
-
     @Autowired
     private MockMvc webClient;
 
     @ClassRule
     public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
-
-
-
 
     @Test
     public void givenJWTTokenIsNull_whenDeleteDraft_thenReturnBadRequest()

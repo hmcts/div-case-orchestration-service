@@ -54,10 +54,6 @@ public class SaveDraftITest {
     @ClassRule
     public static WireMockClassRule emailServiceServer = new WireMockClassRule(9999);
 
-
-
-
-
     @Test
     public void givenJWTTokenIsNull_whenSaveDraft_thenReturnBadRequest()
             throws Exception {

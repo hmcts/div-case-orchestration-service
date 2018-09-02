@@ -30,10 +30,10 @@ public class EmailServiceTest {
     @Autowired
     private EmailService emailService;
 
-    @Value("${uk.gov.notify.email.templates}")
+    @Value("#{${uk.gov.notify.email.templates}}")
     private Map<String, String> emailTemplates;
 
-    @Value("${uk.gov.notify.email.template.vars}")
+    @Value("#{${uk.gov.notify.email.template.vars}}")
     private Map<String, Map<String, String>> emailTemplateVars;
 
     @Test
