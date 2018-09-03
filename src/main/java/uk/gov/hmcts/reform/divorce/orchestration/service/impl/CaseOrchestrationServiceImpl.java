@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCalllbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
@@ -29,19 +30,22 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     private final DeleteDraftWorkflow deleteDraftWorkflow;
 
+    private final AuthenticateRespondentWorkflow authenticateRespondentWorkflow;
+
     @Autowired
     public CaseOrchestrationServiceImpl(SubmitToCCDWorkflow submitToCCDWorkflow,
                                         CcdCalllbackWorkflow ccdCallbackWorkflow,
                                         RetrieveDraftWorkflow retrieveDraftWorkflow,
                                         SaveDraftWorkflow saveDraftWorkflow,
-                                        DeleteDraftWorkflow deleteDraftWorkflow) {
+                                        DeleteDraftWorkflow deleteDraftWorkflow,
+                                        AuthenticateRespondentWorkflow authenticateRespondentWorkflow) {
         this.submitToCCDWorkflow = submitToCCDWorkflow;
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
         this.retrieveDraftWorkflow = retrieveDraftWorkflow;
         this.saveDraftWorkflow = saveDraftWorkflow;
         this.deleteDraftWorkflow = deleteDraftWorkflow;
+        this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
     }
-
 
     @Override
     public Map<String, Object> submit(Map<String, Object> payLoad,
@@ -67,6 +71,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         } else {
             return ccdCallbackWorkflow.errors();
         }
+    }
+
+    @Override
+    public Boolean authenticateRespondent(String authToken) throws WorkflowException {
+        return authenticateRespondentWorkflow.run(authToken);
     }
 
     @Override

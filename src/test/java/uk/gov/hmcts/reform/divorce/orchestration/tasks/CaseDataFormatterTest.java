@@ -72,6 +72,7 @@ public class CaseDataFormatterTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void executeShouldReturnUpdatedPayloadForValidCase() throws TaskException {
         //given

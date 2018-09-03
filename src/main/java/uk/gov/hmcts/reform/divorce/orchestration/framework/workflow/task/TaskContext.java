@@ -6,10 +6,9 @@ public interface TaskContext {
 
     boolean getStatus();
 
-    void setTransientObject(String key, Object jsonNode);
+    void setTransientObject(String key, Object data);
 
     Object getTransientObject(String key);
-
 }
 
 

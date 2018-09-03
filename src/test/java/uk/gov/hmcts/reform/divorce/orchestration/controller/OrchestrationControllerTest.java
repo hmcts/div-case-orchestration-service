@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DELETE_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SAVE_DRAFT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
@@ -32,10 +33,10 @@ public class OrchestrationControllerTest {
     private static final String AUTH_TOKEN = "authtoken";
 
     @Mock
-    private CaseOrchestrationService service;
+    private CaseOrchestrationService caseOrchestrationService;
 
     @InjectMocks
-    private OrchestrationController controller;
+    private OrchestrationController classUnderTest;
 
     @Test
     public void whenPetitionIssued_thenCallbackWorksAsExpected() throws WorkflowException {
@@ -49,18 +50,62 @@ public class OrchestrationControllerTest {
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder().data(new HashMap<>()).build();
 
-        when(service.ccdCallbackHandler(createEvent, AUTH_TOKEN)).thenReturn(new HashMap<>());
+        when(caseOrchestrationService.ccdCallbackHandler(createEvent, AUTH_TOKEN)).thenReturn(new HashMap<>());
 
-        ResponseEntity<CcdCallbackResponse> actual = controller.petitionIssuedCallback(AUTH_TOKEN, createEvent);
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.petitionIssuedCallback(AUTH_TOKEN, createEvent);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
     }
 
     @Test
+    public void givenWorkflowExceptionThrown_whenAuthenticateRespondent_thenReturnUnauthorized() throws WorkflowException {
+        when(caseOrchestrationService.authenticateRespondent(AUTH_TOKEN)).thenThrow(new WorkflowException(""));
+
+        ResponseEntity<Void> actual = classUnderTest.authenticateRespondent(AUTH_TOKEN);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, actual.getStatusCode());
+
+        verify(caseOrchestrationService).authenticateRespondent(AUTH_TOKEN);
+    }
+
+    @Test
+    public void givenResponseIsNull_whenAuthenticateRespondent_thenReturnUnauthorized() throws WorkflowException {
+        when(caseOrchestrationService.authenticateRespondent(AUTH_TOKEN)).thenReturn(null);
+
+        ResponseEntity<Void> actual = classUnderTest.authenticateRespondent(AUTH_TOKEN);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, actual.getStatusCode());
+
+        verify(caseOrchestrationService).authenticateRespondent(AUTH_TOKEN);
+    }
+
+    @Test
+    public void givenResponseIsFalse_whenAuthenticateRespondent_thenReturnUnauthorized() throws WorkflowException {
+        when(caseOrchestrationService.authenticateRespondent(AUTH_TOKEN)).thenReturn(false);
+
+        ResponseEntity<Void> actual = classUnderTest.authenticateRespondent(AUTH_TOKEN);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, actual.getStatusCode());
+
+        verify(caseOrchestrationService).authenticateRespondent(AUTH_TOKEN);
+    }
+
+    @Test
+    public void givenResponseIsTrue_whenAuthenticateRespondent_thenReturnOK() throws WorkflowException {
+        when(caseOrchestrationService.authenticateRespondent(AUTH_TOKEN)).thenReturn(true);
+
+        ResponseEntity<Void> actual = classUnderTest.authenticateRespondent(AUTH_TOKEN);
+
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+
+        verify(caseOrchestrationService).authenticateRespondent(AUTH_TOKEN);
+    }
+
+    @Test
     public void givenUserWithoutDraft_whenRetrieveDraft_thenNotFoundResponseReturned() throws WorkflowException {
 
-        ResponseEntity<Map<String, Object>> actual = controller.retrieveDraft(AUTH_TOKEN);
+        ResponseEntity<Map<String, Object>> actual = classUnderTest.retrieveDraft(AUTH_TOKEN);
 
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
     }
@@ -69,9 +114,9 @@ public class OrchestrationControllerTest {
     public void givenAnErrorOnDraft_whenRetrieveDraft_thenErrorResponseReturned() throws WorkflowException {
         final Map<String, Object> draftServiceResponse = new LinkedHashMap<>();
         draftServiceResponse.put(VALIDATION_ERROR_KEY,"Workflow error");
-        when(service.getDraft(AUTH_TOKEN)).thenReturn(draftServiceResponse);
+        when(caseOrchestrationService.getDraft(AUTH_TOKEN)).thenReturn(draftServiceResponse);
 
-        ResponseEntity<Map<String, Object>> actual = controller.retrieveDraft(AUTH_TOKEN);
+        ResponseEntity<Map<String, Object>> actual = classUnderTest.retrieveDraft(AUTH_TOKEN);
 
         assertEquals(draftServiceResponse, actual.getBody());
     }
@@ -79,9 +124,9 @@ public class OrchestrationControllerTest {
     @Test
     public void givenAnErrorOdDraft_whenRetrieveDraft_thenNotFoundResponseReturned() throws WorkflowException {
         final Map<String, Object> draftServiceResponse = new LinkedHashMap<>();
-        when(service.getDraft(AUTH_TOKEN)).thenReturn(draftServiceResponse);
+        when(caseOrchestrationService.getDraft(AUTH_TOKEN)).thenReturn(draftServiceResponse);
 
-        ResponseEntity<Map<String, Object>> actual = controller.retrieveDraft(AUTH_TOKEN);
+        ResponseEntity<Map<String, Object>> actual = classUnderTest.retrieveDraft(AUTH_TOKEN);
 
         assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
     }
@@ -89,8 +134,8 @@ public class OrchestrationControllerTest {
     @Test
     public void givenUserSavedDraft_whenRetrieveDraft_thenUserSaveDraftIsReturned() throws WorkflowException {
         final Map<String, Object> expectedObject = mock(Map.class);
-        when(service.getDraft(AUTH_TOKEN)).thenReturn(expectedObject);
-        ResponseEntity<Map<String, Object>> actual = controller.retrieveDraft(AUTH_TOKEN);
+        when(caseOrchestrationService.getDraft(AUTH_TOKEN)).thenReturn(expectedObject);
+        ResponseEntity<Map<String, Object>> actual = classUnderTest.retrieveDraft(AUTH_TOKEN);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expectedObject, actual.getBody());
@@ -99,8 +144,8 @@ public class OrchestrationControllerTest {
     @Test(expected = RuntimeException.class)
     public void givenWorkflowError_whenRetrieveDraft_thenHandleError() throws WorkflowException {
 
-        when(service.getDraft(AUTH_TOKEN)).thenThrow(new WorkflowException("Workflow failed"));
-        ResponseEntity<Map<String, Object>> actual = controller.retrieveDraft(AUTH_TOKEN);
+        when(caseOrchestrationService.getDraft(AUTH_TOKEN)).thenThrow(new WorkflowException("Workflow failed"));
+        ResponseEntity<Map<String, Object>> actual = classUnderTest.retrieveDraft(AUTH_TOKEN);
     }
 
     @Test
@@ -108,10 +153,10 @@ public class OrchestrationControllerTest {
         Map<String, Object> payload =  mock(Map.class);
         final String userEmail = "test@email.com";
 
-        ResponseEntity<Map<String, Object>> response = controller.saveDraft(AUTH_TOKEN, payload, userEmail);
+        ResponseEntity<Map<String, Object>> response = classUnderTest.saveDraft(AUTH_TOKEN, payload, userEmail);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(service).saveDraft(payload, AUTH_TOKEN, userEmail);
+        verify(caseOrchestrationService).saveDraft(payload, AUTH_TOKEN, userEmail);
     }
 
     @Test
@@ -119,8 +164,8 @@ public class OrchestrationControllerTest {
         Map<String, Object> payload =  new HashMap<>();
         final String userEmail = "test@email.com";
         WorkflowException safeDraftError = new WorkflowException("Workflow failed");
-        when(service.saveDraft(payload, AUTH_TOKEN, userEmail)).thenThrow(safeDraftError);
-        ResponseEntity<Map<String, Object>> response = controller.saveDraft(AUTH_TOKEN, payload, userEmail);
+        when(caseOrchestrationService.saveDraft(payload, AUTH_TOKEN, userEmail)).thenThrow(safeDraftError);
+        ResponseEntity<Map<String, Object>> response = classUnderTest.saveDraft(AUTH_TOKEN, payload, userEmail);
 
         assertEquals(safeDraftError, response.getBody().get(SAVE_DRAFT_ERROR_KEY));
     }
@@ -128,21 +173,21 @@ public class OrchestrationControllerTest {
     @Test
     public void whenDeleteDraft_thenDeleteDraftServiceIsCalled() throws WorkflowException {
         Map<String, Object> payload =  mock(Map.class);
-        when(service.deleteDraft(AUTH_TOKEN)).thenReturn(payload);
-        ResponseEntity<Map<String, Object>> response = controller.deleteDraft(AUTH_TOKEN);
+        when(caseOrchestrationService.deleteDraft(AUTH_TOKEN)).thenReturn(payload);
+        ResponseEntity<Map<String, Object>> response = classUnderTest.deleteDraft(AUTH_TOKEN);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(payload, response.getBody());
 
-        verify(service).deleteDraft(AUTH_TOKEN);
+        verify(caseOrchestrationService).deleteDraft(AUTH_TOKEN);
     }
 
     @Test
     public void givenWorkflowError_whenDeleteDraft_thenReturnError() throws WorkflowException {
         WorkflowException deleteDraftError = new WorkflowException("Workflow failed");
 
-        when(service.deleteDraft(AUTH_TOKEN)).thenThrow(deleteDraftError);
-        ResponseEntity<Map<String, Object>> response = controller.deleteDraft(AUTH_TOKEN);
+        when(caseOrchestrationService.deleteDraft(AUTH_TOKEN)).thenThrow(deleteDraftError);
+        ResponseEntity<Map<String, Object>> response = classUnderTest.deleteDraft(AUTH_TOKEN);
 
         assertEquals(deleteDraftError, response.getBody().get(DELETE_ERROR_KEY));
     }

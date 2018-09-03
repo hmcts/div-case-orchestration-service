@@ -14,6 +14,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException;
 
+    Boolean authenticateRespondent(String authToken) throws WorkflowException;
+
     Map<String, Object> getDraft(String authToken) throws WorkflowException;
 
     Map<String,Object> saveDraft(Map<String, Object> payLoad,

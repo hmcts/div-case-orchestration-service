@@ -34,8 +34,8 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     private static final String BASE_CASE_TO_SUBMIT = "draft/basic-case.json";
     private static final String BASE_CASE_RESPONSE = "draft/complete-case-response.json";
 
-    private static final String NO_VALID_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib" +
-            "mFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+    private static final String NO_VALID_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib"
+            + "mFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
     private static final String PETITIONER_EMAIL_KEY = "D8PetitionerEmail";
     private static final String CREATED_DATE__KEY = "createdDate";
@@ -52,13 +52,12 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
     @Before
     public void setUp() {
-        user = getCitizenUserDetails();
+        user = createCitizenUser();
     }
 
     @After
     public void tearDown() {
         draftsSubmissionSupport.deleteDraft(user);
-        cleanUser();
         user = null;
     }
 
