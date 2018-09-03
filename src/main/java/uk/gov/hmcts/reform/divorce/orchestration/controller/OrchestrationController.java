@@ -134,7 +134,7 @@ public class OrchestrationController {
             @ApiResponse(code = 200, message = "Respondent Authenticated"),
             @ApiResponse(code = 401, message = "User Not Authenticated"),
             @ApiResponse(code = 400, message = "Bad Request")
-    })
+            })
     public ResponseEntity<Void> authenticateRespondent(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken) {
         Boolean authenticateRespondent = null;
