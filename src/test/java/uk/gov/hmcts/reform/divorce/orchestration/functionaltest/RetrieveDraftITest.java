@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @AutoConfigureMockMvc
 public class RetrieveDraftITest {
     private static final String API_URL = "/draft";
-    private static final String CMS_CONTEXT_PATH = "/casemaintenance/version/1/retrieveCase";
+    private static final String CMS_CONTEXT_PATH = "/casemaintenance/version/1/retrieveCase?checkCcd=true";
 
     private static final String USER_TOKEN = "Some JWT Token";
     private static final String CASE_ID = "12345";
