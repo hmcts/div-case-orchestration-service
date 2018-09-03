@@ -92,7 +92,7 @@ public class PetitionIssuedITest {
     }
 
     @Test
-    public void givenJWTTokenIsNull_whenTransformToCCDFormat_thenReturnBadRequest()
+    public void givenJWTTokenIsNull_whenPetitionIssued_thenReturnBadRequest()
             throws Exception {
         webClient.perform(post(API_URL)
                 .content(convertObjectToJsonString(CREATE_EVENT))
@@ -102,7 +102,7 @@ public class PetitionIssuedITest {
     }
 
     @Test
-    public void givenThereIsAConnectionError_whenTransformToCCDFormat_thenReturnBadGateway()
+    public void givenThereIsAConnectionError_whenPetitionIssued_thenReturnBadGateway()
             throws Exception {
         final String errorMessage = "some error message";
 
@@ -119,7 +119,7 @@ public class PetitionIssuedITest {
     }
 
     // @Test - TODO
-    public void givenValidationFailed_whenTransformToCCDFormat_thenReturnCaseWithValidationErrors()
+    public void givenValidationFailed_whenPetitionIssued_thenReturnCaseWithValidationErrors()
             throws Exception {
         final List<String> errors = Collections.singletonList("Some Error");
         final List<String> warnings = Collections.singletonList("Some Warning");
@@ -151,7 +151,7 @@ public class PetitionIssuedITest {
     }
 
     // @Test - TODO
-    public void givenEverythingWorksAsExpected_whenTransformToCCDFormat_thenReturnCaseExpectedChanges()
+    public void givenEverythingWorksAsExpected_whenPetitionIssued_thenReturnCaseExpectedChanges()
             throws Exception {
         final ValidationResponse validationResponse = ValidationResponse.builder().build();
 
