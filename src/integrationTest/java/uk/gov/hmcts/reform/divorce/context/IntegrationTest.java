@@ -48,14 +48,14 @@ public abstract class IntegrationTest {
     }
 
     protected UserDetails createCitizenUser() {
-        final String username = "simulate-delivered" + UUID.randomUUID();
+        final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
         final String password = UUID.randomUUID().toString().toUpperCase(Locale.ENGLISH);
 
         return getUserDetails(username, password, CITIZEN_ROLE);
     }
 
     protected UserDetails createCitizenUser(String role) {
-        final String username = "simulate-delivered" + UUID.randomUUID();
+        final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
         final String password = UUID.randomUUID().toString().toUpperCase(Locale.ENGLISH);
 
         return getUserDetails(username, password, role);
