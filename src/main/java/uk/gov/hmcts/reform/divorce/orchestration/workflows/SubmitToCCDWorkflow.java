@@ -40,8 +40,8 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
                 new Task[]{
                     formatDivorceSessionToCaseData,
                     validateCaseData,
-                    deleteDraft,
-                    submitCaseToCCD
+                    submitCaseToCCD,
+                    deleteDraft
                 },
                 payLoad,
                 authToken);

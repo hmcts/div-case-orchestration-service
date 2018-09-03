@@ -1,0 +1,122 @@
+{
+  "D8DerivedRespondentHomeAddress": "80 Landor Road\nLondon\nSW9 9PE",
+  "D8PetitionerNameChangedHow": [
+    "marriageCertificate"
+  ],
+  "D8DerivedPetitionerHomeAddress": "80 Landor Road\nLondon\nSW9 9PE",
+  "D8RespondentHomeAddress": {
+    "County": null,
+    "Country": null,
+    "PostCode": "SW9 9PE",
+    "PostTown": null,
+    "AddressLine1": null,
+    "AddressLine2": null,
+    "AddressLine3": null
+  },
+  "D8ScreenHasRespondentAddress": "YES",
+  "D8DivorceCostsClaim": "YES",
+  "D8ScreenHasMarriageCert": "YES",
+  "D8PetitionerHomeAddress": {
+    "County": null,
+    "Country": null,
+    "PostCode": "SW9 9PE",
+    "PostTown": null,
+    "AddressLine1": null,
+    "AddressLine2": null,
+    "AddressLine3": null
+  },
+  "D8DivorceClaimFrom": [
+    "respondent"
+  ],
+  "D8ScreenHasMarriageBroken": "YES",
+  "D8InferredRespondentGender": "male",
+  "D8ReasonForDivorceEnableAdultery": "YES",
+  "D8ReasonForDivorceShowAdultery": "YES",
+  "D8DerivedStatementOfCase": "My wife is having an affair this week.",
+  "D8LivingArrangementsLiveTogether": "YES",
+  "D8ReasonForDivorceHasMarriage": "YES",
+  "D8JurisdictionConfidentLegal": "YES",
+  "D8RespondentCorrespondenceUseHomeAddress": "No",
+  "D8FinancialOrderFor": [
+    "petitioner",
+    "children"
+  ],
+  "D8Connections": {
+    "A": "The Petitioner and the Respondent are habitually resident in England and Wales",
+    "B": null,
+    "C": "The Respondent is habitually resident in England and Wales",
+    "D": null,
+    "E": null,
+    "F": null,
+    "G": null
+  },
+  "D8PetitionerCorrespondenceAddress": {
+    "County": null,
+    "Country": null,
+    "PostCode": "SW9 9PE",
+    "PostTown": null,
+    "AddressLine1": null,
+    "AddressLine2": null,
+    "AddressLine3": null
+  },
+  "D8RespondentLastName": "Jamed",
+  "D8PetitionerNameDifferentToMarriageCert": "YES",
+  "D8JurisdictionConnection": [
+    "A",
+    "C"
+  ],
+  "D8LegalProceedingsRelated": [
+    "children"
+  ],
+  "D8LegalProceedingsDetails": "The legal proceeding details",
+  "D8PetitionerLastName": "Smith",
+  "D8ReasonForDivorceAdulteryIsNamed": "NO",
+  "D8PetitionerPhoneNumber": "01234567890",
+  "D8ClaimsCostsAppliedForFees": "YES",
+  "D8ReasonForDivorceShowTwoYearsSeparation": "YES",
+  "D8StatementOfTruth": "YES",
+  "D8PetitionerCorrespondenceUseHomeAddress": "YES",
+  "D8DerivedRespondentCurrentName": "Jane Jamed",
+  "D8ReasonForDivorceLimitReasons": "NO",
+  "D8HelpWithFeesAppliedForFees": "YES",
+  "D8PetitionerEmail": "e426741d-9c3b-40b9-9a63-7fe4a5255b37@simulate-delivered.com",
+  "D8ReasonForDivorceBehaviourDetails": "My wife is having an affair this week.",
+  "D8HelpWithFeesReferenceNumber": "HWF-123-456",
+  "D8ReasonForDivorceClaiming5YearSeparatio": "NO",
+  "D8ReasonForDivorceShowDesertion": "YES",
+  "D8DerivedRespondentCorrespondenceAddr": "80 Landor Road\nLondon\nSW9 9PE",
+  "D8MarriagePetitionerName": "John Doe",
+  "D8Cohort": "onlineSubmissionPrivateBeta",
+  "D8MarriageIsSameSexCouple": "NO",
+  "D8FinancialOrder": "YES",
+  "D8ReasonForDivorceShowFiveYearsSeparatio": "YES",
+  "D8MarriageDate": "2001-02-02",
+  "D8HelpWithFeesNeedHelp": "YES",
+  "D8JurisdictionRespondentResidence": "YES",
+  "D8DivorceWho": "husband",
+  "D8MarriageCanDivorce": "YES",
+  "D8RespondentFirstName": "Jane",
+  "D8ReasonForDivorceShowUnreasonableBehavi": "YES",
+  "D8DocumentsUploaded": [],
+  "D8DerivedPetitionerCorrespondenceAddr": "80 Landor Road\nLondon\nSW9 9PE",
+  "D8JurisdictionPetitionerResidence": "YES",
+  "D8ReasonForDivorceClaimingAdultery": "NO",
+  "D8MarriedInUk": "YES",
+  "D8PetitionerFirstName": "John",
+  "D8MarriageRespondentName": "Jenny Benny",
+  "D8PetitionerContactDetailsConfidential": "share",
+  "D8LegalProceedings": "YES",
+  "createdDate": "2018-09-03",
+  "D8RespondentCorrespondenceAddress": {
+    "County": null,
+    "Country": null,
+    "PostCode": "SW9 9PE",
+    "PostTown": null,
+    "AddressLine1": null,
+    "AddressLine2": null,
+    "AddressLine3": null
+  },
+  "D8ReasonForDivorce": "unreasonable-behaviour",
+  "D8DerivedPetitionerCurrentFullName": "John Smith",
+  "D8InferredPetitionerGender": "female"
+}

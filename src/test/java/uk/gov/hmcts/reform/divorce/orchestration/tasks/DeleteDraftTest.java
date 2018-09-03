@@ -28,11 +28,8 @@ public class DeleteDraftTest {
     public void givenUserToken_whenExecuteDeleteDraftTask_thenDeleteDraftRequestIsSentToCMS() {
         TaskContext context = mock(TaskContext.class);
         Map<String, Object> payload  = mock(Map.class);
-        Map<String, Object> expectedResponse  = mock(Map.class);
 
-        when(caseMaintenanceClient.deleteDraft(AUTH_TOKEN)).thenReturn(expectedResponse);
-
-        Assert.assertEquals(expectedResponse, target.execute(context, payload, AUTH_TOKEN));
+        Assert.assertEquals(payload, target.execute(context, payload, AUTH_TOKEN));
 
         verify(caseMaintenanceClient).deleteDraft(AUTH_TOKEN);
     }
