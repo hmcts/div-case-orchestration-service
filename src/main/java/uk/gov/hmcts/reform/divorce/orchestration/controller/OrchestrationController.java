@@ -94,8 +94,7 @@ public class OrchestrationController {
     @PostMapping(path = "/authenticate-respondent")
     @ApiOperation(value = "Authenticates the respondent")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Respondent Authenticated",
-            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 200, message = "Respondent Authenticated"),
         @ApiResponse(code = 401, message = "User Not Authenticated"),
         @ApiResponse(code = 400, message = "Bad Request")
         })
