@@ -28,7 +28,7 @@ public class RetrieveDraft implements Task<Map<String, Object>> {
                                        Map<String, Object> noPayLoad,
                                        Object... params) {
 
-        Map<String, Object> cmsContent = caseMaintenanceClient.retrievePetition(String.valueOf(params[0]));
+        Map<String, Object> cmsContent = caseMaintenanceClient.retrievePetition(String.valueOf(params[0]), true);
         if (cmsContent != null && cmsContent.containsKey(CASE_DATA_KEY)) {
             return (Map<String, Object>) cmsContent.get(CASE_DATA_KEY);
         } else {
