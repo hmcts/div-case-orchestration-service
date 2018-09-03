@@ -76,7 +76,7 @@ public class DeleteDraftITest {
                 .header(AUTHORIZATION, USER_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string(""));
+                .andExpect(content().string("{}"));
     }
 
     private void stubCmsServerEndpoint(HttpStatus status, String body)
