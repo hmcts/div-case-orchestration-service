@@ -26,7 +26,7 @@ public class SubmitCaseToCCDIntegrationTest extends IntegrationTest {
 
     @Test
     public void givenDivorceSession_whenSubmitIsCalled_caseIdIsReturned() throws Exception {
-        Response submissionResponse = submitCase(getCitizenUserDetails().getAuthToken(), "basic-divorce-session.json");
+        Response submissionResponse = submitCase(createCitizenUser().getAuthToken(), "basic-divorce-session.json");
 
         assertEquals(HttpStatus.OK.value(), submissionResponse.getStatusCode());
         assertNotEquals("0", submissionResponse.path(CASE_ID_KEY));

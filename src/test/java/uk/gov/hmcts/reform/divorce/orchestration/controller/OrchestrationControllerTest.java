@@ -153,7 +153,8 @@ public class OrchestrationControllerTest {
                 .status(SUCCESS_STATUS)
                 .build();
 
-        when(caseOrchestrationService.update(caseData, AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID)).thenReturn(submissionData);
+        when(caseOrchestrationService.update(caseData, AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID))
+                .thenReturn(submissionData);
 
         ResponseEntity<CaseResponse> response = classUnderTest
                 .update(AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID, caseData);

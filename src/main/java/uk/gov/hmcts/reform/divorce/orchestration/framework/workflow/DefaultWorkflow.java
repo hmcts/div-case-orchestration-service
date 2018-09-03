@@ -14,8 +14,6 @@ public class DefaultWorkflow<T> implements Workflow<T> {
 
     @Override
     public T execute(Task[] tasks, T payload, Pair... pairs) throws WorkflowException {
-        context = new DefaultTaskContext();
-
         for (Pair pair : pairs) {
             context.setTransientObject(pair.getKey().toString(), pair.getValue());
         }

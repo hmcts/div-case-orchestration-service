@@ -34,10 +34,10 @@ public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
     public void givenDivorceSession_whenUpdateIsCalled_caseIdIsReturned() throws Exception {
         String caseId = ccdClientSupport.submitCase(
                 ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "submit-case-data.json", Map.class),
-                getCitizenUserDetails()
+                createCitizenUser()
         ).getId().toString();
 
-        Response updateResponse = updateCase(getCitizenUserDetails().getAuthToken(), caseId, "payments-update.json");
+        Response updateResponse = updateCase(createCitizenUser().getAuthToken(), caseId, "payments-update.json");
 
         assertEquals(HttpStatus.OK.value(), updateResponse.getStatusCode());
         assertNotEquals("0", updateResponse.path(CASE_ID_KEY));
