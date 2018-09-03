@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.AuthenticateUserResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
@@ -21,8 +20,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @FeignClient(name = "idam-api", url = "${idam.api.url}")
 public interface IdamClient {
+
     @RequestMapping(method = RequestMethod.POST, value = "/pin")
-    @ResponseBody
     Pin createPin(@RequestBody PinRequest request,
                   @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation);
 
