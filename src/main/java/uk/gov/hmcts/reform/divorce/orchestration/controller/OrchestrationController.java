@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.Validat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,6 +135,7 @@ public class OrchestrationController {
             response = orchestrationService.saveDraft(payload, authorizationToken, notificationEmail);
         } catch (WorkflowException e) {
             log.error("Error saving draft", e);
+            response = new HashMap<>();
             response.put(SAVE_DRAFT_ERROR_KEY, e);
         }
 
