@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
+import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.ccd.CcdClientSupport;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
@@ -32,12 +33,13 @@ public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
 
     @Test
     public void givenDivorceSession_whenUpdateIsCalled_caseIdIsReturned() throws Exception {
+        UserDetails citizenUser = createCitizenUser();
         String caseId = ccdClientSupport.submitCase(
                 ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "submit-case-data.json", Map.class),
-                createCitizenUser()
+                citizenUser
         ).getId().toString();
 
-        Response updateResponse = updateCase(createCitizenUser().getAuthToken(), caseId, "payments-update.json");
+        Response updateResponse = updateCase(citizenUser.getAuthToken(), caseId, "payments-update.json");
 
         assertEquals(HttpStatus.OK.value(), updateResponse.getStatusCode());
         assertNotEquals("0", updateResponse.path(CASE_ID_KEY));
