@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCalllbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public class CaseOrchestrationServiceImplTest {
     private SubmitToCCDWorkflow submitToCCDWorkflow;
 
     @Mock
-    private CcdCalllbackWorkflow ccdCallbackWorkflow;
+    private CcdCallbackWorkflow ccdCallbackWorkflow;
 
     private CaseOrchestrationServiceImpl service;
 

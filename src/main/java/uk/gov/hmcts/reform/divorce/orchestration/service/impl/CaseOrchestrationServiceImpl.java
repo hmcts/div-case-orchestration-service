@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCalllbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 
 import java.util.Map;
@@ -18,11 +18,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SubmitToCCDWorkflow submitToCCDWorkflow;
 
-    private final CcdCalllbackWorkflow ccdCallbackWorkflow;
+    private final CcdCallbackWorkflow ccdCallbackWorkflow;
 
     @Autowired
     public CaseOrchestrationServiceImpl(SubmitToCCDWorkflow submitToCCDWorkflow,
-                                        CcdCalllbackWorkflow ccdCallbackWorkflow) {
+                                        CcdCallbackWorkflow ccdCallbackWorkflow) {
         this.submitToCCDWorkflow = submitToCCDWorkflow;
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
     }
