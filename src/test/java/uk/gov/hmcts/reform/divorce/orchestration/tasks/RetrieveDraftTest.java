@@ -34,7 +34,7 @@ public class RetrieveDraftTest {
         Map<String, Object> payload  = mock(Map.class);
         Map<String, Object> emptyResponse  = mock(Map.class);
 
-        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(emptyResponse);
+        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, true)).thenReturn(emptyResponse);
 
         assertTrue(target.execute(context, payload, AUTH_TOKEN).isEmpty());
     }
@@ -47,7 +47,7 @@ public class RetrieveDraftTest {
         Map<String, Object> clientResponse  = new LinkedHashMap<>();
         clientResponse.put(CASE_DATA_KEY, expectedResponse);
 
-        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(clientResponse);
+        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, true)).thenReturn(clientResponse);
 
         assertEquals(expectedResponse,target.execute(context, payload, AUTH_TOKEN));
     }

@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
@@ -130,7 +129,7 @@ public class OrchestrationController {
             @ApiParam(value = "The email address that will receive the notification that the draft has been saved")
             @Email final String notificationEmail) {
 
-        Map<String, Object> response = null;
+        Map<String, Object> response = new LinkedHashMap<>();
         try {
             response = orchestrationService.saveDraft(payload, authorizationToken, notificationEmail);
         } catch (WorkflowException e) {
@@ -150,11 +149,12 @@ public class OrchestrationController {
                                             @ApiParam(value = "JWT authorisation token issued by IDAM",
                                                     required = true) final String authorizationToken) {
 
-        Map<String, Object> response = new LinkedHashMap<>();
+        Map<String, Object> response;
         try {
             response  = orchestrationService.deleteDraft(authorizationToken);
         } catch (WorkflowException e) {
             log.error("Error deleting draft", e);
+            response = new LinkedHashMap<>();
             response.put(DELETE_ERROR_KEY, e);
         }
 

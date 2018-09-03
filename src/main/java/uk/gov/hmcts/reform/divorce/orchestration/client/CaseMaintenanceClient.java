@@ -19,13 +19,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public interface CaseMaintenanceClient {
 
     @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/casemaintenance/version/1/submit",
-        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+            method = RequestMethod.POST,
+            value = "/casemaintenance/version/1/submit",
+            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> submitCase(
-        @RequestBody Map<String, Object> submitCase,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
+            @RequestBody Map<String, Object> submitCase,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
 
     @RequestMapping(
             method = RequestMethod.PUT,
@@ -33,21 +33,29 @@ public interface CaseMaintenanceClient {
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> saveDraft(
-        @RequestBody Map<String, Object> draft,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
-        @RequestParam(value = "divorceFormat") boolean divorceFormat);
+            @RequestBody Map<String, Object> draft,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
+            @RequestParam(value = "divorceFormat") boolean divorceFormat);
 
     @RequestMapping(
-        method = RequestMethod.GET,
-        value = "/casemaintenance/version/1/retrieveCase"
+            method = RequestMethod.GET,
+            value = "/casemaintenance/version/1/retrieveCase"
     )
     Map<String, Object> retrievePetition(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
+            @RequestParam(value = "checkCcd") boolean checkCcd);
 
     @RequestMapping(
             method = RequestMethod.DELETE,
             value = "/casemaintenance/version/1/drafts"
     )
     Map<String, Object> deleteDraft(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
+
+    @RequestMapping(
+            method = RequestMethod.GET,
+            value = "/casemaintenance/version/1/drafts"
+    )
+    Map<String, Object> getDrafts(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
 }

@@ -23,6 +23,7 @@ public class DeleteDraft implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> noPayLoad,
                                        Object... params) {
-        return caseMaintenanceClient.deleteDraft(String.valueOf(params[0]));
+        caseMaintenanceClient.deleteDraft(String.valueOf(params[0]));
+        return noPayLoad;
     }
 }
