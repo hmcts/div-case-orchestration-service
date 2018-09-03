@@ -36,7 +36,7 @@ uk:
           vars: "{SAVE_DRAFT: {divorceUrl: 'https://apply-divorce.service.gov.uk'}}"
 idam:
   api:
-    url: ${IDAM_API_URL:http://localhost:4502}
+    url: ${IDAM_API_URL:http://localhost:4503}
     redirect-url: ${IDAM_API_REDIRECT_URL:http://localhost:8080/authenticated}
     port: 4503
     health:
