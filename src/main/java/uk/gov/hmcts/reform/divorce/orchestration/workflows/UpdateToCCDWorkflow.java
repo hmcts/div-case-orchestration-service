@@ -18,7 +18,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
-@Scope("prototype")
 public class UpdateToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
