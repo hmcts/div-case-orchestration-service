@@ -115,7 +115,7 @@ public class ServiceContextConfiguration {
 
     @Bean
     public CosApiClient getCosApiClient(
-            @Value("${core.orchestration.api.url}") final String cosApiClientUrl) {
+            @Value("${case.orchestration.service.base.uri}") final String cosApiClientUrl) {
         return Feign.builder()
                 .requestInterceptor(requestInterceptor())
                 .encoder(new JacksonEncoder())

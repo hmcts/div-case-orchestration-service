@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.draft;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import feign.FeignException;
 import org.junit.After;
 import org.junit.Before;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.hmcts.reform.divorce.support.cms.CmsClientSupport;
 import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
 import uk.gov.hmcts.reform.divorce.util.DateUtil;
