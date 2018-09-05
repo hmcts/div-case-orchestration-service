@@ -5,8 +5,17 @@
         <BuiltIn enabled="true">
             <HTTP enabled="true"/>
         </BuiltIn>
-        <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.PetitionIssuedCallBackServiceImpl">
-            <Method name="issuePetition" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
+            <Method name="ccdCallbackHandler" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
+            <Method name="authenticateRespondent" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
+            <Method name="submit" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
+            <Method name="update" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
     </Instrumentation>
 </ApplicationInsightsAgent>
