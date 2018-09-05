@@ -26,8 +26,7 @@ public class CaseDataFormatter implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context,
-                                       Map<String, Object> caseData,
-                                       Object... params) throws TaskException {
+                                       Map<String, Object> caseData) throws TaskException {
         GeneratedDocumentInfo miniPetition
                 = (GeneratedDocumentInfo) caseData.get(MINI_PETITION_TEMPLATE_NAME);
         GeneratedDocumentInfo respondentInvitation
