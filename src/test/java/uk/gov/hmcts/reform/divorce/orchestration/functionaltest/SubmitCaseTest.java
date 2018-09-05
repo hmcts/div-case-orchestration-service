@@ -49,7 +49,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class SubmitCaseTest {
 
-    private static final String API_URL = "/submit";
+    private static final String API_URL = "/transformationapi/version/1/submit";
 
     private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
     private static final String VALIDATION_CONTEXT_PATH = "/version/1/validate";
