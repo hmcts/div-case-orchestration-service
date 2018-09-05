@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
@@ -9,6 +10,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SaveToDraftStore;
 
 import java.util.Map;
+
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 
 @Component
 public class SaveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
@@ -33,7 +37,8 @@ public class SaveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
                     emailNotification
                 },
                 payLoad,
-                authToken,
-                notificationEmail);
+                new ImmutablePair(AUTH_TOKEN_JSON_KEY, authToken),
+                new ImmutablePair(NOTIFICATION_EMAIL, notificationEmail)
+        );
     }
 }

@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+
 @Component
 public class DeleteDraft implements Task<Map<String, Object>> {
 
@@ -18,12 +20,9 @@ public class DeleteDraft implements Task<Map<String, Object>> {
         this.caseMaintenanceClient = caseMaintenanceClient;
     }
 
-
     @Override
-    public Map<String, Object> execute(TaskContext context,
-                                       Map<String, Object> noPayLoad,
-                                       Object... params) {
-        caseMaintenanceClient.deleteDraft(String.valueOf(params[0]));
-        return noPayLoad;
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
+        caseMaintenanceClient.deleteDraft(context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString());
+        return payload;
     }
 }

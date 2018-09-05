@@ -18,6 +18,7 @@ public class OrchestrationConstants {
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
     public static final String SUCCESS_STATUS = "success";
     public static final String ERROR_STATUS = "error";
+    public static final String NOTIFICATION_EMAIL = "email_address";
 
     // Document Generator
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";

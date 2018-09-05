@@ -54,7 +54,7 @@ public class SubmitCaseTest {
     private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
     private static final String VALIDATION_CONTEXT_PATH = "/version/1/validate";
     private static final String SUBMISSION_CONTEXT_PATH = "/casemaintenance/version/1/submit";
-
+    private static final String DELETE_DRAFT_CONTEXT_PATH = "/casemaintenance/version/1/drafts";
     private static final String AUTH_TOKEN = "authToken";
 
     private static final Map<String, Object> CASE_DATA = Collections.emptyMap();
@@ -87,6 +87,7 @@ public class SubmitCaseTest {
         stubFormatterServerEndpoint(CASE_DATA, CASE_DATA);
         stubValidationServerEndpoint(HttpStatus.OK, validationRequest, validationResponse);
         stubMaintenanceServerEndpointForSubmit(CASE_DATA, responseData);
+        stubMaintenanceServerEndpointForDeleteDraft();
 
         CaseResponse submissionResonse = CaseResponse.builder()
                 .caseId(TEST_CASE_ID)
@@ -169,5 +170,13 @@ public class SubmitCaseTest {
                         .withStatus(HttpStatus.OK.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                         .withBody(convertObjectToJsonString(response))));
+    }
+
+    private void stubMaintenanceServerEndpointForDeleteDraft() {
+        maintenanceServiceServer.stubFor(WireMock.delete(DELETE_DRAFT_CONTEXT_PATH)
+                .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)));
     }
 }

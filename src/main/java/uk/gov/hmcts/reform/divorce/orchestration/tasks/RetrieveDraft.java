@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
 @Component
@@ -25,10 +26,10 @@ public class RetrieveDraft implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context,
-                                       Map<String, Object> noPayLoad,
-                                       Object... params) {
+                                       Map<String, Object> noPayLoad) {
 
-        Map<String, Object> cmsContent = caseMaintenanceClient.retrievePetition(String.valueOf(params[0]), true);
+        Map<String, Object> cmsContent = caseMaintenanceClient
+                .retrievePetition(context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(), true);
         if (cmsContent != null && cmsContent.containsKey(CASE_DATA_KEY)) {
             return (Map<String, Object>) cmsContent.get(CASE_DATA_KEY);
         } else {
