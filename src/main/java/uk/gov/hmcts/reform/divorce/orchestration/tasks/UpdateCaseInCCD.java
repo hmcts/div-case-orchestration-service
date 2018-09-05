@@ -10,22 +10,22 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
-public class SubmitCaseToCCD implements Task<Map<String, Object>> {
-
-    private final CaseMaintenanceClient caseMaintenanceClient;
+public class UpdateCaseInCCD implements Task<Map<String, Object>> {
 
     @Autowired
-    public SubmitCaseToCCD(CaseMaintenanceClient caseMaintenanceClient) {
-        this.caseMaintenanceClient = caseMaintenanceClient;
-    }
+    private CaseMaintenanceClient caseMaintenanceClient;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return caseMaintenanceClient.submitCase(
+        return caseMaintenanceClient.updateCase(
                 caseData,
-                context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString()
+                (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+                (String) context.getTransientObject(CASE_ID_JSON_KEY),
+                (String) context.getTransientObject(CASE_EVENT_ID_JSON_KEY)
         );
     }
 }

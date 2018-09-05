@@ -7,9 +7,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
+import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Collections;
 import java.util.Map;
@@ -21,13 +22,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SubmitCaseToCCDTest {
+public class FormatDivorceSessionToCaseDataTest {
 
     @Mock
-    CaseMaintenanceClient caseMaintenanceClient;
+    CaseFormatterClient caseFormatterClient;
 
     @InjectMocks
-    SubmitCaseToCCD submitCaseToCCD;
+    FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -36,18 +37,15 @@ public class SubmitCaseToCCDTest {
     public void setup() {
         testData = Collections.emptyMap();
         context = new DefaultTaskContext();
-
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
     }
 
     @Test
-    public void executeShouldCallCaseMaintenanceClientSubmitEndpoint() throws Exception {
-        Map<String, Object> resultData = Collections.singletonMap("Hello", "World");
+    public void executeShouldCallCaseFormatterClientTransformToCCDFormat() throws Exception {
+        when(caseFormatterClient.transformToCCDFormat(testData, AUTH_TOKEN)).thenReturn(testData);
 
-        when(caseMaintenanceClient.submitCase(testData, AUTH_TOKEN)).thenReturn(resultData);
+        assertEquals(testData, formatDivorceSessionToCaseData.execute(context, testData));
 
-        assertEquals(resultData, submitCaseToCCD.execute(context, testData));
-
-        verify(caseMaintenanceClient).submitCase(testData, AUTH_TOKEN);
+        verify(caseFormatterClient).transformToCCDFormat(testData, AUTH_TOKEN);
     }
 }
