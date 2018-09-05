@@ -19,7 +19,7 @@ public interface CaseOrchestrationService {
     /**
      * Update case.
      */
-    Map<String, Object> update(Map<String, Object> divorceSession,
-                               String authToken, String caseId, String eventId) throws WorkflowException;
+    Map<String, Object> update(Map<String, Object> divorceEventSession,
+                               String authToken, String caseId) throws WorkflowException;
 
 }

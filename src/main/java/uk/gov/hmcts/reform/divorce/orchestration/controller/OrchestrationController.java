@@ -72,7 +72,7 @@ public class OrchestrationController {
                         .build());
     }
 
-    @PostMapping(path = "/submit")
+    @PostMapping(path = "/transformationapi/version/1/submit")
     @ApiOperation(value = "Handles submit called from petition frontend")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Submit was successful and case was created in CCD",
@@ -101,7 +101,7 @@ public class OrchestrationController {
                         .build());
     }
 
-    @PostMapping(path = "/updateCase/{caseId}/{eventId}")
+    @PostMapping(path = "/transformationapi/version/1/updateCase/{caseId}")
     @ApiOperation(value = "Handles update called from petition frontend")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
@@ -111,11 +111,10 @@ public class OrchestrationController {
     public ResponseEntity<CaseResponse> update(
             @RequestHeader(value = "Authorization") String authorizationToken,
             @PathVariable String caseId,
-            @PathVariable String eventId,
             @RequestBody @ApiParam("Divorce Session") Map<String, Object> payload) {
         Map<String, Object> response;
         try {
-            response = orchestrationService.update(payload, authorizationToken, caseId, eventId);
+            response = orchestrationService.update(payload, authorizationToken, caseId);
         } catch (WorkflowException exception) {
             log.error(exception.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
