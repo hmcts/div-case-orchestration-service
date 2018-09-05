@@ -101,8 +101,7 @@ public class SaveDraftITest {
                 .andExpect(content().string("{}"));
     }
 
-    private void stubCmsServerEndpoint(HttpStatus status, String body)
-            throws Exception {
+    private void stubCmsServerEndpoint(HttpStatus status, String body) {
         cmsServiceServer.stubFor(WireMock.put(CMS_CONTEXT_PATH)
                 .willReturn(aResponse()
                         .withStatus(status.value())

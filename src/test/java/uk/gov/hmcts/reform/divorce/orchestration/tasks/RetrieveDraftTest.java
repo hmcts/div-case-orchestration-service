@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.LinkedHashMap;
@@ -16,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,18 +32,20 @@ public class RetrieveDraftTest {
 
     @Test
     public void givenUserTokenWithoutDraft_whenExecuteRetrieveTask_thenReturnEmptyResponse() {
-        TaskContext context = mock(TaskContext.class);
+        TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         Map<String, Object> payload  = mock(Map.class);
         Map<String, Object> emptyResponse  = mock(Map.class);
 
         when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, true)).thenReturn(emptyResponse);
 
-        assertTrue(target.execute(context, payload, AUTH_TOKEN).isEmpty());
+        assertTrue(target.execute(context, payload).isEmpty());
     }
 
     @Test
     public void givenUserToken_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMS() {
-        TaskContext context = mock(TaskContext.class);
+        TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         Map<String, Object> payload  = mock(Map.class);
         Map<String, Object> expectedResponse  = mock(Map.class);
         Map<String, Object> clientResponse  = new LinkedHashMap<>();
@@ -49,6 +53,6 @@ public class RetrieveDraftTest {
 
         when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, true)).thenReturn(clientResponse);
 
-        assertEquals(expectedResponse,target.execute(context, payload, AUTH_TOKEN));
+        assertEquals(expectedResponse,target.execute(context, payload));
     }
 }
