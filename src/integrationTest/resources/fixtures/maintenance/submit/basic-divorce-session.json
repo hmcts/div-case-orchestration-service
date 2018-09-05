@@ -1,0 +1,1076 @@
+{
+  "screenHasMarriageBroken":"Yes",
+  "screenHasRespondentAddress":"Yes",
+  "screenHasMarriageCert":"Yes",
+  "helpWithFeesNeedHelp":"Yes",
+  "helpWithFeesAppliedForFees":"Yes",
+  "helpWithFeesReferenceNumber":"HWF-123-456",
+  "divorceWho":"husband",
+  "marriageIsSameSexCouple":"No",
+  "marriageDateDay":2,
+  "marriageDateMonth":2,
+  "marriageDateYear":2001,
+  "marriageDate":"2001-02-02T00:00:00.000Z",
+  "marriageCanDivorce":true,
+  "marriageDateIsFuture":false,
+  "marriageDateMoreThan100":false,
+  "marriedInUk":"Yes",
+  "jurisdictionPath":[
+    "JurisdictionHabitualResidence",
+    "JurisdictionInterstitial"
+  ],
+  "jurisdictionConnection":[
+    "A",
+    "C"
+  ],
+  "connections":{
+    "A":"The Petitioner and the Respondent are habitually resident in England and Wales",
+    "C":"The Respondent is habitually resident in England and Wales"
+  },
+  "jurisdictionPetitionerResidence":"Yes",
+  "jurisdictionRespondentResidence":"Yes",
+  "jurisdictionConfidentLegal":"Yes",
+  "jurisdictionConnectionFirst":"A",
+  "petitionerContactDetailsConfidential":"share",
+  "petitionerFirstName":"John",
+  "petitionerLastName":"Smith",
+  "respondentFirstName":"Jane",
+  "respondentLastName":"Jamed",
+  "marriagePetitionerName":"John Doe",
+  "marriageRespondentName":"Jenny Benny",
+  "petitionerNameDifferentToMarriageCertificate":"Yes",
+  "petitionerNameChangedHow":[
+    "marriageCertificate"
+  ],
+  "petitionerPhoneNumber":"01234567890",
+  "petitionerConsent":"Yes",
+  "petitionerHomeAddress":{
+    "addressType":"postcode",
+    "selectAddressIndex":"0",
+    "postcode":"SW9 9PE",
+    "address":[
+      "80 Landor Road",
+      "London",
+      "SW9 9PE"
+    ],
+    "addressConfirmed":"true",
+    "addresses":[
+      {
+        "uprn":"100021861927",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":80,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"80 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.125313,
+            51.465806
+          ]
+        }
+      },
+      {
+        "uprn":"100023388947",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":82,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"82 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1252266,
+            51.4658046
+          ]
+        }
+      },
+      {
+        "uprn":"100023388948",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":84,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"84 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1251673,
+            51.4658486
+          ]
+        }
+      },
+      {
+        "uprn":"100023388949",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"FLAT A-B",
+        "building_number":86,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"Flat A-B\n86 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1250654,
+            51.465874
+          ]
+        }
+      },
+      {
+        "uprn":"100021861937",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":88,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"88 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1250079,
+            51.465873
+          ]
+        }
+      },
+      {
+        "uprn":"100023388950",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":90,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"90 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1249356,
+            51.4658809
+          ]
+        }
+      },
+      {
+        "uprn":"100023388951",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":92,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"92 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1248773,
+            51.4658979
+          ]
+        }
+      },
+      {
+        "uprn":"100023388952",
+        "organisation_name":"Divorced Org",
+        "department_name":"Unfun Department",
+        "po_box_number":"Box 99",
+        "building_name":"The Splited Builing",
+        "sub_building_name":"Aka Sad House",
+        "building_number":94,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"Near the river",
+        "dependent_locality":"Small Local",
+        "double_dependent_locality":"Dependent Place",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"94 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1248046,
+            51.4659148
+          ]
+        }
+      },
+      {
+        "uprn":"10008791853",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"80A",
+        "sub_building_name":"",
+        "building_number":null,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"80A Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.125313,
+            51.465806
+          ]
+        }
+      }
+    ],
+    "validPostcode":true,
+    "postcodeError":"false",
+    "addressBaseUK":{
+      "addressLine1":"80 LANDOR ROAD",
+      "addressLine2":"",
+      "addressLine3":"",
+      "postCode":"SW9 9PE",
+      "postTown":"LONDON",
+      "county":"",
+      "country":"UK"
+    },
+    "url":"/petitioner-respondent/address",
+    "formattedAddress":{
+      "whereabouts":[
+        "80 Landor Road",
+        "London"
+      ],
+      "postcode":"SW9 9PE"
+    }
+  },
+  "petitionerCorrespondenceUseHomeAddress":"Yes",
+  "petitionerCorrespondenceAddress":{
+    "addressType":"postcode",
+    "selectAddressIndex":"0",
+    "postcode":"SW9 9PE",
+    "address":[
+      "80 Landor Road",
+      "London",
+      "SW9 9PE"
+    ],
+    "addressConfirmed":"true",
+    "addresses":[
+      {
+        "uprn":"100021861927",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":80,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"80 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.125313,
+            51.465806
+          ]
+        }
+      },
+      {
+        "uprn":"100023388947",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":82,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"82 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1252266,
+            51.4658046
+          ]
+        }
+      },
+      {
+        "uprn":"100023388948",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":84,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"84 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1251673,
+            51.4658486
+          ]
+        }
+      },
+      {
+        "uprn":"100023388949",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"FLAT A-B",
+        "building_number":86,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"Flat A-B\n86 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1250654,
+            51.465874
+          ]
+        }
+      },
+      {
+        "uprn":"100021861937",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":88,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"88 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1250079,
+            51.465873
+          ]
+        }
+      },
+      {
+        "uprn":"100023388950",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":90,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"90 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1249356,
+            51.4658809
+          ]
+        }
+      },
+      {
+        "uprn":"100023388951",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":92,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"92 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1248773,
+            51.4658979
+          ]
+        }
+      },
+      {
+        "uprn":"100023388952",
+        "organisation_name":"Divorced Org",
+        "department_name":"Unfun Department",
+        "po_box_number":"Box 99",
+        "building_name":"The Splited Builing",
+        "sub_building_name":"Aka Sad House",
+        "building_number":94,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"Near the river",
+        "dependent_locality":"Small Local",
+        "double_dependent_locality":"Dependent Place",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"94 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1248046,
+            51.4659148
+          ]
+        }
+      },
+      {
+        "uprn":"10008791853",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"80A",
+        "sub_building_name":"",
+        "building_number":null,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"80A Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.125313,
+            51.465806
+          ]
+        }
+      }
+    ],
+    "validPostcode":true,
+    "postcodeError":"false",
+    "addressBaseUK":{
+      "addressLine1":"80 LANDOR ROAD",
+      "addressLine2":"",
+      "addressLine3":"",
+      "postCode":"SW9 9PE",
+      "postTown":"LONDON",
+      "county":"",
+      "country":"UK"
+    },
+    "url":"/petitioner-respondent/address",
+    "formattedAddress":{
+      "whereabouts":[
+        "80 Landor Road",
+        "London"
+      ],
+      "postcode":"SW9 9PE"
+    }
+  },
+  "livingArrangementsLiveTogether":"Yes",
+  "respondentHomeAddress":{
+    "addressType":"postcode",
+    "selectAddressIndex":"0",
+    "postcode":"SW9 9PE",
+    "address":[
+      "80 Landor Road",
+      "London",
+      "SW9 9PE"
+    ],
+    "addressConfirmed":"true",
+    "addresses":[
+      {
+        "uprn":"100021861927",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":80,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"80 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.125313,
+            51.465806
+          ]
+        }
+      },
+      {
+        "uprn":"100023388947",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":82,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"82 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1252266,
+            51.4658046
+          ]
+        }
+      },
+      {
+        "uprn":"100023388948",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":84,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"84 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1251673,
+            51.4658486
+          ]
+        }
+      },
+      {
+        "uprn":"100023388949",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"FLAT A-B",
+        "building_number":86,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"Flat A-B\n86 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1250654,
+            51.465874
+          ]
+        }
+      },
+      {
+        "uprn":"100021861937",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":88,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"88 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1250079,
+            51.465873
+          ]
+        }
+      },
+      {
+        "uprn":"100023388950",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":90,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"90 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1249356,
+            51.4658809
+          ]
+        }
+      },
+      {
+        "uprn":"100023388951",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":92,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"92 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1248773,
+            51.4658979
+          ]
+        }
+      },
+      {
+        "uprn":"100023388952",
+        "organisation_name":"Divorced Org",
+        "department_name":"Unfun Department",
+        "po_box_number":"Box 99",
+        "building_name":"The Splited Builing",
+        "sub_building_name":"Aka Sad House",
+        "building_number":94,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"Near the river",
+        "dependent_locality":"Small Local",
+        "double_dependent_locality":"Dependent Place",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"94 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1248046,
+            51.4659148
+          ]
+        }
+      },
+      {
+        "uprn":"10008791853",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"80A",
+        "sub_building_name":"",
+        "building_number":null,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"80A Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.125313,
+            51.465806
+          ]
+        }
+      }
+    ],
+    "validPostcode":true,
+    "postcodeError":"false",
+    "addressBaseUK":{
+      "addressLine1":"80 LANDOR ROAD",
+      "addressLine2":"",
+      "addressLine3":"",
+      "postCode":"SW9 9PE",
+      "postTown":"LONDON",
+      "county":"",
+      "country":"UK"
+    },
+    "url":"/petitioner-respondent/address",
+    "formattedAddress":{
+      "whereabouts":[
+        "80 Landor Road",
+        "London"
+      ],
+      "postcode":"SW9 9PE"
+    }
+  },
+  "respondentCorrespondenceUseHomeAddress":"No",
+  "respondentCorrespondenceAddress":{
+    "addressType":"postcode",
+    "selectAddressIndex":"0",
+    "postcode":"SW9 9PE",
+    "address":[
+      "80 Landor Road",
+      "London",
+      "SW9 9PE"
+    ],
+    "addressConfirmed":"true",
+    "addresses":[
+      {
+        "uprn":"100021861927",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":80,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"80 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.125313,
+            51.465806
+          ]
+        }
+      },
+      {
+        "uprn":"100023388947",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":82,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"82 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1252266,
+            51.4658046
+          ]
+        }
+      },
+      {
+        "uprn":"100023388948",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":84,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"84 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1251673,
+            51.4658486
+          ]
+        }
+      },
+      {
+        "uprn":"100023388949",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"FLAT A-B",
+        "building_number":86,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"Flat A-B\n86 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1250654,
+            51.465874
+          ]
+        }
+      },
+      {
+        "uprn":"100021861937",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":88,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"88 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1250079,
+            51.465873
+          ]
+        }
+      },
+      {
+        "uprn":"100023388950",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":90,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"90 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1249356,
+            51.4658809
+          ]
+        }
+      },
+      {
+        "uprn":"100023388951",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"",
+        "sub_building_name":"",
+        "building_number":92,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"92 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1248773,
+            51.4658979
+          ]
+        }
+      },
+      {
+        "uprn":"100023388952",
+        "organisation_name":"Divorced Org",
+        "department_name":"Unfun Department",
+        "po_box_number":"Box 99",
+        "building_name":"The Splited Builing",
+        "sub_building_name":"Aka Sad House",
+        "building_number":94,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"Near the river",
+        "dependent_locality":"Small Local",
+        "double_dependent_locality":"Dependent Place",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"94 Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.1248046,
+            51.4659148
+          ]
+        }
+      },
+      {
+        "uprn":"10008791853",
+        "organisation_name":"",
+        "department_name":"",
+        "po_box_number":"",
+        "building_name":"80A",
+        "sub_building_name":"",
+        "building_number":null,
+        "thoroughfare_name":"LANDOR ROAD",
+        "dependent_thoroughfare_name":"",
+        "dependent_locality":"",
+        "double_dependent_locality":"",
+        "post_town":"LONDON",
+        "postcode":"SW9 9PE",
+        "postcode_type":"S",
+        "formatted_address":"80A Landor Road\nLondon\nSW9 9PE",
+        "point":{
+          "type":"Point",
+          "coordinates":[
+            -0.125313,
+            51.465806
+          ]
+        }
+      }
+    ],
+    "validPostcode":true,
+    "postcodeError":"false",
+    "addressBaseUK":{
+      "addressLine1":"80 LANDOR ROAD",
+      "addressLine2":"",
+      "addressLine3":"",
+      "postCode":"SW9 9PE",
+      "postTown":"LONDON",
+      "county":"",
+      "country":"UK"
+    },
+    "url":"/petitioner-respondent/respondent-correspondence-address",
+    "formattedAddress":{
+      "whereabouts":[
+        "80 Landor Road",
+        "London"
+      ],
+      "postcode":"SW9 9PE"
+    }
+  },
+  "reasonForDivorce":"unreasonable-behaviour",
+  "reasonForDivorceHasMarriageDate":true,
+  "reasonForDivorceShowAdultery":true,
+  "reasonForDivorceShowUnreasonableBehaviour":true,
+  "reasonForDivorceShowTwoYearsSeparation":true,
+  "reasonForDivorceShowFiveYearsSeparation":true,
+  "reasonForDivorceShowDesertion":true,
+  "reasonForDivorceLimitReasons":false,
+  "reasonForDivorceEnableAdultery":true,
+  "reasonForDivorceBehaviourDetails":[
+    "My wife is having an affair this week."
+  ],
+  "legalProceedings":"Yes",
+  "legalProceedingsRelated":[
+    "children"
+  ],
+  "legalProceedingsDetails":"The legal proceeding details",
+  "financialOrder":"Yes",
+  "financialOrderFor":[
+    "petitioner",
+    "children"
+  ],
+  "claimsCosts":"Yes",
+  "reasonForDivorceAdulteryIsNamed":"No",
+  "claimsCostsFrom":[
+    "respondent"
+  ],
+  "claimsCostsAppliedForFees":true,
+  "reasonForDivorceClaiming5YearSeparation":false,
+  "reasonForDivorceClaimingAdultery":false,
+  "marriageCertificateFiles":[
+
+  ],
+  "confirmPrayer":"Yes"
+}

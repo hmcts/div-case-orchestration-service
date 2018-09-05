@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow;
 
-import lombok.Data;
+import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -9,17 +9,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-@Data
 public class DefaultWorkflow<T> implements Workflow<T> {
     private DefaultTaskContext context = new DefaultTaskContext();
 
-    @SuppressWarnings("unchecked")
     @Override
-    public T execute(Task[] tasks, T payLoad, Object... params) throws WorkflowException {
+    public T execute(Task[] tasks, T payload, Pair... pairs) throws WorkflowException {
+        for (Pair pair : pairs) {
+            context.setTransientObject(pair.getKey().toString(), pair.getValue());
+        }
+
         try {
             for (Task<T> task: tasks) {
-                payLoad = task.execute(context, payLoad, params);
-                if (context.getStatus()) { 
+                payload = task.execute(context, payload);
+                if (context.getStatus()) {
                     break;
                 }
             }
@@ -27,7 +29,7 @@ public class DefaultWorkflow<T> implements Workflow<T> {
             throw new WorkflowException(e.getMessage());
         }
 
-        return payLoad;
+        return payload;
     }
 
     @Override
@@ -41,6 +43,7 @@ public class DefaultWorkflow<T> implements Workflow<T> {
                 errors.put(key, entry.getValue());
             }
         }
+
         return errors;
     }
 }

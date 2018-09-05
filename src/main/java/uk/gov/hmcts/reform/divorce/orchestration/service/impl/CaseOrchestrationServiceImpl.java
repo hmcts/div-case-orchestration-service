@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
 import java.util.Map;
 
@@ -20,7 +21,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 @Service
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
-    private final SubmitToCCDWorkflow submitToCCDWorkflow;
 
     private final CcdCalllbackWorkflow ccdCallbackWorkflow;
 
@@ -31,33 +31,24 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final DeleteDraftWorkflow deleteDraftWorkflow;
 
     private final AuthenticateRespondentWorkflow authenticateRespondentWorkflow;
+    private final SubmitToCCDWorkflow submitToCCDWorkflow;
+    private final UpdateToCCDWorkflow updateToCCDWorkflow;
 
     @Autowired
-    public CaseOrchestrationServiceImpl(SubmitToCCDWorkflow submitToCCDWorkflow,
-                                        CcdCalllbackWorkflow ccdCallbackWorkflow,
+    public CaseOrchestrationServiceImpl(CcdCalllbackWorkflow ccdCallbackWorkflow,
+                                        AuthenticateRespondentWorkflow authenticateRespondentWorkflow,
+                                        SubmitToCCDWorkflow submitToCCDWorkflow,
+                                        UpdateToCCDWorkflow updateToCCDWorkflow,
                                         RetrieveDraftWorkflow retrieveDraftWorkflow,
                                         SaveDraftWorkflow saveDraftWorkflow,
-                                        DeleteDraftWorkflow deleteDraftWorkflow,
-                                        AuthenticateRespondentWorkflow authenticateRespondentWorkflow) {
-        this.submitToCCDWorkflow = submitToCCDWorkflow;
+                                        DeleteDraftWorkflow deleteDraftWorkflow) {
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
+        this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
+        this.submitToCCDWorkflow = submitToCCDWorkflow;
+        this.updateToCCDWorkflow = updateToCCDWorkflow;
         this.retrieveDraftWorkflow = retrieveDraftWorkflow;
         this.saveDraftWorkflow = saveDraftWorkflow;
         this.deleteDraftWorkflow = deleteDraftWorkflow;
-        this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
-    }
-
-    @Override
-    public Map<String, Object> submit(Map<String, Object> payLoad,
-                                      String authToken) throws WorkflowException {
-        payLoad = submitToCCDWorkflow.run(payLoad, authToken);
-
-        if (submitToCCDWorkflow.errors().isEmpty()) {
-            log.info("Case ID is: {}", payLoad.get(ID));
-            return payLoad;
-        } else {
-            return submitToCCDWorkflow.errors();
-        }
     }
 
     @Override
@@ -76,6 +67,29 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Boolean authenticateRespondent(String authToken) throws WorkflowException {
         return authenticateRespondentWorkflow.run(authToken);
+    }
+
+    @Override
+    public Map<String, Object> submit(Map<String, Object> divorceSession, String authToken) throws WorkflowException {
+        Map<String, Object> payload = submitToCCDWorkflow.run(divorceSession, authToken);
+
+        if (submitToCCDWorkflow.errors().isEmpty()) {
+            log.info("Case ID is: {}", payload.get(ID));
+            return payload;
+        } else {
+            return submitToCCDWorkflow.errors();
+        }
+    }
+
+    @Override
+    public Map<String, Object> update(Map<String, Object> divorceSession,
+                                      String authToken,
+                                      String caseId,
+                                      String eventId) throws WorkflowException {
+        Map<String, Object> payload = updateToCCDWorkflow.run(divorceSession, authToken, caseId, eventId);
+
+        log.info("Case ID is: {}", payload.get(ID));
+        return payload;
     }
 
     @Override

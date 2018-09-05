@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -16,13 +17,15 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthenticateRespondentUTest {
-    private static final TaskContext TASK_CONTEXT = new DefaultTaskContext();
     private static final String AUTH_TOKEN = "some token";
     private static final String BEARER_AUTH_TOKEN = "Bearer some token";
     private static Boolean PAYLOAD = false;
+
+    private TaskContext context = new DefaultTaskContext();
 
     @Mock
     private IdamClient idamClient;
@@ -30,18 +33,23 @@ public class AuthenticateRespondentUTest {
     @InjectMocks
     private AuthenticateRespondent classUnderTest;
 
+    @Before
+    public void setup() {
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+    }
+
     @Test
     public void givenUserDetailsIsNull_whenExecute_thenReturnFalse() {
         Mockito.when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(null);
 
-        assertFalse(classUnderTest.execute(TASK_CONTEXT, PAYLOAD, AUTH_TOKEN));
+        assertFalse(classUnderTest.execute(context, PAYLOAD));
     }
 
     @Test
     public void givenRolesIsNull_whenExecute_thenReturnFalse() {
         Mockito.when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(UserDetails.builder().build());
 
-        assertFalse(classUnderTest.execute(TASK_CONTEXT, PAYLOAD, AUTH_TOKEN));
+        assertFalse(classUnderTest.execute(context, PAYLOAD));
     }
 
     @Test
@@ -52,7 +60,7 @@ public class AuthenticateRespondentUTest {
                     .roles(Collections.emptyList())
                     .build());
 
-        assertFalse(classUnderTest.execute(TASK_CONTEXT, PAYLOAD, AUTH_TOKEN));
+        assertFalse(classUnderTest.execute(context, PAYLOAD));
     }
 
     @Test
@@ -66,7 +74,7 @@ public class AuthenticateRespondentUTest {
                     ))
                     .build());
 
-        assertFalse(classUnderTest.execute(TASK_CONTEXT, PAYLOAD, AUTH_TOKEN));
+        assertFalse(classUnderTest.execute(context, PAYLOAD));
     }
 
     @Test
@@ -80,7 +88,7 @@ public class AuthenticateRespondentUTest {
                     ))
                     .build());
 
-        assertFalse(classUnderTest.execute(TASK_CONTEXT, PAYLOAD, AUTH_TOKEN));
+        assertFalse(classUnderTest.execute(context, PAYLOAD));
     }
 
     @Test
@@ -95,6 +103,6 @@ public class AuthenticateRespondentUTest {
                     ))
                     .build());
 
-        assertTrue(classUnderTest.execute(TASK_CONTEXT, PAYLOAD, AUTH_TOKEN));
+        assertTrue(classUnderTest.execute(context, PAYLOAD));
     }
 }

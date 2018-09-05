@@ -34,7 +34,7 @@ public class CcdClientSupport {
     public CaseDetails submitCase(Object data, UserDetails userDetails) {
         final String serviceToken = authTokenGenerator.generate();
 
-        StartEventResponse startEventResponse = coreCaseDataApi.startForCaseworker(
+        StartEventResponse startEventResponse = coreCaseDataApi.startForCitizen(
             userDetails.getAuthToken(),
             serviceToken,
             userDetails.getId(),
@@ -53,7 +53,7 @@ public class CcdClientSupport {
             ).data(data)
             .build();
 
-        return coreCaseDataApi.submitForCaseworker(
+        return coreCaseDataApi.submitForCitizen(
             userDetails.getAuthToken(),
             serviceToken,
             userDetails.getId(),
