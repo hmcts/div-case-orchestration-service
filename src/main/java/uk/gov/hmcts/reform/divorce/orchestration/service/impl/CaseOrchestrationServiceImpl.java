@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
-import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
@@ -75,7 +74,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                       String authToken,
                                       String caseId) throws WorkflowException {
         Map<String, Object> payload = updateToCCDWorkflow.run(
-            divorceEventSession, AuthUtil.getBearToken(authToken), caseId);
+            divorceEventSession, authToken, caseId);
 
         log.info("Case ID is: {}", payload.get(ID));
         return payload;

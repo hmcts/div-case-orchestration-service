@@ -6,4 +6,7 @@ public class TaskException extends Exception {
         super(message);
     }
 
+    public TaskException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

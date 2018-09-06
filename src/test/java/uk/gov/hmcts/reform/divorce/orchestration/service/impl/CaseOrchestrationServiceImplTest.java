@@ -7,11 +7,13 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -24,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
@@ -45,6 +48,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private UpdateToCCDWorkflow updateToCCDWorkflow;
+
+    @Mock
+    private RetrieveAosCaseWorkflow retrieveAosCaseWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -148,6 +154,17 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(requestPayload, actual);
 
         verify(updateToCCDWorkflow).run(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
+    }
+
+    @Test
+    public void whenRetrieveAosCase_thenProceedAsExpected() throws WorkflowException {
+        final CaseDataResponse caseDataResponse = CaseDataResponse.builder().build();
+
+        when(retrieveAosCaseWorkflow.run(TEST_CHECK_CCD, AUTH_TOKEN)).thenReturn(caseDataResponse);
+
+        assertEquals(caseDataResponse, classUnderTest.retrieveAosCase(TEST_CHECK_CCD, AUTH_TOKEN));
+
+        verify(retrieveAosCaseWorkflow).run(TEST_CHECK_CCD, AUTH_TOKEN);
     }
 
     @After

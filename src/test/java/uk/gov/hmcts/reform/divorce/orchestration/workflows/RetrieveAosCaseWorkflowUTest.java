@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveAosCase;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 
@@ -29,22 +31,19 @@ public class RetrieveAosCaseWorkflowUTest {
 
     @Test
     public void whenRetrieveAos_thenProcessAsExpected() throws WorkflowException {
-        final String authToken = "auth token";
-        final boolean checkCcd = true;
-
-        final ImmutablePair<String, Object> authTokenPair = new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, authToken);
-        final ImmutablePair<String, Object> checkCcdPair = new ImmutablePair<>(CHECK_CCD, checkCcd);
+        final ImmutablePair<String, Object> authTokenPair = new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        final ImmutablePair<String, Object> checkCcdPair = new ImmutablePair<>(CHECK_CCD, CHECK_CCD);
 
         final Task[] tasks = new Task[]{
-                retrieveAosCase,
-                caseDataToDivorceFormatter
-            };
+            retrieveAosCase,
+            caseDataToDivorceFormatter
+        };
 
         final CaseDataResponse caseDataResponse = CaseDataResponse.builder().build();
 
         when(classUnderTest.execute(tasks, null, authTokenPair, checkCcdPair)).thenReturn(caseDataResponse);
 
-        CaseDataResponse actual = classUnderTest.run(checkCcd, authToken);
+        CaseDataResponse actual = classUnderTest.run(TEST_CHECK_CCD, AUTH_TOKEN);
 
         assertEquals(caseDataResponse, actual);
     }

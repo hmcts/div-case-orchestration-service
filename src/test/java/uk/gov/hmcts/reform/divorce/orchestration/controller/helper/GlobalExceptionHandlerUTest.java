@@ -4,28 +4,82 @@ import feign.FeignException;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 
 public class GlobalExceptionHandlerUTest {
+    private static  final int STATUS_CODE = HttpStatus.BAD_REQUEST.value();
+
     private final GlobalExceptionHandler classUnderTest = new GlobalExceptionHandler();
 
     @Test
     public void whenHandleBadRequestException_thenReturnUnderLyingError() {
-        final int statusCode = HttpStatus.BAD_REQUEST.value();
-        final String errorMessage = "some error message";
+        final FeignException feignException = getFeignException();
 
-        final FeignException feignException = mock(FeignException.class);
+        ResponseEntity<Object> actual = classUnderTest.handleBadRequestException(feignException);
 
-        when(feignException.status()).thenReturn(statusCode);
-        when(feignException.getMessage()).thenReturn(errorMessage);
-
-        ResponseEntity<Object> response = classUnderTest.handleBadRequestException(feignException);
-
-        assertEquals(statusCode, response.getStatusCodeValue());
-        assertEquals(errorMessage, response.getBody());
+        assertEquals(STATUS_CODE, actual.getStatusCodeValue());
+        assertEquals(TEST_ERROR, actual.getBody());
     }
 
+    @Test
+    public void givenNoCause_whenHandleWorkFlowException_thenReturnInternalServerError() {
+        final WorkflowException workflowException = new WorkflowException(TEST_ERROR);
+
+        ResponseEntity<Object> actual = classUnderTest.handleWorkFlowException(workflowException);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actual.getStatusCode());
+        assertEquals(TEST_ERROR, actual.getBody());
+    }
+
+    @Test
+    public void givenCauseInstanceOfFeignException_whenHandleWorkFlowException_thenReturnFeignStatus() {
+        final FeignException feignException = getFeignException();
+
+        final WorkflowException workflowException = new WorkflowException(TEST_ERROR, feignException);
+
+        ResponseEntity<Object> actual = classUnderTest.handleWorkFlowException(workflowException);
+
+        assertEquals(STATUS_CODE, actual.getStatusCodeValue());
+        assertEquals(TEST_ERROR, actual.getBody());
+    }
+
+    @Test
+    public void givenCauseInstanceOfTaskException_whenHandleWorkFlowException_thenReturnInternalServerError() {
+        final TaskException taskException = new TaskException(TEST_ERROR);
+
+        final WorkflowException workflowException = new WorkflowException(TEST_ERROR, taskException);
+
+        ResponseEntity<Object> actual = classUnderTest.handleWorkFlowException(workflowException);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actual.getStatusCode());
+        assertEquals(TEST_ERROR, actual.getBody());
+    }
+
+    @Test
+    public void givenCauseTaskExceptionContainsFeignException_whenHandleWorkFlowException_thenReturnFeignStatus() {
+        final FeignException feignException = getFeignException();
+
+        final TaskException taskException = new TaskException(TEST_ERROR, feignException);
+
+        final WorkflowException workflowException = new WorkflowException(TEST_ERROR, taskException);
+
+        ResponseEntity<Object> actual = classUnderTest.handleWorkFlowException(workflowException);
+
+        assertEquals(STATUS_CODE, actual.getStatusCodeValue());
+        assertEquals(TEST_ERROR, actual.getBody());
+    }
+
+    private FeignException getFeignException() {
+        final FeignException feignException = mock(FeignException.class);
+
+        when(feignException.status()).thenReturn(GlobalExceptionHandlerUTest.STATUS_CODE);
+        when(feignException.getMessage()).thenReturn(TEST_ERROR);
+        return feignException;
+    }
 }

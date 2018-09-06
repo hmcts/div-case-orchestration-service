@@ -20,26 +20,26 @@ public class GlobalExceptionHandler {
         return handleFeignException(exception);
     }
 
-    private ResponseEntity<Object> handleFeignException(FeignException exception) {
-        return ResponseEntity.status(exception.status()).body(exception.getMessage());
-    }
-
     @ExceptionHandler(WorkflowException.class)
     public ResponseEntity<Object> handleWorkFlowException(WorkflowException exception) {
         log.warn(exception.getMessage(), exception);
 
-        if(exception.getCause() != null) {
-            if(exception.getCause() instanceof FeignException){
+        if (exception.getCause() != null) {
+            if (exception.getCause() instanceof FeignException) {
                 return handleFeignException((FeignException) exception.getCause());
             }
 
-            if(exception.getCause() instanceof TaskException
+            if (exception.getCause() instanceof TaskException
                 && exception.getCause().getCause() != null
                 && exception.getCause().getCause() instanceof FeignException) {
-                return handleFeignException((FeignException) exception.getCause());
+                return handleFeignException((FeignException) exception.getCause().getCause());
             }
         }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
+    }
+
+    private ResponseEntity<Object> handleFeignException(FeignException exception) {
+        return ResponseEntity.status(exception.status()).body(exception.getMessage());
     }
 }

@@ -6,10 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCaseToCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
@@ -61,14 +59,5 @@ public class SubmitToCCDWorkflowTest {
         verify(formatDivorceSessionToCaseData).execute(context, testData);
         verify(validateCaseData).execute(context, testData);
         verify(submitCaseToCCD).execute(context, testData);
-    }
-
-    @Test(expected = WorkflowException.class)
-    public void runShouldThrowWorkflowExceptionWhenTaskExceptionIsThrown() throws Exception {
-        when(formatDivorceSessionToCaseData.execute(context, testData)).thenThrow(new TaskException("An Error"));
-
-        submitToCCDWorkflow.run(testData, AUTH_TOKEN);
-
-        verify(formatDivorceSessionToCaseData).execute(context, testData);
     }
 }

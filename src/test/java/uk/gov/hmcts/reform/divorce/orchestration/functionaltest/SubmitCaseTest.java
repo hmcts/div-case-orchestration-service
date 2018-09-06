@@ -16,7 +16,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationRequest;
@@ -35,7 +34,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
@@ -60,8 +58,6 @@ public class SubmitCaseTest {
     private static final Map<String, Object> CASE_DATA = Collections.emptyMap();
 
     private static final String FORM_ID = "case-progression";
-    private static final String VALIDATION_ERROR =
-            "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData_Error";
     private static final ValidationRequest validationRequest = ValidationRequest.builder()
             .data(CASE_DATA)
             .formId(FORM_ID)
@@ -84,9 +80,9 @@ public class SubmitCaseTest {
     public void givenCaseDataAndAuth_whenCaseDataIsSubmitted_thenReturnSuccess() throws Exception {
         Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
 
-        stubFormatterServerEndpoint(CASE_DATA, CASE_DATA);
-        stubValidationServerEndpoint(HttpStatus.OK, validationRequest, validationResponse);
-        stubMaintenanceServerEndpointForSubmit(CASE_DATA, responseData);
+        stubFormatterServerEndpoint();
+        stubValidationServerEndpoint();
+        stubMaintenanceServerEndpointForSubmit(responseData);
 
         CaseResponse submissionResonse = CaseResponse.builder()
                 .caseId(TEST_CASE_ID)
@@ -125,10 +121,8 @@ public class SubmitCaseTest {
         List<String> validationErrors = Collections.singletonList("An error has occurred");
         validationResponse.setErrors(validationErrors);
 
-        Map<String, Object> errors = Collections.singletonMap(VALIDATION_ERROR, validationResponse);
-
-        stubFormatterServerEndpoint(CASE_DATA, CASE_DATA);
-        stubValidationServerEndpoint(HttpStatus.OK, validationRequest, validationResponse);
+        stubFormatterServerEndpoint();
+        stubValidationServerEndpoint();
 
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, AUTH_TOKEN)
@@ -138,32 +132,30 @@ public class SubmitCaseTest {
                 .andExpect(status().is4xxClientError());
     }
 
-    private void stubFormatterServerEndpoint(Map<String, Object> transformToCCDFormat, Map<String, Object> response)
+    private void stubFormatterServerEndpoint()
             throws Exception {
         formatterServiceServer.stubFor(WireMock.post(CCD_FORMAT_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(transformToCCDFormat)))
+                .withRequestBody(equalToJson(convertObjectToJsonString(CASE_DATA)))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(convertObjectToJsonString(response))));
+                        .withBody(convertObjectToJsonString(CASE_DATA))));
     }
 
-    private void stubValidationServerEndpoint(HttpStatus status,
-                                              ValidationRequest request,
-                                              ValidationResponse response)
+    private void stubValidationServerEndpoint()
             throws Exception {
         validationServiceServer.stubFor(WireMock.post(VALIDATION_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(request)))
+                .withRequestBody(equalToJson(convertObjectToJsonString(validationRequest)))
                 .willReturn(aResponse()
-                        .withStatus(status.value())
+                        .withStatus(HttpStatus.OK.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(convertObjectToJsonString(response))));
+                        .withBody(convertObjectToJsonString(validationResponse))));
     }
 
-    private void stubMaintenanceServerEndpointForSubmit(Map<String, Object> caseData, Map<String, Object> response)
+    private void stubMaintenanceServerEndpointForSubmit(Map<String, Object> response)
             throws Exception {
         maintenanceServiceServer.stubFor(WireMock.post(SUBMISSION_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
+                .withRequestBody(equalToJson(convertObjectToJsonString(CASE_DATA)))
                 .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())

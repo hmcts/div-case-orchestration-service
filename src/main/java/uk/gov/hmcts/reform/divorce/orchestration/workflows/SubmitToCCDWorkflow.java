@@ -16,11 +16,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
-
     private final FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
-
     private final ValidateCaseData validateCaseData;
-
     private final SubmitCaseToCCD submitCaseToCCD;
 
     @Autowired
@@ -34,10 +31,11 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     public Map<String, Object> run(Map<String, Object> payload, String authToken) throws WorkflowException {
 
-        return this.execute(new Task[] {
-            formatDivorceSessionToCaseData,
-            validateCaseData,
-            submitCaseToCCD
+        return this.execute(
+            new Task[] {
+                formatDivorceSessionToCaseData,
+                validateCaseData,
+                submitCaseToCCD
             },
             payload,
             new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, authToken)
