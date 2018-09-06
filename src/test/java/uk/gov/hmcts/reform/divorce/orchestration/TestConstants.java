@@ -21,5 +21,12 @@ public class TestConstants {
     public static final String TEST_LETTER_HOLDER_ID_CODE = "test.letter.holder.id";
     public static final String TEST_AOS_INVITATION_FILE_NAME = "aosinvitation" + TEST_CASE_ID;
     public static final String TEST_MINI_PETITION_FILE_NAME = "d8petition" + TEST_CASE_ID;
-
+    public static final Double TEST_FEE_AMOUNT = 550d;
+    public static final String TEST_FEE_CODE = "FEE000";
+    public static final Integer TEST_FEE_VERSION = 3;
+    public static final String TEST_FEE_DESCRIPTION = "Test Fee";
+    public static final String TEST_SOLICITOR_ACCOUNT_NUMBER = "test.solicitor.account";
+    public static final String TEST_SOLICITOR_FIRM_NAME = "test.solicitor.firm";
+    public static final String TEST_SOLICITOR_REFERENCE = "test.solicitor.reference";
+    public static final String TEST_SERVICE_AUTH_TOKEN = "test.service.auth.token";
 }
