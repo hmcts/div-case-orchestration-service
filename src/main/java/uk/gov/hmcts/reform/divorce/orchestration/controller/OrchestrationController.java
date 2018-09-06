@@ -72,7 +72,7 @@ public class OrchestrationController {
                         .build());
     }
 
-    @PostMapping(path = "/transformationapi/version/1/submit")
+    @PostMapping(path = "/submit")
     @ApiOperation(value = "Handles submit called from petition frontend")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Submit was successful and case was created in CCD",
@@ -101,7 +101,7 @@ public class OrchestrationController {
                         .build());
     }
 
-    @PostMapping(path = "/transformationapi/version/1/updateCase/{caseId}")
+    @PostMapping(path = "/updateCase/{caseId}")
     @ApiOperation(value = "Handles update called from petition frontend")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",

@@ -55,7 +55,7 @@ public class UpdateCaseTest {
     private static final String EVENT_ID = "updateEvent";
     private static final String AUTH_TOKEN = "authToken";
 
-    private static final String API_URL = String.format("/transformationapi/version/1/updateCase/%s", CASE_ID);
+    private static final String API_URL = String.format("/updateCase/%s", CASE_ID);
 
     private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
     private static final String UPDATE_CONTEXT_PATH = String.format(
