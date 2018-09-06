@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCalllbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -19,13 +19,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Service
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
-    private final CcdCalllbackWorkflow ccdCallbackWorkflow;
+    private final CcdCallbackWorkflow ccdCallbackWorkflow;
     private final AuthenticateRespondentWorkflow authenticateRespondentWorkflow;
     private final SubmitToCCDWorkflow submitToCCDWorkflow;
     private final UpdateToCCDWorkflow updateToCCDWorkflow;
 
     @Autowired
-    public CaseOrchestrationServiceImpl(CcdCalllbackWorkflow ccdCallbackWorkflow,
+    public CaseOrchestrationServiceImpl(CcdCallbackWorkflow ccdCallbackWorkflow,
                                         AuthenticateRespondentWorkflow authenticateRespondentWorkflow,
                                         SubmitToCCDWorkflow submitToCCDWorkflow,
                                         UpdateToCCDWorkflow updateToCCDWorkflow) {
@@ -73,5 +73,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
         log.info("Case ID is: {}", payload.get(ID));
         return payload;
+    }
+
+    @Override
+    public Map<String, Object> retrieveAosCase(boolean checkCcd, String authorizationToken) {
+        return null;
     }
 }

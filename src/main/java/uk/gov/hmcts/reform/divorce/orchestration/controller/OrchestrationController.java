@@ -8,13 +8,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -23,9 +24,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.Validat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
@@ -125,6 +126,27 @@ public class OrchestrationController {
                         .caseId(response.get(ID).toString())
                         .status(SUCCESS_STATUS)
                         .build());
+    }
+
+    @GetMapping(path = "/retrieve-aos-case")
+    @ApiOperation(value = "Provides case details to front end")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Case details fetched successfully",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")
+    })
+    public ResponseEntity<Map<String, Object>> retrieveAosCase(
+        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestParam @ApiParam("checkCcd") boolean checkCcd) {
+        Map<String, Object> response;
+        try {
+            response =
+                orchestrationService.retrieveAosCase(checkCcd,
+                    authorizationToken);
+        } catch (WorkflowException e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping(path = "/authenticate-respondent")

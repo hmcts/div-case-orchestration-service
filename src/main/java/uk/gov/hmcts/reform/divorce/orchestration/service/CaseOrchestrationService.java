@@ -22,4 +22,5 @@ public interface CaseOrchestrationService {
     Map<String, Object> update(Map<String, Object> divorceEventSession,
                                String authToken, String caseId) throws WorkflowException;
 
+    Map<String,Object> retrieveAosCase(boolean checkCcd, String authorizationToken);
 }
