@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataFormatter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddPDF;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.IdamPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
@@ -36,8 +36,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CcdCalllbackWorkflowTest {
-    private CcdCalllbackWorkflow ccdCalllbackWorkflow;
+public class CcdCallbackWorkflowTest {
+    private CcdCallbackWorkflow ccdCallbackWorkflow;
 
     @Mock
     private ValidateCaseData validateCaseData;
@@ -52,7 +52,7 @@ public class CcdCalllbackWorkflowTest {
     private IdamPinGenerator idamPinGenerator;
 
     @Mock
-    private CaseDataFormatter caseDataFormatter;
+    private CaseFormatterAddPDF caseFormatterAddPDF;
 
     private CreateEvent createEventRequest;
     private Map<String, Object> payload;
@@ -61,13 +61,13 @@ public class CcdCalllbackWorkflowTest {
 
     @Before
     public void setUp() throws Exception {
-        ccdCalllbackWorkflow =
-                new CcdCalllbackWorkflow(
+        ccdCallbackWorkflow =
+                new CcdCallbackWorkflow(
                         validateCaseData,
                         petitionGenerator,
                         idamPinGenerator,
                         respondentLetterGenerator,
-                        caseDataFormatter);
+                    caseFormatterAddPDF);
 
         payload = new HashMap<>();
         payload.put("D8ScreenHasMarriageBroken", "YES");
@@ -100,10 +100,10 @@ public class CcdCalllbackWorkflowTest {
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(idamPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
-        when(caseDataFormatter.execute(context, payload)).thenReturn(payload);
+        when(caseFormatterAddPDF.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = ccdCalllbackWorkflow.run(createEventRequest, AUTH_TOKEN);
+        Map<String, Object> response = ccdCallbackWorkflow.run(createEventRequest, AUTH_TOKEN);
 
         //Then
         assertNotNull(response);
@@ -113,6 +113,6 @@ public class CcdCalllbackWorkflowTest {
 
     @After
     public void tearDown() throws Exception {
-        ccdCalllbackWorkflow = null;
+        ccdCallbackWorkflow = null;
     }
 }

@@ -31,8 +31,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CaseDataFormatterTest {
-    private CaseDataFormatter caseDataFormatter;
+public class CaseFormatterAddPDFTest {
+    private CaseFormatterAddPDF caseFormatterAddPDF;
 
     @Mock
     private CaseFormatterClient caseFormatterClient;
@@ -44,7 +44,7 @@ public class CaseDataFormatterTest {
 
     @Before
     public void setUp() {
-        caseDataFormatter = new CaseDataFormatter(caseFormatterClient);
+        caseFormatterAddPDF = new CaseFormatterAddPDF(caseFormatterClient);
 
         petition =
                 GeneratedDocumentInfo.builder()
@@ -80,7 +80,7 @@ public class CaseDataFormatterTest {
         when(caseFormatterClient.addDocuments(any())).thenReturn(payload);
 
         //when
-        Map<String, Object> response = caseDataFormatter.execute(context, payload);
+        Map<String, Object> response = caseFormatterAddPDF.execute(context, payload);
 
         //then
         assertNotNull(response);
@@ -93,7 +93,7 @@ public class CaseDataFormatterTest {
 
     @After
     public void tearDown() {
-        caseDataFormatter = null;
+        caseFormatterAddPDF = null;
     }
 
 }

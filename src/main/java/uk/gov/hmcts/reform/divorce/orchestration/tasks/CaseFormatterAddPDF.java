@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
 
@@ -16,17 +15,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
 
 @Component
-public class CaseDataFormatter implements Task<Map<String, Object>> {
+public class CaseFormatterAddPDF implements Task<Map<String, Object>> {
     private final CaseFormatterClient caseFormatterClient;
 
     @Autowired
-    public CaseDataFormatter(CaseFormatterClient caseFormatterClient) {
+    public CaseFormatterAddPDF(CaseFormatterClient caseFormatterClient) {
         this.caseFormatterClient = caseFormatterClient;
     }
 
     @Override
     public Map<String, Object> execute(TaskContext context,
-                                       Map<String, Object> caseData) throws TaskException {
+                                       Map<String, Object> caseData) {
         GeneratedDocumentInfo miniPetition
                 = (GeneratedDocumentInfo) caseData.get(MINI_PETITION_TEMPLATE_NAME);
         GeneratedDocumentInfo respondentInvitation
