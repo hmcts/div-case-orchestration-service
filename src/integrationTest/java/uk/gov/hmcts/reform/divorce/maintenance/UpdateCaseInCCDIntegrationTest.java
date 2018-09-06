@@ -34,6 +34,7 @@ public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
     @Test
     public void givenDivorceSession_whenUpdateIsCalled_caseIdIsReturned() throws Exception {
         UserDetails citizenUser = createCitizenUser();
+
         String caseId = ccdClientSupport.submitCase(
                 ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "submit-case-data.json", Map.class),
                 citizenUser
@@ -42,7 +43,7 @@ public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
         Response updateResponse = updateCase(citizenUser.getAuthToken(), caseId, "payments-update.json");
 
         assertEquals(HttpStatus.OK.value(), updateResponse.getStatusCode());
-        assertNotEquals("0", updateResponse.path(CASE_ID_KEY));
+        assertEquals(caseId, updateResponse.path(CASE_ID_KEY));
     }
 
     private Response updateCase(String userToken, String caseId, String fileName) throws Exception {
@@ -54,7 +55,7 @@ public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
         }
 
         return RestUtil.postToRestService(
-                serverUrl + contextPath + "/" + caseId + "/" + UPDATE_EVENT_ID,
+                serverUrl + contextPath + "/" + caseId,
                 headers,
                 fileName == null ? null : ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + fileName)
         );
