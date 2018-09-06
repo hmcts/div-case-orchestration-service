@@ -45,13 +45,13 @@ public class RespondentLetterGeneratorTest {
     private Map<String, Object> payload;
     private CaseDetails caseDetails;
     private TaskContext context;
-    private GeneratedDocumentInfo aosinvitation;
+    private GeneratedDocumentInfo aosInvitation;
 
     @Before
     public void setUp() {
         respondentLetterGenerator = new RespondentLetterGenerator(documentGeneratorClient);
 
-        aosinvitation =
+        aosInvitation =
                 GeneratedDocumentInfo.builder()
                         .fileName(TEST_FILENAME)
                         .url(TEST_DOC_URL)
@@ -75,15 +75,15 @@ public class RespondentLetterGeneratorTest {
     @Test
     public void executeShouldReturnUpdatedPayloadForValidCase() throws TaskException {
         //given
-        when(documentGeneratorClient.generatePDF(any(), anyString())).thenReturn(aosinvitation);
+        when(documentGeneratorClient.generatePDF(any(), anyString())).thenReturn(aosInvitation);
 
         //when
         Map<String, Object> response = respondentLetterGenerator.execute(context, payload);
 
         //then
         assertNotNull(response);
-        assertEquals(aosinvitation.getDocumentType(), DOCUMENT_TYPE_INVITATION);
-        assertEquals(aosinvitation.getFileName(), String.format(INVITATION_FILE_NAME_FORMAT,
+        assertEquals(aosInvitation.getDocumentType(), DOCUMENT_TYPE_INVITATION);
+        assertEquals(aosInvitation.getFileName(), String.format(INVITATION_FILE_NAME_FORMAT,
                 caseDetails.getCaseId()));
         assertTrue(payload.containsKey(RESPONDENT_INVITATION_TEMPLATE_NAME));
     }

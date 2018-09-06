@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,11 +39,10 @@ public class ValidateCaseDataTest {
     private ValidationResponse validationResponse;
     private ValidationResponse invalidationResponse;
     private Map<String, Object> payload;
-    private CaseDetails caseDetails;
     private TaskContext context;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         validateCaseData = new ValidateCaseData(caseValidationClient);
         validationResponse =
                 ValidationResponse.builder()
@@ -53,18 +52,18 @@ public class ValidateCaseDataTest {
         invalidationResponse =
                 ValidationResponse.builder()
                         .validationStatus("Pass")
-                        .errors(Arrays.asList("Invalid input"))
+                        .errors(Collections.singletonList("Invalid input"))
                         .build();
 
         payload = new HashMap<>();
         payload.put("D8ScreenHasMarriageBroken", "YES");
         payload.put(PIN,TEST_PIN );
 
-        caseDetails = CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .state(TEST_STATE)
-                .caseData(payload)
-                .build();
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .caseData(payload)
+            .build();
 
         context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
@@ -99,7 +98,7 @@ public class ValidateCaseDataTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         validateCaseData = null;
     }
 }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 
@@ -22,5 +23,5 @@ public interface CaseOrchestrationService {
     Map<String, Object> update(Map<String, Object> divorceEventSession,
                                String authToken, String caseId) throws WorkflowException;
 
-    Map<String,Object> retrieveAosCase(boolean checkCcd, String authorizationToken);
+    CaseDataResponse retrieveAosCase(boolean checkCcd, String authorizationToken) throws WorkflowException;
 }

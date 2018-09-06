@@ -8,12 +8,14 @@ public class OrchestrationConstants {
 
     // Core Case Data
     public static final String CASE_DATA_JSON_KEY = "case_data";
+    public static final String CHECK_CCD = "checkCcd";
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";
     public static final String CASE_ID_JSON_KEY = "caseId";
     public static final String D_8_PETITIONER_FIRST_NAME = "D8PetitionerFirstName";
     public static final String D_8_PETITIONER_LAST_NAME = "D8PetitionerLastName";
+    public static final String D_8_DIVORCE_UNIT = "D8DivorceUnit";
     public static final String ID = "id";
     public static final String PIN = "pin";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";

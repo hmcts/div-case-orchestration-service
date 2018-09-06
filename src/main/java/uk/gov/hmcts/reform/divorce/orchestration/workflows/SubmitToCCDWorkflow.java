@@ -38,8 +38,9 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
             formatDivorceSessionToCaseData,
             validateCaseData,
             submitCaseToCCD
-        }, payload,
-            new ImmutablePair(AUTH_TOKEN_JSON_KEY, authToken)
+            },
+            payload,
+            new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, authToken)
         );
     }
 }

@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -26,35 +24,36 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateCaseInCCDTest {
+    private static final Map<String, Object> TEST_DATA = Collections.emptyMap();
 
     @Mock
-    CaseMaintenanceClient caseMaintenanceClient;
+    private CaseMaintenanceClient caseMaintenanceClient;
 
     @InjectMocks
-    UpdateCaseInCCD updateCaseInCCD;
+    private UpdateCaseInCCD updateCaseInCCD;
 
-    private Map<String, Object> testData;
-    private TaskContext context;
+    @Test
+    public void executeShouldCallCaseMaintenanceClientUpdateEndpoint() {
+        final TaskContext context = createContext();
 
-    @Before
-    public void setup() {
-        testData = Collections.emptyMap();
-        context = new DefaultTaskContext();
+        final Map<String, Object> resultData = Collections.singletonMap("Hello", "World");
+
+        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID, TEST_DATA))
+                .thenReturn(resultData);
+
+        assertEquals(resultData, updateCaseInCCD.execute(context, TEST_DATA));
+
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID, TEST_DATA);
+    }
+
+    private TaskContext createContext() {
+        final TaskContext context = new DefaultTaskContext();
 
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         context.setTransientObject(CASE_EVENT_ID_JSON_KEY, TEST_EVENT_ID);
+
+        return context;
     }
 
-    @Test
-    public void executeShouldCallCaseMaintenanceClientUpdateEndpoint() throws Exception {
-        Map<String, Object> resultData = Collections.singletonMap("Hello", "World");
-
-        when(caseMaintenanceClient.updateCase(testData, AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID))
-                .thenReturn(resultData);
-
-        assertEquals(resultData, updateCaseInCCD.execute(context, testData));
-
-        verify(caseMaintenanceClient).updateCase(testData, AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID);
-    }
 }

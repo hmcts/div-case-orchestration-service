@@ -19,33 +19,33 @@ case:
   validation:
     service:
       api:
-        baseurl: ${CASE_VALIDATION_SERVICE_API_BASEURL:http://localhost:4008}
+        baseurl: ${CASE_VALIDATION_SERVICE_API_BASEURL:http://div-vs-aat.service.core-compute-aat.internal}
   maintenance:
     service:
       api:
-        baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://localhost:4010}
+        baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://div-cms-aat.service.core-compute-aat.internal}
 
 idam:
   api:
-    url: ${IDAM_API_URL:http://localhost:4503}
-    redirect-url: ${IDAM_API_REDIRECT_URL:http://localhost:8080/authenticated}
+    url: ${IDAM_API_URL:https://preprod-idamapi.reform.hmcts.net:3511}
+    redirect-url: ${IDAM_API_REDIRECT_URL:https://div-pfe-aat.service.core-compute-aat.internal/authenticated}
     port: 4503
     health:
       context-path: /health
   citizen:
-    username: dummy
-    password: dummy
+      username: DivCitizenUser@AAT.com
+      password: DivPassword1234
 
 auth2:
   client:
     id: divorce
-    secret: dummy
+    secret: thUphEveC2Ekuqedaneh4jEcRuba4t2t
 
 document:
   generator:
     service:
       api:
-        baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://localhost:4007}
+        baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://div-dgs-aat.service.core-compute-aat.internal}
 
 http:
   connect:
