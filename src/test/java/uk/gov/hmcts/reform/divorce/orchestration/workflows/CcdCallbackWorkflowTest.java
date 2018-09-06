@@ -57,10 +57,9 @@ public class CcdCallbackWorkflowTest {
     private CreateEvent createEventRequest;
     private Map<String, Object> payload;
     private TaskContext context;
-    private CaseDetails caseDetails;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         ccdCallbackWorkflow =
                 new CcdCallbackWorkflow(
                         validateCaseData,
@@ -71,19 +70,19 @@ public class CcdCallbackWorkflowTest {
 
         payload = new HashMap<>();
         payload.put("D8ScreenHasMarriageBroken", "YES");
-        payload.put(PIN,TEST_PIN );
+        payload.put(PIN,TEST_PIN);
 
-        caseDetails = CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .state(TEST_STATE)
-                .caseData(payload)
-                .build();
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .caseData(payload)
+            .build();
         createEventRequest =
                 CreateEvent.builder()
                         .eventId(TEST_EVENT_ID)
                         .token(TEST_TOKEN)
                         .caseDetails(
-                                caseDetails
+                            caseDetails
                         )
                         .build();
 
@@ -112,7 +111,7 @@ public class CcdCallbackWorkflowTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         ccdCallbackWorkflow = null;
     }
 }

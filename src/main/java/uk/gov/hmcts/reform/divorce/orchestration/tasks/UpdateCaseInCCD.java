@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
 
@@ -20,12 +19,12 @@ public class UpdateCaseInCCD implements Task<Map<String, Object>> {
     private CaseMaintenanceClient caseMaintenanceClient;
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         return caseMaintenanceClient.updateCase(
-                caseData,
-                (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY),
-                (String) context.getTransientObject(CASE_ID_JSON_KEY),
-                (String) context.getTransientObject(CASE_EVENT_ID_JSON_KEY)
+            (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+            (String) context.getTransientObject(CASE_ID_JSON_KEY),
+            (String) context.getTransientObject(CASE_EVENT_ID_JSON_KEY),
+            caseData
         );
     }
 }

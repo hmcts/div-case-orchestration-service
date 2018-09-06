@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,7 +71,7 @@ public class PetitionGeneratorTest {
     }
 
     @Test
-    public void executeShouldReturnUpdatedPayloadForValidCase() throws TaskException {
+    public void executeShouldReturnUpdatedPayloadForValidCase() {
         //given
         when(documentGeneratorClient.generatePDF(any(), anyString())).thenReturn(petition);
 

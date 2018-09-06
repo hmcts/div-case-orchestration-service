@@ -37,7 +37,8 @@ public class UpdateToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
         return this.execute(new Task[] {
             formatDivorceSessionToCaseData,
             updateCaseInCCD
-        }, payload,
+            },
+            payload,
             new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, authToken),
             new ImmutablePair<>(CASE_ID_JSON_KEY, caseId),
             new ImmutablePair<>(CASE_EVENT_ID_JSON_KEY, eventId)

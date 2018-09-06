@@ -27,16 +27,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SubmitToCCDWorkflowTest {
 
     @Mock
-    FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
+    private FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
 
     @Mock
-    ValidateCaseData validateCaseData;
+    private ValidateCaseData validateCaseData;
 
     @Mock
-    SubmitCaseToCCD submitCaseToCCD;
+    private SubmitCaseToCCD submitCaseToCCD;
 
     @InjectMocks
-    SubmitToCCDWorkflow submitToCCDWorkflow;
+    private SubmitToCCDWorkflow submitToCCDWorkflow;
 
     private Map<String, Object> testData;
     private TaskContext context;
