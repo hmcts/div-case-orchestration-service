@@ -7,7 +7,6 @@ This application orchestrates a workflow based on the requested business require
 ### Prerequisites
 
 - [JDK 8](https://www.oracle.com/java)
-- [Docker](https://www.docker.com)
 
 ### Building
 
@@ -22,8 +21,8 @@ To build project please execute the following command:
 
 To get the project to build in IntelliJ IDEA, you have to:
 
-# Install the Lombok plugin: Preferences -> Plugins
-# Enable Annotation Processing: Preferences -> Build, Execution, Deployment -> Compiler -> Annotation Processors
+ - Install the Lombok plugin: Preferences -> Plugins
+ - Enable Annotation Processing: Preferences -> Build, Execution, Deployment -> Compiler -> Annotation Processors
 
 ### Running
 
@@ -33,8 +32,7 @@ You can run the application by executing following command:
     ./gradlew bootRun
 ```
 
-As a result the following container(s) will get created and started:
- - long living container for API application exposing port `4013`
+The application will start locally on `http://localhost:4013`
 
 ### API documentation
 
