@@ -15,6 +15,11 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CHECK_CCD;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
@@ -29,34 +34,28 @@ public class RetrieveAosCaseUTest {
 
     @Test
     public void whenRetrieveAosCase_thenReturnExpectedOutput() {
-        final String authToken = "auth token";
-        final boolean checkCcd = true;
-        final String court = "court";
-        final String caseId = "caseId";
-        final String state = "state";
-
         final DefaultTaskContext context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, authToken);
-        context.setTransientObject(CHECK_CCD, checkCcd);
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(CHECK_CCD, TEST_CHECK_CCD);
 
-        final Map<String, Object> caseData = Collections.singletonMap(D_8_DIVORCE_UNIT, court);
+        final Map<String, Object> caseData = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
 
         final CaseDetails cmsResponse =
             CaseDetails.builder()
                 .caseData(caseData)
-                .caseId(caseId)
-                .state(state)
+                .caseId(TEST_CASE_ID)
+                .state(TEST_STATE)
                 .build();
 
-        Mockito.when(caseMaintenanceClient.retrieveAosCase(authToken, checkCcd)).thenReturn(cmsResponse);
+        Mockito.when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD)).thenReturn(cmsResponse);
 
         CaseDataResponse actual = classUnderTest.execute(context, null);
 
-        assertEquals(caseId, actual.getCaseId());
-        assertEquals(court, actual.getCourts());
-        assertEquals(state, actual.getState());
+        assertEquals(TEST_CASE_ID, actual.getCaseId());
+        assertEquals(TEST_COURT, actual.getCourts());
+        assertEquals(TEST_STATE, actual.getState());
         assertEquals(caseData, actual.getData());
 
-        Mockito.verify(caseMaintenanceClient).retrieveAosCase(authToken, checkCcd);
+        Mockito.verify(caseMaintenanceClient).retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD);
     }
 }

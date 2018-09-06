@@ -26,7 +26,7 @@ public class RetrieveAosCaseWorkflow extends DefaultWorkflow<CaseDataResponse> {
     }
 
     public CaseDataResponse run(boolean checkCcd,
-                                   String authToken) throws WorkflowException {
+                                String authToken) throws WorkflowException {
         return this.execute(
             new Task[]{
                 retrieveAosCase,

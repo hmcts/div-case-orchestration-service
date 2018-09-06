@@ -21,13 +21,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final ValidateCaseData validateCaseData;
-
     private final PetitionGenerator petitionGenerator;
-
     private final IdamPinGenerator idamPinGenerator;
-
     private final RespondentLetterGenerator respondentLetterGenerator;
-
     private final CaseFormatterAddPDF caseFormatterAddPDF;
 
     @Autowired
@@ -54,8 +50,8 @@ public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
                 caseFormatterAddPDF
             },
             caseDetailsRequest.getCaseDetails().getCaseData(),
-            new ImmutablePair(AUTH_TOKEN_JSON_KEY, authToken),
-            new ImmutablePair(CASE_DETAILS_JSON_KEY, caseDetailsRequest.getCaseDetails())
+            new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, authToken),
+            new ImmutablePair<>(CASE_DETAILS_JSON_KEY, caseDetailsRequest.getCaseDetails())
         );
     }
 }

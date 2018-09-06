@@ -24,9 +24,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.Validat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
-import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.Map;
+import javax.ws.rs.core.MediaType;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
@@ -118,7 +118,7 @@ public class OrchestrationController {
         @ApiResponse(code = 200, message = "Case details fetched successfully",
             response = CaseDataResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")
-    })
+        })
     public ResponseEntity<CaseDataResponse> retrieveAosCase(
         @RequestHeader(value = "Authorization") String authorizationToken,
         @RequestParam @ApiParam("checkCcd") boolean checkCcd) throws WorkflowException {
