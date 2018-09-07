@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.Validat
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
 
@@ -22,21 +23,19 @@ public class ValidateCaseData implements Task<Map<String, Object>> {
     }
 
     @Override
-    public Map<String, Object> execute(TaskContext context,
-                                       Map<String, Object> payLoad,
-                                       Object... params)  {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         ValidationResponse validationResponse =
-            caseValidationClient.validate(
-                ValidationRequest.builder()
-                    .data(payLoad)
-                    .formId(FORM_ID)
-                    .build());
+                caseValidationClient.validate(
+                        ValidationRequest.builder()
+                                .data(caseData)
+                                .formId(FORM_ID)
+                                .build());
 
         if (!validationResponse.isValid()) {
             context.setTaskFailed(true);
             context.setTransientObject(this.getClass().getName() + "_Error", validationResponse);
         }
 
-        return payLoad;
+        return caseData;
     }
 }
