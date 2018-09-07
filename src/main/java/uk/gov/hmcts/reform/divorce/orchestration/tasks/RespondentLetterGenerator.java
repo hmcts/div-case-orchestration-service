@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
 
@@ -32,26 +31,26 @@ public class RespondentLetterGenerator implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> caseData,
-                                       Object... params) throws TaskException {
+                                       Object... params) {
         CaseDetails caseDetails = (CaseDetails) params[1];
-        GeneratedDocumentInfo aosinvitation =
+        GeneratedDocumentInfo aosInvitation =
                 documentGeneratorClient.generatePDF(
                         GenerateDocumentRequest.builder()
                                 .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
                                 .values(ImmutableMap.of(
                                         CASE_DETAILS_JSON_KEY, caseDetails,
-                                        ACCESS_CODE, caseData.get(PIN)
+                                        ACCESS_CODE, caseData.remove(PIN)
                                         )
                                 )
                                 .build(),
                         String.valueOf(params[0])
                 );
 
-        aosinvitation.setDocumentType(DOCUMENT_TYPE_INVITATION);
-        aosinvitation.setFileName(String.format(INVITATION_FILE_NAME_FORMAT,
+        aosInvitation.setDocumentType(DOCUMENT_TYPE_INVITATION);
+        aosInvitation.setFileName(String.format(INVITATION_FILE_NAME_FORMAT,
                 caseDetails.getCaseId()));
 
-        caseData.put(RESPONDENT_INVITATION_TEMPLATE_NAME, aosinvitation);
+        caseData.put(RESPONDENT_INVITATION_TEMPLATE_NAME, aosInvitation);
 
         return caseData;
     }

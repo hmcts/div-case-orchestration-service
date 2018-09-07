@@ -18,7 +18,6 @@ public class SubmitCaseToCCD implements Task<Map<String, Object>> {
         this.caseMaintenanceClient = caseMaintenanceClient;
     }
 
-
     @Override
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> caseData,
