@@ -41,7 +41,7 @@ public class RespondentLetterGenerator implements Task<Map<String, Object>> {
                                 .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
                                 .values(ImmutableMap.of(
                                         DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails,
-                                        ACCESS_CODE, caseData.get(PIN)
+                                        ACCESS_CODE, caseData.remove(PIN)
                                         )
                                 )
                                 .build(),

@@ -24,11 +24,12 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DELETE_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SAVE_DRAFT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
@@ -152,18 +153,21 @@ public class OrchestrationControllerTest {
 
     @Test
     public void whenUpdate_thenReturnPayload() throws Exception {
-        final Map<String, Object> caseData = Collections.emptyMap();
+        final Map<String, Object> eventData = new HashMap<>();
+        eventData.put(CASE_EVENT_DATA_JSON_KEY,  Collections.emptyMap());
+        eventData.put(CASE_EVENT_ID_JSON_KEY, TEST_EVENT_ID);
+
         final Map<String, Object> submissionData = Collections.singletonMap(ID, TEST_CASE_ID);
         final CaseResponse expectedResponse = CaseResponse.builder()
                 .caseId(TEST_CASE_ID)
                 .status(SUCCESS_STATUS)
                 .build();
 
-        when(caseOrchestrationService.update(caseData, AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID))
+        when(caseOrchestrationService.update(eventData, AUTH_TOKEN, TEST_CASE_ID))
                 .thenReturn(submissionData);
 
         ResponseEntity<CaseResponse> response = classUnderTest
-                .update(AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID, caseData);
+                .update(AUTH_TOKEN, TEST_CASE_ID, eventData);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
@@ -171,104 +175,16 @@ public class OrchestrationControllerTest {
 
     @Test
     public void whenUpdate_givenException_thenReturnInternalServerError() throws Exception {
-        final Map<String, Object> caseData = Collections.emptyMap();
+        final Map<String, Object> eventData = new HashMap<>();
+        eventData.put(CASE_EVENT_DATA_JSON_KEY,  Collections.emptyMap());
+        eventData.put(CASE_EVENT_ID_JSON_KEY, TEST_EVENT_ID);
 
-        when(caseOrchestrationService.update(caseData, AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID))
+        when(caseOrchestrationService.update(eventData, AUTH_TOKEN, TEST_CASE_ID))
                 .thenThrow(new WorkflowException("An Error"));
 
         ResponseEntity<CaseResponse> response = classUnderTest
-                .update(AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID, caseData);
+                .update(AUTH_TOKEN, TEST_CASE_ID, eventData);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    }
-
-    @Test
-    public void givenUserWithoutDraft_whenRetrieveDraft_thenNotFoundResponseReturned() throws WorkflowException {
-
-        ResponseEntity<Map<String, Object>> actual = classUnderTest.retrieveDraft(AUTH_TOKEN);
-
-        assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
-    }
-
-    @Test
-    public void givenAnErrorOnDraft_whenRetrieveDraft_thenErrorResponseReturned() throws WorkflowException {
-        final Map<String, Object> draftServiceResponse = new LinkedHashMap<>();
-        draftServiceResponse.put(VALIDATION_ERROR_KEY,"Workflow error");
-        when(caseOrchestrationService.getDraft(AUTH_TOKEN)).thenReturn(draftServiceResponse);
-
-        ResponseEntity<Map<String, Object>> actual = classUnderTest.retrieveDraft(AUTH_TOKEN);
-
-        assertEquals(draftServiceResponse, actual.getBody());
-    }
-
-    @Test
-    public void givenAnErrorOdDraft_whenRetrieveDraft_thenNotFoundResponseReturned() throws WorkflowException {
-        final Map<String, Object> draftServiceResponse = new LinkedHashMap<>();
-        when(caseOrchestrationService.getDraft(AUTH_TOKEN)).thenReturn(draftServiceResponse);
-
-        ResponseEntity<Map<String, Object>> actual = classUnderTest.retrieveDraft(AUTH_TOKEN);
-
-        assertEquals(HttpStatus.NOT_FOUND, actual.getStatusCode());
-    }
-
-    @Test
-    public void givenUserSavedDraft_whenRetrieveDraft_thenUserSaveDraftIsReturned() throws WorkflowException {
-        final Map<String, Object> expectedObject = mock(Map.class);
-        when(caseOrchestrationService.getDraft(AUTH_TOKEN)).thenReturn(expectedObject);
-        ResponseEntity<Map<String, Object>> actual = classUnderTest.retrieveDraft(AUTH_TOKEN);
-
-        assertEquals(HttpStatus.OK, actual.getStatusCode());
-        assertEquals(expectedObject, actual.getBody());
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void givenWorkflowError_whenRetrieveDraft_thenHandleError() throws WorkflowException {
-
-        when(caseOrchestrationService.getDraft(AUTH_TOKEN)).thenThrow(new WorkflowException("Workflow failed"));
-        ResponseEntity<Map<String, Object>> actual = classUnderTest.retrieveDraft(AUTH_TOKEN);
-    }
-
-    @Test
-    public void givenDraftPayload_whenSaveDraft_thenSaveDraftServiceIsCalled() throws WorkflowException {
-        Map<String, Object> payload =  mock(Map.class);
-        final String userEmail = "test@email.com";
-
-        ResponseEntity<Map<String, Object>> response = classUnderTest.saveDraft(AUTH_TOKEN, payload, userEmail);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(caseOrchestrationService).saveDraft(payload, AUTH_TOKEN, userEmail);
-    }
-
-    @Test
-    public void givenWorkflowError_whenSaveDraft_thenReturnError() throws WorkflowException {
-        Map<String, Object> payload =  new HashMap<>();
-        final String userEmail = "test@email.com";
-        WorkflowException safeDraftError = new WorkflowException("Workflow failed");
-        when(caseOrchestrationService.saveDraft(payload, AUTH_TOKEN, userEmail)).thenThrow(safeDraftError);
-        ResponseEntity<Map<String, Object>> response = classUnderTest.saveDraft(AUTH_TOKEN, payload, userEmail);
-
-        assertEquals(safeDraftError, response.getBody().get(SAVE_DRAFT_ERROR_KEY));
-    }
-
-    @Test
-    public void whenDeleteDraft_thenDeleteDraftServiceIsCalled() throws WorkflowException {
-        Map<String, Object> payload =  mock(Map.class);
-        when(caseOrchestrationService.deleteDraft(AUTH_TOKEN)).thenReturn(payload);
-        ResponseEntity<Map<String, Object>> response = classUnderTest.deleteDraft(AUTH_TOKEN);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(payload, response.getBody());
-
-        verify(caseOrchestrationService).deleteDraft(AUTH_TOKEN);
-    }
-
-    @Test
-    public void givenWorkflowError_whenDeleteDraft_thenReturnError() throws WorkflowException {
-        WorkflowException deleteDraftError = new WorkflowException("Workflow failed");
-
-        when(caseOrchestrationService.deleteDraft(AUTH_TOKEN)).thenThrow(deleteDraftError);
-        ResponseEntity<Map<String, Object>> response = classUnderTest.deleteDraft(AUTH_TOKEN);
-
-        assertEquals(deleteDraftError, response.getBody().get(DELETE_ERROR_KEY));
     }
 }

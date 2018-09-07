@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
@@ -26,10 +27,12 @@ public class UpdateToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
     @Autowired
     private UpdateCaseInCCD updateCaseInCCD;
 
-    public Map<String, Object> run(Map<String, Object> payload,
+    public Map<String, Object> run(Map<String, Object> divorceEvent,
                                    String authToken,
-                                   String caseId,
-                                   String eventId) throws WorkflowException {
+                                   String caseId) throws WorkflowException {
+
+        Map<String, Object> payload = (Map<String, Object>) divorceEvent.get(CASE_EVENT_DATA_JSON_KEY);
+        String eventId = divorceEvent.get(CASE_EVENT_ID_JSON_KEY).toString();
 
         return this.execute(new Task[] {
             formatDivorceSessionToCaseData,
