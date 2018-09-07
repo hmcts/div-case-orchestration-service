@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
 
@@ -22,7 +21,7 @@ public class FormatDivorceSessionToCaseData implements Task<Map<String, Object>>
     @Override
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> sessionData,
-                                       Object... params) throws TaskException {
+                                       Object... params) {
         return caseFormatterClient.transformToCCDFormat(sessionData, String.valueOf(params[0]));
     }
 }

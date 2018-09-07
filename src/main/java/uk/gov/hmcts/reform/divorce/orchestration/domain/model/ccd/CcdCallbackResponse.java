@@ -20,7 +20,6 @@ import java.util.Map;
 @Builder
 public class CcdCallbackResponse {
     @ApiModelProperty(value = "The entire case data to be returned with updated fields")
-    @JsonProperty("case_data")
     private Map<String, Object> data;
     @ApiModelProperty(value = "Error messages")
     private List<String> errors;
