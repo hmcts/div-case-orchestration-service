@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${SERVICE_NAME}-config
+  namespace: ${NAMESPACE}
+data:
+  REFORM_ENVIRONMENT : "aat"
+  APPLICATION_INSIGHTS_IKEY : "2054b272-1999-41aa-904f-4c72b3c9920d"
+  CASE_FORMATTER_SERVICE_API_BASEURL : "http://div-cfs-aat.service.core-compute-aat.internal"
+  SLOT : "PRODUCTION"
+  CASE_VALIDATION_SERVICE_API_BASEURL : "http://div-vs-aat.service.core-compute-aat.internal"
+  REFORM_SERVICE_NAME : "cos"
+  DOCUMENT_GENERATOR_SERVICE_API_BASEURL : "http://div-dgs-aat.service.core-compute-aat.internal"
+  IDAM_API_URL : "https://preprod-idamapi.reform.hmcts.net:3511"
+  REFORM_TEAM : "div"
+  CASE_MAINTENANCE_SERVICE_API_BASEURL : "http://div-cms-aat.service.core-compute-aat.internal"
+  IDAM_CITIZEN_USERNAME : "DivCitizenUser@AAT.com"
+  APPINSIGHTS_INSTRUMENTATIONKEY : "2054b272-1999-41aa-904f-4c72b3c9920d"
+  IDAM_API_REDIRECT_URL : "https://div-pfe-aat.service.core-compute-aat.internal/authenticated"
