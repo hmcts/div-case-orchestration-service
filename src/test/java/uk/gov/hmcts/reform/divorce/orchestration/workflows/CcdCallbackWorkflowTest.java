@@ -31,6 +31,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -86,17 +88,19 @@ public class CcdCallbackWorkflowTest {
                         .build();
 
         context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
     }
 
 
     @Test
     public void runShouldReturnValidCaseDataForValidCase() throws WorkflowException, TaskException {
         //Given
-        when(validateCaseData.execute(context, payload, AUTH_TOKEN, caseDetails)).thenReturn(payload);
-        when(petitionGenerator.execute(context, payload, AUTH_TOKEN, caseDetails)).thenReturn(payload);
-        when(idamPinGenerator.execute(context, payload, AUTH_TOKEN, caseDetails)).thenReturn(payload);
-        when(respondentLetterGenerator.execute(context, payload, AUTH_TOKEN, caseDetails)).thenReturn(payload);
-        when(caseDataFormatter.execute(context, payload, AUTH_TOKEN, caseDetails)).thenReturn(payload);
+        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(petitionGenerator.execute(context, payload)).thenReturn(payload);
+        when(idamPinGenerator.execute(context, payload)).thenReturn(payload);
+        when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
+        when(caseDataFormatter.execute(context, payload)).thenReturn(payload);
 
         //When
         Map<String, Object> response = ccdCallbackWorkflow.run(createEventRequest, AUTH_TOKEN);
