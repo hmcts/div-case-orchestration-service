@@ -26,6 +26,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -65,7 +67,8 @@ public class ValidateCaseDataTest {
                 .build();
 
         context = new DefaultTaskContext();
-
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
     }
 
     @Test
@@ -74,7 +77,7 @@ public class ValidateCaseDataTest {
         when(caseValidationClient.validate(any())).thenReturn(validationResponse);
 
         //when
-        Map<String, Object> response = validateCaseData.execute(context, payload, AUTH_TOKEN, caseDetails);
+        Map<String, Object> response = validateCaseData.execute(context, payload);
 
         //then
         assertNotNull(response);
@@ -88,7 +91,7 @@ public class ValidateCaseDataTest {
         when(caseValidationClient.validate(any())).thenReturn(invalidationResponse);
 
         //when
-        Map<String, Object> response = validateCaseData.execute(context, payload, AUTH_TOKEN, caseDetails);
+        Map<String, Object> response = validateCaseData.execute(context, payload);
 
         //then
         assertNotNull(response);

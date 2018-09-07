@@ -1,19 +1,19 @@
 package uk.gov.hmcts.reform.divorce.context;
 
+import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationMethodRule;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.util.IdamUtils;
 
 import java.util.Locale;
 import java.util.UUID;
 
-@RunWith(SpringRunner.class)
+@RunWith(SerenityRunner.class)
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
     private static final String CASE_WORKER_USERNAME = "CASE_WORKER_USER";
@@ -48,14 +48,14 @@ public abstract class IntegrationTest {
     }
 
     protected UserDetails createCitizenUser() {
-        final String username = "simulate-delivered" + UUID.randomUUID();
+        final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
         final String password = UUID.randomUUID().toString().toUpperCase(Locale.ENGLISH);
 
         return getUserDetails(username, password, CITIZEN_ROLE);
     }
 
     protected UserDetails createCitizenUser(String role) {
-        final String username = "simulate-delivered" + UUID.randomUUID();
+        final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
         final String password = UUID.randomUUID().toString().toUpperCase(Locale.ENGLISH);
 
         return getUserDetails(username, password, role);
@@ -75,6 +75,5 @@ public abstract class IntegrationTest {
             .authToken(authToken)
             .id(userId)
             .build();
-
     }
 }

@@ -10,14 +10,18 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+
 @Component
 public class AuthenticateRespondent implements Task<Boolean> {
     @Autowired
     private IdamClient idamClient;
 
     @Override
-    public Boolean execute(TaskContext context, Boolean payload, Object... params) {
-        UserDetails userDetails = idamClient.retrieveUserDetails(AuthUtil.getBearToken(params[0].toString()));
+    public Boolean execute(TaskContext context, Boolean payload) {
+        UserDetails userDetails = idamClient.retrieveUserDetails(AuthUtil.getBearToken(
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString()
+                ));
         return isRespondentUser(userDetails);
     }
 
