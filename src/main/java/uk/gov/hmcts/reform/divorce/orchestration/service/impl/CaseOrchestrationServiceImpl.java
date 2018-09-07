@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCalllbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Service
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
-    private final CcdCalllbackWorkflow ccdCallbackWorkflow;
+    private final CcdCallbackWorkflow ccdCallbackWorkflow;
 
     private final RetrieveDraftWorkflow retrieveDraftWorkflow;
 
@@ -35,7 +35,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final UpdateToCCDWorkflow updateToCCDWorkflow;
 
     @Autowired
-    public CaseOrchestrationServiceImpl(CcdCalllbackWorkflow ccdCallbackWorkflow,
+    public CaseOrchestrationServiceImpl(CcdCallbackWorkflow ccdCallbackWorkflow,
                                         AuthenticateRespondentWorkflow authenticateRespondentWorkflow,
                                         SubmitToCCDWorkflow submitToCCDWorkflow,
                                         UpdateToCCDWorkflow updateToCCDWorkflow,

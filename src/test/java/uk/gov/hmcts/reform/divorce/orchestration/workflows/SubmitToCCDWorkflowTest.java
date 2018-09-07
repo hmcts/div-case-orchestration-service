@@ -36,9 +36,6 @@ public class SubmitToCCDWorkflowTest {
     @Mock
     SubmitCaseToCCD submitCaseToCCD;
 
-    @Mock
-    DeleteDraft deleteDraft;
-
     @InjectMocks
     SubmitToCCDWorkflow submitToCCDWorkflow;
 

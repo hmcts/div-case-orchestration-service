@@ -42,13 +42,13 @@ idam:
     health:
       context-path: /health
   citizen:
-    username: dummy
-    password: dummy
+    username: dummyUsername
+    password: dummyPassword
 
 auth2:
   client:
     id: divorce
-    secret: dummy
+    secret: dummySecret
 
 document:
   generator:
