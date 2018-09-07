@@ -54,7 +54,7 @@ public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
         }
 
         return RestUtil.postToRestService(
-                serverUrl + contextPath + "/" + caseId + "/" + UPDATE_EVENT_ID,
+                serverUrl + contextPath + "/" + caseId,
                 headers,
                 fileName == null ? null : ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + fileName)
         );

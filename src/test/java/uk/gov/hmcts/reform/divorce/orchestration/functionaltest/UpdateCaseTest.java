@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -34,6 +36,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -50,7 +55,7 @@ public class UpdateCaseTest {
     private static final String EVENT_ID = "updateEvent";
     private static final String AUTH_TOKEN = "authToken";
 
-    private static final String API_URL = String.format("/updateCase/%s/%s", CASE_ID, EVENT_ID);
+    private static final String API_URL = String.format("/updateCase/%s", CASE_ID);
 
     private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
     private static final String UPDATE_CONTEXT_PATH = String.format(
@@ -59,7 +64,9 @@ public class UpdateCaseTest {
         EVENT_ID
     );
 
-    private static final Map<String, Object> CASE_DATA = Collections.emptyMap();
+    private static final Map<String, Object> caseData = Collections.emptyMap();
+
+    private Map<String, Object> eventData;
 
     @Autowired
     private MockMvc webClient;
@@ -70,12 +77,19 @@ public class UpdateCaseTest {
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(4010);
 
+    @Before
+    public void setup() {
+        eventData = new HashMap<>();
+        eventData.put(CASE_EVENT_DATA_JSON_KEY, caseData);
+        eventData.put(CASE_EVENT_ID_JSON_KEY, EVENT_ID);
+    }
+
     @Test
-    public void givenCaseDataAndAuth_whenCaseDataIsSubmitted_thenReturnSuccess() throws Exception {
+    public void givenEventDataAndAuth_whenEventDataIsSubmitted_thenReturnSuccess() throws Exception {
         Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
 
-        stubFormatterServerEndpoint(CASE_DATA, CASE_DATA);
-        stubMaintenanceServerEndpointForUpdate(CASE_DATA, responseData);
+        stubFormatterServerEndpoint(caseData, caseData);
+        stubMaintenanceServerEndpointForUpdate(caseData, responseData);
 
         CaseResponse updateResponse = CaseResponse.builder()
                 .caseId(TEST_CASE_ID)
@@ -84,7 +98,7 @@ public class UpdateCaseTest {
 
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(CASE_DATA))
+                .content(convertObjectToJsonString(eventData))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
@@ -92,7 +106,7 @@ public class UpdateCaseTest {
     }
 
     @Test
-    public void givenNoPayload_whenCaseDataIsSubmitted_thenReturnBadRequest() throws Exception {
+    public void givenNoPayload_whenEventDataIsSubmitted_thenReturnBadRequest() throws Exception {
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, AUTH_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -101,9 +115,9 @@ public class UpdateCaseTest {
     }
 
     @Test
-    public void givenNoAuthToken_whenCaseDataIsSubmitted_thenReturnBadRequest() throws Exception {
+    public void givenNoAuthToken_whenEventDataIsSubmitted_thenReturnBadRequest() throws Exception {
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(CASE_DATA))
+                .content(convertObjectToJsonString(eventData))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -119,10 +133,10 @@ public class UpdateCaseTest {
                         .withBody(convertObjectToJsonString(response))));
     }
 
-    private void stubMaintenanceServerEndpointForUpdate(Map<String, Object> caseData, Map<String, Object> response)
+    private void stubMaintenanceServerEndpointForUpdate(Map<String, Object> eventData, Map<String, Object> response)
             throws Exception {
         maintenanceServiceServer.stubFor(WireMock.post(UPDATE_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
+                .withRequestBody(equalToJson(convertObjectToJsonString(eventData)))
                 .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())

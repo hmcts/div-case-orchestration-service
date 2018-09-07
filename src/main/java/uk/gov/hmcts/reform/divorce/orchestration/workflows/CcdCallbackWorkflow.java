@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 
 @Component
-public class CcdCalllbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final ValidateCaseData validateCaseData;
 
     private final PetitionGenerator petitionGenerator;
@@ -31,7 +31,7 @@ public class CcdCalllbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final CaseDataFormatter caseDataFormatter;
 
     @Autowired
-    public CcdCalllbackWorkflow(ValidateCaseData validateCaseData,
+    public CcdCallbackWorkflow(ValidateCaseData validateCaseData,
                                 PetitionGenerator petitionGenerator,
                                 IdamPinGenerator idamPinGenerator,
                                 RespondentLetterGenerator respondentLetterGenerator,
@@ -46,16 +46,16 @@ public class CcdCalllbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
     public Map<String, Object> run(CreateEvent caseDetailsRequest,
                                    String authToken) throws WorkflowException {
         return this.execute(
-            new Task[]{
-                validateCaseData,
-                petitionGenerator,
-                idamPinGenerator,
-                respondentLetterGenerator,
-                caseDataFormatter
-            },
-            caseDetailsRequest.getCaseDetails().getCaseData(),
-            new ImmutablePair(AUTH_TOKEN_JSON_KEY, authToken),
-            new ImmutablePair(CASE_DETAILS_JSON_KEY, caseDetailsRequest.getCaseDetails())
+                new Task[]{
+                    validateCaseData,
+                    petitionGenerator,
+                    idamPinGenerator,
+                    respondentLetterGenerator,
+                    caseDataFormatter
+                },
+                caseDetailsRequest.getCaseDetails().getCaseData(),
+                new ImmutablePair(AUTH_TOKEN_JSON_KEY, authToken),
+                new ImmutablePair(CASE_DETAILS_JSON_KEY, caseDetailsRequest.getCaseDetails())
         );
     }
 }

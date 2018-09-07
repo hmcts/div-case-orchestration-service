@@ -36,8 +36,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CcdCalllbackWorkflowTest {
-    private CcdCalllbackWorkflow ccdCalllbackWorkflow;
+public class CcdCallbackWorkflowTest {
+    private CcdCallbackWorkflow ccdCallbackWorkflow;
 
     @Mock
     private ValidateCaseData validateCaseData;
@@ -61,8 +61,8 @@ public class CcdCalllbackWorkflowTest {
 
     @Before
     public void setUp() throws Exception {
-        ccdCalllbackWorkflow =
-                new CcdCalllbackWorkflow(
+        ccdCallbackWorkflow =
+                new CcdCallbackWorkflow(
                         validateCaseData,
                         petitionGenerator,
                         idamPinGenerator,
@@ -103,7 +103,7 @@ public class CcdCalllbackWorkflowTest {
         when(caseDataFormatter.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = ccdCalllbackWorkflow.run(createEventRequest, AUTH_TOKEN);
+        Map<String, Object> response = ccdCallbackWorkflow.run(createEventRequest, AUTH_TOKEN);
 
         //Then
         assertNotNull(response);
@@ -113,6 +113,6 @@ public class CcdCalllbackWorkflowTest {
 
     @After
     public void tearDown() throws Exception {
-        ccdCalllbackWorkflow = null;
+        ccdCallbackWorkflow = null;
     }
 }
