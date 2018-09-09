@@ -20,7 +20,6 @@ public class IdamUtils {
     @Value("${auth.idam.client.secret}")
     private String idamSecret;
 
-
     public void createUser(String username, String password, String... roles) {
         RegisterUserRequest registerUserRequest =
             RegisterUserRequest.builder()
