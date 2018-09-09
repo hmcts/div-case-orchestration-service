@@ -27,12 +27,9 @@ public class CaseFormatterAddPDF implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> caseData) {
         GeneratedDocumentInfo miniPetition
-                = (GeneratedDocumentInfo) caseData.get(MINI_PETITION_TEMPLATE_NAME);
+                = (GeneratedDocumentInfo) context.getTransientObject(MINI_PETITION_TEMPLATE_NAME);
         GeneratedDocumentInfo respondentInvitation
-                = (GeneratedDocumentInfo) caseData.get(RESPONDENT_INVITATION_TEMPLATE_NAME);
-
-        caseData.remove(MINI_PETITION_TEMPLATE_NAME);
-        caseData.remove(RESPONDENT_INVITATION_TEMPLATE_NAME);
+                = (GeneratedDocumentInfo) context.getTransientObject(RESPONDENT_INVITATION_TEMPLATE_NAME);
 
         return caseFormatterClient.addDocuments(
                 DocumentUpdateRequest.builder()

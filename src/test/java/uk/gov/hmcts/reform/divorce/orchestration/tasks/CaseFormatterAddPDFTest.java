@@ -1,26 +1,23 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.junit.After;
-import org.junit.Before;
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D_8_DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DOC_URL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_TEMPLATE_NAME;
@@ -28,56 +25,43 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseFormatterAddPDFTest {
-    private CaseFormatterAddPDF caseFormatterAddPDF;
-
     @Mock
     private CaseFormatterClient caseFormatterClient;
-    private Map<String, Object> payload;
-    private TaskContext context;
 
-    @Before
-    public void setUp() {
-        caseFormatterAddPDF = new CaseFormatterAddPDF(caseFormatterClient);
+    @InjectMocks
+    private CaseFormatterAddPDF caseFormatterAddPDF;
 
-        GeneratedDocumentInfo petition = GeneratedDocumentInfo.builder()
-            .fileName(TEST_FILENAME)
-            .url(TEST_DOC_URL)
-            .build();
-
-        GeneratedDocumentInfo aosInvitation = GeneratedDocumentInfo.builder()
-            .fileName(TEST_FILENAME)
-            .url(TEST_DOC_URL)
-            .build();
-
-        payload = new HashMap<>();
-        payload.put(MINI_PETITION_TEMPLATE_NAME, petition);
-        payload.put(RESPONDENT_INVITATION_TEMPLATE_NAME, aosInvitation);
-        payload.put(D_8_DOCUMENTS_GENERATED, Arrays.asList(petition, aosInvitation) );
-
-        context = new DefaultTaskContext();
-    }
-
-    @SuppressWarnings("unchecked")
     @Test
     public void executeShouldReturnUpdatedPayloadForValidCase() {
+        final GeneratedDocumentInfo petition = GeneratedDocumentInfo.builder()
+            .fileName(TEST_FILENAME)
+            .url(TEST_DOC_URL)
+            .build();
+
+        final GeneratedDocumentInfo aosInvitation = GeneratedDocumentInfo.builder()
+            .fileName(TEST_FILENAME)
+            .url(TEST_DOC_URL)
+            .build();
+
+        final Map<String, Object> payload = new HashMap<>();
+        final TaskContext context = new DefaultTaskContext();
+        final  DocumentUpdateRequest documentUpdateRequest =
+            DocumentUpdateRequest.builder()
+                .caseData(payload)
+                .documents(ImmutableList.of(petition, aosInvitation))
+            .build();
+
+        context.setTransientObject(MINI_PETITION_TEMPLATE_NAME, petition);
+        context.setTransientObject(RESPONDENT_INVITATION_TEMPLATE_NAME, aosInvitation);
+
         //given
-        when(caseFormatterClient.addDocuments(any())).thenReturn(payload);
+        when(caseFormatterClient.addDocuments(documentUpdateRequest)).thenReturn(payload);
 
         //when
         Map<String, Object> response = caseFormatterAddPDF.execute(context, payload);
 
-        //then
-        assertNotNull(response);
-        assertNotNull(response.get(D_8_DOCUMENTS_GENERATED));
-        List<GeneratedDocumentInfo> generatedDocumentInfos
-                = (List<GeneratedDocumentInfo>) response.get(D_8_DOCUMENTS_GENERATED);
-        assertEquals(generatedDocumentInfos.size(), 2);
-        assertEquals(generatedDocumentInfos.get(0).getFileName(), TEST_FILENAME);
-    }
+        assertEquals(payload, response);
 
-    @After
-    public void tearDown() {
-        caseFormatterAddPDF = null;
+        verify(caseFormatterClient).addDocuments(documentUpdateRequest);
     }
-
 }

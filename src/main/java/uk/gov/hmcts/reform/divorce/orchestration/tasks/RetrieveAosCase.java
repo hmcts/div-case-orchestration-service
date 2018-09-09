@@ -28,6 +28,11 @@ public class RetrieveAosCase implements Task<CaseDataResponse> {
             String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
             Boolean.valueOf(String.valueOf(context.getTransientObject(CHECK_CCD))));
 
+        if (caseDetails == null) {
+            context.setTaskFailed(true);
+            return CaseDataResponse.builder().build();
+        }
+
         return CaseDataResponse.builder()
             .data(caseDetails.getCaseData())
             .caseId(caseDetails.getCaseId())

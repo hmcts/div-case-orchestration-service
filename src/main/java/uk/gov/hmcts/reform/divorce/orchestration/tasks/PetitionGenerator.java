@@ -45,7 +45,7 @@ public class PetitionGenerator implements Task<Map<String, Object>> {
         miniPetition.setDocumentType(DOCUMENT_TYPE_PETITION);
         miniPetition.setFileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, caseDetails.getCaseId()));
 
-        caseData.put(MINI_PETITION_TEMPLATE_NAME,miniPetition);
+        context.setTransientObject(MINI_PETITION_TEMPLATE_NAME, miniPetition);
 
         return caseData;
     }
