@@ -28,23 +28,23 @@ public class PetitionIssueTest extends IntegrationTest {
         Collections.singletonList("D8StatementOfTruth must be 'YES'. Actual data is: null");
     
     private static final String D8_MINI_PETITION_DOCUMENT_URL_PATH =
-        "case_data.D8DocumentsGenerated[0].value.DocumentLink.document_url";
+        "data.D8DocumentsGenerated[0].value.DocumentLink.document_url";
     private static final String D8_MINI_PETITION_DOCUMENT_BINARY_URL_PATH =
-        "case_data.D8DocumentsGenerated[0].value.DocumentLink.document_binary_url";
+        "data.D8DocumentsGenerated[0].value.DocumentLink.document_binary_url";
     private static final String D8_MINI_PETITION_DOCUMENT_TYPE_PATH =
-        "case_data.D8DocumentsGenerated[0].value.DocumentType";
+        "data.D8DocumentsGenerated[0].value.DocumentType";
     private static final String D8_MINI_PETITION_DOCUMENT_FILENAME_PATH =
-        "case_data.D8DocumentsGenerated[0].value.DocumentLink.document_filename";
+        "data.D8DocumentsGenerated[0].value.DocumentLink.document_filename";
     private static final String PETITION = "petition";
     private static final String D8_MINI_PETITION_FILE_NAME_FORMAT = "d8petition%s.pdf";
     private static final String D8_AOS_INVITATION_DOCUMENT_URL_PATH =
-            "case_data.D8DocumentsGenerated[1].value.DocumentLink.document_url";
+            "data.D8DocumentsGenerated[1].value.DocumentLink.document_url";
     private static final String D8_AOS_INVITATION_DOCUMENT_BINARY_URL_PATH =
-            "case_data.D8DocumentsGenerated[1].value.DocumentLink.document_binary_url";
+            "data.D8DocumentsGenerated[1].value.DocumentLink.document_binary_url";
     private static final String D8_AOS_INVITATION_DOCUMENT_TYPE_PATH =
-            "case_data.D8DocumentsGenerated[1].value.DocumentType";
+            "data.D8DocumentsGenerated[1].value.DocumentType";
     private static final String D8_AOS_INVITATION_DOCUMENT_FILENAME_PATH =
-            "case_data.D8DocumentsGenerated[1].value.DocumentLink.document_filename";
+            "data.D8DocumentsGenerated[1].value.DocumentLink.document_filename";
     private static final String AOS_INVITATION = "aosinvitation";
     private static final String D8_AOS_INVITATION_FILE_NAME_FORMAT = "aosinvitation%s.pdf";
 

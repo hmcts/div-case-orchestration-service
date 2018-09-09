@@ -28,7 +28,7 @@ public class SubmitCaseToCCDTest {
     private SubmitCaseToCCD submitCaseToCCD;
 
     @Test
-    public void executeShouldCallCaseMaintenanceClientSubmitEndpoint() throws Exception {
+    public void executeShouldCallCaseMaintenanceClientSubmitEndpoint() {
         final Map<String, Object> testData = Collections.emptyMap();
         final TaskContext context = new DefaultTaskContext();
 

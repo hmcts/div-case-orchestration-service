@@ -45,7 +45,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payLoad = ccdCallbackWorkflow.run(caseDetailsRequest, authToken);
 
         if (ccdCallbackWorkflow.errors().isEmpty()) {
-            log.info("Case ID is: {}", payLoad.get(ID));
+            log.info("Callback for case with id: {} successfully completed", payLoad.get(ID));
             return payLoad;
         } else {
             return ccdCallbackWorkflow.errors();

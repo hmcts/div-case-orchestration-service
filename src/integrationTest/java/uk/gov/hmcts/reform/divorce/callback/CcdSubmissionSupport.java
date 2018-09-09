@@ -32,7 +32,8 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             eventId, createCaseWorkerUser());
     }
 
-    protected CaseDetails updateCaseForCitizen(String caseId, String fileName, String eventId, UserDetails userDetails) {
+    protected CaseDetails updateCaseForCitizen(String caseId, String fileName, String eventId,
+                                               UserDetails userDetails) {
         return ccdClientSupport.updateForCitizen(caseId,
             fileName == null ? null : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class),
             eventId, userDetails);

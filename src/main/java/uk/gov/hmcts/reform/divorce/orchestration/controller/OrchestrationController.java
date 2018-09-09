@@ -68,7 +68,7 @@ public class OrchestrationController {
                         .build());
     }
 
-    @PostMapping(path = "/transformationapi/version/1/submit",
+    @PostMapping(path = "/submit",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles submit called from petition frontend")
     @ApiResponses(value = {
@@ -93,7 +93,7 @@ public class OrchestrationController {
                         .build());
     }
 
-    @PostMapping(path = "/transformationapi/version/1/updateCase/{caseId}",
+    @PostMapping(path = "/updateCase/{caseId}",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles update called from petition frontend")
     @ApiResponses(value = {

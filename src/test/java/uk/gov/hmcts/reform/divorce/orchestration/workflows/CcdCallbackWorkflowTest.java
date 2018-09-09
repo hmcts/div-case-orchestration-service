@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddPDF;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.IdamPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
@@ -93,7 +92,7 @@ public class CcdCallbackWorkflowTest {
 
 
     @Test
-    public void runShouldReturnValidCaseDataForValidCase() throws WorkflowException, TaskException {
+    public void runShouldReturnValidCaseDataForValidCase() throws WorkflowException {
         //Given
         when(validateCaseData.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);

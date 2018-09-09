@@ -17,6 +17,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 
@@ -33,6 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
@@ -52,7 +54,7 @@ public class UpdateCaseTest {
     private static final String EVENT_ID = "updateEvent";
     private static final String AUTH_TOKEN = "authToken";
 
-    private static final String API_URL = String.format("/transformationapi/version/1/updateCase/%s", CASE_ID);
+    private static final String API_URL = String.format("/updateCase/%s", CASE_ID);
 
     private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
     private static final String UPDATE_CONTEXT_PATH = String.format(
@@ -85,8 +87,8 @@ public class UpdateCaseTest {
     public void givenEventDataAndAuth_whenEventDataIsSubmitted_thenReturnSuccess() throws Exception {
         Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
 
-        stubFormatterServerEndpoint(caseData, caseData);
-        stubMaintenanceServerEndpointForUpdate(caseData, responseData);
+        stubFormatterServerEndpoint();
+        stubMaintenanceServerEndpointForUpdate(responseData);
 
         CaseResponse updateResponse = CaseResponse.builder()
                 .caseId(TEST_CASE_ID)
@@ -120,20 +122,20 @@ public class UpdateCaseTest {
                 .andExpect(status().isBadRequest());
     }
 
-    private void stubFormatterServerEndpoint(Map<String, Object> transformToCCDFormat, Map<String, Object> response)
+    private void stubFormatterServerEndpoint()
             throws Exception {
         formatterServiceServer.stubFor(WireMock.post(CCD_FORMAT_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(transformToCCDFormat)))
+                .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(convertObjectToJsonString(response))));
+                        .withBody(convertObjectToJsonString(caseData))));
     }
 
-    private void stubMaintenanceServerEndpointForUpdate(Map<String, Object> eventData, Map<String, Object> response)
+    private void stubMaintenanceServerEndpointForUpdate(Map<String, Object> response)
             throws Exception {
         maintenanceServiceServer.stubFor(WireMock.post(UPDATE_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(eventData)))
+                .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
                 .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())

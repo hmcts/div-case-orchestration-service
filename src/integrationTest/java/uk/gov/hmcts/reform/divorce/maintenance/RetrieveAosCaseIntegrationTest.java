@@ -17,8 +17,10 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 
 public class RetrieveAosCaseIntegrationTest extends CcdSubmissionSupport {
+    private static final String PAYLOAD_CONTEXT_PATH = "fixtures/retrieve-aos-case/";
     private static final String CASE_ID_KEY = "caseId";
     private static final String TEST_AOS_RESPONDED_EVENT = "testAosResponded";
     private static final String COURTS_KEY = "courts";
@@ -58,7 +60,8 @@ public class RetrieveAosCaseIntegrationTest extends CcdSubmissionSupport {
         assertEquals(String.valueOf(caseDetails.getId()), cosResponse.path(CASE_ID_KEY));
         assertEquals("eastMidlands", cosResponse.path(COURTS_KEY));
         assertEquals("AosResponded", cosResponse.path(STATE_KEY));
-        assertEquals(caseDetails.getData(), cosResponse.path(DATA_KEY));
+        assertEquals(loadJsonToObject(PAYLOAD_CONTEXT_PATH + "aos-divorce-session.json", Map.class),
+            cosResponse.path(DATA_KEY));
     }
 
     private Response retrieveAosCase(String userToken) {
