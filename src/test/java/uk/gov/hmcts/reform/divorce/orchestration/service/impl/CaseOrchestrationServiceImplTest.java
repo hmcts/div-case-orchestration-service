@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -210,16 +211,16 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenCaseDataValid_whenUpdate_thenReturnPayload() throws Exception {
         // given
-        when(updateToCCDWorkflow.run(requestPayload, AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID))
+        when(updateToCCDWorkflow.run(requestPayload, AUTH_TOKEN, TEST_CASE_ID))
                 .thenReturn(requestPayload);
 
         // when
-        Map<String, Object> actual = classUnderTest.update(requestPayload, AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID);
+        Map<String, Object> actual = classUnderTest.update(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
 
         // then
         assertEquals(requestPayload, actual);
 
-        verify(updateToCCDWorkflow).run(requestPayload, AUTH_TOKEN, TEST_CASE_ID, TEST_EVENT_ID);
+        verify(updateToCCDWorkflow).run(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
     }
 
     @After

@@ -84,9 +84,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> update(Map<String, Object> divorceSession,
                                       String authToken,
-                                      String caseId,
-                                      String eventId) throws WorkflowException {
-        Map<String, Object> payload = updateToCCDWorkflow.run(divorceSession, authToken, caseId, eventId);
+                                      String caseId) throws WorkflowException {
+        Map<String, Object> payload = updateToCCDWorkflow.run(divorceSession, authToken, caseId);
 
         log.info("Case ID is: {}", payload.get(ID));
         return payload;
