@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
@@ -120,8 +121,8 @@ public class OrchestrationController {
         @ApiResponse(code = 400, message = "Bad Request")
         })
     public ResponseEntity<CaseDataResponse> retrieveAosCase(
-        @RequestHeader(value = "Authorization") String authorizationToken,
-        @RequestParam @ApiParam("checkCcd") boolean checkCcd) throws WorkflowException {
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken,
+        @RequestParam @ApiParam(CHECK_CCD) boolean checkCcd) throws WorkflowException {
 
         return ResponseEntity.ok(orchestrationService.retrieveAosCase(checkCcd,
             authorizationToken));

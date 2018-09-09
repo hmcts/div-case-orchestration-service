@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -43,7 +44,7 @@ public class OrchestrationControllerTest {
     private OrchestrationController classUnderTest;
 
     @Test
-    public void whenPetitionIssued_thenCallbackWorksAsExpected() throws WorkflowException {
+    public void givenNoErrors_whenPetitionIssued_thenCallbackWorksAsExpected() throws WorkflowException {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
                 .caseData(caseData)
@@ -55,6 +56,34 @@ public class OrchestrationControllerTest {
         CcdCallbackResponse expected = CcdCallbackResponse.builder().data(Collections.emptyMap()).build();
 
         when(caseOrchestrationService.ccdCallbackHandler(createEvent, AUTH_TOKEN)).thenReturn(Collections.emptyMap());
+
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.petitionIssuedCallback(AUTH_TOKEN, createEvent);
+
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test
+    public void givenErrors_whenPetitionIssued_thenReturnErrorResponse() throws WorkflowException {
+        final List<String> expectedError = Collections.singletonList("Some error");
+        final Map<String, Object> caseData =
+            Collections.singletonMap(
+                VALIDATION_ERROR_KEY,
+                ValidationResponse.builder()
+                    .errors(expectedError)
+                    .build());
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CreateEvent createEvent = new CreateEvent();
+        createEvent.setCaseDetails(caseDetails);
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .errors(expectedError)
+            .build();
+
+        when(caseOrchestrationService.ccdCallbackHandler(createEvent, AUTH_TOKEN)).thenReturn(caseData);
 
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.petitionIssuedCallback(AUTH_TOKEN, createEvent);
 
@@ -124,7 +153,7 @@ public class OrchestrationControllerTest {
     }
 
     @Test
-    public void whenSubmit_givenErrors_thenReturnBadRequest() throws Exception {
+    public void givenErrors_whenSubmit_thenReturnBadRequest() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final Map<String, Object> invalidResponse = Collections.singletonMap(
                 VALIDATION_ERROR_KEY,

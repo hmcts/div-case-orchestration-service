@@ -5,9 +5,9 @@ public class OrchestrationConstants {
     // Authentication
     public static final String ACCESS_CODE = "access_code";
     public static final String AUTH_TOKEN_JSON_KEY = "authToken";
+    public static final String BASIC = "Basic ";
 
     // Core Case Data
-    public static final String CASE_DATA_JSON_KEY = "case_data";
     public static final String CHECK_CCD = "checkCcd";
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
@@ -20,7 +20,6 @@ public class OrchestrationConstants {
     public static final String PIN = "pin";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
     public static final String SUCCESS_STATUS = "success";
-    public static final String ERROR_STATUS = "error";
 
     // Document Generator
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";

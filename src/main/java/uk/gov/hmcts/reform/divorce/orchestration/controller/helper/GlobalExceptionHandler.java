@@ -11,17 +11,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 @ControllerAdvice
 @Slf4j
-public class GlobalExceptionHandler {
+class GlobalExceptionHandler {
 
     @ExceptionHandler(FeignException.class)
-    public ResponseEntity<Object> handleBadRequestException(FeignException exception) {
+    ResponseEntity<Object> handleBadRequestException(FeignException exception) {
         log.warn(exception.getMessage(), exception);
 
         return handleFeignException(exception);
     }
 
     @ExceptionHandler(WorkflowException.class)
-    public ResponseEntity<Object> handleWorkFlowException(WorkflowException exception) {
+    ResponseEntity<Object> handleWorkFlowException(WorkflowException exception) {
         log.warn(exception.getMessage(), exception);
 
         if (exception.getCause() != null) {

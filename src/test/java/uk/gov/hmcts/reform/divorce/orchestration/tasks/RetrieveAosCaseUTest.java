@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CHECK_CCD;
@@ -33,7 +35,26 @@ public class RetrieveAosCaseUTest {
     private RetrieveAosCase classUnderTest;
 
     @Test
-    public void whenRetrieveAosCase_thenReturnExpectedOutput() {
+    public void givenNoCaseExists_whenRetrieveAosCase_thenReturnEmptyResponse() {
+        final DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(CHECK_CCD, TEST_CHECK_CCD);
+
+        Mockito.when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD)).thenReturn(null);
+
+        CaseDataResponse actual = classUnderTest.execute(context, null);
+
+        assertNull(actual.getCaseId());
+        assertNull(actual.getCourts());
+        assertNull(actual.getState());
+        assertNull(actual.getData());
+        assertTrue(context.getStatus());
+
+        Mockito.verify(caseMaintenanceClient).retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD);
+    }
+
+    @Test
+    public void givenCaseExists_whenRetrieveAosCase_thenReturnExpectedOutput() {
         final DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CHECK_CCD, TEST_CHECK_CCD);
