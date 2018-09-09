@@ -26,18 +26,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.Validat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DELETE_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SAVE_DRAFT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
@@ -144,14 +139,9 @@ public class OrchestrationController {
             @ApiResponse(code = 404, message = "Draft does not exist")})
     public ResponseEntity<Map<String, Object>> retrieveDraft(
             @RequestHeader("Authorization") @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
-            final String authorizationToken) {
-        Map<String, Object> response;
-        try {
-            response = orchestrationService.getDraft(authorizationToken);
-        } catch (WorkflowException e) {
-            log.error("Error retrieving draft" , e);
-            throw new RuntimeException(e);
-        }
+            final String authorizationToken) throws WorkflowException {
+
+        Map<String, Object>    response = orchestrationService.getDraft(authorizationToken);
         if (response.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -171,18 +161,9 @@ public class OrchestrationController {
             @NotNull Map<String, Object> payload,
             @RequestParam(value = "notificationEmail", required = false)
             @ApiParam(value = "The email address that will receive the notification that the draft has been saved")
-            @Email final String notificationEmail) {
+            @Email final String notificationEmail) throws WorkflowException {
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        try {
-            response = orchestrationService.saveDraft(payload, authorizationToken, notificationEmail);
-        } catch (WorkflowException e) {
-            log.error("Error saving draft", e);
-            response = new HashMap<>();
-            response.put(SAVE_DRAFT_ERROR_KEY, e);
-        }
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(orchestrationService.saveDraft(payload, authorizationToken, notificationEmail));
     }
 
     @DeleteMapping(path = "/drafts")
@@ -191,18 +172,10 @@ public class OrchestrationController {
             @ApiResponse(code = 200, message = "The divorce draft has been deleted successfully")})
     public ResponseEntity<Map<String, Object>> deleteDraft(@RequestHeader("Authorization")
                                             @ApiParam(value = "JWT authorisation token issued by IDAM",
-                                                    required = true) final String authorizationToken) {
+                                                    required = true) final String authorizationToken)
+            throws WorkflowException {
 
-        Map<String, Object> response;
-        try {
-            response  = orchestrationService.deleteDraft(authorizationToken);
-        } catch (WorkflowException e) {
-            log.error("Error deleting draft", e);
-            response = new LinkedHashMap<>();
-            response.put(DELETE_ERROR_KEY, e);
-        }
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(orchestrationService.deleteDraft(authorizationToken));
     }
 
     @PostMapping(path = "/authenticate-respondent")
