@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -24,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
@@ -41,7 +44,7 @@ public class OrchestrationControllerTest {
     private OrchestrationController classUnderTest;
 
     @Test
-    public void whenPetitionIssued_thenCallbackWorksAsExpected() throws WorkflowException {
+    public void givenNoErrors_whenPetitionIssued_thenCallbackWorksAsExpected() throws WorkflowException {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
                 .caseData(caseData)
@@ -53,6 +56,34 @@ public class OrchestrationControllerTest {
         CcdCallbackResponse expected = CcdCallbackResponse.builder().data(Collections.emptyMap()).build();
 
         when(caseOrchestrationService.ccdCallbackHandler(createEvent, AUTH_TOKEN)).thenReturn(Collections.emptyMap());
+
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.petitionIssuedCallback(AUTH_TOKEN, createEvent);
+
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test
+    public void givenErrors_whenPetitionIssued_thenReturnErrorResponse() throws WorkflowException {
+        final List<String> expectedError = Collections.singletonList("Some error");
+        final Map<String, Object> caseData =
+            Collections.singletonMap(
+                VALIDATION_ERROR_KEY,
+                ValidationResponse.builder()
+                    .errors(expectedError)
+                    .build());
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CreateEvent createEvent = new CreateEvent();
+        createEvent.setCaseDetails(caseDetails);
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .errors(expectedError)
+            .build();
+
+        when(caseOrchestrationService.ccdCallbackHandler(createEvent, AUTH_TOKEN)).thenReturn(caseData);
 
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.petitionIssuedCallback(AUTH_TOKEN, createEvent);
 
@@ -122,18 +153,7 @@ public class OrchestrationControllerTest {
     }
 
     @Test
-    public void whenSubmit_givenException_thenReturnInternalServerError() throws Exception {
-        final Map<String, Object> caseData = Collections.emptyMap();
-
-        when(caseOrchestrationService.submit(caseData, AUTH_TOKEN)).thenThrow(new WorkflowException("An Error"));
-
-        ResponseEntity<CaseResponse> response = classUnderTest.submit(AUTH_TOKEN, caseData);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    }
-
-    @Test
-    public void whenSubmit_givenErrors_thenReturnBadRequest() throws Exception {
+    public void givenErrors_whenSubmit_thenReturnBadRequest() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final Map<String, Object> invalidResponse = Collections.singletonMap(
                 VALIDATION_ERROR_KEY,
@@ -169,18 +189,29 @@ public class OrchestrationControllerTest {
         assertEquals(expectedResponse, response.getBody());
     }
 
+    @Test(expected = WorkflowException.class)
+    public void givenThrowsException_whenRetrieveAosCase_thenThrowWorkflowException() throws WorkflowException {
+
+        when(caseOrchestrationService.retrieveAosCase(TEST_CHECK_CCD, AUTH_TOKEN))
+            .thenThrow(new WorkflowException("error"));
+
+        classUnderTest.retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD);
+
+        verify(caseOrchestrationService).retrieveAosCase(TEST_CHECK_CCD, AUTH_TOKEN);
+    }
+
     @Test
-    public void whenUpdate_givenException_thenReturnInternalServerError() throws Exception {
-        final Map<String, Object> eventData = new HashMap<>();
-        eventData.put(CASE_EVENT_DATA_JSON_KEY,  Collections.emptyMap());
-        eventData.put(CASE_EVENT_ID_JSON_KEY, TEST_EVENT_ID);
+    public void givenAllGoesWell_whenRetrieveAosCase_thenReturnExpectedResponse() throws WorkflowException {
+        final CaseDataResponse caseDataResponse = CaseDataResponse.builder().build();
 
-        when(caseOrchestrationService.update(eventData, AUTH_TOKEN, TEST_CASE_ID))
-                .thenThrow(new WorkflowException("An Error"));
+        when(caseOrchestrationService.retrieveAosCase(TEST_CHECK_CCD, AUTH_TOKEN))
+            .thenReturn(caseDataResponse);
 
-        ResponseEntity<CaseResponse> response = classUnderTest
-                .update(AUTH_TOKEN, TEST_CASE_ID, eventData);
+        ResponseEntity<CaseDataResponse> actual = classUnderTest.retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(caseDataResponse, actual.getBody());
+
+        verify(caseOrchestrationService).retrieveAosCase(TEST_CHECK_CCD, AUTH_TOKEN);
     }
 }

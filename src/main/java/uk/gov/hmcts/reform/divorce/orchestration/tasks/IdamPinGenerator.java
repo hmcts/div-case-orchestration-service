@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.Base64;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BASIC;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
@@ -24,7 +25,6 @@ public class IdamPinGenerator implements Task<Map<String, Object>> {
     private static final String BEARER = "Bearer ";
     private static final String AUTHORIZATION_CODE = "authorization_code";
     private static final String CODE = "code";
-    private static final String BASIC = "Basic ";
 
     @Value("${idam.api.redirect-url}")
     private String authRedirectUrl;
@@ -52,12 +52,12 @@ public class IdamPinGenerator implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> caseData) {
         Pin pin = idamClient.createPin(PinRequest.builder()
-                        .firstName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_FIRST_NAME, "")))
-                        .lastName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_LAST_NAME, "")))
-                        .build(),
-                getIdamOauth2Token(citizenUserName, citizenPassword));
+                .firstName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_FIRST_NAME, "")))
+                .lastName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_LAST_NAME, "")))
+                .build(),
+            getIdamOauth2Token(citizenUserName, citizenPassword));
 
-        caseData.put(PIN, pin.getPin());
+        context.setTransientObject(PIN, pin.getPin());
         caseData.put(RESPONDENT_LETTER_HOLDER_ID, pin.getUserId());
 
         return caseData;

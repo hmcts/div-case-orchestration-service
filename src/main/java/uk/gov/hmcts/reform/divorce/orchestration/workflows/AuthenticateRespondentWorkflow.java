@@ -20,9 +20,11 @@ public class AuthenticateRespondentWorkflow extends DefaultWorkflow<Boolean> {
     }
 
     public Boolean run(String authToken) throws WorkflowException {
-        return this.execute(new Task[] {
-            authenticateRespondent,
-        }, null,
+        return this.execute(
+            new Task[] {
+                authenticateRespondent,
+            },
+            null,
             new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, authToken)
         );
     }

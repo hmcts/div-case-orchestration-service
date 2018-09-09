@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -24,24 +22,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SubmitCaseToCCDTest {
 
     @Mock
-    CaseMaintenanceClient caseMaintenanceClient;
+    private CaseMaintenanceClient caseMaintenanceClient;
 
     @InjectMocks
-    SubmitCaseToCCD submitCaseToCCD;
-
-    private Map<String, Object> testData;
-    private TaskContext context;
-
-    @Before
-    public void setup() {
-        testData = Collections.emptyMap();
-        context = new DefaultTaskContext();
-
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-    }
+    private SubmitCaseToCCD submitCaseToCCD;
 
     @Test
-    public void executeShouldCallCaseMaintenanceClientSubmitEndpoint() throws Exception {
+    public void executeShouldCallCaseMaintenanceClientSubmitEndpoint() {
+        final Map<String, Object> testData = Collections.emptyMap();
+        final TaskContext context = new DefaultTaskContext();
+
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+
         Map<String, Object> resultData = Collections.singletonMap("Hello", "World");
 
         when(caseMaintenanceClient.submitCase(testData, AUTH_TOKEN)).thenReturn(resultData);

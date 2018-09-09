@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -27,6 +25,7 @@ public class UpdateToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
     @Autowired
     private UpdateCaseInCCD updateCaseInCCD;
 
+    @SuppressWarnings("unchecked")
     public Map<String, Object> run(Map<String, Object> divorceEvent,
                                    String authToken,
                                    String caseId) throws WorkflowException {
@@ -34,10 +33,12 @@ public class UpdateToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
         Map<String, Object> payload = (Map<String, Object>) divorceEvent.get(CASE_EVENT_DATA_JSON_KEY);
         String eventId = divorceEvent.get(CASE_EVENT_ID_JSON_KEY).toString();
 
-        return this.execute(new Task[] {
-            formatDivorceSessionToCaseData,
-            updateCaseInCCD
-        }, payload,
+        return this.execute(
+            new Task[] {
+                formatDivorceSessionToCaseData,
+                updateCaseInCCD
+            },
+            payload,
             new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, authToken),
             new ImmutablePair<>(CASE_ID_JSON_KEY, caseId),
             new ImmutablePair<>(CASE_EVENT_ID_JSON_KEY, eventId)

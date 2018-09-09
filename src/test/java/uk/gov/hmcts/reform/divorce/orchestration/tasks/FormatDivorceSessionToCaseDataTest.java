@@ -6,11 +6,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Collections;
 import java.util.Map;
@@ -25,10 +23,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class FormatDivorceSessionToCaseDataTest {
 
     @Mock
-    CaseFormatterClient caseFormatterClient;
+    private CaseFormatterClient caseFormatterClient;
 
     @InjectMocks
-    FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
+    private FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -41,11 +39,11 @@ public class FormatDivorceSessionToCaseDataTest {
     }
 
     @Test
-    public void executeShouldCallCaseFormatterClientTransformToCCDFormat() throws Exception {
-        when(caseFormatterClient.transformToCCDFormat(testData, AUTH_TOKEN)).thenReturn(testData);
+    public void executeShouldCallCaseFormatterClientTransformToCCDFormat() {
+        when(caseFormatterClient.transformToCCDFormat(AUTH_TOKEN, testData)).thenReturn(testData);
 
         assertEquals(testData, formatDivorceSessionToCaseData.execute(context, testData));
 
-        verify(caseFormatterClient).transformToCCDFormat(testData, AUTH_TOKEN);
+        verify(caseFormatterClient).transformToCCDFormat(AUTH_TOKEN, testData);
     }
 }

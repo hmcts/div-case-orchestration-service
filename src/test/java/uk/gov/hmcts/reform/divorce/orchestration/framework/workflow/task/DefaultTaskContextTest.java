@@ -5,7 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 public class DefaultTaskContextTest {
@@ -19,13 +20,13 @@ public class DefaultTaskContextTest {
 
     @Test
     public void defaultContextStatusIsFalseByDefault() {
-        assertEquals(false, defaultTaskContext.getStatus());
+        assertFalse(defaultTaskContext.getStatus());
     }
 
     @Test
     public void defaultContextStatusIsTrueWhenSetFailedIsCalled() {
         defaultTaskContext.setTaskFailed(true);
-        assertEquals(true, defaultTaskContext.getStatus());
+        assertTrue(defaultTaskContext.getStatus());
     }
 
 }
