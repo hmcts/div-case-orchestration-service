@@ -19,8 +19,7 @@ public class CaseDataToDivorceFormatter implements Task<CaseDataResponse> {
     }
 
     @Override
-    public CaseDataResponse execute(TaskContext context,
-                                    CaseDataResponse caseDataResponse) {
+    public CaseDataResponse execute(TaskContext context, CaseDataResponse caseDataResponse) {
 
         caseDataResponse.setData(
             caseFormatterClient.transformToDivorceFormat(

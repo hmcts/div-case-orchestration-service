@@ -24,8 +24,7 @@ public class CaseFormatterAddPDF implements Task<Map<String, Object>> {
     }
 
     @Override
-    public Map<String, Object> execute(TaskContext context,
-                                       Map<String, Object> caseData) {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         GeneratedDocumentInfo miniPetition
                 = (GeneratedDocumentInfo) context.getTransientObject(MINI_PETITION_TEMPLATE_NAME);
         GeneratedDocumentInfo respondentInvitation

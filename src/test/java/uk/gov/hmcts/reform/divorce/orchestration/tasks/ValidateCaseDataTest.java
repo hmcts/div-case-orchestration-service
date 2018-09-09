@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -71,7 +70,7 @@ public class ValidateCaseDataTest {
     }
 
     @Test
-    public void executeShouldReturnUpdatedPayloadForValidCase() throws TaskException {
+    public void executeShouldReturnUpdatedPayloadForValidCase() {
         //given
         when(caseValidationClient.validate(any())).thenReturn(validationResponse);
 
@@ -85,7 +84,7 @@ public class ValidateCaseDataTest {
     }
 
     @Test
-    public void executeShouldReturnUpdatedContextForInValidCase() throws TaskException {
+    public void executeShouldReturnUpdatedContextForInValidCase() {
         //given
         when(caseValidationClient.validate(any())).thenReturn(invalidationResponse);
 

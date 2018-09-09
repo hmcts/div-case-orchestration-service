@@ -22,8 +22,7 @@ public class RetrieveAosCase implements Task<CaseDataResponse> {
     }
 
     @Override
-    public CaseDataResponse execute(TaskContext context,
-                                    CaseDataResponse payload) {
+    public CaseDataResponse execute(TaskContext context, CaseDataResponse payload) {
         CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(
             String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
             Boolean.valueOf(String.valueOf(context.getTransientObject(CHECK_CCD))));
