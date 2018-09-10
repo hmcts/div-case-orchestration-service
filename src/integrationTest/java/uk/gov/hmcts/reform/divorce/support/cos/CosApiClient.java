@@ -22,14 +22,14 @@ public interface CosApiClient {
 
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/draft",
+            value = "/draftsapi/version/1",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> getDraft(@RequestHeader(AUTHORIZATION) String authorisation);
 
     @RequestMapping(
             method = RequestMethod.PUT,
-            value = "/drafts",
+            value = "/draftsapi/version/1",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> saveDraft(@RequestHeader(AUTHORIZATION) String authorisation,
@@ -39,7 +39,7 @@ public interface CosApiClient {
 
     @RequestMapping(
             method = RequestMethod.DELETE,
-            value = "/drafts",
+            value = "/draftsapi/version/1",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> deleteDraft(@RequestHeader(AUTHORIZATION) String authorisation);

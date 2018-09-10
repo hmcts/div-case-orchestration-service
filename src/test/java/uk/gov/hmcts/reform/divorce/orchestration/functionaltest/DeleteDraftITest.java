@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class DeleteDraftITest {
-    private static final String API_URL = "/drafts";
+    private static final String API_URL = "/draftsapi/version/1";
     private static final String CMS_CONTEXT_PATH = "/casemaintenance/version/1/drafts";
 
     private static final String USER_TOKEN = "Some JWT Token";

@@ -132,7 +132,7 @@ public class OrchestrationController {
                         .build());
     }
     
-    @GetMapping(path = "/draft", produces = MediaType.APPLICATION_JSON)
+    @GetMapping(path = "/draftsapi/version/1", produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Retrieves a divorce case draft")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "A draft exists. The draft content is in the response body"),
@@ -148,7 +148,7 @@ public class OrchestrationController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping(path = "/drafts", consumes = MediaType.APPLICATION_JSON)
+    @PutMapping(path = "/draftsapi/version/1", consumes = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Saves or updates a draft to draft store")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Draft saved")})
@@ -166,7 +166,7 @@ public class OrchestrationController {
         return ResponseEntity.ok(orchestrationService.saveDraft(payload, authorizationToken, notificationEmail));
     }
 
-    @DeleteMapping(path = "/drafts")
+    @DeleteMapping(path = "/draftsapi/version/1")
     @ApiOperation(value = "Deletes a divorce case draft")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The divorce draft has been deleted successfully")})
