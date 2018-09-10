@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class SaveDraftITest {
-    private static final String API_URL = "/drafts";
+    private static final String API_URL = "/draftsapi/version/1";
     private static final String CMS_CONTEXT_PATH = "/casemaintenance/version/1/drafts?divorceFormat=true";
 
     private static final String USER_TOKEN = "Some JWT Token";
