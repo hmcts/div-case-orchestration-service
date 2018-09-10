@@ -10,8 +10,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class DefaultWorkflow<T> implements Workflow<T> {
-    private DefaultTaskContext context = new DefaultTaskContext();
+    private final DefaultTaskContext context = new DefaultTaskContext();
 
+    @SuppressWarnings("unchecked")
     @Override
     public T execute(Task[] tasks, T payload, Pair... pairs) throws WorkflowException {
         for (Pair pair : pairs) {
@@ -26,7 +27,7 @@ public class DefaultWorkflow<T> implements Workflow<T> {
                 }
             }
         } catch (TaskException e) {
-            throw new WorkflowException(e.getMessage());
+            throw new WorkflowException(e.getMessage(), e);
         }
 
         return payload;

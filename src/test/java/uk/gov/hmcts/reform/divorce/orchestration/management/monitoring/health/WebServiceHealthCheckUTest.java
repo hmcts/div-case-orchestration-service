@@ -29,8 +29,8 @@ public class WebServiceHealthCheckUTest {
     private final RestTemplate restTemplate = mock(RestTemplate.class);
     private final HttpEntityFactory httpEntityFactory = mock(HttpEntityFactory.class);
 
-    private final TestWebServiceHealthCheck healthCheck = new TestWebServiceHealthCheck(httpEntityFactory, restTemplate,
-            URI);
+    private final TestWebServiceHealthCheck healthCheck =
+        new TestWebServiceHealthCheck(httpEntityFactory, restTemplate, URI);
 
     @Test
     public void givenServiceReturnsOk_whenHealth_thenReturnUp() {

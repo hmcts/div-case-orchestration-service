@@ -18,6 +18,5 @@ public class CaseDetails {
     @JsonProperty("id")
     private String caseId;
 
-    @JsonProperty("status")
     private String state;
 }

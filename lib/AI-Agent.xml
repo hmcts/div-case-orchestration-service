@@ -17,6 +17,42 @@
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
             <Method name="update" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
+            <Method name="retrieveAosCase" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.AuthenticateRespondent">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataToDivorceFormatter">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveAosCase">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCaseToCCD">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddPDF">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.IdamPinGenerator">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
     </Instrumentation>
 </ApplicationInsightsAgent>
 

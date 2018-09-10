@@ -80,7 +80,7 @@ public class PetitionIssueTest extends IntegrationTest {
             "ccd-callback-aos-invitation.json");
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertGeneratedDocumentsExists(cosResponse, createCaseWorkerUser().getAuthToken());
+        assertGeneratedDocumentsExists(cosResponse);
     }
 
     private Response issuePetition(String userToken, String fileName) throws Exception {
@@ -100,7 +100,7 @@ public class PetitionIssueTest extends IntegrationTest {
             );
     }
 
-    private void assertGeneratedDocumentsExists(Response cosResponse, String userToken) {
+    private void assertGeneratedDocumentsExists(Response cosResponse) {
         String petitionUri = cosResponse.path(D8_MINI_PETITION_DOCUMENT_BINARY_URL_PATH);
 
         assertNotNull(petitionUri);
