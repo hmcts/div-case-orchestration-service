@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
 @Component
+@Slf4j
 public class CaseDataToDivorceFormatter implements Task<CaseDataResponse> {
     private final CaseFormatterClient caseFormatterClient;
 
@@ -20,6 +22,8 @@ public class CaseDataToDivorceFormatter implements Task<CaseDataResponse> {
 
     @Override
     public CaseDataResponse execute(TaskContext context, CaseDataResponse caseDataResponse) {
+
+        log.warn("******this line it hit*******");
 
         caseDataResponse.setData(
             caseFormatterClient.transformToDivorceFormat(
