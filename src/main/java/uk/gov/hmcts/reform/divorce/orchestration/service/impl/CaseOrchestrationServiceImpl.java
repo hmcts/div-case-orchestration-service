@@ -115,6 +115,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             log.info("Draft saved");
             return response;
         } else {
+            log.error("Workflow error saving draft");
             return saveDraftWorkflow.errors();
         }
 
@@ -127,7 +128,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             log.info("Draft deleted");
             return response;
         } else {
-            log.error("Workflow Error deleting draft");
+            log.error("Workflow error deleting draft");
             return deleteDraftWorkflow.errors();
         }
     }
