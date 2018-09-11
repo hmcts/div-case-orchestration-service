@@ -13,7 +13,7 @@ public class DefaultTaskContext implements TaskContext {
     private Map<String, Object> transientObjects = new HashMap<>();
 
     public DefaultTaskContext() {
-        this.setTaskFailed(false);
+        this.status = false;
     }
 
     @Override

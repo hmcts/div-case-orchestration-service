@@ -11,8 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataFormatter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddPDF;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.IdamPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
@@ -52,38 +51,37 @@ public class CcdCallbackWorkflowTest {
     private IdamPinGenerator idamPinGenerator;
 
     @Mock
-    private CaseDataFormatter caseDataFormatter;
+    private CaseFormatterAddPDF caseFormatterAddPDF;
 
     private CreateEvent createEventRequest;
     private Map<String, Object> payload;
     private TaskContext context;
-    private CaseDetails caseDetails;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         ccdCallbackWorkflow =
                 new CcdCallbackWorkflow(
                         validateCaseData,
                         petitionGenerator,
                         idamPinGenerator,
                         respondentLetterGenerator,
-                        caseDataFormatter);
+                    caseFormatterAddPDF);
 
         payload = new HashMap<>();
         payload.put("D8ScreenHasMarriageBroken", "YES");
-        payload.put(PIN,TEST_PIN );
+        payload.put(PIN,TEST_PIN);
 
-        caseDetails = CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .state(TEST_STATE)
-                .caseData(payload)
-                .build();
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .caseData(payload)
+            .build();
         createEventRequest =
                 CreateEvent.builder()
                         .eventId(TEST_EVENT_ID)
                         .token(TEST_TOKEN)
                         .caseDetails(
-                                caseDetails
+                            caseDetails
                         )
                         .build();
 
@@ -94,13 +92,13 @@ public class CcdCallbackWorkflowTest {
 
 
     @Test
-    public void runShouldReturnValidCaseDataForValidCase() throws WorkflowException, TaskException {
+    public void runShouldReturnValidCaseDataForValidCase() throws WorkflowException {
         //Given
         when(validateCaseData.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(idamPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
-        when(caseDataFormatter.execute(context, payload)).thenReturn(payload);
+        when(caseFormatterAddPDF.execute(context, payload)).thenReturn(payload);
 
         //When
         Map<String, Object> response = ccdCallbackWorkflow.run(createEventRequest, AUTH_TOKEN);
@@ -112,7 +110,7 @@ public class CcdCallbackWorkflowTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         ccdCallbackWorkflow = null;
     }
 }

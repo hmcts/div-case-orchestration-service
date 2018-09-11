@@ -65,8 +65,7 @@ public class DefaultWorkflowTest {
 
     @Test(expected = NullPointerException.class)
     public void executeShouldThrowExceptionWithNoTasks() throws Exception {
-        Task[] tasks = null;
-        defaultWorkflow.execute(tasks, payload);
+        defaultWorkflow.execute(null, payload);
     }
 
     @Test(expected = WorkflowException.class)

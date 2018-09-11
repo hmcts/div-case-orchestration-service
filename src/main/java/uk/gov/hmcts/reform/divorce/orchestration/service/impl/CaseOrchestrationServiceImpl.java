@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
@@ -21,18 +23,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 @Service
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
-
     private final CcdCallbackWorkflow ccdCallbackWorkflow;
-
     private final RetrieveDraftWorkflow retrieveDraftWorkflow;
-
     private final SaveDraftWorkflow saveDraftWorkflow;
-
     private final DeleteDraftWorkflow deleteDraftWorkflow;
-
     private final AuthenticateRespondentWorkflow authenticateRespondentWorkflow;
     private final SubmitToCCDWorkflow submitToCCDWorkflow;
     private final UpdateToCCDWorkflow updateToCCDWorkflow;
+    private final RetrieveAosCaseWorkflow retrieveAosCaseWorkflow;
 
     @Autowired
     public CaseOrchestrationServiceImpl(CcdCallbackWorkflow ccdCallbackWorkflow,
@@ -41,7 +39,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         UpdateToCCDWorkflow updateToCCDWorkflow,
                                         RetrieveDraftWorkflow retrieveDraftWorkflow,
                                         SaveDraftWorkflow saveDraftWorkflow,
-                                        DeleteDraftWorkflow deleteDraftWorkflow) {
+                                        DeleteDraftWorkflow deleteDraftWorkflow,
+                                        RetrieveAosCaseWorkflow retrieveAosCaseWorkflow) {
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
         this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
         this.submitToCCDWorkflow = submitToCCDWorkflow;
@@ -49,6 +48,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         this.retrieveDraftWorkflow = retrieveDraftWorkflow;
         this.saveDraftWorkflow = saveDraftWorkflow;
         this.deleteDraftWorkflow = deleteDraftWorkflow;
+        this.retrieveAosCaseWorkflow = retrieveAosCaseWorkflow;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payLoad = ccdCallbackWorkflow.run(caseDetailsRequest, authToken);
 
         if (ccdCallbackWorkflow.errors().isEmpty()) {
-            log.info("Case ID is: {}", payLoad.get(ID));
+            log.info("Callback for case with id: {} successfully completed", payLoad.get(ID));
             return payLoad;
         } else {
             return ccdCallbackWorkflow.errors();
@@ -131,5 +131,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             log.error("Workflow error deleting draft");
             return deleteDraftWorkflow.errors();
         }
+    }
+
+    @Override
+    public CaseDataResponse retrieveAosCase(boolean checkCcd, String authorizationToken) throws WorkflowException {
+        return retrieveAosCaseWorkflow.run(checkCcd, authorizationToken);
     }
 }

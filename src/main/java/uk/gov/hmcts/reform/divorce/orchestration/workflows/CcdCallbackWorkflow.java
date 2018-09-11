@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataFormatter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddPDF;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.IdamPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
@@ -21,41 +21,37 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final ValidateCaseData validateCaseData;
-
     private final PetitionGenerator petitionGenerator;
-
     private final IdamPinGenerator idamPinGenerator;
-
     private final RespondentLetterGenerator respondentLetterGenerator;
-
-    private final CaseDataFormatter caseDataFormatter;
+    private final CaseFormatterAddPDF caseFormatterAddPDF;
 
     @Autowired
     public CcdCallbackWorkflow(ValidateCaseData validateCaseData,
-                                PetitionGenerator petitionGenerator,
-                                IdamPinGenerator idamPinGenerator,
-                                RespondentLetterGenerator respondentLetterGenerator,
-                                CaseDataFormatter caseDataFormatter) {
+                               PetitionGenerator petitionGenerator,
+                               IdamPinGenerator idamPinGenerator,
+                               RespondentLetterGenerator respondentLetterGenerator,
+                               CaseFormatterAddPDF caseFormatterAddPDF) {
         this.validateCaseData = validateCaseData;
         this.petitionGenerator = petitionGenerator;
         this.respondentLetterGenerator = respondentLetterGenerator;
         this.idamPinGenerator = idamPinGenerator;
-        this.caseDataFormatter = caseDataFormatter;
+        this.caseFormatterAddPDF = caseFormatterAddPDF;
     }
 
     public Map<String, Object> run(CreateEvent caseDetailsRequest,
                                    String authToken) throws WorkflowException {
         return this.execute(
-                new Task[]{
-                    validateCaseData,
-                    petitionGenerator,
-                    idamPinGenerator,
-                    respondentLetterGenerator,
-                    caseDataFormatter
-                },
-                caseDetailsRequest.getCaseDetails().getCaseData(),
-                new ImmutablePair(AUTH_TOKEN_JSON_KEY, authToken),
-                new ImmutablePair(CASE_DETAILS_JSON_KEY, caseDetailsRequest.getCaseDetails())
+            new Task[]{
+                validateCaseData,
+                petitionGenerator,
+                idamPinGenerator,
+                respondentLetterGenerator,
+                caseFormatterAddPDF
+            },
+            caseDetailsRequest.getCaseDetails().getCaseData(),
+            new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, authToken),
+            new ImmutablePair<>(CASE_DETAILS_JSON_KEY, caseDetailsRequest.getCaseDetails())
         );
     }
 }
