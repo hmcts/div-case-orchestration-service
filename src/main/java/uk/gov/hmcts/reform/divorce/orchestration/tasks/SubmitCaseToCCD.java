@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
 
@@ -22,7 +21,7 @@ public class SubmitCaseToCCD implements Task<Map<String, Object>> {
     }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         return caseMaintenanceClient.submitCase(
                 caseData,
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString()

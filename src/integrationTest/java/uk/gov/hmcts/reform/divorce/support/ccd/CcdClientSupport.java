@@ -63,6 +63,40 @@ public class CcdClientSupport {
             caseDataContent);
     }
 
+    public CaseDetails updateForCitizen(String caseId, Object data, String eventId, UserDetails userDetails) {
+        final String serviceToken = authTokenGenerator.generate();
+
+        StartEventResponse startEventResponse = coreCaseDataApi.startEventForCitizen(
+            userDetails.getAuthToken(),
+            serviceToken,
+            userDetails.getId(),
+            jurisdictionId,
+            caseType,
+            caseId,
+            eventId);
+
+        CaseDataContent caseDataContent = CaseDataContent.builder()
+            .eventToken(startEventResponse.getToken())
+            .event(
+                Event.builder()
+                    .id(startEventResponse.getEventId())
+                    .summary(DIVORCE_CASE_SUBMISSION_EVENT_SUMMARY)
+                    .description(DIVORCE_CASE_SUBMISSION_EVENT_DESCRIPTION)
+                    .build()
+            ).data(data)
+            .build();
+
+        return coreCaseDataApi.submitEventForCitizen(
+            userDetails.getAuthToken(),
+            serviceToken,
+            userDetails.getId(),
+            jurisdictionId,
+            caseType,
+            caseId,
+            true,
+            caseDataContent);
+    }
+
 
     public CaseDetails update(String caseId, Object data, String eventId, UserDetails userDetails) {
         final String serviceToken = authTokenGenerator.generate();

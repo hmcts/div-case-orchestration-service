@@ -52,6 +52,9 @@ public class HealthCheckITest {
     @Value("${document.generator.service.api.baseurl}")
     private String documentGeneratorServiceHealthUrl;
 
+    @Value("${idam.api.url}")
+    private String idamServiceHealthCheckUrl;
+
     @Autowired
     private RestTemplate restTemplate;
 
@@ -84,6 +87,7 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseFormatterServiceHealthUrl, true);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
 
         HttpResponse response = getHealth();
         String body = EntityUtils.toString(response.getEntity());
@@ -104,6 +108,7 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseFormatterServiceHealthUrl, false);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
 
         HttpResponse response = getHealth();
         String body = EntityUtils.toString(response.getEntity());
@@ -124,6 +129,7 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseFormatterServiceHealthUrl, true);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, false);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
 
         HttpResponse response = getHealth();
         String body = EntityUtils.toString(response.getEntity());
@@ -144,6 +150,7 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseFormatterServiceHealthUrl, true);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, false);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
 
         HttpResponse response = getHealth();
         String body = EntityUtils.toString(response.getEntity());
@@ -164,6 +171,7 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseFormatterServiceHealthUrl, false);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, false);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, false);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
 
         HttpResponse response = getHealth();
         String body = EntityUtils.toString(response.getEntity());
@@ -181,8 +189,8 @@ public class HealthCheckITest {
 
     private void mockEndpointAndResponse(String requestUrl, boolean serviceUp) {
         mockRestServiceServer.expect(once(), requestTo(requestUrl + "/health")).andExpect(method(HttpMethod.GET))
-                .andRespond(withStatus(serviceUp ? HttpStatus.OK : HttpStatus.SERVICE_UNAVAILABLE)
-                        .body(serviceUp ? HEALTH_UP_RESPONSE : HEALTH_DOWN_RESPONSE)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8));
+            .andRespond(withStatus(serviceUp ? HttpStatus.OK : HttpStatus.SERVICE_UNAVAILABLE)
+                .body(serviceUp ? HEALTH_UP_RESPONSE : HEALTH_DOWN_RESPONSE)
+                .contentType(MediaType.APPLICATION_JSON_UTF8));
     }
 }
