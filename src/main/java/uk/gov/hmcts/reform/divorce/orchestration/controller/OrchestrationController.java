@@ -162,18 +162,11 @@ public class OrchestrationController {
             @ApiResponse(code = 200, message = "Petition issue fee amount is send to CCD as callback response",
                     response = CcdCallbackResponse.class),
             @ApiResponse(code = 400, message = "Bad Request")
-    })
+            })
     public ResponseEntity<CcdCallbackResponse> getPetitionIssueFees(
-            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) {
-        Map<String, Object> response;
-        try {
-            response = orchestrationService.setOrderSummary(caseDetailsRequest);
-        } catch(WorkflowException exception) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-
+            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-                .data(response)
+                .data(orchestrationService.setOrderSummary(caseDetailsRequest))
                 .build()
         );
     }
@@ -185,16 +178,11 @@ public class OrchestrationController {
             @ApiResponse(code = 200, message = "Callback to receive payment from the solicitor",
                     response = CcdCallbackResponse.class),
             @ApiResponse(code = 400, message = "Bad Request")
-    })
+            })
     public ResponseEntity<CcdCallbackResponse> processPbaPayment(
             @RequestHeader(value = "Authorization") String authorizationToken,
-            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) {
-        Map<String, Object> response;
-        try {
-            response = orchestrationService.processPbaPayment(caseDetailsRequest, authorizationToken);
-        } catch(WorkflowException exception) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+        Map<String, Object> response = orchestrationService.processPbaPayment(caseDetailsRequest, authorizationToken);
 
         if (response != null && response.containsKey(SOLICITOR_VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(
@@ -213,17 +201,12 @@ public class OrchestrationController {
             @ApiResponse(code = 200, message = "Callback to populate missing requirement fields when "
                     + "creating solicitor cases.", response = CcdCallbackResponse.class),
             @ApiResponse(code = 400, message = "Bad Request")
-    })
+            })
     public ResponseEntity<CcdCallbackResponse> solicitorCreate(
-            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) {
-        Map<String, Object> response;
-        try {
-            response = orchestrationService.solicitorCreate(caseDetailsRequest);
-        } catch(WorkflowException exception) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-
-        return ResponseEntity.ok(CcdCallbackResponse.builder().data(response).build());
+            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .data(orchestrationService.solicitorCreate(caseDetailsRequest))
+                .build());
     }
 
     private List<String> getErrors(Map<String, Object> response) {

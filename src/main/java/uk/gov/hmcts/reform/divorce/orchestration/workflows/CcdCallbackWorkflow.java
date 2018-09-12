@@ -50,8 +50,8 @@ public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
                 caseFormatterAddPDF
             },
             caseDetailsRequest.getCaseDetails().getCaseData(),
-            new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, authToken),
-            new ImmutablePair<>(CASE_DETAILS_JSON_KEY, caseDetailsRequest.getCaseDetails())
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetailsRequest.getCaseDetails())
         );
     }
 }

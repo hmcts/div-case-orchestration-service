@@ -17,30 +17,33 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DATA_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
 
-public class GetPetitionIssueFeesTest extends IntegrationTest {
+public class ProcessPbaPaymentTest extends IntegrationTest {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/solicitor/";
 
-    @Value("${case.orchestration.solicitor.petition-issue-fees.context-path}")
+    @Value("${case.orchestration.solicitor.process-pba-payment.context-path}")
     private String contextPath;
 
     @Test
-    public void givenCreateEvent_whenGetPetitionIssueFees_thenReturnUpdatedData() throws Exception {
+    public void givenCreateEvent_whenProcessPbaPayment_thenReturnDataWithNoErrors() throws Exception {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+        headers.put(HttpHeaders.AUTHORIZATION, createCaseWorkerUser().getAuthToken());
 
         Response response = RestUtil.postToRestService(
                 serverUrl + contextPath,
                 headers,
-                ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + "ccd-request-data.json")
+                ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json")
         );
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
 
         Map<String, Object> responseData = response.getBody().path("data");
 
-        assertNotNull(responseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY));
+        // There will be an error if PBA payment is unsuccessful
+        assertNotNull(responseData.get(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY));
     }
 
 }

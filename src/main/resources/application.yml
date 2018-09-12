@@ -33,7 +33,7 @@ fees-and-payments:
 payment:
   service:
     api:
-      baseurl: ${PAYMENTS_SERVICE_API_BASEURL:http://localhost:9190}
+      baseurl: ${PAYMENT_API_BASEURL:http://localhost:9190}
 
 idam:
   api:

@@ -155,17 +155,6 @@ public class OrchestrationControllerTest {
     }
 
     @Test
-    public void givenException_whenSubmit_thenReturnInternalServerError() throws Exception {
-        final Map<String, Object> caseData = Collections.emptyMap();
-
-        when(caseOrchestrationService.submit(caseData, AUTH_TOKEN)).thenThrow(new WorkflowException("An Error"));
-
-        ResponseEntity<CaseResponse> response = classUnderTest.submit(AUTH_TOKEN, caseData);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    }
-
-    @Test
     public void givenErrors_whenSubmit_thenReturnBadRequest() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final Map<String, Object> invalidResponse = Collections.singletonMap(
@@ -249,24 +238,6 @@ public class OrchestrationControllerTest {
     }
 
     @Test
-    public void givenWorkflowException_whenGetPetitionIssueFees_thenReturnInternalServerError() throws Exception {
-        final Map<String, Object> caseData = Collections.emptyMap();
-        final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
-
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
-
-        when(caseOrchestrationService.setOrderSummary(createEvent))
-                .thenThrow(new WorkflowException("An Error"));
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.getPetitionIssueFees(createEvent);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    }
-
-    @Test
     public void whenProcessPbaPayment_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
@@ -284,24 +255,6 @@ public class OrchestrationControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
-    }
-
-    @Test
-    public void givenWorkflowException_whenProcessPbaPayment_thenReturnInternalServerError() throws Exception {
-        final Map<String, Object> caseData = Collections.emptyMap();
-        final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
-
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
-
-        when(caseOrchestrationService.processPbaPayment(createEvent, AUTH_TOKEN))
-                .thenThrow(new WorkflowException("An Error"));
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, createEvent);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
@@ -348,23 +301,5 @@ public class OrchestrationControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
-    }
-
-    @Test
-    public void givenWorkflowException_whenSolicitorCreate_thenReturnInternalServerError() throws Exception {
-        final Map<String, Object> caseData = Collections.emptyMap();
-        final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
-
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
-
-        when(caseOrchestrationService.solicitorCreate(createEvent))
-                .thenThrow(new WorkflowException("An Error"));
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorCreate(createEvent);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 }

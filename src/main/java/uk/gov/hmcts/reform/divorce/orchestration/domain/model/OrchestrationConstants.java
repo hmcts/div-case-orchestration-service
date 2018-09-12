@@ -10,6 +10,7 @@ public class OrchestrationConstants {
 
     // Core Case Data
     public static final String CHECK_CCD = "checkCcd";
+    public static final String CASE_DATA_JSON_KEY = "case_data";
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";

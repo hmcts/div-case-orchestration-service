@@ -26,17 +26,17 @@ public interface CaseOrchestrationService {
     CaseDataResponse retrieveAosCase(boolean checkCcd, String authorizationToken) throws WorkflowException;
 
     /**
-     * Get fee for petition issue and set it on the case data
+     * Get fee for petition issue and set it on the case data.
      */
     Map<String, Object> setOrderSummary(CreateEvent caseDetailsRequest) throws WorkflowException;
 
     /**
-     * Process Pay By Account payment for Solicitor
+     * Process Pay By Account payment for Solicitor.
      */
     Map<String, Object> processPbaPayment(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException;
 
     /**
-     * Set Court details for Solicitor created case
+     * Set Court details for Solicitor created case.
      */
     Map<String, Object> solicitorCreate(CreateEvent caseDetailsRequest) throws WorkflowException;
 }

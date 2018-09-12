@@ -35,8 +35,8 @@ public class ProcessPbaPaymentWorkflow extends DefaultWorkflow<Map<String, Objec
             processPbaPayment
         },
             caseDetailsRequest.getCaseDetails().getCaseData(),
-            new ImmutablePair(AUTH_TOKEN_JSON_KEY, authToken),
-            new ImmutablePair(CASE_ID_JSON_KEY, caseDetailsRequest.getCaseDetails().getCaseId())
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseDetailsRequest.getCaseDetails().getCaseId())
         );
     }
 }

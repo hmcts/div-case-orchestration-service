@@ -100,8 +100,8 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, true);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
-        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
 
@@ -133,8 +133,8 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, true);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
-        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
 
@@ -166,8 +166,8 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, true);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, false);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
-        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
 
@@ -199,8 +199,8 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, true);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, false);
-        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
 
@@ -233,6 +233,7 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
 
@@ -265,6 +266,7 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, false);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
 
@@ -297,6 +299,7 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, false);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
 
@@ -329,6 +332,7 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, false);
 
@@ -360,8 +364,8 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, false);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, false);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, false);
-        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, false);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, false);
         mockEndpointAndResponse(paymentServiceHealthUrl, false);
         mockEndpointAndResponse(serviceAuthHealthUrl, false);
 

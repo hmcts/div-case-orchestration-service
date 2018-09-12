@@ -16,31 +16,36 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DATA_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CREATED_DATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
 
-public class GetPetitionIssueFeesTest extends IntegrationTest {
+public class SolicitorCreatePaymentTest extends IntegrationTest {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/solicitor/";
 
-    @Value("${case.orchestration.solicitor.petition-issue-fees.context-path}")
+    @Value("${case.orchestration.solicitor.solicitor-create.context-path}")
     private String contextPath;
 
     @Test
-    public void givenCreateEvent_whenGetPetitionIssueFees_thenReturnUpdatedData() throws Exception {
+    public void givenCreateEvent_whenSolicitorCreate_thenReturnUpdatedData() throws Exception {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 
         Response response = RestUtil.postToRestService(
                 serverUrl + contextPath,
                 headers,
-                ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + "ccd-request-data.json")
+                ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json")
         );
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
 
         Map<String, Object> responseData = response.getBody().path("data");
 
-        assertNotNull(responseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY));
+        assertNotNull(responseData.get(CREATED_DATE_JSON_KEY));
+        assertNotNull(responseData.get(DIVORCE_UNIT_JSON_KEY));
+        assertNotNull(responseData.get(DIVORCE_CENTRE_SITEID_JSON_KEY));
     }
 
 }

@@ -39,9 +39,9 @@ public class UpdateToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
                 updateCaseInCCD
             },
             payload,
-            new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, authToken),
-            new ImmutablePair<>(CASE_ID_JSON_KEY, caseId),
-            new ImmutablePair<>(CASE_EVENT_ID_JSON_KEY, eventId)
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
+            ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, eventId)
         );
     }
 }

@@ -8,6 +8,8 @@ locals {
   validation_service_baseurl        = "http://div-vs-${local.local_env}.service.core-compute-${local.local_env}.internal"
   case_maintenance_service_baseurl  = "http://div-cms-${local.local_env}.service.core-compute-${local.local_env}.internal"
   fees_and_payments_service_baseurl = "http://div-fps-${local.local_env}.service.core-compute-${local.local_env}.internal"
+  payment_api_baseurl               = "http://payment-api-${local.local_env}.service.core-compute-${local.local_env}.internal"
+  service_auth_provider_baseurl     = "http://rpe-service-auth-provider-${local.local_env}.service.core-compute-${local.local_env}.internal"
   petitioner_fe_baseurl             = "https://div-pfe-${local.local_env}.service.core-compute-${local.local_env}.internal"
 
   previewVaultName = "${var.raw_product}-aat"
@@ -36,6 +38,8 @@ module "div-cos" {
     DOCUMENT_GENERATOR_SERVICE_API_BASEURL          = "${local.document_generator_baseurl}"
     CASE_MAINTENANCE_SERVICE_API_BASEURL            = "${local.case_maintenance_service_baseurl}"
     FEES_AND_PAYMENTS_SERVICE_API_BASEURL           = "${local.fees_and_payments_service_baseurl}"
+    PAYMENT_API_BASEURL                             = "${local.payment_api_baseurl}"
+    SERVICE_AUTH_PROVIDER_URL                       = "${local.service_auth_provider_baseurl}"
     IDAM_API_URL                                    = "${var.idam_api_baseurl}"
     IDAM_API_REDIRECT_URL                           = "${local.petitioner_fe_baseurl}/authenticated"
     AUTH2_CLIENT_SECRET                             = "${data.azurerm_key_vault_secret.auth-idam-client-secret.value}"
