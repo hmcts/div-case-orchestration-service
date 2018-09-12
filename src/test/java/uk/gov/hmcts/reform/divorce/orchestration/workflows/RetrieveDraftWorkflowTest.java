@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
 
 import java.util.HashMap;
@@ -28,22 +29,30 @@ public class RetrieveDraftWorkflowTest {
     @Mock
     private RetrieveDraft retrieveDraft;
 
+    @Mock
+    private CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
+
     @InjectMocks
     private RetrieveDraftWorkflow target;
 
     @Test
     public void givenADraft_whenExecuteSaveDraftWorkflow_thenExecuteAllTaskInOrder() throws WorkflowException {
         Map<String, Object> payload = new HashMap<>();
+        Map<String, Object> casePayload = mock(Map.class);
         Map<String, Object> draftPayload = mock(Map.class);
+
         ArgumentMatcher<TaskContext> contextWithAuthTokenMatcher =
             argument -> argument.getTransientObject(AUTH_TOKEN_JSON_KEY) != null;
 
-        when(retrieveDraft.execute(argThat(contextWithAuthTokenMatcher),
-                eq(payload))).thenReturn(draftPayload);
+        when(retrieveDraft.execute(argThat(contextWithAuthTokenMatcher), eq(payload))).thenReturn(casePayload);
 
+        when(caseDataToDivorceFormatter.execute(argThat(contextWithAuthTokenMatcher),
+                eq(casePayload))).thenReturn(draftPayload);
         assertEquals(draftPayload, target.run(AUTH_TOKEN));
 
         verify(retrieveDraft).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
+        verify(caseDataToDivorceFormatter).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
+
     }
 
 }

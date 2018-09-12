@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.google.common.collect.Maps;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +41,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @AutoConfigureMockMvc
 public class RetrieveDraftITest {
     private static final String API_URL = "/draftsapi/version/1";
-    private static final String CMS_CONTEXT_PATH = "/casemaintenance/version/1/retrieveCase?checkCcd=true";
+    private static final String CMS_CONTEXT_PATH = "/casemaintenance/version/1/retrieveCase?checkCcd=false";
+    private static final String CFS_CONTEXT_PATH = "/caseformatter/version/1/to-divorce-format";
 
     private static final String USER_TOKEN = "Some JWT Token";
     private static final String CASE_ID = "12345";
@@ -56,6 +59,9 @@ public class RetrieveDraftITest {
 
     @ClassRule
     public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
+
+    @ClassRule
+    public static WireMockClassRule cfsServiceServer = new WireMockClassRule(4011);
 
     @Test
     public void givenJWTTokenIsNull_whenRetrieveDraft_thenReturnBadRequest()
@@ -80,7 +86,7 @@ public class RetrieveDraftITest {
     }
 
     @Test
-    public void givenNoDraftInDraftStore_whenRetrieveraft_thenReturnNotFound()
+    public void givenNoDraftInDraftStore_whenRetrieveDraft_thenReturnNotFound()
             throws Exception {
 
         stubCmsServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DETAILS));
@@ -98,19 +104,44 @@ public class RetrieveDraftITest {
 
         CASE_DATA.put("deaftProperty1", "value1");
         CASE_DATA.put("deaftProperty2", "value2");
-
-        stubCmsServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DETAILS));
-
+        CaseDetails caseDetails = CaseDetails.builder().caseData(CASE_DATA).build();
+        stubCmsServerEndpoint(HttpStatus.OK, convertObjectToJsonString(caseDetails));
+        stubCfsServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DATA));
+        Map<String, Object> expectedResponse = Maps.newHashMap(CASE_DATA);
+        expectedResponse.put( "fetchedDraft", true);
         webClient.perform(get(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(CASE_DATA)));
+                .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
     }
 
-    private void stubCmsServerEndpoint(HttpStatus status, String body)
-            throws Exception {
+    @Test
+    public void givenCaseWithCaseId_whenCmsCalled_thenReturnCase() throws Exception {
+
+        CASE_DATA.put("deaftProperty1", "value1");
+        CASE_DATA.put("deaftProperty2", "value2");
+        stubCmsServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DETAILS));
+        stubCfsServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DATA));
+        Map<String, Object> expectedResponse = Maps.newHashMap(CASE_DATA);
+        expectedResponse.put( "fetchedDraft", false);
+        webClient.perform(get(API_URL)
+                .header(AUTHORIZATION, USER_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+    }
+
+    private void stubCmsServerEndpoint(HttpStatus status, String body) {
         cmsServiceServer.stubFor(WireMock.get(CMS_CONTEXT_PATH)
+                .willReturn(aResponse()
+                        .withStatus(status.value())
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                        .withBody(body)));
+    }
+
+    private void stubCfsServerEndpoint(HttpStatus status, String body) {
+        cfsServiceServer.stubFor(WireMock.post(CFS_CONTEXT_PATH)
                 .willReturn(aResponse()
                         .withStatus(status.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)

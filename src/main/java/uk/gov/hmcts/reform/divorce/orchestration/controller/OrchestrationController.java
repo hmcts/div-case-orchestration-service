@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -127,7 +128,7 @@ public class OrchestrationController {
             final String authorizationToken) throws WorkflowException {
 
         Map<String, Object>    response = orchestrationService.getDraft(authorizationToken);
-        if (response.isEmpty()) {
+        if (MapUtils.isEmpty(response)) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(response);
