@@ -1,4 +1,5 @@
 {
+  "helpWithFeesNeedHelp": "No",
   "jurisdictionPath": [
     "JurisdictionHabitualResidence",
     "JurisdictionInterstitial"
@@ -23,5 +24,9 @@
   "marriagePetitionerName": "user test",
   "marriageRespondentName": "wife test",
   "petitionerNameDifferentToMarriageCertificate": "No",
-  "petitionerPhoneNumber": ""
+  "petitionerPhoneNumber": "",
+  "marriageDateDay": 12,
+  "marriageDateMonth": 11,
+  "marriageDateYear": 2000,
+  "marriageDate": "2000-11-12T00:00:00.000Z"
 }
