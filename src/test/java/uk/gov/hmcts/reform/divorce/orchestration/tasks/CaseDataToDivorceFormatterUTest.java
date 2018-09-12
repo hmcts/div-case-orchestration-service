@@ -17,6 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDataToDivorceFormatterUTest {
@@ -30,13 +31,14 @@ public class CaseDataToDivorceFormatterUTest {
     @SuppressWarnings("unchecked")
     @Test
     public void whenFormatData_thenReturnExpectedData() {
-        final DefaultTaskContext context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-
         final Map<String, Object> caseData = mock(Map.class);
         final Map<String, Object> expectedResults = mock(Map.class);
 
-        final CaseDataResponse caseDataResponseInput = CaseDataResponse.builder().data(caseData).build();
+        final DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(CCD_CASE_DATA, caseData);
+
+        final CaseDataResponse caseDataResponseInput = CaseDataResponse.builder().build();
 
         Mockito.when(caseFormatterClient.transformToDivorceFormat(AUTH_TOKEN, caseData)).thenReturn(expectedResults);
 

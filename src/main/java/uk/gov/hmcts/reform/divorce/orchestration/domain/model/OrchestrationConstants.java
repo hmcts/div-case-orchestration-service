@@ -16,6 +16,7 @@ public class OrchestrationConstants {
     public static final String D_8_PETITIONER_FIRST_NAME = "D8PetitionerFirstName";
     public static final String D_8_PETITIONER_LAST_NAME = "D8PetitionerLastName";
     public static final String D_8_DIVORCE_UNIT = "D8DivorceUnit";
+    public static final String CCD_CASE_DATA = "ccdCaseData";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
