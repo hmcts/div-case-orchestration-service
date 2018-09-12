@@ -27,6 +27,8 @@ public class CaseDataDraftToDivorceFormatter implements Task<Map<String, Object>
                 caseDataResponse
         );
         formattedData.put(IS_DRAFT_KEY, caseDataResponse.get(IS_DRAFT_KEY));
+        formattedData.remove("expires");
+
         return formattedData;
     }
 }
