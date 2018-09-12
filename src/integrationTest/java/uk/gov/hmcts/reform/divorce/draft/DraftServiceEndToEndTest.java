@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.cms.CmsClientSupport;
 import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
-import uk.gov.hmcts.reform.divorce.util.DateUtil;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
 import java.util.List;
@@ -35,7 +34,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     private static final String NO_VALID_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib"
             + "mFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
-    private static final String PETITIONER_EMAIL_KEY = "D8PetitionerEmail";
+    private static final String PETITIONER_EMAIL_KEY = "petitionerEmail";
     private static final String CREATED_DATE__KEY = "createdDate";
 
     private static final String CMS_DATA_KEY = "data";
@@ -181,7 +180,6 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     private Map<String, Object> getDraftResponseResource(String file, UserDetails user) {
         Map<String, Object> expectedDraft = ResourceLoader.loadJsonToObject(file,
                 Map.class);
-        expectedDraft.put(CREATED_DATE__KEY, DateUtil.parseCurrentDate());
         expectedDraft.put(PETITIONER_EMAIL_KEY, user.getEmailAddress());
         return expectedDraft;
     }
