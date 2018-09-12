@@ -64,7 +64,7 @@ public interface CaseMaintenanceClient {
             method = RequestMethod.GET,
             value = "/casemaintenance/version/1/retrieveCase"
     )
-    Map<String, Object> retrievePetition(
+    CaseDetails retrievePetition(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
             @RequestParam(value = "checkCcd") boolean checkCcd);
 

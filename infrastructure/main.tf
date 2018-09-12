@@ -40,6 +40,7 @@ module "div-cos" {
     IDAM_CITIZEN_USERNAME                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-username.value}"
     IDAM_CITIZEN_PASSWORD                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-password.value}"
     UK_GOV_NOTIFY_API_KEY                           = "${data.azurerm_key_vault_secret.uk-gov-notify-api-key.value}"
+    DRAFT_CCD_CHECK_ENABLED                         = "${var.draft_check_ccd_enabled}"
   }
 }
 

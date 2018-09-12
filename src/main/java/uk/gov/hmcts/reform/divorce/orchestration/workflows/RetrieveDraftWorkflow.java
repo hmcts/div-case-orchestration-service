@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
 
 import java.util.HashMap;
@@ -17,16 +18,20 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final RetrieveDraft retrieveDraft;
+    private final CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
 
     @Autowired
-    public RetrieveDraftWorkflow(RetrieveDraft retrieveDraft) {
+    public RetrieveDraftWorkflow(RetrieveDraft retrieveDraft,
+                                 CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter) {
         this.retrieveDraft = retrieveDraft;
+        this.caseDataToDivorceFormatter = caseDataToDivorceFormatter;
     }
 
     public Map<String, Object> run(String authToken) throws WorkflowException {
         return this.execute(
                 new Task[]{
-                    retrieveDraft
+                    retrieveDraft,
+                    caseDataToDivorceFormatter
                 },
                 new HashMap<>(),
                 new ImmutablePair(AUTH_TOKEN_JSON_KEY, authToken)

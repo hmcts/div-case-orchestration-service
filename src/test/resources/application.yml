@@ -85,6 +85,12 @@ management:
       exposure:
         include: info, health, metrics
 
+draft:
+  api:
+    ccd:
+      check:
+        enabled: false
+
 logging:
   level:
     org.springframework.web: ERROR
