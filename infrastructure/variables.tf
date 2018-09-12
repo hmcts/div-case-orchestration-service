@@ -40,3 +40,7 @@ variable "vault_env" {}
 variable "common_tags" {
   type = "map"
 }
+
+variable "draft_check_ccd_enabled" {
+    default = false
+}
