@@ -29,7 +29,6 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
     }
 
     public Map<String, Object> run(String authToken) throws WorkflowException {
-        context = new DefaultTaskContext();
         return this.execute(
                 new Task[]{
                     retrieveDraft,

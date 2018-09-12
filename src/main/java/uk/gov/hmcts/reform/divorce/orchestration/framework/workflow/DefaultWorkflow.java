@@ -3,12 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-public class DefaultWorkflow<T> implements Workflow<T> {
-    protected DefaultTaskContext context = new DefaultTaskContext();
+public class DefaultWorkflow<T> extends AbstractWorkflow<T> {
 
     @SuppressWarnings("unchecked")
     @Override
