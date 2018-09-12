@@ -108,17 +108,6 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenErrorOnDraftWorkflow_whenGetDraft_thenReturnErrors() throws WorkflowException {
-        Map<String, Object> expectedErrors = mock(Map.class);
-        Map<String, Object> workflowResponsePayload = mock(Map.class);
-
-        when(retrieveDraftWorkflow.run(AUTH_TOKEN)).thenReturn(workflowResponsePayload);
-        when(retrieveDraftWorkflow.errors()).thenReturn(expectedErrors);
-
-        assertEquals(expectedErrors, classUnderTest.getDraft(AUTH_TOKEN));
-    }
-
-    @Test
     public void whenSaveDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
         Map<String, Object> payload = mock(Map.class);
         Map<String, Object> testExpectedPayload = mock(Map.class);

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
@@ -28,6 +29,7 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
     }
 
     public Map<String, Object> run(String authToken) throws WorkflowException {
+        context = new DefaultTaskContext();
         return this.execute(
                 new Task[]{
                     retrieveDraft,
