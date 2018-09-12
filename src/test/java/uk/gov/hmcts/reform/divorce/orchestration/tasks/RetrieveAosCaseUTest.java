@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CHECK
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 
@@ -75,7 +76,7 @@ public class RetrieveAosCaseUTest {
         assertEquals(TEST_CASE_ID, actual.getCaseId());
         assertEquals(TEST_COURT, actual.getCourts());
         assertEquals(TEST_STATE, actual.getState());
-        assertEquals(caseData, actual.getData());
+        assertEquals(caseData, context.getTransientObject(CCD_CASE_DATA));
 
         Mockito.verify(caseMaintenanceClient).retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD);
     }
