@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class DefaultWorkflow<T> implements Workflow<T> {
-    private final DefaultTaskContext context = new DefaultTaskContext();
+    protected DefaultTaskContext context = new DefaultTaskContext();
 
     @SuppressWarnings("unchecked")
     @Override

@@ -93,16 +93,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> getDraft(String authToken) throws WorkflowException {
-        Map<String, Object> response = retrieveDraftWorkflow.run(authToken);
-        if (retrieveDraftWorkflow.errors().isEmpty()) {
-            String caseOrDraft = (response != null && response.get(ID) != null)
-                    ? "case with ID: " + response.get(ID) : "draft";
-            log.info("Get draft returns a {}", caseOrDraft);
-            return response;
-        } else {
-            log.error("Workflow Error retrieving draft");
-            return retrieveDraftWorkflow.errors();
-        }
+        return retrieveDraftWorkflow.run(authToken);
     }
 
     @Override
