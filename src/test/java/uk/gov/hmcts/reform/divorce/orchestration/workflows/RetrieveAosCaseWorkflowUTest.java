@@ -32,7 +32,7 @@ public class RetrieveAosCaseWorkflowUTest {
     @Test
     public void whenRetrieveAos_thenProcessAsExpected() throws WorkflowException {
         final ImmutablePair<String, Object> authTokenPair = new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        final ImmutablePair<String, Object> checkCcdPair = new ImmutablePair<>(CHECK_CCD, CHECK_CCD);
+        final ImmutablePair<String, Object> checkCcdPair = new ImmutablePair<>(CHECK_CCD, TEST_CHECK_CCD);
 
         final Task[] tasks = new Task[]{
             retrieveAosCase,

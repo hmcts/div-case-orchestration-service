@@ -33,8 +33,8 @@ public class RetrieveAosCaseWorkflow extends DefaultWorkflow<CaseDataResponse> {
                 caseDataToDivorceFormatter
             },
             null,
-            new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, authToken),
-            new ImmutablePair<>(CHECK_CCD, checkCcd)
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+            ImmutablePair.of(CHECK_CCD, checkCcd)
         );
     }
 }
