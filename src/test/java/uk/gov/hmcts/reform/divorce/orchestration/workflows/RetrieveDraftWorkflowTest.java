@@ -9,6 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveNullElements;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
 
 import java.util.HashMap;
@@ -32,6 +33,9 @@ public class RetrieveDraftWorkflowTest {
     @Mock
     private CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
 
+    @Mock
+    private RemoveNullElements removeNullElements;
+
     @InjectMocks
     private RetrieveDraftWorkflow target;
 
@@ -48,10 +52,14 @@ public class RetrieveDraftWorkflowTest {
 
         when(caseDataToDivorceFormatter.execute(argThat(contextWithAuthTokenMatcher),
                 eq(casePayload))).thenReturn(draftPayload);
+        when(removeNullElements.execute(argThat(contextWithAuthTokenMatcher),
+                eq(draftPayload))).thenReturn(draftPayload);
         assertEquals(draftPayload, target.run(AUTH_TOKEN));
 
         verify(retrieveDraft).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
         verify(caseDataToDivorceFormatter).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
+        verify(removeNullElements).execute(argThat(contextWithAuthTokenMatcher),eq(draftPayload));
+
 
     }
 
