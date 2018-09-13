@@ -21,6 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 public class ProcessPbaPaymentTest extends IntegrationTest {
 
+    private static final String DATA_KEY = "data";
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/solicitor/";
 
     @Value("${case.orchestration.solicitor.process-pba-payment.context-path}")
@@ -40,7 +41,7 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
 
-        Map<String, Object> responseData = response.getBody().path("data");
+        Map<String, Object> responseData = response.getBody().path(DATA_KEY);
 
         // There will be an error if PBA payment is unsuccessful
         assertNotNull(responseData.get(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY));

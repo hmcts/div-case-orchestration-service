@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 public class SolicitorCreatePaymentTest extends IntegrationTest {
 
+    private static final String DATA_KEY = "data";
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/solicitor/";
 
     @Value("${case.orchestration.solicitor.solicitor-create.context-path}")
@@ -41,7 +42,7 @@ public class SolicitorCreatePaymentTest extends IntegrationTest {
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
 
-        Map<String, Object> responseData = response.getBody().path("data");
+        Map<String, Object> responseData = response.getBody().path(DATA_KEY);
 
         assertNotNull(responseData.get(CREATED_DATE_JSON_KEY));
         assertNotNull(responseData.get(DIVORCE_UNIT_JSON_KEY));
