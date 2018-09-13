@@ -46,7 +46,10 @@ idam:
     username: dummyuser
     password: dummypassword
   s2s-auth:
-      url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
+    url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
+    microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_ccd_submission}
+    secret: ${SERVICE_AUTH_SECRET:dummysecret}
+
 
 auth2:
   client:

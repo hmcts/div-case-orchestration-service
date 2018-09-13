@@ -15,11 +15,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class ValidateSolicitorCaseData implements Task<Map<String, Object>> {
 
+    @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
-        boolean petitionStatmentOfTruth = valueEqualsYes(caseData.get(STATEMENT_OF_TRUTH).toString());
-        boolean solStatmentOfTruth = valueEqualsYes(caseData.get(SOLICITOR_STATEMENT_OF_TRUTH).toString());
+        boolean petitionStatmentOfTruth = valueEqualsYes((String) caseData.get(STATEMENT_OF_TRUTH));
+        boolean solStatmentOfTruth = valueEqualsYes((String) caseData.get(SOLICITOR_STATEMENT_OF_TRUTH));
 
         if (!petitionStatmentOfTruth || !solStatmentOfTruth) {
             context.setTaskFailed(true);

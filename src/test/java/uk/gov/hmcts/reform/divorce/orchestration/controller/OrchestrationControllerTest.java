@@ -265,7 +265,7 @@ public class OrchestrationControllerTest {
                 .build();
         final Map<String, Object> invalidResponse = Collections.singletonMap(
                 SOLICITOR_VALIDATION_ERROR_KEY,
-                ERROR_STATUS
+                Collections.singletonList(ERROR_STATUS)
         );
 
         final CreateEvent createEvent = new CreateEvent();

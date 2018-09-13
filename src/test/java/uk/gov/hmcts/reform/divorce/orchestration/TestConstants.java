@@ -28,5 +28,7 @@ public class TestConstants {
     public static final String TEST_SOLICITOR_ACCOUNT_NUMBER = "test.solicitor.account";
     public static final String TEST_SOLICITOR_FIRM_NAME = "test.solicitor.firm";
     public static final String TEST_SOLICITOR_REFERENCE = "test.solicitor.reference";
-    public static final String TEST_SERVICE_AUTH_TOKEN = "test.service.auth.token";
+    public static final String TEST_SERVICE_AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            + ".eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ"
+            + ".SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 }

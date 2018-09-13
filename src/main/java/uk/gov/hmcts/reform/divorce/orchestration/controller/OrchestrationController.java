@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.Validat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
@@ -171,6 +171,7 @@ public class OrchestrationController {
         );
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping(path = "/process-pba-payment", consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Solicitor pay callback")
@@ -187,7 +188,7 @@ public class OrchestrationController {
         if (response != null && response.containsKey(SOLICITOR_VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(
                     CcdCallbackResponse.builder()
-                            .errors(Collections.singletonList(response.get(SOLICITOR_VALIDATION_ERROR_KEY).toString()))
+                            .errors((List<String>) response.get(SOLICITOR_VALIDATION_ERROR_KEY))
                             .build());
         }
 

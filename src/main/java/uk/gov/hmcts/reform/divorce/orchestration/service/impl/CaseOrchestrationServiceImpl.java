@@ -105,7 +105,15 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> processPbaPayment(CreateEvent caseDetailsRequest,
                                                  String authToken) throws WorkflowException {
-        return processPbaPaymentWorkflow.run(caseDetailsRequest, authToken);
+        Map<String, Object> payLoad = processPbaPaymentWorkflow.run(caseDetailsRequest, authToken);
+
+        if (processPbaPaymentWorkflow.errors().isEmpty()) {
+            log.info("Callback pay by acccount for solicitor case with id: {} successfully completed",
+                    payLoad.get(ID));
+            return payLoad;
+        } else {
+            return processPbaPaymentWorkflow.errors();
+        }
     }
 
     @Override

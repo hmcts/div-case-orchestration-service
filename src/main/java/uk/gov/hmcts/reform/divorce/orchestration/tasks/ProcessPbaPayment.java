@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,11 +40,15 @@ public class ProcessPbaPayment implements Task<Map<String, Object>> {
 
     private final PaymentClient paymentClient;
     private final AuthTokenGenerator serviceAuthGenerator;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public ProcessPbaPayment(PaymentClient paymentClient, AuthTokenGenerator serviceAuthGenerator) {
+    public ProcessPbaPayment(PaymentClient paymentClient,
+                             AuthTokenGenerator serviceAuthGenerator,
+                             ObjectMapper objectMapper) {
         this.paymentClient = paymentClient;
         this.serviceAuthGenerator = serviceAuthGenerator;
+        this.objectMapper = objectMapper;
     }
 
     @SuppressWarnings("unchecked")
@@ -52,7 +57,9 @@ public class ProcessPbaPayment implements Task<Map<String, Object>> {
         try {
             if (solicitorPayByAccount((String) caseData.get(SOLICITOR_HOW_TO_PAY_JSON_KEY))) {
                 CreditAccountPaymentRequest request = new CreditAccountPaymentRequest();
-                OrderSummary orderSummary = (OrderSummary) caseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY);
+                OrderSummary orderSummary = objectMapper.convertValue(
+                        caseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY),
+                        OrderSummary.class);
 
                 request.setService(SERVICE);
                 request.setCurrency(CURRENCY);
@@ -88,7 +95,8 @@ public class ProcessPbaPayment implements Task<Map<String, Object>> {
                         + context.getTransientObject(CASE_ID_JSON_KEY));
             }
         } catch (NullPointerException exception) {
-            log.error("Missing required fields for Solicitor Payment");
+            log.error("Missing required fields for Solicitor Payment on case Id - "
+                + context.getTransientObject(CASE_ID_JSON_KEY), exception);
             throw new TaskException(exception.getMessage());
         }
 

@@ -192,6 +192,25 @@ public class CaseOrchestrationServiceImplTest {
         verify(processPbaPaymentWorkflow).run(createEventRequest, AUTH_TOKEN);
     }
 
+
+    @Test
+    public void givenCaseDataInvalid_whenProcessPbaPayment_thenReturnListOfErrors() throws Exception {
+        // given
+        when(processPbaPaymentWorkflow.run(createEventRequest, AUTH_TOKEN))
+                .thenReturn(requestPayload);
+        Map<String, Object> errors = Collections.singletonMap("new_Error", "An Error");
+        when(processPbaPaymentWorkflow.errors()).thenReturn(errors);
+
+        // when
+        Map<String, Object> actual = classUnderTest.processPbaPayment(createEventRequest, AUTH_TOKEN);
+
+        // then
+        assertEquals(errors, actual);
+
+        verify(processPbaPaymentWorkflow).run(createEventRequest, AUTH_TOKEN);
+        verify(processPbaPaymentWorkflow, times(2)).errors();
+    }
+
     @Test
     public void givenCaseData_whenSolicitorCreate_thenReturnPayload() throws Exception {
         // given

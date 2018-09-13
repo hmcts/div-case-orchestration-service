@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,12 +58,16 @@ public class ProcessPbaPaymentTest {
     @Mock
     private AuthTokenGenerator serviceAuthGenerator;
 
+    @Mock
+    private ObjectMapper objectMapper;
+
     @InjectMocks
     private ProcessPbaPayment processPbaPayment;
 
     private TaskContext context;
     private Map<String, Object> caseData;
     private CreditAccountPaymentRequest expectedRequest;
+    private OrderSummary orderSummary;
 
     @Before
     public void setup() {
@@ -76,7 +81,7 @@ public class ProcessPbaPaymentTest {
                 .version(TEST_FEE_VERSION)
                 .description(TEST_FEE_DESCRIPTION)
                 .build();
-        OrderSummary orderSummary = new OrderSummary();
+        orderSummary = new OrderSummary();
         orderSummary.add(feeResponse);
 
         caseData = new HashMap<>();
@@ -110,6 +115,8 @@ public class ProcessPbaPaymentTest {
 
     @Test
     public void givenValidData_whenExecuteIsCalled_thenMakePayment() throws Exception {
+        when(objectMapper.convertValue(caseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY), OrderSummary.class))
+                .thenReturn(orderSummary);
         when(serviceAuthGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
         when(paymentClient.creditAccountPayment(
@@ -120,6 +127,8 @@ public class ProcessPbaPaymentTest {
 
         assertEquals(caseData, processPbaPayment.execute(context, caseData));
 
+        verify(objectMapper).convertValue(caseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY), OrderSummary.class);
+        verify(serviceAuthGenerator).generate();
         verify(paymentClient).creditAccountPayment(
                 AUTH_TOKEN,
                 TEST_SERVICE_AUTH_TOKEN,
@@ -131,8 +140,6 @@ public class ProcessPbaPaymentTest {
         caseData.replace(SOLICITOR_HOW_TO_PAY_JSON_KEY, "NotByAccount");
 
         // Will fail if it attempts to call paymentClient
-        System.out.println(processPbaPayment);
-
         assertEquals(caseData, processPbaPayment.execute(context, caseData));
     }
 

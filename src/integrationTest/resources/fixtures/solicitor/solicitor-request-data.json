@@ -134,8 +134,22 @@
       },
       "D8InferredPetitionerGender": "female",
       "D8JurisdictionHabituallyResLast6Months": "NO",
-      "solApplicationFeeOrderSummary" : null,
-      "SolicitorFeeAccountNumber" : "AccountNumber",
+      "solApplicationFeeOrderSummary": {
+        "PaymentReference": null,
+        "PaymentTotal": "55000",
+        "Fees": [
+          {
+            "value": {
+              "FeeDescription": "Filing an application for a divorce, nullity or civil partnership dissolution – fees order 1.2.",
+              "FeeVersion": "4",
+              "FeeCode": "FEE0002",
+              "FeeAmount": "55000"
+            }
+          }
+        ]
+      },
+      "SolicitorFeeAccountNumber" : "PBA1234567",
+      "D8SolicitorReference" : "SolicitorReference",
       "D8SelectedDivorceCentreSiteId" : "AA01",
       "PetitionerSolicitorFirm" : "Solicitor",
       "PetitionerSolicitorPhone" : "01234567890",

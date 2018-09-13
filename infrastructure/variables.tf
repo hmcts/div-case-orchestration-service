@@ -40,3 +40,7 @@ variable "vault_env" {}
 variable "common_tags" {
   type = "map"
 }
+
+variable "ccd_submission_microservice_key" {
+  default = "divorce_ccd_submission"
+}
