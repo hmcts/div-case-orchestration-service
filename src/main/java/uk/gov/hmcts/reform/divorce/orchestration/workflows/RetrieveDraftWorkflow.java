@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveNullElements;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
 
 import java.util.HashMap;
@@ -20,19 +21,23 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
     private final RetrieveDraft retrieveDraft;
     private final CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
+    private final RemoveNullElements removeNullElements;
 
     @Autowired
     public RetrieveDraftWorkflow(RetrieveDraft retrieveDraft,
-                                 CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter) {
+                                 CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter,
+                                 RemoveNullElements removeNullElements) {
         this.retrieveDraft = retrieveDraft;
         this.caseDataToDivorceFormatter = caseDataToDivorceFormatter;
+        this.removeNullElements = removeNullElements;
     }
 
     public Map<String, Object> run(String authToken) throws WorkflowException {
         return this.execute(
                 new Task[]{
                     retrieveDraft,
-                    caseDataToDivorceFormatter
+                    caseDataToDivorceFormatter,
+                    removeNullElements
                 },
                 new HashMap<>(),
                 new ImmutablePair(AUTH_TOKEN_JSON_KEY, authToken)
