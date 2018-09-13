@@ -17,11 +17,24 @@ public class OrchestrationConstants {
     public static final String D_8_PETITIONER_LAST_NAME = "D8PetitionerLastName";
     public static final String D_8_DIVORCE_UNIT = "D8DivorceUnit";
     public static final String CCD_CASE_DATA = "ccdCaseData";
+    public static final String D_8_PETITIONER_EMAIL = "D8PetitionerEmail";
+    public static final String D_8_INFERRED_RESPONDENT_GENDER = "D8InferredRespondentGender";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
     public static final String SUCCESS_STATUS = "success";
+    public static final String ERROR_STATUS = "error";
+
+    //Notification
+    public static final String NOTIFICATION_EMAIL = "email_address";
+    public static final String NOTIFICATION_TEMPLATE = "notification_template";
+    public static final String NOTIFICATION_TEMPLATE_VARS = "notification_template_vars";
+    public static final String NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY = "first name";
+    public static final String NOTIFICATION_ADDRESSEE_LAST_NAME_KEY = "last name";
+    public static final String NOTIFICATION_RELATIONSHIP_KEY = "relationship";
+    public static final String NOTIFICATION_REFERENCE_KEY = "ref";
+
 
     // Document Generator
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";
@@ -36,4 +49,7 @@ public class OrchestrationConstants {
     public static final String FORM_ID = "case-progression";
     public static final String VALIDATION_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData_Error";
+    public static final String EMAIL_ERROR_KEY
+            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
+
 }

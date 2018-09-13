@@ -29,14 +29,11 @@ uk:
   gov:
     notify:
       api:
-        key: dummy
+        key: 2409ba37-b5e6-4f03-b052-7d0f0986888d
       email:
-        templates: "{SAVE_DRAFT:'9fbb6bdb-1043-440a-b082-5ea71b5c2609',
-                     APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c'
-                     RESPONDENT_SUBMISSION_CONSENT: 'c323844c-5fb9-4ba4-8290-b84139eb033c'}"
+        templates: "{SAVE_DRAFT:'9fbb6bdb-1043-440a-b082-5ea71b5c2609', APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c'}"
         template:
           vars: "{SAVE_DRAFT: {divorceUrl: 'https://apply-divorce.service.gov.uk'}}"
-
 idam:
   api:
     url: ${IDAM_API_URL:http://localhost:4503}
@@ -45,8 +42,8 @@ idam:
     health:
       context-path: /health
   citizen:
-    username: dummyuser
-    password: dummypassword
+    username: dummy
+    password: dummy
 
 auth2:
   client:

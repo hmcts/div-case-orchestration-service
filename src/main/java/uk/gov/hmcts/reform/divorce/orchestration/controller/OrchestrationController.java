@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -150,6 +151,22 @@ public class OrchestrationController {
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @PutMapping(path = "/aos-received")
+    @ApiOperation(value = "")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "The divorce draft has been deleted successfully"),
+            @ApiResponse(code = 401, message = "User Not Authenticated"),
+            @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> aosReceived(
+            @RequestHeader("Authorization")
+            @ApiParam(value = "JWT authorisation token issued by IDAM",
+                    required = true) final String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(orchestrationService.aosReceived(caseDetailsRequest, authorizationToken));
+
     }
 
     private List<String> getErrors(Map<String, Object> response) {
