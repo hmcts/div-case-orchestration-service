@@ -27,12 +27,9 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
@@ -76,7 +73,7 @@ public class AOSRespondentSubmittedITest {
 
     @Test
     public void givenEmptyBody_whenPerformAOSReceived_thenReturnBadRequestResponse() throws Exception {
-        webClient.perform(put(API_URL)
+        webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -107,7 +104,7 @@ public class AOSRespondentSubmittedITest {
                         .build())
                 .build();
 
-        webClient.perform(put(API_URL)
+        webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
                 .content(ObjectMapperTestUtil.convertObjectToJsonString(caseEvent))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -135,7 +132,7 @@ public class AOSRespondentSubmittedITest {
                 .data(caseEvent.getCaseDetails().getCaseData())
                 .build();
         String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
-        webClient.perform(put(API_URL)
+        webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
                 .content(ObjectMapperTestUtil.convertObjectToJsonString(caseEvent))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -167,7 +164,7 @@ public class AOSRespondentSubmittedITest {
         mockEmailClient(D_8_PETITIONER_EMAIL, PETITIONER_FIRST_NAME, PETITIONER_LAST_NAME, "wife", CASE_ID);
 
         String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
-        webClient.perform(put(API_URL)
+        webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
                 .content(ObjectMapperTestUtil.convertObjectToJsonString(caseEvent))
                 .contentType(MediaType.APPLICATION_JSON))

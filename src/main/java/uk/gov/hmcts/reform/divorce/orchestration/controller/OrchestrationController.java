@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
@@ -153,7 +154,8 @@ public class OrchestrationController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @PutMapping(path = "/aos-received")
+    @PostMapping(path = "/aos-received")
+    @RequestMapping(consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The divorce draft has been deleted successfully"),
@@ -164,7 +166,6 @@ public class OrchestrationController {
             @ApiParam(value = "JWT authorisation token issued by IDAM",
                     required = true) final String authorizationToken,
             @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
-
         return ResponseEntity.ok(orchestrationService.aosReceived(caseDetailsRequest, authorizationToken));
 
     }
