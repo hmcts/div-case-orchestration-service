@@ -42,5 +42,5 @@ variable "common_tags" {
 }
 
 variable "ccd_submission_microservice_key" {
-  default = "divorce_ccd_submission"
+  default = "divorce_frontend"
 }
