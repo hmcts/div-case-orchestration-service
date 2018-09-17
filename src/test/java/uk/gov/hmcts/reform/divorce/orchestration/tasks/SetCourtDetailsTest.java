@@ -53,7 +53,7 @@ public class SetCourtDetailsTest {
     public void executeShouldSetDateAndCourtDetailsOnPayload() {
         Map<String, Object> resultData = new HashMap<>();
         resultData.put(CREATED_DATE_JSON_KEY, LocalDate.now().format(ofPattern("yyyy-MM-dd")));
-        resultData.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getDisplayName());
+        resultData.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getId());
         resultData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.EASTMIDLANDS.getSiteId());
 
         assertEquals(resultData, setCourtDetails.execute(context, testData));

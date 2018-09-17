@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -34,6 +35,7 @@ public class SendSubmissionNotificationEmailTest {
     public static final String COURT_DISPLAY_NAME = "eastMidlands";
     public static final String UNFORMATTED_CASE_ID = "0123456789012345";
     public static final String FORMATTED_CASE_ID = "0123-4567-8901-2345";
+    public static final String SHORT_CASE_ID = "0123456789";
 
     @Mock
     EmailService emailService;
@@ -68,7 +70,20 @@ public class SendSubmissionNotificationEmailTest {
     }
 
     @Test
-    public void executeShouldSetDateAndCourtDetailsOnPayload() {
+    public void executeShouldCallEmailService() {
+        when(emailService.sendSubmissionNotificationEmail(TEST_USER_EMAIL, templateVars)).thenReturn(null);
+
+        assertEquals(testData, sendSubmissionNotificationEmail.execute(context, testData));
+
+        verify(emailService).sendSubmissionNotificationEmail(TEST_USER_EMAIL, templateVars);
+    }
+
+
+    @Test
+    public void executeShouldCallEmailServiceWithNoCaseIdFormatWhenNoUnableToFormatId() {
+        context.setTransientObject(CASE_ID_JSON_KEY, SHORT_CASE_ID);
+        templateVars.replace("CCD reference", SHORT_CASE_ID);
+
         when(emailService.sendSubmissionNotificationEmail(TEST_USER_EMAIL, templateVars)).thenReturn(null);
 
         assertEquals(testData, sendSubmissionNotificationEmail.execute(context, testData));
