@@ -59,7 +59,7 @@ public class RetrieveAosCaseIntegrationTest extends CcdSubmissionSupport {
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertEquals(String.valueOf(caseDetails.getId()), cosResponse.path(CASE_ID_KEY));
         assertEquals("eastMidlands", cosResponse.path(COURTS_KEY));
-        assertEquals("AosResponded", cosResponse.path(STATE_KEY));
+        assertEquals("AosCompleted", cosResponse.path(STATE_KEY));
         assertEquals(loadJsonToObject(PAYLOAD_CONTEXT_PATH + "aos-divorce-session.json", Map.class),
             cosResponse.path(DATA_KEY));
     }
