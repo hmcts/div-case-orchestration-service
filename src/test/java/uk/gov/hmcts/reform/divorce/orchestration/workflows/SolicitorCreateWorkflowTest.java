@@ -51,7 +51,7 @@ public class SolicitorCreateWorkflowTest {
     @Test
     public void runShouldExecuteTasksAndReturnPayload() throws Exception {
         Map<String, Object> resultData = Collections.singletonMap(
-                DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getDisplayName()
+                DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getId()
         );
 
         when(setCourtDetails.execute(context, testData)).thenReturn(resultData);
