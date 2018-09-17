@@ -8,6 +8,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCaseToCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
@@ -33,6 +35,9 @@ public class SubmitToCCDWorkflowTest {
     @Mock
     private SubmitCaseToCCD submitCaseToCCD;
 
+    @Mock
+    private DeleteDraft deleteDraft;
+
     @InjectMocks
     private SubmitToCCDWorkflow submitToCCDWorkflow;
 
@@ -53,6 +58,7 @@ public class SubmitToCCDWorkflowTest {
         when(formatDivorceSessionToCaseData.execute(context, testData)).thenReturn(testData);
         when(validateCaseData.execute(context, testData)).thenReturn(testData);
         when(submitCaseToCCD.execute(context, testData)).thenReturn(resultData);
+        when(deleteDraft.execute(context, resultData)).thenReturn(resultData);
 
         assertEquals(resultData, submitToCCDWorkflow.run(testData, AUTH_TOKEN));
 
