@@ -1,0 +1,102 @@
+info:
+  app:
+    name: ${spring.application.name}
+
+spring:
+  application:
+    name: div-cos
+  resources:
+    static-locations:
+
+server:
+  port: ${CASE_ORCHESTRATION_SERVICE_URL:4013}
+
+case:
+  formatter:
+    service:
+      api:
+        baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://localhost:4011}
+  validation:
+    service:
+      api:
+        baseurl: ${CASE_VALIDATION_SERVICE_API_BASEURL:http://localhost:4008}
+  maintenance:
+    service:
+      api:
+        baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://localhost:4010}
+
+uk:
+  gov:
+    notify:
+      api:
+        key: 2409ba37-b5e6-4f03-b052-7d0f0986888d
+      email:
+        templates: "{SAVE_DRAFT:'9fbb6bdb-1043-440a-b082-5ea71b5c2609', APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c'}"
+        template:
+          vars: "{SAVE_DRAFT: {divorceUrl: 'https://apply-divorce.service.gov.uk'}}"
+idam:
+  api:
+    url: ${IDAM_API_URL:http://localhost:4503}
+    redirect-url: ${IDAM_API_REDIRECT_URL:http://localhost:8080/authenticated}
+    port: 4503
+    health:
+      context-path: /health
+  citizen:
+    username: dummy
+    password: dummy
+
+auth2:
+  client:
+    id: divorce
+    secret: dummy
+
+document:
+  generator:
+    service:
+      api:
+        baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://localhost:4007}
+
+http:
+  connect:
+    timeout: 60000
+    request:
+      timeout: 60000
+
+documentation:
+  swagger:
+    enabled: true
+
+# GENERAL SPRING BOOT ACTUATOR CONFIG
+# Context path for Spring Boot Actuator endpoints
+# Allow actuator endpoints to be accessed without requiring authentication
+# Enable default health indicators
+# Enable disk space health check
+management:
+  endpoint:
+    health:
+      show-details: "ALWAYS"
+      cache:
+        time-to-live: 4000
+  endpoints:
+    web:
+      base-path: /
+      path-mapping:
+        health: health
+      exposure:
+        include: info, health, metrics
+
+draft:
+  api:
+    ccd:
+      check:
+        enabled: false
+
+logging:
+  level:
+    org.springframework.web: ERROR
+    uk.gov.hmcts.reform.divorce.orchestration: DEBUG
+  pattern:
+    console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"
+
+azure:
+  app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:false}

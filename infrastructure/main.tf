@@ -39,6 +39,9 @@ module "div-cos" {
     AUTH2_CLIENT_SECRET                             = "${data.azurerm_key_vault_secret.auth-idam-client-secret.value}"
     IDAM_CITIZEN_USERNAME                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-username.value}"
     IDAM_CITIZEN_PASSWORD                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-password.value}"
+    UK_GOV_NOTIFY_API_KEY                           = "${data.azurerm_key_vault_secret.uk-gov-notify-api-key.value}"
+    UK_GOV_NOTIFY_EMAIL_TEMPLATES                   = "${var.uk_gov_notify_email_templates}"
+    UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS               = "${var.uk_gov_notify_email_template_vars}"
   }
 }
 
@@ -69,5 +72,10 @@ data "azurerm_key_vault_secret" "auth-idam-citizen-username" {
 
 data "azurerm_key_vault_secret" "auth-idam-citizen-password" {
   name      = "idam-citizen-password"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "uk-gov-notify-api-key" {
+  name      = "uk-gov-notify-api-key"
   vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
