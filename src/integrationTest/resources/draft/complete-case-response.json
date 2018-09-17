@@ -35,7 +35,7 @@
     "url" : null,
     "address" : [ "80 Landor Road", "London", "SW9 9PE" ]
   },
-  "helpWithFeesNeedHelp" : "YES",
+  "helpWithFeesNeedHelp" : "Yes",
   "petitionerNameChangedHow" : [ "marriageCertificate" ],
   "marriageDate" : "2001-02-02T00:00:00.000+0000",
   "screenHasRespondentAddress" : "Yes",
@@ -67,10 +67,10 @@
   "marriageCertificateFiles" : [ ],
   "petitionerPhoneNumber" : "01234567890",
   "helpWithFeesAppliedForFees" : "Yes",
-  "marriageDateDay" : "2",
+  "marriageDateDay" : 2,
   "reasonForDivorceShowAdultery" : "true",
   "respondentCorrespondenceUseHomeAddress" : "No",
-  "marriageDateYear" : "2001",
+  "marriageDateYear" : 2001,
   "jurisdictionConnection" : [ "A", "C" ],
   "financialOrder" : "Yes",
   "petitionerContactDetailsConfidential" : "share",
@@ -117,7 +117,7 @@
   "respondentFirstName" : "Jane",
   "reasonForDivorceHasMarriageDate" : "true",
   "marriedInUk" : "Yes",
-  "marriageDateMonth" : "2",
+  "marriageDateMonth" : 2,
   "marriageCanDivorce" : "true",
   "financialOrderFor" : [ "petitioner", "children" ]
 }
