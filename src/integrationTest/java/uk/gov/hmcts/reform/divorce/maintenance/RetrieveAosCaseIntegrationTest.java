@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 public class RetrieveAosCaseIntegrationTest extends CcdSubmissionSupport {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/retrieve-aos-case/";
     private static final String CASE_ID_KEY = "caseId";
-    private static final String TEST_AOS_RESPONDED_EVENT = "testAosResponded";
+    private static final String TEST_AOS_RESPONDED_EVENT = "testAosStarted";
     private static final String COURTS_KEY = "courts";
     private static final String STATE_KEY = "state";
     private static final String DATA_KEY = "data";
@@ -60,7 +60,7 @@ public class RetrieveAosCaseIntegrationTest extends CcdSubmissionSupport {
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertEquals(String.valueOf(caseDetails.getId()), cosResponse.path(CASE_ID_KEY));
         assertEquals("eastMidlands", cosResponse.path(COURTS_KEY));
-        assertEquals("AosResponded", cosResponse.path(STATE_KEY));
+        assertEquals("AosStarted", cosResponse.path(STATE_KEY));
         assertNotNull(cosResponse.path(DATA_KEY));
     }
 
