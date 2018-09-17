@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
@@ -29,15 +28,17 @@ public class AosReceivedCallbackTest extends IntegrationTest {
     public void givenCase_whenSubmitAOS_thenReturnAOSData() {
 
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
-        Map<String, Object> response =cosApiClient.aosReceived(createCaseWorkerUser().getAuthToken(),aosCase);
+        Map<String, Object> response =cosApiClient.aosReceived(createCaseWorkerUser().getAuthToken(), aosCase);
         assertEquals(aosCase.get(CASE_DATA), response.get(CASE_DATA));
     }
 
     @Test
     public void givenCaseWithoutEmail_whenSubmitAOS_thenReturnNotificationError() {
 
-        Map<String, Object> aosCaseWithoutEmailAddress = ResourceLoader.loadJsonToObject(ERROR_CASE_RESPONSE, Map.class);
-        Map<String, Object> response = cosApiClient.aosReceived(createCaseWorkerUser().getAuthToken(), aosCaseWithoutEmailAddress);
+        Map<String, Object> aosCaseWithoutEmailAddress = ResourceLoader
+                .loadJsonToObject(ERROR_CASE_RESPONSE, Map.class);
+        Map<String, Object> response = cosApiClient
+                .aosReceived(createCaseWorkerUser().getAuthToken(), aosCaseWithoutEmailAddress);
 
         assertNull(response.get(CASE_DATA));
         List<String> error = (List<String>) response.get(ERRORS);
