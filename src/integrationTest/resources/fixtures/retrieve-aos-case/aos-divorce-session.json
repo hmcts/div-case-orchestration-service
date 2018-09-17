@@ -152,7 +152,25 @@
     "url":null
   },
   "respondentNameAsOnMarriageCertificate":null,
-  "livingArrangementsLastLivedTogetherAddress":null,
+  "livingArrangementsLastLivedTogetherAddress":{
+    "postcodeManual":null,
+    "addressConfirmed":true,
+    "validPostcode":false,
+    "address":[
+      "Flat A-B",
+      "86 Landor Road",
+      "London",
+      "SW9 9PE"
+    ],
+    "town":null,
+    "addressType":"abroad",
+    "postcode":null,
+    "addressAbroad":"Flat A-B\n86 Landor Road\nLondon\nSW9 9PE",
+    "street1":null,
+    "street2":null,
+    "postcodeError":false,
+    "url":null
+  },
   "reasonForDivorceLimitReasons":"false",
   "reasonForDivorceHasMarriageDate":"true",
   "reasonForDivorceDesertionDate":null,
@@ -163,7 +181,24 @@
   "marriageCanDivorce":"true",
   "reasonForDivorceDesertionBeforeMarriage":null,
   "connectionSummary":null,
-  "respondentSolicitorAddress":null,
+  "respondentSolicitorAddress":{
+    "postcodeManual":null,
+    "addressConfirmed":true,
+    "validPostcode":false,
+    "address":[
+      "90 Landor Road",
+      "London",
+      "SW9 9PE"
+    ],
+    "town":null,
+    "addressType":"abroad",
+    "postcode":null,
+    "addressAbroad":"90 Landor Road\nLondon\nSW9 9PE",
+    "street1":null,
+    "street2":null,
+    "postcodeError":false,
+    "url":null
+  },
   "livingArrangementsLiveTogether":"No",
   "petitionerFirstName":"John",
   "jurisdictionPetitionerDomicile":null,
