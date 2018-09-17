@@ -1,0 +1,25 @@
+{
+  "DNApplicationSubmittedDate": "2018-09-03",
+  "PetitionChangedDetailsDN": "Some free text",
+  "ConfirmPetitionDN": "yes",
+  "DivorceCostsOptionDN": "originalAmount",
+  "CostsDifferentDetails": "Some free text",
+  "DocumentsUploadedDN": [
+    "http://url1",
+    "http://url2"
+  ],
+  "StatementOfTruthDN": "yes",
+  "AlternativeRespCorrAddress": "",
+  "AdulteryLifeIntolerable": "yes",
+  "AdulteryDateFoundOut": "2018-09-03",
+  "AdulteryLivedApartSinceEventDN": "yes",
+  "AdulteryTimeLivedTogetherDetailsDN": "Free text",
+  "BehaviourStillHappeningDN": "yes",
+  "BehaviourMostRecentIncidentDateDN": "2018-09-03",
+  "BehaviourLivedApartSinceEventDN": "no",
+  "BehaviourTimeLivedTogetherDetailsDN": "Free text",
+  "DesertionLivedApartSinceEventDN": "No",
+  "DesertionTimeLivedTogetherDetailsDN": "Free text",
+  "SeparationLivedApartSinceEventDN": "No",
+  "SeparationTimeLivedTogetherDetailsDN": "Free text"
+}

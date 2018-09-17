@@ -24,4 +24,12 @@ public interface CaseOrchestrationService {
                                String authToken, String caseId) throws WorkflowException;
 
     CaseDataResponse retrieveAosCase(boolean checkCcd, String authorizationToken) throws WorkflowException;
+
+    Map<String, Object> getDraft(String authToken) throws WorkflowException;
+
+    Map<String,Object> saveDraft(Map<String, Object> payLoad,
+                                 String authorizationToken,
+                                 String notificationEmail) throws WorkflowException;
+
+    Map<String,Object> deleteDraft(String authorizationToken) throws WorkflowException;
 }
