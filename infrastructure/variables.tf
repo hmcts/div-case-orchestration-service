@@ -43,4 +43,11 @@ variable "common_tags" {
 
 variable "draft_check_ccd_enabled" {
     default = false
+
+variable "uk_gov_notify_email_templates" {
+    type = "string"
+}
+
+variable "uk_gov_notify_email_template_vars" {
+    type = "string"
 }
