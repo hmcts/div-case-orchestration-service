@@ -1,6 +1,7 @@
 {
   "reasonForDivorceDesertionDateInFuture" : null,
   "reasonForDivorceDesertionDay" : null,
+  "caseReference" : null,
   "reasonForDivorceSeperationInFuture" : null,
   "respondentCorrespondenceAddress" : {
     "postcodeManual" : null,
