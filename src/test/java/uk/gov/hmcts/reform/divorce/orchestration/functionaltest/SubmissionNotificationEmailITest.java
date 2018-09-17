@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
+
 import java.util.HashMap;
 import java.util.Map;
 

@@ -32,7 +32,7 @@ public class SubmissionNotificationTest extends IntegrationTest {
         Response response = RestUtil.postToRestService(
                 serverUrl + contextPath,
                 headers,
-                ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + "submit-complete-case.json")
+                ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + "ccd-callback-petition-issued.json")
         );
 
         // Will fail if email fails to send

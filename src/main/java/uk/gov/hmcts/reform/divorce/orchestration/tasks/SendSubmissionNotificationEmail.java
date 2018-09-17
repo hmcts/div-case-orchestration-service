@@ -51,11 +51,15 @@ public class SendSubmissionNotificationEmail implements Task<Map<String, Object>
     }
 
     private String formatReferenceId(String referenceId) {
-        return String.format("%s-%s-%s-%s",
-            referenceId.substring(0, 4),
-            referenceId.substring(4, 8),
-            referenceId.substring(8, 12),
-            referenceId.substring(12));
+        try {
+            return String.format("%s-%s-%s-%s",
+                    referenceId.substring(0, 4),
+                    referenceId.substring(4, 8),
+                    referenceId.substring(8, 12),
+                    referenceId.substring(12));
+        } catch (Exception exception) {
+            return referenceId;
+        }
     }
 
 }
