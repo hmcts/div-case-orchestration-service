@@ -13,8 +13,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -41,16 +45,16 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private CcdCallbackWorkflow ccdCallbackWorkflow;
-    
+
     @Mock
     private RetrieveDraftWorkflow retrieveDraftWorkflow;
-    
+
     @Mock
     private SaveDraftWorkflow saveDraftWorkflow;
-    
+
     @Mock
     private DeleteDraftWorkflow deleteDraftWorkflow;
-    
+
     @Mock
     private AuthenticateRespondentWorkflow authenticateRespondentWorkflow;
 
@@ -59,6 +63,18 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private UpdateToCCDWorkflow updateToCCDWorkflow;
+
+    @Mock
+    private SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow;
+
+    @Mock
+    private SetOrderSummaryWorkflow setOrderSummaryWorkflow;
+
+    @Mock
+    private ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
+
+    @Mock
+    private SolicitorCreateWorkflow solicitorCreateWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -71,17 +87,17 @@ public class CaseOrchestrationServiceImplTest {
 
     @Before
     public void setUp() {
+        requestPayload = Collections.emptyMap();
         createEventRequest = CreateEvent.builder()
                 .caseDetails(
                         CaseDetails.builder()
-                                .caseData(Collections.emptyMap())
+                                .caseData(requestPayload)
                                 .caseId(TEST_CASE_ID)
                                 .state(TEST_STATE)
                                 .build())
                 .eventId(TEST_EVENT_ID)
                 .token(TEST_TOKEN)
                 .build();
-        requestPayload = Collections.emptyMap();
         expectedPayload = Collections.singletonMap(PIN, TEST_PIN);
     }
 
@@ -210,6 +226,85 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(requestPayload, actual);
 
         verify(updateToCCDWorkflow).run(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
+    }
+
+    @Test
+    public void givenCaseData_whenSendSubmissionNotification_thenReturnPayload() throws Exception {
+        // given
+        when(sendSubmissionNotificationWorkflow.run(createEventRequest))
+                .thenReturn(requestPayload);
+
+        // when
+        Map<String, Object> actual = classUnderTest.sendSubmissionNotificationEmail(createEventRequest);
+
+        // then
+        assertEquals(requestPayload, actual);
+
+        verify(sendSubmissionNotificationWorkflow).run(createEventRequest);
+    }
+
+    @Test
+    public void givenCaseData_whenSetOrderSummary_thenReturnPayload() throws Exception {
+        // given
+        when(setOrderSummaryWorkflow.run(requestPayload))
+                .thenReturn(requestPayload);
+
+        // when
+        Map<String, Object> actual = classUnderTest.setOrderSummary(createEventRequest);
+
+        // then
+        assertEquals(requestPayload, actual);
+
+        verify(setOrderSummaryWorkflow).run(requestPayload);
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_thenReturnPayload() throws Exception {
+        // given
+        when(processPbaPaymentWorkflow.run(createEventRequest, AUTH_TOKEN))
+                .thenReturn(requestPayload);
+
+        // when
+        Map<String, Object> actual = classUnderTest.processPbaPayment(createEventRequest, AUTH_TOKEN);
+
+        // then
+        assertEquals(requestPayload, actual);
+
+        verify(processPbaPaymentWorkflow).run(createEventRequest, AUTH_TOKEN);
+    }
+
+
+    @Test
+    public void givenCaseDataInvalid_whenProcessPbaPayment_thenReturnListOfErrors() throws Exception {
+        // given
+        when(processPbaPaymentWorkflow.run(createEventRequest, AUTH_TOKEN))
+                .thenReturn(requestPayload);
+        Map<String, Object> errors = Collections.singletonMap("new_Error", "An Error");
+        when(processPbaPaymentWorkflow.errors()).thenReturn(errors);
+
+        // when
+        Map<String, Object> actual = classUnderTest.processPbaPayment(createEventRequest, AUTH_TOKEN);
+
+        // then
+        assertEquals(errors, actual);
+
+        verify(processPbaPaymentWorkflow).run(createEventRequest, AUTH_TOKEN);
+        verify(processPbaPaymentWorkflow, times(2)).errors();
+    }
+
+    @Test
+    public void givenCaseData_whenSolicitorCreate_thenReturnPayload() throws Exception {
+        // given
+        when(solicitorCreateWorkflow.run(requestPayload))
+                .thenReturn(requestPayload);
+
+        // when
+        Map<String, Object> actual = classUnderTest.solicitorCreate(createEventRequest);
+
+        // then
+        assertEquals(requestPayload, actual);
+
+        verify(solicitorCreateWorkflow).run(requestPayload);
     }
 
     @After
