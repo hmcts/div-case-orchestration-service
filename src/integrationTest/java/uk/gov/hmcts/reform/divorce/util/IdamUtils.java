@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.divorce.model.RegisterUserRequest;
-import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.model.UserGroup;
 
 import java.util.Base64;

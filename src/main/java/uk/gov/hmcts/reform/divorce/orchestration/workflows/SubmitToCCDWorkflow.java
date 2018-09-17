@@ -43,7 +43,7 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
                 deleteDraft
             },
             payload,
-            new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, authToken)
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)
         );
     }
 }
