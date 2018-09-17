@@ -12,6 +12,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -19,6 +22,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 
 
@@ -36,7 +41,16 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private CcdCallbackWorkflow ccdCallbackWorkflow;
-
+    
+    @Mock
+    private RetrieveDraftWorkflow retrieveDraftWorkflow;
+    
+    @Mock
+    private SaveDraftWorkflow saveDraftWorkflow;
+    
+    @Mock
+    private DeleteDraftWorkflow deleteDraftWorkflow;
+    
     @Mock
     private AuthenticateRespondentWorkflow authenticateRespondentWorkflow;
 
@@ -84,6 +98,54 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(expectedPayload, actual);
         assertEquals(expectedPayload.get(PIN), TEST_PIN);
     }
+
+    @Test
+    public void givenDraftInWorkflowResponse_whenGetDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
+        Map<String, Object> testExpectedPayload = mock(Map.class);
+
+        when(retrieveDraftWorkflow.run(AUTH_TOKEN)).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload,classUnderTest.getDraft(AUTH_TOKEN));
+    }
+
+    @Test
+    public void whenSaveDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
+        Map<String, Object> payload = mock(Map.class);
+        Map<String, Object> testExpectedPayload = mock(Map.class);
+
+        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, TEST_USER_EMAIL)).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload,classUnderTest.saveDraft(payload, AUTH_TOKEN, TEST_USER_EMAIL));
+    }
+
+    @Test
+    public void givenErrorOnDraftWorkflow_whenSaveDraft_thenReturnErrors() throws WorkflowException {
+        Map<String, Object> expectedErrors = mock(Map.class);
+        Map<String, Object> payload = mock(Map.class);
+        Map<String, Object> workflowResponsePayload = mock(Map.class);
+
+        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, TEST_USER_EMAIL)).thenReturn(workflowResponsePayload);
+        when(saveDraftWorkflow.errors()).thenReturn(expectedErrors);
+
+        assertEquals(expectedErrors,classUnderTest.saveDraft(payload, AUTH_TOKEN, TEST_USER_EMAIL));
+    }
+
+    @Test
+    public void givenUserWithADraft_whenDeleteDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
+        Map<String, Object> testExpectedPayload = mock(Map.class);
+        when(deleteDraftWorkflow.run(AUTH_TOKEN)).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload,classUnderTest.deleteDraft(AUTH_TOKEN));
+    }
+
+    @Test
+    public void givenErrorOnDraftWorkflow_whenDeleteDraft_thenReturnErrors() throws WorkflowException {
+        Map<String, Object> expectedErrors = mock(Map.class);
+        Map<String, Object> workflowResponsePayload = mock(Map.class);
+
+        when(deleteDraftWorkflow.run(AUTH_TOKEN)).thenReturn(workflowResponsePayload);
+        when(deleteDraftWorkflow.errors()).thenReturn(expectedErrors);
+
+        assertEquals(expectedErrors, classUnderTest.deleteDraft(AUTH_TOKEN));
+    }
+
 
     @SuppressWarnings("ConstantConditions")
     @Test

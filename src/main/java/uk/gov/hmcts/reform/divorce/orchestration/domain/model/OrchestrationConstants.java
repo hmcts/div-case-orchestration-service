@@ -22,6 +22,9 @@ public class OrchestrationConstants {
     public static final String PIN = "pin";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
     public static final String SUCCESS_STATUS = "success";
+    public static final String NOTIFICATION_EMAIL = "email_address";
+
+    public static final String IS_DRAFT_KEY =   "fetchedDraft";
 
     // Document Generator
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";
@@ -36,4 +39,11 @@ public class OrchestrationConstants {
     public static final String FORM_ID = "case-progression";
     public static final String VALIDATION_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData_Error";
+    public static final String EMAIL_ERROR_KEY
+            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
+    public static final String SAVE_DRAFT_ERROR_KEY
+            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.SaveToDraftStore_Error";
+    public static final String DELETE_ERROR_KEY
+            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft_Error";
+
 }
