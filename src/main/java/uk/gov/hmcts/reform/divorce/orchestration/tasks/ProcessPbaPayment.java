@@ -85,6 +85,9 @@ public class ProcessPbaPayment implements Task<Map<String, Object>> {
                 List<PaymentItem> paymentItemList = Collections.singletonList(paymentItem);
                 request.setFees(paymentItemList);
 
+                log.info("About to make payment on case Id - "
+                        + context.getTransientObject(CASE_ID_JSON_KEY));
+
                 paymentClient.creditAccountPayment(
                         context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
                         serviceAuthGenerator.generate(),

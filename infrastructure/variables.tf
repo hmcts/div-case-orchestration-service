@@ -41,6 +41,6 @@ variable "common_tags" {
   type = "map"
 }
 
-variable "ccd_submission_microservice_key" {
+variable "service_auth_microservice_name" {
   default = "divorce_frontend"
 }

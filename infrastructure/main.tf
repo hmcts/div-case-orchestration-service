@@ -40,7 +40,8 @@ module "div-cos" {
     FEES_AND_PAYMENTS_SERVICE_API_BASEURL           = "${local.fees_and_payments_service_baseurl}"
     PAYMENT_API_BASEURL                             = "${local.payment_api_baseurl}"
     SERVICE_AUTH_PROVIDER_URL                       = "${local.service_auth_provider_baseurl}"
-    SERVICE_AUTH_MICROSERVICE                       = "${var.ccd_submission_microservice_key}"
+    SERVICE_AUTH_MICROSERVICE                       = "${var.service_auth_microservice_name}"
+    SERVICE_AUTH_SECRET                             = "${data.azurerm_key_vault_secret.frontend_secret.value}"
     IDAM_API_URL                                    = "${var.idam_api_baseurl}"
     IDAM_API_REDIRECT_URL                           = "${local.petitioner_fe_baseurl}/authenticated"
     AUTH2_CLIENT_SECRET                             = "${data.azurerm_key_vault_secret.auth-idam-client-secret.value}"
@@ -62,6 +63,11 @@ data "azurerm_key_vault_secret" "ccd-submission-s2s-auth-secret" {
 data "azurerm_key_vault_secret" "div-doc-s2s-auth-secret" {
   name      = "div-doc-s2s-auth-secret"
   vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "frontend_secret" {
+    name      = "frontend-secret"
+    vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "auth-idam-client-secret" {

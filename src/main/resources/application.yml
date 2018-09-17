@@ -48,7 +48,7 @@ idam:
   s2s-auth:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
-    secret: ${AUTH2_CLIENT_SECRET:dummysecret}
+    secret: ${SERVICE_AUTH_SECRET:dummysecret}
 
 
 auth2:
