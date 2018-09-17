@@ -29,7 +29,7 @@ public class SubmitCaseToCCDIntegrationTest extends IntegrationTest {
         Response submissionResponse = submitCase(createCitizenUser().getAuthToken(), "basic-divorce-session.json");
 
         assertEquals(HttpStatus.OK.value(), submissionResponse.getStatusCode());
-        assertNotEquals("0", submissionResponse.path(CASE_ID_KEY));
+        assertNotEquals("0", submissionResponse.getBody().path(CASE_ID_KEY));
     }
 
     private Response submitCase(String userToken, String fileName) throws Exception {

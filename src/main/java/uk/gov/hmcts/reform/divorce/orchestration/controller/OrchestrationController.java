@@ -24,12 +24,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.Validat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
@@ -150,6 +152,62 @@ public class OrchestrationController {
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @PostMapping(path = "/petition-issue-fees",
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Return a order summary for petition issue")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Petition issue fee amount is send to CCD as callback response",
+                    response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request")
+            })
+    public ResponseEntity<CcdCallbackResponse> getPetitionIssueFees(
+            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .data(orchestrationService.setOrderSummary(caseDetailsRequest))
+                .build()
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    @PostMapping(path = "/process-pba-payment", consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Solicitor pay callback")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Callback to receive payment from the solicitor",
+                    response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request")
+            })
+    public ResponseEntity<CcdCallbackResponse> processPbaPayment(
+            @RequestHeader(value = "Authorization") String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+        Map<String, Object> response = orchestrationService.processPbaPayment(caseDetailsRequest, authorizationToken);
+
+        if (response != null && response.containsKey(SOLICITOR_VALIDATION_ERROR_KEY)) {
+            return ResponseEntity.ok(
+                    CcdCallbackResponse.builder()
+                            .errors((List<String>) response.get(SOLICITOR_VALIDATION_ERROR_KEY))
+                            .build());
+        }
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder().data(response).build());
+    }
+
+    @PostMapping(path = "/solicitor-create", consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Solicitor pay callback")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Callback to populate missing requirement fields when "
+                    + "creating solicitor cases.", response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request")
+            })
+    public ResponseEntity<CcdCallbackResponse> solicitorCreate(
+            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .data(orchestrationService.solicitorCreate(caseDetailsRequest))
+                .build());
     }
 
     private List<String> getErrors(Map<String, Object> response) {

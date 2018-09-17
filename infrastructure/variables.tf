@@ -40,3 +40,7 @@ variable "vault_env" {}
 variable "common_tags" {
   type = "map"
 }
+
+variable "service_auth_microservice_name" {
+  default = "divorce_frontend"
+}

@@ -25,6 +25,16 @@ case:
       api:
         baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://localhost:4010}
 
+fees-and-payments:
+  service:
+    api:
+      baseurl: ${FEES_AND_PAYMENTS_SERVICE_API_BASEURL:http://localhost:4009}
+
+payment:
+  service:
+    api:
+      baseurl: ${PAYMENT_API_BASEURL:http://localhost:9190}
+
 idam:
   api:
     url: ${IDAM_API_URL:http://localhost:4503}
@@ -35,6 +45,11 @@ idam:
   citizen:
     username: dummyuser
     password: dummypassword
+  s2s-auth:
+    url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
+    microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
+    secret: ${SERVICE_AUTH_SECRET:dummysecret}
+
 
 auth2:
   client:

@@ -38,7 +38,7 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
                 submitCaseToCCD
             },
             payload,
-            new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, authToken)
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)
         );
     }
 }
