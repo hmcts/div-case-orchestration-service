@@ -24,9 +24,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.Validat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
-import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.Map;
+import javax.ws.rs.core.MediaType;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
