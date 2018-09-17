@@ -21,5 +21,5 @@ public class TestConstants {
     public static final String TEST_LETTER_HOLDER_ID_CODE = "test.letter.holder.id";
     public static final String TEST_AOS_INVITATION_FILE_NAME = "aosinvitation" + TEST_CASE_ID;
     public static final String TEST_MINI_PETITION_FILE_NAME = "d8petition" + TEST_CASE_ID;
-
+    public static final String TEST_USER_EMAIL = "test@email.com";
 }

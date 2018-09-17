@@ -1,0 +1,17 @@
+{
+  "petitionerEmail": "test.user@testaccount.com",
+  "screenHasMarriageBroken": "Yes",
+  "screenHasRespondentAddress": "Yes",
+  "screenHasMarriageCert": "Yes",
+  "helpWithFeesNeedHelp": "No",
+  "divorceWho": "wife",
+  "marriageIsSameSexCouple": "No",
+  "marriageDateDay": 12,
+  "marriageDateMonth": 11,
+  "marriageDateYear": 2000,
+  "marriageDate": "2000-11-12T00:00:00.000Z",
+  "marriageCanDivorce": true,
+  "marriageDateIsFuture": false,
+  "marriageDateMoreThan100": false,
+  "marriedInUk": "Yes"
+}
