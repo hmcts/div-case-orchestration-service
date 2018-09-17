@@ -18,7 +18,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@FeignClient(name = "idam-api", url = "${idam.api.url}")
+@FeignClient(
+    name = "idamClient",
+    url = "${idam.api.url}",
+    qualifier="idamClient"
+)
 public interface IdamClient {
 
     @RequestMapping(method = RequestMethod.POST, value = "/pin")

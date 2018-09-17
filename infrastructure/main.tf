@@ -12,6 +12,8 @@ locals {
   previewVaultName = "${var.raw_product}-aat"
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
+
+  idam_strategic_enabled = true
 }
 
 module "div-cos" {
@@ -39,6 +41,7 @@ module "div-cos" {
     AUTH2_CLIENT_SECRET                             = "${data.azurerm_key_vault_secret.auth-idam-client-secret.value}"
     IDAM_CITIZEN_USERNAME                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-username.value}"
     IDAM_CITIZEN_PASSWORD                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-password.value}"
+    IDAM_STRATEGIC_ENABLED                          = "${local.idam_strategic_enabled}"
   }
 }
 

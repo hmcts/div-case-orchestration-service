@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.authorisation.generators.ServiceAuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.divorce.support.ccd.CcdClientSupport;
+import uk.gov.hmcts.reform.divorce.support.CcdClientSupport;
 import uk.gov.hmcts.reform.divorce.util.IdamUtils;
 
 @Lazy

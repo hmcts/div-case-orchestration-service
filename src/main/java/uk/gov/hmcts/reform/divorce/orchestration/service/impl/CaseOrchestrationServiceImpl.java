@@ -4,11 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LinkRespondentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
@@ -25,18 +28,21 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SubmitToCCDWorkflow submitToCCDWorkflow;
     private final UpdateToCCDWorkflow updateToCCDWorkflow;
     private final RetrieveAosCaseWorkflow retrieveAosCaseWorkflow;
+    private final LinkRespondentWorkflow linkRespondentWorkflow;
 
     @Autowired
     public CaseOrchestrationServiceImpl(CcdCallbackWorkflow ccdCallbackWorkflow,
                                         AuthenticateRespondentWorkflow authenticateRespondentWorkflow,
                                         SubmitToCCDWorkflow submitToCCDWorkflow,
                                         UpdateToCCDWorkflow updateToCCDWorkflow,
-                                        RetrieveAosCaseWorkflow retrieveAosCaseWorkflow) {
+                                        RetrieveAosCaseWorkflow retrieveAosCaseWorkflow,
+                                        LinkRespondentWorkflow linkRespondentWorkflow) {
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
         this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
         this.submitToCCDWorkflow = submitToCCDWorkflow;
         this.updateToCCDWorkflow = updateToCCDWorkflow;
         this.retrieveAosCaseWorkflow = retrieveAosCaseWorkflow;
+        this.linkRespondentWorkflow = linkRespondentWorkflow;
     }
 
     @Override
@@ -83,5 +89,15 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public CaseDataResponse retrieveAosCase(boolean checkCcd, String authorizationToken) throws WorkflowException {
         return retrieveAosCaseWorkflow.run(checkCcd, authorizationToken);
+    }
+
+    @Override
+    public UserDetails linkRespondent(String authToken, String caseId, String pin)
+        throws WorkflowException {
+        return linkRespondentWorkflow.run(
+            authToken,
+            caseId,
+            pin
+        );
     }
 }

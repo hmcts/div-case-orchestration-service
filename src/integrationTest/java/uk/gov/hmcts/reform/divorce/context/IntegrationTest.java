@@ -29,7 +29,7 @@ public abstract class IntegrationTest {
     protected String serverUrl;
 
     @Autowired
-    private IdamUtils idamTestSupportUtil;
+    protected IdamUtils idamTestSupportUtil;
 
     @Rule
     public SpringIntegrationMethodRule springMethodIntegration;

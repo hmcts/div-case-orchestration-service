@@ -17,16 +17,18 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LinkRespondentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
@@ -147,6 +149,29 @@ public class OrchestrationController {
 
         if (authenticateRespondent != null && authenticateRespondent) {
             return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @PostMapping(path = "/link-respondent/{caseId}/{pin}")
+    @ApiOperation(value = "Authorize the respondent")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Respondent Authenticated",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 401, message = "User Not Authenticated"),
+        @ApiResponse(code = 404, message = "Case Not found")
+    })
+    public ResponseEntity<UserDetails> linkRespondent(
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken,
+        @PathVariable("caseId") @ApiParam("Unique identifier of the session that was submitted to CCD") String caseId,
+        @PathVariable("pin") @ApiParam(value = "Pin", required = true) String pin) throws WorkflowException {
+
+        UserDetails linkRespondent = orchestrationService.linkRespondent(authorizationToken, caseId, pin);
+
+        if (linkRespondent != null) {
+            return ResponseEntity.ok(linkRespondent);
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

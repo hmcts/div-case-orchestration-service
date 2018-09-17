@@ -35,6 +35,8 @@ idam:
   citizen:
     username: dummyuser
     password: dummypassword
+  strategic:
+    enabled: false
 
 auth2:
   client:

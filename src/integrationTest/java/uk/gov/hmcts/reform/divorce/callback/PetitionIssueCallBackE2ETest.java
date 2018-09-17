@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.divorce.support.emclient.EvidenceManagementUtil;
+import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
+import uk.gov.hmcts.reform.divorce.support.EvidenceManagementUtil;
 
 import java.util.List;
 import java.util.Map;
