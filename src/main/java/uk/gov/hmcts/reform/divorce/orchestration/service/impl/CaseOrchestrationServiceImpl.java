@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateResponden
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
@@ -20,7 +22,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkfl
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 
@@ -39,6 +43,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
     private final SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow;
+    private final RespondentSubmittedCallbackWorkflow aosRespondedWorkflow;
+
 
     @Autowired
     public CaseOrchestrationServiceImpl(CcdCallbackWorkflow ccdCallbackWorkflow,
@@ -52,7 +58,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         SetOrderSummaryWorkflow setOrderSummaryWorkflow,
                                         ProcessPbaPaymentWorkflow processPbaPaymentWorkflow,
                                         SolicitorCreateWorkflow solicitorCreateWorkflow,
-                                        SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow) {
+                                        SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow,
+                                        RespondentSubmittedCallbackWorkflow aosRespondedWorkflow) {
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
         this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
         this.submitToCCDWorkflow = submitToCCDWorkflow;
@@ -61,6 +68,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         this.saveDraftWorkflow = saveDraftWorkflow;
         this.deleteDraftWorkflow = deleteDraftWorkflow;
         this.retrieveAosCaseWorkflow = retrieveAosCaseWorkflow;
+        this.aosRespondedWorkflow = aosRespondedWorkflow;
         this.setOrderSummaryWorkflow = setOrderSummaryWorkflow;
         this.processPbaPaymentWorkflow = processPbaPaymentWorkflow;
         this.solicitorCreateWorkflow = solicitorCreateWorkflow;
@@ -143,6 +151,30 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public CaseDataResponse retrieveAosCase(boolean checkCcd, String authorizationToken) throws WorkflowException {
         return retrieveAosCaseWorkflow.run(checkCcd, authorizationToken);
+    }
+
+    @Override
+    public CcdCallbackResponse aosReceived(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException {
+        Map<String, Object> response = aosRespondedWorkflow.run(caseDetailsRequest, authToken);
+        if (aosRespondedWorkflow.errors().isEmpty()) {
+            return CcdCallbackResponse.builder()
+                    .data(response)
+                    .build();
+        } else {
+            Map<String, Object> workflowErrors = aosRespondedWorkflow.errors();
+            log.error("Aos received notification failed." + workflowErrors);
+            return CcdCallbackResponse
+                    .builder()
+                    .errors(getNotificationErrors(workflowErrors))
+                    .build();
+        }
+    }
+
+    private List<String> getNotificationErrors(Map<String, Object> notificationErrors) {
+        return notificationErrors.entrySet()
+                .stream()
+                .map(entry -> entry.getValue().toString())
+                .collect(Collectors.toList());
     }
 
     @Override

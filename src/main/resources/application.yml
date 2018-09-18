@@ -41,7 +41,9 @@ uk:
       api:
         key: dummy
       email:
-        templates: "{SAVE_DRAFT:'9fbb6bdb-1043-440a-b082-5ea71b5c2609', APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c'}"
+        templates: "{SAVE_DRAFT:'9fbb6bdb-1043-440a-b082-5ea71b5c2609',
+                     APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c',
+                     RESPONDENT_SUBMISSION_CONSENT: '594dc500-93ca-4f4b-931b-acbf9ee83d25'}"
         template:
           vars: "{SAVE_DRAFT: {divorceUrl: 'https://apply-divorce.service.gov.uk'}}"
 

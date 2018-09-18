@@ -280,6 +280,21 @@ public class OrchestrationController {
                 .build());
     }
 
+    @PostMapping(path = "/aos-received")
+    @ApiOperation(value = "Respondent confirmation notification ")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Notification sent successful"),
+            @ApiResponse(code = 401, message = "User Not Authenticated"),
+            @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> aosReceived(
+            @RequestHeader("Authorization")
+            @ApiParam(value = "JWT authorisation token issued by IDAM",
+                    required = true) final String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+        return ResponseEntity.ok(orchestrationService.aosReceived(caseDetailsRequest, authorizationToken));
+
+    }
+
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();
