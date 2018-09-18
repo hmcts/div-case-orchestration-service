@@ -16,7 +16,7 @@ locals {
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
 
-  idam_strategic_enabled = true
+  idam_strategic_enabled = "false"
 }
 
 module "div-cos" {
