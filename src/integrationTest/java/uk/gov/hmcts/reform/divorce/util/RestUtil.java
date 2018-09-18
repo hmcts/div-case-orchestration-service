@@ -31,33 +31,6 @@ public class RestUtil {
         }
     }
 
-    public static Response putToRestService(String url, Map<String, Object> headers, String requestBody,
-                                     Map<String, Object> params) {
-        if (requestBody != null) {
-            return SerenityRest.given()
-                .headers(headers)
-                .params(params)
-                .body(requestBody)
-                .when()
-                .put(url)
-                .andReturn();
-        } else {
-            return SerenityRest.given()
-                .headers(headers)
-                .when()
-                .put(url)
-                .andReturn();
-        }
-    }
-
-    public static Response deleteOnRestService(String url, Map<String, Object> headers) {
-        return SerenityRest.given()
-            .headers(headers)
-            .when()
-            .delete(url)
-            .andReturn();
-    }
-
     public static Response getFromRestService(String url, Map<String, Object> headers, Map<String, Object> params) {
         if (params != null) {
             return SerenityRest.given()

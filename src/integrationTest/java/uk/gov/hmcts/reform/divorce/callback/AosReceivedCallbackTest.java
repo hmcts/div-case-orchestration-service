@@ -26,7 +26,6 @@ public class AosReceivedCallbackTest extends IntegrationTest {
     @SuppressWarnings("unchecked")
     @Test
     public void givenCase_whenSubmitAOS_thenReturnAOSData() {
-
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
         Map<String, Object> response = cosApiClient.aosReceived(createCaseWorkerUser().getAuthToken(), aosCase);
         assertEquals(aosCase.get(CASE_DATA), response.get(CASE_DATA));
