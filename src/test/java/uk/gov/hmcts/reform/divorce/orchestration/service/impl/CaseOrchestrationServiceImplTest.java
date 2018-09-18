@@ -14,6 +14,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -21,6 +28,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 
 
@@ -38,6 +47,15 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private CcdCallbackWorkflow ccdCallbackWorkflow;
+
+    @Mock
+    private RetrieveDraftWorkflow retrieveDraftWorkflow;
+
+    @Mock
+    private SaveDraftWorkflow saveDraftWorkflow;
+
+    @Mock
+    private DeleteDraftWorkflow deleteDraftWorkflow;
 
     @Mock
     private AuthenticateRespondentWorkflow authenticateRespondentWorkflow;
@@ -51,6 +69,18 @@ public class CaseOrchestrationServiceImplTest {
     @Mock
     private LinkRespondentWorkflow linkRespondentWorkflow;
 
+    @Mock
+    private SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow;
+
+    @Mock
+    private SetOrderSummaryWorkflow setOrderSummaryWorkflow;
+
+    @Mock
+    private ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
+
+    @Mock
+    private SolicitorCreateWorkflow solicitorCreateWorkflow;
+
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
 
@@ -62,17 +92,17 @@ public class CaseOrchestrationServiceImplTest {
 
     @Before
     public void setUp() {
+        requestPayload = Collections.emptyMap();
         createEventRequest = CreateEvent.builder()
                 .caseDetails(
                         CaseDetails.builder()
-                                .caseData(Collections.emptyMap())
+                                .caseData(requestPayload)
                                 .caseId(TEST_CASE_ID)
                                 .state(TEST_STATE)
                                 .build())
                 .eventId(TEST_EVENT_ID)
                 .token(TEST_TOKEN)
                 .build();
-        requestPayload = Collections.emptyMap();
         expectedPayload = Collections.singletonMap(PIN, TEST_PIN);
     }
 
@@ -89,6 +119,59 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(expectedPayload, actual);
         assertEquals(expectedPayload.get(PIN), TEST_PIN);
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void givenDraftInWorkflowResponse_whenGetDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
+        Map<String, Object> testExpectedPayload = mock(Map.class);
+
+        when(retrieveDraftWorkflow.run(AUTH_TOKEN)).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload,classUnderTest.getDraft(AUTH_TOKEN));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void whenSaveDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
+        Map<String, Object> payload = mock(Map.class);
+        Map<String, Object> testExpectedPayload = mock(Map.class);
+
+        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, TEST_USER_EMAIL)).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload,classUnderTest.saveDraft(payload, AUTH_TOKEN, TEST_USER_EMAIL));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void givenErrorOnDraftWorkflow_whenSaveDraft_thenReturnErrors() throws WorkflowException {
+        Map<String, Object> expectedErrors = mock(Map.class);
+        Map<String, Object> payload = mock(Map.class);
+        Map<String, Object> workflowResponsePayload = mock(Map.class);
+
+        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, TEST_USER_EMAIL)).thenReturn(workflowResponsePayload);
+        when(saveDraftWorkflow.errors()).thenReturn(expectedErrors);
+
+        assertEquals(expectedErrors,classUnderTest.saveDraft(payload, AUTH_TOKEN, TEST_USER_EMAIL));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void givenUserWithADraft_whenDeleteDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
+        Map<String, Object> testExpectedPayload = mock(Map.class);
+        when(deleteDraftWorkflow.run(AUTH_TOKEN)).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload,classUnderTest.deleteDraft(AUTH_TOKEN));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void givenErrorOnDraftWorkflow_whenDeleteDraft_thenReturnErrors() throws WorkflowException {
+        Map<String, Object> expectedErrors = mock(Map.class);
+        Map<String, Object> workflowResponsePayload = mock(Map.class);
+
+        when(deleteDraftWorkflow.run(AUTH_TOKEN)).thenReturn(workflowResponsePayload);
+        when(deleteDraftWorkflow.errors()).thenReturn(expectedErrors);
+
+        assertEquals(expectedErrors, classUnderTest.deleteDraft(AUTH_TOKEN));
+    }
+
 
     @SuppressWarnings("ConstantConditions")
     @Test
@@ -164,6 +247,85 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(userDetails, classUnderTest.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN));
 
         verify(linkRespondentWorkflow).run(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN);
+    }
+
+    @Test
+    public void givenCaseData_whenSendSubmissionNotification_thenReturnPayload() throws Exception {
+        // given
+        when(sendSubmissionNotificationWorkflow.run(createEventRequest))
+                .thenReturn(requestPayload);
+
+        // when
+        Map<String, Object> actual = classUnderTest.sendSubmissionNotificationEmail(createEventRequest);
+
+        // then
+        assertEquals(requestPayload, actual);
+
+        verify(sendSubmissionNotificationWorkflow).run(createEventRequest);
+    }
+
+    @Test
+    public void givenCaseData_whenSetOrderSummary_thenReturnPayload() throws Exception {
+        // given
+        when(setOrderSummaryWorkflow.run(requestPayload))
+                .thenReturn(requestPayload);
+
+        // when
+        Map<String, Object> actual = classUnderTest.setOrderSummary(createEventRequest);
+
+        // then
+        assertEquals(requestPayload, actual);
+
+        verify(setOrderSummaryWorkflow).run(requestPayload);
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_thenReturnPayload() throws Exception {
+        // given
+        when(processPbaPaymentWorkflow.run(createEventRequest, AUTH_TOKEN))
+                .thenReturn(requestPayload);
+
+        // when
+        Map<String, Object> actual = classUnderTest.processPbaPayment(createEventRequest, AUTH_TOKEN);
+
+        // then
+        assertEquals(requestPayload, actual);
+
+        verify(processPbaPaymentWorkflow).run(createEventRequest, AUTH_TOKEN);
+    }
+
+
+    @Test
+    public void givenCaseDataInvalid_whenProcessPbaPayment_thenReturnListOfErrors() throws Exception {
+        // given
+        when(processPbaPaymentWorkflow.run(createEventRequest, AUTH_TOKEN))
+                .thenReturn(requestPayload);
+        Map<String, Object> errors = Collections.singletonMap("new_Error", "An Error");
+        when(processPbaPaymentWorkflow.errors()).thenReturn(errors);
+
+        // when
+        Map<String, Object> actual = classUnderTest.processPbaPayment(createEventRequest, AUTH_TOKEN);
+
+        // then
+        assertEquals(errors, actual);
+
+        verify(processPbaPaymentWorkflow).run(createEventRequest, AUTH_TOKEN);
+        verify(processPbaPaymentWorkflow, times(2)).errors();
+    }
+
+    @Test
+    public void givenCaseData_whenSolicitorCreate_thenReturnPayload() throws Exception {
+        // given
+        when(solicitorCreateWorkflow.run(requestPayload))
+                .thenReturn(requestPayload);
+
+        // when
+        Map<String, Object> actual = classUnderTest.solicitorCreate(createEventRequest);
+
+        // then
+        assertEquals(requestPayload, actual);
+
+        verify(solicitorCreateWorkflow).run(requestPayload);
     }
 
     @After

@@ -7,6 +7,9 @@ locals {
   document_generator_baseurl        = "http://div-dgs-${local.local_env}.service.core-compute-${local.local_env}.internal"
   validation_service_baseurl        = "http://div-vs-${local.local_env}.service.core-compute-${local.local_env}.internal"
   case_maintenance_service_baseurl  = "http://div-cms-${local.local_env}.service.core-compute-${local.local_env}.internal"
+  fees_and_payments_service_baseurl = "http://div-fps-${local.local_env}.service.core-compute-${local.local_env}.internal"
+  payment_api_baseurl               = "http://payment-api-${local.local_env}.service.core-compute-${local.local_env}.internal"
+  service_auth_provider_baseurl     = "http://rpe-service-auth-provider-${local.local_env}.service.core-compute-${local.local_env}.internal"
   petitioner_fe_baseurl             = "https://div-pfe-${local.local_env}.service.core-compute-${local.local_env}.internal"
 
   previewVaultName = "${var.raw_product}-aat"
@@ -36,12 +39,20 @@ module "div-cos" {
     CASE_VALIDATION_SERVICE_API_BASEURL             = "${local.validation_service_baseurl}"
     DOCUMENT_GENERATOR_SERVICE_API_BASEURL          = "${local.document_generator_baseurl}"
     CASE_MAINTENANCE_SERVICE_API_BASEURL            = "${local.case_maintenance_service_baseurl}"
+    FEES_AND_PAYMENTS_SERVICE_API_BASEURL           = "${local.fees_and_payments_service_baseurl}"
+    PAYMENT_API_BASEURL                             = "${local.payment_api_baseurl}"
+    SERVICE_AUTH_PROVIDER_URL                       = "${local.service_auth_provider_baseurl}"
+    SERVICE_AUTH_MICROSERVICE                       = "${var.service_auth_microservice_name}"
+    SERVICE_AUTH_SECRET                             = "${data.azurerm_key_vault_secret.frontend_secret.value}"
     IDAM_API_URL                                    = "${var.idam_api_baseurl}"
     IDAM_API_REDIRECT_URL                           = "${local.petitioner_fe_baseurl}/authenticated"
     AUTH2_CLIENT_SECRET                             = "${data.azurerm_key_vault_secret.auth-idam-client-secret.value}"
     IDAM_CITIZEN_USERNAME                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-username.value}"
     IDAM_CITIZEN_PASSWORD                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-password.value}"
     IDAM_STRATEGIC_ENABLED                          = "${local.idam_strategic_enabled}"
+    UK_GOV_NOTIFY_API_KEY                           = "${data.azurerm_key_vault_secret.uk-gov-notify-api-key.value}"
+    UK_GOV_NOTIFY_EMAIL_TEMPLATES                   = "${var.uk_gov_notify_email_templates}"
+    UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS               = "${var.uk_gov_notify_email_template_vars}"
   }
 }
 
@@ -60,6 +71,11 @@ data "azurerm_key_vault_secret" "div-doc-s2s-auth-secret" {
   vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "frontend_secret" {
+    name      = "frontend-secret"
+    vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
+}
+
 data "azurerm_key_vault_secret" "auth-idam-client-secret" {
   name      = "idam-secret"
   vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
@@ -72,5 +88,10 @@ data "azurerm_key_vault_secret" "auth-idam-citizen-username" {
 
 data "azurerm_key_vault_secret" "auth-idam-citizen-password" {
   name      = "idam-citizen-password"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "uk-gov-notify-api-key" {
+  name      = "uk-gov-notify-api-key"
   vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }

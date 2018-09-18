@@ -112,6 +112,7 @@ def versions = [
         puppyCrawl                      : '7.6',
         reformsJavaLogging              : '3.0.1',
         serviceTokenGenerator           : '1.0.0',
+        hmctsNotify                     : '3.8.0-RELEASE',
         feignHttpClient                 : '9.5.1',
         reformSpringBootAutoConfigure   : '1.1.0',
         wiremockVersion                 : '2.8.0',
@@ -147,6 +148,7 @@ dependencies {
     compile group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
     compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: versions.reformSpringBootAutoConfigure
 
+    compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: versions.reformsJavaLogging
@@ -161,7 +163,9 @@ dependencies {
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
+        exclude(module: 'commons-logging')
+    }
     testCompile group: 'com.github.tomakehurst', name:'wiremock', version: versions.wiremockVersion
 
     runtime('org.springframework.boot:spring-boot-devtools')

@@ -59,4 +59,36 @@ public interface CaseMaintenanceClient {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
         @PathVariable("caseId") String caseId,
         @PathVariable("letterHolderId") String letterHolderId);
+
+    @RequestMapping(
+            method = RequestMethod.PUT,
+            value = "/casemaintenance/version/1/drafts",
+            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> saveDraft(
+            @RequestBody Map<String, Object> draft,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
+            @RequestParam(value = "divorceFormat") boolean divorceFormat);
+
+    @RequestMapping(
+            method = RequestMethod.GET,
+            value = "/casemaintenance/version/1/retrieveCase"
+    )
+    CaseDetails retrievePetition(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
+            @RequestParam(value = "checkCcd") boolean checkCcd);
+
+    @RequestMapping(
+            method = RequestMethod.DELETE,
+            value = "/casemaintenance/version/1/drafts"
+    )
+    Map<String, Object> deleteDraft(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
+
+    @RequestMapping(
+            method = RequestMethod.GET,
+            value = "/casemaintenance/version/1/drafts"
+    )
+    Map<String, Object> getDrafts(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
 }
