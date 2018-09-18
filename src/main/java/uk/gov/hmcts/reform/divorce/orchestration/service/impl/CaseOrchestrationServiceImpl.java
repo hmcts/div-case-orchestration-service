@@ -10,8 +10,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -25,10 +32,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Service
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final CcdCallbackWorkflow ccdCallbackWorkflow;
+    private final RetrieveDraftWorkflow retrieveDraftWorkflow;
+    private final SaveDraftWorkflow saveDraftWorkflow;
+    private final DeleteDraftWorkflow deleteDraftWorkflow;
     private final AuthenticateRespondentWorkflow authenticateRespondentWorkflow;
     private final SubmitToCCDWorkflow submitToCCDWorkflow;
     private final UpdateToCCDWorkflow updateToCCDWorkflow;
     private final RetrieveAosCaseWorkflow retrieveAosCaseWorkflow;
+    private final SetOrderSummaryWorkflow setOrderSummaryWorkflow;
+    private final ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
+    private final SolicitorCreateWorkflow solicitorCreateWorkflow;
+    private final SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow;
     private final RespondentSubmittedCallbackWorkflow aosRespondedWorkflow;
 
 
@@ -37,14 +51,28 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         AuthenticateRespondentWorkflow authenticateRespondentWorkflow,
                                         SubmitToCCDWorkflow submitToCCDWorkflow,
                                         UpdateToCCDWorkflow updateToCCDWorkflow,
+                                        RetrieveDraftWorkflow retrieveDraftWorkflow,
+                                        SaveDraftWorkflow saveDraftWorkflow,
+                                        DeleteDraftWorkflow deleteDraftWorkflow,
                                         RetrieveAosCaseWorkflow retrieveAosCaseWorkflow,
+                                        SetOrderSummaryWorkflow setOrderSummaryWorkflow,
+                                        ProcessPbaPaymentWorkflow processPbaPaymentWorkflow,
+                                        SolicitorCreateWorkflow solicitorCreateWorkflow,
+                                        SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow,
                                         RespondentSubmittedCallbackWorkflow aosRespondedWorkflow) {
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
         this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
         this.submitToCCDWorkflow = submitToCCDWorkflow;
         this.updateToCCDWorkflow = updateToCCDWorkflow;
+        this.retrieveDraftWorkflow = retrieveDraftWorkflow;
+        this.saveDraftWorkflow = saveDraftWorkflow;
+        this.deleteDraftWorkflow = deleteDraftWorkflow;
         this.retrieveAosCaseWorkflow = retrieveAosCaseWorkflow;
         this.aosRespondedWorkflow = aosRespondedWorkflow;
+        this.setOrderSummaryWorkflow = setOrderSummaryWorkflow;
+        this.processPbaPaymentWorkflow = processPbaPaymentWorkflow;
+        this.solicitorCreateWorkflow = solicitorCreateWorkflow;
+        this.sendSubmissionNotificationWorkflow = sendSubmissionNotificationWorkflow;
     }
 
     @Override
@@ -78,14 +106,46 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> update(Map<String, Object> divorceEventSession,
+    public Map<String, Object> update(Map<String, Object> divorceSession,
                                       String authToken,
                                       String caseId) throws WorkflowException {
-        Map<String, Object> payload = updateToCCDWorkflow.run(
-            divorceEventSession, authToken, caseId);
+        Map<String, Object> payload = updateToCCDWorkflow.run(divorceSession, authToken, caseId);
 
         log.info("Case ID is: {}", payload.get(ID));
         return payload;
+    }
+
+    @Override
+    public Map<String, Object> getDraft(String authToken) throws WorkflowException {
+        return retrieveDraftWorkflow.run(authToken);
+    }
+
+    @Override
+    public Map<String, Object> saveDraft(Map<String, Object> payLoad,
+                                         String authToken,
+                                         String notificationEmail) throws WorkflowException {
+        Map<String, Object> response = saveDraftWorkflow.run(payLoad, authToken, notificationEmail);
+
+        if (saveDraftWorkflow.errors().isEmpty()) {
+            log.info("Draft saved");
+            return response;
+        } else {
+            log.error("Workflow error saving draft");
+            return saveDraftWorkflow.errors();
+        }
+
+    }
+
+    @Override
+    public Map<String, Object> deleteDraft(String authToken) throws WorkflowException {
+        Map<String, Object> response = deleteDraftWorkflow.run(authToken);
+        if (deleteDraftWorkflow.errors().isEmpty()) {
+            log.info("Draft deleted");
+            return response;
+        } else {
+            log.error("Workflow error deleting draft");
+            return deleteDraftWorkflow.errors();
+        }
     }
 
     @Override
@@ -115,5 +175,35 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .stream()
                 .map(entry -> entry.getValue().toString())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<String, Object> sendSubmissionNotificationEmail(
+            CreateEvent caseDetailsRequest) throws WorkflowException {
+        return sendSubmissionNotificationWorkflow.run(caseDetailsRequest);
+    }
+
+    @Override
+    public Map<String, Object> setOrderSummary(CreateEvent caseDetailsRequest) throws WorkflowException {
+        return setOrderSummaryWorkflow.run(caseDetailsRequest.getCaseDetails().getCaseData());
+    }
+
+    @Override
+    public Map<String, Object> processPbaPayment(CreateEvent caseDetailsRequest,
+                                                 String authToken) throws WorkflowException {
+        Map<String, Object> payLoad = processPbaPaymentWorkflow.run(caseDetailsRequest, authToken);
+
+        if (processPbaPaymentWorkflow.errors().isEmpty()) {
+            log.info("Callback pay by acccount for solicitor case with id: {} successfully completed",
+                    payLoad.get(ID));
+            return payLoad;
+        } else {
+            return processPbaPaymentWorkflow.errors();
+        }
+    }
+
+    @Override
+    public Map<String, Object> solicitorCreate(CreateEvent caseDetailsRequest) throws WorkflowException {
+        return solicitorCreateWorkflow.run(caseDetailsRequest.getCaseDetails().getCaseData());
     }
 }
