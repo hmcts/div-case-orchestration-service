@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.support.cms;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
