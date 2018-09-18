@@ -21,12 +21,21 @@ public class OrchestrationConstants {
     public static final String D_8_DIVORCE_UNIT = "D8DivorceUnit";
     public static final String D_8_PETITIONER_EMAIL = "D8PetitionerEmail";
     public static final String CCD_CASE_DATA = "ccdCaseData";
+    public static final String D_8_INFERRED_RESPONDENT_GENDER = "D8InferredRespondentGender";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
     public static final String SUCCESS_STATUS = "success";
+
+    //Notification
     public static final String NOTIFICATION_EMAIL = "email_address";
+    public static final String NOTIFICATION_TEMPLATE = "notification_template";
+    public static final String NOTIFICATION_TEMPLATE_VARS = "notification_template_vars";
+    public static final String NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY = "first name";
+    public static final String NOTIFICATION_ADDRESSEE_LAST_NAME_KEY = "last name";
+    public static final String NOTIFICATION_RELATIONSHIP_KEY = "relationship";
+    public static final String NOTIFICATION_REFERENCE_KEY = "ref";
 
     public static final String IS_DRAFT_KEY =   "fetchedDraft";
     public static final String STATEMENT_OF_TRUTH = "D8StatementOfTruth";
@@ -71,5 +80,4 @@ public class OrchestrationConstants {
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.SaveToDraftStore_Error";
     public static final String DELETE_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft_Error";
-
 }
