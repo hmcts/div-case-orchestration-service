@@ -20,6 +20,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public interface CosApiClient {
 
     @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/aos-received",
+            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> aosReceived(@RequestHeader(AUTHORIZATION) String authorisation,
+                                   @RequestBody Map<String, Object> caseDataContent
+    );
+
+    @RequestMapping(
             method = RequestMethod.GET,
             value = "/draftsapi/version/1",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
@@ -34,7 +43,7 @@ public interface CosApiClient {
     Map<String, Object> saveDraft(@RequestHeader(AUTHORIZATION) String authorisation,
                                   @RequestBody JsonNode caseDataContent,
                    @RequestParam(name = "notificationEmail") String notificationEmail
-                   );
+   );
 
     @RequestMapping(
             method = RequestMethod.DELETE,

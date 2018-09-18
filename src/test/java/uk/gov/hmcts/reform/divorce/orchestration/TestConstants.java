@@ -34,4 +34,6 @@ public class TestConstants {
             + ".SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
     public static final String TEST_PETITIONER_FIRST_NAME = "First";
     public static final String TEST_PETITIONER_LAST_NAME = "Last";
+    public static final String TEST_USER_FIRST_NAME = "user first name";
+    public static final String TEST_USER_LAST_NAME = "user last name";
 }
