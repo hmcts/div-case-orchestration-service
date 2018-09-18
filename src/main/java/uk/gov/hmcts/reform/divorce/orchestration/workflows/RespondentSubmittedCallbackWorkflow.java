@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -59,18 +60,18 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         String petitionerEmail = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_EMAIL);
 
         return this.execute(
-                new Task[]{
-                    emailNotificationTask
-                },
-                caseDetailsRequest.getCaseDetails().getCaseData(),
-                new ImmutablePair(AUTH_TOKEN_JSON_KEY, authToken),
-                new ImmutablePair(NOTIFICATION_EMAIL, petitionerEmail),
-                new ImmutablePair(NOTIFICATION_TEMPLATE_VARS, notificationTemplateVars),
-                new ImmutablePair(NOTIFICATION_TEMPLATE, EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT)
+            new Task[]{
+                emailNotificationTask
+            },
+            caseDetailsRequest.getCaseDetails().getCaseData(),
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+            ImmutablePair.of(NOTIFICATION_EMAIL, petitionerEmail),
+            ImmutablePair.of(NOTIFICATION_TEMPLATE_VARS, notificationTemplateVars),
+            ImmutablePair.of(NOTIFICATION_TEMPLATE, EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT)
         );
     }
 
-    private String getFieldAsStringOrNull(final CaseDetails caseDetails, String fieldKey) throws WorkflowException {
+    private String getFieldAsStringOrNull(final CaseDetails caseDetails, String fieldKey) {
         Object fieldValue = caseDetails.getCaseData().get(fieldKey);
         if (fieldValue == null) {
             return null;
@@ -78,12 +79,13 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         return fieldValue.toString();
     }
 
-    private String getRespondentRelationship(CaseDetails caseDetails) throws WorkflowException {
+    private String getRespondentRelationship(CaseDetails caseDetails) {
         String gender = getFieldAsStringOrNull(caseDetails, D_8_INFERRED_RESPONDENT_GENDER);
         if (gender == null) {
             return null;
         }
-        switch (gender.toLowerCase()) {
+
+        switch (gender.toLowerCase(Locale.ENGLISH)) {
             case MALE_GENDER : return MALE_GENDER_IN_RELATION;
             case FEMALE_GENDER : return  FEMALE_GENDER_IN_RELATION;
             default:

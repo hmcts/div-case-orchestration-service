@@ -100,7 +100,7 @@ public class ProcessPbaPayment implements Task<Map<String, Object>> {
         } catch (NullPointerException exception) {
             log.error("Missing required fields for Solicitor Payment on case Id - "
                 + context.getTransientObject(CASE_ID_JSON_KEY), exception);
-            throw new TaskException(exception.getMessage());
+            throw new TaskException(exception);
         }
 
         return caseData;

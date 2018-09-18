@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

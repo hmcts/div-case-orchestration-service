@@ -14,7 +14,6 @@ public class OrchestrationConstants {
 
     // Core Case Data
     public static final String CHECK_CCD = "checkCcd";
-    public static final String CASE_DATA_JSON_KEY = "case_data";
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";
@@ -83,8 +82,4 @@ public class OrchestrationConstants {
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData_Error";
     public static final String EMAIL_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
-    public static final String SAVE_DRAFT_ERROR_KEY
-            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.SaveToDraftStore_Error";
-    public static final String DELETE_ERROR_KEY
-            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft_Error";
 }
