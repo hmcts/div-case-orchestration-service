@@ -20,6 +20,18 @@
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
             <Method name="retrieveAosCase" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
+            <Method name="sendSubmissionNotificationEmail" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
+            <Method name="setOrderSummary" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
+            <Method name="processPbaPayment" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
+            <Method name="solicitorCreate" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.AuthenticateRespondent">
             <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
@@ -51,6 +63,24 @@
             <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSubmissionNotificationEmail">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFee">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPayment">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCourtDetails">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.SetOrderSummary">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData">
             <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
     </Instrumentation>
