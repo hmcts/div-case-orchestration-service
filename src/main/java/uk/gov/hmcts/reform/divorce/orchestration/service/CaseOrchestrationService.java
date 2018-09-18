@@ -28,4 +28,32 @@ public interface CaseOrchestrationService {
 
     CcdCallbackResponse aosReceived(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException;
 
+
+    Map<String, Object> getDraft(String authToken) throws WorkflowException;
+
+    Map<String,Object> saveDraft(Map<String, Object> payLoad,
+                                 String authorizationToken,
+                                 String notificationEmail) throws WorkflowException;
+
+    Map<String,Object> deleteDraft(String authorizationToken) throws WorkflowException;
+
+    /**
+     * Sends notification email for successful submission.
+     */
+    Map<String, Object> sendSubmissionNotificationEmail(CreateEvent caseDetailsRequest) throws WorkflowException;
+
+    /**
+     * Get fee for petition issue and set it on the case data.
+     */
+    Map<String, Object> setOrderSummary(CreateEvent caseDetailsRequest) throws WorkflowException;
+
+    /**
+     * Process Pay By Account payment for Solicitor.
+     */
+    Map<String, Object> processPbaPayment(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException;
+
+    /**
+     * Set Court details for Solicitor created case.
+     */
+    Map<String, Object> solicitorCreate(CreateEvent caseDetailsRequest) throws WorkflowException;
 }

@@ -1,0 +1,74 @@
+{
+  "fetchedDraft" : true,
+  "petitionerNameDifferentToMarriageCertificate" : "No",
+  "marriageRespondentName" : "wife test",
+  "marriagePetitionerName" : "user test",
+  "petitionerLastName" : "user",
+  "petitionerPhoneNumber" : "",
+  "petitionerFirstName" : "test",
+  "court" : {
+    "eastMidlands" : {
+      "divorceCentre" : "East Midlands Regional Divorce Centre",
+      "courtCity" : "Nottingham",
+      "poBox" : "PO Box 10447",
+      "postCode" : "NG2 9QN",
+      "openingHours" : "Telephone Enquiries from: 8.30am to 5pm",
+      "email" : "eastmidlandsdivorce@hmcts.gsi.gov.uk",
+      "phoneNumber" : "0300 303 0642",
+      "siteId" : "AA01"
+    },
+    "westMidlands" : {
+      "divorceCentre" : "West Midlands Regional Divorce Centre",
+      "courtCity" : "Stoke-on-Trent",
+      "poBox" : "PO Box 3650",
+      "postCode" : "ST4 9NH",
+      "openingHours" : "Telephone Enquiries from: 8.30am to 5pm",
+      "email" : "westmidlandsdivorce@hmcts.gsi.gov.uk",
+      "phoneNumber" : "0300 303 0642",
+      "siteId" : "AA02"
+    },
+    "southWest" : {
+      "divorceCentre" : "South West Regional Divorce Centre",
+      "courtCity" : "Southampton",
+      "poBox" : "PO Box 1792",
+      "postCode" : "SO15 9GG",
+      "openingHours" : "Telephone Enquiries from: 8.30am to 5pm",
+      "email" : "sw-region-divorce@hmcts.gsi.gov.uk",
+      "phoneNumber" : "0300 303 0642",
+      "siteId" : "AA03"
+    },
+    "northWest" : {
+      "divorceCentre" : "North West Regional Divorce Centre",
+      "divorceCentreAddressName" : "Liverpool Civil & Family Court",
+      "courtCity" : "Liverpool",
+      "street" : "35 Vernon Street",
+      "postCode" : "L2 2BX",
+      "openingHours" : "Telephone Enquiries from: 8.30am to 5pm",
+      "email" : "family@liverpool.countycourt.gsi.gov.uk",
+      "phoneNumber" : "0300 303 0642",
+      "siteId" : "AA04"
+    }
+  },
+  "respondentFirstName" : "wife",
+  "marriageDateDay" : 12,
+  "marriageDateYear" : 2000,
+  "marriageDateMonth" : 11,
+  "jurisdictionConfidentLegal" : "Yes",
+  "petitionerEmail" : "simulate-deliveredae9b270b-b41d-4237-bf33-e0cad2e40dae@notifications.service.gov.uk",
+  "jurisdictionConnection" : [ "A", "C" ],
+  "respondentLastName" : "test",
+  "petitionerContactDetailsConfidential" : "keep",
+  "jurisdictionPetitionerResidence" : "Yes",
+  "helpWithFeesNeedHelp" : "No",
+  "marriageDate" : "2000-11-12T00:00:00.000+0000",
+  "jurisdictionRespondentResidence" : "Yes",
+  "connections" : {
+    "A" : "The Petitioner and the Respondent are habitually resident in England and Wales",
+    "B" : null,
+    "C" : "The Respondent is habitually resident in England and Wales",
+    "D" : null,
+    "E" : null,
+    "F" : null,
+    "G" : null
+  }
+}
