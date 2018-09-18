@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.service.impl.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Collections;

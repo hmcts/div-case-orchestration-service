@@ -25,7 +25,7 @@ public class AuthenticateRespondentWorkflow extends DefaultWorkflow<Boolean> {
                 authenticateRespondent,
             },
             null,
-            new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, authToken)
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)
         );
     }
 }

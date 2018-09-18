@@ -25,6 +25,16 @@ case:
       api:
         baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://localhost:4010}
 
+fees-and-payments:
+  service:
+    api:
+      baseurl: ${FEES_AND_PAYMENTS_SERVICE_API_BASEURL:http://localhost:4009}
+
+payment:
+  service:
+    api:
+      baseurl: ${PAYMENT_API_BASEURL:http://localhost:9190}
+
 uk:
   gov:
     notify:
@@ -34,6 +44,7 @@ uk:
         templates: "{SAVE_DRAFT:'9fbb6bdb-1043-440a-b082-5ea71b5c2609', APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c'}"
         template:
           vars: "{SAVE_DRAFT: {divorceUrl: 'https://apply-divorce.service.gov.uk'}}"
+
 idam:
   api:
     url: ${IDAM_API_URL:http://localhost:4503}
@@ -44,6 +55,10 @@ idam:
   citizen:
     username: dummy
     password: dummy
+  s2s-auth:
+    url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
+    microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
+    secret: ${SERVICE_AUTH_SECRET:dummysecret}
 
 auth2:
   client:
@@ -84,6 +99,12 @@ management:
         health: health
       exposure:
         include: info, health, metrics
+
+draft:
+  api:
+    ccd:
+      check:
+        enabled: false
 
 logging:
   level:

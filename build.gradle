@@ -163,7 +163,9 @@ dependencies {
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
+        exclude(module: 'commons-logging')
+    }
     testCompile group: 'com.github.tomakehurst', name:'wiremock', version: versions.wiremockVersion
 
     runtime('org.springframework.boot:spring-boot-devtools')
