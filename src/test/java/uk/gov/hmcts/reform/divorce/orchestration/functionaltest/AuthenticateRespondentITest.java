@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
-import com.github.tomakehurst.wiremock.matching.EqualToPattern;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +19,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -41,15 +35,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUT
 @PropertySource(value = "classpath:application.yml")
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class AuthenticateRespondentITest {
+public class AuthenticateRespondentITest extends IdamTestSupport {
     private static final String API_URL = "/authenticate-respondent";
-    private static final String IDAM_USER_DETAILS_CONTEXT_PATH = "/details";
 
     @Autowired
     private MockMvc webClient;
-
-    @ClassRule
-    public static WireMockClassRule idamUserDetailsServer = new WireMockClassRule(4503);
 
     @Test
     public void givenAuthTokenIsNull_whenAuthenticateRespondent_thenReturnBadRequest() throws Exception {
@@ -107,15 +97,6 @@ public class AuthenticateRespondentITest {
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
             .header(AUTHORIZATION, AUTH_TOKEN))
             .andExpect(status().isOk());
-    }
-
-    private void stubUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
-        idamUserDetailsServer.stubFor(get(IDAM_USER_DETAILS_CONTEXT_PATH)
-            .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
-            .willReturn(aResponse()
-                .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withBody(message)));
     }
 
     private String getUserDetailsResponse(List<String> roles) {

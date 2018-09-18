@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
@@ -10,7 +9,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
@@ -27,17 +25,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.AuthenticateUserResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.TokenExchangeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -52,14 +45,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ACCESS_CODE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BASIC;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
@@ -79,16 +70,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @PropertySource(value = "classpath:application.yml")
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class PetitionIssuedITest {
+public class PetitionIssuedITest extends IdamTestSupport {
     private static final String API_URL = "/petition-issued";
     private static final String VALIDATION_CONTEXT_PATH = "/version/1/validate";
     private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
-    private static final String IDAM_PIN_DETAILS_CONTEXT_PATH = "/pin";
-    private static final String IDAM_AUTHORIZE_CONTEXT_PATH = "/oauth2/authorize";
-    private static final String IDAM_EXCHANGE_CODE_CONTEXT_PATH = "/oauth2/token";
-    private static final String CODE = "code";
-    private static final String AUTHORIZATION_CODE = "authorization_code";
     private static final String RESPONDENT_FIRST_NAME = "respondent first name";
     private static final String RESPONDENT_LAST_NAME = "respondent last name";
 
@@ -103,21 +89,6 @@ public class PetitionIssuedITest {
             .caseDetails(CASE_DETAILS)
             .build();
 
-    @Value("${idam.api.redirect-url}")
-    private String authRedirectUrl;
-
-    @Value("${auth2.client.id}")
-    private String authClientId;
-
-    @Value("${auth2.client.secret}")
-    private String authClientSecret;
-
-    @Value("${idam.citizen.username}")
-    private String citizenUserName;
-
-    @Value("${idam.citizen.password}")
-    private String citizenPassword;
-
     @Autowired
     private MockMvc webClient;
 
@@ -130,8 +101,6 @@ public class PetitionIssuedITest {
     @ClassRule
     public static WireMockClassRule formatterServiceServer = new WireMockClassRule(4011);
 
-    @ClassRule
-    public static WireMockClassRule idamUserServer = new WireMockClassRule(4503);
 
     @BeforeClass
     public static void beforeClass() {
@@ -271,50 +240,10 @@ public class PetitionIssuedITest {
                 .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
     }
 
-    private void stubSignIn() {
-        try {
-            final String authCode = "AuthCode";
 
-            final AuthenticateUserResponse authenticateUserResponse =
-                AuthenticateUserResponse.builder()
-                .code(authCode)
-                .build();
-
-            final TokenExchangeResponse tokenExchangeResponse =
-                TokenExchangeResponse.builder()
-                .accessToken(AUTH_TOKEN_1)
-                .build();
-
-            idamUserServer.stubFor(WireMock.post(IDAM_AUTHORIZE_CONTEXT_PATH
-                + "?response_type=" + CODE
-                + "&client_id=" + authClientId
-                + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name()))
-                .withHeader(AUTHORIZATION, new EqualToPattern(getBasicAuthHeader(citizenUserName, citizenPassword)))
-                .withHeader(CONTENT_TYPE, new EqualToPattern(MediaType.APPLICATION_JSON_VALUE))
-                .willReturn(aResponse()
-                    .withStatus(HttpStatus.OK.value())
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                    .withBody(convertObjectToJsonString(authenticateUserResponse))));
-
-            idamUserServer.stubFor(WireMock.post(IDAM_EXCHANGE_CODE_CONTEXT_PATH
-                + "?code=" + authCode
-                + "&grant_type=" + AUTHORIZATION_CODE
-                + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name())
-                + "&client_id=" + authClientId
-                + "&client_secret=" + authClientSecret)
-                .willReturn(aResponse()
-                    .withStatus(HttpStatus.OK.value())
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                    .withBody(convertObjectToJsonString(tokenExchangeResponse))));
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private void stubValidationServerEndpoint(HttpStatus status,
-                                              ValidationRequest validationRequest, String body)
-            throws Exception {
+                                              ValidationRequest validationRequest, String body) {
         validationServiceServer.stubFor(WireMock.post(VALIDATION_CONTEXT_PATH)
                 .withRequestBody(equalToJson(convertObjectToJsonString(validationRequest)))
                 .willReturn(aResponse()
@@ -324,8 +253,7 @@ public class PetitionIssuedITest {
     }
 
     private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest generateDocumentRequest,
-                                                     GeneratedDocumentInfo response)
-            throws Exception {
+                                                     GeneratedDocumentInfo response) {
         documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
                 .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
                 .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
@@ -336,30 +264,12 @@ public class PetitionIssuedITest {
     }
 
     private void stubFormatterServerEndpoint(DocumentUpdateRequest documentUpdateRequest,
-                                             Map<String, Object> response)
-            throws Exception {
+                                             Map<String, Object> response) {
         formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
                 .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                         .withBody(convertObjectToJsonString(response))));
-    }
-
-    private void stubPinDetailsEndpoint(String authHeader,
-                                        PinRequest pinRequest, Pin response) throws JsonProcessingException {
-        idamUserServer.stubFor(WireMock.post(IDAM_PIN_DETAILS_CONTEXT_PATH)
-            .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
-            .withHeader(CONTENT_TYPE, new EqualToPattern(APPLICATION_JSON_UTF8_VALUE))
-            .withRequestBody(equalToJson(convertObjectToJsonString(pinRequest)))
-            .willReturn(aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withBody(convertObjectToJsonString(response))));
-    }
-
-    private String getBasicAuthHeader(String username, String password) {
-        String authorisation = username + ":" + password;
-        return BASIC + Base64.getEncoder().encodeToString(authorisation.getBytes());
     }
 }

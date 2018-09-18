@@ -19,19 +19,67 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 public class LinkRespondentTest extends RetrieveAosCaseSupport {
+    private static final String PIN_USER_FIRST_NAME = "pinuserfirstname";
+    private static final String PIN_USER_LAST_NAME = "pinuserfirstname";
 
     @Value("${case.orchestration.maintenance.link-respondent.context-path}")
     private String contextPath;
 
     @Test
-    public void givenValidCaseDetails_whenLinkRespondent_thenCaseShouldBeLinked() {
-        final String pinUserFirstName = "pinuserfirstname";
-        final String pinUserLastName = "pinuserfirstname";
+    public void givenUserTokenIsNull_whenLinkRespondent_thenReturnBadRequest() {
+        Response cosResponse = linkRespondent(null, 1L, "somepin");
 
+        assertEquals(HttpStatus.BAD_REQUEST.value(), cosResponse.getStatusCode());
+    }
+
+    @Test
+    public void givenInvalidPin_whenLinkRespondent_thenReturnUnAuthorised() {
+        final UserDetails petitionerUserDetails = createCitizenUser();
+
+        Response cosResponse = linkRespondent(petitionerUserDetails.getAuthToken(), 1L, "somepin");
+
+        assertEquals(HttpStatus.UNAUTHORIZED.value(), cosResponse.getStatusCode());
+    }
+
+    @Test
+    public void givenCaseIdDoesNotPresent_whenLinkRespondent_thenReturnBadRequest() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
         final PinResponse pinResponse =
-            idamTestSupportUtil.generatePin(pinUserFirstName, pinUserLastName, petitionerUserDetails.getAuthToken());
+            idamTestSupportUtil.generatePin(PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME,
+                petitionerUserDetails.getAuthToken());
+
+        Response cosResponse = linkRespondent(petitionerUserDetails.getAuthToken(), 1L, pinResponse.getPin());
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), cosResponse.getStatusCode());
+    }
+
+    @Test
+    public void givenLinkFails_whenLinkRespondent_thenReturnNotFound() {
+        final UserDetails petitionerUserDetails = createCitizenUser();
+
+        final PinResponse pinResponse =
+            idamTestSupportUtil.generatePin(PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME,
+                petitionerUserDetails.getAuthToken());
+
+        final CaseDetails caseDetails = submitCase(
+            "submit-complete-case.json",
+            createCaseWorkerUser()
+        );
+
+        Response cosResponse =
+            linkRespondent(petitionerUserDetails.getAuthToken(), caseDetails.getId(), pinResponse.getPin());
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), cosResponse.getStatusCode());
+    }
+
+    @Test
+    public void givenValidCaseDetails_whenLinkRespondent_thenCaseShouldBeLinked() {
+        final UserDetails petitionerUserDetails = createCitizenUser();
+
+        final PinResponse pinResponse =
+            idamTestSupportUtil.generatePin(PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME,
+                petitionerUserDetails.getAuthToken());
 
         final CaseDetails caseDetails = submitCase(
             "submit-complete-case.json",

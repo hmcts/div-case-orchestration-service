@@ -133,8 +133,7 @@ public class SubmitCaseTest {
                 .andExpect(status().is4xxClientError());
     }
 
-    private void stubFormatterServerEndpoint()
-            throws Exception {
+    private void stubFormatterServerEndpoint() {
         formatterServiceServer.stubFor(WireMock.post(CCD_FORMAT_CONTEXT_PATH)
                 .withRequestBody(equalToJson(convertObjectToJsonString(CASE_DATA)))
                 .willReturn(aResponse()
@@ -143,8 +142,7 @@ public class SubmitCaseTest {
                         .withBody(convertObjectToJsonString(CASE_DATA))));
     }
 
-    private void stubValidationServerEndpoint()
-            throws Exception {
+    private void stubValidationServerEndpoint() {
         validationServiceServer.stubFor(WireMock.post(VALIDATION_CONTEXT_PATH)
                 .withRequestBody(equalToJson(convertObjectToJsonString(validationRequest)))
                 .willReturn(aResponse()
@@ -153,8 +151,7 @@ public class SubmitCaseTest {
                         .withBody(convertObjectToJsonString(validationResponse))));
     }
 
-    private void stubMaintenanceServerEndpointForSubmit(Map<String, Object> response)
-            throws Exception {
+    private void stubMaintenanceServerEndpointForSubmit(Map<String, Object> response) {
         maintenanceServiceServer.stubFor(WireMock.post(SUBMISSION_CONTEXT_PATH)
                 .withRequestBody(equalToJson(convertObjectToJsonString(CASE_DATA)))
                 .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))

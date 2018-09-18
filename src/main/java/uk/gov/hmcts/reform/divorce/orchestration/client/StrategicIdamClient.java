@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "strategicIdamClient",
     url = "${idam.api.url}",
-    qualifier="strategicIdamClient",
+    qualifier = "strategicIdamClient",
     configuration = StrategicIdamClient.Configuration.class)
 @ConditionalOnProperty(value = "idam.strategic.enabled", havingValue = "true")
 public interface StrategicIdamClient extends IdamClient {

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LinkRespondentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;

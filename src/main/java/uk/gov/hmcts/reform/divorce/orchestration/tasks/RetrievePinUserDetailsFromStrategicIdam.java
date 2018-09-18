@@ -4,11 +4,14 @@ import feign.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.client.StrategicIdamClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LOCATION_HEADER;
@@ -25,8 +28,15 @@ public class RetrievePinUserDetailsFromStrategicIdam extends RetrievePinUserDeta
     }
 
     @Override
-    protected String authenticatePinUser(String pin, String authClientId, String authRedirectUrl) {
-        return getCodeFromRedirect(idamClient.authenticatePinUser(pin, authClientId, authRedirectUrl));
+    protected String authenticatePinUser(String pin, String authClientId, String authRedirectUrl) throws TaskException {
+        Response authenticateResponse = idamClient.authenticatePinUser(pin, authClientId, authRedirectUrl);
+
+        if (authenticateResponse.status() == HttpStatus.OK.value()
+            || authenticateResponse.status() == HttpStatus.FOUND.value()) {
+            return getCodeFromRedirect(authenticateResponse);
+        }
+
+        throw new TaskException(new AuthenticationError(String.format("Error authenticating PIN [%s]", pin)));
     }
 
     @Override

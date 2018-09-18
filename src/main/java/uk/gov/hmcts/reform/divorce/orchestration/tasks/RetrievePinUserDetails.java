@@ -55,6 +55,8 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
         return pinUserDetails;
     }
 
-    protected abstract String authenticatePinUser(String pin, String authClientId, String authRedirectUrl);
+    protected abstract String authenticatePinUser(String pin, String authClientId, String authRedirectUrl)
+        throws TaskException;
+
     protected abstract IdamClient getIdamClient();
 }

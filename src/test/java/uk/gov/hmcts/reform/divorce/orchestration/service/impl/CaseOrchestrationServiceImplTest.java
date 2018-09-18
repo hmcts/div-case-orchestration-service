@@ -9,9 +9,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -45,6 +47,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private UpdateToCCDWorkflow updateToCCDWorkflow;
+
+    @Mock
+    private LinkRespondentWorkflow linkRespondentWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -148,6 +153,17 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(requestPayload, actual);
 
         verify(updateToCCDWorkflow).run(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
+    }
+
+    @Test
+    public void whenLinkRespondent_thenProceedAsExpected() throws WorkflowException {
+        final UserDetails userDetails = UserDetails.builder().build();
+
+        when(linkRespondentWorkflow.run(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN)).thenReturn(userDetails);
+
+        assertEquals(userDetails, classUnderTest.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN));
+
+        verify(linkRespondentWorkflow).run(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN);
     }
 
     @After

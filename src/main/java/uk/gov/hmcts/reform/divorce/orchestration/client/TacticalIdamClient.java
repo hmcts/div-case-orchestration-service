@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.AuthenticateU
 
 @FeignClient(name = "tacticalIdamClient",
     url = "${idam.api.url}",
-    qualifier="tacticalIdamClient"
-)
+    qualifier = "tacticalIdamClient"
+    )
 @ConditionalOnProperty(value = "idam.strategic.enabled", havingValue = "false")
 public interface TacticalIdamClient extends IdamClient {
 

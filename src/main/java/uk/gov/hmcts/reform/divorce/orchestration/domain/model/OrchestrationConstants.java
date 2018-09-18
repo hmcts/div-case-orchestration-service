@@ -21,7 +21,7 @@ public class OrchestrationConstants {
     public static final String D_8_PETITIONER_LAST_NAME = "D8PetitionerLastName";
     public static final String D_8_DIVORCE_UNIT = "D8DivorceUnit";
     public static final String CCD_CASE_DATA = "ccdCaseData";
-    public static final String RESPONDENT_EMAIL_ADDREESS = "RespEmailAddress";
+    public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
     public static final String START_AOS_EVENT_ID = "startAos";
 
 

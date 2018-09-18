@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LinkRespondentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
@@ -26,9 +25,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.Validat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
-import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.Map;
+import javax.ws.rs.core.MediaType;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
@@ -162,7 +161,7 @@ public class OrchestrationController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 401, message = "User Not Authenticated"),
         @ApiResponse(code = 404, message = "Case Not found")
-    })
+        })
     public ResponseEntity<UserDetails> linkRespondent(
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken,
         @PathVariable("caseId") @ApiParam("Unique identifier of the session that was submitted to CCD") String caseId,

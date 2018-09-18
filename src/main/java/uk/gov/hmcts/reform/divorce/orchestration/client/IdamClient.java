@@ -21,7 +21,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @FeignClient(
     name = "idamClient",
     url = "${idam.api.url}",
-    qualifier="idamClient"
+    qualifier = "idamClient"
 )
 public interface IdamClient {
 

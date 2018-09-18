@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDREESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
 
 @Component
@@ -36,7 +36,7 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
             (String)context.getTransientObject(AUTH_TOKEN_JSON_KEY),
             (String)context.getTransientObject(CASE_ID_JSON_KEY),
             START_AOS_EVENT_ID,
-            ImmutableMap.of(RESPONDENT_EMAIL_ADDREESS, respondentDetails.getEmail())
+            ImmutableMap.of(RESPONDENT_EMAIL_ADDRESS, respondentDetails.getEmail())
         );
 
         return payLoad;

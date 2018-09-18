@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LinkRespondentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -92,12 +91,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public UserDetails linkRespondent(String authToken, String caseId, String pin)
-        throws WorkflowException {
-        return linkRespondentWorkflow.run(
-            authToken,
-            caseId,
-            pin
-        );
+    public UserDetails linkRespondent(String authToken, String caseId, String pin) throws WorkflowException {
+        return linkRespondentWorkflow.run(authToken, caseId, pin);
     }
 }
