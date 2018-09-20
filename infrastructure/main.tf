@@ -17,7 +17,7 @@ locals {
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
   
   asp_name = "${var.env == "prod" ? "div-cos-prod" : "${var.product}-${var.env}"}"
-  asp_rg = "${var.env == "prod" ? "div-cos-prod" : "${var.product}-shared-infrastructure-${var.env}"}"
+  asp_rg = "${var.env == "prod" ? "div-cos-prod" : "${var.product}-${var.env}"}"
 }
 
 module "div-cos" {
