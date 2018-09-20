@@ -15,6 +15,9 @@ locals {
   previewVaultName = "${var.raw_product}-aat"
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
+  
+  asp_name = "${var.env == "prod" ? "div-cos-prod" : "${var.product}-${var.env}"}"
+  asp_rg = "${var.env == "prod" ? "div-cos-prod" : "${var.product}-shared-infrastructure-${var.env}"}"
 }
 
 module "div-cos" {
@@ -27,6 +30,8 @@ module "div-cos" {
   subscription                = "${var.subscription}"
   capacity                    = "${var.capacity}"
   common_tags                 = "${var.common_tags}"
+  asp_name                        = "${local.asp_name}"
+  asp_rg                          = "${local.asp_rg}"
 
   app_settings = {
     // logging vars
