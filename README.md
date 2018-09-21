@@ -7,7 +7,6 @@ This application orchestrates a workflow based on the requested business require
 ### Prerequisites
 
 - [JDK 8](https://www.oracle.com/java)
-- [Docker](https://www.docker.com)
 
 ### Building
 
@@ -20,28 +19,25 @@ To build project please execute the following command:
     ./gradlew build
 ```
 
+To get the project to build in IntelliJ IDEA, you have to:
+
+ - Install the Lombok plugin: Preferences -> Plugins
+ - Enable Annotation Processing: Preferences -> Build, Execution, Deployment -> Compiler -> Annotation Processors
+
 ### Running
 
-First you need to create distribution by executing following command:
+You can run the application by executing following command:
 
 ```bash
-    ./gradlew installDist
+    ./gradlew bootRun
 ```
 
-When the distribution has been created in `build/install/div-document-generator` directory,
-you can run the application by executing following command:
-
-```bash
-    docker-compose up
-```
-
-As a result the following container(s) will get created and started:
- - long living container for API application exposing port `4008`
+The application will start locally on `http://localhost:4013`
 
 ### API documentation
 
 API documentation is provided with Swagger:
- - `http://localhost:4008/swagger-ui.html` - UI to interact with the API resources
+ - `http://localhost:4013/swagger-ui.html` - UI to interact with the API resources
 
 ## Developing
 
