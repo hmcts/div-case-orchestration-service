@@ -238,7 +238,6 @@ public class OrchestrationControllerTest {
         ResponseEntity<UserDetails> actual = classUnderTest.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
-        assertEquals(expected, actual.getBody());
 
         verify(caseOrchestrationService).linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN);
     }

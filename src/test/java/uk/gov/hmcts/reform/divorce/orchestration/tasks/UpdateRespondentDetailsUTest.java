@@ -18,6 +18,7 @@ import java.util.Map;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
@@ -52,13 +53,13 @@ public class UpdateRespondentDetailsUTest {
 
         final Map<String, Object> dataToUpdate = ImmutableMap.of(RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL);
 
-        when(idamClient.retrieveUserDetails(AUTH_TOKEN)).thenReturn(respondentDetails);
+        when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS_EVENT_ID, dataToUpdate))
             .thenReturn(null);
 
         Assert.assertEquals(payload, classUnderTest.execute(taskContext, payload));
 
-        verify(idamClient).retrieveUserDetails(AUTH_TOKEN);
+        verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS_EVENT_ID, dataToUpdate);
     }
 }

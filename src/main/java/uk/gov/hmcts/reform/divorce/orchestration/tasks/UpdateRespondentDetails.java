@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -30,7 +31,8 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) {
         UserDetails respondentDetails =
-            idamClient.retrieveUserDetails((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY));
+            idamClient.retrieveUserDetails(
+                AuthUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
 
         caseMaintenanceClient.updateCase(
             (String)context.getTransientObject(AUTH_TOKEN_JSON_KEY),

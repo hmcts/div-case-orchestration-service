@@ -34,6 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CODE;
@@ -142,7 +143,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
-        stubUserDetailsEndpoint(UNAUTHORIZED, AUTH_TOKEN, TEST_ERROR);
+        stubUserDetailsEndpoint(UNAUTHORIZED, BEARER_AUTH_TOKEN, TEST_ERROR);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -157,7 +158,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
-        stubUserDetailsEndpoint(OK, AUTH_TOKEN, USER_DETAILS_JSON);
+        stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
         stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, TEST_ERROR);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -173,14 +174,13 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
-        stubUserDetailsEndpoint(OK, AUTH_TOKEN, USER_DETAILS_JSON);
+        stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
         stubMaintenanceServerEndpointForUpdate(OK, convertObjectToJsonString(CASE_DATA));
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk())
-            .andExpect(content().json(USER_DETAILS_PIN_USER_JSON));
+            .andExpect(status().isOk());
     }
 
 

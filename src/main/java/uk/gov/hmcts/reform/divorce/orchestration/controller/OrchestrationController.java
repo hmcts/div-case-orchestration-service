@@ -208,8 +208,7 @@ public class OrchestrationController {
     @PostMapping(path = "/link-respondent/{caseId}/{pin}")
     @ApiOperation(value = "Authorize the respondent")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Respondent Authenticated",
-            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 200, message = "Respondent Authenticated"),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 401, message = "User Not Authenticated"),
         @ApiResponse(code = 404, message = "Case Not found")
@@ -222,7 +221,7 @@ public class OrchestrationController {
         UserDetails linkRespondent = orchestrationService.linkRespondent(authorizationToken, caseId, pin);
 
         if (linkRespondent != null) {
-            return ResponseEntity.ok(linkRespondent);
+            return ResponseEntity.ok().build();
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
