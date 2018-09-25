@@ -32,8 +32,8 @@ module "div-cos" {
   subscription                = "${var.subscription}"
   capacity                    = "${var.capacity}"
   common_tags                 = "${var.common_tags}"
-  asp_name                        = "${local.asp_name}"
-  asp_rg                          = "${local.asp_rg}"
+  asp_name                    = "${local.asp_name}"
+  asp_rg                      = "${local.asp_rg}"
 
   app_settings = {
     // logging vars
@@ -58,6 +58,7 @@ module "div-cos" {
     UK_GOV_NOTIFY_API_KEY                           = "${data.azurerm_key_vault_secret.uk-gov-notify-api-key.value}"
     UK_GOV_NOTIFY_EMAIL_TEMPLATES                   = "${var.uk_gov_notify_email_templates}"
     UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS               = "${var.uk_gov_notify_email_template_vars}"
+    DRAFT_CCD_CHECK_ENABLED                         = "${var.draft_check_ccd_enabled}"
   }
 }
 
