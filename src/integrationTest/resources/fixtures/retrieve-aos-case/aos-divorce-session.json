@@ -1,8 +1,4 @@
 {
-  "reasonForDivorceDesertionDateInFuture":null,
-  "reasonForDivorceDesertionDay":null,
-  "caseReference":null,
-  "reasonForDivorceSeperationInFuture":null,
   "respondentCorrespondenceAddress":{
     "postcodeManual":null,
     "addressConfirmed":true,
@@ -22,31 +18,51 @@
     "url":null
   },
   "petitionerLastName":"Smith",
-  "reasonForDivorceHasMarriage":null,
+  "livingArrangementsLiveTogether":"No",
+  "petitionerFirstName":"John",
   "courts":"eastMidlands",
-  "reasonForDivorceAdultery3rdPartyLastName":null,
-  "reasonForDivorceDesertion":null,
   "claimsCosts":"Yes",
-  "reasonForDivorceDesertionAgreed":null,
   "reasonForDivorceShowDesertion":"true",
-  "reasonForDivorceDesertionInFuture":null,
   "jurisdictionConfidentLegal":"Yes",
+  "respondentLastName":"Jamed",
   "reasonForDivorceShowTwoYearsSeparation":"true",
+  "petitionerCorrespondenceAddress":{
+    "postcodeManual":null,
+    "addressConfirmed":true,
+    "validPostcode":true,
+    "address":[
+      "84 Landor Road",
+      "London",
+      "SW9 9PE"
+    ],
+    "town":null,
+    "addressType":"postcode",
+    "postcode":"AB24 232",
+    "addressAbroad":null,
+    "street1":null,
+    "street2":null,
+    "postcodeError":false,
+    "url":null
+  },
   "helpWithFeesNeedHelp":"Yes",
-  "jurisdictionRespondentDomicile":null,
-  "payment":null,
   "marriageDate":"2001-02-02T00:00:00.000+0000",
   "petitionerNameChangedHow":[
     "marriageCertificate"
   ],
-  "reasonForDivorceAdulteryDetails":null,
   "screenHasRespondentAddress":"Yes",
+  "connections":{
+    "A":"The Petitioner and the Respondent are habitually resident in England and Wales",
+    "B":null,
+    "C":"The Respondent is habitually resident in England and Wales",
+    "D":null,
+    "E":null,
+    "F":null,
+    "G":null
+  },
   "petitionerCorrespondenceUseHomeAddress":"No",
   "reasonForDivorceShowUnreasonableBehaviour":"true",
-  "reasonForDivorceSeperationDateBeforeMarriageDate":null,
-  "reasonForDivorceDesertionMonth":null,
+  "reasonForDivorceEnableAdultery":"true",
   "legalProceedingsDetails":"The legal proceeding details",
-  "reasonForDivorceDesertionDetails":null,
   "court":{
     "northWest":{
       "phoneNumber":"0300 303 0642",
@@ -90,30 +106,43 @@
       "email":"eastmidlandsdivorce@hmcts.gsi.gov.uk"
     }
   },
-  "placeOfMarriage":null,
+  "reasonForDivorceShowFiveYearsSeparation":"true",
+  "claimsCostsFrom":[
+    "respondent"
+  ],
   "screenHasMarriageBroken":"Yes",
+  "petitionerEmail":"email@email.com",
   "reasonForDivorce":"unreasonable-behaviour",
-  "reasonForDivorceSeperationBeforeMarriage":null,
   "jurisdictionPetitionerResidence":"Yes",
-  "existingPayments":null,
+  "legalProceedings":"Yes",
   "marriageIsSameSexCouple":"No",
   "jurisdictionRespondentResidence":"Yes",
-  "reasonForDivorceSeperationDate":null,
+  "expires":0,
+  "helpWithFeesReferenceNumber":"HWF-123-456",
+  "divorceWho":"husband",
   "marriagePetitionerName":"John Doe",
-  "jurisdictionLastHabitualResident":null,
-  "reasonForDivorceAdulteryWhereDetails":null,
-  "marriageCertificateFiles":null,
+  "screenHasPrinter":"Yes",
+  "petitionerPhoneNumber":"01234567890",
+  "helpWithFeesAppliedForFees":"Yes",
+  "marriageDateDay":2,
   "respondentCorrespondenceUseHomeAddress":"Solicitor",
-  "reasonForDivorceSeperationMonth":null,
-  "reasonForDivorceAdulteryKnowWhen":null,
-  "d8":null,
-  "residualJurisdictionEligible":null,
+  "reasonForDivorceShowAdultery":"true",
+  "marriageDateYear":2001,
+  "jurisdictionConnection":[
+    "A",
+    "C"
+  ],
+  "financialOrder":"Yes",
   "petitionerContactDetailsConfidential":"share",
   "confirmPrayer":"Yes",
+  "claimsCostsAppliedForFees":"true",
+  "legalProceedingsRelated":[
+    "children"
+  ],
   "reasonForDivorceAdulteryIsNamed":"No",
-  "reasonForDivorceSeperation":null,
-  "marriageIsFuture":null,
+  "reasonForDivorceClaiming5YearSeparation":"false",
   "petitionerNameDifferentToMarriageCertificate":"Yes",
+  "livingArrangementsLastLivedTogether":"No",
   "respondentHomeAddress":{
     "postcodeManual":null,
     "addressConfirmed":true,
@@ -133,7 +162,6 @@
     "url":null
   },
   "marriageRespondentName":"Jenny Benny",
-  "reasonForDivorceAdultery3rdPartyFirstName":null,
   "petitionerHomeAddress":{
     "postcodeManual":null,
     "addressConfirmed":true,
@@ -152,7 +180,10 @@
     "postcodeError":false,
     "url":null
   },
-  "respondentNameAsOnMarriageCertificate":null,
+  "reasonForDivorceBehaviourDetails":[
+    "My wife is having an affair this week."
+  ],
+  "screenHasMarriageCert":"Yes",
   "livingArrangementsLastLivedTogetherAddress":{
     "postcodeManual":null,
     "addressConfirmed":true,
@@ -172,16 +203,17 @@
     "postcodeError":false,
     "url":null
   },
+  "reasonForDivorceClaimingAdultery":"false",
+  "respondentFirstName":"Jane",
   "reasonForDivorceLimitReasons":"false",
   "reasonForDivorceHasMarriageDate":"true",
-  "reasonForDivorceDesertionDate":null,
-  "marriedInUk":null,
   "marriageDateMonth":2,
-  "reasonForDivorceSeperationDay":null,
-  "reasonForDivorceAdultery3rd":null,
   "marriageCanDivorce":"true",
-  "reasonForDivorceDesertionBeforeMarriage":null,
-  "connectionSummary":null,
+  "respondentLivesAtLastAddress":"No",
+  "financialOrderFor":[
+    "petitioner",
+    "children"
+  ],
   "respondentSolicitorAddress":{
     "postcodeManual":null,
     "addressConfirmed":true,
@@ -199,98 +231,5 @@
     "street2":null,
     "postcodeError":false,
     "url":null
-  },
-  "livingArrangementsLiveTogether":"No",
-  "petitionerFirstName":"John",
-  "jurisdictionPetitionerDomicile":null,
-  "respondentLastName":"Jamed",
-  "petitionerCorrespondenceAddress":{
-    "postcodeManual":null,
-    "addressConfirmed":true,
-    "validPostcode":true,
-    "address":[
-      "84 Landor Road",
-      "London",
-      "SW9 9PE"
-    ],
-    "town":null,
-    "addressType":"postcode",
-    "postcode":"AB24 232",
-    "addressAbroad":null,
-    "street1":null,
-    "street2":null,
-    "postcodeError":false,
-    "url":null
-  },
-  "connections":{
-    "A":"The Petitioner and the Respondent are habitually resident in England and Wales",
-    "B":null,
-    "C":"The Respondent is habitually resident in England and Wales",
-    "D":null,
-    "E":null,
-    "F":null,
-    "G":null
-  },
-  "respondentHome":null,
-  "reasonForDivorceAdulteryWhenDetails":null,
-  "reasonForDivorceSeperationDateIsSameOrAfterLimitDate":null,
-  "reasonForDivorceEnableAdultery":"true",
-  "reasonForDivorceShowFiveYearsSeparation":"true",
-  "respondentCorrespondenceSendToSolicitor":null,
-  "jurisdictionLastTwelveMonths":null,
-  "marriageMoreThan100":null,
-  "claimsCostsFrom":[
-    "respondent"
-  ],
-  "petitionerEmail":"email@email.com",
-  "jurisdictionPath":null,
-  "legalProceedings":"Yes",
-  "countryName":null,
-  "respondentSolicitorName":null,
-  "jurisdictionConnectionFirst":null,
-  "expires":0,
-  "helpWithFeesReferenceNumber":"HWF-123-456",
-  "divorceWho":"husband",
-  "reasonForDivorceAdulteryKnowWhere":null,
-  "certificateInEnglish":null,
-  "screenHasPrinter":"Yes",
-  "petitionerNameChangedHowOtherDetails":null,
-  "petitionerPhoneNumber":"01234567890",
-  "reasonForDivorceSeperationYear":null,
-  "helpWithFeesAppliedForFees":"Yes",
-  "marriageDateDay":2,
-  "reasonForDivorceShowAdultery":"true",
-  "marriageDateYear":2001,
-  "jurisdictionConnection":[
-    "A",
-    "C"
-  ],
-  "reasonForDivorceSeperationDateInFuture":null,
-  "reasonForDivorceAdultery3rdAddress":null,
-  "financialOrder":"Yes",
-  "reasonForDivorceDesertionYear":null,
-  "claimsCostsAppliedForFees":"true",
-  "legalProceedingsRelated":[
-    "children"
-  ],
-  "reasonForDivorceClaiming5YearSeparation":"false",
-  "reasonForDivorceDesertionAlright":null,
-  "livingArrangementsLastLivedTogether":"No",
-  "respondentKnowsHomeAddress":null,
-  "reasonForDivorceAdulteryWishToName":null,
-  "sessionKey":null,
-  "respondentSolicitorCompany":null,
-  "reasonForDivorceBehaviourDetails":[
-    "My wife is having an affair this week."
-  ],
-  "screenHasMarriageCert":"Yes",
-  "reasonForDivorceClaimingAdultery":"false",
-  "reasonForDivorceSeperationIsSameOrAfterLimit":null,
-  "respondentFirstName":"Jane",
-  "certifiedTranslation":null,
-  "respondentLivesAtLastAddress":"No",
-  "financialOrderFor":[
-    "petitioner",
-    "children"
-  ]
+  }
 }

@@ -26,8 +26,14 @@ public class OrchestrationConstants {
     public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
     public static final String START_AOS_EVENT_ID = "startAos";
+    public static final String COMPLETE_AOS_EVENT_ID = "aosCompletedFromAosStarted";
+    public static final String AWAITING_DN_AOS_EVENT_ID = "issueDecreeNisi";
+    public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosCompletedAwaitingAnswerFromAosStarted";
     public static final String D_8_INFERRED_RESPONDENT_GENDER = "D8InferredRespondentGender";
-
+    public static final String RESP_ADMIT_OR_CONSENT_CCD_FIELD = "RespAdmitOrConsentToFact";
+    public static final String RESP_DEFENDS_DIVORCE_CCD_FIELD = "RespDefendsDivorce";
+    public static final String YES_VALUE = "Yes";
+    public static final String NO_VALUE = "No";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
