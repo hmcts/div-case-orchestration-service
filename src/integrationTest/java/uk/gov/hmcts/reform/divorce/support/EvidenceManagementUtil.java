@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.support.emclient;
+package uk.gov.hmcts.reform.divorce.support;
 
 import io.restassured.response.Response;
 import lombok.AccessLevel;

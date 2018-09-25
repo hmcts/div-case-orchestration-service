@@ -28,11 +28,11 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.authorisation.generators.ServiceAuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
-import uk.gov.hmcts.reform.divorce.support.ccd.CcdClientSupport;
+import uk.gov.hmcts.reform.divorce.support.CcdClientSupport;
+import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 import uk.gov.hmcts.reform.divorce.support.cms.CmsClientSupport;
 import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
 import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
-import uk.gov.hmcts.reform.divorce.util.IdamUtils;
 
 @Lazy
 @Configuration

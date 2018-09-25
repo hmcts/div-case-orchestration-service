@@ -8,9 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
-import uk.gov.hmcts.reform.divorce.util.IdamUtils;
+import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 
-import java.util.Locale;
 import java.util.UUID;
 
 @RunWith(SerenityRunner.class)
@@ -22,6 +21,7 @@ public abstract class IntegrationTest {
     private static final String CASEWORKER_DIVORCE_ROLE = "caseworker-divorce";
     private static final String CASEWORKER_DIVORCE_COURTADMIN_ROLE = "caseworker-divorce-courtadmin";
     private static final String CASEWORKER_ROLE = "caseworker";
+    private static final String PASSWORD = "PassW0rd";
 
     private UserDetails caseWorkerUser;
 
@@ -29,7 +29,7 @@ public abstract class IntegrationTest {
     protected String serverUrl;
 
     @Autowired
-    private IdamUtils idamTestSupportUtil;
+    protected IdamUtils idamTestSupportUtil;
 
     @Rule
     public SpringIntegrationMethodRule springMethodIntegration;
@@ -38,42 +38,44 @@ public abstract class IntegrationTest {
         this.springMethodIntegration = new SpringIntegrationMethodRule();
     }
 
-    protected synchronized UserDetails createCaseWorkerUser() {
-        if (caseWorkerUser == null) {
-            caseWorkerUser = getUserDetails(CASE_WORKER_USERNAME, CASE_WORKER_PASSWORD,
-                CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_ROLE, CITIZEN_ROLE);
-        }
+    protected UserDetails createCaseWorkerUser() {
+        synchronized (this) {
+            if (caseWorkerUser == null) {
+                caseWorkerUser = getUserDetails(CASE_WORKER_USERNAME, CASE_WORKER_PASSWORD,
+                    CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_ROLE, CITIZEN_ROLE);
+            }
 
-        return caseWorkerUser;
+            return caseWorkerUser;
+        }
     }
 
     protected UserDetails createCitizenUser() {
         final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
-        final String password = UUID.randomUUID().toString().toUpperCase(Locale.ENGLISH);
 
-        return getUserDetails(username, password, CITIZEN_ROLE);
+        return getUserDetails(username, PASSWORD, CITIZEN_ROLE);
     }
 
     protected UserDetails createCitizenUser(String role) {
         final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
-        final String password = UUID.randomUUID().toString().toUpperCase(Locale.ENGLISH);
 
-        return getUserDetails(username, password, role);
+        return getUserDetails(username, PASSWORD, role);
     }
 
-    private synchronized UserDetails getUserDetails(String username, String password, String... role) {
-        idamTestSupportUtil.createUser(username, password, role);
+    private UserDetails getUserDetails(String username, String password, String... role) {
+        synchronized (this) {
+            idamTestSupportUtil.createUser(username, password, role);
 
-        final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
+            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
 
-        final String userId = idamTestSupportUtil.getUserId(authToken);
+            final String userId = idamTestSupportUtil.getUserId(authToken);
 
-        return UserDetails.builder()
-            .username(username)
-            .emailAddress(username)
-            .password(password)
-            .authToken(authToken)
-            .id(userId)
-            .build();
+            return UserDetails.builder()
+                .username(username)
+                .emailAddress(username)
+                .password(password)
+                .authToken(authToken)
+                .id(userId)
+                .build();
+        }
     }
 }

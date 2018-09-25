@@ -9,7 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
-import uk.gov.hmcts.reform.divorce.support.ccd.CcdClientSupport;
+import uk.gov.hmcts.reform.divorce.support.CcdClientSupport;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 
 public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
 
-    private static final String UPDATE_EVENT_ID = "paymentMade";
     private static final String CASE_ID_KEY = "caseId";
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/update/";
 

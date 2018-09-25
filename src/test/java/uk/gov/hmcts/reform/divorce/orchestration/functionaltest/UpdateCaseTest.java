@@ -17,7 +17,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 
@@ -34,7 +33,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
@@ -122,8 +120,7 @@ public class UpdateCaseTest {
                 .andExpect(status().isBadRequest());
     }
 
-    private void stubFormatterServerEndpoint()
-            throws Exception {
+    private void stubFormatterServerEndpoint() {
         formatterServiceServer.stubFor(WireMock.post(CCD_FORMAT_CONTEXT_PATH)
                 .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
                 .willReturn(aResponse()
@@ -132,8 +129,7 @@ public class UpdateCaseTest {
                         .withBody(convertObjectToJsonString(caseData))));
     }
 
-    private void stubMaintenanceServerEndpointForUpdate(Map<String, Object> response)
-            throws Exception {
+    private void stubMaintenanceServerEndpointForUpdate(Map<String, Object> response) {
         maintenanceServiceServer.stubFor(WireMock.post(UPDATE_CONTEXT_PATH)
                 .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
                 .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))

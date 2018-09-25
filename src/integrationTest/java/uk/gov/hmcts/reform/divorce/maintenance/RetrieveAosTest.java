@@ -1,34 +1,24 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
-import org.apache.http.entity.ContentType;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.divorce.callback.CcdSubmissionSupport;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
-import uk.gov.hmcts.reform.divorce.util.RestUtil;
+import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 
-public class RetrieveAosCaseIntegrationTest extends CcdSubmissionSupport {
+public class RetrieveAosTest extends RetrieveAosCaseSupport {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/retrieve-aos-case/";
-    private static final String CASE_ID_KEY = "caseId";
     private static final String TEST_AOS_RESPONDED_EVENT = "testAosStarted";
     private static final String COURTS_KEY = "courts";
     private static final String STATE_KEY = "state";
     private static final String DATA_KEY = "data";
-
-    @Value("${case.orchestration.maintenance.retrieve-aos-case.context-path}")
-    private String contextPath;
 
     @Test
     public void givenUserTokenIsNull_whenAuthenticateUser_thenReturnBadRequest() {
@@ -62,20 +52,5 @@ public class RetrieveAosCaseIntegrationTest extends CcdSubmissionSupport {
         assertEquals("AosStarted", cosResponse.path(STATE_KEY));
         assertEquals(loadJsonToObject(PAYLOAD_CONTEXT_PATH + "aos-divorce-session.json", Map.class),
             cosResponse.path(DATA_KEY));
-    }
-
-    private Response retrieveAosCase(String userToken) {
-        final Map<String, Object> headers = new HashMap<>();
-        headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
-
-        if (userToken != null) {
-            headers.put(HttpHeaders.AUTHORIZATION, userToken);
-        }
-
-        return RestUtil.getFromRestService(
-                serverUrl + contextPath,
-                headers,
-                Collections.singletonMap("checkCcd", true)
-        );
     }
 }

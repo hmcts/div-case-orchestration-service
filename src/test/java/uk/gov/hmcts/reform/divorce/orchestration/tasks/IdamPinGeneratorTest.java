@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USERID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 
@@ -44,7 +44,7 @@ public class IdamPinGeneratorTest {
         idamPinGenerator = new IdamPinGenerator(idamClient);
 
         pin = Pin.builder()
-                .userId(TEST_USERID)
+                .userId(TEST_USER_ID)
                 .pin(TEST_PIN)
                 .build();
 

@@ -3,12 +3,9 @@ package uk.gov.hmcts.reform.divorce.callback;
 import io.restassured.response.Response;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
@@ -53,10 +50,6 @@ public class PetitionIssueTest extends IntegrationTest {
 
     @Value("${case.orchestration.petition-issued.context-path}")
     private String contextPath;
-
-    @Autowired
-    @Qualifier("documentGeneratorTokenGenerator")
-    private AuthTokenGenerator divDocAuthTokenGenerator;
 
     @Test
     public void givenUserTokenIsNull_whenRetrievePetition_thenReturnBadRequest() throws Exception {

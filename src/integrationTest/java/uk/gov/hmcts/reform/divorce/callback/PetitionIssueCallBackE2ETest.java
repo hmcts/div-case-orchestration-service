@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.divorce.support.emclient.EvidenceManagementUtil;
+import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
+import uk.gov.hmcts.reform.divorce.support.EvidenceManagementUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,9 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     private static final String SUBMIT_COMPLETE_CASE = "submit-complete-case.json";
     private static final String PAYMENT_MADE = "payment-made.json";
     private static final String PAYMENT_EVENT_ID = "paymentMade";
-    private static final String ISSUE_EVENT_ID = "issueFromSubmitted";
+    //TODO: use this when the COS goes live
+    //private static final String ISSUE_EVENT_ID = "issueFromSubmitted";
+    private static final String ISSUE_EVENT_ID = "testIssuePetitionCOS";
 
     private static final String PETITION = "petition";
     private static final String D8_MINI_PETITION_FILE_NAME_FORMAT = "d8petition%d.pdf";
@@ -37,7 +40,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         updateCase(caseDetails.getId().toString(), PAYMENT_MADE, PAYMENT_EVENT_ID);
         //issue
         CaseDetails caseDetailsAfterIssue =
-            updateCase(caseDetails.getId().toString(), PAYMENT_MADE, ISSUE_EVENT_ID);
+            updateCase(caseDetails.getId().toString(), null, ISSUE_EVENT_ID);
 
         assertGeneratedDocumentExists(caseDetailsAfterIssue, caseDetails.getId());
     }

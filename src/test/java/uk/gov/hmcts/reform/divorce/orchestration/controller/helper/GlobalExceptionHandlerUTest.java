@@ -4,12 +4,14 @@ import feign.FeignException;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 
 public class GlobalExceptionHandlerUTest {
@@ -33,7 +35,7 @@ public class GlobalExceptionHandlerUTest {
 
         ResponseEntity<Object> actual = classUnderTest.handleWorkFlowException(workflowException);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actual.getStatusCode());
+        assertEquals(INTERNAL_SERVER_ERROR, actual.getStatusCode());
         assertEquals(TEST_ERROR, actual.getBody());
     }
 
@@ -57,7 +59,7 @@ public class GlobalExceptionHandlerUTest {
 
         ResponseEntity<Object> actual = classUnderTest.handleWorkFlowException(workflowException);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actual.getStatusCode());
+        assertEquals(INTERNAL_SERVER_ERROR, actual.getStatusCode());
         assertEquals(TEST_ERROR, actual.getBody());
     }
 
@@ -74,6 +76,35 @@ public class GlobalExceptionHandlerUTest {
         assertEquals(STATUS_CODE, actual.getStatusCodeValue());
         assertEquals(TEST_ERROR, actual.getBody());
     }
+
+    @Test
+    public void givenCauseTaskExceptionContainsNoFeignNoAuthException_whenHandleWorkFlowException_thenReturnFeignStatus() {
+        final Exception exception = new Exception(TEST_ERROR);
+
+        final TaskException taskException = new TaskException(TEST_ERROR, exception);
+
+        final WorkflowException workflowException = new WorkflowException(TEST_ERROR, taskException);
+
+        ResponseEntity<Object> actual = classUnderTest.handleWorkFlowException(workflowException);
+
+        assertEquals(INTERNAL_SERVER_ERROR.value(), actual.getStatusCodeValue());
+        assertEquals(TEST_ERROR, actual.getBody());
+    }
+
+    @Test
+    public void givenCauseTaskExceptionContainsAuthorizationError_whenHandleWorkFlowException_thenReturnUnAuthorized() {
+        final AuthenticationError authenticationError = new AuthenticationError(TEST_ERROR);
+
+        final TaskException taskException = new TaskException(TEST_ERROR, authenticationError);
+
+        final WorkflowException workflowException = new WorkflowException(TEST_ERROR, taskException);
+
+        ResponseEntity<Object> actual = classUnderTest.handleWorkFlowException(workflowException);
+
+        assertEquals(HttpStatus.UNAUTHORIZED.value(), actual.getStatusCodeValue());
+        assertEquals(TEST_ERROR, actual.getBody());
+    }
+
 
     private FeignException getFeignException() {
         final FeignException feignException = mock(FeignException.class);

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
@@ -44,7 +45,7 @@ public class IdamPinGenerator implements Task<Map<String, Object>> {
     private final IdamClient idamClient;
 
     @Autowired
-    public IdamPinGenerator(IdamClient idamClient) {
+    public IdamPinGenerator(@Qualifier("idamClient") IdamClient idamClient) {
         this.idamClient = idamClient;
     }
 

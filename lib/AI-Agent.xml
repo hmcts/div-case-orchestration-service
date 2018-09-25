@@ -32,6 +32,9 @@
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
             <Method name="solicitorCreate" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
+            <Method name="linkRespondent" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.AuthenticateRespondent">
             <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
@@ -81,6 +84,18 @@
             <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateRespondentDetails">
             <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
     </Instrumentation>

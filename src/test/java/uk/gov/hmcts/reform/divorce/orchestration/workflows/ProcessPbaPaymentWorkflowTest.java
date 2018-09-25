@@ -31,15 +31,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class ProcessPbaPaymentWorkflowTest {
 
     @Mock
-    ValidateSolicitorCaseData validateSolicitorCaseData;
+    private ValidateSolicitorCaseData validateSolicitorCaseData;
 
     @Mock
-    ProcessPbaPayment processPbaPayment;
+    private ProcessPbaPayment processPbaPayment;
 
     @InjectMocks
-    ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
+    private ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
 
-    private CaseDetails caseDetails;
     private CreateEvent createEventRequest;
     private Map<String, Object> testData;
     private TaskContext context;
@@ -48,17 +47,17 @@ public class ProcessPbaPaymentWorkflowTest {
     public void setup() {
         testData = Collections.emptyMap();
 
-        caseDetails = CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .state(TEST_STATE)
-                .caseData(testData)
-                .build();
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .caseData(testData)
+            .build();
         createEventRequest =
                 CreateEvent.builder()
                         .eventId(TEST_EVENT_ID)
                         .token(TEST_TOKEN)
                         .caseDetails(
-                                caseDetails
+                            caseDetails
                         )
                         .build();
 

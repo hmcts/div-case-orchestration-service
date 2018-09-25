@@ -6,11 +6,13 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
@@ -39,6 +41,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SubmitToCCDWorkflow submitToCCDWorkflow;
     private final UpdateToCCDWorkflow updateToCCDWorkflow;
     private final RetrieveAosCaseWorkflow retrieveAosCaseWorkflow;
+    private final LinkRespondentWorkflow linkRespondentWorkflow;
     private final SetOrderSummaryWorkflow setOrderSummaryWorkflow;
     private final ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
@@ -51,10 +54,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         AuthenticateRespondentWorkflow authenticateRespondentWorkflow,
                                         SubmitToCCDWorkflow submitToCCDWorkflow,
                                         UpdateToCCDWorkflow updateToCCDWorkflow,
+                                        RetrieveAosCaseWorkflow retrieveAosCaseWorkflow,
+                                        LinkRespondentWorkflow linkRespondentWorkflow,
                                         RetrieveDraftWorkflow retrieveDraftWorkflow,
                                         SaveDraftWorkflow saveDraftWorkflow,
                                         DeleteDraftWorkflow deleteDraftWorkflow,
-                                        RetrieveAosCaseWorkflow retrieveAosCaseWorkflow,
                                         SetOrderSummaryWorkflow setOrderSummaryWorkflow,
                                         ProcessPbaPaymentWorkflow processPbaPaymentWorkflow,
                                         SolicitorCreateWorkflow solicitorCreateWorkflow,
@@ -68,6 +72,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         this.saveDraftWorkflow = saveDraftWorkflow;
         this.deleteDraftWorkflow = deleteDraftWorkflow;
         this.retrieveAosCaseWorkflow = retrieveAosCaseWorkflow;
+        this.linkRespondentWorkflow = linkRespondentWorkflow;
         this.aosRespondedWorkflow = aosRespondedWorkflow;
         this.setOrderSummaryWorkflow = setOrderSummaryWorkflow;
         this.processPbaPaymentWorkflow = processPbaPaymentWorkflow;
@@ -151,6 +156,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public CaseDataResponse retrieveAosCase(boolean checkCcd, String authorizationToken) throws WorkflowException {
         return retrieveAosCaseWorkflow.run(checkCcd, authorizationToken);
+    }
+
+    @Override
+    public UserDetails linkRespondent(String authToken, String caseId, String pin) throws WorkflowException {
+        return linkRespondentWorkflow.run(authToken, caseId, pin);
     }
 
     @Override
