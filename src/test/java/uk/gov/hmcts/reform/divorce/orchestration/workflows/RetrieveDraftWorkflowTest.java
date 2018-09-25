@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveNullElements;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCaseIdAndStateOnSession;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,9 @@ public class RetrieveDraftWorkflowTest {
     private CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
 
     @Mock
+    private SetCaseIdAndStateOnSession setCaseIdAndStateOnSession;
+
+    @Mock
     private RemoveNullElements removeNullElements;
 
     @InjectMocks
@@ -52,15 +56,16 @@ public class RetrieveDraftWorkflowTest {
 
         when(caseDataToDivorceFormatter.execute(argThat(contextWithAuthTokenMatcher),
                 eq(casePayload))).thenReturn(draftPayload);
+        when(setCaseIdAndStateOnSession.execute(argThat(contextWithAuthTokenMatcher),
+                eq(draftPayload))).thenReturn(draftPayload);
         when(removeNullElements.execute(argThat(contextWithAuthTokenMatcher),
                 eq(draftPayload))).thenReturn(draftPayload);
         assertEquals(draftPayload, target.run(AUTH_TOKEN));
 
         verify(retrieveDraft).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
         verify(caseDataToDivorceFormatter).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
+        verify(setCaseIdAndStateOnSession).execute(argThat(contextWithAuthTokenMatcher),eq(draftPayload));
         verify(removeNullElements).execute(argThat(contextWithAuthTokenMatcher),eq(draftPayload));
-
-
     }
 
 }

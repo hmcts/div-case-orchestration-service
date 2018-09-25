@@ -18,6 +18,8 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 
 public class DraftServiceEndToEndTest extends IntegrationTest {
 
@@ -173,6 +175,12 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     private void assertUserPetition(String draftFile, UserDetails user) {
         final Map<String, Object> expectedDraft = getDraftResponseResource(draftFile, user);
         Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user);
+
+        // Add dynamic fields if not missing.
+        if (userDraft.get(CASE_ID_JSON_KEY) != null) {
+            expectedDraft.put(CASE_ID_JSON_KEY, userDraft.get(CASE_ID_JSON_KEY));
+            expectedDraft.put(CASE_STATE_JSON_KEY, userDraft.get(CASE_STATE_JSON_KEY));
+        }
         assertEquals(expectedDraft, userDraft);
     }
 
