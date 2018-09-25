@@ -17,7 +17,11 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RetrieveDraftTest {
@@ -53,5 +57,24 @@ public class RetrieveDraftTest {
         when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, false)).thenReturn(clientResponse);
 
         assertEquals(expectedResponse,target.execute(context, payload));
+    }
+
+    @Test
+    public void givenUserTokenWithCase_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMSWithCaseDetails() {
+        TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        Map<String, Object> payload  = mock(Map.class);
+        Map<String, Object> expectedResponse  = mock(Map.class);
+        CaseDetails clientResponse  = CaseDetails.builder()
+                .caseData(expectedResponse)
+                .caseId(TEST_CASE_ID)
+                .state(TEST_STATE)
+                .build();
+
+        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, false)).thenReturn(clientResponse);
+
+        assertEquals(expectedResponse,target.execute(context, payload));
+        assertEquals(TEST_CASE_ID, context.getTransientObject(CASE_ID_JSON_KEY));
+        assertEquals(TEST_STATE, context.getTransientObject(CASE_STATE_JSON_KEY));
     }
 }
