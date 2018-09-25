@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveNullElements;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCaseIdAndStateOnSession;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,14 +21,17 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
     private final RetrieveDraft retrieveDraft;
     private final CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
+    private final SetCaseIdAndStateOnSession setCaseIdAndStateOnSession;
     private final RemoveNullElements removeNullElements;
 
     @Autowired
     public RetrieveDraftWorkflow(RetrieveDraft retrieveDraft,
                                  CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter,
+                                 SetCaseIdAndStateOnSession setCaseIdAndStateOnSession,
                                  RemoveNullElements removeNullElements) {
         this.retrieveDraft = retrieveDraft;
         this.caseDataToDivorceFormatter = caseDataToDivorceFormatter;
+        this.setCaseIdAndStateOnSession = setCaseIdAndStateOnSession;
         this.removeNullElements = removeNullElements;
     }
 
@@ -36,6 +40,7 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
                 new Task[]{
                     retrieveDraft,
                     caseDataToDivorceFormatter,
+                    setCaseIdAndStateOnSession,
                     removeNullElements
                 },
                 new HashMap<>(),
