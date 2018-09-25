@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -42,8 +41,7 @@ public class SaveDraftWorkflowTest {
         argument -> argument.getTransientObject(AUTH_TOKEN_JSON_KEY) != null
         && argument.getTransientObject(NOTIFICATION_EMAIL) != null;
 
-
-
+    @SuppressWarnings("unchecked")
     @Test
     public void givenADraft_whenExecuteSaveDraftWorkflow_thenExecuteAllTaskInOrder() throws WorkflowException {
         Map<String, Object> payload = mock(Map.class);
@@ -62,6 +60,7 @@ public class SaveDraftWorkflowTest {
         verify(emailNotification).execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER), eq(draftSavedPayload));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenAError_whenExecuteSaveDraftWorkflow_thenStopExecution() throws WorkflowException {
         final Map<String, Object> payload = mock(Map.class);
@@ -76,6 +75,6 @@ public class SaveDraftWorkflowTest {
         target.run(payload, AUTH_TOKEN, TEST_USER_EMAIL);
 
         verify(saveToDraftStore).execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER), eq(payload));
-        verify(emailNotification, never()).execute(Mockito.any(TaskContext.class), any());
+        verify(emailNotification, never()).execute(any(TaskContext.class), any());
     }
 }

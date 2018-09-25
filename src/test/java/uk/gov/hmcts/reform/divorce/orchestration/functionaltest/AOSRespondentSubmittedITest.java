@@ -49,21 +49,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class AOSRespondentSubmittedITest {
-
-    private static final String EMAIL_CONTEXT_PATH = "/v2/notifications/email";
     private static final String API_URL = "/aos-received";
     private static final String USER_TOKEN = "anytoken";
 
     private static final String PETITIONER_FIRST_NAME = "any-name";
     private static final String PETITIONER_LAST_NAME = "any-last-name";
-    private static final String RESPONDENT_MALE_GENDER = "male";
     private static final String RESPONDENT_FEMALE_GENDER = "female";
-    private static final String PETITIONER_EMAIL = "some-test-email@@notifications.service.gov.uk";
     private static final String EVENT_ID = "event-id";
     private static final String CASE_ID = "case-id";
+    private static final String RELATIONSHIP = "wife";
 
-
-    private static final String TEMPLATE_ID = "templateId";
     @Autowired
     private MockMvc webClient;
 
@@ -82,7 +77,7 @@ public class AOSRespondentSubmittedITest {
     @Test
     public void givenWithoutPetitionerEmail_whenPerformAOSReceived_thenReturnBadRequestResponse()
             throws Exception {
-        mockEmailClient("null", PETITIONER_FIRST_NAME, PETITIONER_LAST_NAME, "wife", CASE_ID);
+        mockEmailClient("null");
         Map<String, Object> caseDetailMap =   ImmutableMap.of(
                 ID, CASE_ID,
                 D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME,
@@ -161,7 +156,7 @@ public class AOSRespondentSubmittedITest {
                 .errors(Collections.singletonList("java.lang.Exception: error"))
                 .build();
 
-        mockEmailClient(D_8_PETITIONER_EMAIL, PETITIONER_FIRST_NAME, PETITIONER_LAST_NAME, "wife", CASE_ID);
+        mockEmailClient(D_8_PETITIONER_EMAIL);
 
         String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
         webClient.perform(post(API_URL)
@@ -172,13 +167,13 @@ public class AOSRespondentSubmittedITest {
                 .andExpect(content().string(expectedResponse));
     }
 
-    private void mockEmailClient(String email, String firstName,  String lastName, String relationship, String ref )
+    private void mockEmailClient(String email)
             throws NotificationClientException {
         Map<String, String> notificationTemplateVars = new HashMap<>();
-        notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, firstName);
-        notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, lastName);
-        notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
-        notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, ref);
+        notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, PETITIONER_FIRST_NAME);
+        notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, PETITIONER_LAST_NAME);
+        notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, RELATIONSHIP);
+        notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, CASE_ID);
         when(mockClient.sendEmail(any(), eq(email), eq(notificationTemplateVars), any()))
                 .thenThrow(new NotificationClientException(new Exception("error")));
     }

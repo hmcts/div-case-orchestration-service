@@ -49,11 +49,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class SubmissionNotificationEmailITest {
     private static final String API_URL = "/petition-submitted";
+    private static final String SUCCESS = "Success";
 
     private static final String EMAIL_CONTEXT_PATH = "https://api.notifications.service.gov.uk";
 
     private Map<String, Object> caseData;
-    private CaseDetails caseDetails;
     private CreateEvent createEvent;
 
     @Autowired
@@ -70,11 +70,11 @@ public class SubmissionNotificationEmailITest {
         caseData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
         caseData.put(DIVORCE_UNIT_JSON_KEY, "eastMidlands");
 
-        caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .caseId(TEST_CASE_ID)
-                .state(TEST_STATE)
-                .build();
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
 
         createEvent = CreateEvent.builder()
                 .caseDetails(caseDetails)
@@ -87,7 +87,7 @@ public class SubmissionNotificationEmailITest {
                 .data(caseData)
                 .build();
 
-        stubEmailServerEndpoint(HttpStatus.OK, "Success");
+        stubEmailServerEndpoint();
 
         webClient.perform(post(API_URL)
                 .content(convertObjectToJsonString(createEvent))
@@ -97,12 +97,11 @@ public class SubmissionNotificationEmailITest {
                 .andExpect(content().json(convertObjectToJsonString(expected)));
     }
 
-    private void stubEmailServerEndpoint(HttpStatus status, String body)
-            throws Exception {
+    private void stubEmailServerEndpoint() {
         emailServiceServer.stubFor(WireMock.put(EMAIL_CONTEXT_PATH)
                 .willReturn(aResponse()
-                        .withStatus(status.value())
+                        .withStatus(HttpStatus.OK.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(body)));
+                        .withBody(SUCCESS)));
     }
 }

@@ -1,11 +1,12 @@
-package uk.gov.hmcts.reform.divorce.callback;
+package uk.gov.hmcts.reform.divorce.support;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
-import uk.gov.hmcts.reform.divorce.support.ccd.CcdClientSupport;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
@@ -16,17 +17,25 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
     @Autowired
     private CcdClientSupport ccdClientSupport;
 
-    protected CaseDetails submitCase(String fileName, UserDetails userDetails) {
-        return ccdClientSupport.submitCase(
-            loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class),
-            userDetails);
+    @SuppressWarnings("unchecked")
+    @SafeVarargs
+    protected final CaseDetails submitCase(String fileName, UserDetails userDetails,
+                                     Pair<String, String>... additionalCaseData) {
+
+        final Map caseData = loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class);
+
+        Arrays.stream(additionalCaseData).forEach(
+            caseField -> caseData.put(caseField.getKey(), caseField.getValue())
+        );
+
+        return ccdClientSupport.submitCase(caseData, userDetails);
     }
 
-    CaseDetails submitCase(String fileName) {
+    protected CaseDetails submitCase(String fileName) {
         return submitCase(fileName, createCaseWorkerUser());
     }
 
-    CaseDetails updateCase(String caseId, String fileName, String eventId) {
+    protected CaseDetails updateCase(String caseId, String fileName, String eventId) {
         return ccdClientSupport.update(caseId,
             fileName == null ? null : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class),
             eventId, createCaseWorkerUser());

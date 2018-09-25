@@ -35,7 +35,6 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
             + "mFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
     private static final String PETITIONER_EMAIL_KEY = "petitionerEmail";
-    private static final String CREATED_DATE__KEY = "createdDate";
 
     private static final String CMS_DATA_KEY = "data";
 
@@ -177,6 +176,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         assertEquals(expectedDraft, userDraft);
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, Object> getDraftResponseResource(String file, UserDetails user) {
         Map<String, Object> expectedDraft = ResourceLoader.loadJsonToObject(file,
                 Map.class);

@@ -51,6 +51,16 @@ public interface CaseMaintenanceClient {
     );
 
     @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/casemaintenance/version/1/link-respondent/{caseId}/{letterHolderId}",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    void linkRespondent(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
+        @PathVariable("caseId") String caseId,
+        @PathVariable("letterHolderId") String letterHolderId);
+
+    @RequestMapping(
             method = RequestMethod.PUT,
             value = "/casemaintenance/version/1/drafts",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE

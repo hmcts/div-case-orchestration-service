@@ -6,11 +6,14 @@ public class OrchestrationConstants {
     public static final String ACCESS_CODE = "access_code";
     public static final String AUTH_TOKEN_JSON_KEY = "authToken";
     public static final String BASIC = "Basic ";
+    public static final String PIN_PREFIX = "Pin ";
+    public static final String CODE = "code";
+    public static final String LOCATION_HEADER = "Location";
+    public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
 
     // Core Case Data
     public static final String CHECK_CCD = "checkCcd";
-    public static final String CASE_DATA_JSON_KEY = "case_data";
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";
@@ -21,7 +24,10 @@ public class OrchestrationConstants {
     public static final String D_8_DIVORCE_UNIT = "D8DivorceUnit";
     public static final String D_8_PETITIONER_EMAIL = "D8PetitionerEmail";
     public static final String CCD_CASE_DATA = "ccdCaseData";
+    public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
+    public static final String START_AOS_EVENT_ID = "startAos";
     public static final String D_8_INFERRED_RESPONDENT_GENDER = "D8InferredRespondentGender";
+
 
     public static final String ID = "id";
     public static final String PIN = "pin";
@@ -76,8 +82,4 @@ public class OrchestrationConstants {
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData_Error";
     public static final String EMAIL_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
-    public static final String SAVE_DRAFT_ERROR_KEY
-            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.SaveToDraftStore_Error";
-    public static final String DELETE_ERROR_KEY
-            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft_Error";
 }

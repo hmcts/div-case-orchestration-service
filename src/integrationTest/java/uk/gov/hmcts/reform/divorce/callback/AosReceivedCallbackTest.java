@@ -17,21 +17,21 @@ public class AosReceivedCallbackTest extends IntegrationTest {
 
     private static final String BASE_CASE_RESPONSE = "fixtures/retrieve-aos-case/aos-received.json";
     private static final String ERROR_CASE_RESPONSE = "fixtures/retrieve-aos-case/aos-received-error.json";
-    public static final String CASE_DATA = "case_data";
-    public static final String ERRORS = "errors";
-    public static final String CASE_DETAILS = "case_details";
+    private static final String CASE_DATA = "case_data";
+    private static final String ERRORS = "errors";
 
     @Autowired
     private CosApiClient cosApiClient;
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenCase_whenSubmitAOS_thenReturnAOSData() {
-
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
-        Map<String, Object> response =cosApiClient.aosReceived(createCaseWorkerUser().getAuthToken(), aosCase);
+        Map<String, Object> response = cosApiClient.aosReceived(createCaseWorkerUser().getAuthToken(), aosCase);
         assertEquals(aosCase.get(CASE_DATA), response.get(CASE_DATA));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenCaseWithoutEmail_whenSubmitAOS_thenReturnNotificationError() {
 

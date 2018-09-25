@@ -31,7 +31,7 @@ public class ResourceLoader {
         }
     }
 
-    static <T> String objectToJson(T object) {
+    public static <T> String objectToJson(T object) {
         try {
             return new ObjectMapper().writeValueAsString(object);
         } catch (Exception e) {
