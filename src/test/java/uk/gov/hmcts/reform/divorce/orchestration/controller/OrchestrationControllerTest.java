@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
@@ -32,6 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ERROR_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
@@ -215,6 +217,29 @@ public class OrchestrationControllerTest {
         assertEquals(caseDataResponse, actual.getBody());
 
         verify(caseOrchestrationService).retrieveAosCase(TEST_CHECK_CCD, AUTH_TOKEN);
+    }
+
+    @Test
+    public void givenLinkResponseIsNull_whenLinkRespondent_thenReturnUnAuthorised() throws WorkflowException {
+        when(caseOrchestrationService.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN)).thenReturn(null);
+
+        assertEquals(HttpStatus.UNAUTHORIZED,
+            classUnderTest.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN).getStatusCode());
+
+        verify(caseOrchestrationService).linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN);
+    }
+
+    @Test
+    public void givenLinkResponseIsNotNull_whenLinkRespondent_thenReturnUnAuthorised() throws WorkflowException {
+        final UserDetails expected = UserDetails.builder().build();
+
+        when(caseOrchestrationService.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN)).thenReturn(expected);
+
+        ResponseEntity<UserDetails> actual = classUnderTest.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN);
+
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+
+        verify(caseOrchestrationService).linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN);
     }
 
     @Test

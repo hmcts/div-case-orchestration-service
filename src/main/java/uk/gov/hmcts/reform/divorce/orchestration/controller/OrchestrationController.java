@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
@@ -204,6 +205,28 @@ public class OrchestrationController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
+    @PostMapping(path = "/link-respondent/{caseId}/{pin}")
+    @ApiOperation(value = "Authorize the respondent")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Respondent Authenticated"),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 401, message = "User Not Authenticated"),
+        @ApiResponse(code = 404, message = "Case Not found")
+        })
+    public ResponseEntity<UserDetails> linkRespondent(
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken,
+        @PathVariable("caseId") @ApiParam("Unique identifier of the session that was submitted to CCD") String caseId,
+        @PathVariable("pin") @ApiParam(value = "Pin", required = true) String pin) throws WorkflowException {
+
+        UserDetails linkRespondent = orchestrationService.linkRespondent(authorizationToken, caseId, pin);
+
+        if (linkRespondent != null) {
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
     @PostMapping(path = "/petition-submitted",
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON)
@@ -292,7 +315,6 @@ public class OrchestrationController {
                     required = true) final String authorizationToken,
             @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
         return ResponseEntity.ok(orchestrationService.aosReceived(caseDetailsRequest, authorizationToken));
-
     }
 
     private List<String> getErrors(Map<String, Object> response) {

@@ -9,10 +9,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
@@ -65,6 +67,9 @@ public class CaseOrchestrationServiceImplTest {
     private UpdateToCCDWorkflow updateToCCDWorkflow;
 
     @Mock
+    private LinkRespondentWorkflow linkRespondentWorkflow;
+
+    @Mock
     private SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow;
 
     @Mock
@@ -115,6 +120,7 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(expectedPayload.get(PIN), TEST_PIN);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenDraftInWorkflowResponse_whenGetDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
         Map<String, Object> testExpectedPayload = mock(Map.class);
@@ -123,6 +129,7 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(testExpectedPayload,classUnderTest.getDraft(AUTH_TOKEN));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void whenSaveDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
         Map<String, Object> payload = mock(Map.class);
@@ -132,6 +139,7 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(testExpectedPayload,classUnderTest.saveDraft(payload, AUTH_TOKEN, TEST_USER_EMAIL));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenErrorOnDraftWorkflow_whenSaveDraft_thenReturnErrors() throws WorkflowException {
         Map<String, Object> expectedErrors = mock(Map.class);
@@ -144,6 +152,7 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(expectedErrors,classUnderTest.saveDraft(payload, AUTH_TOKEN, TEST_USER_EMAIL));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenUserWithADraft_whenDeleteDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
         Map<String, Object> testExpectedPayload = mock(Map.class);
@@ -151,6 +160,7 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(testExpectedPayload,classUnderTest.deleteDraft(AUTH_TOKEN));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenErrorOnDraftWorkflow_whenDeleteDraft_thenReturnErrors() throws WorkflowException {
         Map<String, Object> expectedErrors = mock(Map.class);
@@ -226,6 +236,17 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(requestPayload, actual);
 
         verify(updateToCCDWorkflow).run(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
+    }
+
+    @Test
+    public void whenLinkRespondent_thenProceedAsExpected() throws WorkflowException {
+        final UserDetails userDetails = UserDetails.builder().build();
+
+        when(linkRespondentWorkflow.run(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN)).thenReturn(userDetails);
+
+        assertEquals(userDetails, classUnderTest.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN));
+
+        verify(linkRespondentWorkflow).run(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN);
     }
 
     @Test

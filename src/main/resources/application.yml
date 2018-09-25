@@ -57,6 +57,8 @@ idam:
   citizen:
     username: dummyuser
     password: dummypassword
+  strategic:
+    enabled: false
   s2s-auth:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
@@ -72,6 +74,12 @@ document:
     service:
       api:
         baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://localhost:4007}
+
+draft:
+  api:
+    ccd:
+      check:
+        enabled: ${DRAFT_CCD_CHECK_ENABLED:true}
 
 http:
   connect:
@@ -101,12 +109,6 @@ management:
         health: health
       exposure:
         include: info, health, metrics
-
-draft:
-  api:
-    ccd:
-      check:
-        enabled: ${DRAFT_CCD_CHECK_ENABLED:true}
 
 logging:
   level:

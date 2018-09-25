@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.support.ccd;
+package uk.gov.hmcts.reform.divorce.support;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -63,7 +63,7 @@ public class CcdClientSupport {
             caseDataContent);
     }
 
-    public CaseDetails updateForCitizen(String caseId, Object data, String eventId, UserDetails userDetails) {
+    CaseDetails updateForCitizen(String caseId, Object data, String eventId, UserDetails userDetails) {
         final String serviceToken = authTokenGenerator.generate();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEventForCitizen(
@@ -98,7 +98,7 @@ public class CcdClientSupport {
     }
 
 
-    public CaseDetails update(String caseId, Object data, String eventId, UserDetails userDetails) {
+    CaseDetails update(String caseId, Object data, String eventId, UserDetails userDetails) {
         final String serviceToken = authTokenGenerator.generate();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
