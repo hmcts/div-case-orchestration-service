@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETE_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_CCD_FIELD;
@@ -32,6 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class SubmitAosCaseUTest {
     private static final Map<String, Object> EXPECTED_OUTPUT = Collections.emptyMap();
+    private static final Map<String, Object> CASE_UPDATE_RESPONSE = new HashMap<>();
     private static final TaskContext TASK_CONTEXT = new DefaultTaskContext();
 
     @Mock
@@ -44,6 +47,7 @@ public class SubmitAosCaseUTest {
     public static void beforeClass() {
         TASK_CONTEXT.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         TASK_CONTEXT.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        CASE_UPDATE_RESPONSE.put(CCD_CASE_DATA_FIELD, EXPECTED_OUTPUT);
     }
 
     @Test
@@ -51,7 +55,7 @@ public class SubmitAosCaseUTest {
         final Map<String, Object> divorceSession = getCaseData(YES_VALUE, YES_VALUE);
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
-            .thenReturn(EXPECTED_OUTPUT);
+            .thenReturn(CASE_UPDATE_RESPONSE);
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
@@ -64,7 +68,7 @@ public class SubmitAosCaseUTest {
         final Map<String, Object> divorceSession = getCaseData(NO_VALUE, YES_VALUE);
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
-            .thenReturn(EXPECTED_OUTPUT);
+            .thenReturn(CASE_UPDATE_RESPONSE);
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
@@ -77,7 +81,7 @@ public class SubmitAosCaseUTest {
         final Map<String, Object> divorceSession = getCaseData(NO_VALUE, NO_VALUE);
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETE_AOS_EVENT_ID, divorceSession))
-            .thenReturn(EXPECTED_OUTPUT);
+            .thenReturn(CASE_UPDATE_RESPONSE);
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
@@ -89,7 +93,7 @@ public class SubmitAosCaseUTest {
         final Map<String, Object> divorceSession = getCaseData(YES_VALUE, NO_VALUE);
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
-            .thenReturn(EXPECTED_OUTPUT);
+            .thenReturn(CASE_UPDATE_RESPONSE);
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 

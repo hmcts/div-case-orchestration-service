@@ -12,6 +12,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETE_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_DEFENDS_DIVORCE_CCD_FIELD;
@@ -25,12 +26,18 @@ public class SubmitAosCase implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        return caseMaintenanceClient.updateCase(
+        Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
             (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY),
             (String) context.getTransientObject(CASE_ID_JSON_KEY),
             getAosCompleteEventId(caseData),
             caseData
         );
+
+        if (updateCase != null) {
+            updateCase.remove(CCD_CASE_DATA_FIELD);
+        }
+
+        return updateCase;
     }
 
     private String getAosCompleteEventId(Map<String, Object> aosCase) {
