@@ -26,7 +26,7 @@ List<LinkedHashMap<String, Object>> secrets = [
         secret("idam-secret", "AUTH_IDAM_CLIENT_SECRET"),
         secret("frontend-secret", "SERVICE_AUTH_SECRET"),
         secret("idam-secret", "AUTH2_CLIENT_SECRET"),
-        secret("auth-idam-citizen-password", "IDAM_CITIZEN_PASSWORD")
+        secret("idam-citizen-password, "IDAM_CITIZEN_PASSWORD")
   
 ]
 
