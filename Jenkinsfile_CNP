@@ -25,8 +25,9 @@ List<LinkedHashMap<String, Object>> secrets = [
         secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
         secret("idam-secret", "AUTH_IDAM_CLIENT_SECRET"),
         secret("frontend-secret", "SERVICE_AUTH_SECRET"),
-        secret("auth-idam-client-secret", "AUTH2_CLIENT_SECRET"),
+        secret("idam-secret", "AUTH2_CLIENT_SECRET"),
         secret("auth-idam-citizen-password", "IDAM_CITIZEN_PASSWORD")
+  
 ]
 
 withPipeline(type, product, component) {
