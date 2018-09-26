@@ -4,16 +4,26 @@ metadata:
   name: ${SERVICE_NAME}-config
   namespace: ${NAMESPACE}
 data:
-  REFORM_ENVIRONMENT : "aat"
-  APPLICATION_INSIGHTS_IKEY : "2054b272-1999-41aa-904f-4c72b3c9920d"
+  IDAM_CITIZEN_PASSWORD : ${IDAM_CITIZEN_PASSWORD}
+  AUTH2_CLIENT_SECRET : ${AUTH2_CLIENT_SECRET}
+  SERVICE_AUTH_MICROSERVICE : "divorce_frontend"
+  APPLICATION_INSIGHTS_IKEY : "019ed56f-e01d-4651-895d-bc6334f3d1b1"
+  SERVICE_AUTH_SECRET : ${SERVICE_AUTH_SECRET}
   CASE_FORMATTER_SERVICE_API_BASEURL : "http://div-cfs-aat.service.core-compute-aat.internal"
-  SLOT : "PRODUCTION"
+  SERVICE_AUTH_PROVIDER_URL : "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
   CASE_VALIDATION_SERVICE_API_BASEURL : "http://div-vs-aat.service.core-compute-aat.internal"
   REFORM_SERVICE_NAME : "cos"
+  IDAM_STRATEGIC_ENABLED : "false"
+  UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS : "{SAVE_DRAFT: {divorceUrl: 'https://div-pfe-aat.service.core-compute-aat.internal'}}"
   DOCUMENT_GENERATOR_SERVICE_API_BASEURL : "http://div-dgs-aat.service.core-compute-aat.internal"
+  FEES_AND_PAYMENTS_SERVICE_API_BASEURL : "http://div-fps-aat.service.core-compute-aat.internal"
   IDAM_API_URL : "https://preprod-idamapi.reform.hmcts.net:3511"
   REFORM_TEAM : "div"
+  DRAFT_CCD_CHECK_ENABLED : "false"
+  UK_GOV_NOTIFY_EMAIL_TEMPLATES : "{SAVE_DRAFT:'9fbb6bdb-1043-440a-b082-5ea71b5c2609', APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c', RESPONDENT_SUBMISSION_CONSENT: '594dc500-93ca-4f4b-931b-acbf9ee83d25'}"
+  UK_GOV_NOTIFY_API_KEY : "divorce_preprod_live_key-b86e6469-4927-4f50-a029-6ddb523330cf-2409ba37-b5e6-4f03-b052-7d0f0986888d"
   CASE_MAINTENANCE_SERVICE_API_BASEURL : "http://div-cms-aat.service.core-compute-aat.internal"
   IDAM_CITIZEN_USERNAME : "DivCitizenUser@AAT.com"
-  APPINSIGHTS_INSTRUMENTATIONKEY : "2054b272-1999-41aa-904f-4c72b3c9920d"
+  PAYMENT_API_BASEURL : "http://payment-api-aat.service.core-compute-aat.internal"
+  APPINSIGHTS_INSTRUMENTATIONKEY : "019ed56f-e01d-4651-895d-bc6334f3d1b1"
   IDAM_API_REDIRECT_URL : "https://div-pfe-aat.service.core-compute-aat.internal/authenticated"
