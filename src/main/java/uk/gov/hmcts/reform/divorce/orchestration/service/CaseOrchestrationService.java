@@ -45,4 +45,7 @@ public interface CaseOrchestrationService {
     Map<String, Object> processPbaPayment(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> solicitorCreate(CreateEvent caseDetailsRequest) throws WorkflowException;
+
+    Map<String, Object> submitAosCase(Map<String, Object> payload, String authorizationToken, String caseId)
+        throws WorkflowException;
 }

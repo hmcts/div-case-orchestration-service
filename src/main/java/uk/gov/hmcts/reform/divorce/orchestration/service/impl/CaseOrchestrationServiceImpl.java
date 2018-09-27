@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -47,7 +48,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
     private final SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow;
     private final RespondentSubmittedCallbackWorkflow aosRespondedWorkflow;
-
+    private final SubmitAosCaseWorkflow submitAosCaseWorkflow;
 
     @Autowired
     public CaseOrchestrationServiceImpl(CcdCallbackWorkflow ccdCallbackWorkflow,
@@ -63,7 +64,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         ProcessPbaPaymentWorkflow processPbaPaymentWorkflow,
                                         SolicitorCreateWorkflow solicitorCreateWorkflow,
                                         SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow,
-                                        RespondentSubmittedCallbackWorkflow aosRespondedWorkflow) {
+                                        RespondentSubmittedCallbackWorkflow aosRespondedWorkflow,
+                                        SubmitAosCaseWorkflow submitAosCaseWorkflow) {
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
         this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
         this.submitToCCDWorkflow = submitToCCDWorkflow;
@@ -78,6 +80,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         this.processPbaPaymentWorkflow = processPbaPaymentWorkflow;
         this.solicitorCreateWorkflow = solicitorCreateWorkflow;
         this.sendSubmissionNotificationWorkflow = sendSubmissionNotificationWorkflow;
+        this.submitAosCaseWorkflow = submitAosCaseWorkflow;
     }
 
     @Override
@@ -204,7 +207,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payLoad = processPbaPaymentWorkflow.run(caseDetailsRequest, authToken);
 
         if (processPbaPaymentWorkflow.errors().isEmpty()) {
-            log.info("Callback pay by acccount for solicitor case with id: {} successfully completed",
+            log.info("Callback pay by account for solicitor case with id: {} successfully completed",
                     payLoad.get(ID));
             return payLoad;
         } else {
@@ -215,5 +218,15 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> solicitorCreate(CreateEvent caseDetailsRequest) throws WorkflowException {
         return solicitorCreateWorkflow.run(caseDetailsRequest.getCaseDetails().getCaseData());
+    }
+
+    @Override
+    public Map<String, Object> submitAosCase(Map<String, Object> divorceSession, String authorizationToken,
+                                             String caseId)
+        throws WorkflowException {
+        Map<String, Object> payload = submitAosCaseWorkflow.run(divorceSession, authorizationToken, caseId);
+
+        log.info("Case ID is: {}", payload.get(ID));
+        return payload;
     }
 }

@@ -347,4 +347,18 @@ public class OrchestrationControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }
+
+    @Test
+    public void whenSubmitAos_thenProceedAsExpected() throws WorkflowException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+
+        when(caseOrchestrationService.submitAosCase(caseData, AUTH_TOKEN, TEST_CASE_ID)).thenReturn(caseData);
+
+        ResponseEntity<Map<String, Object>> response = classUnderTest.submitAos(AUTH_TOKEN, TEST_CASE_ID, caseData);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(caseData, response.getBody());
+
+        verify(caseOrchestrationService).submitAosCase(caseData, AUTH_TOKEN, TEST_CASE_ID);
+    }
 }
