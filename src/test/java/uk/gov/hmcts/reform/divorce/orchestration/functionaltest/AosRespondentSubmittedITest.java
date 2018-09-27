@@ -48,7 +48,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @PropertySource(value = "classpath:application.yml")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-public class AOSRespondentSubmittedITest {
+public class AosRespondentSubmittedITest {
     private static final String API_URL = "/aos-received";
     private static final String USER_TOKEN = "anytoken";
 
