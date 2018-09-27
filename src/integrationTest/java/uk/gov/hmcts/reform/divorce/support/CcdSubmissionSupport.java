@@ -20,7 +20,7 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
     @SuppressWarnings("unchecked")
     @SafeVarargs
     protected final CaseDetails submitCase(String fileName, UserDetails userDetails,
-                                     Pair<String, String>... additionalCaseData) {
+                                           Pair<String, String>... additionalCaseData) {
 
         final Map caseData = loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class);
 
