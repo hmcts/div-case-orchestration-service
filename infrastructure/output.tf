@@ -11,5 +11,5 @@ output "idam_s2s_url" {
 }
 
 output "draft_check_ccd_enabled" {
-    value = "${var.draft_check_ccd_enabled}"
+  value = "${var.draft_check_ccd_enabled}"
 }
