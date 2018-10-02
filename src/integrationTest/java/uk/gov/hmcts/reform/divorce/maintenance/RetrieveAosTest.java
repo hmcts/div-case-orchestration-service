@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 
 public class RetrieveAosTest extends RetrieveAosCaseSupport {
@@ -31,8 +30,7 @@ public class RetrieveAosTest extends RetrieveAosCaseSupport {
     public void givenNoCase_whenRetrieveAosCase_thenReturnEmptyResponse() {
         Response cosResponse = retrieveAosCase(createCitizenUser().getAuthToken());
 
-        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertNull(cosResponse.path(CASE_ID_KEY));
+        assertEquals(HttpStatus.NOT_FOUND.value(), cosResponse.getStatusCode());
     }
 
     @Test
