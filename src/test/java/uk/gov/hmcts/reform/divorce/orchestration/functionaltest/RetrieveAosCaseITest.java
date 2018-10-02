@@ -105,8 +105,7 @@ public class RetrieveAosCaseITest {
             .header(AUTHORIZATION, AUTH_TOKEN)
             .param(CHECK_CCD, String.valueOf(TEST_CHECK_CCD))
             .accept(APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string(containsString("")));
+            .andExpect(status().isNotFound());
     }
 
     @Test
