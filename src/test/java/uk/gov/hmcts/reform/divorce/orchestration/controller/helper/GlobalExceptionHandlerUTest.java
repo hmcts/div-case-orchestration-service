@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
@@ -102,6 +103,20 @@ public class GlobalExceptionHandlerUTest {
         ResponseEntity<Object> actual = classUnderTest.handleWorkFlowException(workflowException);
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), actual.getStatusCodeValue());
+        assertEquals(TEST_ERROR, actual.getBody());
+    }
+
+    @Test
+    public void givenCauseTaskExceptionContainsCaseNotFoundException_whenHandleWorkFlowException_thenReturnNotFound() {
+        final CaseNotFoundException caseNotFoundException = new CaseNotFoundException(TEST_ERROR);
+
+        final TaskException taskException = new TaskException(TEST_ERROR, caseNotFoundException);
+
+        final WorkflowException workflowException = new WorkflowException(TEST_ERROR, taskException);
+
+        ResponseEntity<Object> actual = classUnderTest.handleWorkFlowException(workflowException);
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), actual.getStatusCodeValue());
         assertEquals(TEST_ERROR, actual.getBody());
     }
 

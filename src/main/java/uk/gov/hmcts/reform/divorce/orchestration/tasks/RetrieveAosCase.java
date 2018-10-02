@@ -5,8 +5,10 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
@@ -23,14 +25,13 @@ public class RetrieveAosCase implements Task<CaseDataResponse> {
     }
 
     @Override
-    public CaseDataResponse execute(TaskContext context, CaseDataResponse payload) {
+    public CaseDataResponse execute(TaskContext context, CaseDataResponse payload) throws TaskException {
         CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(
             String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
             Boolean.valueOf(String.valueOf(context.getTransientObject(CHECK_CCD))));
 
         if (caseDetails == null) {
-            context.setTaskFailed(true);
-            return CaseDataResponse.builder().build();
+            throw new TaskException(new CaseNotFoundException("No case found"));
         }
 
         context.setTransientObject(CCD_CASE_DATA, caseDetails.getCaseData());
