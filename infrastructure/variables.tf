@@ -42,7 +42,7 @@ variable "common_tags" {
 }
 
 variable "draft_check_ccd_enabled" {
-    default = false
+    default = true
 }
 
 variable "uk_gov_notify_email_templates" {
