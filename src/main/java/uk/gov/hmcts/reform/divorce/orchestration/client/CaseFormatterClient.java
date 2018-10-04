@@ -52,4 +52,14 @@ public interface CaseFormatterClient {
     Map<String, Object> transformToAosCaseFormat(
         @RequestBody Map<String, Object> divorceSession
     );
+
+    //TODO Update the caseFormater
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/caseformatter/version/1/to-dn-submit-format",
+            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> transformToDnCaseFormat(
+            @RequestBody Map<String, Object> divorceSession
+    );
 }

@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendSubmissionNotific
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitAosCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -49,6 +50,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow;
     private final RespondentSubmittedCallbackWorkflow aosRespondedWorkflow;
     private final SubmitAosCaseWorkflow submitAosCaseWorkflow;
+    private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
 
     @Autowired
     public CaseOrchestrationServiceImpl(CcdCallbackWorkflow ccdCallbackWorkflow,
@@ -65,7 +67,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         SolicitorCreateWorkflow solicitorCreateWorkflow,
                                         SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow,
                                         RespondentSubmittedCallbackWorkflow aosRespondedWorkflow,
-                                        SubmitAosCaseWorkflow submitAosCaseWorkflow) {
+                                        SubmitAosCaseWorkflow submitAosCaseWorkflow,
+                                        SubmitDnCaseWorkflow submitDnCaseWorkflow) {
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
         this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
         this.submitToCCDWorkflow = submitToCCDWorkflow;
@@ -81,6 +84,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         this.solicitorCreateWorkflow = solicitorCreateWorkflow;
         this.sendSubmissionNotificationWorkflow = sendSubmissionNotificationWorkflow;
         this.submitAosCaseWorkflow = submitAosCaseWorkflow;
+        this.submitDnCaseWorkflow = submitDnCaseWorkflow;
     }
 
     @Override
@@ -225,6 +229,16 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                              String caseId)
         throws WorkflowException {
         Map<String, Object> payload = submitAosCaseWorkflow.run(divorceSession, authorizationToken, caseId);
+
+        log.info("Case ID is: {}", payload.get(ID));
+        return payload;
+    }
+
+    @Override
+    public Map<String, Object> submitDnCase(Map<String, Object> divorceSession, String authorizationToken,
+                                             String caseId)
+            throws WorkflowException {
+        Map<String, Object> payload = submitDnCaseWorkflow.run(divorceSession, authorizationToken, caseId);
 
         log.info("Case ID is: {}", payload.get(ID));
         return payload;
