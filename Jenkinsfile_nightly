@@ -14,7 +14,7 @@ def component = "cos"
 withNightlyPipeline(type, product, component) {
 
 after('checkout') {
-       ./gradlew clean build
+       sh './gradlew clean build'
     }
 
     enableMutationTest()
