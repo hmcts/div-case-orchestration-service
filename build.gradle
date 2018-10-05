@@ -244,13 +244,17 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 }
 
 pitest {
-    targetClasses = ['**uk.gov.hmcts.reform.divorce..*']
-    excludedClasses = ['uk.gov.hmcts.reform.divorce.casemaintenanceservice.config.*',
-                       'uk.gov.hmcts.reform.divorce.casemaintenanceservice.domain.model.*']
-    threads = 1
+    targetClasses = ['uk.gov.hmcts.reform.divorce.orchestration.*']
+    excludedClasses = ['uk.gov.hmcts.reform.divorce.orchestration.config.*',
+                       'uk.gov.hmcts.reform.divorce.orchestration.domain.model.*',
+                       'uk.gov.hmcts.reform.divorce.orchestration.exception.*',
+                       'uk.gov.hmcts.reform.divorce.orchestration.client.*',
+                       'uk.gov.hmcts.reform.divorce.orchestration.management.config.*',
+                       'uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.*']
+    threads = 10
     outputFormats = ['XML', 'HTML']
-    timestampedReports = true
-    mutationThreshold = 90
+    timestampedReports = false
+    mutationThreshold = 80
 }
 
 pmd {
