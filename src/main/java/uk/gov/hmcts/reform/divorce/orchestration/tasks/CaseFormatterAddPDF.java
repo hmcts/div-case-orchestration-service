@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
@@ -9,6 +8,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_TEMPLATE_NAME;
@@ -25,16 +26,24 @@ public class CaseFormatterAddPDF implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
+        List<GeneratedDocumentInfo> documents = new ArrayList<>();
+
         GeneratedDocumentInfo miniPetition
                 = (GeneratedDocumentInfo) context.getTransientObject(MINI_PETITION_TEMPLATE_NAME);
+
+        documents.add(miniPetition);
+
         GeneratedDocumentInfo respondentInvitation
                 = (GeneratedDocumentInfo) context.getTransientObject(RESPONDENT_INVITATION_TEMPLATE_NAME);
+
+        if(respondentInvitation != null) {
+            documents.add(respondentInvitation);
+        }
 
         return caseFormatterClient.addDocuments(
                 DocumentUpdateRequest.builder()
                         .caseData(caseData)
-                        .documents(ImmutableList.of(miniPetition,
-                                respondentInvitation))
+                        .documents(documents)
                         .build());
     }
 }

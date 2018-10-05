@@ -86,7 +86,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest,
                                                   String authToken) throws WorkflowException {
-        Map<String, Object> payLoad = ccdCallbackWorkflow.run(caseDetailsRequest, authToken);
+        Map<String, Object> payLoad = ccdCallbackWorkflow.run(caseDetailsRequest, authToken, true);
 
         if (ccdCallbackWorkflow.errors().isEmpty()) {
             log.info("Callback for case with id: {} successfully completed", payLoad.get(ID));
