@@ -2,6 +2,9 @@ buildscript {
     ext {
         springBootVersion = '2.0.5.RELEASE'
     }
+    ext {
+        springCloudVersion = 'Finchley.SR1'
+    }
     repositories {
         mavenLocal()
         jcenter()
@@ -107,16 +110,17 @@ dependencyCheck {
 def versions = [
         commonsIo                       : '2.5',
         commonsLang3                    : '3.7',
+        javaxWsRs                       : '2.1.1',
         springfoxSwagger                : '2.7.0',
-        lombok                          : '1.16.16',
+        lombok                          : '1.18.2',
         puppyCrawl                      : '7.6',
         reformsJavaLogging              : '3.0.1',
         serviceTokenGenerator           : '1.0.0',
         hmctsNotify                     : '3.8.0-RELEASE',
         feignHttpClient                 : '10.0.1',
         reformSpringBootAutoConfigure   : '1.1.0',
-        wiremockVersion                 : '2.8.0',
-        restAssured                     : '3.0.3',
+        wiremockVersion                 : '2.19.0',
+        restAssured                     : '3.1.1',
         serenity                        : '1.5.2',
         serenityCucumber                : '1.1.3',
         unirest                         : '1.4.9',
@@ -127,6 +131,12 @@ def versions = [
         ccdStoreClient                  : '4.1.0'
 ]
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-web')
@@ -135,6 +145,7 @@ dependencies {
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
     compile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
+    compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: versions.javaxWsRs
 
     compile group: 'org.springframework', name: 'spring-context-support'
     compile (group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
