@@ -18,7 +18,7 @@ plugins {
     id 'application'
     id 'checkstyle'
     id 'com.github.ben-manes.versions' version '0.17.0'
-    id 'io.spring.dependency-management' version '1.0.5.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.6.RELEASE'
     id 'jacoco'
     id 'org.owasp.dependencycheck' version '3.2.1'
     id 'com.jfrog.bintray' version '1.8.0'
@@ -113,7 +113,7 @@ def versions = [
         reformsJavaLogging              : '3.0.1',
         serviceTokenGenerator           : '1.0.0',
         hmctsNotify                     : '3.8.0-RELEASE',
-        feignHttpClient                 : '9.5.1',
+        feignHttpClient                 : '10.0.1',
         reformSpringBootAutoConfigure   : '1.1.0',
         wiremockVersion                 : '2.8.0',
         restAssured                     : '3.0.3',
