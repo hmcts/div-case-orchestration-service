@@ -18,7 +18,7 @@ plugins {
     id 'application'
     id 'checkstyle'
     id 'com.github.ben-manes.versions' version '0.17.0'
-    id 'io.spring.dependency-management' version '1.0.6.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.5.RELEASE'
     id 'jacoco'
     id 'org.owasp.dependencycheck' version '3.2.1'
     id 'com.jfrog.bintray' version '1.8.0'
@@ -57,7 +57,6 @@ repositories {
     mavenLocal()
     jcenter()
 
-    maven { url 'https://artifactory.reform.hmcts.net/artifactory/libs-release' }
     maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
     maven { url "http://repo.maven.apache.org/maven2" }
     maven { url 'https://repo.spring.io/libs-milestone' }
@@ -113,7 +112,7 @@ def versions = [
         reformsJavaLogging              : '3.0.1',
         serviceTokenGenerator           : '1.0.0',
         hmctsNotify                     : '3.8.0-RELEASE',
-        feignHttpClient                 : '10.0.1',
+        feignHttpClient                 : '9.5.1',
         reformSpringBootAutoConfigure   : '1.1.0',
         wiremockVersion                 : '2.8.0',
         restAssured                     : '3.0.3',
@@ -244,17 +243,13 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 }
 
 pitest {
-    targetClasses = ['uk.gov.hmcts.reform.divorce.orchestration.*']
-    excludedClasses = ['uk.gov.hmcts.reform.divorce.orchestration.config.*',
-                       'uk.gov.hmcts.reform.divorce.orchestration.domain.model.*',
-                       'uk.gov.hmcts.reform.divorce.orchestration.exception.*',
-                       'uk.gov.hmcts.reform.divorce.orchestration.client.*',
-                       'uk.gov.hmcts.reform.divorce.orchestration.management.config.*',
-                       'uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.*']
-    threads = 10
+    targetClasses = ['**uk.gov.hmcts.reform.divorce..*']
+    excludedClasses = ['uk.gov.hmcts.reform.divorce.casemaintenanceservice.config.*',
+                       'uk.gov.hmcts.reform.divorce.casemaintenanceservice.domain.model.*']
+    threads = 1
     outputFormats = ['XML', 'HTML']
-    timestampedReports = false
-    mutationThreshold = 80
+    timestampedReports = true
+    mutationThreshold = 90
 }
 
 pmd {
