@@ -36,7 +36,7 @@ public class CaseFormatterAddPDF implements Task<Map<String, Object>> {
         GeneratedDocumentInfo respondentInvitation
                 = (GeneratedDocumentInfo) context.getTransientObject(RESPONDENT_INVITATION_TEMPLATE_NAME);
 
-        if(respondentInvitation != null) {
+        if (respondentInvitation != null) {
             documents.add(respondentInvitation);
         }
 
