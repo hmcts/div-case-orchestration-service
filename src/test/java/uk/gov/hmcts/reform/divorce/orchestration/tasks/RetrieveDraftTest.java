@@ -32,6 +32,7 @@ public class RetrieveDraftTest {
     @InjectMocks
     private RetrieveDraft target;
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenUserTokenWithoutDraft_whenExecuteRetrieveTask_thenReturnEmptyResponse() {
         TaskContext context = new DefaultTaskContext();
@@ -44,6 +45,7 @@ public class RetrieveDraftTest {
         assertNull(target.execute(context, payload));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenUserToken_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMS() {
         TaskContext context = new DefaultTaskContext();
@@ -59,6 +61,7 @@ public class RetrieveDraftTest {
         assertEquals(expectedResponse,target.execute(context, payload));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenUserTokenWithCase_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMSWithCaseDetails() {
         TaskContext context = new DefaultTaskContext();

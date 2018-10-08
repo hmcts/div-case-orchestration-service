@@ -35,6 +35,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERATE_AOS_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
@@ -59,8 +60,11 @@ public class OrchestrationController {
             })
     public ResponseEntity<CcdCallbackResponse> petitionIssuedCallback(
             @RequestHeader(value = "Authorization") String authorizationToken,
+            @RequestParam(value = GENERATE_AOS_INVITATION, required = false)
+                @ApiParam(GENERATE_AOS_INVITATION) boolean generateAosInvitation,
             @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
-        Map<String, Object> response = orchestrationService.ccdCallbackHandler(caseDetailsRequest, authorizationToken);
+        Map<String, Object> response = orchestrationService.ccdCallbackHandler(caseDetailsRequest, authorizationToken,
+            generateAosInvitation);
 
         if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(
@@ -127,9 +131,10 @@ public class OrchestrationController {
             @ApiResponse(code = 404, message = "Draft does not exist")})
     public ResponseEntity<Map<String, Object>> retrieveDraft(
             @RequestHeader("Authorization") @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
-            final String authorizationToken) throws WorkflowException {
+            final String authorizationToken,
+            @RequestParam(value = CHECK_CCD, required = false) @ApiParam(CHECK_CCD) Boolean checkCcd) throws WorkflowException {
 
-        Map<String, Object>    response = orchestrationService.getDraft(authorizationToken);
+        Map<String, Object>    response = orchestrationService.getDraft(authorizationToken, checkCcd);
         if (MapUtils.isEmpty(response)) {
             return ResponseEntity.notFound().build();
         }

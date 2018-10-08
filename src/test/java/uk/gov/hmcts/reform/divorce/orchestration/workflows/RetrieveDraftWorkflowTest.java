@@ -43,6 +43,7 @@ public class RetrieveDraftWorkflowTest {
     @InjectMocks
     private RetrieveDraftWorkflow target;
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenADraft_whenExecuteSaveDraftWorkflow_thenExecuteAllTaskInOrder() throws WorkflowException {
         Map<String, Object> payload = new HashMap<>();
@@ -60,7 +61,7 @@ public class RetrieveDraftWorkflowTest {
                 eq(draftPayload))).thenReturn(draftPayload);
         when(removeNullElements.execute(argThat(contextWithAuthTokenMatcher),
                 eq(draftPayload))).thenReturn(draftPayload);
-        assertEquals(draftPayload, target.run(AUTH_TOKEN));
+        assertEquals(draftPayload, target.run(AUTH_TOKEN, true));
 
         verify(retrieveDraft).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
         verify(caseDataToDivorceFormatter).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
