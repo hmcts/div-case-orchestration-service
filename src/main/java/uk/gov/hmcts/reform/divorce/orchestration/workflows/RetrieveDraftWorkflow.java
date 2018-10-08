@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 
 @Component
 public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
@@ -35,7 +36,7 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
         this.removeNullElements = removeNullElements;
     }
 
-    public Map<String, Object> run(String authToken) throws WorkflowException {
+    public Map<String, Object> run(String authToken, Boolean checkCcd) throws WorkflowException {
         return this.execute(
                 new Task[]{
                     retrieveDraft,
@@ -44,7 +45,8 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
                     removeNullElements
                 },
                 new HashMap<>(),
-                new ImmutablePair(AUTH_TOKEN_JSON_KEY, authToken)
+                ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+                ImmutablePair.of(CHECK_CCD, checkCcd)
         );
     }
 
