@@ -53,7 +53,6 @@ public interface CaseFormatterClient {
         @RequestBody Map<String, Object> divorceSession
     );
 
-    //TODO Update the caseFormater
     @RequestMapping(
             method = RequestMethod.POST,
             value = "/caseformatter/version/1/to-dn-submit-format",
