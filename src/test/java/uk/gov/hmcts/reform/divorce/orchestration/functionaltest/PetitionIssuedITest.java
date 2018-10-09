@@ -57,6 +57,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FORM_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERATE_AOS_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.INVITATION_FILE_NAME_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_FILE_NAME_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_TEMPLATE_NAME;
@@ -174,7 +175,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
     }
 
     @Test
-    public void givenEverythingWorksAsExpected_whenPetitionIssued_thenReturnCaseExpectedChanges()
+    public void givenGenerateInvitationIsNull_whenPetitionIssued_thenReturnCaseExpectedChanges()
         throws Exception {
         final ValidationResponse validationResponse = ValidationResponse.builder().build();
 
@@ -198,6 +199,109 @@ public class PetitionIssuedITest extends IdamTestSupport {
                         .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
                         .build();
 
+        final DocumentUpdateRequest documentUpdateRequest =
+                DocumentUpdateRequest.builder()
+                        .documents(Collections.singletonList(generatedMiniPetitionInfo))
+                        .caseData(CASE_DATA)
+                        .build();
+
+        final Map<String, Object> formattedCaseData = Collections.emptyMap();
+
+        stubSignIn();
+        stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
+        stubValidationServerEndpoint(HttpStatus.OK,
+                ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
+                convertObjectToJsonString(validationResponse));
+        stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionInfo);
+
+        stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
+
+        webClient.perform(post(API_URL)
+                .content(convertObjectToJsonString(CREATE_EVENT))
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
+    }
+
+    @Test
+    public void givenGenerateInvitationIsFalse_whenPetitionIssued_thenReturnCaseExpectedChanges()
+        throws Exception {
+        final ValidationResponse validationResponse = ValidationResponse.builder().build();
+
+        final PinRequest pinRequest =
+            PinRequest.builder()
+                .firstName(RESPONDENT_FIRST_NAME)
+                .lastName(RESPONDENT_LAST_NAME)
+                .build();
+
+        final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
+
+        final GenerateDocumentRequest generateMiniPetitionRequest =
+            GenerateDocumentRequest.builder()
+                .template(MINI_PETITION_TEMPLATE_NAME)
+                .values(Collections.singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
+                .build();
+
+        final GeneratedDocumentInfo generatedMiniPetitionInfo =
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_PETITION)
+                .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
+                .build();
+
+        final DocumentUpdateRequest documentUpdateRequest =
+            DocumentUpdateRequest.builder()
+                .documents(Collections.singletonList(generatedMiniPetitionInfo))
+                .caseData(CASE_DATA)
+                .build();
+
+        final Map<String, Object> formattedCaseData = Collections.emptyMap();
+
+        stubSignIn();
+        stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
+        stubValidationServerEndpoint(HttpStatus.OK,
+            ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
+            convertObjectToJsonString(validationResponse));
+        stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionInfo);
+
+        stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(CREATE_EVENT))
+            .param(GENERATE_AOS_INVITATION, "true")
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
+    }
+
+    @Test
+    public void givenGenerateInvitationIsTrue_whenPetitionIssued_thenReturnCaseExpectedChanges()
+        throws Exception {
+        final ValidationResponse validationResponse = ValidationResponse.builder().build();
+
+        final PinRequest pinRequest =
+            PinRequest.builder()
+                .firstName(RESPONDENT_FIRST_NAME)
+                .lastName(RESPONDENT_LAST_NAME)
+                .build();
+
+        final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
+
+        final GenerateDocumentRequest generateMiniPetitionRequest =
+            GenerateDocumentRequest.builder()
+                .template(MINI_PETITION_TEMPLATE_NAME)
+                .values(Collections.singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
+                .build();
+
+        final GeneratedDocumentInfo generatedMiniPetitionInfo =
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_PETITION)
+                .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
+                .build();
+
         final GenerateDocumentRequest generateAosInvitationRequest =
             GenerateDocumentRequest.builder()
                 .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
@@ -214,33 +318,32 @@ public class PetitionIssuedITest extends IdamTestSupport {
                 .build();
 
         final DocumentUpdateRequest documentUpdateRequest =
-                DocumentUpdateRequest.builder()
-                        .documents(Arrays.asList(generatedMiniPetitionInfo, generatedAosInvitationInfo))
-                        .caseData(CASE_DATA)
-                        .build();
+            DocumentUpdateRequest.builder()
+                .documents(Arrays.asList(generatedMiniPetitionInfo, generatedAosInvitationInfo))
+                .caseData(CASE_DATA)
+                .build();
 
         final Map<String, Object> formattedCaseData = Collections.emptyMap();
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
         stubValidationServerEndpoint(HttpStatus.OK,
-                ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
-                convertObjectToJsonString(validationResponse));
+            ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
+            convertObjectToJsonString(validationResponse));
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionInfo);
         stubDocumentGeneratorServerEndpoint(generateAosInvitationRequest, generatedAosInvitationInfo);
 
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(CREATE_EVENT))
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
+            .content(convertObjectToJsonString(CREATE_EVENT))
+            .param(GENERATE_AOS_INVITATION, "true")
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
     }
-
-
 
     private void stubValidationServerEndpoint(HttpStatus status,
                                               ValidationRequest validationRequest, String body) {
