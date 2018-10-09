@@ -61,10 +61,10 @@
     "street2": null,
     "town": null,
     "postcodeManual": null,
-    "addressConfirmed": true,
+    "addressConfirmed": "true",
     "addressAbroad": "Some address here",
     "validPostcode": false,
-    "postcodeError": false,
+    "postcodeError": null,
     "url": null,
     "address": [
       "Some address here"
@@ -78,10 +78,10 @@
     "street2": null,
     "town": null,
     "postcodeManual": null,
-    "addressConfirmed": true,
+    "addressConfirmed": "true",
     "addressAbroad": "Some address here",
     "validPostcode": false,
-    "postcodeError": false,
+    "postcodeError": null,
     "url": null,
     "address": [
       "Some address here"
@@ -98,10 +98,10 @@
     "street2": null,
     "town": null,
     "postcodeManual": null,
-    "addressConfirmed": true,
+    "addressConfirmed": "true",
     "addressAbroad": "Some address here",
     "validPostcode": false,
-    "postcodeError": false,
+    "postcodeError": null,
     "url": null,
     "address": [
       "Some address here"
@@ -115,10 +115,10 @@
     "street2": null,
     "town": null,
     "postcodeManual": null,
-    "addressConfirmed": true,
+    "addressConfirmed": "true",
     "addressAbroad": "Some address here",
     "validPostcode": false,
-    "postcodeError": false,
+    "postcodeError": null,
     "url": null,
     "address": [
       "Some address here"
@@ -247,5 +247,6 @@
     }
   ],
   "existingPayments": null,
-  "d8": null
+  "d8": null,
+  "petitionerConsent": "Yes"
 }
