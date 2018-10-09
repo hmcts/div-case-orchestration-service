@@ -196,5 +196,4 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         expectedDraft.put(PETITIONER_EMAIL_KEY, user.getEmailAddress());
         return expectedDraft;
     }
-
 }
