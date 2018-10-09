@@ -30,7 +30,7 @@ List<LinkedHashMap<String, Object>> secrets = [
 ]
 
 withPipeline(type, product, component) {
-    if (new ProjectBranch(env.BRANCH_NAME).isPR() && !env.CHANGE_TITLE.startsWith('[PREVIEW]')) {
+    if (!env.CHANGE_TITLE.startsWith('[PREVIEW]')) {
         enableDockerBuild()
         enableDeployToAKS()
     }
