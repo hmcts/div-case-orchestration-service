@@ -132,7 +132,8 @@ public class OrchestrationController {
     public ResponseEntity<Map<String, Object>> retrieveDraft(
             @RequestHeader("Authorization") @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
             final String authorizationToken,
-            @RequestParam(value = CHECK_CCD, required = false) @ApiParam(CHECK_CCD) Boolean checkCcd) throws WorkflowException {
+            @RequestParam(value = CHECK_CCD, required = false) @ApiParam(CHECK_CCD) Boolean checkCcd)
+        throws WorkflowException {
 
         Map<String, Object>    response = orchestrationService.getDraft(authorizationToken, checkCcd);
         if (MapUtils.isEmpty(response)) {

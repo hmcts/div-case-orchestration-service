@@ -41,6 +41,7 @@ public class RetrieveDraft implements Task<Map<String, Object>> {
             boolean isDraft = StringUtils.isEmpty(cmsContent.getCaseId());
             caseData = cmsContent.getCaseData();
             caseData.put(IS_DRAFT_KEY, isDraft);
+
             if (!isDraft) {
                 context.setTransientObject(CASE_ID_JSON_KEY, cmsContent.getCaseId());
                 context.setTransientObject(CASE_STATE_JSON_KEY, cmsContent.getState());
@@ -52,12 +53,12 @@ public class RetrieveDraft implements Task<Map<String, Object>> {
     }
 
     private boolean getCheckCcd(TaskContext context) {
-         Object contextValue = context.getTransientObject(CHECK_CCD);
+        Object contextValue = context.getTransientObject(CHECK_CCD);
 
-         if(contextValue != null) {
-             return (Boolean)contextValue;
-         }
+        if (contextValue != null) {
+            return (Boolean)contextValue;
+        }
 
-         return checkCcd;
+        return checkCcd;
     }
 }
