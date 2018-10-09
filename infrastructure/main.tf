@@ -17,8 +17,8 @@ locals {
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
   idam_strategic_enabled = "false"
   
-  asp_name = "${var.env == "prod" ? "div-cos-prod" : "${var.product}-${var.env}"}"
-  asp_rg = "${var.env == "prod" ? "div-cos-prod" : "${var.product}-${var.env}"}"
+  asp_name = "${var.env == "prod" ? "div-cos-prod" : "${var.raw_product}-${var.env}"}"
+  asp_rg = "${var.env == "prod" ? "div-cos-prod" : "${var.raw_product}-${var.env}"}"
 }
 
 module "div-cos" {
