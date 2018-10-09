@@ -38,5 +38,6 @@
   "marriagePetitionerName": "user test",
   "marriageRespondentName": "wife test",
   "petitionerNameDifferentToMarriageCertificate": "No",
-  "petitionerPhoneNumber": ""
+  "petitionerPhoneNumber": "",
+  "petitionerConsent": "Yes"
 }

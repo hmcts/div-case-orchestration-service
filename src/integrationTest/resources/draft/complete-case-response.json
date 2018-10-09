@@ -162,5 +162,6 @@
   "marriedInUk" : "Yes",
   "marriageDateMonth" : 2,
   "marriageCanDivorce" : "true",
-  "financialOrderFor" : [ "petitioner", "children" ]
+  "financialOrderFor" : [ "petitioner", "children" ],
+  "petitionerConsent": "Yes"
 }
