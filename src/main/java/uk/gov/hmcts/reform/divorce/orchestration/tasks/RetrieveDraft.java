@@ -14,6 +14,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_DRAFT_KEY;
 
 @Component
@@ -34,11 +35,13 @@ public class RetrieveDraft implements Task<Map<String, Object>> {
         Map<String, Object> caseData = null;
 
         CaseDetails cmsContent = caseMaintenanceClient
-                .retrievePetition(context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(), checkCcd);
+                .retrievePetition(context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(), getCheckCcd(context));
+
         if (cmsContent != null && cmsContent.getCaseData() != null && !cmsContent.getCaseData().isEmpty()) {
             boolean isDraft = StringUtils.isEmpty(cmsContent.getCaseId());
             caseData = cmsContent.getCaseData();
             caseData.put(IS_DRAFT_KEY, isDraft);
+
             if (!isDraft) {
                 context.setTransientObject(CASE_ID_JSON_KEY, cmsContent.getCaseId());
                 context.setTransientObject(CASE_STATE_JSON_KEY, cmsContent.getState());
@@ -47,6 +50,15 @@ public class RetrieveDraft implements Task<Map<String, Object>> {
             context.setTaskFailed(true);
         }
         return caseData;
+    }
 
+    private boolean getCheckCcd(TaskContext context) {
+        Object contextValue = context.getTransientObject(CHECK_CCD);
+
+        if (contextValue != null) {
+            return (Boolean)contextValue;
+        }
+
+        return checkCcd;
     }
 }

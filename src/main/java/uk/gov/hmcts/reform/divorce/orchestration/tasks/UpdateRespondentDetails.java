@@ -38,7 +38,9 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
             (String)context.getTransientObject(AUTH_TOKEN_JSON_KEY),
             (String)context.getTransientObject(CASE_ID_JSON_KEY),
             START_AOS_EVENT_ID,
-            ImmutableMap.of(RESPONDENT_EMAIL_ADDRESS, respondentDetails.getEmail())
+            ImmutableMap.of(
+                RESPONDENT_EMAIL_ADDRESS, respondentDetails.getEmail()
+            )
         );
 
         return payLoad;
