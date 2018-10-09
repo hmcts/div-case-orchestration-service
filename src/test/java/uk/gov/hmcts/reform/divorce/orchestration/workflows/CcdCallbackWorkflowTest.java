@@ -11,11 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddPDF;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.IdamPinGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +33,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class CcdCallbackWorkflowTest {
     private CcdCallbackWorkflow ccdCallbackWorkflow;
+
+    @Mock
+    private SetIssueDate setIssueDate;
 
     @Mock
     private ValidateCaseData validateCaseData;
@@ -61,6 +60,7 @@ public class CcdCallbackWorkflowTest {
     public void setUp() {
         ccdCallbackWorkflow =
                 new CcdCallbackWorkflow(
+                        setIssueDate,
                         validateCaseData,
                         petitionGenerator,
                         idamPinGenerator,
@@ -94,6 +94,7 @@ public class CcdCallbackWorkflowTest {
     @Test
     public void runShouldReturnValidCaseDataForValidCase() throws WorkflowException {
         //Given
+        when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(validateCaseData.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(idamPinGenerator.execute(context, payload)).thenReturn(payload);

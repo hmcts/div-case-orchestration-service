@@ -7,11 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddPDF;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.IdamPinGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.*;
 
 import java.util.Map;
 
@@ -20,6 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
+    private final SetIssueDate setIssueDate;
     private final ValidateCaseData validateCaseData;
     private final PetitionGenerator petitionGenerator;
     private final IdamPinGenerator idamPinGenerator;
@@ -27,11 +24,12 @@ public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final CaseFormatterAddPDF caseFormatterAddPDF;
 
     @Autowired
-    public CcdCallbackWorkflow(ValidateCaseData validateCaseData,
+    public CcdCallbackWorkflow(SetIssueDate setIssueDate, ValidateCaseData validateCaseData,
                                PetitionGenerator petitionGenerator,
                                IdamPinGenerator idamPinGenerator,
                                RespondentLetterGenerator respondentLetterGenerator,
                                CaseFormatterAddPDF caseFormatterAddPDF) {
+        this.setIssueDate = setIssueDate;
         this.validateCaseData = validateCaseData;
         this.petitionGenerator = petitionGenerator;
         this.respondentLetterGenerator = respondentLetterGenerator;
@@ -43,6 +41,7 @@ public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
                                    String authToken) throws WorkflowException {
         return this.execute(
             new Task[]{
+                setIssueDate,
                 validateCaseData,
                 petitionGenerator,
                 idamPinGenerator,
