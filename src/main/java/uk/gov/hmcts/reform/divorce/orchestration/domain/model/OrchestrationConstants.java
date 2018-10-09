@@ -36,6 +36,7 @@ public class OrchestrationConstants {
     public static final String RESP_DEFENDS_DIVORCE_CCD_FIELD = "RespDefendsDivorce";
     public static final String YES_VALUE = "Yes";
     public static final String NO_VALUE = "No";
+    public static final String DN_AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
 
     public static final String ID = "id";
     public static final String PIN = "pin";

@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETE_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_AWAITING_LEGAL_ADVISOR_REFERRAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_DEFENDS_DIVORCE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -29,7 +30,7 @@ public class SubmitDnCase implements Task<Map<String, Object>> {
         Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
             (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY),
             (String) context.getTransientObject(CASE_ID_JSON_KEY),
-            getDnCompleteEventId(caseData),
+            DN_AWAITING_LEGAL_ADVISOR_REFERRAL,
             caseData
         );
 
@@ -40,17 +41,4 @@ public class SubmitDnCase implements Task<Map<String, Object>> {
         return updateCase;
     }
 
-
-    //TODO Use the correct event value
-    private String getDnCompleteEventId(Map<String, Object> aosCase) {
-        if (YES_VALUE.equalsIgnoreCase((String)aosCase.get(RESP_DEFENDS_DIVORCE_CCD_FIELD))) {
-            return AWAITING_ANSWER_AOS_EVENT_ID;
-        }
-
-        if (YES_VALUE.equalsIgnoreCase((String)aosCase.get(RESP_ADMIT_OR_CONSENT_CCD_FIELD))) {
-            return AWAITING_DN_AOS_EVENT_ID;
-        }
-
-        return COMPLETE_AOS_EVENT_ID;
-    }
 }
