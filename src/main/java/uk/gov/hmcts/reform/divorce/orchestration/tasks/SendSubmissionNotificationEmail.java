@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 
 @Component
+@Slf4j
 public class SendSubmissionNotificationEmail implements Task<Map<String, Object>> {
 
     private final EmailService emailService;
@@ -58,8 +60,8 @@ public class SendSubmissionNotificationEmail implements Task<Map<String, Object>
                     referenceId.substring(8, 12),
                     referenceId.substring(12));
         } catch (Exception exception) {
+            log.warn("Error formatting case reference {}", referenceId);
             return referenceId;
         }
     }
-
 }
