@@ -11,7 +11,6 @@ import java.util.Map;
 @Component
 public class CmsClientSupport {
 
-
     @Autowired
     CaseMaintenanceClient cmsClient;
 
@@ -19,8 +18,9 @@ public class CmsClientSupport {
         return cmsClient.getDrafts(userDetails.getAuthToken());
     }
 
-    public Map<String, Object> saveDrafts(String fileName, UserDetails userDetails) {
+    @SuppressWarnings("unchecked")
+    public void saveDrafts(String fileName, UserDetails userDetails) {
         Map<String, Object> draftResource = ResourceLoader.loadJsonToObject(fileName, Map.class);
-        return cmsClient.saveDraft(draftResource, userDetails.getAuthToken(), true);
+        cmsClient.saveDraft(draftResource, userDetails.getAuthToken(), true);
     }
 }
