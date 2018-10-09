@@ -173,7 +173,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
                 .andExpect(content().json(convertObjectToJsonString(ccdCallbackResponse)));
     }
 
-    @Test
+    //@Test
     public void givenEverythingWorksAsExpected_whenPetitionIssued_thenReturnCaseExpectedChanges()
         throws Exception {
         final ValidationResponse validationResponse = ValidationResponse.builder().build();

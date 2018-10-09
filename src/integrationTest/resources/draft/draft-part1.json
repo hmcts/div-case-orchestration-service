@@ -13,5 +13,6 @@
   "marriageCanDivorce": true,
   "marriageDateIsFuture": false,
   "marriageDateMoreThan100": false,
-  "marriedInUk": "Yes"
+  "marriedInUk": "Yes",
+  "petitionerConsent": "Yes"
 }
