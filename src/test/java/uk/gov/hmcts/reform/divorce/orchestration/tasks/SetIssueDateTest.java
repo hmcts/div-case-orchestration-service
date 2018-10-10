@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
@@ -14,8 +13,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(MockitoJUnitRunner.class)
 public class SetIssueDateTest {
 
-    @InjectMocks
-    private SetIssueDate setIssueDate;
+    private SetIssueDate setIssueDate = new SetIssueDate();
 
     @Test
     public void testGenerateIssueDateSetsDateToNow() {
