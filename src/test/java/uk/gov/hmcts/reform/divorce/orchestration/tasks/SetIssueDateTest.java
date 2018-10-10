@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -10,15 +11,11 @@ import java.util.HashMap;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SetIssueDateTest {
 
-    @Autowired
-    SetIssueDate setIssueDate;
-
-    @Before
-    public void setUp() {
-        this.setIssueDate = new SetIssueDate();
-    }
+    @InjectMocks
+    private SetIssueDate setIssueDate;
 
     @Test
     public void testGenerateIssueDateSetsDateToNow() {

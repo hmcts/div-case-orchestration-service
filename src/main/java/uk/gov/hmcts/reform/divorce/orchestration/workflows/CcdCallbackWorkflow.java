@@ -31,7 +31,8 @@ public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final CaseFormatterAddPDF caseFormatterAddPDF;
 
     @Autowired
-    public CcdCallbackWorkflow(SetIssueDate setIssueDate, ValidateCaseData validateCaseData,
+    public CcdCallbackWorkflow(SetIssueDate setIssueDate,
+                               ValidateCaseData validateCaseData,
                                PetitionGenerator petitionGenerator,
                                IdamPinGenerator idamPinGenerator,
                                RespondentLetterGenerator respondentLetterGenerator,
