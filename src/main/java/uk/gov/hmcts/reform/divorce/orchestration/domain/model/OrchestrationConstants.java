@@ -12,6 +12,9 @@ public class OrchestrationConstants {
     public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
 
+    //Issue Petition
+    public  static final String GENERATE_AOS_INVITATION = "generateAosInvitation";
+
     // Core Case Data
     public static final String CHECK_CCD = "checkCcd";
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
