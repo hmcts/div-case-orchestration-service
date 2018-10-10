@@ -29,6 +29,16 @@ public interface CosApiClient {
     );
 
     @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/dn-submitted",
+            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> dnSubmitted(@RequestHeader(AUTHORIZATION) String authorisation,
+                                    @RequestBody Map<String, Object> caseDataContent
+    );
+
+
+    @RequestMapping(
             method = RequestMethod.GET,
             value = "/draftsapi/version/1",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
