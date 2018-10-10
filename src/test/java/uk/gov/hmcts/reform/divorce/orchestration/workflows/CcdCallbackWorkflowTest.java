@@ -66,8 +66,8 @@ public class CcdCallbackWorkflowTest {
     public void setUp() {
         ccdCallbackWorkflow =
                 new CcdCallbackWorkflow(
-                        setIssueDate,
                         validateCaseData,
+                        setIssueDate,
                         petitionGenerator,
                         idamPinGenerator,
                         respondentLetterGenerator,

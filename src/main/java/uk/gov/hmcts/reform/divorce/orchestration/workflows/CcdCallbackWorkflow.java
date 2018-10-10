@@ -31,14 +31,14 @@ public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final CaseFormatterAddPDF caseFormatterAddPDF;
 
     @Autowired
-    public CcdCallbackWorkflow(SetIssueDate setIssueDate,
-                               ValidateCaseData validateCaseData,
+    public CcdCallbackWorkflow(ValidateCaseData validateCaseData,
+                               SetIssueDate setIssueDate,
                                PetitionGenerator petitionGenerator,
                                IdamPinGenerator idamPinGenerator,
                                RespondentLetterGenerator respondentLetterGenerator,
                                CaseFormatterAddPDF caseFormatterAddPDF) {
-        this.setIssueDate = setIssueDate;
         this.validateCaseData = validateCaseData;
+        this.setIssueDate = setIssueDate;
         this.petitionGenerator = petitionGenerator;
         this.respondentLetterGenerator = respondentLetterGenerator;
         this.idamPinGenerator = idamPinGenerator;
@@ -50,8 +50,8 @@ public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
         List<Task> tasks = new ArrayList<>();
 
-        tasks.add(setIssueDate);
         tasks.add(validateCaseData);
+        tasks.add(setIssueDate);
         tasks.add(petitionGenerator);
         tasks.add(idamPinGenerator);
 
