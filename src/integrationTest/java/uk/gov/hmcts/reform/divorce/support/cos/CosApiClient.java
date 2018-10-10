@@ -33,14 +33,15 @@ public interface CosApiClient {
             value = "/draftsapi/version/1",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
-    Map<String, Object> getDraft(@RequestHeader(AUTHORIZATION) String authorisation);
+    Map<String, Object> getDraft(@RequestHeader(AUTHORIZATION) String authorisation,
+                                 @RequestParam("checkCcd") boolean checkCcd);
 
     @RequestMapping(
             method = RequestMethod.PUT,
             value = "/draftsapi/version/1",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
-    Map<String, Object> saveDraft(@RequestHeader(AUTHORIZATION) String authorisation,
+    void saveDraft(@RequestHeader(AUTHORIZATION) String authorisation,
                                   @RequestBody JsonNode caseDataContent,
                    @RequestParam(name = "notificationEmail") String notificationEmail
    );
@@ -50,7 +51,7 @@ public interface CosApiClient {
             value = "/draftsapi/version/1",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
-    Map<String, Object> deleteDraft(@RequestHeader(AUTHORIZATION) String authorisation);
+    void deleteDraft(@RequestHeader(AUTHORIZATION) String authorisation);
 
     @RequestMapping(
             method = RequestMethod.POST,
