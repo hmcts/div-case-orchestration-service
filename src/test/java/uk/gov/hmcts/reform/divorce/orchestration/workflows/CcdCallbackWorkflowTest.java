@@ -100,8 +100,8 @@ public class CcdCallbackWorkflowTest {
     @Test
     public void givenAosInvitationGenerateIsTrue_whenRun_thenProceedAsExpected() throws WorkflowException {
         //Given
-        when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(idamPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
@@ -120,6 +120,7 @@ public class CcdCallbackWorkflowTest {
     public void givenAosInvitationGenerateIsFalse_whenRun_thenProceedAsExpected() throws WorkflowException {
         //Given
         when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(idamPinGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddPDF.execute(context, payload)).thenReturn(payload);
