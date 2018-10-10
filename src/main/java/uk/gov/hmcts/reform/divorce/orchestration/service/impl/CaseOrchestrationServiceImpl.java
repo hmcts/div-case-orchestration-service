@@ -89,8 +89,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest,
-                                                  String authToken) throws WorkflowException {
-        Map<String, Object> payLoad = ccdCallbackWorkflow.run(caseDetailsRequest, authToken);
+                                                  String authToken,
+                                                  boolean generateAosInvitation) throws WorkflowException {
+        Map<String, Object> payLoad = ccdCallbackWorkflow.run(caseDetailsRequest, authToken, generateAosInvitation);
 
         if (ccdCallbackWorkflow.errors().isEmpty()) {
             log.info("Callback for case with id: {} successfully completed", payLoad.get(ID));
@@ -128,8 +129,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> getDraft(String authToken) throws WorkflowException {
-        return retrieveDraftWorkflow.run(authToken);
+    public Map<String, Object> getDraft(String authToken, Boolean checkCcd) throws WorkflowException {
+        return retrieveDraftWorkflow.run(authToken, checkCcd);
     }
 
     @Override

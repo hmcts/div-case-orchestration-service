@@ -17,17 +17,17 @@ public class DraftsSubmissionSupport {
     @Autowired
     private CosApiClient cosApiClient;
 
-    public Map<String, Object> getUserDraft(UserDetails userDetails) {
-        return cosApiClient.getDraft(userDetails.getAuthToken());
+    public Map<String, Object> getUserDraft(UserDetails userDetails, boolean checkCcd) {
+        return cosApiClient.getDraft(userDetails.getAuthToken(), checkCcd);
     }
 
-    public Map<String, Object> saveDraft(UserDetails userDetails, String fileName) {
+    public void saveDraft(UserDetails userDetails, String fileName) {
         JsonNode draftResource = ResourceLoader.loadJsonToObject(fileName, JsonNode.class);
-        return cosApiClient.saveDraft(userDetails.getAuthToken(), draftResource, userDetails.getEmailAddress());
+        cosApiClient.saveDraft(userDetails.getAuthToken(), draftResource, userDetails.getEmailAddress());
     }
 
-    public Map<String, Object> deleteDraft(UserDetails userDetails) {
-        return cosApiClient.deleteDraft(userDetails.getAuthToken());
+    public void deleteDraft(UserDetails userDetails) {
+        cosApiClient.deleteDraft(userDetails.getAuthToken());
     }
 
 

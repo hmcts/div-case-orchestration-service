@@ -30,8 +30,11 @@ List<LinkedHashMap<String, Object>> secrets = [
 ]
 
 withPipeline(type, product, component) {
-    enableDockerBuild()
-    enableDeployToAKS()
+    if (env.CHANGE_TITLE && !env.CHANGE_TITLE.startsWith('[PREVIEW]')) {
+        enableDockerBuild()
+        enableDeployToAKS()
+    }
+
     loadVaultSecrets(secrets)
     setVaultName('div')
 

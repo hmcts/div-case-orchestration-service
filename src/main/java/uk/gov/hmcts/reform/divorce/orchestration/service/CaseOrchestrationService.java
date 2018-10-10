@@ -10,7 +10,8 @@ import java.util.Map;
 
 public interface CaseOrchestrationService {
 
-    Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException;
+    Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest, String authToken,
+                                           boolean generateAosInvitation) throws WorkflowException;
 
     Boolean authenticateRespondent(String authToken) throws WorkflowException;
 
@@ -28,7 +29,7 @@ public interface CaseOrchestrationService {
     CcdCallbackResponse aosReceived(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException;
 
 
-    Map<String, Object> getDraft(String authToken) throws WorkflowException;
+    Map<String, Object> getDraft(String authToken, Boolean checkCcd) throws WorkflowException;
 
     Map<String,Object> saveDraft(Map<String, Object> payLoad,
                                  String authorizationToken,
