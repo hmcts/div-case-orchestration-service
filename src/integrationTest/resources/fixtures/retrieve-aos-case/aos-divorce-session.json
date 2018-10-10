@@ -1,7 +1,7 @@
 {
   "respondentCorrespondenceAddress":{
     "postcodeManual":null,
-    "addressConfirmed":true,
+    "addressConfirmed":"true",
     "validPostcode":true,
     "address":[
       "82 Landor Road",
@@ -14,7 +14,7 @@
     "addressAbroad":null,
     "street1":null,
     "street2":null,
-    "postcodeError":false,
+    "postcodeError":"false",
     "url":null
   },
   "petitionerLastName":"Smith",
@@ -28,7 +28,7 @@
   "reasonForDivorceShowTwoYearsSeparation":"true",
   "petitionerCorrespondenceAddress":{
     "postcodeManual":null,
-    "addressConfirmed":true,
+    "addressConfirmed":"true",
     "validPostcode":true,
     "address":[
       "84 Landor Road",
@@ -41,7 +41,7 @@
     "addressAbroad":null,
     "street1":null,
     "street2":null,
-    "postcodeError":false,
+    "postcodeError":"false",
     "url":null
   },
   "helpWithFeesNeedHelp":"Yes",
@@ -145,7 +145,7 @@
   "livingArrangementsLastLivedTogether":"No",
   "respondentHomeAddress":{
     "postcodeManual":null,
-    "addressConfirmed":true,
+    "addressConfirmed":"true",
     "validPostcode":true,
     "address":[
       "88 Landor Road",
@@ -158,13 +158,13 @@
     "addressAbroad":null,
     "street1":null,
     "street2":null,
-    "postcodeError":false,
+    "postcodeError":"false",
     "url":null
   },
   "marriageRespondentName":"Jenny Benny",
   "petitionerHomeAddress":{
     "postcodeManual":null,
-    "addressConfirmed":true,
+    "addressConfirmed":"true",
     "validPostcode":true,
     "address":[
       "82 Landor Road",
@@ -177,7 +177,7 @@
     "addressAbroad":null,
     "street1":null,
     "street2":null,
-    "postcodeError":false,
+    "postcodeError":"false",
     "url":null
   },
   "reasonForDivorceBehaviourDetails":[
@@ -186,7 +186,7 @@
   "screenHasMarriageCert":"Yes",
   "livingArrangementsLastLivedTogetherAddress":{
     "postcodeManual":null,
-    "addressConfirmed":true,
+    "addressConfirmed":"true",
     "validPostcode":false,
     "address":[
       "Flat A-B",
@@ -200,7 +200,7 @@
     "addressAbroad":"Flat A-B\n86 Landor Road\nLondon\nSW9 9PE",
     "street1":null,
     "street2":null,
-    "postcodeError":false,
+    "postcodeError":null,
     "url":null
   },
   "reasonForDivorceClaimingAdultery":"false",
@@ -216,7 +216,7 @@
   ],
   "respondentSolicitorAddress":{
     "postcodeManual":null,
-    "addressConfirmed":true,
+    "addressConfirmed":"true",
     "validPostcode":false,
     "address":[
       "90 Landor Road",
@@ -229,7 +229,7 @@
     "addressAbroad":"90 Landor Road\nLondon\nSW9 9PE",
     "street1":null,
     "street2":null,
-    "postcodeError":false,
+    "postcodeError":null,
     "url":null
   }
 }
