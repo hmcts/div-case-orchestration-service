@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -40,15 +42,22 @@ public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
     }
 
     public Map<String, Object> run(CreateEvent caseDetailsRequest,
-                                   String authToken) throws WorkflowException {
+                                   String authToken, boolean generateAosInvitation) throws WorkflowException {
+
+        List<Task> tasks = new ArrayList<>();
+
+        tasks.add(validateCaseData);
+        tasks.add(petitionGenerator);
+        tasks.add(idamPinGenerator);
+
+        if (generateAosInvitation) {
+            tasks.add(respondentLetterGenerator);
+        }
+
+        tasks.add(caseFormatterAddPDF);
+
         return this.execute(
-            new Task[]{
-                validateCaseData,
-                petitionGenerator,
-                idamPinGenerator,
-                respondentLetterGenerator,
-                caseFormatterAddPDF
-            },
+            tasks.toArray(new Task[tasks.size()]),
             caseDetailsRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetailsRequest.getCaseDetails())

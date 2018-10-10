@@ -115,13 +115,27 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void ccdCallbackHandlerShouldReturnValidCaseDataForValidRequest()
+    public void givenGenerateInvitationIsTrue_whenCcdCallbackHandler_thenReturnExpected()
             throws WorkflowException {
         //given
-        when(ccdCallbackWorkflow.run(createEventRequest, AUTH_TOKEN)).thenReturn(expectedPayload);
+        when(ccdCallbackWorkflow.run(createEventRequest, AUTH_TOKEN, true)).thenReturn(expectedPayload);
 
         //when
-        Map<String, Object> actual = classUnderTest.ccdCallbackHandler(createEventRequest, AUTH_TOKEN);
+        Map<String, Object> actual = classUnderTest.ccdCallbackHandler(createEventRequest, AUTH_TOKEN, true);
+
+        //then
+        assertEquals(expectedPayload, actual);
+        assertEquals(expectedPayload.get(PIN), TEST_PIN);
+    }
+
+    @Test
+    public void givenGenerateInvitationIsFalse_whenCcdCallbackHandler_thenReturnExpected()
+        throws WorkflowException {
+        //given
+        when(ccdCallbackWorkflow.run(createEventRequest, AUTH_TOKEN, false)).thenReturn(expectedPayload);
+
+        //when
+        Map<String, Object> actual = classUnderTest.ccdCallbackHandler(createEventRequest, AUTH_TOKEN, false);
 
         //then
         assertEquals(expectedPayload, actual);
@@ -133,8 +147,8 @@ public class CaseOrchestrationServiceImplTest {
     public void givenDraftInWorkflowResponse_whenGetDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
         Map<String, Object> testExpectedPayload = mock(Map.class);
 
-        when(retrieveDraftWorkflow.run(AUTH_TOKEN)).thenReturn(testExpectedPayload);
-        assertEquals(testExpectedPayload,classUnderTest.getDraft(AUTH_TOKEN));
+        when(retrieveDraftWorkflow.run(AUTH_TOKEN, true)).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload,classUnderTest.getDraft(AUTH_TOKEN, true));
     }
 
     @SuppressWarnings("unchecked")
