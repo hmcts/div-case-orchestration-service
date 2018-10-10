@@ -361,4 +361,18 @@ public class OrchestrationControllerTest {
 
         verify(caseOrchestrationService).submitAosCase(caseData, AUTH_TOKEN, TEST_CASE_ID);
     }
+
+    @Test
+    public void whenSubmitDn_thenProceedAsExpected() throws WorkflowException {
+        final Map<String, Object> dnCase = Collections.emptyMap();
+
+        when(caseOrchestrationService.submitDnCase(dnCase, AUTH_TOKEN, TEST_CASE_ID)).thenReturn(dnCase);
+
+        ResponseEntity<Map<String, Object>> response = classUnderTest.submitDn(AUTH_TOKEN, TEST_CASE_ID, dnCase);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dnCase, response.getBody());
+
+        verify(caseOrchestrationService).submitDnCase(dnCase, AUTH_TOKEN, TEST_CASE_ID);
+    }
 }
