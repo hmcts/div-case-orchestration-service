@@ -77,5 +77,6 @@
   "marriageCanDivorce" : "true",
   "jurisdictionPetitionerResidence" : "Yes",
   "marriageIsSameSexCouple" : "No",
-  "jurisdictionRespondentResidence" : "Yes"
+  "jurisdictionRespondentResidence" : "Yes",
+  "petitionerConsent": "Yes"
 }
