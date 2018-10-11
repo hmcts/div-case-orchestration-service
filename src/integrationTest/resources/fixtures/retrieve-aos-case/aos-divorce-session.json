@@ -195,7 +195,7 @@
       "SW9 9PE"
     ],
     "town":null,
-    "addressType":"abroad",
+    "addressType":"manual",
     "postcode":null,
     "addressAbroad":"Flat A-B\n86 Landor Road\nLondon\nSW9 9PE",
     "street1":null,
@@ -224,7 +224,7 @@
       "SW9 9PE"
     ],
     "town":null,
-    "addressType":"abroad",
+    "addressType":"manual",
     "postcode":null,
     "addressAbroad":"90 Landor Road\nLondon\nSW9 9PE",
     "street1":null,
