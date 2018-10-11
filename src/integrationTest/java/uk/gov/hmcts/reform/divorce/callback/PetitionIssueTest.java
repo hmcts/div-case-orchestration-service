@@ -52,6 +52,8 @@ public class PetitionIssueTest extends IntegrationTest {
     private static final String CASE_ID = "1517833758870511";
     private static final String ISSUE_DATE = "data.IssueDate";
 
+    private static final String EXPECTED_ISSUE_DATE = LocalDate.now().format(ofPattern("yyyy-MM-dd"));
+
     @Value("${case.orchestration.petition-issued.context-path}")
     private String contextPath;
 
@@ -72,20 +74,13 @@ public class PetitionIssueTest extends IntegrationTest {
     }
 
     @Test
-    public void givenPetitionIssued_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
-        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(), "ccd-callback-petition-issued.json", false);
-
-        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertEquals(LocalDate.now().format(ofPattern("yyyy-MM-dd")), cosResponse.path(ISSUE_DATE));
-    }
-
-    @Test
     public void givenGenerateAosNull_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
         Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
             "ccd-callback-aos-invitation.json", null);
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertGeneratedDocumentsExists(cosResponse, false);
+        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
 
     @Test
@@ -95,6 +90,7 @@ public class PetitionIssueTest extends IntegrationTest {
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertGeneratedDocumentsExists(cosResponse, false);
+        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
 
     @Test
@@ -104,6 +100,7 @@ public class PetitionIssueTest extends IntegrationTest {
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertGeneratedDocumentsExists(cosResponse, true);
+        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
 
     private Response issuePetition(String userToken, String fileName, Boolean generateAosInvitation) throws Exception {
