@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
 public class SubmitDnCaseTest extends CcdSubmissionSupport {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-dn/";
-    private static final String TEST_DN_STARTED_EVENT_ID = "testAosStarted";
+    private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
 
     @Value("${case.orchestration.maintenance.submit-dn.context-path}")
     private String contextPath;
@@ -47,7 +47,7 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
 
         final CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_DN_STARTED_EVENT_ID, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, userDetails);
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, "issueDecreeNisi", userDetails);
 
         Response cosResponse = submitDnCase(userDetails.getAuthToken(), caseDetails.getId(),
