@@ -35,6 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 @Service
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
+    public static final String CASE_ID_IS = "Case ID is: {}";
     private final CcdCallbackWorkflow ccdCallbackWorkflow;
     private final RetrieveDraftWorkflow retrieveDraftWorkflow;
     private final SaveDraftWorkflow saveDraftWorkflow;
@@ -111,7 +112,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payload = submitToCCDWorkflow.run(divorceSession, authToken);
 
         if (submitToCCDWorkflow.errors().isEmpty()) {
-            log.info("Case ID is: {}", payload.get(ID));
+            log.info(CASE_ID_IS, payload.get(ID));
             return payload;
         } else {
             return submitToCCDWorkflow.errors();
