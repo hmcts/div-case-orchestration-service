@@ -48,6 +48,7 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_DN_STARTED_EVENT_ID, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, "issueDecreeNisi", userDetails);
 
         Response cosResponse = submitDnCase(userDetails.getAuthToken(), caseDetails.getId(),
             "dn-submit.json");
