@@ -49,4 +49,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> submitAosCase(Map<String, Object> payload, String authorizationToken, String caseId)
         throws WorkflowException;
+
+    Map<String, Object> submitDnCase(Map<String, Object> divorceSession, String authorizationToken, String caseId)
+            throws WorkflowException;
 }
