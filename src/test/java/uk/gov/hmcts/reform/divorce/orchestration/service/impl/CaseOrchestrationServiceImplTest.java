@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendSubmissionNotific
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitAosCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -84,6 +85,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private SubmitAosCaseWorkflow submitAosCaseWorkflow;
+
+    @Mock
+    private SubmitDnCaseWorkflow submitDnCaseWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -353,6 +357,15 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(requestPayload, classUnderTest.submitAosCase(requestPayload, AUTH_TOKEN, TEST_CASE_ID));
 
         verify(submitAosCaseWorkflow).run(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
+    }
+
+    @Test
+    public void givenDnCaseData_whenSubmitDnCase_thenReturnPayload() throws Exception {
+        when(submitDnCaseWorkflow.run(requestPayload, AUTH_TOKEN, TEST_CASE_ID)).thenReturn(requestPayload);
+
+        assertEquals(requestPayload, classUnderTest.submitDnCase(requestPayload, AUTH_TOKEN, TEST_CASE_ID));
+
+        verify(submitDnCaseWorkflow).run(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
     }
 
     @After

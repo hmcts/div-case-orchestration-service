@@ -40,6 +40,7 @@ public class OrchestrationConstants {
     public static final String YES_VALUE = "Yes";
     public static final String NO_VALUE = "No";
     public static final String ISSUE_DATE = "IssueDate";
+    public static final String DN_AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
