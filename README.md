@@ -32,12 +32,12 @@ You can run the application by executing following command:
     ./gradlew bootRun
 ```
 
-The application will start locally on `http://localhost:4013`
+The application will start locally on `http://localhost:4012`
 
 ### API documentation
 
 API documentation is provided with Swagger:
- - `http://localhost:4013/swagger-ui.html` - UI to interact with the API resources
+ - `http://localhost:4012/swagger-ui.html` - UI to interact with the API resources
 
 ## Developing
 

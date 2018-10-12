@@ -9,7 +9,7 @@ spring:
     static-locations:
 
 server:
-  port: ${CASE_ORCHESTRATION_SERVICE_URL:4013}
+  port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
 
 case:
   formatter:
