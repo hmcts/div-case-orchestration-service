@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
 public class SubmitDnCaseTest extends CcdSubmissionSupport {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-dn/";
-    private static final String TEST_DN_STARTED_EVENT_ID = "AwaitingLegalAdvisorReferral";
+    private static final String TEST_DN_STARTED_EVENT_ID = "testAosStarted";
 
     @Value("${case.orchestration.maintenance.submit-dn.context-path}")
     private String contextPath;

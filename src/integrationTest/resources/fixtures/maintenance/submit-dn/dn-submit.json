@@ -3,6 +3,8 @@
     "ConfirmPetitionDN" : "YES",
     "DivorceCostsOptionDN" : "YES",
     "statementOfTruthDN" : "YES",
+    "statementOfTruthChanges" : "YES",
+    "statementOfTruthNoChanges" : "NO",
     "AdulteryLifeIntolerable" : "YES",
     "AdulteryDateFoundOut" : "2018-10-04",
     "AdulteryLivedApartSinceEventDN" : "NO",
