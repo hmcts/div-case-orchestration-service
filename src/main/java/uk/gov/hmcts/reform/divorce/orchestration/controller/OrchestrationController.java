@@ -359,6 +359,19 @@ public class OrchestrationController {
                 orchestrationService.submitDnCase(divorceSession, authorizationToken, caseId));
     }
 
+    @PostMapping(path = "/dn-submitted")
+    @ApiOperation(value = "Decree nisi submitted confirmation notification ")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Notification sent successful"),
+            @ApiResponse(code = 401, message = "User Not Authenticated"),
+            @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> dnSubmitted(
+            @RequestHeader("Authorization")
+            @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+        return ResponseEntity.ok(orchestrationService.dnSubmitted(caseDetailsRequest, authorizationToken));
+    }
+
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();

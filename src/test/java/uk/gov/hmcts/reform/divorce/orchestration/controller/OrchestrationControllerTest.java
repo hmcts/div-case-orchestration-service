@@ -379,4 +379,24 @@ public class OrchestrationControllerTest {
 
         verify(caseOrchestrationService).submitDnCase(dnCase, AUTH_TOKEN, TEST_CASE_ID);
     }
+
+    @Test
+    public void whenDNSubmittedCallback_thenReturnCcdResponse() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .build();
+
+        final CreateEvent createEvent = new CreateEvent();
+        createEvent.setCaseDetails(caseDetails);
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        when(caseOrchestrationService.dnSubmitted(createEvent, AUTH_TOKEN)).thenReturn(expectedResponse);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest
+                .dnSubmitted(AUTH_TOKEN, createEvent);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+    }
 }
