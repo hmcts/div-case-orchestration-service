@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GenericEmailNotificationUTest {
@@ -43,14 +44,17 @@ public class GenericEmailNotificationUTest {
 
         Map<String, String>  vars = mock(Map.class);
         context.setTransientObject(NOTIFICATION_EMAIL, TEST_USER_EMAIL);
-        context.setTransientObject(NOTIFICATION_TEMPLATE, EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT);
+        context.setTransientObject(NOTIFICATION_TEMPLATE, RESPONDENT_SUBMISSION_CONSENT);
         context.setTransientObject(NOTIFICATION_TEMPLATE_VARS, vars);
 
         Map<String, Object>  data = mock(Map.class);
         Map<String, Object> taskResponse = genericEmailNotification.execute(context, data);
 
         verify(emailService, times(1))
-                .sendEmail(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT, GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION, TEST_USER_EMAIL, vars);
+                .sendEmail(RESPONDENT_SUBMISSION_CONSENT,
+                        GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION,
+                        TEST_USER_EMAIL,
+                        vars);
         assertEquals(taskResponse, data);
     }
 
@@ -60,13 +64,16 @@ public class GenericEmailNotificationUTest {
 
         Map<String, String>  vars = mock(Map.class);
         context.setTransientObject(NOTIFICATION_EMAIL, TEST_USER_EMAIL);
-        context.setTransientObject(NOTIFICATION_TEMPLATE, EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT);
+        context.setTransientObject(NOTIFICATION_TEMPLATE, RESPONDENT_SUBMISSION_CONSENT);
         context.setTransientObject(NOTIFICATION_TEMPLATE_VARS, vars);
 
         Map<String, Object>  data = mock(Map.class);
         Exception clientException = new Exception("Error");
-        doThrow(new NotificationClientException(clientException)).when(emailService)
-                .sendEmail(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT, GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION, TEST_USER_EMAIL, vars);
+        doThrow(new NotificationClientException(clientException))
+                .when(emailService).sendEmail(RESPONDENT_SUBMISSION_CONSENT,
+                    GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION,
+                    TEST_USER_EMAIL,
+                    vars);
 
         Map<String, Object> taskResponse = genericEmailNotification.execute(context, data);
 

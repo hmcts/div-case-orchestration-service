@@ -17,7 +17,8 @@ public class ObjectMapperTestUtil {
     }
 
     public static <T> T getJsonFromResourceFile(String filePath, Class<T> clazz) throws IOException {
-        try (InputStream resourceAsStream = SendRespondentSubmissionNotificationEmailTest.class.getResourceAsStream(filePath)) {
+        try (InputStream resourceAsStream =
+                     SendRespondentSubmissionNotificationEmailTest.class.getResourceAsStream(filePath)) {
             return getCommonObjectMapper().readValue(resourceAsStream, clazz);
         }
     }

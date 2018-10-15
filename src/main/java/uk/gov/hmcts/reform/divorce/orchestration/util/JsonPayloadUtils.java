@@ -9,7 +9,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 public class JsonPayloadUtils {
 
-    public static boolean getBooleanFromPayloadField(final Map<String, Object> payload, final String keyValue) throws InvalidPropertyException {
+    public static boolean getBooleanFromPayloadField(final Map<String, Object> payload, final String keyValue)
+            throws InvalidPropertyException {
         if (!payload.containsKey(keyValue)) {
             throw new InvalidPropertyException(keyValue);
         }

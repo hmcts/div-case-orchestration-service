@@ -36,8 +36,10 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
 
     private static final String EMAIL_DESCRIPTION = "respondent submission notification email - defended divorce";
 
-    private static final DateTimeFormatter CLIENT_FACING_DATE_FORMAT = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(Locale.UK);
     private static final int LIMIT_IN_DAYS_FOR_FORM_SUBMISSION = 21;
+    private static final DateTimeFormatter CLIENT_FACING_DATE_FORMAT = DateTimeFormatter
+            .ofLocalizedDate(FormatStyle.LONG)
+            .withLocale(Locale.UK);
 
     @Autowired
     private EmailService emailService;
@@ -93,7 +95,8 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
 
     private String getFormSubmissionDateLimit(Map<String, Object> payload) {
         LocalDate dateAOSReceivedFromRespondent = LocalDate.parse((String) payload.get(DATE_AOS_RECEIVED_FROM_RESP));
-        return dateAOSReceivedFromRespondent.plusDays(LIMIT_IN_DAYS_FOR_FORM_SUBMISSION).format(CLIENT_FACING_DATE_FORMAT);
+        LocalDate limitDate = dateAOSReceivedFromRespondent.plusDays(LIMIT_IN_DAYS_FOR_FORM_SUBMISSION);
+        return limitDate.format(CLIENT_FACING_DATE_FORMAT);
     }
 
 }

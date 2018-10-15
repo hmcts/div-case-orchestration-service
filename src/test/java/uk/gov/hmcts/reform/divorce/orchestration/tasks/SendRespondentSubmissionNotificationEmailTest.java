@@ -57,10 +57,10 @@ public class SendRespondentSubmissionNotificationEmailTest {
     private ArgumentCaptor<Map<String, String>> templateParametersCaptor;
 
     @InjectMocks
-    private SendRespondentSubmissionNotificationForDefendedDivorceEmail sendRespondentSubmissionNotificationForDefendedDivorceEmail;
+    private SendRespondentSubmissionNotificationForDefendedDivorceEmail defendedDivorceNotificationEmailTask;
 
     @InjectMocks
-    private SendRespondentSubmissionNotificationForUndefendedDivorceEmail sendRespondentSubmissionNotificationForUndefendedDivorceEmail;
+    private SendRespondentSubmissionNotificationForUndefendedDivorceEmail undefendedDivorceNotificationEmailTask;
 
     private Court testCourt;
 
@@ -76,14 +76,16 @@ public class SendRespondentSubmissionNotificationEmailTest {
     }
 
     @Test
-    public void testRightEmailIsSent_WhenRespondentChoosesToDefendDivorce_AndAllFieldsArePresent() throws TaskException, IOException, NotificationClientException {
-        CreateEvent incomingPayload = getJsonFromResourceFile("/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
+    public void testRightEmailIsSent_WhenRespondentChoosesToDefendDivorce_AndAllFieldsArePresent()
+            throws TaskException, IOException, NotificationClientException {
+        CreateEvent incomingPayload = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
         Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
 
-        Map<String, Object> returnedPayload = sendRespondentSubmissionNotificationForDefendedDivorceEmail.execute(context, caseData);
+        Map<String, Object> returnedPayload = defendedDivorceNotificationEmailTask.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
         verify(emailService).sendEmail(eq(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION),
@@ -105,14 +107,16 @@ public class SendRespondentSubmissionNotificationEmailTest {
     }
 
     @Test
-    public void testRightEmailIsSent_WhenRespondentChoosesNotToDefendDivorce_AndAllFieldsArePresent() throws TaskException, IOException, NotificationClientException {
-        CreateEvent incomingPayload = getJsonFromResourceFile("/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CreateEvent.class);
+    public void testRightEmailIsSent_WhenRespondentChoosesNotToDefendDivorce_AndAllFieldsArePresent()
+            throws TaskException, IOException, NotificationClientException {
+        CreateEvent incomingPayload = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CreateEvent.class);
         Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
 
-        Map<String, Object> returnedPayload = sendRespondentSubmissionNotificationForUndefendedDivorceEmail.execute(context, caseData);
+        Map<String, Object> returnedPayload = undefendedDivorceNotificationEmailTask.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
         verify(emailService).sendEmail(eq(RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION),
@@ -131,33 +135,37 @@ public class SendRespondentSubmissionNotificationEmailTest {
     }
 
     @Test
-    public void testExceptionIsThrown_WhenEmailCannotBeSent_ForDefendedDivorce() throws TaskException, IOException, NotificationClientException {
+    public void testExceptionIsThrown_WhenEmailCannotBeSent_ForDefendedDivorce() throws TaskException,
+            IOException, NotificationClientException {
         expectedException.expect(TaskException.class);
         expectedException.expectMessage("Failed to send e-mail");
 
         doThrow(NotificationClientException.class).when(emailService).sendEmail(any(), any(), any(), any());
-        CreateEvent incomingPayload = getJsonFromResourceFile("/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
+        CreateEvent incomingPayload = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
         Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
 
-        sendRespondentSubmissionNotificationForDefendedDivorceEmail.execute(context, caseData);
+        defendedDivorceNotificationEmailTask.execute(context, caseData);
     }
 
     @Test
-    public void testResponseContainsErrorsWhenEmailCannotBeSent_ForUndefendedDivorce() throws TaskException, IOException, NotificationClientException {
+    public void testResponseContainsErrorsWhenEmailCannotBeSent_ForUndefendedDivorce() throws TaskException,
+            IOException, NotificationClientException {
         expectedException.expect(TaskException.class);
         expectedException.expectMessage("Failed to send e-mail");
 
         doThrow(NotificationClientException.class).when(emailService).sendEmail(any(), any(), any(), any());
-        CreateEvent incomingPayload = getJsonFromResourceFile("/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CreateEvent.class);
+        CreateEvent incomingPayload = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CreateEvent.class);
         Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
 
-        sendRespondentSubmissionNotificationForUndefendedDivorceEmail.execute(context, caseData);
+        undefendedDivorceNotificationEmailTask.execute(context, caseData);
     }
 
 }

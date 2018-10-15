@@ -299,7 +299,8 @@ public class CaseOrchestrationServiceImplTest {
     public void givenCaseData_whenSendRespondentSubmissionNotification_thenReturnPayload() throws Exception {
         when(sendRespondentSubmissionNotificationWorkflow.run(createEventRequest)).thenReturn(requestPayload);
 
-        Map<String, Object> returnedPayload = classUnderTest.sendRespondentSubmissionNotificationEmail(createEventRequest);
+        Map<String, Object> returnedPayload = classUnderTest
+                .sendRespondentSubmissionNotificationEmail(createEventRequest);
 
         assertEquals(requestPayload, returnedPayload);
         verify(sendRespondentSubmissionNotificationWorkflow).run(createEventRequest);

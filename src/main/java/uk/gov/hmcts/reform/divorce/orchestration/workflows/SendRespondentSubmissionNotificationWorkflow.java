@@ -23,10 +23,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.JsonPayloadUtils.ge
 public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
-    private SendRespondentSubmissionNotificationForDefendedDivorceEmail sendRespondentSubmissionNotificationForDefendedDivorceEmailTask;
+    private SendRespondentSubmissionNotificationForDefendedDivorceEmail
+            sendRespondentSubmissionNotificationForDefendedDivorceEmailTask;
 
     @Autowired
-    private SendRespondentSubmissionNotificationForUndefendedDivorceEmail sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
+    private SendRespondentSubmissionNotificationForUndefendedDivorceEmail
+            sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
 
     public Map<String, Object> run(CreateEvent caseRequestDetails) throws WorkflowException {
         Map<String, Object> caseData = caseRequestDetails.getCaseDetails().getCaseData();

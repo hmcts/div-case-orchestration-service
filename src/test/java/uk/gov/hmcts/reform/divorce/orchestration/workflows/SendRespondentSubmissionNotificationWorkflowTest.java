@@ -46,10 +46,10 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
     public ExpectedException expectedException = none();
 
     @Mock
-    private SendRespondentSubmissionNotificationForDefendedDivorceEmail sendRespondentSubmissionNotificationForDefendedDivorceEmailTask;
+    private SendRespondentSubmissionNotificationForDefendedDivorceEmail defendedDivorceNotificationEmailTask;
 
     @Mock
-    private SendRespondentSubmissionNotificationForUndefendedDivorceEmail sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
+    private SendRespondentSubmissionNotificationForUndefendedDivorceEmail undefendedDivorceNotificationEmailTask;
 
     @Captor
     private ArgumentCaptor<TaskContext> taskContextArgumentCaptor;
@@ -60,46 +60,52 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
     @Before
     public void setUp() throws TaskException {
         returnedPayloadFromTask = new HashMap<>();
-        when(sendRespondentSubmissionNotificationForDefendedDivorceEmailTask.execute(any(), any())).thenReturn(returnedPayloadFromTask);
-        when(sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask.execute(any(), any())).thenReturn(returnedPayloadFromTask);
+        when(defendedDivorceNotificationEmailTask.execute(any(), any())).thenReturn(returnedPayloadFromTask);
+        when(undefendedDivorceNotificationEmailTask.execute(any(), any())).thenReturn(returnedPayloadFromTask);
     }
 
     @Test
     public void testDefendedTaskIsCalledWhenWorkflowIsRun() throws WorkflowException, IOException, TaskException {
-        CreateEvent caseRequestDetails = getJsonFromResourceFile("/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
+        CreateEvent caseRequestDetails = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
         Map<String, Object> caseData = caseRequestDetails.getCaseDetails().getCaseData();
 
         Map<String, Object> returnedPayloadFromWorkflow = workflow.run(caseRequestDetails);
 
-        verify(sendRespondentSubmissionNotificationForDefendedDivorceEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
-        verifyZeroInteractions(sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask);
+        verify(defendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
+        verifyZeroInteractions(undefendedDivorceNotificationEmailTask);
         assertThat(returnedPayloadFromWorkflow, is(sameInstance(returnedPayloadFromTask)));
         TaskContext taskContextPassedToTask = taskContextArgumentCaptor.getValue();
-        String caseIdPassedToTaskInWorkflowContext = (String) taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
-        assertThat(caseIdPassedToTaskInWorkflowContext, is(equalTo(UNFORMATTED_CASE_ID)));
+        String caseIdPassedToTask = (String) taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
+        assertThat(caseIdPassedToTask, is(equalTo(UNFORMATTED_CASE_ID)));
     }
 
     @Test
-    public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorce() throws IOException, WorkflowException, TaskException {
-        CreateEvent caseRequestDetails = getJsonFromResourceFile("/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CreateEvent.class);
+    public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorce() throws IOException,
+            WorkflowException, TaskException {
+        CreateEvent caseRequestDetails = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CreateEvent.class);
         Map<String, Object> caseData = caseRequestDetails.getCaseDetails().getCaseData();
 
         Map<String, Object> returnedPayloadFromWorkflow = workflow.run(caseRequestDetails);
 
-        verify(sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
-        verifyZeroInteractions(sendRespondentSubmissionNotificationForDefendedDivorceEmailTask);
+        verify(undefendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
+        verifyZeroInteractions(defendedDivorceNotificationEmailTask);
         assertThat(returnedPayloadFromWorkflow, is(sameInstance(returnedPayloadFromTask)));
         TaskContext taskContextPassedToTask = taskContextArgumentCaptor.getValue();
-        String caseIdPassedToTaskInWorkflowContext = (String) taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
-        assertThat(caseIdPassedToTaskInWorkflowContext, is(equalTo(UNFORMATTED_CASE_ID)));
+        String caseIdPassedToTask = (String) taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
+        assertThat(caseIdPassedToTask, is(equalTo(UNFORMATTED_CASE_ID)));
     }
 
     @Test
-    public void testExceptionIsThrown_IfNotPossibleToAssert_WhetherDivorceWillBeDefended() throws IOException, WorkflowException {
+    public void testExceptionIsThrown_IfNotPossibleToAssert_WhetherDivorceWillBeDefended() throws IOException,
+            WorkflowException {
         expectedException.expect(WorkflowException.class);
-        expectedException.expectMessage("Could not evaluate value of property \"" + RESP_DEFENDS_DIVORCE_CCD_FIELD + "\"");
+        expectedException.expectMessage("Could not evaluate value of property \""
+                + RESP_DEFENDS_DIVORCE_CCD_FIELD + "\"");
 
-        CreateEvent caseRequestDetails = getJsonFromResourceFile("/jsonExamples/payloads/faultyAcknowledgementOfService.json", CreateEvent.class);
+        CreateEvent caseRequestDetails = getJsonFromResourceFile(
+                "/jsonExamples/payloads/faultyAcknowledgementOfService.json", CreateEvent.class);
         Map<String, Object> incomingCaseDate = caseRequestDetails.getCaseDetails().getCaseData();
 
         Map<String, Object> returnedPayloadFromWorkflow = workflow.run(caseRequestDetails);

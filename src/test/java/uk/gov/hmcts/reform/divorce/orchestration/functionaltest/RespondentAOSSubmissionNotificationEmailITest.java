@@ -57,7 +57,8 @@ public class RespondentAOSSubmissionNotificationEmailITest {
 
     @Test
     public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForDefendedDivorce() throws Exception {
-        CreateEvent createEvent = getJsonFromResourceFile("/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
+        CreateEvent createEvent = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
         Map<String, Object> caseData = createEvent.getCaseDetails().getCaseData();
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
                 .data(caseData)
@@ -74,12 +75,15 @@ public class RespondentAOSSubmissionNotificationEmailITest {
                         hasJsonPath("$.errors", nullValue())
                 )));
 
-        verify(mockClient).sendEmail(eq(DEFENDED_DIVORCE_EMAIL_TEMPLATE_ID), eq("respondent@divorce.co.uk"), any(), any());
+        verify(mockClient).sendEmail(eq(DEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
+                eq("respondent@divorce.co.uk"),
+                any(), any());
     }
 
     @Test
     public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce() throws Exception {
-        CreateEvent createEvent = getJsonFromResourceFile("/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CreateEvent.class);
+        CreateEvent createEvent = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CreateEvent.class);
         Map<String, Object> caseData = createEvent.getCaseDetails().getCaseData();
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
                 .data(caseData)
@@ -96,12 +100,15 @@ public class RespondentAOSSubmissionNotificationEmailITest {
                         hasJsonPath("$.errors", nullValue())
                 )));
 
-        verify(mockClient).sendEmail(eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID), eq("respondent@divorce.co.uk"), any(), any());
+        verify(mockClient).sendEmail(eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
+                eq("respondent@divorce.co.uk"),
+                any(), any());
     }
 
     @Test
     public void testResponseHasValidationErrors_WhenItIsNotClearIfDivorceWillBeDefended() throws Exception {
-        CreateEvent createEvent = getJsonFromResourceFile("/jsonExamples/payloads/faultyAcknowledgementOfService.json", CreateEvent.class);
+        CreateEvent createEvent = getJsonFromResourceFile(
+                "/jsonExamples/payloads/faultyAcknowledgementOfService.json", CreateEvent.class);
 
         webClient.perform(post(API_URL)
                 .content(convertObjectToJsonString(createEvent))
@@ -117,7 +124,8 @@ public class RespondentAOSSubmissionNotificationEmailITest {
 
     @Test
     public void testResponseHasError_IfEmailCannotBeSent() throws Exception {
-        CreateEvent createEvent = getJsonFromResourceFile("/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
+        CreateEvent createEvent = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
         doThrow(NotificationClientException.class).when(mockClient).sendEmail(any(), any(), any(), any());
 
         webClient.perform(post(API_URL)

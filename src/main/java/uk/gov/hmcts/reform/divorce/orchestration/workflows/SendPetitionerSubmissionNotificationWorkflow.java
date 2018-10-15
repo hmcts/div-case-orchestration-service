@@ -19,14 +19,15 @@ public class SendPetitionerSubmissionNotificationWorkflow extends DefaultWorkflo
     private final SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail;
 
     @Autowired
-    public SendPetitionerSubmissionNotificationWorkflow(SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail) {
+    public SendPetitionerSubmissionNotificationWorkflow(
+            SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail) {
         this.sendPetitionerSubmissionNotificationEmail = sendPetitionerSubmissionNotificationEmail;
     }
 
     public Map<String, Object> run(CreateEvent caseRequestDetails) throws WorkflowException {
         return this.execute(
             new Task[] {
-                    sendPetitionerSubmissionNotificationEmail,
+                sendPetitionerSubmissionNotificationEmail,
             },
             caseRequestDetails.getCaseDetails().getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseRequestDetails.getCaseDetails().getCaseId())

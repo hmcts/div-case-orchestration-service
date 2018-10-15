@@ -7,8 +7,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,10 +30,10 @@ public class CourtLookupServiceTest {
         Court foundCourt = courtLookupService.getCourtByKey("eastMidlands");
 
         assertThat(foundCourt.getDivorceCentreName(), is("East Midlands Regional Divorce Centre"));
-        String expectedAddress = "East Midlands Regional Divorce Centre" + LINE_SEPARATOR +
-                "PO Box 10447" + LINE_SEPARATOR +
-                "Nottingham" + LINE_SEPARATOR +
-                "NG2 9QN";
+        String expectedAddress = "East Midlands Regional Divorce Centre" + LINE_SEPARATOR
+                + "PO Box 10447" + LINE_SEPARATOR
+                + "Nottingham" + LINE_SEPARATOR
+                + "NG2 9QN";
         assertThat(foundCourt.getFormattedAddress(), is(expectedAddress));
     }
 
@@ -42,11 +42,11 @@ public class CourtLookupServiceTest {
         Court foundCourt = courtLookupService.getCourtByKey("northWest");
 
         assertThat(foundCourt.getDivorceCentreName(), is("North West Regional Divorce Centre"));
-        String expectedAddress = "North West Regional Divorce Centre" + LINE_SEPARATOR +
-                "Liverpool Civil & Family Court" + LINE_SEPARATOR +
-                "35 Vernon Street" + LINE_SEPARATOR +
-                "Liverpool" + LINE_SEPARATOR +
-                "L2 2BX";
+        String expectedAddress = "North West Regional Divorce Centre" + LINE_SEPARATOR
+                + "Liverpool Civil & Family Court" + LINE_SEPARATOR
+                + "35 Vernon Street" + LINE_SEPARATOR
+                + "Liverpool" + LINE_SEPARATOR
+                + "L2 2BX";
         assertThat(foundCourt.getFormattedAddress(), is(expectedAddress));
     }
 

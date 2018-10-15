@@ -43,7 +43,8 @@ public class SendPetitionerSubmissionNotificationEmail implements Task<Map<Strin
             templateVars.put("RDC name", CourtEnum.valueOf(
                 caseData.get(DIVORCE_UNIT_JSON_KEY).toString().toUpperCase(Locale.UK)).getDisplayName()
             );
-            templateVars.put("CCD reference", formatCaseIdToReferenceNumber((String) context.getTransientObject(CASE_ID_JSON_KEY)));
+            String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
+            templateVars.put("CCD reference", formatCaseIdToReferenceNumber(caseId));
 
             emailService.sendPetitionerSubmissionNotificationEmail(petitionerEmail, templateVars);
         }

@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailToSend;
@@ -60,16 +62,6 @@ public class EmailService {
         sendEmail(emailToSend, emailDescription);
     }
 
-    private EmailToSend generateEmail(String destinationAddress,
-                                      String templateName,
-                                      Map<String, String> templateVars) {
-        String referenceId = UUID.randomUUID().toString();
-        String templateId = emailTemplates.get(templateName);
-        Map<String, String> templateFields = (templateVars != null ? templateVars : emailTemplateVars.get(templateName));
-
-        return new EmailToSend(destinationAddress, templateId, templateFields, referenceId);
-    }
-
     private void sendEmail(EmailToSend emailToSend, String emailDescription) throws NotificationClientException {
         log.debug("Attempting to send {} email. Reference ID: {}", emailDescription, emailToSend.getReferenceId());
         emailClient.sendEmail(
@@ -79,6 +71,20 @@ public class EmailService {
                 emailToSend.getReferenceId()
         );
         log.info("Sending email success. Reference ID: {}", emailToSend.getReferenceId());
+    }
+
+    private EmailToSend generateEmail(String destinationAddress,
+                                      String templateName,
+                                      Map<String, String> templateVars) {
+        String referenceId = UUID.randomUUID().toString();
+        String templateId = emailTemplates.get(templateName);
+        Map<String, String> templateFields = (templateVars != null
+                ?
+                templateVars
+                :
+                emailTemplateVars.get(templateName));
+
+        return new EmailToSend(destinationAddress, templateId, templateFields, referenceId);
     }
 
     private Map<String, Object> sendEmailAndReturnErrorsInResponse(EmailToSend emailToSend, String emailDescription) {

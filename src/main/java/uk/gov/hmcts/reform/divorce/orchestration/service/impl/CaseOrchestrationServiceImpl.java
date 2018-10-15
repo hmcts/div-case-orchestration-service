@@ -70,8 +70,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         SetOrderSummaryWorkflow setOrderSummaryWorkflow,
                                         ProcessPbaPaymentWorkflow processPbaPaymentWorkflow,
                                         SolicitorCreateWorkflow solicitorCreateWorkflow,
-                                        SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow,
-                                        SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow,
+                                        SendPetitionerSubmissionNotificationWorkflow
+                                                    sendPetitionerSubmissionNotificationWorkflow,
+                                        SendRespondentSubmissionNotificationWorkflow
+                                                    sendRespondentSubmissionNotificationWorkflow,
                                         RespondentSubmittedCallbackWorkflow aosRespondedWorkflow,
                                         SubmitAosCaseWorkflow submitAosCaseWorkflow,
                                         DNSubmittedWorkflow submitDNWorkflow,
@@ -211,7 +213,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> sendRespondentSubmissionNotificationEmail(CreateEvent caseDetailsRequest) throws WorkflowException {
+    public Map<String, Object> sendRespondentSubmissionNotificationEmail(CreateEvent caseDetailsRequest)
+            throws WorkflowException {
         return sendRespondentSubmissionNotificationWorkflow.run(caseDetailsRequest);
     }
 
