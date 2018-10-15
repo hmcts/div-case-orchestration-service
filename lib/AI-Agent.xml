@@ -21,7 +21,7 @@
             <Method name="retrieveAosCase" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
-            <Method name="sendSubmissionNotificationEmail" reportCaughtExceptions="true" reportExecutionTime="true"/>
+            <Method name="sendApplicantSubmissionNotificationEmail" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.service.impl.CaseOrchestrationServiceImpl">
             <Method name="setOrderSummary" reportCaughtExceptions="true" reportExecutionTime="true"/>
@@ -68,7 +68,7 @@
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator">
             <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
-        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSubmissionNotificationEmail">
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.SendApplicantSubmissionNotificationEmail">
             <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFee">

@@ -29,51 +29,59 @@ public class EmailService {
     private Map<String, Map<String, String>> emailTemplateVars;
 
     public Map<String, Object> sendSaveDraftConfirmationEmail(String destinationAddress) {
-        String      templateName = EmailTemplateNames.SAVE_DRAFT.name();
-        EmailToSend emailToSend  = generateEmail(destinationAddress, templateName, null);
+        String templateName = EmailTemplateNames.SAVE_DRAFT.name();
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, null);
 
-        return sendEmailWithErrorResponse(emailToSend, "draft saved confirmation");
+        return sendEmailAndReturnErrorsInResponse(emailToSend, "draft saved confirmation");
     }
 
-    public Map<String, Object> sendSubmissionNotificationEmail(String              destinationAddress,
-                                                Map<String, String> templateVars) {
-        String      templateName = EmailTemplateNames.APPLIC_SUBMISSION.name();
-        EmailToSend emailToSend  = generateEmail(destinationAddress, templateName, templateVars);
+    public Map<String, Object> sendPetitionerSubmissionNotificationEmail(String destinationAddress,
+                                                                         Map<String, String> templateVars) {
+        String templateName = EmailTemplateNames.APPLIC_SUBMISSION.name();
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
 
-        return sendEmailWithErrorResponse(emailToSend, "submission notification");
+        return sendEmailAndReturnErrorsInResponse(emailToSend, "submission notification");
+    }
+
+    public void sendEmail(EmailTemplateNames emailTemplate,
+                          String destinationAddress,
+                          Map<String, String> templateParameters) throws NotificationClientException {
+        sendEmail(emailTemplate, "sendEmail", destinationAddress, templateParameters);
+    }
+
+    public void sendEmail(EmailTemplateNames emailTemplate,
+                          String emailDescription,
+                          String destinationAddress,
+                          Map<String, String> templateParameters) throws NotificationClientException {
+
+        String templateName = emailTemplate.name();
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateParameters);
+
+        sendEmail(emailToSend, emailDescription);
     }
 
     private EmailToSend generateEmail(String destinationAddress,
                                       String templateName,
                                       Map<String, String> templateVars) {
-        String              referenceId  = UUID.randomUUID().toString();
-        String              templateId   = emailTemplates.get(templateName);
-        Map<String, String> templateFlds = templateVars != null ? templateVars : emailTemplateVars.get(templateName);
+        String referenceId = UUID.randomUUID().toString();
+        String templateId = emailTemplates.get(templateName);
+        Map<String, String> templateFields = (templateVars != null ? templateVars : emailTemplateVars.get(templateName));
 
-        return new EmailToSend(destinationAddress, templateId, templateFlds, referenceId);
-    }
-
-    public void sendEmail(EmailTemplateNames emailTemplate, String destinationAddress,
-                          Map<String, String> templateVars) throws NotificationClientException {
-
-        String templateName = emailTemplate.name();
-        EmailToSend emailToSend  = generateEmail(destinationAddress, templateName, templateVars);
-
-        sendEmail(emailToSend, "submission notification");
+        return new EmailToSend(destinationAddress, templateId, templateFields, referenceId);
     }
 
     private void sendEmail(EmailToSend emailToSend, String emailDescription) throws NotificationClientException {
         log.debug("Attempting to send {} email. Reference ID: {}", emailDescription, emailToSend.getReferenceId());
         emailClient.sendEmail(
                 emailToSend.getTemplateId(),
-                emailToSend.getEmailAddress(),
+                emailToSend.getDestinationEmailAddress(),
                 emailToSend.getTemplateFields(),
                 emailToSend.getReferenceId()
         );
         log.info("Sending email success. Reference ID: {}", emailToSend.getReferenceId());
     }
 
-    private Map<String, Object> sendEmailWithErrorResponse(EmailToSend emailToSend, String emailDescription) {
+    private Map<String, Object> sendEmailAndReturnErrorsInResponse(EmailToSend emailToSend, String emailDescription) {
         Map<String, Object> response = new HashMap<>();
         try {
             sendEmail(emailToSend, emailDescription);
@@ -85,6 +93,4 @@ public class EmailService {
 
         return response;
     }
-
 }
-

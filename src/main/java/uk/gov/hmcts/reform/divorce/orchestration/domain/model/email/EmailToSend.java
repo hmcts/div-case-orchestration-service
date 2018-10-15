@@ -6,7 +6,7 @@ import java.util.Map;
 
 @Value
 public final class EmailToSend {
-    String emailAddress;
+    String destinationEmailAddress;
     String templateId;
     Map<String, String> templateFields;
     String referenceId;

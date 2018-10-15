@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendSubmissionNotificationEmailTest {
+public class SendPetitionerSubmissionNotificationEmailTest {
 
     public static final String COURT_DISPLAY_NAME = "eastMidlands";
     public static final String UNFORMATTED_CASE_ID = "0123456789012345";
@@ -39,7 +39,7 @@ public class SendSubmissionNotificationEmailTest {
     EmailService emailService;
 
     @InjectMocks
-    SendSubmissionNotificationEmail sendSubmissionNotificationEmail;
+    SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -69,11 +69,11 @@ public class SendSubmissionNotificationEmailTest {
 
     @Test
     public void executeShouldCallEmailService() {
-        when(emailService.sendSubmissionNotificationEmail(TEST_USER_EMAIL, templateVars)).thenReturn(null);
+        when(emailService.sendPetitionerSubmissionNotificationEmail(TEST_USER_EMAIL, templateVars)).thenReturn(null);
 
-        assertEquals(testData, sendSubmissionNotificationEmail.execute(context, testData));
+        assertEquals(testData, sendPetitionerSubmissionNotificationEmail.execute(context, testData));
 
-        verify(emailService).sendSubmissionNotificationEmail(TEST_USER_EMAIL, templateVars);
+        verify(emailService).sendPetitionerSubmissionNotificationEmail(TEST_USER_EMAIL, templateVars);
     }
 
 
@@ -82,10 +82,10 @@ public class SendSubmissionNotificationEmailTest {
         context.setTransientObject(CASE_ID_JSON_KEY, SHORT_CASE_ID);
         templateVars.replace("CCD reference", SHORT_CASE_ID);
 
-        when(emailService.sendSubmissionNotificationEmail(TEST_USER_EMAIL, templateVars)).thenReturn(null);
+        when(emailService.sendPetitionerSubmissionNotificationEmail(TEST_USER_EMAIL, templateVars)).thenReturn(null);
 
-        assertEquals(testData, sendSubmissionNotificationEmail.execute(context, testData));
+        assertEquals(testData, sendPetitionerSubmissionNotificationEmail.execute(context, testData));
 
-        verify(emailService).sendSubmissionNotificationEmail(TEST_USER_EMAIL, templateVars);
+        verify(emailService).sendPetitionerSubmissionNotificationEmail(TEST_USER_EMAIL, templateVars);
     }
 }

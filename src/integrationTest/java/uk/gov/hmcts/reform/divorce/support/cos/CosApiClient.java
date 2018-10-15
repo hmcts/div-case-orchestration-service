@@ -30,6 +30,16 @@ public interface CosApiClient {
 
     @RequestMapping(
             method = RequestMethod.POST,
+            value = "/aos-submitted",
+            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> aosSubmitted(@RequestHeader(AUTHORIZATION) String authorisation,
+                                     @RequestBody Map<String, Object> caseDataContent);
+
+
+
+    @RequestMapping(
+            method = RequestMethod.POST,
             value = "/dn-submitted",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )

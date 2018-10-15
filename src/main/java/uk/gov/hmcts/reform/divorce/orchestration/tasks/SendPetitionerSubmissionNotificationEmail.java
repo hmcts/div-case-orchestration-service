@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,15 +17,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 
 @Component
-@Slf4j
-public class SendSubmissionNotificationEmail implements Task<Map<String, Object>> {
+public class SendPetitionerSubmissionNotificationEmail implements Task<Map<String, Object>> {
 
     private final EmailService emailService;
 
     @Autowired
-    public SendSubmissionNotificationEmail(EmailService emailService) {
+    public SendPetitionerSubmissionNotificationEmail(EmailService emailService) {
         this.emailService = emailService;
     }
 
@@ -44,24 +43,12 @@ public class SendSubmissionNotificationEmail implements Task<Map<String, Object>
             templateVars.put("RDC name", CourtEnum.valueOf(
                 caseData.get(DIVORCE_UNIT_JSON_KEY).toString().toUpperCase(Locale.UK)).getDisplayName()
             );
-            templateVars.put("CCD reference", formatReferenceId((String) context.getTransientObject(CASE_ID_JSON_KEY)));
+            templateVars.put("CCD reference", formatCaseIdToReferenceNumber((String) context.getTransientObject(CASE_ID_JSON_KEY)));
 
-            emailService.sendSubmissionNotificationEmail(petitionerEmail, templateVars);
+            emailService.sendPetitionerSubmissionNotificationEmail(petitionerEmail, templateVars);
         }
 
         return caseData;
     }
 
-    private String formatReferenceId(String referenceId) {
-        try {
-            return String.format("%s-%s-%s-%s",
-                    referenceId.substring(0, 4),
-                    referenceId.substring(4, 8),
-                    referenceId.substring(8, 12),
-                    referenceId.substring(12));
-        } catch (Exception exception) {
-            log.warn("Error formatting case reference {}", referenceId);
-            return referenceId;
-        }
-    }
 }

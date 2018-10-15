@@ -16,12 +16,12 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class SubmissionNotificationTest extends IntegrationTest {
+public class PetitionSubmissionNotificationTest extends IntegrationTest {
 
     private static final String DATA_KEY = "data";
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/issue-petition/";
 
-    @Value("${case.orchestration.notification.submit.context-path}")
+    @Value("${case.orchestration.petition-submission.notification.context-path}")
     private String contextPath;
 
     @Test

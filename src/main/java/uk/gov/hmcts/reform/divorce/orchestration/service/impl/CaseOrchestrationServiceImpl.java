@@ -19,7 +19,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCa
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitAosCaseWorkflow;
@@ -49,7 +50,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SetOrderSummaryWorkflow setOrderSummaryWorkflow;
     private final ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
-    private final SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow;
+    private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
+    private final SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
     private final RespondentSubmittedCallbackWorkflow aosRespondedWorkflow;
     private final SubmitAosCaseWorkflow submitAosCaseWorkflow;
     private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
@@ -68,7 +70,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         SetOrderSummaryWorkflow setOrderSummaryWorkflow,
                                         ProcessPbaPaymentWorkflow processPbaPaymentWorkflow,
                                         SolicitorCreateWorkflow solicitorCreateWorkflow,
-                                        SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow,
+                                        SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow,
+                                        SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow,
                                         RespondentSubmittedCallbackWorkflow aosRespondedWorkflow,
                                         SubmitAosCaseWorkflow submitAosCaseWorkflow,
                                         DNSubmittedWorkflow submitDNWorkflow,
@@ -86,7 +89,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         this.setOrderSummaryWorkflow = setOrderSummaryWorkflow;
         this.processPbaPaymentWorkflow = processPbaPaymentWorkflow;
         this.solicitorCreateWorkflow = solicitorCreateWorkflow;
-        this.sendSubmissionNotificationWorkflow = sendSubmissionNotificationWorkflow;
+        this.sendPetitionerSubmissionNotificationWorkflow = sendPetitionerSubmissionNotificationWorkflow;
+        this.sendRespondentSubmissionNotificationWorkflow = sendRespondentSubmissionNotificationWorkflow;
         this.submitAosCaseWorkflow = submitAosCaseWorkflow;
         this.submitDnCaseWorkflow = submitDnCaseWorkflow;
         this.dnSubmittedWorkflow = submitDNWorkflow;
@@ -201,9 +205,14 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> sendSubmissionNotificationEmail(
+    public Map<String, Object> sendPetitionerSubmissionNotificationEmail(
             CreateEvent caseDetailsRequest) throws WorkflowException {
-        return sendSubmissionNotificationWorkflow.run(caseDetailsRequest);
+        return sendPetitionerSubmissionNotificationWorkflow.run(caseDetailsRequest);
+    }
+
+    @Override
+    public Map<String, Object> sendRespondentSubmissionNotificationEmail(CreateEvent caseDetailsRequest) throws WorkflowException {
+        return sendRespondentSubmissionNotificationWorkflow.run(caseDetailsRequest);
     }
 
     @Override
