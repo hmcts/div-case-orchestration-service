@@ -54,7 +54,7 @@ public class RespondentAOSSubmissionNotificationEmailITest {
 
     @MockBean
     private EmailClient mockClient;
-
+    
     @Test
     public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForDefendedDivorce() throws Exception {
         CreateEvent createEvent = getJsonFromResourceFile(
