@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskHelper;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
@@ -42,10 +43,7 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
             .withLocale(Locale.UK);
 
     @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private CourtLookupService courtLookupService;
+    private TaskHelper taskHelper;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseDataPayload) throws TaskException {
@@ -56,7 +54,7 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         String respondentLastName = (String) caseDataPayload.get(RESP_LAST_NAME_CCD_FIELD);
         String petitionerInferredGender = (String) caseDataPayload.get(D_8_INFERRED_PETITIONER_GENDER);
         String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
-        Court court = getCourt((String) caseDataPayload.get(DIVORCE_UNIT_JSON_KEY));
+        Court court = taskHelper.getCourt((String) caseDataPayload.get(DIVORCE_UNIT_JSON_KEY));
 
         String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
         templateFields.put("case number", formatCaseIdToReferenceNumber(caseId));
@@ -71,26 +69,12 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         String formSubmissionDateLimit = getFormSubmissionDateLimit(caseDataPayload);
         templateFields.put("form submission date limit", formSubmissionDateLimit);
 
-        try {
-            emailService.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
-                    EMAIL_DESCRIPTION,
-                    respondentEmailAddress,
-                    templateFields);
-        } catch (NotificationClientException e) {
-            TaskException taskException = new TaskException("Failed to send e-mail", e);
-            log.error(taskException.getMessage(), e);
-            throw taskException;
-        }
+        taskHelper.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
+                EMAIL_DESCRIPTION,
+                respondentEmailAddress,
+                templateFields);
 
         return caseDataPayload;
-    }
-
-    private Court getCourt(String divorceUnitKey) throws TaskException {
-        try {
-            return courtLookupService.getCourtByKey(divorceUnitKey);
-        } catch (CourtDetailsNotFound courtDetailsNotFound) {
-            throw new TaskException(courtDetailsNotFound);
-        }
     }
 
     private String getFormSubmissionDateLimit(Map<String, Object> payload) {

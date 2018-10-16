@@ -12,12 +12,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
-import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
-import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
-import uk.gov.service.notify.NotificationClientException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskHelper;
 
 import java.io.IOException;
 import java.util.Map;
@@ -29,9 +26,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -48,10 +43,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
     public ExpectedException expectedException = none();
 
     @Mock
-    private EmailService emailService;
-
-    @Mock
-    private CourtLookupService courtLookupService;
+    private TaskHelper taskHelper;
 
     @Captor
     private ArgumentCaptor<Map<String, String>> templateParametersCaptor;
@@ -65,19 +57,19 @@ public class SendRespondentSubmissionNotificationEmailTest {
     private Court testCourt;
 
     @Before
-    public void setUp() throws CourtDetailsNotFound {
+    public void setUp() throws TaskException {
         testCourt = new Court();
         testCourt.setDivorceCentreName("East Midlands Regional Divorce Centre");
         testCourt.setPoBox("PO Box 10447");
         testCourt.setCourtCity("Nottingham");
         testCourt.setPostCode("NG2 9QN");
 
-        when(courtLookupService.getCourtByKey("eastMidlands")).thenReturn(testCourt);
+        when(taskHelper.getCourt("eastMidlands")).thenReturn(testCourt);
     }
 
     @Test
-    public void testRightEmailIsSent_WhenRespondentChoosesToDefendDivorce_AndAllFieldsArePresent()
-            throws TaskException, IOException, NotificationClientException {
+    public void testRightEmailIsSent_WhenRespondentChoosesToDefendDivorce()
+            throws TaskException, IOException {
         CreateEvent incomingPayload = getJsonFromResourceFile(
                 "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
         Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
@@ -88,7 +80,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
         Map<String, Object> returnedPayload = defendedDivorceNotificationEmailTask.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
-        verify(emailService).sendEmail(eq(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION),
+        verify(taskHelper).sendEmail(eq(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION),
                 eq("respondent submission notification email - defended divorce"),
                 eq("respondent@divorce.co.uk"),
                 templateParametersCaptor.capture());
@@ -107,8 +99,8 @@ public class SendRespondentSubmissionNotificationEmailTest {
     }
 
     @Test
-    public void testRightEmailIsSent_WhenRespondentChoosesNotToDefendDivorce_AndAllFieldsArePresent()
-            throws TaskException, IOException, NotificationClientException {
+    public void testRightEmailIsSent_WhenRespondentChoosesNotToDefendDivorce()
+            throws TaskException, IOException {
         CreateEvent incomingPayload = getJsonFromResourceFile(
                 "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CreateEvent.class);
         Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
@@ -119,7 +111,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
         Map<String, Object> returnedPayload = undefendedDivorceNotificationEmailTask.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
-        verify(emailService).sendEmail(eq(RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION),
+        verify(taskHelper).sendEmail(eq(RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION),
                 eq("respondent submission notification email - undefended divorce"),
                 eq("respondent@divorce.co.uk"),
                 templateParametersCaptor.capture());
@@ -132,40 +124,6 @@ public class SendRespondentSubmissionNotificationEmailTest {
                 hasEntry("RDC name", testCourt.getDivorceCentreName())
         ));
         assertThat(templateParameters.size(), equalTo(5));
-    }
-
-    @Test
-    public void testExceptionIsThrown_WhenEmailCannotBeSent_ForDefendedDivorce() throws TaskException,
-            IOException, NotificationClientException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Failed to send e-mail");
-
-        doThrow(NotificationClientException.class).when(emailService).sendEmail(any(), any(), any(), any());
-        CreateEvent incomingPayload = getJsonFromResourceFile(
-                "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
-        Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
-        String caseId = incomingPayload.getCaseDetails().getCaseId();
-        DefaultTaskContext context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, caseId);
-
-        defendedDivorceNotificationEmailTask.execute(context, caseData);
-    }
-
-    @Test
-    public void testResponseContainsErrorsWhenEmailCannotBeSent_ForUndefendedDivorce() throws TaskException,
-            IOException, NotificationClientException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Failed to send e-mail");
-
-        doThrow(NotificationClientException.class).when(emailService).sendEmail(any(), any(), any(), any());
-        CreateEvent incomingPayload = getJsonFromResourceFile(
-                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CreateEvent.class);
-        Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
-        String caseId = incomingPayload.getCaseDetails().getCaseId();
-        DefaultTaskContext context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, caseId);
-
-        undefendedDivorceNotificationEmailTask.execute(context, caseData);
     }
 
 }

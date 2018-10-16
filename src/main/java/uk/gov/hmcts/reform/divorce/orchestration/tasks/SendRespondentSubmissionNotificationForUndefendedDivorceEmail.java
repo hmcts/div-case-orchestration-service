@@ -4,13 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
-import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
-import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
-import uk.gov.service.notify.NotificationClientException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,10 +27,7 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
     private static final String EMAIL_DESCRIPTION = "respondent submission notification email - undefended divorce";
 
     @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private CourtLookupService courtLookupService;
+    private TaskHelper taskHelper;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseDataPayload) throws TaskException {
@@ -44,7 +38,8 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
         String respondentLastName = (String) caseDataPayload.get(RESP_LAST_NAME_CCD_FIELD);
         String petitionerInferredGender = (String) caseDataPayload.get(D_8_INFERRED_PETITIONER_GENDER);
         String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
-        Court court = getCourt((String) caseDataPayload.get(DIVORCE_UNIT_JSON_KEY));
+        String divorceUnitKey = (String) caseDataPayload.get(DIVORCE_UNIT_JSON_KEY);
+        Court court = taskHelper.getCourt(divorceUnitKey);
 
         templateFields.put("email address", respondentEmailAddress);
         templateFields.put("first name", respondentFirstName);
@@ -52,26 +47,12 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
         templateFields.put("husband or wife", petitionerRelationshipToRespondent);
         templateFields.put("RDC name", court.getDivorceCentreName());
 
-        try {
-            emailService.sendEmail(RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION,
-                    EMAIL_DESCRIPTION,
-                    respondentEmailAddress,
-                    templateFields);
-        } catch (NotificationClientException e) {
-            TaskException taskException = new TaskException("Failed to send e-mail", e);
-            log.error(taskException.getMessage(), e);
-            throw taskException;
-        }
+        taskHelper.sendEmail(RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION,
+                EMAIL_DESCRIPTION,
+                respondentEmailAddress,
+                templateFields);
 
         return caseDataPayload;
-    }
-
-    private Court getCourt(String divorceUnitKey) throws TaskException {
-        try {
-            return courtLookupService.getCourtByKey(divorceUnitKey);
-        } catch (CourtDetailsNotFound courtDetailsNotFound) {
-            throw new TaskException(courtDetailsNotFound);
-        }
     }
 
 }

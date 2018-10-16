@@ -1,0 +1,50 @@
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.util;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
+import uk.gov.service.notify.NotificationClientException;
+
+import java.util.Map;
+
+@Component
+@Slf4j
+public class TaskHelper {
+
+    @Autowired
+    private CourtLookupService courtLookupService;
+
+    @Autowired
+    private EmailService emailService;
+
+    public Court getCourt(String divorceUnitKey) throws TaskException {
+        try {
+            return courtLookupService.getCourtByKey(divorceUnitKey);
+        } catch (CourtDetailsNotFound courtDetailsNotFound) {
+            throw new TaskException(courtDetailsNotFound);
+        }
+    }
+
+    public void sendEmail(EmailTemplateNames emailTemplate,
+                          String emailDescription,
+                          String destinationEmailAddress,
+                          Map<String, String> templateParameters) throws TaskException {
+        try {
+            emailService.sendEmail(emailTemplate,
+                    emailDescription,
+                    destinationEmailAddress,
+                    templateParameters);
+        } catch (NotificationClientException e) {
+            TaskException taskException = new TaskException("Failed to send e-mail", e);
+            log.error(taskException.getMessage(), e);
+            throw taskException;
+        }
+    }
+
+}

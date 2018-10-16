@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.testutil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationEmailTest;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class ObjectMapperTestUtil {
+
+    private static ObjectMapper objectMapper;
 
     public static String convertObjectToJsonString(final Object object) {
         try {
@@ -24,7 +25,11 @@ public class ObjectMapperTestUtil {
     }
 
     private static ObjectMapper getCommonObjectMapper() {
-        return new ObjectMapper();
+        if (objectMapper == null) {
+            objectMapper = new ObjectMapper();
+        }
+
+        return objectMapper;
     }
 
 }
