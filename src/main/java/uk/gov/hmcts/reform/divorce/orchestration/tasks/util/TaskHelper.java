@@ -41,8 +41,8 @@ public class TaskHelper {
                     destinationEmailAddress,
                     templateParameters);
         } catch (NotificationClientException e) {
+            log.error(e.getMessage(), e);
             TaskException taskException = new TaskException("Failed to send e-mail", e);
-            log.error(taskException.getMessage(), e);
             throw taskException;
         }
     }
