@@ -105,7 +105,7 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
                 + RESP_DEFENDS_DIVORCE_CCD_FIELD + "\"");
 
         CreateEvent caseRequestDetails = getJsonFromResourceFile(
-                "/jsonExamples/payloads/faultyAcknowledgementOfService.json", CreateEvent.class);
+                "/jsonExamples/payloads/unclearAcknowledgementOfService.json", CreateEvent.class);
         Map<String, Object> incomingCaseDate = caseRequestDetails.getCaseDetails().getCaseData();
 
         Map<String, Object> returnedPayloadFromWorkflow = workflow.run(caseRequestDetails);

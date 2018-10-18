@@ -108,7 +108,7 @@ public class RespondentAOSSubmissionNotificationEmailITest {
     @Test
     public void testResponseHasValidationErrors_WhenItIsNotClearIfDivorceWillBeDefended() throws Exception {
         CreateEvent createEvent = getJsonFromResourceFile(
-                "/jsonExamples/payloads/faultyAcknowledgementOfService.json", CreateEvent.class);
+                "/jsonExamples/payloads/unclearAcknowledgementOfService.json", CreateEvent.class);
 
         webClient.perform(post(API_URL)
                 .content(convertObjectToJsonString(createEvent))
@@ -119,6 +119,61 @@ public class RespondentAOSSubmissionNotificationEmailITest {
                         isJson(),
                         hasJsonPath("$.data", is(nullValue())),
                         hasJsonPath("$.errors", hasItem("Could not evaluate value of property \"RespDefendsDivorce\""))
+                )));
+    }
+
+    @Test
+    public void testResponseHasValidationErrors_WhenCaseIdIsMissing_ForDefendedDivorce() throws Exception {
+        CreateEvent createEvent = getJsonFromResourceFile(
+                "/jsonExamples/payloads/defendedDivorceAOSMissingCaseId.json", CreateEvent.class);
+
+        webClient.perform(post(API_URL)
+                .content(convertObjectToJsonString(createEvent))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        isJson(),
+                        hasJsonPath("$.data", is(nullValue())),
+                        hasJsonPath("$.errors", hasItem("Could not evaluate value of mandatory property \"caseId\""))
+                )));
+    }
+
+    @Test
+    public void testResponseHasValidationErrors_WhenFieldsAreMissing_ForDefendedDivorce() throws Exception {
+        CreateEvent createEvent = getJsonFromResourceFile(
+                "/jsonExamples/payloads/defendedDivorceAOSMissingFields.json", CreateEvent.class);
+
+        webClient.perform(post(API_URL)
+                .content(convertObjectToJsonString(createEvent))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        isJson(),
+                        hasJsonPath("$.data", is(nullValue())),
+                        hasJsonPath("$.errors",
+                                hasItem("Could not evaluate value of mandatory property \"D8InferredPetitionerGender\"")
+                        )
+                )));
+    }
+
+    @Test
+    public void testResponseHasValidationErrors_WhenFieldsAreMissing_ForUndefendedDivorce() throws Exception {
+        CreateEvent createEvent = getJsonFromResourceFile(
+                "/jsonExamples/payloads/undefendedDivorceAOSMissingFields.json", CreateEvent.class);
+
+        webClient.perform(post(API_URL)
+                .content(convertObjectToJsonString(createEvent))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        isJson(),
+                        hasJsonPath("$.data", is(nullValue())),
+                        hasJsonPath("$.errors",
+                                hasItem("Could not evaluate value of mandatory property \"D8DivorceUnit\"")
+                        )
                 )));
     }
 

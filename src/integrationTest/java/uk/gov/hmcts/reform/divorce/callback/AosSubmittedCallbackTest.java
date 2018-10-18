@@ -16,7 +16,8 @@ import static org.junit.Assert.assertTrue;
 public class AosSubmittedCallbackTest extends IntegrationTest {
 
     private static final String BASE_CASE_RESPONSE = "fixtures/respond-to-a-divorce/ccd-callback-aos-submitted.json";
-    private static final String ERROR_CASE_RESPONSE = "fixtures/respond-to-a-divorce/ccd-callback-aos-submitted-error.json";
+    private static final String ERROR_CASE_RESPONSE =
+            "fixtures/respond-to-a-divorce/ccd-callback-aos-submitted-error.json";
     private static final String CASE_DATA = "case_data";
     private static final String ERRORS = "errors";
 
@@ -41,7 +42,7 @@ public class AosSubmittedCallbackTest extends IntegrationTest {
         assertNull(response.get(CASE_DATA));
         List<String> error = (List<String>) response.get(ERRORS);
         assertEquals(1, error.size());
-        assertTrue(error.get(0).contains("Failed to send e-mail"));
+        assertTrue(error.get(0).contains("Could not evaluate value of mandatory property \"RespEmailAddress\""));
     }
 
 }

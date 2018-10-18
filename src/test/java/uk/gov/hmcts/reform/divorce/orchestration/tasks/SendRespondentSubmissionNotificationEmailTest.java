@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskHelper;
 
 import java.io.IOException;
 import java.util.Map;
@@ -43,7 +42,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
     public ExpectedException expectedException = none();
 
     @Mock
-    private TaskHelper taskHelper;
+    private TaskCommons taskCommons;
 
     @Captor
     private ArgumentCaptor<Map<String, String>> templateParametersCaptor;
@@ -64,7 +63,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
         testCourt.setCourtCity("Nottingham");
         testCourt.setPostCode("NG2 9QN");
 
-        when(taskHelper.getCourt("eastMidlands")).thenReturn(testCourt);
+        when(taskCommons.getCourt("eastMidlands")).thenReturn(testCourt);
     }
 
     @Test
@@ -80,7 +79,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
         Map<String, Object> returnedPayload = defendedDivorceNotificationEmailTask.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
-        verify(taskHelper).sendEmail(eq(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION),
+        verify(taskCommons).sendEmail(eq(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION),
                 eq("respondent submission notification email - defended divorce"),
                 eq("respondent@divorce.co.uk"),
                 templateParametersCaptor.capture());
@@ -99,6 +98,40 @@ public class SendRespondentSubmissionNotificationEmailTest {
     }
 
     @Test
+    public void testExceptionIsThrown_WhenCaseIdIsMissing_ForDefendedDivorce()
+            throws IOException, TaskException {
+        expectedException.expect(TaskException.class);
+        expectedException.expectMessage("Could not evaluate value of mandatory property \"caseId\"");
+
+        CreateEvent incomingPayload = getJsonFromResourceFile(
+                "/jsonExamples/payloads/defendedDivorceAOSMissingCaseId.json", CreateEvent.class);
+        Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
+        String caseId = incomingPayload.getCaseDetails().getCaseId();
+        DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, caseId);
+
+        defendedDivorceNotificationEmailTask.execute(context, caseData);
+    }
+
+    @Test
+    public void testExceptionIsThrown_WhenMandatoryFieldIsMissing_ForDefendedDivorce()
+            throws IOException, TaskException {
+        expectedException.expect(TaskException.class);
+        expectedException.expectMessage(
+                "Could not evaluate value of mandatory property \"D8InferredPetitionerGender\""
+        );
+
+        CreateEvent incomingPayload = getJsonFromResourceFile(
+                "/jsonExamples/payloads/defendedDivorceAOSMissingFields.json", CreateEvent.class);
+        Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
+        String caseId = incomingPayload.getCaseDetails().getCaseId();
+        DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, caseId);
+
+        defendedDivorceNotificationEmailTask.execute(context, caseData);
+    }
+
+    @Test
     public void testRightEmailIsSent_WhenRespondentChoosesNotToDefendDivorce()
             throws TaskException, IOException {
         CreateEvent incomingPayload = getJsonFromResourceFile(
@@ -111,7 +144,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
         Map<String, Object> returnedPayload = undefendedDivorceNotificationEmailTask.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
-        verify(taskHelper).sendEmail(eq(RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION),
+        verify(taskCommons).sendEmail(eq(RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION),
                 eq("respondent submission notification email - undefended divorce"),
                 eq("respondent@divorce.co.uk"),
                 templateParametersCaptor.capture());
@@ -124,6 +157,22 @@ public class SendRespondentSubmissionNotificationEmailTest {
                 hasEntry("RDC name", testCourt.getDivorceCentreName())
         ));
         assertThat(templateParameters.size(), equalTo(5));
+    }
+
+    @Test
+    public void testExceptionIsThrown_WhenMandatoryFieldIsMissing_ForUndefendedDivorce()
+            throws IOException, TaskException {
+        expectedException.expect(TaskException.class);
+        expectedException.expectMessage("Could not evaluate value of mandatory property \"D8DivorceUnit\"");
+
+        CreateEvent incomingPayload = getJsonFromResourceFile(
+                "/jsonExamples/payloads/undefendedDivorceAOSMissingFields.json", CreateEvent.class);
+        Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
+        String caseId = incomingPayload.getCaseDetails().getCaseId();
+        DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, caseId);
+
+        undefendedDivorceNotificationEmailTask.execute(context, caseData);
     }
 
 }

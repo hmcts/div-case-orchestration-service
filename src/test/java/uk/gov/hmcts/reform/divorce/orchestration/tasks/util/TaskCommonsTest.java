@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.doThrow;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TaskHelperTest {
+public class TaskCommonsTest {
 
     @Rule
     public ExpectedException expectedException = none();
@@ -33,7 +34,7 @@ public class TaskHelperTest {
     private CourtLookupService courtLookupService;
 
     @InjectMocks
-    private TaskHelper taskHelper;
+    private TaskCommons taskCommons;
 
     @Test
     public void testTaskExceptionIsThrown_WhenEmailCannotBeSent() throws TaskException, NotificationClientException {
@@ -47,7 +48,7 @@ public class TaskHelperTest {
                     "test@hmcts.net",
                     templateParameters);
 
-        taskHelper.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
+        taskCommons.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
                 "test",
                 "test@hmcts.net",
                 templateParameters);
@@ -62,7 +63,7 @@ public class TaskHelperTest {
                 .when(courtLookupService)
                 .getCourtByKey("testKey");
 
-        taskHelper.getCourt("testKey");
+        taskCommons.getCourt("testKey");
     }
 
 }

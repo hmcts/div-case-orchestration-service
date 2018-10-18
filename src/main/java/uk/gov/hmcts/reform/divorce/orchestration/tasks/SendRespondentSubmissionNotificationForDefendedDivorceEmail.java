@@ -4,14 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
-import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
-import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskHelper;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -20,7 +15,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_AOS_RECEIVED_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
@@ -28,6 +22,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
 
@@ -43,20 +39,22 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
             .withLocale(Locale.UK);
 
     @Autowired
-    private TaskHelper taskHelper;
+    private TaskCommons taskCommons;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseDataPayload) throws TaskException {
-        String respondentEmailAddress = (String) caseDataPayload.get(RESPONDENT_EMAIL_ADDRESS);
+        String respondentEmailAddress = getMandatoryPropertyValueAsString(caseDataPayload, RESPONDENT_EMAIL_ADDRESS);
 
         Map<String, String> templateFields = new HashMap<>();
-        String respondentFirstName = (String) caseDataPayload.get(RESP_FIRST_NAME_CCD_FIELD);
-        String respondentLastName = (String) caseDataPayload.get(RESP_LAST_NAME_CCD_FIELD);
-        String petitionerInferredGender = (String) caseDataPayload.get(D_8_INFERRED_PETITIONER_GENDER);
+        String respondentFirstName = getMandatoryPropertyValueAsString(caseDataPayload, RESP_FIRST_NAME_CCD_FIELD);
+        String respondentLastName = getMandatoryPropertyValueAsString(caseDataPayload, RESP_LAST_NAME_CCD_FIELD);
+        String petitionerInferredGender = getMandatoryPropertyValueAsString(caseDataPayload,
+                D_8_INFERRED_PETITIONER_GENDER);
         String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
-        Court court = taskHelper.getCourt((String) caseDataPayload.get(DIVORCE_UNIT_JSON_KEY));
+        String divorceUnit = getMandatoryPropertyValueAsString(caseDataPayload, DIVORCE_UNIT_JSON_KEY);
+        Court court = taskCommons.getCourt(divorceUnit);
 
-        String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
+        String caseId = getCaseId(context);
         templateFields.put("case number", formatCaseIdToReferenceNumber(caseId));
 
         templateFields.put("email address", respondentEmailAddress);
@@ -69,7 +67,7 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         String formSubmissionDateLimit = getFormSubmissionDateLimit(caseDataPayload);
         templateFields.put("form submission date limit", formSubmissionDateLimit);
 
-        taskHelper.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
+        taskCommons.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
                 EMAIL_DESCRIPTION,
                 respondentEmailAddress,
                 templateFields);
