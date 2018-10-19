@@ -75,8 +75,9 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         return caseDataPayload;
     }
 
-    private String getFormSubmissionDateLimit(Map<String, Object> payload) {
-        LocalDate dateAOSReceivedFromRespondent = LocalDate.parse((String) payload.get(DATE_AOS_RECEIVED_FROM_RESP));
+    private String getFormSubmissionDateLimit(Map<String, Object> payload) throws TaskException {
+        String dateAsString = getMandatoryPropertyValueAsString(payload, DATE_AOS_RECEIVED_FROM_RESP);
+        LocalDate dateAOSReceivedFromRespondent = LocalDate.parse(dateAsString);
         LocalDate limitDate = dateAOSReceivedFromRespondent.plusDays(LIMIT_IN_DAYS_FOR_FORM_SUBMISSION);
         return limitDate.format(CLIENT_FACING_DATE_FORMAT);
     }
