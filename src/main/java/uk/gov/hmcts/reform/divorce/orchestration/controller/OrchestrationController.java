@@ -341,6 +341,37 @@ public class OrchestrationController {
             orchestrationService.submitAosCase(payload, authorizationToken, caseId));
     }
 
+    @PostMapping(path = "/submit-dn/{caseId}",
+            consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Handles DN update")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
+            response = CaseResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")
+        })
+    public ResponseEntity<Map<String, Object>> submitDn(
+            @RequestHeader(value = "Authorization") String authorizationToken,
+            @PathVariable String caseId,
+            @RequestBody @ApiParam("Complete Divorce Session / partial DN data ") Map<String, Object> divorceSession)
+            throws WorkflowException {
+
+        return ResponseEntity.ok(
+                orchestrationService.submitDnCase(divorceSession, authorizationToken, caseId));
+    }
+
+    @PostMapping(path = "/dn-submitted")
+    @ApiOperation(value = "Decree nisi submitted confirmation notification ")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Notification sent successful"),
+            @ApiResponse(code = 401, message = "User Not Authenticated"),
+            @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> dnSubmitted(
+            @RequestHeader("Authorization")
+            @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+        return ResponseEntity.ok(orchestrationService.dnSubmitted(caseDetailsRequest, authorizationToken));
+    }
+
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();

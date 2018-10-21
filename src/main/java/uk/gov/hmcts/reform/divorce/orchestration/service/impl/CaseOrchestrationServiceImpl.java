@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendSubmissionNotific
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitAosCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -34,6 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 @Service
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
+    public static final String CASE_ID_IS = "Case ID is: {}";
     private final CcdCallbackWorkflow ccdCallbackWorkflow;
     private final RetrieveDraftWorkflow retrieveDraftWorkflow;
     private final SaveDraftWorkflow saveDraftWorkflow;
@@ -49,6 +52,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow;
     private final RespondentSubmittedCallbackWorkflow aosRespondedWorkflow;
     private final SubmitAosCaseWorkflow submitAosCaseWorkflow;
+    private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
+    private final DNSubmittedWorkflow dnSubmittedWorkflow;
 
     @Autowired
     public CaseOrchestrationServiceImpl(CcdCallbackWorkflow ccdCallbackWorkflow,
@@ -65,7 +70,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         SolicitorCreateWorkflow solicitorCreateWorkflow,
                                         SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow,
                                         RespondentSubmittedCallbackWorkflow aosRespondedWorkflow,
-                                        SubmitAosCaseWorkflow submitAosCaseWorkflow) {
+                                        SubmitAosCaseWorkflow submitAosCaseWorkflow,
+                                        DNSubmittedWorkflow submitDNWorkflow,
+                                        SubmitDnCaseWorkflow submitDnCaseWorkflow) {
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
         this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
         this.submitToCCDWorkflow = submitToCCDWorkflow;
@@ -81,6 +88,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         this.solicitorCreateWorkflow = solicitorCreateWorkflow;
         this.sendSubmissionNotificationWorkflow = sendSubmissionNotificationWorkflow;
         this.submitAosCaseWorkflow = submitAosCaseWorkflow;
+        this.submitDnCaseWorkflow = submitDnCaseWorkflow;
+        this.dnSubmittedWorkflow = submitDNWorkflow;
     }
 
     @Override
@@ -107,7 +116,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payload = submitToCCDWorkflow.run(divorceSession, authToken);
 
         if (submitToCCDWorkflow.errors().isEmpty()) {
-            log.info("Case ID is: {}", payload.get(ID));
+            log.info(CASE_ID_IS, payload.get(ID));
             return payload;
         } else {
             return submitToCCDWorkflow.errors();
@@ -229,5 +238,38 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
         log.info("Case ID is: {}", payload.get(ID));
         return payload;
+    }
+
+    @Override
+    public Map<String, Object> submitDnCase(Map<String, Object> divorceSession, String authorizationToken,
+                                             String caseId)
+            throws WorkflowException {
+        Map<String, Object> payload = submitDnCaseWorkflow.run(divorceSession, authorizationToken, caseId);
+
+        log.info("Case ID is: {}", payload.get(ID));
+        return payload;
+    }
+
+    @Override
+    public CcdCallbackResponse dnSubmitted(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException {
+        Map<String, Object> response = dnSubmittedWorkflow.run(caseDetailsRequest, authToken);
+
+        if (dnSubmittedWorkflow.errors().isEmpty()) {
+            log.info("Case ID {}. DN submitted notification sent.", caseDetailsRequest
+                    .getCaseDetails()
+                    .getCaseId());
+            return CcdCallbackResponse.builder()
+                    .data(response)
+                    .build();
+        } else {
+            Map<String, Object> workflowErrors = dnSubmittedWorkflow.errors();
+            log.error("Case ID {}. DN submitted notification failed." + workflowErrors, caseDetailsRequest
+                    .getCaseDetails()
+                    .getCaseId());
+            return CcdCallbackResponse
+                    .builder()
+                    .errors(getNotificationErrors(workflowErrors))
+                    .build();
+        }
     }
 }

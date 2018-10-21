@@ -3,6 +3,7 @@ buildscript {
         springBootVersion = '2.0.5.RELEASE'
     }
     repositories {
+        mavenLocal()
         mavenCentral()
         jcenter()
 
@@ -55,6 +56,7 @@ compileTestJava {
 
 repositories {
     mavenLocal()
+    mavenCentral()
     jcenter()
 
     maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
