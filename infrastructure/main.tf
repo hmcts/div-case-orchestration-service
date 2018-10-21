@@ -22,17 +22,18 @@ locals {
 }
 
 module "div-cos" {
-  source                      = "git@github.com:hmcts/moj-module-webapp.git"
-  product                     = "${var.product}-${var.component}"
-  location                    = "${var.location}"
-  env                         = "${var.env}"
-  ilbIp                       = "${var.ilbIp}"
-  is_frontend                 = false
-  subscription                = "${var.subscription}"
-  capacity                    = "${var.capacity}"
-  common_tags                 = "${var.common_tags}"
-  asp_name                    = "${local.asp_name}"
-  asp_rg                      = "${local.asp_rg}"
+  source                          = "git@github.com:hmcts/moj-module-webapp.git"
+  product                         = "${var.product}-${var.component}"
+  location                        = "${var.location}"
+  env                             = "${var.env}"
+  ilbIp                           = "${var.ilbIp}"
+  appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
+  is_frontend                     = false
+  subscription                    = "${var.subscription}"
+  capacity                        = "${var.capacity}"
+  common_tags                     = "${var.common_tags}"
+  asp_name                        = "${local.asp_name}"
+  asp_rg                          = "${local.asp_rg}"
 
   app_settings = {
     // logging vars
