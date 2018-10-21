@@ -1,0 +1,52 @@
+{
+    "PetitionChangedDetailsDN" : "Some details about this dn changes",
+    "ConfirmPetitionDN" : "YES",
+    "DivorceCostsOptionDN" : "YES",
+    "statementOfTruthDN" : "YES",
+    "statementOfTruthChanges" : "YES",
+    "statementOfTruthNoChanges" : "NO",
+    "AdulteryLifeIntolerable" : "YES",
+    "AdulteryDateFoundOut" : "2018-10-04",
+    "AdulteryLivedApartSinceEventDN" : "NO",
+    "AdulteryTimeLivedTogetherDetailsDN" : "3 months",
+    "BehaviourStillHappeningDN" : "NO",
+    "BehaviourMostRecentIncidentDateDN" : "2018-10-03",
+    "BehaviourLivedApartSinceEventDN" : "NO",
+    "BehaviourTimeLivedTogetherDetailsDN" : "Since we've met in a bar",
+    "DesertionLivedApartSinceEventDN" : "NO",
+    "DesertionTimeLivedTogetherDetailsDN" : "Since we've met in a club",
+    "SeparationLivedApartSinceEventDN" : "NO",
+    "SeparationTimeLivedTogetherDetailsDN" : "Since we've met in a restaurant",
+    "DocumentsUploadedDN" : [
+        {
+            "id" : null,
+            "value" : {
+                "DocumentType" : "other",
+                "DocumentLink" : {
+                    "document_url" : "http://localhost:5006/documents/7f63ca9b-c361-49ab-aa8c-8fbdb6bc2936",
+                    "document_binary_url" : null,
+                    "document_filename" : null
+                },
+                "DocumentDateAdded" : "2017-12-11",
+                "DocumentComment" : "",
+                "DocumentFileName" : "govuklogo.png",
+                "DocumentEmailContent" : ""
+            }
+        },
+        {
+            "id" : null,
+            "value" : {
+                "DocumentType": "other",
+                "DocumentLink" : {
+                    "document_url" : "http://localhost:5006/documents/560f4bd1-fcf2-4dc5-80d1-d7e00d861655",
+                    "document_binary_url" : null,
+                    "document_filename" : null
+                },
+                "DocumentDateAdded": "2017-12-11",
+                "DocumentComment": "",
+                "DocumentFileName": "d8-eng.pdf",
+                "DocumentEmailContent": ""
+            }
+        }
+    ]
+}

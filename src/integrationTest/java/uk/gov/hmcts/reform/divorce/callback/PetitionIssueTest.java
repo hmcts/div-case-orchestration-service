@@ -10,11 +10,13 @@ import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -48,6 +50,9 @@ public class PetitionIssueTest extends IntegrationTest {
 
     private static final String CASE_ERROR_KEY = "errors";
     private static final String CASE_ID = "1517833758870511";
+    private static final String ISSUE_DATE = "data.IssueDate";
+
+    private static final String EXPECTED_ISSUE_DATE = LocalDate.now().format(ofPattern("yyyy-MM-dd"));
 
     @Value("${case.orchestration.petition-issued.context-path}")
     private String contextPath;
@@ -75,6 +80,7 @@ public class PetitionIssueTest extends IntegrationTest {
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertGeneratedDocumentsExists(cosResponse, false);
+        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
 
     @Test
@@ -84,6 +90,7 @@ public class PetitionIssueTest extends IntegrationTest {
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertGeneratedDocumentsExists(cosResponse, false);
+        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
 
     @Test
@@ -93,6 +100,7 @@ public class PetitionIssueTest extends IntegrationTest {
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertGeneratedDocumentsExists(cosResponse, true);
+        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
 
     private Response issuePetition(String userToken, String fileName, Boolean generateAosInvitation) throws Exception {

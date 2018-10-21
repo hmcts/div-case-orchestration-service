@@ -365,4 +365,38 @@ public class OrchestrationControllerTest {
 
         verify(caseOrchestrationService).submitAosCase(caseData, AUTH_TOKEN, TEST_CASE_ID);
     }
+
+    @Test
+    public void whenSubmitDn_thenProceedAsExpected() throws WorkflowException {
+        final Map<String, Object> dnCase = Collections.emptyMap();
+
+        when(caseOrchestrationService.submitDnCase(dnCase, AUTH_TOKEN, TEST_CASE_ID)).thenReturn(dnCase);
+
+        ResponseEntity<Map<String, Object>> response = classUnderTest.submitDn(AUTH_TOKEN, TEST_CASE_ID, dnCase);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dnCase, response.getBody());
+
+        verify(caseOrchestrationService).submitDnCase(dnCase, AUTH_TOKEN, TEST_CASE_ID);
+    }
+
+    @Test
+    public void whenDNSubmittedCallback_thenReturnCcdResponse() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .build();
+
+        final CreateEvent createEvent = new CreateEvent();
+        createEvent.setCaseDetails(caseDetails);
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        when(caseOrchestrationService.dnSubmitted(createEvent, AUTH_TOKEN)).thenReturn(expectedResponse);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest
+                .dnSubmitted(AUTH_TOKEN, createEvent);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+    }
 }

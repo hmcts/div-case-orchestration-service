@@ -8,11 +8,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendSubmissionNotific
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitAosCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -84,6 +87,12 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private SubmitAosCaseWorkflow submitAosCaseWorkflow;
+
+    @Mock
+    private DNSubmittedWorkflow dnSubmittedWorkflow;
+
+    @Mock
+    private SubmitDnCaseWorkflow submitDnCaseWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -354,6 +363,50 @@ public class CaseOrchestrationServiceImplTest {
 
         verify(submitAosCaseWorkflow).run(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
     }
+
+    @Test
+    public void givenDnCaseData_whenSubmitDnCase_thenReturnPayload() throws Exception {
+        when(submitDnCaseWorkflow.run(requestPayload, AUTH_TOKEN, TEST_CASE_ID)).thenReturn(requestPayload);
+
+        assertEquals(requestPayload, classUnderTest.submitDnCase(requestPayload, AUTH_TOKEN, TEST_CASE_ID));
+
+        verify(submitDnCaseWorkflow).run(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
+    }
+
+    @Test
+    public void givenNoError_whenExecuteDnSubmittedWorkflow_thenReturnCaseData() throws WorkflowException {
+        CcdCallbackResponse expectedResponse =  CcdCallbackResponse.builder()
+                .data(createEventRequest.getCaseDetails().getCaseData())
+                .build();
+
+        when(dnSubmittedWorkflow
+                .run(createEventRequest, AUTH_TOKEN))
+                .thenReturn(createEventRequest.getCaseDetails().getCaseData());
+
+        CcdCallbackResponse ccdResponse = classUnderTest.dnSubmitted(createEventRequest, AUTH_TOKEN);
+
+        assertEquals(expectedResponse, ccdResponse);
+    }
+
+    @Test
+    public void givenError_whenExecuteDnSubmittedWorkflow_thenReturnErrorData() throws WorkflowException {
+
+        Map<String, Object> workflowError = Collections.singletonMap("ErrorKey", "Error value");
+        when(dnSubmittedWorkflow
+                .run(createEventRequest, AUTH_TOKEN))
+                .thenReturn(createEventRequest.getCaseDetails().getCaseData());
+
+        when(dnSubmittedWorkflow.errors()).thenReturn(workflowError);
+
+        CcdCallbackResponse expectedResponse =  CcdCallbackResponse.builder()
+                .errors(Collections.singletonList("Error value"))
+                .build();
+
+        CcdCallbackResponse ccdResponse = classUnderTest.dnSubmitted(createEventRequest, AUTH_TOKEN);
+
+        assertEquals(expectedResponse, ccdResponse);
+    }
+
 
     @After
     public void tearDown() {

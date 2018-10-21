@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddPDF;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.IdamPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
 
 import java.util.HashMap;
@@ -40,6 +41,9 @@ public class CcdCallbackWorkflowTest {
     private CcdCallbackWorkflow ccdCallbackWorkflow;
 
     @Mock
+    private SetIssueDate setIssueDate;
+
+    @Mock
     private ValidateCaseData validateCaseData;
 
     @Mock
@@ -63,6 +67,7 @@ public class CcdCallbackWorkflowTest {
         ccdCallbackWorkflow =
                 new CcdCallbackWorkflow(
                         validateCaseData,
+                        setIssueDate,
                         petitionGenerator,
                         idamPinGenerator,
                         respondentLetterGenerator,
@@ -96,6 +101,7 @@ public class CcdCallbackWorkflowTest {
     public void givenAosInvitationGenerateIsTrue_whenRun_thenProceedAsExpected() throws WorkflowException {
         //Given
         when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(idamPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
@@ -114,6 +120,7 @@ public class CcdCallbackWorkflowTest {
     public void givenAosInvitationGenerateIsFalse_whenRun_thenProceedAsExpected() throws WorkflowException {
         //Given
         when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(idamPinGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddPDF.execute(context, payload)).thenReturn(payload);
