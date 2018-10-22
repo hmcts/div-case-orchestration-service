@@ -57,6 +57,15 @@ To run all checks (including unit tests) please execute following command:
     ./gradlew check
 ```
 
+### Mutation tests
+
+To run all mutation tests execute the following command:
+
+```
+/gradlew pitest
+
+```
+
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning.

@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendSubmissionNotific
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitAosCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -35,6 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 @Service
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
+    public static final String CASE_ID_IS = "Case ID is: {}";
     private final CcdCallbackWorkflow ccdCallbackWorkflow;
     private final CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
     private final RetrieveDraftWorkflow retrieveDraftWorkflow;
@@ -51,6 +54,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow;
     private final RespondentSubmittedCallbackWorkflow aosRespondedWorkflow;
     private final SubmitAosCaseWorkflow submitAosCaseWorkflow;
+    private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
+    private final DNSubmittedWorkflow dnSubmittedWorkflow;
 
     @Autowired
     public CaseOrchestrationServiceImpl(CcdCallbackWorkflow ccdCallbackWorkflow,
@@ -68,7 +73,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow,
                                         RespondentSubmittedCallbackWorkflow aosRespondedWorkflow,
                                         SubmitAosCaseWorkflow submitAosCaseWorkflow,
-                                        CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow) {
+                                        CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow,
+                                        DNSubmittedWorkflow submitDNWorkflow,
+                                        SubmitDnCaseWorkflow submitDnCaseWorkflow) {
+
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
         this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
         this.submitToCCDWorkflow = submitToCCDWorkflow;
@@ -85,12 +93,15 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         this.sendSubmissionNotificationWorkflow = sendSubmissionNotificationWorkflow;
         this.submitAosCaseWorkflow = submitAosCaseWorkflow;
         this.ccdCallbackBulkPrintWorkflow = ccdCallbackBulkPrintWorkflow;
+        this.submitDnCaseWorkflow = submitDnCaseWorkflow;
+        this.dnSubmittedWorkflow = submitDNWorkflow;
     }
 
     @Override
     public Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest,
-                                                  String authToken) throws WorkflowException {
-        Map<String, Object> payLoad = ccdCallbackWorkflow.run(caseDetailsRequest, authToken);
+                                                  String authToken,
+                                                  boolean generateAosInvitation) throws WorkflowException {
+        Map<String, Object> payLoad = ccdCallbackWorkflow.run(caseDetailsRequest, authToken, generateAosInvitation);
 
         if (ccdCallbackWorkflow.errors().isEmpty()) {
             log.info("Callback for case with id: {} successfully completed", payLoad.get(ID));
@@ -124,7 +135,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payload = submitToCCDWorkflow.run(divorceSession, authToken);
 
         if (submitToCCDWorkflow.errors().isEmpty()) {
-            log.info("Case ID is: {}", payload.get(ID));
+            log.info(CASE_ID_IS, payload.get(ID));
             return payload;
         } else {
             return submitToCCDWorkflow.errors();
@@ -142,8 +153,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> getDraft(String authToken) throws WorkflowException {
-        return retrieveDraftWorkflow.run(authToken);
+    public Map<String, Object> getDraft(String authToken, Boolean checkCcd) throws WorkflowException {
+        return retrieveDraftWorkflow.run(authToken, checkCcd);
     }
 
     @Override
@@ -246,5 +257,38 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
         log.info("Case ID is: {}", payload.get(ID));
         return payload;
+    }
+
+    @Override
+    public Map<String, Object> submitDnCase(Map<String, Object> divorceSession, String authorizationToken,
+                                             String caseId)
+            throws WorkflowException {
+        Map<String, Object> payload = submitDnCaseWorkflow.run(divorceSession, authorizationToken, caseId);
+
+        log.info("Case ID is: {}", payload.get(ID));
+        return payload;
+    }
+
+    @Override
+    public CcdCallbackResponse dnSubmitted(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException {
+        Map<String, Object> response = dnSubmittedWorkflow.run(caseDetailsRequest, authToken);
+
+        if (dnSubmittedWorkflow.errors().isEmpty()) {
+            log.info("Case ID {}. DN submitted notification sent.", caseDetailsRequest
+                    .getCaseDetails()
+                    .getCaseId());
+            return CcdCallbackResponse.builder()
+                    .data(response)
+                    .build();
+        } else {
+            Map<String, Object> workflowErrors = dnSubmittedWorkflow.errors();
+            log.error("Case ID {}. DN submitted notification failed." + workflowErrors, caseDetailsRequest
+                    .getCaseDetails()
+                    .getCaseId());
+            return CcdCallbackResponse
+                    .builder()
+                    .errors(getNotificationErrors(workflowErrors))
+                    .build();
+        }
     }
 }

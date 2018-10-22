@@ -10,13 +10,16 @@ import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class PetitionIssueTest extends IntegrationTest {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/issue-petition/";
@@ -47,13 +50,16 @@ public class PetitionIssueTest extends IntegrationTest {
 
     private static final String CASE_ERROR_KEY = "errors";
     private static final String CASE_ID = "1517833758870511";
+    private static final String ISSUE_DATE = "data.IssueDate";
+
+    private static final String EXPECTED_ISSUE_DATE = LocalDate.now().format(ofPattern("yyyy-MM-dd"));
 
     @Value("${case.orchestration.petition-issued.context-path}")
     private String contextPath;
 
     @Test
     public void givenUserTokenIsNull_whenRetrievePetition_thenReturnBadRequest() throws Exception {
-        Response cosResponse = issuePetition(null, "ccd-callback-petition-issued.json");
+        Response cosResponse = issuePetition(null, "ccd-callback-petition-issued.json", null);
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), cosResponse.getStatusCode());
     }
@@ -61,22 +67,43 @@ public class PetitionIssueTest extends IntegrationTest {
     @Test
     public void givenInvalidCaseData_whenRetrievePetition_thenReturnValidationError() throws Exception {
         Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
-            "invalid-ccd-callback-petition-issued.json");
+            "invalid-ccd-callback-petition-issued.json", null);
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertEquals(EXPECTED_ERROR, cosResponse.path(CASE_ERROR_KEY));
     }
 
     @Test
-    public void givenValidCaseData_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
+    public void givenGenerateAosNull_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
         Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
-            "ccd-callback-aos-invitation.json");
+            "ccd-callback-aos-invitation.json", null);
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertGeneratedDocumentsExists(cosResponse);
+        assertGeneratedDocumentsExists(cosResponse, false);
+        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
 
-    private Response issuePetition(String userToken, String fileName) throws Exception {
+    @Test
+    public void givenGenerateAosFalse_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
+        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
+            "ccd-callback-aos-invitation.json", false);
+
+        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
+        assertGeneratedDocumentsExists(cosResponse, false);
+        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
+    }
+
+    @Test
+    public void givenGenerateAosTrue_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
+        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
+            "ccd-callback-aos-invitation.json", true);
+
+        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
+        assertGeneratedDocumentsExists(cosResponse, true);
+        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
+    }
+
+    private Response issuePetition(String userToken, String fileName, Boolean generateAosInvitation) throws Exception {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 
@@ -84,16 +111,23 @@ public class PetitionIssueTest extends IntegrationTest {
             headers.put(HttpHeaders.AUTHORIZATION, userToken);
         }
 
+        final Map<String, Object> params = new HashMap<>();
+
+        if (generateAosInvitation != null) {
+            params.put("generateAosInvitation", generateAosInvitation);
+        }
+
         String json = ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + fileName);
         return
             RestUtil.postToRestService(
                 serverUrl + contextPath,
                 headers,
-                fileName == null ? null : json
+                fileName == null ? null : json,
+                params
             );
     }
 
-    private void assertGeneratedDocumentsExists(Response cosResponse) {
+    private void assertGeneratedDocumentsExists(Response cosResponse, boolean aosInvitataionExists) {
         String petitionUri = cosResponse.path(D8_MINI_PETITION_DOCUMENT_BINARY_URL_PATH);
 
         assertNotNull(petitionUri);
@@ -102,13 +136,16 @@ public class PetitionIssueTest extends IntegrationTest {
         assertEquals(String.format(D8_MINI_PETITION_FILE_NAME_FORMAT, CASE_ID),
             cosResponse.path(D8_MINI_PETITION_DOCUMENT_FILENAME_PATH));
 
-
         String aosInvitationUri = cosResponse.path(D8_AOS_INVITATION_DOCUMENT_BINARY_URL_PATH);
 
-        assertNotNull(aosInvitationUri);
-        assertNotNull(cosResponse.path(D8_AOS_INVITATION_DOCUMENT_URL_PATH));
-        assertEquals(AOS_INVITATION, cosResponse.path(D8_AOS_INVITATION_DOCUMENT_TYPE_PATH));
-        assertEquals(String.format(D8_AOS_INVITATION_FILE_NAME_FORMAT, CASE_ID),
+        if (aosInvitataionExists) {
+            assertNotNull(aosInvitationUri);
+            assertNotNull(cosResponse.path(D8_AOS_INVITATION_DOCUMENT_URL_PATH));
+            assertEquals(AOS_INVITATION, cosResponse.path(D8_AOS_INVITATION_DOCUMENT_TYPE_PATH));
+            assertEquals(String.format(D8_AOS_INVITATION_FILE_NAME_FORMAT, CASE_ID),
                 cosResponse.path(D8_AOS_INVITATION_DOCUMENT_FILENAME_PATH));
+        } else {
+            assertNull(aosInvitationUri);
+        }
     }
 }

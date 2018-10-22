@@ -104,10 +104,13 @@ public class RetrieveDraftITest {
         CASE_DATA.put("deaftProperty1", "value1");
         CASE_DATA.put("deaftProperty2", "value2");
         CaseDetails caseDetails = CaseDetails.builder().caseData(CASE_DATA).build();
+
         stubCmsServerEndpoint(HttpStatus.OK, convertObjectToJsonString(caseDetails));
-        stubCfsServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DATA));
+        stubCfsServerEndpoint(convertObjectToJsonString(CASE_DATA));
+
         Map<String, Object> expectedResponse = Maps.newHashMap(CASE_DATA);
-        expectedResponse.put( "fetchedDraft", true);
+        expectedResponse.put("fetchedDraft", true);
+
         webClient.perform(get(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -120,10 +123,13 @@ public class RetrieveDraftITest {
 
         CASE_DATA.put("deaftProperty1", "value1");
         CASE_DATA.put("deaftProperty2", "value2");
+
         stubCmsServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DETAILS));
-        stubCfsServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DATA));
+        stubCfsServerEndpoint(convertObjectToJsonString(CASE_DATA));
+
         Map<String, Object> expectedResponse = Maps.newHashMap(CASE_DATA);
-        expectedResponse.put( "fetchedDraft", false);
+        expectedResponse.put("fetchedDraft", false);
+
         webClient.perform(get(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -139,10 +145,10 @@ public class RetrieveDraftITest {
                         .withBody(body)));
     }
 
-    private void stubCfsServerEndpoint(HttpStatus status, String body) {
+    private void stubCfsServerEndpoint(String body) {
         cfsServiceServer.stubFor(WireMock.post(CFS_CONTEXT_PATH)
                 .willReturn(aResponse()
-                        .withStatus(status.value())
+                        .withStatus(HttpStatus.OK.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                         .withBody(body)));
     }

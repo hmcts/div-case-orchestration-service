@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddPDF;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.IdamPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
 
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -37,6 +39,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class CcdCallbackWorkflowTest {
     private CcdCallbackWorkflow ccdCallbackWorkflow;
+
+    @Mock
+    private SetIssueDate setIssueDate;
 
     @Mock
     private ValidateCaseData validateCaseData;
@@ -62,6 +67,7 @@ public class CcdCallbackWorkflowTest {
         ccdCallbackWorkflow =
                 new CcdCallbackWorkflow(
                         validateCaseData,
+                        setIssueDate,
                         petitionGenerator,
                         idamPinGenerator,
                         respondentLetterGenerator,
@@ -92,21 +98,42 @@ public class CcdCallbackWorkflowTest {
 
 
     @Test
-    public void runShouldReturnValidCaseDataForValidCase() throws WorkflowException {
+    public void givenAosInvitationGenerateIsTrue_whenRun_thenProceedAsExpected() throws WorkflowException {
         //Given
         when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(idamPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddPDF.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = ccdCallbackWorkflow.run(createEventRequest, AUTH_TOKEN);
+        Map<String, Object> response = ccdCallbackWorkflow.run(createEventRequest, AUTH_TOKEN, true);
 
         //Then
         assertNotNull(response);
         assertEquals(2, response.size());
         assertTrue(response.containsKey(PIN));
+    }
+
+    @Test
+    public void givenAosInvitationGenerateIsFalse_whenRun_thenProceedAsExpected() throws WorkflowException {
+        //Given
+        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(setIssueDate.execute(context, payload)).thenReturn(payload);
+        when(petitionGenerator.execute(context, payload)).thenReturn(payload);
+        when(idamPinGenerator.execute(context, payload)).thenReturn(payload);
+        when(caseFormatterAddPDF.execute(context, payload)).thenReturn(payload);
+
+        //When
+        Map<String, Object> response = ccdCallbackWorkflow.run(createEventRequest, AUTH_TOKEN, false);
+
+        //Then
+        assertNotNull(response);
+        assertEquals(2, response.size());
+        assertTrue(response.containsKey(PIN));
+
+        verifyZeroInteractions(respondentLetterGenerator);
     }
 
     @After

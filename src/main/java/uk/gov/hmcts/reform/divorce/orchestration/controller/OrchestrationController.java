@@ -39,6 +39,7 @@ import javax.ws.rs.core.MediaType;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERATE_AOS_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
@@ -63,8 +64,11 @@ public class OrchestrationController {
             })
     public ResponseEntity<CcdCallbackResponse> petitionIssuedCallback(
             @RequestHeader(value = "Authorization") String authorizationToken,
+            @RequestParam(value = GENERATE_AOS_INVITATION, required = false)
+                @ApiParam(GENERATE_AOS_INVITATION) boolean generateAosInvitation,
             @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
-        Map<String, Object> response = orchestrationService.ccdCallbackHandler(caseDetailsRequest, authorizationToken);
+        Map<String, Object> response = orchestrationService.ccdCallbackHandler(caseDetailsRequest, authorizationToken,
+            generateAosInvitation);
 
         if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(
@@ -164,9 +168,11 @@ public class OrchestrationController {
             @ApiResponse(code = 404, message = "Draft does not exist")})
     public ResponseEntity<Map<String, Object>> retrieveDraft(
             @RequestHeader("Authorization") @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
-            final String authorizationToken) throws WorkflowException {
+            final String authorizationToken,
+            @RequestParam(value = CHECK_CCD, required = false) @ApiParam(CHECK_CCD) Boolean checkCcd)
+        throws WorkflowException {
 
-        Map<String, Object>    response = orchestrationService.getDraft(authorizationToken);
+        Map<String, Object>    response = orchestrationService.getDraft(authorizationToken, checkCcd);
         if (MapUtils.isEmpty(response)) {
             return ResponseEntity.notFound().build();
         }
@@ -370,6 +376,37 @@ public class OrchestrationController {
 
         return ResponseEntity.ok(
             orchestrationService.submitAosCase(payload, authorizationToken, caseId));
+    }
+
+    @PostMapping(path = "/submit-dn/{caseId}",
+            consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Handles DN update")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
+            response = CaseResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")
+        })
+    public ResponseEntity<Map<String, Object>> submitDn(
+            @RequestHeader(value = "Authorization") String authorizationToken,
+            @PathVariable String caseId,
+            @RequestBody @ApiParam("Complete Divorce Session / partial DN data ") Map<String, Object> divorceSession)
+            throws WorkflowException {
+
+        return ResponseEntity.ok(
+                orchestrationService.submitDnCase(divorceSession, authorizationToken, caseId));
+    }
+
+    @PostMapping(path = "/dn-submitted")
+    @ApiOperation(value = "Decree nisi submitted confirmation notification ")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Notification sent successful"),
+            @ApiResponse(code = 401, message = "User Not Authenticated"),
+            @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> dnSubmitted(
+            @RequestHeader("Authorization")
+            @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+        return ResponseEntity.ok(orchestrationService.dnSubmitted(caseDetailsRequest, authorizationToken));
     }
 
     private List<String> getErrors(Map<String, Object> response) {

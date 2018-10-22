@@ -18,22 +18,23 @@ locals {
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
   idam_strategic_enabled = "false"
   
-  asp_name = "${var.env == "prod" ? "div-cos-prod" : "${var.product}-${var.env}"}"
-  asp_rg = "${var.env == "prod" ? "div-cos-prod" : "${var.product}-${var.env}"}"
+  asp_name = "${var.env == "prod" ? "div-cos-prod" : "${var.raw_product}-${var.env}"}"
+  asp_rg = "${var.env == "prod" ? "div-cos-prod" : "${var.raw_product}-${var.env}"}"
 }
 
 module "div-cos" {
-  source                      = "git@github.com:hmcts/moj-module-webapp.git"
-  product                     = "${var.product}-${var.component}"
-  location                    = "${var.location}"
-  env                         = "${var.env}"
-  ilbIp                       = "${var.ilbIp}"
-  is_frontend                 = false
-  subscription                = "${var.subscription}"
-  capacity                    = "${var.capacity}"
-  common_tags                 = "${var.common_tags}"
-  asp_name                    = "${local.asp_name}"
-  asp_rg                      = "${local.asp_rg}"
+  source                          = "git@github.com:hmcts/moj-module-webapp.git"
+  product                         = "${var.product}-${var.component}"
+  location                        = "${var.location}"
+  env                             = "${var.env}"
+  ilbIp                           = "${var.ilbIp}"
+  appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
+  is_frontend                     = false
+  subscription                    = "${var.subscription}"
+  capacity                        = "${var.capacity}"
+  common_tags                     = "${var.common_tags}"
+  asp_name                        = "${local.asp_name}"
+  asp_rg                          = "${local.asp_rg}"
 
   app_settings = {
     // logging vars

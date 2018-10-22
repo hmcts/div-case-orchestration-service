@@ -15,7 +15,7 @@ public class RemoveNullElements  implements Task<Map<String, Object>> {
         if (payload != null) {
             return payload.entrySet().stream()
                     .filter(entry -> entry.getValue() != null)
-                    .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         }
 
         return null;

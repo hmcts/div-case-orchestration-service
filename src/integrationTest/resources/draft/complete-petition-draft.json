@@ -55,16 +55,16 @@
   "petitionerEmail": "simulate-delivered73719a04-fabf-4f31-9c66-2fb060639ccf@notifications.service.gov.uk",
   "petitionerPhoneNumber": null,
   "petitionerHomeAddress": {
-    "addressType": "abroad",
+    "addressType": "manual",
     "postcode": null,
     "street1": null,
     "street2": null,
     "town": null,
     "postcodeManual": null,
-    "addressConfirmed": true,
+    "addressConfirmed": "true",
     "addressAbroad": "Some address here",
     "validPostcode": false,
-    "postcodeError": false,
+    "postcodeError": null,
     "url": null,
     "address": [
       "Some address here"
@@ -72,16 +72,16 @@
   },
   "petitionerCorrespondenceUseHomeAddress": "Yes",
   "petitionerCorrespondenceAddress": {
-    "addressType": "abroad",
+    "addressType": "manual",
     "postcode": null,
     "street1": null,
     "street2": null,
     "town": null,
     "postcodeManual": null,
-    "addressConfirmed": true,
+    "addressConfirmed": "true",
     "addressAbroad": "Some address here",
     "validPostcode": false,
-    "postcodeError": false,
+    "postcodeError": null,
     "url": null,
     "address": [
       "Some address here"
@@ -92,16 +92,16 @@
   "livingArrangementsLastLivedTogetherAddress": null,
   "respondentLivesAtLastAddress": null,
   "respondentHomeAddress": {
-    "addressType": "abroad",
+    "addressType": "manual",
     "postcode": null,
     "street1": null,
     "street2": null,
     "town": null,
     "postcodeManual": null,
-    "addressConfirmed": true,
+    "addressConfirmed": "true",
     "addressAbroad": "Some address here",
     "validPostcode": false,
-    "postcodeError": false,
+    "postcodeError": null,
     "url": null,
     "address": [
       "Some address here"
@@ -109,16 +109,16 @@
   },
   "respondentCorrespondenceUseHomeAddress": "Yes",
   "respondentCorrespondenceAddress": {
-    "addressType": "abroad",
+    "addressType": "manual",
     "postcode": null,
     "street1": null,
     "street2": null,
     "town": null,
     "postcodeManual": null,
-    "addressConfirmed": true,
+    "addressConfirmed": "true",
     "addressAbroad": "Some address here",
     "validPostcode": false,
-    "postcodeError": false,
+    "postcodeError": null,
     "url": null,
     "address": [
       "Some address here"
@@ -247,5 +247,6 @@
     }
   ],
   "existingPayments": null,
-  "d8": null
+  "d8": null,
+  "petitionerConsent": "Yes"
 }
