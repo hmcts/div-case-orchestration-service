@@ -9,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.Invocation;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
@@ -16,7 +17,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
@@ -26,6 +30,8 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -71,7 +77,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
             throws TaskException, IOException {
         CreateEvent incomingPayload = getJsonFromResourceFile(
                 "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
-        Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
+        Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
@@ -95,6 +101,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
                 hasEntry("form submission date limit", "11 October 2018")
         ));
         assertThat(templateParameters.size(), equalTo(8));
+        checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);
     }
 
     @Test
@@ -136,7 +143,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
             throws TaskException, IOException {
         CreateEvent incomingPayload = getJsonFromResourceFile(
                 "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CreateEvent.class);
-        Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
+        Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
@@ -157,6 +164,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
                 hasEntry("RDC name", testCourt.getDivorceCentreName())
         ));
         assertThat(templateParameters.size(), equalTo(5));
+        checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);
     }
 
     @Test
@@ -173,6 +181,24 @@ public class SendRespondentSubmissionNotificationEmailTest {
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
 
         undefendedDivorceNotificationEmailTask.execute(context, caseData);
+    }
+
+    private void checkThatPropertiesAreCheckedBeforeBeingRetrieved(Map<String, Object> mockCaseData) {
+        List<String> listOfMethodInvoked = mockingDetails(mockCaseData).getInvocations().stream()
+                .map(Invocation::getMethod)
+                .map(Method::getName)
+                .collect(Collectors.toList());
+
+        long amountOfPropertiesChecked = listOfMethodInvoked.stream()
+                .filter(name -> name.equalsIgnoreCase("containsKey"))
+                .count();
+        long amountOfPropertiesRetrieved = listOfMethodInvoked.stream()
+                .filter(name -> name.equalsIgnoreCase("get"))
+                .count();
+
+        assertThat("Properties should be checked before they are retrieved",
+                amountOfPropertiesChecked,
+                equalTo(amountOfPropertiesRetrieved));
     }
 
 }
