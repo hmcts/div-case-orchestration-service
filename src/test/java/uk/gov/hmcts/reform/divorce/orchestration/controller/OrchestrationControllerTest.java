@@ -93,11 +93,13 @@ public class OrchestrationControllerTest {
         final CreateEvent createEvent = new CreateEvent();
         createEvent.setCaseDetails(caseDetails);
 
-        CcdCallbackResponse expected = CcdCallbackResponse.builder().data(Collections.emptyMap()).build();
+        CcdCallbackResponse expected =
+            CcdCallbackResponse.builder().errors(Collections.emptyList()).warnings(Collections.emptyList())
+                .data(Collections.emptyMap()).build();
 
-        when(caseOrchestrationService.ccdCallbackHandler(createEvent, AUTH_TOKEN)).thenReturn(Collections.emptyMap());
+        when(caseOrchestrationService.ccdCallbackBulkPrintHandler(createEvent, AUTH_TOKEN)).thenReturn(Collections.emptyMap());
 
-        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.petitionIssuedCallback(AUTH_TOKEN, createEvent);
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.bulkPrint(AUTH_TOKEN, createEvent);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
@@ -419,8 +421,8 @@ public class OrchestrationControllerTest {
     public void whenDNSubmittedCallback_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
+            .caseData(caseData)
+            .build();
 
         final CreateEvent createEvent = new CreateEvent();
         createEvent.setCaseDetails(caseDetails);
@@ -429,7 +431,7 @@ public class OrchestrationControllerTest {
         when(caseOrchestrationService.dnSubmitted(createEvent, AUTH_TOKEN)).thenReturn(expectedResponse);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest
-                .dnSubmitted(AUTH_TOKEN, createEvent);
+            .dnSubmitted(AUTH_TOKEN, createEvent);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
