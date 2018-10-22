@@ -2,14 +2,13 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -17,17 +16,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Optional.ofNullable;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 
 @Component
 @Slf4j
-public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
+public final class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
 
     private static final String DOCUMENT_LINK = "DocumentLink";
 
@@ -60,20 +59,19 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
 
         Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = extractGeneratedDocumentList(caseData);
-        populateDocumentBytes(generatedDocumentInfoList);
+        populateDocumentBytes(context, generatedDocumentInfoList);
         context.setTransientObject(DOCUMENTS_GENERATED, generatedDocumentInfoList);
         return caseData;
     }
 
-    private void populateDocumentBytes(Map<String, GeneratedDocumentInfo> generatedDocumentInfos) {
+    private void populateDocumentBytes(TaskContext context, Map<String, GeneratedDocumentInfo> generatedDocumentInfos) {
+        CaseDetails caseDetails = (CaseDetails) context.getTransientObject(CASE_DETAILS_JSON_KEY);
         for (GeneratedDocumentInfo generatedDocumentInfo : generatedDocumentInfos.values()) {
 
             CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build();
             byte[] bytes = null;
             try {
                 HttpGet request = new HttpGet(generatedDocumentInfo.getUrl());
-                /** Enable this if you are running tests locally */
-                //request.setConfig(getProxyConfig());
                 request.setHeader(SERVICE_AUTHORIZATION, authTokenGenerator.generate());
                 request.setHeader(USER_ROLES, CASEWORKER_DIVORCE);
                 CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(request);
@@ -83,16 +81,13 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
 
             } catch (IOException e) {
 
-                log.error("Failed to get bytes from document store for document {}", generatedDocumentInfo.getUrl());
+                log.error("Failed to get bytes from document store for document {} in case Id {}",
+                    generatedDocumentInfo.getUrl(), caseDetails.getCaseId());
             }
             generatedDocumentInfo.setBytes(bytes);
         }
     }
 
-    private RequestConfig getProxyConfig() {
-        return RequestConfig.custom().setProxy(new HttpHost("proxyout.reform.hmcts.net",
-            8080)).build();
-    }
 
     /**
      * I'm not using object mapper here to keep it consistent with rest of code, when we migrate the formatter
@@ -105,27 +100,26 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
         Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = new HashMap<>();
         for (Map<String, Object> document : documentList) {
             Map<String, Object> value = ((Map) document.get(VALUE));
-            String documentType = getStringValue(value.entrySet(), DOCUMENT_TYPE);
+            String documentType = getStringValue(value, DOCUMENT_TYPE);
             Map<String, Object> documentLink =
-                ofNullable(getValue(value.entrySet(), DOCUMENT_LINK)).map(obj -> (Map) obj).orElse(null);
+                ofNullable(getValue(value, DOCUMENT_LINK)).map(obj -> (Map) obj).orElse(null);
 
             if (ofNullable(documentLink).isPresent()) {
                 GeneratedDocumentInfo gdi = GeneratedDocumentInfo.builder()
-                    .documentType(getStringValue(value.entrySet(), DOCUMENT_TYPE))
-                    .url(getStringValue(documentLink.entrySet(), DOCUMENT_URL))
+                    .documentType(getStringValue(value, DOCUMENT_TYPE))
+                    .url(getStringValue(documentLink, DOCUMENT_URL))
                     .documentType(documentType)
-                    .fileName(getStringValue(documentLink.entrySet(), DOCUMENT_FILENAME))
+                    .fileName(getStringValue(documentLink, DOCUMENT_FILENAME))
                     .build();
                 generatedDocumentInfoList.put(documentType, gdi);
-                log.info(gdi.toString());
             }
         }
 
         return generatedDocumentInfoList;
     }
 
-    private Object getValue(Collection<Map.Entry<String, Object>> list, String key) {
-        Iterator<Map.Entry<String, Object>> iterator = list.iterator();
+    private Object getValue(Map<String, Object> objectMap, String key) {
+        Iterator<Map.Entry<String, Object>> iterator = objectMap.entrySet().iterator();
         Object result = null;
         while (iterator.hasNext()) {
             Map.Entry map = iterator.next();
@@ -136,8 +130,8 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
         return result;
     }
 
-    private String getStringValue(Collection<Map.Entry<String, Object>> list, String key) {
-        return ofNullable(getValue(list, key)).map(Object::toString).orElse(StringUtils.EMPTY);
+    private String getStringValue(Map<String, Object> objectMap, String key) {
+        return ofNullable(getValue(objectMap, key)).map(Object::toString).orElse(StringUtils.EMPTY);
     }
 
 }

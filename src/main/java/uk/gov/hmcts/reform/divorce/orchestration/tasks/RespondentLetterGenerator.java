@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
-import feign.Feign;
-import feign.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
@@ -30,7 +28,6 @@ public class RespondentLetterGenerator implements Task<Map<String, Object>> {
     @Autowired
     public RespondentLetterGenerator(DocumentGeneratorClient documentGeneratorClient) {
         this.documentGeneratorClient = documentGeneratorClient;
-
     }
 
     @Override

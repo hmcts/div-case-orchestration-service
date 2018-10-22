@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.ToString;
 
 @Data
-@ToString
 public class FeeValue {
 
     @JsonProperty("FeeDescription")

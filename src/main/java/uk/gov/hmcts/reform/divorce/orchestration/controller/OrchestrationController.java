@@ -81,7 +81,7 @@ public class OrchestrationController {
 
     @PostMapping(path = "/bulk-print",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles Issue callback from CCD")
+    @ApiOperation(value = "Handles bulk print callback from CCD")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback was processed successFully or in case of an error message is "
             + "attached to the case",

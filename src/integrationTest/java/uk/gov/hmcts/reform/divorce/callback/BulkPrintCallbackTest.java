@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails.*;
 import static uk.gov.hmcts.reform.divorce.util.RestUtil.postToRestService;
 
 @Slf4j
@@ -96,9 +97,8 @@ public class BulkPrintCallbackTest extends IntegrationTest {
             ResourceLoader.loadJson(FIXTURES_ISSUE_PETITION_CCD_CALLBACK_AOS_INVITATION_JSON)
         ).getBody().as(Map.class);
         CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(
-            uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails.builder().caseData((Map)
-                response.get("data")).caseId("323").state("submitted").build()
+        createEvent.setCaseDetails(builder().caseData(
+            (Map) response.get("data")).caseId("323").state("submitted").build()
         );
         ResponseBody body = postToRestService(serverUrl + "/bulk-print", caseworkerHeaders,
             ResourceLoader.objectToJson(createEvent)).getBody();
