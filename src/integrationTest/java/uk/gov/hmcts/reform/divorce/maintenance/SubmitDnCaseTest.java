@@ -26,14 +26,14 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
     private String contextPath;
 
     @Test
-    public void givenUserTokenIsNull_whenSubmitAos_thenReturnBadRequest() throws Exception {
+    public void givenUserTokenIsNull_whenSubmitDn_thenReturnBadRequest() throws Exception {
         Response cosResponse = submitDnCase(null, 1L, "dn-submit.json");
 
         assertEquals(BAD_REQUEST.value(), cosResponse.getStatusCode());
     }
 
     @Test
-    public void givenNoCaseData_whenSubmitAos_thenReturnBadRequest() throws Exception {
+    public void givenNoCaseData_whenSubmitDn_thenReturnBadRequest() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
         Response cosResponse = submitDnCase(userDetails.getAuthToken(), 1L, null);
@@ -48,7 +48,7 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, userDetails);
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, "issueDecreeNisi", userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, "aosSubmittedUndefended", userDetails);
 
         Response cosResponse = submitDnCase(userDetails.getAuthToken(), caseDetails.getId(),
             "dn-submit.json");
