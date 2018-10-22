@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
@@ -13,7 +16,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETE_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_DEFENDS_DIVORCE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -21,15 +27,25 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SubmitAosCase implements Task<Map<String, Object>> {
 
+    @Value("${aos.responded.awaiting-answer.days-to-respond}")
+    private int daysToRespond;
+
     @Autowired
     private CaseMaintenanceClient caseMaintenanceClient;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
+        String authToken = (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY);
+        String eventId = getAosCompleteEventId(caseData);
+
+        if (AWAITING_ANSWER_AOS_EVENT_ID.equals(eventId)) {
+            caseData.put(CCD_DUE_DATE, getAosDueDate(authToken));
+        }
+
         Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
-            (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+            authToken,
             (String) context.getTransientObject(CASE_ID_JSON_KEY),
-            getAosCompleteEventId(caseData),
+            eventId,
             caseData
         );
 
@@ -38,6 +54,16 @@ public class SubmitAosCase implements Task<Map<String, Object>> {
         }
 
         return updateCase;
+    }
+
+    private String getAosDueDate(String authToken) {
+        CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(authToken, true);
+
+        String receivedAOSFromRespDate = (String)caseDetails.getCaseData().get(RECEIVED_AOS_FROM_RESP_DATE);
+
+        LocalDate respondedDate = new LocalDate(receivedAOSFromRespDate);
+
+        return respondedDate.plusDays(daysToRespond).toString(CCD_DATE_FORMAT);
     }
 
     private String getAosCompleteEventId(Map<String, Object> aosCase) {

@@ -11,6 +11,11 @@ spring:
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
 
+aos:
+  responded:
+    awaiting-answer:
+      days-to-respond: 21
+
 case:
   formatter:
     service:

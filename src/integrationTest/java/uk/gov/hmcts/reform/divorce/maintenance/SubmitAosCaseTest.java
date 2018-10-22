@@ -46,7 +46,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
     public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
-        final CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);
+        CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, userDetails);
 
@@ -56,6 +56,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path("id"));
         assertEquals("AosSubmittedAwaitingAnswer", cosResponse.path("state"));
+        assertDueDate(userDetails, String.valueOf(caseDetails.getId()));
     }
 
     @Test
@@ -72,6 +73,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path("id"));
         assertEquals("AosSubmittedAwaitingAnswer", cosResponse.path("state"));
+        assertDueDate(userDetails, String.valueOf(caseDetails.getId()));
     }
 
     @Test
@@ -119,5 +121,10 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
             headers,
             filePath == null ? null : loadJson(PAYLOAD_CONTEXT_PATH + filePath)
         );
+    }
+
+    private void assertDueDate(UserDetails userDetails, String caseId) {
+        CaseDetails caseDetails = ccdClientSupport.retrieveCase(userDetails, caseId);
+        assertEquals(caseDetails.getData().get("dueDate"), "2018-11-12");
     }
 }

@@ -44,6 +44,7 @@ public class OrchestrationConstants {
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
     public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
     public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
+    public static final String CCD_DUE_DATE = "dueDate";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
