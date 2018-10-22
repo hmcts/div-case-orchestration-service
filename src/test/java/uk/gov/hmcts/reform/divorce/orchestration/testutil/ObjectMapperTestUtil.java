@@ -6,6 +6,7 @@ public class ObjectMapperTestUtil {
 
     public static String convertObjectToJsonString(final Object object) {
         try {
+
             return new ObjectMapper().writeValueAsString(object);
         } catch (Exception e) {
             throw new RuntimeException(e);

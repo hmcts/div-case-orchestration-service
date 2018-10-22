@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
@@ -35,6 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Service
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final CcdCallbackWorkflow ccdCallbackWorkflow;
+    private final CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
     private final RetrieveDraftWorkflow retrieveDraftWorkflow;
     private final SaveDraftWorkflow saveDraftWorkflow;
     private final DeleteDraftWorkflow deleteDraftWorkflow;
@@ -65,7 +67,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         SolicitorCreateWorkflow solicitorCreateWorkflow,
                                         SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow,
                                         RespondentSubmittedCallbackWorkflow aosRespondedWorkflow,
-                                        SubmitAosCaseWorkflow submitAosCaseWorkflow) {
+                                        SubmitAosCaseWorkflow submitAosCaseWorkflow,
+                                        CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow) {
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
         this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
         this.submitToCCDWorkflow = submitToCCDWorkflow;
@@ -81,6 +84,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         this.solicitorCreateWorkflow = solicitorCreateWorkflow;
         this.sendSubmissionNotificationWorkflow = sendSubmissionNotificationWorkflow;
         this.submitAosCaseWorkflow = submitAosCaseWorkflow;
+        this.ccdCallbackBulkPrintWorkflow = ccdCallbackBulkPrintWorkflow;
     }
 
     @Override
@@ -93,6 +97,20 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             return payLoad;
         } else {
             return ccdCallbackWorkflow.errors();
+        }
+    }
+
+    @Override
+    public Map<String, Object> ccdCallbackBulkPrintHandler(CreateEvent caseDetailsRequest, String authToken)
+        throws WorkflowException {
+
+        Map<String, Object> payLoad = ccdCallbackBulkPrintWorkflow.run(caseDetailsRequest, authToken);
+
+        if (ccdCallbackBulkPrintWorkflow.errors().isEmpty()) {
+            log.info("Callback for case with id: {} successfully completed", payLoad.get(ID));
+            return payLoad;
+        } else {
+            return ccdCallbackBulkPrintWorkflow.errors();
         }
     }
 
@@ -171,28 +189,28 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> response = aosRespondedWorkflow.run(caseDetailsRequest, authToken);
         if (aosRespondedWorkflow.errors().isEmpty()) {
             return CcdCallbackResponse.builder()
-                    .data(response)
-                    .build();
+                .data(response)
+                .build();
         } else {
             Map<String, Object> workflowErrors = aosRespondedWorkflow.errors();
             log.error("Aos received notification failed." + workflowErrors);
             return CcdCallbackResponse
-                    .builder()
-                    .errors(getNotificationErrors(workflowErrors))
-                    .build();
+                .builder()
+                .errors(getNotificationErrors(workflowErrors))
+                .build();
         }
     }
 
     private List<String> getNotificationErrors(Map<String, Object> notificationErrors) {
         return notificationErrors.entrySet()
-                .stream()
-                .map(entry -> entry.getValue().toString())
-                .collect(Collectors.toList());
+            .stream()
+            .map(entry -> entry.getValue().toString())
+            .collect(Collectors.toList());
     }
 
     @Override
     public Map<String, Object> sendSubmissionNotificationEmail(
-            CreateEvent caseDetailsRequest) throws WorkflowException {
+        CreateEvent caseDetailsRequest) throws WorkflowException {
         return sendSubmissionNotificationWorkflow.run(caseDetailsRequest);
     }
 
@@ -208,7 +226,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
         if (processPbaPaymentWorkflow.errors().isEmpty()) {
             log.info("Callback pay by account for solicitor case with id: {} successfully completed",
-                    payLoad.get(ID));
+                payLoad.get(ID));
             return payLoad;
         } else {
             return processPbaPaymentWorkflow.errors();

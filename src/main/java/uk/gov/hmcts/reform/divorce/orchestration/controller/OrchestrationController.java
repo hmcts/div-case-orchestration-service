@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -28,12 +30,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.Validat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
@@ -73,6 +77,39 @@ public class OrchestrationController {
                 CcdCallbackResponse.builder()
                         .data(response)
                         .build());
+    }
+
+    @PostMapping(path = "/bulk-print",
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Handles Issue callback from CCD")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback was processed successFully or in case of an error message is "
+            + "attached to the case",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")
+        })
+    public ResponseEntity<CcdCallbackResponse> bulkPrint(
+        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+
+        Map<String, Object> response = orchestrationService.ccdCallbackBulkPrintHandler(caseDetailsRequest,
+            authorizationToken);
+
+        if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
+            return ResponseEntity.ok(
+                CcdCallbackResponse.builder()
+                    .data(ImmutableMap.of())
+                    .warnings(ImmutableList.of())
+                    .errors(Collections.singletonList("Failed to bulk print documents"))
+                    .build());
+        }
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(response)
+                .errors(Collections.emptyList())
+                .warnings(Collections.emptyList())
+                .build());
     }
 
     @PostMapping(path = "/submit",

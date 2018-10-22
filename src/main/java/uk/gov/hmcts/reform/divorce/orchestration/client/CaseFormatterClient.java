@@ -21,7 +21,7 @@ public interface CaseFormatterClient {
         value = "/caseformatter/version/1/add-documents",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
-    Map<String, Object> addDocuments(
+    Map<String, Object>     addDocuments(
         @RequestBody DocumentUpdateRequest documentUpdateRequest);
 
     @RequestMapping(
