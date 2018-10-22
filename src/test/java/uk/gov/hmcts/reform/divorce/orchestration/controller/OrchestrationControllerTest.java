@@ -97,8 +97,8 @@ public class OrchestrationControllerTest {
             CcdCallbackResponse.builder().errors(Collections.emptyList()).warnings(Collections.emptyList())
                 .data(Collections.emptyMap()).build();
 
-        when(caseOrchestrationService.ccdCallbackBulkPrintHandler(createEvent, AUTH_TOKEN)).thenReturn(Collections.emptyMap());
-
+        when(caseOrchestrationService.ccdCallbackBulkPrintHandler(createEvent, AUTH_TOKEN))
+            .thenReturn(Collections.emptyMap());
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.bulkPrint(AUTH_TOKEN, createEvent);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
