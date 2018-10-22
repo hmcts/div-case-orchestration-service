@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 public class SetIssueDateTest {
 
-    private SetIssueDate setIssueDate = new SetIssueDate();
+    private final SetIssueDate setIssueDate = new SetIssueDate();
 
     @Test
     public void testGenerateIssueDateSetsDateToNow() {

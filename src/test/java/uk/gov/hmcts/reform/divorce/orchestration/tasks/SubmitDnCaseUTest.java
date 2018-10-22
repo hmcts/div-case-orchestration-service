@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_AWAITING_LEGAL_ADVISOR_REFERRAL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SubmitDnCaseUTest {
@@ -48,14 +48,14 @@ public class SubmitDnCaseUTest {
     public void givenDnSubmit_whenExecute_thenProceedAsExpected() {
         final Map<String, Object> divorceSession = ImmutableMap.of();
 
-        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, DN_AWAITING_LEGAL_ADVISOR_REFERRAL,
+        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, DN_RECEIVED,
             divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient)
-            .updateCase(AUTH_TOKEN, TEST_CASE_ID, DN_AWAITING_LEGAL_ADVISOR_REFERRAL, divorceSession);
+            .updateCase(AUTH_TOKEN, TEST_CASE_ID, DN_RECEIVED, divorceSession);
     }
 
 }
