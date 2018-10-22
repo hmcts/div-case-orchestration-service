@@ -55,7 +55,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path("id"));
-        assertEquals("AosCompletedAwaitingAnswer", cosResponse.path("state"));
+        assertEquals("AosSubmittedAwaitingAnswer", cosResponse.path("state"));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path("id"));
-        assertEquals("AosCompletedAwaitingAnswer", cosResponse.path("state"));
+        assertEquals("AosSubmittedAwaitingAnswer", cosResponse.path("state"));
     }
 
     @Test
