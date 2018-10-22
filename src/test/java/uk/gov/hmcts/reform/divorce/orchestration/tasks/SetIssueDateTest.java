@@ -7,6 +7,8 @@ import java.util.HashMap;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.junit.Assert.assertEquals;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ISSUE_DATE;
 
 public class SetIssueDateTest {
 
@@ -18,7 +20,7 @@ public class SetIssueDateTest {
 
         setIssueDate.execute(null, payload);
 
-        String expectedDate = LocalDate.now().format(ofPattern("yyyy-MM-dd"));
-        assertEquals(expectedDate, payload.get("IssueDate"));
+        String expectedDate = LocalDate.now().format(ofPattern(CCD_DATE_FORMAT));
+        assertEquals(expectedDate, payload.get(ISSUE_DATE));
     }
 }

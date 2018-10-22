@@ -11,10 +11,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
+import java.time.LocalDate;
+
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
 public class UpdateRespondentDetails implements Task<UserDetails> {
@@ -39,7 +46,9 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
             (String)context.getTransientObject(CASE_ID_JSON_KEY),
             START_AOS_EVENT_ID,
             ImmutableMap.of(
-                RESPONDENT_EMAIL_ADDRESS, respondentDetails.getEmail()
+                RESPONDENT_EMAIL_ADDRESS, respondentDetails.getEmail(),
+                RECEIVED_AOS_FROM_RESP, YES_VALUE,
+                RECEIVED_AOS_FROM_RESP_DATE, LocalDate.now().format(ofPattern(CCD_DATE_FORMAT))
             )
         );
 

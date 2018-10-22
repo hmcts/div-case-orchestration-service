@@ -53,6 +53,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ACCESS_CODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
@@ -111,7 +112,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
         CASE_DATA.put(D_8_PETITIONER_FIRST_NAME, RESPONDENT_FIRST_NAME);
         CASE_DATA.put(D_8_PETITIONER_LAST_NAME, RESPONDENT_LAST_NAME);
         CASE_DATA.put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
-        CASE_DATA.put(ISSUE_DATE, LocalDate.now().format(ofPattern("yyyy-MM-dd")));
+        CASE_DATA.put(ISSUE_DATE, LocalDate.now().format(ofPattern(CCD_DATE_FORMAT)));
     }
 
     @Test
