@@ -41,6 +41,9 @@ public class OrchestrationConstants {
     public static final String NO_VALUE = "No";
     public static final String ISSUE_DATE = "IssueDate";
     public static final String DN_RECEIVED = "dnReceived";
+    public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
+    public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
+    public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
