@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.junit.Test;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.junit.Assert.assertEquals;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ISSUE_DATE;
 
 public class SetIssueDateTest {
@@ -20,7 +18,7 @@ public class SetIssueDateTest {
 
         setIssueDate.execute(null, payload);
 
-        String expectedDate = LocalDate.now().format(ofPattern(CCD_DATE_FORMAT));
+        String expectedDate = CcdUtil.getCurrentDate();
         assertEquals(expectedDate, payload.get(ISSUE_DATE));
     }
 }
