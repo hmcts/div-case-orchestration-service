@@ -128,7 +128,6 @@ public class RetrieveDraftITest {
         stubCfsServerEndpoint(convertObjectToJsonString(CASE_DATA));
 
         Map<String, Object> expectedResponse = Maps.newHashMap(CASE_DATA);
-        expectedResponse.put("fetchedDraft", false);
 
         webClient.perform(get(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
