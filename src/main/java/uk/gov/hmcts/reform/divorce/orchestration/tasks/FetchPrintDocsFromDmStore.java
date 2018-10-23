@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @Slf4j
-public final class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
+public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
 
     private static final String DOCUMENT_LINK = "DocumentLink";
 
