@@ -16,13 +16,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -60,7 +59,7 @@ public class SolicitorCreateITest {
     @Test
     public void givenCaseData_whenSolicitorCreate_thenReturnEastMidlandsCourtAllocation() throws Exception {
         Map<String, Object> expectedData = new HashMap<>();
-        expectedData.put(CREATED_DATE_JSON_KEY, LocalDate.now().format(ofPattern("yyyy-MM-dd")));
+        expectedData.put(CREATED_DATE_JSON_KEY, CcdUtil.getCurrentDate());
         expectedData.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getId());
         expectedData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.EASTMIDLANDS.getSiteId());
 
