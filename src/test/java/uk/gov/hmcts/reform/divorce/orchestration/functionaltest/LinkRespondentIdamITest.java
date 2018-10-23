@@ -43,8 +43,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_AOS_RECEIVED_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -69,7 +69,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
     private static final Map<String, Object> CASE_DATA = ImmutableMap.of(
         RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
         RECEIVED_AOS_FROM_RESP, YES_VALUE,
-        RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
+        DATE_AOS_RECEIVED_FROM_RESP, CcdUtil.getCurrentDate()
     );
 
     @Autowired
