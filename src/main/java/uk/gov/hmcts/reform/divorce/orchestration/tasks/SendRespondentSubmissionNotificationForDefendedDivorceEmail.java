@@ -16,7 +16,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_AOS_RECEIVED_FROM_RESP;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -33,6 +32,7 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
 
     private static final String EMAIL_DESCRIPTION = "respondent submission notification email - defended divorce";
 
+    private static final String EAST_MIDLANDS_DIVORCE_UNIT = "eastMidlands";
     private static final int LIMIT_IN_DAYS_FOR_FORM_SUBMISSION = 21;
     private static final DateTimeFormatter CLIENT_FACING_DATE_FORMAT = DateTimeFormatter
             .ofLocalizedDate(FormatStyle.LONG)
@@ -51,7 +51,7 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         String petitionerInferredGender = getMandatoryPropertyValueAsString(caseDataPayload,
                 D_8_INFERRED_PETITIONER_GENDER);
         String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
-        String divorceUnit = getMandatoryPropertyValueAsString(caseDataPayload, DIVORCE_UNIT_JSON_KEY);
+        String divorceUnit = EAST_MIDLANDS_DIVORCE_UNIT;
         Court court = taskCommons.getCourt(divorceUnit);
 
         String caseId = getCaseId(context);
