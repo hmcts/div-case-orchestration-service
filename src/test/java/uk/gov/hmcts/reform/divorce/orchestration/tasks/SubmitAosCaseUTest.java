@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,7 +64,7 @@ public class SubmitAosCaseUTest {
 
     @Test
     public void givenConsentAndDefend_whenExecute_thenProceedAsExpected() {
-        final Map<String, Object> divorceSession = getCaseDataForDefend(YES_VALUE);
+        final Map<String, Object> divorceSession = getCaseData(YES_VALUE, true);
 
         when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true)).thenReturn(AOS_CASE_DETAILS);
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
@@ -81,7 +80,7 @@ public class SubmitAosCaseUTest {
 
     @Test
     public void givenNoConsentAndDefend_whenExecute_thenProceedAsExpected() {
-        final Map<String, Object> divorceSession = getCaseDataForDefend(NO_VALUE);
+        final Map<String, Object> divorceSession = getCaseData(NO_VALUE, true);
 
 
         when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true)).thenReturn(AOS_CASE_DETAILS);
@@ -97,7 +96,7 @@ public class SubmitAosCaseUTest {
 
     @Test
     public void givenNoConsentAndNoDefend_whenExecute_thenProceedAsExpected() {
-        final Map<String, Object> divorceSession = getCaseDataForNoDefend(NO_VALUE);
+        final Map<String, Object> divorceSession = getCaseData(NO_VALUE, false);
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETE_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
@@ -109,7 +108,7 @@ public class SubmitAosCaseUTest {
 
     @Test
     public void givenConsentAndNoDefend_whenExecute_thenProceedAsExpected() {
-        final Map<String, Object> divorceSession = getCaseDataForNoDefend(YES_VALUE);
+        final Map<String, Object> divorceSession = getCaseData(YES_VALUE, false);
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
@@ -119,19 +118,18 @@ public class SubmitAosCaseUTest {
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession);
     }
 
-    private Map<String, Object> getCaseDataForDefend(String consent) {
+    private Map<String, Object> getCaseData(String consent, boolean defended) {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(RESP_ADMIT_OR_CONSENT_CCD_FIELD, consent);
-        caseData.put(RESP_DEFENDS_DIVORCE_CCD_FIELD, YES_VALUE);
-        caseData.put(CCD_DUE_DATE, AOS_DUE_DATE);
+
+        if (defended) {
+            caseData.put(RESP_DEFENDS_DIVORCE_CCD_FIELD, YES_VALUE);
+            caseData.put(CCD_DUE_DATE, AOS_DUE_DATE);
+        } else {
+            caseData.put(RESP_DEFENDS_DIVORCE_CCD_FIELD, NO_VALUE);
+            caseData.put(CCD_DUE_DATE, null);
+        }
 
         return caseData;
-    }
-
-    private Map<String, Object> getCaseDataForNoDefend(String consent) {
-        return ImmutableMap.of(
-            RESP_ADMIT_OR_CONSENT_CCD_FIELD, consent,
-            RESP_DEFENDS_DIVORCE_CCD_FIELD, NO_VALUE
-        );
     }
 }

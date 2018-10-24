@@ -3,10 +3,12 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
@@ -43,6 +45,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
@@ -66,17 +69,26 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         START_AOS_EVENT_ID
     );
 
-    private static final Map<String, Object> CASE_DATA = ImmutableMap.of(
-        RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
-        RECEIVED_AOS_FROM_RESP, YES_VALUE,
-        RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
-    );
+    @Value("${aos.responded.days-to-complete}")
+    private int daysToComplete;
 
     @Autowired
     private MockMvc webClient;
 
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(4010);
+
+    private Map<String, Object> caseData;
+
+    @Before
+    public void setup() {
+        caseData = ImmutableMap.of(
+            RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
+            RECEIVED_AOS_FROM_RESP, YES_VALUE,
+            RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate(),
+            CCD_DUE_DATE, CcdUtil.getCurrentDatePlusDays(daysToComplete)
+        );
+    }
 
     @Test
     public void givenAuthTokenIsNull_whenLinkRespondent_thenReturnBadRequest() throws Exception {
@@ -183,7 +195,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
-        stubMaintenanceServerEndpointForUpdate(OK, convertObjectToJsonString(CASE_DATA));
+        stubMaintenanceServerEndpointForUpdate(OK, convertObjectToJsonString(caseData));
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -203,7 +215,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
 
     private void stubMaintenanceServerEndpointForUpdate(HttpStatus status, String response) {
         maintenanceServiceServer.stubFor(post(UPDATE_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(CASE_DATA)))
+            .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .willReturn(aResponse()
                 .withStatus(status.value())

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.entity.ContentType;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +22,15 @@ import static org.junit.Assert.assertEquals;
 public class LinkRespondentTest extends RetrieveAosCaseSupport {
     private static final String PIN_USER_FIRST_NAME = "pinuserfirstname";
     private static final String PIN_USER_LAST_NAME = "pinuserfirstname";
+    private static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
+    private static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
+    private static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
+    private static final String CCD_DUE_DATE = "dueDate";
+    private static final String YES_VALUE = "Yes";
+    private static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
+
+    @Value("${aos.responded.days-to-complete}")
+    private int daysToComplete;
 
     @Value("${case.orchestration.maintenance.link-respondent.context-path}")
     private String contextPath;
@@ -103,6 +113,18 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         Response caseResponse = retrieveAosCase(respondentUserDetails.getAuthToken());
 
         assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
+
+        assertCaseDetails(respondentUserDetails, String.valueOf(caseDetails.getId()));
+    }
+
+    private void assertCaseDetails(UserDetails userDetails, String caseId) {
+        CaseDetails caseDetails = ccdClientSupport.retrieveCase(userDetails, caseId);
+
+        assertEquals(userDetails.getEmailAddress(), caseDetails.getData().get(RESPONDENT_EMAIL_ADDRESS));
+        assertEquals(YES_VALUE, caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
+        assertEquals(LocalDate.now().toString(CCD_DATE_FORMAT), caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE));
+        assertEquals(LocalDate.now().plusDays(daysToComplete).toString(CCD_DATE_FORMAT),
+            caseDetails.getData().get(CCD_DUE_DATE));
     }
 
     private Response linkRespondent(String userToken, Long caseId, String pin) {

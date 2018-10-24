@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
-import com.google.common.collect.ImmutableMap;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,7 +86,7 @@ public class SubmitAosCaseITest {
     @Test
     public void givenNoAuthToken_whenSubmitAos_thenReturnBadRequest() throws Exception {
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .content(convertObjectToJsonString(getCaseDataForDefend(YES_VALUE)))
+            .content(convertObjectToJsonString(getCaseData(YES_VALUE, true)))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
@@ -104,7 +103,7 @@ public class SubmitAosCaseITest {
 
     @Test
     public void givenCaseFormatterFails_whenSubmitAos_thenPropagateTheException() throws Exception {
-        final Map<String, Object> caseData = getCaseDataForDefend(YES_VALUE);
+        final Map<String, Object> caseData = getCaseData(YES_VALUE, true);
 
         stubFormatterServerEndpoint(BAD_REQUEST, caseData, TEST_ERROR);
 
@@ -119,7 +118,7 @@ public class SubmitAosCaseITest {
 
     @Test
     public void givenCaseUpdateFails_whenSubmitAos_thenPropagateTheException() throws Exception {
-        final Map<String, Object> caseData = getCaseDataForNoDefend(YES_VALUE);
+        final Map<String, Object> caseData = getCaseData(YES_VALUE, false);
 
         stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
         stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, AWAITING_DN_AOS_EVENT_ID, caseData, TEST_ERROR);
@@ -135,7 +134,7 @@ public class SubmitAosCaseITest {
 
     @Test
     public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseDataForDefend(YES_VALUE);
+        final Map<String, Object> caseData = getCaseData(YES_VALUE, true);
         final String caseDataString = convertObjectToJsonString(caseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
@@ -153,7 +152,7 @@ public class SubmitAosCaseITest {
 
     @Test
     public void givenNoConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseDataForDefend(NO_VALUE);
+        final Map<String, Object> caseData = getCaseData(NO_VALUE, true);
         final String caseDataString = convertObjectToJsonString(caseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
@@ -171,7 +170,7 @@ public class SubmitAosCaseITest {
 
     @Test
     public void givenNoConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseDataForNoDefend(NO_VALUE);
+        final Map<String, Object> caseData = getCaseData(NO_VALUE, false);
         final String caseDataString = convertObjectToJsonString(caseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
@@ -188,7 +187,7 @@ public class SubmitAosCaseITest {
 
     @Test
     public void givenConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseDataForNoDefend(YES_VALUE);
+        final Map<String, Object> caseData = getCaseData(YES_VALUE, false);
         final String caseDataString = convertObjectToJsonString(caseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
@@ -232,19 +231,18 @@ public class SubmitAosCaseITest {
                 .withBody(message)));
     }
 
-    private Map<String, Object> getCaseDataForDefend(String consent) {
+    private Map<String, Object> getCaseData(String consent, boolean defended) {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(RESP_ADMIT_OR_CONSENT_CCD_FIELD, consent);
-        caseData.put(RESP_DEFENDS_DIVORCE_CCD_FIELD, YES_VALUE);
-        caseData.put(CCD_DUE_DATE, AOS_DUE_DATE);
+
+        if (defended) {
+            caseData.put(RESP_DEFENDS_DIVORCE_CCD_FIELD, YES_VALUE);
+            caseData.put(CCD_DUE_DATE, AOS_DUE_DATE);
+        } else {
+            caseData.put(RESP_DEFENDS_DIVORCE_CCD_FIELD, NO_VALUE);
+            caseData.put(CCD_DUE_DATE, null);
+        }
 
         return caseData;
-    }
-
-    private Map<String, Object> getCaseDataForNoDefend(String consent) {
-        return ImmutableMap.of(
-            RESP_ADMIT_OR_CONSENT_CCD_FIELD, consent,
-            RESP_DEFENDS_DIVORCE_CCD_FIELD, NO_VALUE
-        );
     }
 }

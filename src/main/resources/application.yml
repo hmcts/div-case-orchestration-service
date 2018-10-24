@@ -13,8 +13,9 @@ server:
 
 aos:
   responded:
+    days-to-complete: ${AOS_RESPONDED_DAYS_TO_COMPLETE:7}
     awaiting-answer:
-      days-to-respond: 21
+      days-to-respond: ${AOS_RESPONDED_AWAITING_ANSWER_DAYS_TO_RESPOND:21}
 
 case:
   formatter:
