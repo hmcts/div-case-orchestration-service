@@ -42,7 +42,7 @@ feature-toggle:
   toggle:
     bulk-printer-toggle-name: "divorce_bulk_print"
 send-letter:
-  url: ${SEND_LETTER_SERIVCE_BASE_URL:http://localhost:4021}
+  url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
 
 bulk-print:
   dueDate: 9

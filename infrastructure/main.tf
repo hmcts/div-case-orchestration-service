@@ -60,8 +60,8 @@ module "div-cos" {
     UK_GOV_NOTIFY_EMAIL_TEMPLATES                   = "${var.uk_gov_notify_email_templates}"
     UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS               = "${var.uk_gov_notify_email_template_vars}"
     DRAFT_CCD_CHECK_ENABLED                         = "${var.draft_check_ccd_enabled}"
-    FEATURE_TOGGLE_SERVICE_API_BASE_URL             = "${local.feature_toggle_baseurl}"
-    SEND_LETTER_SERIVCE_BASE_URL                    = "${local.send_letter_service_baseurl}"
+    FEATURE_TOGGLE_SERVICE_API_BASEURL             = "${local.feature_toggle_baseurl}"
+    SEND_LETTER_SERIVCE_BASEURL                    = "${local.send_letter_service_baseurl}"
   }
 }
 
