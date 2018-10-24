@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.rules.ExpectedException.none;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.Constants.LINE_SEPARATOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINE_SEPARATOR;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

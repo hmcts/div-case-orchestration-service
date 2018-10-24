@@ -28,7 +28,7 @@ public class AosSubmittedCallbackTest extends IntegrationTest {
     @Test
     public void whenSubmitAOSSubmittedIsCalledBack_thenReturnAOSData() {
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
-        Map<String, Object> response = cosApiClient.aosSubmitted(null, aosCase);
+        Map<String, Object> response = cosApiClient.aosSubmitted(aosCase);
         assertEquals(aosCase.get(CASE_DATA), response.get(CASE_DATA));
     }
 
@@ -37,7 +37,7 @@ public class AosSubmittedCallbackTest extends IntegrationTest {
     public void givenCaseWithoutEmail_whenAOSSubmittedIsCalledBack_thenReturnNotificationError() {
         Map<String, Object> aosCaseWithoutEmailAddress = ResourceLoader
                 .loadJsonToObject(ERROR_CASE_RESPONSE, Map.class);
-        Map<String, Object> response = cosApiClient.aosSubmitted(null, aosCaseWithoutEmailAddress);
+        Map<String, Object> response = cosApiClient.aosSubmitted(aosCaseWithoutEmailAddress);
 
         assertNull(response.get(CASE_DATA));
         List<String> error = (List<String>) response.get(ERRORS);

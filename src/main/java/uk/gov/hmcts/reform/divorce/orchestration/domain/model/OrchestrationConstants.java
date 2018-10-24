@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model;
 
 public class OrchestrationConstants {
 
+    public static final String LINE_SEPARATOR = System.lineSeparator();
+
     // Authentication
     public static final String ACCESS_CODE = "access_code";
     public static final String AUTH_TOKEN_JSON_KEY = "authToken";
@@ -102,4 +104,5 @@ public class OrchestrationConstants {
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData_Error";
     public static final String EMAIL_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
+
 }

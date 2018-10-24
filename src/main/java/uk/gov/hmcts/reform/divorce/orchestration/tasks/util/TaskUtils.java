@@ -13,28 +13,33 @@ public class TaskUtils {
     public static String getMandatoryPropertyValueAsString(Map<String, Object> propertiesMap, String key)
             throws TaskException {
         if (!propertiesMap.containsKey(key)) {
-            return throwTaskExceptionForMandatoryProperty(key);
+            throw buildTaskExceptionForMandatoryProperty(key);
         }
 
         String propertyValue = (String) propertiesMap.get(key);
         if (isNullOrEmpty(propertyValue)) {
-            throwTaskExceptionForMandatoryProperty(key);
+            throw buildTaskExceptionForMandatoryProperty(key);
         }
 
         return propertyValue;
     }
 
     public static String getCaseId(TaskContext context) throws TaskException {
-        String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
+        Object transientObject = context.getTransientObject(CASE_ID_JSON_KEY);
+        if (!String.class.isInstance(transientObject)) {
+            throw buildTaskExceptionForMandatoryProperty(CASE_ID_JSON_KEY);
+        }
+
+        String caseId = (String) transientObject;
         if (isNullOrEmpty(caseId)) {
-            throwTaskExceptionForMandatoryProperty(CASE_ID_JSON_KEY);
+            throw buildTaskExceptionForMandatoryProperty(CASE_ID_JSON_KEY);
         }
 
         return caseId;
     }
 
-    private static String throwTaskExceptionForMandatoryProperty(String key) throws TaskException {
-        throw new TaskException(String.format("Could not evaluate value of mandatory property \"%s\"", key));
+    private static TaskException buildTaskExceptionForMandatoryProperty(String key) {
+        return new TaskException(String.format("Could not evaluate value of mandatory property \"%s\"", key));
     }
 
 }

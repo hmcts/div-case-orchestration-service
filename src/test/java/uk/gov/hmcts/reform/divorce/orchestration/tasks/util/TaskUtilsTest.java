@@ -48,7 +48,6 @@ public class TaskUtilsTest {
         TaskUtils.getMandatoryPropertyValueAsString(caseDataPayload, "testKey");
     }
 
-    //TODO - null or empty
     @Test
     public void testCaseIdCanBeRetrieved() throws TaskException {
         DefaultTaskContext context = new DefaultTaskContext();
@@ -76,6 +75,17 @@ public class TaskUtilsTest {
 
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, "");
+
+        TaskUtils.getCaseId(context);
+    }
+
+    @Test
+    public void testExceptionIsThrown_WhenCaseIdIsNotString() throws TaskException {
+        expectedException.expect(TaskException.class);
+        expectedException.expectMessage("Could not evaluate value of mandatory property \"" + CASE_ID_JSON_KEY + "\"");
+
+        DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, 123);
 
         TaskUtils.getCaseId(context);
     }

@@ -42,6 +42,19 @@ public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflo
     }
 
     private Task[] getAppropriateTasks(Map<String, Object> caseData) throws WorkflowException {
+        Task[] tasks;
+
+        boolean respondentDefendingDivorce = isRespondentDefendingDivorce(caseData);
+        if (respondentDefendingDivorce) {
+            tasks = getTasksForDefendedDivorce();
+        } else {
+            tasks = getTasksForUndefendedDivorce();
+        }
+
+        return tasks;
+    }
+
+    private boolean isRespondentDefendingDivorce(Map<String, Object> caseData) throws WorkflowException {
         boolean respondentDefendingDivorce;
         try {
             respondentDefendingDivorce = getBooleanFromPayloadField(caseData, RESP_DEFENDS_DIVORCE_CCD_FIELD);
@@ -49,14 +62,7 @@ public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflo
             log.error("Error deciding which tasks to perform in workflow", e);
             throw new WorkflowException(e.getMessage(), e);
         }
-
-        Task[] tasks;
-        if (respondentDefendingDivorce) {
-            tasks = getTasksForDefendedDivorce();
-        } else {
-            tasks = getTasksForUndefendedDivorce();
-        }
-        return tasks;
+        return respondentDefendingDivorce;
     }
 
     private Task[] getTasksForDefendedDivorce() {

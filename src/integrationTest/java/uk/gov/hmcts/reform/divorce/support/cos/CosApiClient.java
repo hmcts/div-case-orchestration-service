@@ -33,8 +33,7 @@ public interface CosApiClient {
             value = "/aos-submitted",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
-    Map<String, Object> aosSubmitted(@RequestHeader(AUTHORIZATION) String authorisation,
-                                     @RequestBody Map<String, Object> caseDataContent);
+    Map<String, Object> aosSubmitted(@RequestBody Map<String, Object> caseDataContent);
 
 
 

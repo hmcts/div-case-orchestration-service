@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.joining;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.Constants.LINE_SEPARATOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINE_SEPARATOR;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
@@ -39,41 +41,41 @@ public class Court {
 
     public String getFormattedAddress() {
         if (formattedAddress == null) {
-            formatAddressAccordingly();
+            formattedAddress = formatAddress();
         }
 
         return formattedAddress;
     }
 
-    private void formatAddressAccordingly() {
+    private String formatAddress() {
+        List<String> addressLines;
+
         if (isPOBoxAddress()) {
-            formattedAddress = formatAddressWithPOBox();
+            addressLines = getAddressLinesWithPOBox();
         } else {
-            formattedAddress = formatAddressWithoutPOBox();
+            addressLines = getAddressLinesWithoutPOBox();
         }
+
+        return addressLines.stream().collect(joining(LINE_SEPARATOR));
     }
 
     private boolean isPOBoxAddress() {
         return poBox != null;
     }
 
-    private String formatAddressWithPOBox() {
+    private List<String> getAddressLinesWithPOBox() {
         return newArrayList(divorceCentreName,
                 poBox,
                 courtCity,
-                postCode)
-                .stream()
-                .collect(joining(LINE_SEPARATOR));
+                postCode);
     }
 
-    private String formatAddressWithoutPOBox() {
+    private List<String> getAddressLinesWithoutPOBox() {
         return newArrayList(divorceCentreName,
                 divorceCentreAddressName,
                 street,
                 courtCity,
-                postCode)
-                .stream()
-                .collect(joining(LINE_SEPARATOR));
+                postCode);
     }
 
 }
