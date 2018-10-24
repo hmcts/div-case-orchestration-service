@@ -15,9 +15,7 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -111,14 +109,14 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     public void givenUser_whenSaveDraft_thenCaseIsSavedInDraftStore() {
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
-        assertUserPetition(DRAFT_WITH_DIVORCE_FORMAT_FILE, user, null);
+        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user, null);
     }
 
     @Test
     public void givenUserWithDraft_whenDeleteDraft_thenDraftIsDeleted() {
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
-        assertUserPetition(DRAFT_WITH_DIVORCE_FORMAT_FILE, user, null);
+        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user, null);
 
         draftsSubmissionSupport.deleteDraft(user);
 
@@ -134,7 +132,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     public void givenUserWithDraft_whenSubmitCase_thenDraftIsDeletedAndCaseExist() {
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
-        assertUserPetition(DRAFT_WITH_DIVORCE_FORMAT_FILE, user, null);
+        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user, null);
 
         String caseId = (String)draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
 
@@ -149,7 +147,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     public void givenUserWithDraftAfterSubmittedCase_whenGetDraft_thenCaseIsReturned() {
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
-        assertUserPetition(DRAFT_WITH_DIVORCE_FORMAT_FILE, user, null);
+        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user, null);
 
         final String caseId =
             (String)draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
@@ -170,30 +168,35 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     @Test
     public void givenUserWithDraft_whenUpdateDraft_thenDraftIsUpdated() {
         draftsSubmissionSupport.saveDraft(user, DRAFT_PART_1_FILE);
-        assertUserPetition(DRAFT_PART_1_RESPONSE_FILE, user, null);
+        assertUserDraft(DRAFT_PART_1_RESPONSE_FILE, user, null);
 
         draftsSubmissionSupport.saveDraft(user, DRAFT_PART_2_FILE);
-        assertUserPetition(DRAFT_PART_2_RESPONSE_FILE, user, null);
+        assertUserDraft(DRAFT_PART_2_RESPONSE_FILE, user, null);
     }
 
-    private void assertUserPetition(String draftFile, UserDetails user, String caseId) {
-        final Map<String, Object> expectedDraft = getDraftResponseResource(draftFile, user);
+    private void assertUserDraft(String draftFile, UserDetails user, String caseId) {
+        final Map<String, Object> expectedDraft = getDraftResponseResource(draftFile);
+        Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user, true);
+
+        assertEquals(expectedDraft, userDraft);
+    }
+
+    private void assertUserPetition(String caseFile, UserDetails user, String caseId) {
+        final Map<String, Object> expectedDraft = getDraftResponseResource(caseFile);
         Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user, true);
 
         // Add dynamic fields if not missing.
-        if (caseId != null) {
-            expectedDraft.put(CASE_ID_JSON_KEY, caseId);
-            expectedDraft.put(CASE_STATE_JSON_KEY, userDraft.get(CASE_STATE_JSON_KEY));
-        }
+        expectedDraft.put(CASE_ID_JSON_KEY, caseId);
+        expectedDraft.put(CASE_STATE_JSON_KEY, userDraft.get(CASE_STATE_JSON_KEY));
+        expectedDraft.put(PETITIONER_EMAIL_KEY, user.getEmailAddress());
 
-        assertThat(userDraft, samePropertyValuesAs(expectedDraft));
+        assertEquals(expectedDraft, userDraft);
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> getDraftResponseResource(String file, UserDetails user) {
+    private Map<String, Object> getDraftResponseResource(String file) {
         Map<String, Object> expectedDraft = ResourceLoader.loadJsonToObject(file,
                 Map.class);
-        expectedDraft.put(PETITIONER_EMAIL_KEY, user.getEmailAddress());
         return expectedDraft;
     }
 }
