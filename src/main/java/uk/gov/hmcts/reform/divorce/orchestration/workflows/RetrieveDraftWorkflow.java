@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveNullElements;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCaseIdAndStateOnSession;
 
@@ -23,17 +22,14 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
     private final RetrieveDraft retrieveDraft;
     private final CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
     private final SetCaseIdAndStateOnSession setCaseIdAndStateOnSession;
-    private final RemoveNullElements removeNullElements;
 
     @Autowired
     public RetrieveDraftWorkflow(RetrieveDraft retrieveDraft,
                                  CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter,
-                                 SetCaseIdAndStateOnSession setCaseIdAndStateOnSession,
-                                 RemoveNullElements removeNullElements) {
+                                 SetCaseIdAndStateOnSession setCaseIdAndStateOnSession) {
         this.retrieveDraft = retrieveDraft;
         this.caseDataToDivorceFormatter = caseDataToDivorceFormatter;
         this.setCaseIdAndStateOnSession = setCaseIdAndStateOnSession;
-        this.removeNullElements = removeNullElements;
     }
 
     public Map<String, Object> run(String authToken, Boolean checkCcd) throws WorkflowException {
@@ -42,7 +38,6 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
                     retrieveDraft,
                     caseDataToDivorceFormatter,
                     setCaseIdAndStateOnSession,
-                    removeNullElements
                 },
                 new HashMap<>(),
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
