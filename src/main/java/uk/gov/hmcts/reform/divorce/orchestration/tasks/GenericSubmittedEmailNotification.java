@@ -19,12 +19,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @Slf4j
-public class GenericEmailNotification implements Task<Map<String, Object>> {
+public class GenericSubmittedEmailNotification implements Task<Map<String, Object>> {
 
     private final EmailService emailService;
 
     @Autowired
-    public GenericEmailNotification(EmailService emailService) {
+    public GenericSubmittedEmailNotification(EmailService emailService) {
         this.emailService = emailService;
     }
 

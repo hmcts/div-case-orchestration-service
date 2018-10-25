@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
@@ -28,7 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GenericEmailNotificationUTest {
+public class GenericSubmittedEmailNotificationUTest {
 
     private static final String GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION = "submission notification";
 
@@ -36,7 +35,7 @@ public class GenericEmailNotificationUTest {
     private EmailService emailService;
 
     @InjectMocks
-    private GenericEmailNotification genericEmailNotification;
+    private GenericSubmittedEmailNotification genericSubmittedEmailNotification;
 
     @Test
     public void whenExecuteEmailTask_thenEmailServiceIsCalled() throws Exception {
@@ -48,7 +47,7 @@ public class GenericEmailNotificationUTest {
         context.setTransientObject(NOTIFICATION_TEMPLATE_VARS, vars);
 
         Map<String, Object>  data = mock(Map.class);
-        Map<String, Object> taskResponse = genericEmailNotification.execute(context, data);
+        Map<String, Object> taskResponse = genericSubmittedEmailNotification.execute(context, data);
 
         verify(emailService, times(1))
                 .sendEmail(RESPONDENT_SUBMISSION_CONSENT,
@@ -75,7 +74,7 @@ public class GenericEmailNotificationUTest {
                     TEST_USER_EMAIL,
                     vars);
 
-        Map<String, Object> taskResponse = genericEmailNotification.execute(context, data);
+        Map<String, Object> taskResponse = genericSubmittedEmailNotification.execute(context, data);
 
         assertTrue(taskResponse.isEmpty());
         assertNotNull(context.getTransientObject(EMAIL_ERROR_KEY));

@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericSubmittedEmailNotification;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,10 +31,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRe
 @Component
 public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final GenericEmailNotification emailNotificationTask;
+    private final GenericSubmittedEmailNotification emailNotificationTask;
 
     @Autowired
-    public RespondentSubmittedCallbackWorkflow(GenericEmailNotification emailNotificationTask) {
+    public RespondentSubmittedCallbackWorkflow(GenericSubmittedEmailNotification emailNotificationTask) {
         this.emailNotificationTask = emailNotificationTask;
     }
 
