@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model;
 
 public class OrchestrationConstants {
 
+    public static final String LINE_SEPARATOR = System.lineSeparator();
+
     // Authentication
     public static final String ACCESS_CODE = "access_code";
     public static final String AUTH_TOKEN_JSON_KEY = "authToken";
@@ -37,6 +39,10 @@ public class OrchestrationConstants {
     public static final String D_8_INFERRED_RESPONDENT_GENDER = "D8InferredRespondentGender";
     public static final String RESP_ADMIT_OR_CONSENT_CCD_FIELD = "RespAdmitOrConsentToFact";
     public static final String RESP_DEFENDS_DIVORCE_CCD_FIELD = "RespDefendsDivorce";
+    public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
+    public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
+    public static final String D_8_INFERRED_PETITIONER_GENDER = "D8InferredPetitionerGender";
+    public static final String DATE_AOS_RECEIVED_FROM_RESP = "ReceivedAOSfromRespDate";
     public static final String YES_VALUE = "Yes";
     public static final String NO_VALUE = "No";
     public static final String ISSUE_DATE = "IssueDate";
@@ -98,4 +104,5 @@ public class OrchestrationConstants {
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData_Error";
     public static final String EMAIL_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
+
 }

@@ -37,8 +37,11 @@ public interface CaseOrchestrationService {
 
     Map<String,Object> deleteDraft(String authorizationToken) throws WorkflowException;
 
-    Map<String, Object> sendSubmissionNotificationEmail(CreateEvent caseDetailsRequest) throws WorkflowException;
+    Map<String, Object> sendPetitionerSubmissionNotificationEmail(CreateEvent caseDetailsRequest)
+            throws WorkflowException;
 
+    Map<String, Object> sendRespondentSubmissionNotificationEmail(CreateEvent caseDetailsRequest)
+            throws WorkflowException;
 
     Map<String, Object> setOrderSummary(CreateEvent caseDetailsRequest) throws WorkflowException;
 

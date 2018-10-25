@@ -20,7 +20,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitAosCaseWorkflow;
@@ -74,7 +75,10 @@ public class CaseOrchestrationServiceImplTest {
     private LinkRespondentWorkflow linkRespondentWorkflow;
 
     @Mock
-    private SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow;
+    private SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
+
+    @Mock
+    private SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
 
     @Mock
     private SetOrderSummaryWorkflow setOrderSummaryWorkflow;
@@ -277,18 +281,29 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenCaseData_whenSendSubmissionNotification_thenReturnPayload() throws Exception {
+    public void givenCaseData_whenSendPetitionerSubmissionNotification_thenReturnPayload() throws Exception {
         // given
-        when(sendSubmissionNotificationWorkflow.run(createEventRequest))
+        when(sendPetitionerSubmissionNotificationWorkflow.run(createEventRequest))
                 .thenReturn(requestPayload);
 
         // when
-        Map<String, Object> actual = classUnderTest.sendSubmissionNotificationEmail(createEventRequest);
+        Map<String, Object> actual = classUnderTest.sendPetitionerSubmissionNotificationEmail(createEventRequest);
 
         // then
         assertEquals(requestPayload, actual);
 
-        verify(sendSubmissionNotificationWorkflow).run(createEventRequest);
+        verify(sendPetitionerSubmissionNotificationWorkflow).run(createEventRequest);
+    }
+
+    @Test
+    public void givenCaseData_whenSendRespondentSubmissionNotification_thenReturnPayload() throws Exception {
+        when(sendRespondentSubmissionNotificationWorkflow.run(createEventRequest)).thenReturn(requestPayload);
+
+        Map<String, Object> returnedPayload = classUnderTest
+                .sendRespondentSubmissionNotificationEmail(createEventRequest);
+
+        assertEquals(requestPayload, returnedPayload);
+        verify(sendRespondentSubmissionNotificationWorkflow).run(createEventRequest);
     }
 
     @Test

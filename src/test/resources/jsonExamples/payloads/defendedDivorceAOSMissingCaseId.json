@@ -1,0 +1,13 @@
+{
+  "case_details": {
+    "case_data": {
+      "RespEmailAddress": "respondent@divorce.co.uk",
+      "RespDefendsDivorce": "Yes",
+      "D8RespondentFirstName": "Ted",
+      "D8RespondentLastName": "Jones",
+      "D8InferredPetitionerGender": "female",
+      "D8DivorceUnit": "eastMidlands",
+      "ReceivedAOSfromRespDate": "2018-09-20"
+    }
+  }
+}
