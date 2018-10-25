@@ -45,6 +45,14 @@ public class EmailService {
         return sendEmailAndReturnErrorsInResponse(emailToSend, "submission notification");
     }
 
+    public Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(String destinationAddress,
+                                                                         Map<String, String> templateVars) {
+        String templateName = EmailTemplateNames.GENERIC_UPDATE.name();
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+
+        return sendEmailAndReturnErrorsInResponse(emailToSend, "generic update notification");
+    }
+
     public void sendEmail(EmailTemplateNames emailTemplate,
                           String destinationAddress,
                           Map<String, String> templateParameters) throws NotificationClientException {
