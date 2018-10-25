@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericSubmittedEmailNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class RespondentSubmittedCallbackWorkflowUTest {
 
     @Mock
-    private GenericSubmittedEmailNotification emailNotificationTask;
+    private GenericEmailNotification emailNotificationTask;
 
     @InjectMocks
     private RespondentSubmittedCallbackWorkflow classToTest;
