@@ -2,6 +2,8 @@ info:
   app:
     name: ${spring.application.name}
 
+
+
 spring:
   application:
     name: div-cos
@@ -40,6 +42,19 @@ payment:
   service:
     api:
       baseurl: ${PAYMENT_API_BASEURL:http://localhost:9190}
+
+feature-toggle:
+  service:
+    api:
+      baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://localhost:4028}
+  toggle:
+    bulk-printer-toggle-name: "divorce_bulk_print"
+
+send-letter:
+  url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
+
+bulk-print:
+   dueDate: 9
 
 uk:
   gov:
