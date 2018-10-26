@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +16,6 @@ public class GeneratedDocumentInfo {
     private String mimeType;
     private String createdOn;
     private String fileName;
+    @JsonIgnore
+    private byte[] bytes;
 }
