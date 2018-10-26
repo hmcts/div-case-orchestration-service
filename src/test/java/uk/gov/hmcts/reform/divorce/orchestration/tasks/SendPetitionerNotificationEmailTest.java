@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendPetitionerSubmissionNotificationEmailTest {
+public class SendPetitionerNotificationEmailTest {
 
     public static final String COURT_DISPLAY_NAME = "eastMidlands";
     public static final String UNFORMATTED_CASE_ID = "0123456789012345";
@@ -37,6 +37,9 @@ public class SendPetitionerSubmissionNotificationEmailTest {
 
     @Mock
     EmailService emailService;
+
+    @InjectMocks
+    SendPetitionerGenericUpdateNotificationEmail sendPetitionerGenericUpdateNotificationEmail;
 
     @InjectMocks
     SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail;
@@ -61,14 +64,36 @@ public class SendPetitionerSubmissionNotificationEmailTest {
         templateVars.put("email address", TEST_USER_EMAIL);
         templateVars.put("first name", TEST_PETITIONER_FIRST_NAME);
         templateVars.put("last name", TEST_PETITIONER_LAST_NAME);
-        templateVars.put("RDC name", CourtEnum.valueOf(
-            COURT_DISPLAY_NAME.toUpperCase(Locale.UK)).getDisplayName()
-        );
         templateVars.put("CCD reference", FORMATTED_CASE_ID);
     }
 
     @Test
-    public void executeShouldCallEmailService() {
+    public void executeShouldCallEmailServiceForGenericUpdate() {
+        when(emailService.sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, templateVars)).thenReturn(null);
+
+        assertEquals(testData, sendPetitionerGenericUpdateNotificationEmail.execute(context, testData));
+
+        verify(emailService).sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, templateVars);
+    }
+
+    @Test
+    public void executeShouldCallEmailServiceWithNoCaseIdFormatWhenNoUnableToFormatIdForGenericUpdate() {
+        context.setTransientObject(CASE_ID_JSON_KEY, SHORT_CASE_ID);
+        templateVars.replace("CCD reference", SHORT_CASE_ID);
+
+        when(emailService.sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, templateVars)).thenReturn(null);
+
+        assertEquals(testData, sendPetitionerGenericUpdateNotificationEmail.execute(context, testData));
+
+        verify(emailService).sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, templateVars);
+    }
+
+    @Test
+    public void executeShouldCallEmailServiceForSubmission() {
+        templateVars.put("RDC name", CourtEnum.valueOf(
+                COURT_DISPLAY_NAME.toUpperCase(Locale.UK)).getDisplayName()
+        );
+
         when(emailService.sendPetitionerSubmissionNotificationEmail(TEST_USER_EMAIL, templateVars)).thenReturn(null);
 
         assertEquals(testData, sendPetitionerSubmissionNotificationEmail.execute(context, testData));
@@ -76,11 +101,13 @@ public class SendPetitionerSubmissionNotificationEmailTest {
         verify(emailService).sendPetitionerSubmissionNotificationEmail(TEST_USER_EMAIL, templateVars);
     }
 
-
     @Test
-    public void executeShouldCallEmailServiceWithNoCaseIdFormatWhenNoUnableToFormatId() {
+    public void executeShouldCallEmailServiceWithNoCaseIdFormatWhenNoUnableToFormatIdForSubmission() {
         context.setTransientObject(CASE_ID_JSON_KEY, SHORT_CASE_ID);
         templateVars.replace("CCD reference", SHORT_CASE_ID);
+        templateVars.put("RDC name", CourtEnum.valueOf(
+                COURT_DISPLAY_NAME.toUpperCase(Locale.UK)).getDisplayName()
+        );
 
         when(emailService.sendPetitionerSubmissionNotificationEmail(TEST_USER_EMAIL, templateVars)).thenReturn(null);
 
