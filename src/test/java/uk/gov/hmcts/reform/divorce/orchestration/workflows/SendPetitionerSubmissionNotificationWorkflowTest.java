@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSubmissionNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmail;
 
 import java.util.Collections;
 import java.util.Map;
@@ -25,13 +25,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendSubmissionNotificationWorkflowTest {
+public class SendPetitionerSubmissionNotificationWorkflowTest {
 
     @Mock
-    private SendSubmissionNotificationEmail sendSubmissionNotificationEmail;
+    private SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail;
 
     @InjectMocks
-    private SendSubmissionNotificationWorkflow sendSubmissionNotificationWorkflow;
+    private SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
 
     private CreateEvent createEventRequest;
     private Map<String, Object> testData;
@@ -61,10 +61,10 @@ public class SendSubmissionNotificationWorkflowTest {
 
     @Test
     public void runShouldExecuteTasksAndReturnPayload() throws Exception {
-        when(sendSubmissionNotificationEmail.execute(context, testData)).thenReturn(testData);
+        when(sendPetitionerSubmissionNotificationEmail.execute(context, testData)).thenReturn(testData);
 
-        assertEquals(testData, sendSubmissionNotificationWorkflow.run(createEventRequest));
+        assertEquals(testData, sendPetitionerSubmissionNotificationWorkflow.run(createEventRequest));
 
-        verify(sendSubmissionNotificationEmail).execute(context, testData);
+        verify(sendPetitionerSubmissionNotificationEmail).execute(context, testData);
     }
 }

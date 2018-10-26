@@ -65,7 +65,6 @@ public class AosRespondentSubmittedITest {
     @MockBean
     private EmailClient mockClient;
 
-
     @Test
     public void givenEmptyBody_whenPerformAOSReceived_thenReturnBadRequestResponse() throws Exception {
         webClient.perform(post(API_URL)

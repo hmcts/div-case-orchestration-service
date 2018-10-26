@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -27,14 +26,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
 
 @Component
 public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
-
-    private static final String MALE_GENDER = "male";
-    private static final String FEMALE_GENDER = "female";
-    private static final String MALE_GENDER_IN_RELATION = "husband";
-    private static final String FEMALE_GENDER_IN_RELATION = "wife";
 
     private final GenericEmailNotification emailNotificationTask;
 
@@ -71,25 +66,16 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         );
     }
 
+    private String getRespondentRelationship(CaseDetails caseDetails) {
+        String gender = getFieldAsStringOrNull(caseDetails, D_8_INFERRED_RESPONDENT_GENDER);
+        return getRelationshipTermByGender(gender);
+    }
+
     private String getFieldAsStringOrNull(final CaseDetails caseDetails, String fieldKey) {
         Object fieldValue = caseDetails.getCaseData().get(fieldKey);
         if (fieldValue == null) {
             return null;
         }
         return fieldValue.toString();
-    }
-
-    private String getRespondentRelationship(CaseDetails caseDetails) {
-        String gender = getFieldAsStringOrNull(caseDetails, D_8_INFERRED_RESPONDENT_GENDER);
-        if (gender == null) {
-            return null;
-        }
-
-        switch (gender.toLowerCase(Locale.ENGLISH)) {
-            case MALE_GENDER : return MALE_GENDER_IN_RELATION;
-            case FEMALE_GENDER : return  FEMALE_GENDER_IN_RELATION;
-            default:
-                return null;
-        }
     }
 }
