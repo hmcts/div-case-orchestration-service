@@ -67,6 +67,12 @@ public class HealthCheckITest {
     @Value("${idam.s2s-auth.url}")
     private String serviceAuthHealthUrl;
 
+    @Value("${feature-toggle.service.api.baseurl}")
+    private String featureToggleHealthUrl;
+
+    @Value("${send-letter.url}")
+    private String sendLetterHealthUrl;
+
     @Autowired
     private RestTemplate restTemplate;
 
@@ -100,9 +106,11 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, true);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
+        mockEndpointAndResponse(featureToggleHealthUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
         mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
+        mockEndpointAndResponse(sendLetterHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
 
         HttpResponse response = getHealth();
@@ -125,6 +133,86 @@ public class HealthCheckITest {
         assertThat(JsonPath.read(body, "$.details.serviceAuthHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
+
+        assertThat(JsonPath.read(body, "$.details.featureToggleServiceHealthCheck.status").toString(), equalTo("UP"));
+
+        assertThat(JsonPath.read(body, "$.details.sendLetterServiceHealthCheck.status").toString(), equalTo("UP"));
+    }
+
+    @Test
+    public void givenFeatureToggleServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
+        mockEndpointAndResponse(caseFormatterServiceHealthUrl, false);
+        mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, true);
+        mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
+        mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
+        mockEndpointAndResponse(featureToggleHealthUrl, false);
+        mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
+        mockEndpointAndResponse(paymentServiceHealthUrl, true);
+        mockEndpointAndResponse(sendLetterHealthUrl, true);
+        mockEndpointAndResponse(serviceAuthHealthUrl, true);
+
+        HttpResponse response = getHealth();
+        String body = EntityUtils.toString(response.getEntity());
+
+        assertThat(response.getStatusLine().getStatusCode(), equalTo(503));
+        assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));
+        assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
+            equalTo("DOWN"));
+        assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
+            equalTo("UP"));
+        assertThat(JsonPath.read(body, "$.details.caseValidationServiceHealthCheck.status").toString(),
+            equalTo("UP"));
+        assertThat(JsonPath.read(body, "$.details.documentGeneratorServiceHealthCheck.status").toString(),
+            equalTo("UP"));
+        assertThat(JsonPath.read(body, "$.details.feesAndPaymentsServiceHealthCheck.status").toString(),
+            equalTo("UP"));
+        assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
+            equalTo("UP"));
+        assertThat(JsonPath.read(body, "$.details.serviceAuthHealthCheck.status").toString(),
+            equalTo("UP"));
+        assertThat(JsonPath.read(body, "$.details.featureToggleServiceHealthCheck.status").toString(),
+            equalTo("DOWN"));
+        assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
+    }
+
+    @Test
+    public void givenSendLetterServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
+        mockEndpointAndResponse(caseFormatterServiceHealthUrl, false);
+        mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, true);
+        mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
+        mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
+        mockEndpointAndResponse(featureToggleHealthUrl, true);
+        mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
+        mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
+        mockEndpointAndResponse(paymentServiceHealthUrl, true);
+        mockEndpointAndResponse(sendLetterHealthUrl, false);
+        mockEndpointAndResponse(serviceAuthHealthUrl, true);
+
+        HttpResponse response = getHealth();
+        String body = EntityUtils.toString(response.getEntity());
+
+        assertThat(response.getStatusLine().getStatusCode(), equalTo(503));
+        assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));
+        assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
+            equalTo("DOWN"));
+        assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
+            equalTo("UP"));
+        assertThat(JsonPath.read(body, "$.details.caseValidationServiceHealthCheck.status").toString(),
+            equalTo("UP"));
+        assertThat(JsonPath.read(body, "$.details.documentGeneratorServiceHealthCheck.status").toString(),
+            equalTo("UP"));
+        assertThat(JsonPath.read(body, "$.details.feesAndPaymentsServiceHealthCheck.status").toString(),
+            equalTo("UP"));
+        assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
+            equalTo("UP"));
+        assertThat(JsonPath.read(body, "$.details.serviceAuthHealthCheck.status").toString(),
+            equalTo("UP"));
+        assertThat(JsonPath.read(body, "$.details.featureToggleServiceHealthCheck.status").toString(),
+            equalTo("UP"));
+        assertThat(JsonPath.read(body, "$.details.sendLetterServiceHealthCheck.status").toString(),
+            equalTo("DOWN"));
+        assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
     }
 
     @Test
@@ -133,9 +221,11 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, true);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
+        mockEndpointAndResponse(featureToggleHealthUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
         mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
+        mockEndpointAndResponse(sendLetterHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
 
         HttpResponse response = getHealth();
@@ -166,9 +256,11 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, true);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, false);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
+        mockEndpointAndResponse(featureToggleHealthUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
         mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
+        mockEndpointAndResponse(sendLetterHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
 
         HttpResponse response = getHealth();
@@ -199,9 +291,11 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, true);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, false);
+        mockEndpointAndResponse(featureToggleHealthUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
         mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
+        mockEndpointAndResponse(sendLetterHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
 
         HttpResponse response = getHealth();
@@ -232,9 +326,11 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, false);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
+        mockEndpointAndResponse(featureToggleHealthUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
         mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
+        mockEndpointAndResponse(sendLetterHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
 
         HttpResponse response = getHealth();
@@ -265,9 +361,11 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, true);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
+        mockEndpointAndResponse(featureToggleHealthUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, false);
         mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
+        mockEndpointAndResponse(sendLetterHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
 
         HttpResponse response = getHealth();
@@ -298,9 +396,11 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, true);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
+        mockEndpointAndResponse(featureToggleHealthUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
         mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, false);
+        mockEndpointAndResponse(sendLetterHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
 
         HttpResponse response = getHealth();
@@ -331,9 +431,11 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, true);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, true);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, true);
+        mockEndpointAndResponse(featureToggleHealthUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, true);
         mockEndpointAndResponse(idamServiceHealthCheckUrl, true);
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
+        mockEndpointAndResponse(sendLetterHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, false);
 
         HttpResponse response = getHealth();
@@ -364,9 +466,11 @@ public class HealthCheckITest {
         mockEndpointAndResponse(caseMaintenanceServiceHealthUrl, false);
         mockEndpointAndResponse(caseValidationServiceHealthUrl, false);
         mockEndpointAndResponse(documentGeneratorServiceHealthUrl, false);
+        mockEndpointAndResponse(featureToggleHealthUrl, true);
         mockEndpointAndResponse(feesAndPaymentsServiceHealthUrl, false);
         mockEndpointAndResponse(idamServiceHealthCheckUrl, false);
         mockEndpointAndResponse(paymentServiceHealthUrl, false);
+        mockEndpointAndResponse(sendLetterHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, false);
 
         HttpResponse response = getHealth();

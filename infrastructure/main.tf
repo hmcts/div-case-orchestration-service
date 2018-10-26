@@ -11,7 +11,8 @@ locals {
   payment_api_baseurl               = "http://payment-api-${local.local_env}.service.core-compute-${local.local_env}.internal"
   service_auth_provider_baseurl     = "http://rpe-service-auth-provider-${local.local_env}.service.core-compute-${local.local_env}.internal"
   petitioner_fe_baseurl             = "https://div-pfe-${local.local_env}.service.core-compute-${local.local_env}.internal"
-
+  feature_toggle_baseurl            = "http://rpe-feature-toggle-api-${local.local_env}.service.core-compute-${local.local_env}.internal"
+  send_letter_service_baseurl       = "http://rpe-send-letter-service-${local.local_env}.service.core-compute-${local.local_env}.internal"
   previewVaultName = "${var.raw_product}-aat"
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
@@ -59,6 +60,8 @@ module "div-cos" {
     UK_GOV_NOTIFY_EMAIL_TEMPLATES                   = "${var.uk_gov_notify_email_templates}"
     UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS               = "${var.uk_gov_notify_email_template_vars}"
     DRAFT_CCD_CHECK_ENABLED                         = "${var.draft_check_ccd_enabled}"
+    FEATURE_TOGGLE_SERVICE_API_BASEURL             = "${local.feature_toggle_baseurl}"
+    SEND_LETTER_SERIVCE_BASEURL                    = "${local.send_letter_service_baseurl}"
   }
 }
 

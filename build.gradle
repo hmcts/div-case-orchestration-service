@@ -151,6 +151,7 @@ dependencies {
 
     compile group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
     compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: versions.reformSpringBootAutoConfigure
+    compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.1.0'
 
     compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
