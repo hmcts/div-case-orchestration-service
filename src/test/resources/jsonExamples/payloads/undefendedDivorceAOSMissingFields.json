@@ -1,0 +1,13 @@
+{
+  "case_details": {
+    "id": "0123456789012345",
+    "case_data": {
+      "RespEmailAddress": "respondent@divorce.co.uk",
+      "RespDefendsDivorce": "No",
+      "D8RespondentFirstName": "Sarah",
+      "D8RespondentLastName": "Jones",
+      "D8InferredPetitionerGender": "male",
+      "ReceivedAOSfromRespDate": "2018-09-20"
+    }
+  }
+}

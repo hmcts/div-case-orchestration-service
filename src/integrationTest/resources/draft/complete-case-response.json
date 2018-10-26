@@ -122,7 +122,6 @@
   "legalProceedingsRelated" : [ "children" ],
   "reasonForDivorceAdulteryIsNamed" : "No",
   "reasonForDivorceClaiming5YearSeparation" : "false",
-  "fetchedDraft" : false,
   "petitionerNameDifferentToMarriageCertificate" : "Yes",
   "respondentHomeAddress" : {
     "addressType" : "postcode",

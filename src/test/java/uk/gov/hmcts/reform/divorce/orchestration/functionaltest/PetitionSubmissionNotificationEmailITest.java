@@ -47,7 +47,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @PropertySource(value = "classpath:application.yml")
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class SubmissionNotificationEmailITest {
+public class PetitionSubmissionNotificationEmailITest {
     private static final String API_URL = "/petition-submitted";
     private static final String SUCCESS = "Success";
 

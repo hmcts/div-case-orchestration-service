@@ -9,7 +9,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveNullElements;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCaseIdAndStateOnSession;
 
@@ -37,9 +36,6 @@ public class RetrieveDraftWorkflowTest {
     @Mock
     private SetCaseIdAndStateOnSession setCaseIdAndStateOnSession;
 
-    @Mock
-    private RemoveNullElements removeNullElements;
-
     @InjectMocks
     private RetrieveDraftWorkflow target;
 
@@ -59,14 +55,12 @@ public class RetrieveDraftWorkflowTest {
                 eq(casePayload))).thenReturn(draftPayload);
         when(setCaseIdAndStateOnSession.execute(argThat(contextWithAuthTokenMatcher),
                 eq(draftPayload))).thenReturn(draftPayload);
-        when(removeNullElements.execute(argThat(contextWithAuthTokenMatcher),
-                eq(draftPayload))).thenReturn(draftPayload);
+
         assertEquals(draftPayload, target.run(AUTH_TOKEN, true));
 
         verify(retrieveDraft).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
         verify(caseDataToDivorceFormatter).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
         verify(setCaseIdAndStateOnSession).execute(argThat(contextWithAuthTokenMatcher),eq(draftPayload));
-        verify(removeNullElements).execute(argThat(contextWithAuthTokenMatcher),eq(draftPayload));
     }
 
 }

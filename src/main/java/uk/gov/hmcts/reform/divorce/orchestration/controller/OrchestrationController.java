@@ -37,6 +37,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
 
+import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERATE_AOS_INVITATION;
@@ -172,7 +173,7 @@ public class OrchestrationController {
             @RequestParam(value = CHECK_CCD, required = false) @ApiParam(CHECK_CCD) Boolean checkCcd)
         throws WorkflowException {
 
-        Map<String, Object>    response = orchestrationService.getDraft(authorizationToken, checkCcd);
+        Map<String, Object> response = orchestrationService.getDraft(authorizationToken, checkCcd);
         if (MapUtils.isEmpty(response)) {
             return ResponseEntity.notFound().build();
         }
@@ -221,7 +222,7 @@ public class OrchestrationController {
         @RequestParam @ApiParam(CHECK_CCD) boolean checkCcd) throws WorkflowException {
 
         return ResponseEntity.ok(orchestrationService.retrieveAosCase(checkCcd,
-            authorizationToken));
+                authorizationToken));
     }
 
     @PostMapping(path = "/authenticate-respondent")
@@ -283,11 +284,39 @@ public class OrchestrationController {
             @RequestHeader(value = "Authorization", required = false) String authorizationToken,
             @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
 
-        orchestrationService.sendSubmissionNotificationEmail(caseDetailsRequest);
+        orchestrationService.sendPetitionerSubmissionNotificationEmail(caseDetailsRequest);
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseDetailsRequest.getCaseDetails().getCaseData())
-            .build());
+                .data(caseDetailsRequest.getCaseDetails().getCaseData())
+                .build());
+    }
+
+    @PostMapping(path = "/aos-submitted",
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Generate/dispatch a notification email to the respondent when their AOS is submitted")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
+                    response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request")
+        })
+    public ResponseEntity<CcdCallbackResponse> respondentAOSSubmitted(
+            @RequestHeader(value = "Authorization", required = false) String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) {
+
+        Map<String, Object> returnedCaseData;
+
+        try {
+            returnedCaseData = orchestrationService.sendRespondentSubmissionNotificationEmail(caseDetailsRequest);
+        } catch (WorkflowException e) {
+            return ResponseEntity.ok(CcdCallbackResponse.builder()
+                    .errors(singletonList(e.getMessage()))
+                    .build());
+        }
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .data(returnedCaseData)
+                .build());
     }
 
     @PostMapping(path = "/petition-issue-fees",

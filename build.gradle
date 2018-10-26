@@ -126,7 +126,8 @@ def versions = [
         gradlePitest                    : '1.3.0',
         sonarPitest                     : '0.5',
         ccdStoreClient                  : '4.1.0',
-        javaxWsRs                       : '2.1.1'
+        javaxWsRs                       : '2.1.1',
+        jsonPathAssert                  : '2.2.0'
 ]
 
 dependencies {
@@ -171,6 +172,7 @@ dependencies {
         exclude(module: 'commons-logging')
     }
     testCompile group: 'com.github.tomakehurst', name:'wiremock', version: versions.wiremockVersion
+    testCompile group: 'com.jayway.jsonpath', name:'json-path-assert', version: versions.jsonPathAssert
 
     runtime('org.springframework.boot:spring-boot-devtools')
 

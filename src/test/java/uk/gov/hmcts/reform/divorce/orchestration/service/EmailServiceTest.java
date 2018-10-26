@@ -65,7 +65,7 @@ public class EmailServiceTest {
     @Test
     public void sendSubmissionConfirmationEmailShouldCallTheEmailClientToSendAnEmail()
         throws NotificationClientException {
-        emailService.sendSubmissionNotificationEmail(EMAIL_ADDRESS, null);
+        emailService.sendPetitionerSubmissionNotificationEmail(EMAIL_ADDRESS, null);
 
         verify(mockClient).sendEmail(
             eq(emailTemplates.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
@@ -81,7 +81,7 @@ public class EmailServiceTest {
             .when(mockClient).sendEmail(anyString(), anyString(), eq(null), anyString());
 
         try {
-            emailService.sendSubmissionNotificationEmail(EMAIL_ADDRESS, null);
+            emailService.sendPetitionerSubmissionNotificationEmail(EMAIL_ADDRESS, null);
         } catch (Exception e) {
             fail();
         }
