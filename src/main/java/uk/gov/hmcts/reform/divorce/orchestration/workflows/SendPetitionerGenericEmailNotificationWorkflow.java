@@ -34,5 +34,4 @@ public class SendPetitionerGenericEmailNotificationWorkflow extends DefaultWorkf
             ImmutablePair.of(CASE_ID_JSON_KEY, caseRequestDetails.getCaseDetails().getCaseId())
         );
     }
-
 }

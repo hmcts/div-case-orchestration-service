@@ -33,5 +33,4 @@ public class SendPetitionerSubmissionNotificationWorkflow extends DefaultWorkflo
             ImmutablePair.of(CASE_ID_JSON_KEY, caseRequestDetails.getCaseDetails().getCaseId())
         );
     }
-
 }

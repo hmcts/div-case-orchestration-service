@@ -51,5 +51,4 @@ public class SendPetitionerSubmissionNotificationEmail implements Task<Map<Strin
 
         return caseData;
     }
-
 }
