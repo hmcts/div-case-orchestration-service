@@ -7,7 +7,7 @@
     "respJurisdictionRespCountryOfResidence" : "UK",
     "respLegalProceedingsExist" : "YES",
     "respLegalProceedingsDescription" : "Some Description",
-    "respAgreeToCosts" : "no",
+    "respAgreeToCosts" : "No",
     "respCostsAmount" : "1232321",
     "respCostsReason" : "Some Reason",
     "respEmailAddress" : "est@somemail.com",
