@@ -11,12 +11,16 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,8 +55,8 @@ public class OrchestrationControllerTest {
     public void givenNoErrors_whenPetitionIssued_thenCallbackWorksAsExpected() throws WorkflowException {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
+            .caseData(caseData)
+            .build();
 
         final CreateEvent createEvent = new CreateEvent();
         createEvent.setCaseDetails(caseDetails);
@@ -68,6 +72,39 @@ public class OrchestrationControllerTest {
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
     }
+
+    @Test
+    public void givenNoErrors_whenBulkPrintIssued_thenCallbackWorksAsExpected() throws WorkflowException {
+        final Map<String, Object> caseData = new HashMap<>();
+        Document document = new Document();
+        DocumentLink documentLink = new DocumentLink();
+        documentLink.setDocumentUrl("http://document.pdf");
+        documentLink.setDocumentFilename("document.pdf");
+        document.setDocumentLink(documentLink);
+        document.setDocumentType("IssuePetition");
+        CollectionMember<Document> issuePdf = new CollectionMember<>();
+        issuePdf.setValue(document);
+        List<CollectionMember<Document>> documents = new ArrayList<>();
+        caseData.put("DocumentGenerated", documents);
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CreateEvent createEvent = new CreateEvent();
+        createEvent.setCaseDetails(caseDetails);
+
+        CcdCallbackResponse expected =
+            CcdCallbackResponse.builder().errors(Collections.emptyList()).warnings(Collections.emptyList())
+                .data(Collections.emptyMap()).build();
+
+        when(caseOrchestrationService.ccdCallbackBulkPrintHandler(createEvent, AUTH_TOKEN))
+            .thenReturn(Collections.emptyMap());
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.bulkPrint(AUTH_TOKEN, createEvent);
+
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
 
     @Test
     public void givenErrors_whenPetitionIssued_thenReturnErrorResponse() throws WorkflowException {
@@ -148,9 +185,9 @@ public class OrchestrationControllerTest {
         final Map<String, Object> caseData = Collections.emptyMap();
         final Map<String, Object> submissionData = Collections.singletonMap(ID, TEST_CASE_ID);
         final CaseResponse expectedResponse = CaseResponse.builder()
-                .caseId(TEST_CASE_ID)
-                .status(SUCCESS_STATUS)
-                .build();
+            .caseId(TEST_CASE_ID)
+            .status(SUCCESS_STATUS)
+            .build();
 
         when(caseOrchestrationService.submit(caseData, AUTH_TOKEN)).thenReturn(submissionData);
 
@@ -164,8 +201,8 @@ public class OrchestrationControllerTest {
     public void givenErrors_whenSubmit_thenReturnBadRequest() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final Map<String, Object> invalidResponse = Collections.singletonMap(
-                VALIDATION_ERROR_KEY,
-                ValidationResponse.builder().build()
+            VALIDATION_ERROR_KEY,
+            ValidationResponse.builder().build()
         );
 
         when(caseOrchestrationService.submit(caseData, AUTH_TOKEN)).thenReturn(invalidResponse);
@@ -178,20 +215,20 @@ public class OrchestrationControllerTest {
     @Test
     public void whenUpdate_thenReturnCaseResponse() throws Exception {
         final Map<String, Object> eventData = new HashMap<>();
-        eventData.put(CASE_EVENT_DATA_JSON_KEY,  Collections.emptyMap());
+        eventData.put(CASE_EVENT_DATA_JSON_KEY, Collections.emptyMap());
         eventData.put(CASE_EVENT_ID_JSON_KEY, TEST_EVENT_ID);
 
         final Map<String, Object> submissionData = Collections.singletonMap(ID, TEST_CASE_ID);
         final CaseResponse expectedResponse = CaseResponse.builder()
-                .caseId(TEST_CASE_ID)
-                .status(SUCCESS_STATUS)
-                .build();
+            .caseId(TEST_CASE_ID)
+            .status(SUCCESS_STATUS)
+            .build();
 
         when(caseOrchestrationService.update(eventData, AUTH_TOKEN, TEST_CASE_ID))
-                .thenReturn(submissionData);
+            .thenReturn(submissionData);
 
         ResponseEntity<CaseResponse> response = classUnderTest
-                .update(AUTH_TOKEN, TEST_CASE_ID, eventData);
+            .update(AUTH_TOKEN, TEST_CASE_ID, eventData);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
@@ -213,7 +250,7 @@ public class OrchestrationControllerTest {
         final CaseDataResponse caseDataResponse = CaseDataResponse.builder().build();
 
         when(caseOrchestrationService.retrieveAosCase(TEST_CHECK_CCD, AUTH_TOKEN))
-                .thenReturn(caseDataResponse);
+            .thenReturn(caseDataResponse);
 
         ResponseEntity<CaseDataResponse> actual = classUnderTest.retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD);
 
@@ -250,8 +287,8 @@ public class OrchestrationControllerTest {
     public void whenPetitionSubmittedCallback_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
+            .caseData(caseData)
+            .build();
 
         final CreateEvent createEvent = new CreateEvent();
         createEvent.setCaseDetails(caseDetails);
@@ -287,8 +324,8 @@ public class OrchestrationControllerTest {
     public void whenGetPetitionIssueFees_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
+            .caseData(caseData)
+            .build();
 
         final CreateEvent createEvent = new CreateEvent();
         createEvent.setCaseDetails(caseDetails);
@@ -307,8 +344,8 @@ public class OrchestrationControllerTest {
     public void whenProcessPbaPayment_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
+            .caseData(caseData)
+            .build();
 
         final CreateEvent createEvent = new CreateEvent();
         createEvent.setCaseDetails(caseDetails);
@@ -327,11 +364,11 @@ public class OrchestrationControllerTest {
     public void givenInvalidData_whenProcessPbaPayment_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
+            .caseData(caseData)
+            .build();
         final Map<String, Object> invalidResponse = Collections.singletonMap(
-                SOLICITOR_VALIDATION_ERROR_KEY,
-                Collections.singletonList(ERROR_STATUS)
+            SOLICITOR_VALIDATION_ERROR_KEY,
+            Collections.singletonList(ERROR_STATUS)
         );
 
         final CreateEvent createEvent = new CreateEvent();
@@ -342,8 +379,8 @@ public class OrchestrationControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, createEvent);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-                .errors(Collections.singletonList(ERROR_STATUS))
-                .build();
+            .errors(Collections.singletonList(ERROR_STATUS))
+            .build();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
@@ -353,8 +390,8 @@ public class OrchestrationControllerTest {
     public void whenSolicitorCreate_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
+            .caseData(caseData)
+            .build();
 
         final CreateEvent createEvent = new CreateEvent();
         createEvent.setCaseDetails(caseDetails);
@@ -401,8 +438,8 @@ public class OrchestrationControllerTest {
     public void whenDNSubmittedCallback_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
+            .caseData(caseData)
+            .build();
 
         final CreateEvent createEvent = new CreateEvent();
         createEvent.setCaseDetails(caseDetails);
@@ -411,7 +448,7 @@ public class OrchestrationControllerTest {
         when(caseOrchestrationService.dnSubmitted(createEvent, AUTH_TOKEN)).thenReturn(expectedResponse);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest
-                .dnSubmitted(AUTH_TOKEN, createEvent);
+            .dnSubmitted(AUTH_TOKEN, createEvent);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
