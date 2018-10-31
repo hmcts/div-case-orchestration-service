@@ -38,6 +38,8 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
     private static final String PETITIONER_EMAIL_KEY = "petitionerEmail";
 
+    private static final String CREATED_DATE = "createdDate";
+
     private static final String CMS_DATA_KEY = "data";
 
     @Autowired
@@ -189,6 +191,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         expectedDraft.put(CASE_ID_JSON_KEY, caseId);
         expectedDraft.put(CASE_STATE_JSON_KEY, userDraft.get(CASE_STATE_JSON_KEY));
         expectedDraft.put(PETITIONER_EMAIL_KEY, user.getEmailAddress());
+        expectedDraft.put(CREATED_DATE, userDraft.get(CREATED_DATE));
 
         assertEquals(expectedDraft, userDraft);
     }
