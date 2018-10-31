@@ -37,8 +37,8 @@ public class SaveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
                     emailNotification
                 },
                 payLoad,
-                new ImmutablePair(AUTH_TOKEN_JSON_KEY, authToken),
-                new ImmutablePair(NOTIFICATION_EMAIL, notificationEmail)
+                ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+                ImmutablePair.of(NOTIFICATION_EMAIL, notificationEmail)
         );
     }
 }

@@ -143,7 +143,7 @@ public class RetrieveAosCaseITest {
             .andExpect(content().json(convertObjectToJsonString(expected)));
     }
 
-    private void stubRetrieveAosCaseFromCMS(CaseDetails caseDetails) throws Exception {
+    private void stubRetrieveAosCaseFromCMS(CaseDetails caseDetails) {
         stubRetrieveAosCaseFromCMS(HttpStatus.OK, convertObjectToJsonString(caseDetails));
     }
 
@@ -156,14 +156,11 @@ public class RetrieveAosCaseITest {
                 .withBody(message)));
     }
 
-    private void stubFormatterServerEndpoint() throws Exception {
-
+    private void stubFormatterServerEndpoint() {
         stubFormatterServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DATA));
     }
 
-
-    private void stubFormatterServerEndpoint(HttpStatus status, String message)
-        throws Exception {
+    private void stubFormatterServerEndpoint(HttpStatus status, String message) {
         formatterServiceServer.stubFor(WireMock.post(FORMAT_TO_DIVORCE_CONTEXT_PATH)
             .withRequestBody(equalToJson(convertObjectToJsonString(CASE_DATA)))
             .willReturn(aResponse()

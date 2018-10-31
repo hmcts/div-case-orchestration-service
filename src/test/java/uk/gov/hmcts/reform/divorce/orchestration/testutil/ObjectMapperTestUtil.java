@@ -6,12 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class ObjectMapperTestUtil {
-
-    private static ObjectMapper objectMapper;
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
     public static String convertObjectToJsonString(final Object object) {
         try {
-            return getCommonObjectMapper().writeValueAsString(object);
+            return objectMapper.writeValueAsString(object);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -20,16 +19,7 @@ public class ObjectMapperTestUtil {
     public static <T> T getJsonFromResourceFile(String filePath, Class<T> clazz) throws IOException {
         try (InputStream resourceAsStream =
                      ObjectMapperTestUtil.class.getResourceAsStream(filePath)) {
-            return getCommonObjectMapper().readValue(resourceAsStream, clazz);
+            return objectMapper.readValue(resourceAsStream, clazz);
         }
     }
-
-    private static ObjectMapper getCommonObjectMapper() {
-        if (objectMapper == null) {
-            objectMapper = new ObjectMapper();
-        }
-
-        return objectMapper;
-    }
-
 }

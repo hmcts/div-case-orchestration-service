@@ -26,7 +26,7 @@ public class TaskUtils {
 
     public static String getCaseId(TaskContext context) throws TaskException {
         Object transientObject = context.getTransientObject(CASE_ID_JSON_KEY);
-        if (!String.class.isInstance(transientObject)) {
+        if (!(transientObject instanceof String)) {
             throw buildTaskExceptionForMandatoryProperty(CASE_ID_JSON_KEY);
         }
 
