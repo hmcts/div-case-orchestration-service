@@ -101,8 +101,8 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
     public void testExceptionIsThrown_IfNotPossibleToAssert_WhetherDivorceWillBeDefended() throws IOException,
             WorkflowException {
         expectedException.expect(WorkflowException.class);
-        expectedException.expectMessage("Could not evaluate value of property \""
-                + RESP_DEFENDS_DIVORCE_CCD_FIELD + "\"");
+        expectedException.expectMessage(String.format("%s field doesn't contain a valid value",
+            RESP_DEFENDS_DIVORCE_CCD_FIELD));
 
         CreateEvent caseRequestDetails = getJsonFromResourceFile(
                 "/jsonExamples/payloads/unclearAcknowledgementOfService.json", CreateEvent.class);

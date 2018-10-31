@@ -64,4 +64,11 @@
         <cpe>cpe:/a:apache_tomcat:apache_tomcat</cpe>
         <cpe>cpe:/a:apache_software_foundation:tomcat</cpe>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: guava-.*
+   ]]></notes>
+        <gav regex="true">^com\.google\.guava:guava:.*$</gav>
+        <cpe>cpe:/a:google:guava</cpe>
+    </suppress>
 </suppressions>

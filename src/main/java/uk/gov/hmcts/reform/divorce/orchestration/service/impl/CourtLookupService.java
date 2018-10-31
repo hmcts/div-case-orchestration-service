@@ -14,7 +14,7 @@ import java.util.Map;
 @Service
 public class CourtLookupService {
 
-    private Map<String, Court> courts;
+    private final Map<String, Court> courts;
 
     public CourtLookupService(@Value("${court.details}") String courtsDetails,
                               @Autowired ObjectMapper objectMapper) throws IOException {
