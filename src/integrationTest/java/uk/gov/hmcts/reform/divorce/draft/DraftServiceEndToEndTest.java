@@ -111,14 +111,14 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     public void givenUser_whenSaveDraft_thenCaseIsSavedInDraftStore() {
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
-        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user, null);
+        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
     }
 
     @Test
     public void givenUserWithDraft_whenDeleteDraft_thenDraftIsDeleted() {
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
-        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user, null);
+        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
 
         draftsSubmissionSupport.deleteDraft(user);
 
@@ -134,7 +134,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     public void givenUserWithDraft_whenSubmitCase_thenDraftIsDeletedAndCaseExist() {
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
-        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user, null);
+        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
 
         String caseId = (String)draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
 
@@ -142,14 +142,14 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         List response = (List) draftFromCMS.get(CMS_DATA_KEY);
         assertTrue(response.isEmpty());
 
-        assertUserPetition(BASE_CASE_RESPONSE, user, caseId);
+        assertUserPetition(user, caseId);
     }
 
     @Test
     public void givenUserWithDraftAfterSubmittedCase_whenGetDraft_thenCaseIsReturned() {
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
-        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user, null);
+        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
 
         final String caseId =
             (String)draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
@@ -164,27 +164,27 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         response = (List) draftFromCMS.get(CMS_DATA_KEY);
         assertEquals(1, response.size());
 
-        assertUserPetition(BASE_CASE_RESPONSE, user, caseId);
+        assertUserPetition(user, caseId);
     }
 
     @Test
     public void givenUserWithDraft_whenUpdateDraft_thenDraftIsUpdated() {
         draftsSubmissionSupport.saveDraft(user, DRAFT_PART_1_FILE);
-        assertUserDraft(DRAFT_PART_1_RESPONSE_FILE, user, null);
+        assertUserDraft(DRAFT_PART_1_RESPONSE_FILE, user);
 
         draftsSubmissionSupport.saveDraft(user, DRAFT_PART_2_FILE);
-        assertUserDraft(DRAFT_PART_2_RESPONSE_FILE, user, null);
+        assertUserDraft(DRAFT_PART_2_RESPONSE_FILE, user);
     }
 
-    private void assertUserDraft(String draftFile, UserDetails user, String caseId) {
+    private void assertUserDraft(String draftFile, UserDetails user) {
         final Map<String, Object> expectedDraft = getDraftResponseResource(draftFile);
         Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user, true);
 
         assertEquals(expectedDraft, userDraft);
     }
 
-    private void assertUserPetition(String caseFile, UserDetails user, String caseId) {
-        final Map<String, Object> expectedDraft = getDraftResponseResource(caseFile);
+    private void assertUserPetition(UserDetails user, String caseId) {
+        final Map<String, Object> expectedDraft = getDraftResponseResource(BASE_CASE_RESPONSE);
         Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user, true);
 
         // Add dynamic fields if not missing.
@@ -198,8 +198,6 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> getDraftResponseResource(String file) {
-        Map<String, Object> expectedDraft = ResourceLoader.loadJsonToObject(file,
-                Map.class);
-        return expectedDraft;
+        return ResourceLoader.loadJsonToObject(file, Map.class);
     }
 }
