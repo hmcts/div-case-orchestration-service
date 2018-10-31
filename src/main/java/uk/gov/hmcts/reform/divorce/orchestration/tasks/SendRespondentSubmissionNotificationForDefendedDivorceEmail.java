@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_AOS_RECEIVED_FROM_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -33,7 +33,6 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
     private static final String EMAIL_DESCRIPTION = "respondent submission notification email - defended divorce";
 
     private static final String EAST_MIDLANDS_DIVORCE_UNIT = "eastMidlands";
-    private static final int LIMIT_IN_DAYS_FOR_FORM_SUBMISSION = 21;
     private static final DateTimeFormatter CLIENT_FACING_DATE_FORMAT = DateTimeFormatter
             .ofLocalizedDate(FormatStyle.LONG)
             .withLocale(Locale.UK);
@@ -51,8 +50,7 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         String petitionerInferredGender = getMandatoryPropertyValueAsString(caseDataPayload,
                 D_8_INFERRED_PETITIONER_GENDER);
         String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
-        String divorceUnit = EAST_MIDLANDS_DIVORCE_UNIT;
-        Court court = taskCommons.getCourt(divorceUnit);
+        Court court = taskCommons.getCourt(EAST_MIDLANDS_DIVORCE_UNIT);
 
         String caseId = getCaseId(context);
         templateFields.put("case number", formatCaseIdToReferenceNumber(caseId));
@@ -64,7 +62,7 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         templateFields.put("RDC name", court.getDivorceCentreName());
         templateFields.put("court address", court.getFormattedAddress());
 
-        String formSubmissionDateLimit = getFormSubmissionDateLimit(caseDataPayload);
+        String formSubmissionDateLimit = getDueDate(caseDataPayload);
         templateFields.put("form submission date limit", formSubmissionDateLimit);
 
         taskCommons.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
@@ -75,11 +73,10 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         return caseDataPayload;
     }
 
-    private String getFormSubmissionDateLimit(Map<String, Object> payload) throws TaskException {
-        String dateAsString = getMandatoryPropertyValueAsString(payload, DATE_AOS_RECEIVED_FROM_RESP);
-        LocalDate dateAOSReceivedFromRespondent = LocalDate.parse(dateAsString);
-        LocalDate limitDate = dateAOSReceivedFromRespondent.plusDays(LIMIT_IN_DAYS_FOR_FORM_SUBMISSION);
-        return limitDate.format(CLIENT_FACING_DATE_FORMAT);
+    private String getDueDate(Map<String, Object> payload) throws TaskException {
+        String dateAsString = getMandatoryPropertyValueAsString(payload, CCD_DUE_DATE);
+        LocalDate dueDate = LocalDate.parse(dateAsString);
+        return dueDate.format(CLIENT_FACING_DATE_FORMAT);
     }
 
 }

@@ -5,7 +5,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
-import uk.gov.hmcts.reform.divorce.orchestration.exception.InvalidPropertyException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -15,8 +14,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionN
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_DEFENDS_DIVORCE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.JsonPayloadUtils.getBooleanFromPayloadField;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
 @Slf4j
@@ -32,45 +32,24 @@ public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflo
 
     public Map<String, Object> run(CreateEvent caseRequestDetails) throws WorkflowException {
         Map<String, Object> caseData = caseRequestDetails.getCaseDetails().getCaseData();
+        String defended = (String)caseData.get(RESP_DEFENDS_DIVORCE_CCD_FIELD);
 
-        Task[] tasks = getAppropriateTasks(caseData);
+        Task[] tasks;
+
+        if (YES_VALUE.equalsIgnoreCase(defended)) {
+            tasks = new Task[]{sendRespondentSubmissionNotificationForDefendedDivorceEmailTask};
+        } else if (NO_VALUE.equalsIgnoreCase(defended)) {
+            tasks = new Task[]{sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask};
+        } else {
+            String errorMessage = String.format("%s field doesn't contain a valid value",
+                RESP_DEFENDS_DIVORCE_CCD_FIELD);
+            log.error(errorMessage);
+            throw new WorkflowException(errorMessage);
+        }
 
         return execute(tasks,
                 caseData,
                 ImmutablePair.of(CASE_ID_JSON_KEY, caseRequestDetails.getCaseDetails().getCaseId())
         );
     }
-
-    private Task[] getAppropriateTasks(Map<String, Object> caseData) throws WorkflowException {
-        Task[] tasks;
-
-        boolean respondentDefendingDivorce = isRespondentDefendingDivorce(caseData);
-        if (respondentDefendingDivorce) {
-            tasks = getTasksForDefendedDivorce();
-        } else {
-            tasks = getTasksForUndefendedDivorce();
-        }
-
-        return tasks;
-    }
-
-    private boolean isRespondentDefendingDivorce(Map<String, Object> caseData) throws WorkflowException {
-        boolean respondentDefendingDivorce;
-        try {
-            respondentDefendingDivorce = getBooleanFromPayloadField(caseData, RESP_DEFENDS_DIVORCE_CCD_FIELD);
-        } catch (InvalidPropertyException e) {
-            log.error("Error deciding which tasks to perform in workflow", e);
-            throw new WorkflowException(e.getMessage(), e);
-        }
-        return respondentDefendingDivorce;
-    }
-
-    private Task[] getTasksForDefendedDivorce() {
-        return new Task[]{sendRespondentSubmissionNotificationForDefendedDivorceEmailTask};
-    }
-
-    private Task[] getTasksForUndefendedDivorce() {
-        return new Task[]{sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask};
-    }
-
 }

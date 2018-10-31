@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
@@ -38,6 +37,7 @@ public class GenericEmailNotificationUTest {
     @InjectMocks
     private GenericEmailNotification genericEmailNotification;
 
+    @SuppressWarnings("unchecked")
     @Test
     public void whenExecuteEmailTask_thenEmailServiceIsCalled() throws Exception {
         TaskContext context = new DefaultTaskContext();
@@ -58,6 +58,7 @@ public class GenericEmailNotificationUTest {
         assertEquals(taskResponse, data);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenError_whenExecuteEmailTask_thenReturnErrorInTaskContext() throws Exception {
         TaskContext context = new DefaultTaskContext();

@@ -42,8 +42,7 @@ public class TaskCommons {
                     templateParameters);
         } catch (NotificationClientException e) {
             log.error(e.getMessage(), e);
-            TaskException taskException = new TaskException("Failed to send e-mail", e);
-            throw taskException;
+            throw new TaskException("Failed to send e-mail", e);
         }
     }
 

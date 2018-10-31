@@ -15,7 +15,7 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/issue-petition/";
 
     @Autowired
-    private CcdClientSupport ccdClientSupport;
+    protected CcdClientSupport ccdClientSupport;
 
     @SuppressWarnings("unchecked")
     @SafeVarargs

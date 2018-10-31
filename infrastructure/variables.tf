@@ -61,3 +61,11 @@ variable "uk_gov_notify_email_template_vars" {
 variable "service_auth_microservice_name" {
   default = "divorce_frontend"
 }
+
+variable "aos_responded_days_to_complete" {
+  default = 7
+}
+
+variable "aos_responded_awaiting_answer_days_to_respond" {
+  default = 21
+}
