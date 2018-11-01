@@ -27,7 +27,7 @@ public class SendPetitionerGenericEmailNotificationWorkflow extends DefaultWorkf
     public Map<String, Object> run(CreateEvent caseRequestDetails) throws WorkflowException {
         return this.execute(
                 new Task[] {
-                        sendPetitionerGenericUpdateNotificationEmail,
+                    sendPetitionerGenericUpdateNotificationEmail,
                 },
                 caseRequestDetails.getCaseDetails().getCaseData(),
                 ImmutablePair.of(CASE_ID_JSON_KEY, caseRequestDetails.getCaseDetails().getCaseId())

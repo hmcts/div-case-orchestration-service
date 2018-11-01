@@ -279,7 +279,7 @@ public class OrchestrationController {
             @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
                     response = CcdCallbackResponse.class),
             @ApiResponse(code = 400, message = "Bad Request")
-    })
+            })
     public ResponseEntity<CcdCallbackResponse> petitionUpdated(
             @RequestHeader(value = "Authorization", required = false) String authorizationToken,
             @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
