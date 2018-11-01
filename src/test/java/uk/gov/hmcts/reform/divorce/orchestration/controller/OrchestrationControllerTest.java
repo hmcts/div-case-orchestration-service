@@ -304,6 +304,21 @@ public class OrchestrationControllerTest {
     }
 
     @Test
+    public void whenPetitionUpdatedCallback_thenReturnCcdResponse() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .build();
+        final CreateEvent createEvent = new CreateEvent();
+        createEvent.setCaseDetails(caseDetails);
+        when(caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(createEvent)).thenReturn(caseData);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionUpdated(null, createEvent);
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+    }
+
+    @Test
     public void whenRespondentSubmittedCallback_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()

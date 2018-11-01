@@ -9,27 +9,31 @@ spring:
     static-locations:
 
 server:
-  port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
+  port: ${CASE_ORCHESTRATION_SERVICE_URL:4013}
 
 aos:
   responded:
-    days-to-complete: 7
+    days-to-complete: ${AOS_RESPONDED_DAYS_TO_COMPLETE:7}
     awaiting-answer:
-      days-to-respond: 21
+      days-to-respond: ${AOS_RESPONDED_AWAITING_ANSWER_DAYS_TO_RESPOND:21}
 
 case:
   formatter:
     service:
       api:
-        baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://localhost:4011}
+#        baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://localhost:4011}
+        baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://div-cfs-aat.service.core-compute-aat.internal}
   validation:
     service:
       api:
-        baseurl: ${CASE_VALIDATION_SERVICE_API_BASEURL:http://localhost:4008}
+        baseurl: ${CASE_VALIDATION_SERVICE_API_BASEURL:http://div-vs-aat.service.core-compute-aat.internal}
   maintenance:
     service:
       api:
-        baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://localhost:4010}
+        baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://div-cms-aat.service.core-compute-aat.internal}
+#        http://localhost:4010
+#
+
 
 fees-and-payments:
   service:
@@ -40,34 +44,104 @@ payment:
   service:
     api:
       baseurl: ${PAYMENT_API_BASEURL:http://localhost:9190}
+idam:
+  api:
+    url: ${IDAM_API_URL:https://preprod-idamapi.reform.hmcts.net:3511}
+    redirect-url: ${IDAM_API_REDIRECT_URL:https://div-pfe-aat.service.core-compute-aat.internal/authenticated}
+    port: 4503
+    health:
+      context-path: /health
+  citizen:
+    username: DivCitizenUser@AAT.com
+    password: DivPassword1234
+  strategic:
+    enabled: false
+  s2s-auth:
+    url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
+    microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
+    secret: ${SERVICE_AUTH_SECRET:dummysecret}
 
-feature-toggle:
-  service:
-    api:
-      baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://localhost:4028}
-  toggle:
-    bulk-printer-toggle-name: "divorce_bulk_print"
-send-letter:
-  url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
+auth2:
+  client:
+    id: divorce
+    secret: thUphEveC2Ekuqedaneh4jEcRuba4t2t
 
-bulk-print:
-  dueDate: 9
+document:
+  generator:
+    service:
+      api:
+        baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://div-dgs-aat.service.core-compute-aat.internal}
 
+http:
+  connect:
+    timeout: 60000
+    request:
+      timeout: 60000
+
+documentation:
+  swagger:
+    enabled: true
+
+# GENERAL SPRING BOOT ACTUATOR CONFIG
+# Context path for Spring Boot Actuator endpoints
+# Allow actuator endpoints to be accessed without requiring authentication
+# Enable default health indicators
+# Enable disk space health check
+management:
+  endpoint:
+    health:
+      show-details: "ALWAYS"
+      cache:
+        time-to-live: 4000
+  endpoints:
+    web:
+      base-path: /
+      path-mapping:
+        health: health
+      exposure:
+        include: info, health, metrics
+
+logging:
+  level:
+    org.springframework.web: ERROR
+    uk.gov.hmcts.reform.divorce.orchestration: DEBUG
+  pattern:
+    console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"
+
+azure:
+  app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:false}
+
+draft:
+  api:
+    ccd:
+      check:
+        enabled: ${DRAFT_CCD_CHECK_ENABLED:true}
 uk:
   gov:
     notify:
       api:
-        key: 2409ba37-b5e6-4f03-b052-7d0f0986888d
+        key: divorce_preprod_live_key-b86e6469-4927-4f50-a029-6ddb523330cf-2409ba37-b5e6-4f03-b052-7d0f0986888d
+#           emailedsendkey-4f4f42d1-f2f6-4142-a4c9-b540c6570730-a51b5f6f-fed8-4568-939a-83d3c1eda45b
+#          divorce_preprod_live_key -b86e6469-4927-4f50-a029-6ddb523330cf-2409ba37-b5e6-4f03-b052-7d0f0986888d
       email:
         templates: "{
                       APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c',
+                      DN_SUBMISSION: 'edf3bce9-f63a-4be0-93a9-d0c80dff7983',
                       GENERIC_UPDATE: '6ee6ec29-5e88-4516-99cb-2edc30256575',
+                      RESPONDENT_SUBMISSION_CONSENT: '594dc500-93ca-4f4b-931b-acbf9ee83d25',
                       RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION: 'eac41143-b296-4879-ba60-a0ea6f97c757',
                       RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION: '277fd3f3-2fdb-4c79-9354-1b3db8d44cca',
-                      SAVE_DRAFT: '14074c06-87f1-4678-9238-4d71e741eb57'
+                      SAVE_DRAFT:'14074c06-87f1-4678-9238-4d71e741eb57'
                     }"
+
+        #        templates: "{SAVE_DRAFT:'14074c06-87f1-4678-9238-4d71e741eb57',
+#                     APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c',
+#                     RESPONDENT_SUBMISSION_CONSENT: '7d622f03-d76e-4844-9f52-a0204b651134'}"
         template:
           vars: "{SAVE_DRAFT: {divorceUrl: 'https://apply-divorce.service.gov.uk'}}"
+
+useProxy: true
+
 
 court:
   details: "{
@@ -113,76 +187,3 @@ court:
                   \"siteId\":\"AA04\"
                }
             }"
-
-idam:
-  api:
-    url: ${IDAM_API_URL:http://localhost:4503}
-    redirect-url: ${IDAM_API_REDIRECT_URL:http://localhost:8080/authenticated}
-    port: 4503
-    health:
-      context-path: /health
-  citizen:
-    username: dummy
-    password: dummy
-  strategic:
-    enabled: false
-  s2s-auth:
-    url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
-    microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
-    secret: ${SERVICE_AUTH_SECRET:dummysecret}
-
-auth2:
-  client:
-    id: divorce
-    secret: dummy
-
-document:
-  generator:
-    service:
-      api:
-        baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://localhost:4007}
-
-http:
-  connect:
-    timeout: 60000
-    request:
-      timeout: 60000
-
-documentation:
-  swagger:
-    enabled: true
-
-# GENERAL SPRING BOOT ACTUATOR CONFIG
-# Context path for Spring Boot Actuator endpoints
-# Allow actuator endpoints to be accessed without requiring authentication
-# Enable default health indicators
-# Enable disk space health check
-management:
-  endpoint:
-    health:
-      show-details: "ALWAYS"
-      cache:
-        time-to-live: 4000
-  endpoints:
-    web:
-      base-path: /
-      path-mapping:
-        health: health
-      exposure:
-        include: info, health, metrics
-
-draft:
-  api:
-    ccd:
-      check:
-        enabled: false
-
-logging:
-  level:
-    org.springframework.web: ERROR
-    uk.gov.hmcts.reform.divorce.orchestration: DEBUG
-  pattern:
-    console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"
-
-azure:
-  app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:false}

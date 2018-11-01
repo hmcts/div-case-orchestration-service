@@ -271,6 +271,24 @@ public class OrchestrationController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
+    @PostMapping(path = "/petition-updated",
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Generate/dispatch a notification email to the petitioner when the application is updated")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
+                    response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    public ResponseEntity<CcdCallbackResponse> petitionUpdated(
+            @RequestHeader(value = "Authorization", required = false) String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+        orchestrationService.sendPetitionerGenericUpdateNotificationEmail(caseDetailsRequest);
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .data(caseDetailsRequest.getCaseDetails().getCaseData())
+                .build());
+    }
+
     @PostMapping(path = "/petition-submitted",
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON)

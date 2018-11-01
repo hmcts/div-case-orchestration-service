@@ -1,10 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.email;
 
 public enum EmailTemplateNames {
-    SAVE_DRAFT,
     APPLIC_SUBMISSION,
+    DN_SUBMISSION,
+    GENERIC_UPDATE,
     RESPONDENT_SUBMISSION_CONSENT,
     RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
     RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION,
-    DN_SUBMISSION
+    SAVE_DRAFT
 }

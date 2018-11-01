@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmail;
 
 import java.util.Collections;
@@ -25,10 +26,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendPetitionerSubmissionNotificationWorkflowTest {
+public class SendPetitionerEmailNotificationWorkflowTest {
+
+    @Mock
+    private SendPetitionerGenericUpdateNotificationEmail sendPetitionerGenericUpdateNotificationEmail;
 
     @Mock
     private SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail;
+
+    @InjectMocks
+    private SendPetitionerGenericEmailNotificationWorkflow sendPetitionerGenericEmailNotificationWorkflow;
 
     @InjectMocks
     private SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
@@ -60,7 +67,16 @@ public class SendPetitionerSubmissionNotificationWorkflowTest {
     }
 
     @Test
-    public void runShouldExecuteTasksAndReturnPayload() throws Exception {
+    public void genericEmailTaskShouldExecuteAndReturnPayload() throws Exception {
+        when(sendPetitionerGenericUpdateNotificationEmail.execute(context, testData)).thenReturn(testData);
+
+        assertEquals(testData, sendPetitionerGenericEmailNotificationWorkflow.run(createEventRequest));
+
+        verify(sendPetitionerGenericUpdateNotificationEmail).execute(context, testData);
+    }
+
+    @Test
+    public void submissionEmailTaskShouldExecuteAndReturnPayload() throws Exception {
         when(sendPetitionerSubmissionNotificationEmail.execute(context, testData)).thenReturn(testData);
 
         assertEquals(testData, sendPetitionerSubmissionNotificationWorkflow.run(createEventRequest));

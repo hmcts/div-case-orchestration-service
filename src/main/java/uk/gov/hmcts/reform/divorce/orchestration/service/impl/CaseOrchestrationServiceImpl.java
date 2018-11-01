@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCa
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerGenericEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
@@ -53,6 +54,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
+    private final SendPetitionerGenericEmailNotificationWorkflow sendPetitionerGenericEmailNotificationWorkflow;
     private final SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
     private final RespondentSubmittedCallbackWorkflow aosRespondedWorkflow;
     private final SubmitAosCaseWorkflow submitAosCaseWorkflow;
@@ -74,6 +76,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         SolicitorCreateWorkflow solicitorCreateWorkflow,
                                         SendPetitionerSubmissionNotificationWorkflow
                                                     sendPetitionerSubmissionNotificationWorkflow,
+                                        SendPetitionerGenericEmailNotificationWorkflow
+                                                    sendPetitionerGenericEmailNotificationWorkflow,
                                         SendRespondentSubmissionNotificationWorkflow
                                                     sendRespondentSubmissionNotificationWorkflow,
                                         RespondentSubmittedCallbackWorkflow aosRespondedWorkflow,
@@ -96,6 +100,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         this.processPbaPaymentWorkflow = processPbaPaymentWorkflow;
         this.solicitorCreateWorkflow = solicitorCreateWorkflow;
         this.sendPetitionerSubmissionNotificationWorkflow = sendPetitionerSubmissionNotificationWorkflow;
+        this.sendPetitionerGenericEmailNotificationWorkflow = sendPetitionerGenericEmailNotificationWorkflow;
         this.sendRespondentSubmissionNotificationWorkflow = sendRespondentSubmissionNotificationWorkflow;
         this.submitAosCaseWorkflow = submitAosCaseWorkflow;
         this.ccdCallbackBulkPrintWorkflow = ccdCallbackBulkPrintWorkflow;
@@ -229,6 +234,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> sendPetitionerSubmissionNotificationEmail(
             CreateEvent caseDetailsRequest) throws WorkflowException {
         return sendPetitionerSubmissionNotificationWorkflow.run(caseDetailsRequest);
+    }
+
+    @Override
+    public Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(
+            CreateEvent caseDetailsRequest) throws WorkflowException {
+        return sendPetitionerGenericEmailNotificationWorkflow.run(caseDetailsRequest);
     }
 
     @Override
