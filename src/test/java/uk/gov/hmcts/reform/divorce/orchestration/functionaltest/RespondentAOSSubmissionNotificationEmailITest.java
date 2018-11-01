@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -34,6 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_DEFENDS_DIVORCE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -56,7 +56,8 @@ public class RespondentAOSSubmissionNotificationEmailITest {
     private EmailClient mockClient;
 
     @Test
-    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForDefendedDivorce() throws Exception {
+    public void testResponseHasDataAndNoErrors_whenEmailCanBeSent_forDefendedDivorce() throws Exception {
+
         CreateEvent createEvent = getJsonFromResourceFile(
                 "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
         Map<String, Object> caseData = createEvent.getCaseDetails().getCaseData();
@@ -66,8 +67,8 @@ public class RespondentAOSSubmissionNotificationEmailITest {
 
         webClient.perform(post(API_URL)
                 .content(convertObjectToJsonString(createEvent))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(convertObjectToJsonString(expected)))
                 .andExpect(content().string(allOf(
@@ -91,8 +92,8 @@ public class RespondentAOSSubmissionNotificationEmailITest {
 
         webClient.perform(post(API_URL)
                 .content(convertObjectToJsonString(createEvent))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(convertObjectToJsonString(expected)))
                 .andExpect(content().string(allOf(
@@ -118,7 +119,8 @@ public class RespondentAOSSubmissionNotificationEmailITest {
                 .andExpect(content().string(allOf(
                         isJson(),
                         hasJsonPath("$.data", is(nullValue())),
-                        hasJsonPath("$.errors", hasItem("Could not evaluate value of property \"RespDefendsDivorce\""))
+                        hasJsonPath("$.errors", hasItem(String.format("%s field doesn't contain a valid value",
+                            RESP_DEFENDS_DIVORCE_CCD_FIELD)))
                 )));
     }
 
