@@ -62,6 +62,7 @@ public class CcdCallbackWorkflowTest {
     private Map<String, Object> payload;
     private TaskContext context;
 
+
     @Before
     public void setUp() {
         ccdCallbackWorkflow =
