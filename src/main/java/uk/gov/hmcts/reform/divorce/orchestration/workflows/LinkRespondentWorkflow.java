@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveAosCase;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateRespondentDetails;
 
@@ -20,14 +21,17 @@ public class LinkRespondentWorkflow extends DefaultWorkflow<UserDetails> {
     private final RetrievePinUserDetails retrievePinUserDetails;
     private final LinkRespondent linkRespondent;
     private final UpdateRespondentDetails updateRespondentDetails;
+    private final RetrieveAosCase retrieveAosCase;
 
     @Autowired
     public LinkRespondentWorkflow(RetrievePinUserDetails retrievePinUserDetails,
                                   LinkRespondent linkRespondent,
-                                  UpdateRespondentDetails updateRespondentDetails) {
+                                  UpdateRespondentDetails updateRespondentDetails,
+                                  RetrieveAosCase retrieveAosCase) {
         this.retrievePinUserDetails = retrievePinUserDetails;
         this.linkRespondent = linkRespondent;
         this.updateRespondentDetails = updateRespondentDetails;
+        this.retrieveAosCase = retrieveAosCase;
     }
 
     public UserDetails run(String authToken, String caseId, String pin) throws WorkflowException {
@@ -35,6 +39,7 @@ public class LinkRespondentWorkflow extends DefaultWorkflow<UserDetails> {
             new Task[] {
                 retrievePinUserDetails,
                 linkRespondent,
+                retrieveAosCase,
                 updateRespondentDetails
             },
             UserDetails.builder().authToken(authToken).build(),
