@@ -36,6 +36,10 @@ public abstract class IntegrationTest {
     public SpringIntegrationMethodRule springMethodIntegration;
 
     protected IntegrationTest() {
+        System.setProperty("http.proxyHost", "proxyout.reform.hmcts.net");
+        System.setProperty("http.proxyPort", "8080");
+        System.setProperty("https.proxyHost", "proxyout.reform.hmcts.net");
+        System.setProperty("https.proxyPort", "8080");
         this.springMethodIntegration = new SpringIntegrationMethodRule();
     }
 
