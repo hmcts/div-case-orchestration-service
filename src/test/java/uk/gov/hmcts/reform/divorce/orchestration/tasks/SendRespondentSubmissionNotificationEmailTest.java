@@ -72,6 +72,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
         when(taskCommons.getCourt("eastMidlands")).thenReturn(testCourt);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testRightEmailIsSent_WhenRespondentChoosesToDefendDivorce()
             throws TaskException, IOException {
@@ -98,7 +99,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
                 hasEntry("husband or wife", "wife"),
                 hasEntry("RDC name", testCourt.getDivorceCentreName()),
                 hasEntry("court address", testCourt.getFormattedAddress()),
-                hasEntry("form submission date limit", "11 October 2018")
+                hasEntry("form submission date limit", "20 September 2018")
         ));
         assertThat(templateParameters.size(), equalTo(8));
         checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);
@@ -190,10 +191,10 @@ public class SendRespondentSubmissionNotificationEmailTest {
                 .collect(Collectors.toList());
 
         long amountOfPropertiesChecked = listOfMethodInvoked.stream()
-                .filter(name -> name.equalsIgnoreCase("containsKey"))
+                .filter("containsKey"::equalsIgnoreCase)
                 .count();
         long amountOfPropertiesRetrieved = listOfMethodInvoked.stream()
-                .filter(name -> name.equalsIgnoreCase("get"))
+                .filter("get"::equalsIgnoreCase)
                 .count();
 
         assertThat("Properties should be checked before they are retrieved",
