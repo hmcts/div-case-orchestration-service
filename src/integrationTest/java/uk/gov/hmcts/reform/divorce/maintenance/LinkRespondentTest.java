@@ -92,7 +92,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
                 petitionerUserDetails.getAuthToken());
 
         final CaseDetails caseDetails = submitCase(
-            "submit-complete-case.json",
+            "submit-unlinked-case.json",
             createCaseWorkerUser(),
             ImmutablePair.of("AosLetterHolderId", pinResponse.getUserId())
         );
