@@ -50,6 +50,9 @@ public class OrchestrationConstants {
     public static final String DN_RECEIVED = "dnReceived";
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
     public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
+    public static final String AOS_AWAITING = "AosAwaiting";
+    public static final String AOS_OVERDUE = "AosOverdue";
+    public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CCD_DUE_DATE = "dueDate";
 

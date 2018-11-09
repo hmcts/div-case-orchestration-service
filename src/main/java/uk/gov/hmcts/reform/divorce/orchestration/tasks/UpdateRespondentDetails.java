@@ -31,13 +31,16 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
 
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) {
-        CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(
+        CaseDetails caseDetails = caseMaintenanceClient.retrievePetition(
                 String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
                 Boolean.valueOf(String.valueOf(context.getTransientObject(CHECK_CCD))));
 
         String event;
-        if (caseDetails.getState().equals("AosAwaiting") || caseDetails.getState().equals("AosOverdue")
-                || caseDetails.getState().equals("AwaitingReissue")) {
+        boolean standardAosFlow = caseDetails.getState().equals(AOS_AWAITING)
+                || caseDetails.getState().equals(AOS_OVERDUE)
+                || caseDetails.getState().equals(AWAITING_REISSUE);
+
+        if (standardAosFlow) {
             event = START_AOS_EVENT_ID;
         } else {
             event = RESPONDENT_LINK_GENERIC_EVENT_ID;

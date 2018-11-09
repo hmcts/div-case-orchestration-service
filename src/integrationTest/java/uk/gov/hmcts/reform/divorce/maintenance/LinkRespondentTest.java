@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,8 +96,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         final CaseDetails caseDetails = submitCase(
             "submit-unlinked-case.json",
             createCaseWorkerUser(),
-            ImmutablePair.of("AosLetterHolderId", pinResponse.getUserId())
-        );
+            ImmutablePair.of("AosLetterHolderId", pinResponse.getUserId()));
 
         updateCase(String.valueOf(caseDetails.getId()), null, "testAosAwaiting");
 
