@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -41,6 +42,7 @@ public class LinkRespondentWorkflowUTest {
         final ImmutablePair<String, Object>  pinPair = ImmutablePair.of(PIN, TEST_PIN);
         final ImmutablePair<String, Object>  authTokenPair = ImmutablePair.of(AUTH_TOKEN_JSON_KEY, TEST_TOKEN);
         final ImmutablePair<String, Object>  caseIdPair = ImmutablePair.of(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        final ImmutablePair<String, Object>  checkCcdFlag = ImmutablePair.of(CHECK_CCD, Boolean.TRUE.toString());
 
         final Task[] tasks = new Task[] {
             retrievePinUserDetails,
@@ -48,7 +50,8 @@ public class LinkRespondentWorkflowUTest {
             updateRespondentDetails
         };
 
-        when(classUnderTest.execute(tasks, userDetails, pinPair, authTokenPair, caseIdPair)).thenReturn(userDetails);
+        when(classUnderTest.execute(tasks, userDetails, pinPair, authTokenPair, caseIdPair, checkCcdFlag))
+                .thenReturn(userDetails);
 
         UserDetails actual = classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
 

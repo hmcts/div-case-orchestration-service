@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
@@ -26,7 +25,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import java.util.Collections;
 import java.util.Map;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -37,8 +40,24 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.*;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AOS_AWAITING_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
@@ -48,7 +67,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public abstract class LinkRespondentIdamITest extends IdamTestSupport {
-    private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
+    private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveCase";
     private static final String API_URL = "/link-respondent/" + TEST_CASE_ID + "/" + TEST_PIN;
     private static final String LINK_RESPONDENT_CONTEXT_PATH = "/casemaintenance/version/1/link-respondent/"
         + TEST_CASE_ID + "/" + TEST_LETTER_HOLDER_ID_CODE;
@@ -59,11 +78,11 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
     );
     private static final Map<String, Object> CASE_DATA = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
     private static final CaseDetails CASE_DETAILS =
-            CaseDetails.builder()
-                    .caseId(TEST_CASE_ID)
-                    .state(AOS_AWAITING_STATE)
-                    .caseData(CASE_DATA)
-                    .build();
+        CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(AOS_AWAITING_STATE)
+            .caseData(CASE_DATA)
+            .build();
 
     @Value("${aos.responded.days-to-complete}")
     private int daysToComplete;
@@ -160,7 +179,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(UNAUTHORIZED, BEARER_AUTH_TOKEN, TEST_ERROR);
-        stubRetrieveAosCaseFromCMS(CASE_DETAILS);
+        stubRetrieveCaseFromCMS(CASE_DETAILS);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -177,7 +196,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
         stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, TEST_ERROR);
-        stubRetrieveAosCaseFromCMS(CASE_DETAILS);
+        stubRetrieveCaseFromCMS(CASE_DETAILS);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -194,7 +213,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
         stubMaintenanceServerEndpointForUpdate(OK, convertObjectToJsonString(caseData));
-        stubRetrieveAosCaseFromCMS(CASE_DETAILS);
+        stubRetrieveCaseFromCMS(CASE_DETAILS);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -222,15 +241,15 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
                 .withBody(response)));
     }
 
-    private void stubRetrieveAosCaseFromCMS(CaseDetails caseDetails) {
-        stubRetrieveAosCaseFromCMS(HttpStatus.OK, convertObjectToJsonString(caseDetails));
+    private void stubRetrieveCaseFromCMS(CaseDetails caseDetails) {
+        stubRetrieveCaseFromCMS(HttpStatus.OK, convertObjectToJsonString(caseDetails));
     }
 
-    private void stubRetrieveAosCaseFromCMS(HttpStatus status, String message) {
-        maintenanceServiceServer.stubFor(get(urlEqualTo(RETRIEVE_AOS_CASE_CONTEXT_PATH + "?checkCcd=false"))
-                .willReturn(aResponse()
-                        .withStatus(status.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(message)));
+    private void stubRetrieveCaseFromCMS(HttpStatus status, String message) {
+        maintenanceServiceServer.stubFor(get(urlEqualTo(RETRIEVE_AOS_CASE_CONTEXT_PATH + "?checkCcd=true"))
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(message)));
     }
 }
