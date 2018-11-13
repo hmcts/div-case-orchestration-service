@@ -54,7 +54,7 @@ To run all unit tests please execute following command:
 To run all checks (including unit tests) please execute following command:
 
 ```bash
-    ./gradlew check
+    ./gradlew check 
 ```
 
 ### Mutation tests
