@@ -43,6 +43,9 @@ public interface CaseOrchestrationService {
     Map<String, Object> sendPetitionerSubmissionNotificationEmail(CreateEvent caseDetailsRequest)
             throws WorkflowException;
 
+    Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(CreateEvent caseDetailsRequest)
+            throws WorkflowException;
+
     Map<String, Object> sendRespondentSubmissionNotificationEmail(CreateEvent caseDetailsRequest)
             throws WorkflowException;
 
