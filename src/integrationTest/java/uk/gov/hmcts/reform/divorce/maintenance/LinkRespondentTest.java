@@ -14,12 +14,12 @@ import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AOS_STARTED;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
 
 public class LinkRespondentTest extends RetrieveAosCaseSupport {
     private static final String PIN_USER_FIRST_NAME = "pinuserfirstname";
@@ -158,8 +158,10 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         assertEquals(userDetails.getEmailAddress(), caseDetails.getData().get(RESPONDENT_EMAIL_ADDRESS));
         assertEquals(YES_VALUE, caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
         assertEquals(LocalDate.now().toString(CCD_DATE_FORMAT), caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE));
-        assertEquals(LocalDate.now().plusDays(daysToComplete).toString(CCD_DATE_FORMAT),
-            caseDetails.getData().get(CCD_DUE_DATE));
+        if (caseDetails.getState().equals(AOS_STARTED)) {
+            assertEquals(LocalDate.now().plusDays(daysToComplete).toString(CCD_DATE_FORMAT),
+                caseDetails.getData().get(CCD_DUE_DATE));
+        }
     }
 
     private Response linkRespondent(String userToken, Long caseId, String pin) {
