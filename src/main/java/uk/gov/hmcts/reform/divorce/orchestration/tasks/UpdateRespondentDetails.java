@@ -20,11 +20,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LINK_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -43,34 +42,44 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
 
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) {
+        String eventId;
+
+        ImmutableMap updateFields;
+
         CaseDetails caseDetails = caseMaintenanceClient.retrievePetition(
                 String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
-                Boolean.valueOf(String.valueOf(context.getTransientObject(CHECK_CCD))));
+                true);
 
-        String event;
+        UserDetails respondentDetails =
+            idamClient.retrieveUserDetails(
+                AuthUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
+
         boolean standardAosFlow = caseDetails.getState().equals(AOS_AWAITING)
                 || caseDetails.getState().equals(AOS_OVERDUE)
                 || caseDetails.getState().equals(AWAITING_REISSUE);
 
         if (standardAosFlow) {
-            event = START_AOS_EVENT_ID;
-        } else {
-            event = RESPONDENT_LINK_GENERIC_EVENT_ID;
-        }
-        UserDetails respondentDetails =
-            idamClient.retrieveUserDetails(
-                AuthUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
-
-        caseMaintenanceClient.updateCase(
-            (String)context.getTransientObject(AUTH_TOKEN_JSON_KEY),
-            (String)context.getTransientObject(CASE_ID_JSON_KEY),
-            event,
-            ImmutableMap.of(
+            eventId = START_AOS_EVENT_ID;
+            updateFields = ImmutableMap.of(
                 RESPONDENT_EMAIL_ADDRESS, respondentDetails.getEmail(),
                 RECEIVED_AOS_FROM_RESP, YES_VALUE,
                 RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate(),
                 CCD_DUE_DATE, CcdUtil.getCurrentDatePlusDays(daysToComplete)
-            )
+            );
+        } else {
+            eventId = LINK_RESPONDENT_GENERIC_EVENT_ID;
+            updateFields = ImmutableMap.of(
+                RESPONDENT_EMAIL_ADDRESS, respondentDetails.getEmail(),
+                RECEIVED_AOS_FROM_RESP, YES_VALUE,
+                RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
+            );
+        }
+
+        caseMaintenanceClient.updateCase(
+            (String)context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+            (String)context.getTransientObject(CASE_ID_JSON_KEY),
+            eventId,
+            updateFields
         );
 
         return payLoad;

@@ -42,7 +42,6 @@ public class LinkRespondentWorkflowUTest {
         final ImmutablePair<String, Object>  pinPair = ImmutablePair.of(PIN, TEST_PIN);
         final ImmutablePair<String, Object>  authTokenPair = ImmutablePair.of(AUTH_TOKEN_JSON_KEY, TEST_TOKEN);
         final ImmutablePair<String, Object>  caseIdPair = ImmutablePair.of(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        final ImmutablePair<String, Object>  checkCcdFlag = ImmutablePair.of(CHECK_CCD, Boolean.TRUE.toString());
 
         final Task[] tasks = new Task[] {
             retrievePinUserDetails,
@@ -50,7 +49,7 @@ public class LinkRespondentWorkflowUTest {
             updateRespondentDetails
         };
 
-        when(classUnderTest.execute(tasks, userDetails, pinPair, authTokenPair, caseIdPair, checkCcdFlag))
+        when(classUnderTest.execute(tasks, userDetails, pinPair, authTokenPair, caseIdPair))
                 .thenReturn(userDetails);
 
         UserDetails actual = classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);

@@ -33,7 +33,7 @@ public class OrchestrationConstants {
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
     public static final String START_AOS_EVENT_ID = "startAos";
-    public static final String RESPONDENT_LINK_GENERIC_EVENT_ID = "dataMigration";
+    public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
     public static final String COMPLETE_AOS_EVENT_ID = "aosSubmittedNoAdmissionNoConsent";
     public static final String AWAITING_DN_AOS_EVENT_ID = "aosSubmittedUndefended";
     public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";

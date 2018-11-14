@@ -38,4 +38,5 @@ public class TestConstants {
     public static final String TEST_USER_FIRST_NAME = "user first name";
     public static final String TEST_USER_LAST_NAME = "user last name";
     public static final String AOS_AWAITING_STATE = "AosAwaiting";
+    public static final String AWAITING_CONSIDERATION_GENERAL_APPLICATION = "AwaitingConsiderationGeneralApplication";
 }
