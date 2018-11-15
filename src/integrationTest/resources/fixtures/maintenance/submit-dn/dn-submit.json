@@ -1,7 +1,8 @@
 {
     "PetitionChangedDetailsDN" : "Some details about this dn changes",
     "ConfirmPetitionDN" : "YES",
-    "DivorceCostsOptionDN" : "YES",
+    "DivorceCostsOptionDN" : "differentAmount",
+    "CostsDifferentDetails" : "I want to pay 60%",
     "statementOfTruthDN" : "YES",
     "statementOfTruthChanges" : "YES",
     "statementOfTruthNoChanges" : "NO",
