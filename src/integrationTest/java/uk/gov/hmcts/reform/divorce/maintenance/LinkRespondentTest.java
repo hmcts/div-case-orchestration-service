@@ -119,6 +119,40 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     @Test
+    public void givenAosOverdueState_whenLinkRespondent_thenCaseShouldBeLinked() {
+        final UserDetails petitionerUserDetails = createCitizenUser();
+
+        final PinResponse pinResponse =
+            idamTestSupportUtil.generatePin(PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME,
+                petitionerUserDetails.getAuthToken());
+
+        final CaseDetails caseDetails = submitCase(
+            "submit-unlinked-case.json",
+            createCaseWorkerUser(),
+            ImmutablePair.of("AosLetterHolderId", pinResponse.getUserId()));
+
+        updateCase(String.valueOf(caseDetails.getId()), null, "referToLegalAdvisorGA");
+        updateCase(String.valueOf(caseDetails.getId()), null, "orderRefusedGeneralApplication");
+
+        final UserDetails respondentUserDetails = createCitizenUser();
+
+        Response linkResponse =
+            linkRespondent(
+                respondentUserDetails.getAuthToken(),
+                caseDetails.getId(),
+                pinResponse.getPin()
+            );
+
+        assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
+
+        Response caseResponse = retrieveAosCase(respondentUserDetails.getAuthToken());
+
+        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
+
+        assertCaseDetails(respondentUserDetails, String.valueOf(caseDetails.getId()));
+    }
+
+    @Test
     public void givenValidCaseDetails_whenLinkRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
@@ -131,7 +165,6 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             createCaseWorkerUser(),
             ImmutablePair.of("AosLetterHolderId", pinResponse.getUserId()));
 
-        updateCase(String.valueOf(caseDetails.getId()), null, "testAosAwaiting");
         updateCase(String.valueOf(caseDetails.getId()), null, "referToLegalAdvisorGA");
 
         final UserDetails respondentUserDetails = createCitizenUser();
