@@ -75,7 +75,7 @@ public class OrchestrationConstants {
 
     // Document Generator
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";
-    public static final String DOCUMENT_TYPE_INVITATION = "aosinvitation";
+    public static final String DOCUMENT_TYPE_INVITATION = "aos";
     public static final String DOCUMENT_TYPE_PETITION = "petition";
     public static final String INVITATION_FILE_NAME_FORMAT = "aosinvitation%s";
     public static final String MINI_PETITION_FILE_NAME_FORMAT = "d8petition%s";
