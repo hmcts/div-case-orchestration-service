@@ -8,7 +8,6 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.joining;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINE_SEPARATOR;
 
@@ -61,10 +60,17 @@ public class Court {
             addressLines.add(serviceCentreName);
         }
 
+        addressLines.add(getDivorceCentreNameFormattedForAddress());
+
         if (isPOBoxAddress()) {
-            addressLines.addAll(getAddressLinesWithPOBox());
+            addressLines.add(poBox);
+            addressLines.add(courtCity);
+            addressLines.add(postCode);
         } else {
-            addressLines.addAll(getAddressLinesWithoutPOBox());
+            addressLines.add(divorceCentreAddressName);
+            addressLines.add(street);
+            addressLines.add(courtCity);
+            addressLines.add(postCode);
         }
 
         return addressLines.stream().collect(joining(LINE_SEPARATOR));
@@ -76,25 +82,6 @@ public class Court {
 
     private boolean isServiceCentre() {
         return serviceCentreName != null;
-    }
-
-    private List<String> getAddressLinesWithPOBox() {
-        String divorceCentreNameFormattedForAddress = getDivorceCentreNameFormattedForAddress();
-
-        return newArrayList(divorceCentreNameFormattedForAddress,
-                poBox,
-                courtCity,
-                postCode);
-    }
-
-    private List<String> getAddressLinesWithoutPOBox() {
-        String divorceCentreNameFormattedForAddress = getDivorceCentreNameFormattedForAddress();
-
-        return newArrayList(divorceCentreNameFormattedForAddress,
-                divorceCentreAddressName,
-                street,
-                courtCity,
-                postCode);
     }
 
     private String getDivorceCentreNameFormattedForAddress() {
