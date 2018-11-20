@@ -51,6 +51,19 @@ public class CourtLookupServiceTest {
     }
 
     @Test
+    public void testServiceCentreAddressFormattedCorrectly() throws CourtDetailsNotFound {
+        Court foundCourt = courtLookupService.getCourtByKey("serviceCentre");
+
+        assertThat(foundCourt.getDivorceCentreName(), is("East Midlands Regional Divorce Centre"));
+        String expectedAddress = "Courts and Tribunal Service Centre" + LINE_SEPARATOR
+                + "c/o East Midlands Regional Divorce Centre" + LINE_SEPARATOR
+                + "PO Box 10447" + LINE_SEPARATOR
+                + "Nottingham" + LINE_SEPARATOR
+                + "NG2 9QN";
+        assertThat(foundCourt.getFormattedAddress(), is(expectedAddress));
+    }
+
+    @Test
     public void testExceptionInThrownWhenCourtIsNotFound() throws CourtDetailsNotFound {
         expectedException.expect(CourtDetailsNotFound.class);
         expectedException.expectMessage("Could not find court by using key \"unknownCourt\"");

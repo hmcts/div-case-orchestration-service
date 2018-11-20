@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -14,6 +15,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 public class Court {
+
+    private static final String CARE_OF_PREFIX = "c/o ";
+
+    @JsonProperty("serviceCentreName")
+    @Setter
+    private String serviceCentreName;
 
     @JsonProperty("divorceCentre")
     @Setter
@@ -48,12 +55,16 @@ public class Court {
     }
 
     private String formatAddress() {
-        List<String> addressLines;
+        List<String> addressLines = new ArrayList<>();
+
+        if (isServiceCentre()) {
+            addressLines.add(serviceCentreName);
+        }
 
         if (isPOBoxAddress()) {
-            addressLines = getAddressLinesWithPOBox();
+            addressLines.addAll(getAddressLinesWithPOBox());
         } else {
-            addressLines = getAddressLinesWithoutPOBox();
+            addressLines.addAll(getAddressLinesWithoutPOBox());
         }
 
         return addressLines.stream().collect(joining(LINE_SEPARATOR));
@@ -63,19 +74,38 @@ public class Court {
         return poBox != null;
     }
 
+    private boolean isServiceCentre() {
+        return serviceCentreName != null;
+    }
+
     private List<String> getAddressLinesWithPOBox() {
-        return newArrayList(divorceCentreName,
+        String divorceCentreNameFormattedForAddress = getDivorceCentreNameFormattedForAddress();
+
+        return newArrayList(divorceCentreNameFormattedForAddress,
                 poBox,
                 courtCity,
                 postCode);
     }
 
     private List<String> getAddressLinesWithoutPOBox() {
-        return newArrayList(divorceCentreName,
+        String divorceCentreNameFormattedForAddress = getDivorceCentreNameFormattedForAddress();
+
+        return newArrayList(divorceCentreNameFormattedForAddress,
                 divorceCentreAddressName,
                 street,
                 courtCity,
                 postCode);
+    }
+
+    private String getDivorceCentreNameFormattedForAddress() {
+        StringBuffer stringBuffer = new StringBuffer();
+
+        if (isServiceCentre()) {
+            stringBuffer.append(CARE_OF_PREFIX);
+        }
+        stringBuffer.append(divorceCentreName);
+
+        return stringBuffer.toString();
     }
 
 }
