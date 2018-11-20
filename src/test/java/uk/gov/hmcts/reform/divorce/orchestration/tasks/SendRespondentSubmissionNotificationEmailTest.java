@@ -97,7 +97,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
                 hasEntry("first name", "Ted"),
                 hasEntry("last name", "Jones"),
                 hasEntry("husband or wife", "wife"),
-                hasEntry("RDC name", testCourt.getDivorceCentreName()),
+                hasEntry("RDC name", testCourt.getIdentifiableCentreName()),
                 hasEntry("court address", testCourt.getFormattedAddress()),
                 hasEntry("form submission date limit", "20 September 2018")
         ));
@@ -162,7 +162,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
                 hasEntry("first name", "Sarah"),
                 hasEntry("last name", "Jones"),
                 hasEntry("husband or wife", "husband"),
-                hasEntry("RDC name", testCourt.getDivorceCentreName())
+                hasEntry("RDC name", testCourt.getIdentifiableCentreName())
         ));
         assertThat(templateParameters.size(), equalTo(5));
         checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);

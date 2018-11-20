@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import static java.util.stream.Collectors.joining;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINE_SEPARATOR;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Getter
 public class Court {
 
     private static final String CARE_OF_PREFIX = "c/o ";
@@ -93,6 +91,18 @@ public class Court {
         stringBuffer.append(divorceCentreName);
 
         return stringBuffer.toString();
+    }
+
+    public String getIdentifiableCentreName() {
+        String identifiableCentreName;
+
+        if (isServiceCentre()) {
+            identifiableCentreName = serviceCentreName;
+        } else {
+            identifiableCentreName = divorceCentreName;
+        }
+
+        return identifiableCentreName;
     }
 
 }

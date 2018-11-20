@@ -59,7 +59,7 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         templateFields.put("first name", respondentFirstName);
         templateFields.put("last name", respondentLastName);
         templateFields.put("husband or wife", petitionerRelationshipToRespondent);
-        templateFields.put("RDC name", court.getDivorceCentreName());
+        templateFields.put("RDC name", court.getIdentifiableCentreName());
         templateFields.put("court address", court.getFormattedAddress());
 
         String formSubmissionDateLimit = getDueDate(caseDataPayload);

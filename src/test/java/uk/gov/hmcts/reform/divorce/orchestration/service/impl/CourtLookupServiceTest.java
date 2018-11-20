@@ -29,7 +29,7 @@ public class CourtLookupServiceTest {
     public void testCourtAddressWithPOBoxIsFormattedCorrectly() throws CourtDetailsNotFound {
         Court foundCourt = courtLookupService.getCourtByKey("eastMidlands");
 
-        assertThat(foundCourt.getDivorceCentreName(), is("East Midlands Regional Divorce Centre"));
+        assertThat(foundCourt.getIdentifiableCentreName(), is("East Midlands Regional Divorce Centre"));
         String expectedAddress = "East Midlands Regional Divorce Centre" + LINE_SEPARATOR
                 + "PO Box 10447" + LINE_SEPARATOR
                 + "Nottingham" + LINE_SEPARATOR
@@ -41,7 +41,7 @@ public class CourtLookupServiceTest {
     public void testCourtAddressWithoutPOBoxIsFormattedCorrectly() throws CourtDetailsNotFound {
         Court foundCourt = courtLookupService.getCourtByKey("northWest");
 
-        assertThat(foundCourt.getDivorceCentreName(), is("North West Regional Divorce Centre"));
+        assertThat(foundCourt.getIdentifiableCentreName(), is("North West Regional Divorce Centre"));
         String expectedAddress = "North West Regional Divorce Centre" + LINE_SEPARATOR
                 + "Liverpool Civil & Family Court" + LINE_SEPARATOR
                 + "35 Vernon Street" + LINE_SEPARATOR
@@ -54,7 +54,7 @@ public class CourtLookupServiceTest {
     public void testServiceCentreAddressFormattedCorrectly() throws CourtDetailsNotFound {
         Court foundCourt = courtLookupService.getCourtByKey("serviceCentre");
 
-        assertThat(foundCourt.getDivorceCentreName(), is("East Midlands Regional Divorce Centre"));
+        assertThat(foundCourt.getIdentifiableCentreName(), is("Courts and Tribunal Service Centre"));
         String expectedAddress = "Courts and Tribunal Service Centre" + LINE_SEPARATOR
                 + "c/o East Midlands Regional Divorce Centre" + LINE_SEPARATOR
                 + "PO Box 10447" + LINE_SEPARATOR
