@@ -79,6 +79,7 @@ public class Court {
     }
 
     private boolean isServiceCentre() {
+        //serviceCentreName is a field in the json. If it's null, it means the court is not a service centre
         return serviceCentreName != null;
     }
 
