@@ -106,6 +106,7 @@ public class ProcessPbaPayment implements Task<Map<String, Object>> {
         return caseData;
     }
 
+
     private void addToRequest(Consumer<String> setter, Supplier<String> value) {
         Optional.ofNullable(value.get()).ifPresent(setter);
     }
