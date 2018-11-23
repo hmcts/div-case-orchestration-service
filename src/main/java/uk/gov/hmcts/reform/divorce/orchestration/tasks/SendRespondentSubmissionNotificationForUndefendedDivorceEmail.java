@@ -10,7 +10,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
@@ -41,12 +43,14 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
         String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
         String divorceUnitKey = getMandatoryPropertyValueAsString(caseDataPayload, DIVORCE_UNIT_JSON_KEY);
         Court court = taskCommons.getCourt(divorceUnitKey);
+        String caseId = Objects.toString(context.getTransientObject(CASE_ID_JSON_KEY), null);
 
         templateFields.put("email address", respondentEmailAddress);
         templateFields.put("first name", respondentFirstName);
         templateFields.put("last name", respondentLastName);
         templateFields.put("husband or wife", petitionerRelationshipToRespondent);
         templateFields.put("RDC name", court.getDivorceCentreName());
+        templateFields.put("ref", caseId);
 
         taskCommons.sendEmail(RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION,
                 EMAIL_DESCRIPTION,
@@ -55,5 +59,4 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
 
         return caseDataPayload;
     }
-
 }

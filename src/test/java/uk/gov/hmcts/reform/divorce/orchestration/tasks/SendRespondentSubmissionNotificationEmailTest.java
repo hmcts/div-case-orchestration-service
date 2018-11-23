@@ -162,9 +162,10 @@ public class SendRespondentSubmissionNotificationEmailTest {
                 hasEntry("first name", "Sarah"),
                 hasEntry("last name", "Jones"),
                 hasEntry("husband or wife", "husband"),
-                hasEntry("RDC name", testCourt.getDivorceCentreName())
+                hasEntry("RDC name", testCourt.getDivorceCentreName()),
+                hasEntry("ref", caseId)
         ));
-        assertThat(templateParameters.size(), equalTo(5));
+        assertThat(templateParameters.size(), equalTo(6));
         checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);
     }
 
