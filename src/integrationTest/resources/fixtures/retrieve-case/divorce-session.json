@@ -1,0 +1,247 @@
+{
+  "respondentCorrespondenceAddress":{
+    "postcodeManual":null,
+    "addressConfirmed":"true",
+    "validPostcode":true,
+    "address":[
+      "82 Landor Road",
+      "London",
+      "SW9 9PE"
+    ],
+    "town":null,
+    "addressType":"postcode",
+    "postcode":"SW9 9PE",
+    "addressAbroad":null,
+    "street1":null,
+    "street2":null,
+    "postcodeError":"false",
+    "url":null
+  },
+  "petitionerLastName":"Smith",
+  "livingArrangementsLiveTogether":"No",
+  "petitionerFirstName":"John",
+  "courts":"eastMidlands",
+  "claimsCosts":"Yes",
+  "reasonForDivorceShowDesertion":"true",
+  "jurisdictionConfidentLegal":"Yes",
+  "respondentLastName":"Jamed",
+  "reasonForDivorceShowTwoYearsSeparation":"true",
+  "petitionerCorrespondenceAddress":{
+    "postcodeManual":null,
+    "addressConfirmed":"true",
+    "validPostcode":true,
+    "address":[
+      "84 Landor Road",
+      "London",
+      "SW9 9PE"
+    ],
+    "town":null,
+    "addressType":"postcode",
+    "postcode":"AB24 232",
+    "addressAbroad":null,
+    "street1":null,
+    "street2":null,
+    "postcodeError":"false",
+    "url":null
+  },
+  "helpWithFeesNeedHelp":"Yes",
+  "marriageDate":"2001-02-02T00:00:00.000+0000",
+  "petitionerNameChangedHow":[
+    "marriageCertificate"
+  ],
+  "screenHasRespondentAddress":"Yes",
+  "connections":{
+    "A":"The Petitioner and the Respondent are habitually resident in England and Wales",
+    "B":null,
+    "C":"The Respondent is habitually resident in England and Wales",
+    "D":null,
+    "E":null,
+    "F":null,
+    "G":null
+  },
+  "petitionerCorrespondenceUseHomeAddress":"No",
+  "reasonForDivorceShowUnreasonableBehaviour":"true",
+  "reasonForDivorceEnableAdultery":"true",
+  "legalProceedingsDetails":"The legal proceeding details",
+  "court":{
+    "northWest":{
+      "phoneNumber":"0300 303 0642",
+      "street":"35 Vernon Street",
+      "divorceCentre":"North West Regional Divorce Centre",
+      "siteId":"AA04",
+      "divorceCentreAddressName":"Liverpool Civil & Family Court",
+      "postCode":"L2 2BX",
+      "openingHours":"Telephone Enquiries from: 8.30am to 5pm",
+      "courtCity":"Liverpool",
+      "email":"family@liverpool.countycourt.gsi.gov.uk"
+    },
+    "southWest":{
+      "poBox":"PO Box 1792",
+      "phoneNumber":"0300 303 0642",
+      "divorceCentre":"South West Regional Divorce Centre",
+      "siteId":"AA03",
+      "postCode":"SO15 9GG",
+      "openingHours":"Telephone Enquiries from: 8.30am to 5pm",
+      "courtCity":"Southampton",
+      "email":"sw-region-divorce@hmcts.gsi.gov.uk"
+    },
+    "westMidlands":{
+      "poBox":"PO Box 3650",
+      "phoneNumber":"0300 303 0642",
+      "divorceCentre":"West Midlands Regional Divorce Centre",
+      "siteId":"AA02",
+      "postCode":"ST4 9NH",
+      "openingHours":"Telephone Enquiries from: 8.30am to 5pm",
+      "courtCity":"Stoke-on-Trent",
+      "email":"westmidlandsdivorce@hmcts.gsi.gov.uk"
+    },
+    "eastMidlands":{
+      "poBox":"PO Box 10447",
+      "phoneNumber":"0300 303 0642",
+      "divorceCentre":"East Midlands Regional Divorce Centre",
+      "siteId":"AA01",
+      "postCode":"NG2 9QN",
+      "openingHours":"Telephone Enquiries from: 8.30am to 5pm",
+      "courtCity":"Nottingham",
+      "email":"eastmidlandsdivorce@hmcts.gsi.gov.uk"
+    },
+    "serviceCentre":{
+      "poBox":"PO Box 10447",
+      "phoneNumber":"0300 303 0642",
+      "serviceCentreName":"Courts and Tribunal Service Centre",
+      "divorceCentre":"East Midlands Regional Divorce Centre",
+      "siteId":"CTSC",
+      "postCode":"NG2 9QN",
+      "openingHours":"Telephone Enquiries from: 8.30am to 5pm",
+      "courtCity":"Nottingham",
+      "email":"divorce@justice.gov.uk"
+    }
+  },
+  "reasonForDivorceShowFiveYearsSeparation":"true",
+  "claimsCostsFrom":[
+    "respondent"
+  ],
+  "screenHasMarriageBroken":"Yes",
+  "petitionerEmail":"email@email.com",
+  "reasonForDivorce":"unreasonable-behaviour",
+  "jurisdictionPetitionerResidence":"Yes",
+  "legalProceedings":"Yes",
+  "marriageIsSameSexCouple":"No",
+  "jurisdictionRespondentResidence":"Yes",
+  "expires":0,
+  "helpWithFeesReferenceNumber":"HWF-123-456",
+  "divorceWho":"husband",
+  "marriagePetitionerName":"John Doe",
+  "screenHasPrinter":"Yes",
+  "petitionerPhoneNumber":"01234567890",
+  "helpWithFeesAppliedForFees":"Yes",
+  "marriageDateDay":2,
+  "respondentCorrespondenceUseHomeAddress":"Solicitor",
+  "reasonForDivorceShowAdultery":"true",
+  "marriageDateYear":2001,
+  "jurisdictionConnection":[
+    "A",
+    "C"
+  ],
+  "financialOrder":"Yes",
+  "petitionerContactDetailsConfidential":"share",
+  "confirmPrayer":"Yes",
+  "claimsCostsAppliedForFees":"true",
+  "legalProceedingsRelated":[
+    "children"
+  ],
+  "reasonForDivorceAdulteryIsNamed":"No",
+  "reasonForDivorceClaiming5YearSeparation":"false",
+  "petitionerNameDifferentToMarriageCertificate":"Yes",
+  "livingArrangementsLastLivedTogether":"No",
+  "respondentHomeAddress":{
+    "postcodeManual":null,
+    "addressConfirmed":"true",
+    "validPostcode":true,
+    "address":[
+      "88 Landor Road",
+      "London",
+      "SW9 9PE"
+    ],
+    "town":null,
+    "addressType":"postcode",
+    "postcode":"SS SSS",
+    "addressAbroad":null,
+    "street1":null,
+    "street2":null,
+    "postcodeError":"false",
+    "url":null
+  },
+  "marriageRespondentName":"Jenny Benny",
+  "petitionerHomeAddress":{
+    "postcodeManual":null,
+    "addressConfirmed":"true",
+    "validPostcode":true,
+    "address":[
+      "82 Landor Road",
+      "London",
+      "SW9 9PE"
+    ],
+    "town":null,
+    "addressType":"postcode",
+    "postcode":"SW9 9PE",
+    "addressAbroad":null,
+    "street1":null,
+    "street2":null,
+    "postcodeError":"false",
+    "url":null
+  },
+  "reasonForDivorceBehaviourDetails":[
+    "My wife is having an affair this week."
+  ],
+  "screenHasMarriageCert":"Yes",
+  "livingArrangementsLastLivedTogetherAddress":{
+    "postcodeManual":null,
+    "addressConfirmed":"true",
+    "validPostcode":false,
+    "address":[
+      "Flat A-B",
+      "86 Landor Road",
+      "London",
+      "SW9 9PE"
+    ],
+    "town":null,
+    "addressType":"manual",
+    "postcode":null,
+    "addressAbroad":"Flat A-B\n86 Landor Road\nLondon\nSW9 9PE",
+    "street1":null,
+    "street2":null,
+    "postcodeError":null,
+    "url":null
+  },
+  "reasonForDivorceClaimingAdultery":"false",
+  "respondentFirstName":"Jane",
+  "reasonForDivorceLimitReasons":"false",
+  "reasonForDivorceHasMarriageDate":"true",
+  "marriageDateMonth":2,
+  "createdDate":"2018-06-07T00:00:00.000+0000",
+  "marriageCanDivorce":"true",
+  "respondentLivesAtLastAddress":"No",
+  "financialOrderFor":[
+    "petitioner",
+    "children"
+  ],
+  "respondentSolicitorAddress":{
+    "postcodeManual":null,
+    "addressConfirmed":"true",
+    "validPostcode":false,
+    "address":[
+      "90 Landor Road",
+      "London",
+      "SW9 9PE"
+    ],
+    "town":null,
+    "addressType":"manual",
+    "postcode":null,
+    "addressAbroad":"90 Landor Road\nLondon\nSW9 9PE",
+    "street1":null,
+    "street2":null,
+    "postcodeError":null,
+    "url":null
+  }
+}
