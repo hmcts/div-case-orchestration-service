@@ -54,8 +54,8 @@ public class CourtLookupServiceTest {
     public void testServiceCentreAddressFormattedCorrectly() throws CourtDetailsNotFound {
         Court foundCourt = courtLookupService.getCourtByKey("serviceCentre");
 
-        assertThat(foundCourt.getIdentifiableCentreName(), is("Courts and Tribunal Service Centre"));
-        String expectedAddress = "Courts and Tribunal Service Centre" + LINE_SEPARATOR
+        assertThat(foundCourt.getIdentifiableCentreName(), is("Courts and Tribunals Service Centre"));
+        String expectedAddress = "Courts and Tribunals Service Centre" + LINE_SEPARATOR
                 + "c/o East Midlands Regional Divorce Centre" + LINE_SEPARATOR
                 + "PO Box 10447" + LINE_SEPARATOR
                 + "Nottingham" + LINE_SEPARATOR

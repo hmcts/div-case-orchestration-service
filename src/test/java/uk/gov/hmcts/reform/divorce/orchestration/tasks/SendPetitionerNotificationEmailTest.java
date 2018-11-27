@@ -33,7 +33,7 @@ public class SendPetitionerNotificationEmailTest {
     private static final String TEST_COURT_KEY = "westMidlands";
     private static final String TEST_COURT_DISPLAY_NAME = "West Midlands Regional Divorce Centre";
     private static final String SERVICE_CENTRE_KEY = "serviceCentre";
-    private static final String SERVICE_CENTRE_DISPLAY_NAME = "Courts and Tribunal Service Centre";
+    private static final String SERVICE_CENTRE_DISPLAY_NAME = "Courts and Tribunals Service Centre";
 
     private static final String UNFORMATTED_CASE_ID = "0123456789012345";
     private static final String FORMATTED_CASE_ID = "0123-4567-8901-2345";
