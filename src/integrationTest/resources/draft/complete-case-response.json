@@ -93,6 +93,17 @@
       "email" : "family@liverpool.countycourt.gsi.gov.uk",
       "phoneNumber" : "0300 303 0642",
       "siteId" : "AA04"
+    },
+    "serviceCentre": {
+      "serviceCentreName": "Courts and Tribunals Service Centre",
+      "divorceCentre": "East Midlands Regional Divorce Centre",
+      "courtCity": "Nottingham",
+      "poBox": "PO Box 10447",
+      "postCode": "NG2 9QN",
+      "openingHours": "Telephone Enquiries from: 8.30am to 5pm",
+      "email": "divorce@justice.gov.uk",
+      "phoneNumber": "0300 303 0642",
+      "siteId": "CTSC"
     }
   },
   "reasonForDivorceShowFiveYearsSeparation" : "true",
