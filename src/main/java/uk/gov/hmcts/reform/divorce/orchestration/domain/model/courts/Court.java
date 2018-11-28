@@ -2,18 +2,22 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.joining;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINE_SEPARATOR;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Getter
 public class Court {
+
+    private static final String CARE_OF_PREFIX = "c/o ";
+
+    @JsonProperty("serviceCentreName")
+    @Setter
+    private String serviceCentreName;
 
     @JsonProperty("divorceCentre")
     @Setter
@@ -48,12 +52,23 @@ public class Court {
     }
 
     private String formatAddress() {
-        List<String> addressLines;
+        List<String> addressLines = new ArrayList<>();
+
+        if (isServiceCentre()) {
+            addressLines.add(serviceCentreName);
+        }
+
+        addressLines.add(getDivorceCentreNameFormattedForAddress());
 
         if (isPOBoxAddress()) {
-            addressLines = getAddressLinesWithPOBox();
+            addressLines.add(poBox);
+            addressLines.add(courtCity);
+            addressLines.add(postCode);
         } else {
-            addressLines = getAddressLinesWithoutPOBox();
+            addressLines.add(divorceCentreAddressName);
+            addressLines.add(street);
+            addressLines.add(courtCity);
+            addressLines.add(postCode);
         }
 
         return addressLines.stream().collect(joining(LINE_SEPARATOR));
@@ -63,19 +78,32 @@ public class Court {
         return poBox != null;
     }
 
-    private List<String> getAddressLinesWithPOBox() {
-        return newArrayList(divorceCentreName,
-                poBox,
-                courtCity,
-                postCode);
+    private boolean isServiceCentre() {
+        //serviceCentreName is a field in the json. If it's null, it means the court is not a service centre
+        return serviceCentreName != null;
     }
 
-    private List<String> getAddressLinesWithoutPOBox() {
-        return newArrayList(divorceCentreName,
-                divorceCentreAddressName,
-                street,
-                courtCity,
-                postCode);
+    private String getDivorceCentreNameFormattedForAddress() {
+        StringBuffer stringBuffer = new StringBuffer();
+
+        if (isServiceCentre()) {
+            stringBuffer.append(CARE_OF_PREFIX);
+        }
+        stringBuffer.append(divorceCentreName);
+
+        return stringBuffer.toString();
+    }
+
+    public String getIdentifiableCentreName() {
+        String identifiableCentreName;
+
+        if (isServiceCentre()) {
+            identifiableCentreName = serviceCentreName;
+        } else {
+            identifiableCentreName = divorceCentreName;
+        }
+
+        return identifiableCentreName;
     }
 
 }

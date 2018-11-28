@@ -46,7 +46,7 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
         templateFields.put("first name", respondentFirstName);
         templateFields.put("last name", respondentLastName);
         templateFields.put("husband or wife", petitionerRelationshipToRespondent);
-        templateFields.put("RDC name", court.getDivorceCentreName());
+        templateFields.put("RDC name", court.getIdentifiableCentreName());
 
         taskCommons.sendEmail(RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION,
                 EMAIL_DESCRIPTION,
