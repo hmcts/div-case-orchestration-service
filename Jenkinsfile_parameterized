@@ -3,7 +3,7 @@
 
 properties([
         parameters([
-                string(name: 'PRODUCT_NAME', defaultValue: 'divorce', description: 'Divorce'),
+                string(name: 'PRODUCT_NAME', defaultValue: 'div', description: 'Divorce'),
                 string(name: 'COMPONENT', defaultValue: 'cos', description: 'Default Case Orchestration Service'),
                 string(name: 'TYPE', defaultValue: 'java', description: ''),
                 string(name: 'ENVIRONMENT', defaultValue: 'saat', description: 'Environment where code should be build and deployed'),
@@ -28,6 +28,6 @@ List<LinkedHashMap<String, Object>> secrets = [
         secret("idam-secret", "AUTH_IDAM_CLIENT_SECRET")
 ]
 
-withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.ENVIRONMENT, params.SUBSCRIPTION) {
+withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.COMPONENT, params.ENVIRONMENT, params.SUBSCRIPTION) {
         loadVaultSecrets(secrets)
 }
