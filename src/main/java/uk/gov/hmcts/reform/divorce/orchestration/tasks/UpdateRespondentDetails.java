@@ -48,7 +48,7 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
 
         Map<String, Object> updateFields = new HashMap<>();
 
-        CaseDetails caseDetails = caseMaintenanceClient.retrievePetition(
+        CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(
                 String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
                 true);
 
