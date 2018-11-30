@@ -287,7 +287,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
     }
 
     private void stubRetrieveCaseFromCMS(CaseDetails caseDetails) {
-        stubRetrieveCaseFromCMS(HttpStatus.OK, convertObjectToJsonString(caseDetails));
+        stubRetrieveCaseFromCMS(OK, convertObjectToJsonString(caseDetails));
     }
 
     private void stubRetrieveCaseFromCMS(HttpStatus status, String message) {

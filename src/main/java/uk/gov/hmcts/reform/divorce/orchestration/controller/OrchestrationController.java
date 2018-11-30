@@ -106,7 +106,7 @@ public class OrchestrationController {
                 CcdCallbackResponse.builder()
                     .data(ImmutableMap.of())
                     .warnings(ImmutableList.of())
-                    .errors(Collections.singletonList("Failed to bulk print documents"))
+                    .errors(singletonList("Failed to bulk print documents"))
                     .build());
         }
         return ResponseEntity.ok(
@@ -223,6 +223,20 @@ public class OrchestrationController {
 
         return ResponseEntity.ok(orchestrationService.retrieveAosCase(checkCcd,
                 authorizationToken));
+    }
+
+    @GetMapping(path = "/retrieve-case", produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Provides case details to front end")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Case details fetched successfully",
+            response = CaseDataResponse.class),
+        @ApiResponse(code = 300, message = "Multiple Cases"),
+        @ApiResponse(code = 400, message = "No Case found"),
+        @ApiResponse(code = 400, message = "Bad Request")
+        })
+    public ResponseEntity<CaseDataResponse> retrieveCase(
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken) throws WorkflowException {
+        return ResponseEntity.ok(orchestrationService.getCase(authorizationToken));
     }
 
     @PostMapping(path = "/authenticate-respondent")
