@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails.*;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails.builder;
 import static uk.gov.hmcts.reform.divorce.util.RestUtil.postToRestService;
 
 @Slf4j
