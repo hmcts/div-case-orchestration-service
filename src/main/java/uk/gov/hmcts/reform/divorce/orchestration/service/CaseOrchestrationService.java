@@ -26,6 +26,8 @@ public interface CaseOrchestrationService {
     CaseDataResponse retrieveAosCase(boolean checkCcd, String authorizationToken) throws WorkflowException;
 
 
+    CaseDataResponse getCase(String authorizationToken) throws WorkflowException;
+
     UserDetails linkRespondent(String authToken, String caseId, String pin)
         throws WorkflowException;
 
