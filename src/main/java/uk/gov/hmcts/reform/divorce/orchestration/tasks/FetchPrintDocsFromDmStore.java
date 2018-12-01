@@ -90,9 +90,9 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                 byte[] byteChunk = new byte[4096];
-                int n;
-                while ( (n = is.read(byteChunk)) > 0 ) {
-                    baos.write(byteChunk, 0, n);
+                int readBytes;
+                while ( (readBytes = is.read(byteChunk)) > 0 ) {
+                    baos.write(byteChunk, 0, readBytes);
                 }
                 bytes = baos.toByteArray();
 
@@ -110,6 +110,7 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
             generatedDocumentInfo.setBytes(bytes);
         }
     }
+
     /**
      * I'm not using object mapper here to keep it consistent with rest of code, when we migrate the formatter
      * service to as module dependency this method could be simplified.
