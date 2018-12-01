@@ -93,7 +93,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
                     .build());
             fail("Not authenticated error expected");
         } catch (FeignException error) {
-            assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
+            assertEquals(HttpStatus.UNAUTHORIZED.value(), error.status());
         }
     }
 
