@@ -14,12 +14,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintW
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerGenericEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
@@ -38,7 +40,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 @Service
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
-    public static final String CASE_ID_IS = "Case ID is: {}";
+    private static final String CASE_ID_IS = "Case ID is: {}";
+
     private final CcdCallbackWorkflow ccdCallbackWorkflow;
     private final CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
     private final RetrieveDraftWorkflow retrieveDraftWorkflow;
@@ -53,11 +56,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
+    private final SendPetitionerGenericEmailNotificationWorkflow sendPetitionerGenericEmailNotificationWorkflow;
     private final SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
     private final RespondentSubmittedCallbackWorkflow aosRespondedWorkflow;
     private final SubmitAosCaseWorkflow submitAosCaseWorkflow;
     private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
     private final DNSubmittedWorkflow dnSubmittedWorkflow;
+    private final GetCaseWorkflow getCaseWorkflow;
 
     @Autowired
     public CaseOrchestrationServiceImpl(CcdCallbackWorkflow ccdCallbackWorkflow,
@@ -74,13 +79,16 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         SolicitorCreateWorkflow solicitorCreateWorkflow,
                                         SendPetitionerSubmissionNotificationWorkflow
                                                     sendPetitionerSubmissionNotificationWorkflow,
+                                        SendPetitionerGenericEmailNotificationWorkflow
+                                                    sendPetitionerGenericEmailNotificationWorkflow,
                                         SendRespondentSubmissionNotificationWorkflow
                                                     sendRespondentSubmissionNotificationWorkflow,
                                         RespondentSubmittedCallbackWorkflow aosRespondedWorkflow,
                                         SubmitAosCaseWorkflow submitAosCaseWorkflow,
                                         CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow,
                                         DNSubmittedWorkflow submitDNWorkflow,
-                                        SubmitDnCaseWorkflow submitDnCaseWorkflow) {
+                                        SubmitDnCaseWorkflow submitDnCaseWorkflow,
+                                        GetCaseWorkflow getCaseWorkflow) {
 
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
         this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
@@ -96,11 +104,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         this.processPbaPaymentWorkflow = processPbaPaymentWorkflow;
         this.solicitorCreateWorkflow = solicitorCreateWorkflow;
         this.sendPetitionerSubmissionNotificationWorkflow = sendPetitionerSubmissionNotificationWorkflow;
+        this.sendPetitionerGenericEmailNotificationWorkflow = sendPetitionerGenericEmailNotificationWorkflow;
         this.sendRespondentSubmissionNotificationWorkflow = sendRespondentSubmissionNotificationWorkflow;
         this.submitAosCaseWorkflow = submitAosCaseWorkflow;
         this.ccdCallbackBulkPrintWorkflow = ccdCallbackBulkPrintWorkflow;
         this.submitDnCaseWorkflow = submitDnCaseWorkflow;
         this.dnSubmittedWorkflow = submitDNWorkflow;
+        this.getCaseWorkflow = getCaseWorkflow;
     }
 
     @Override
@@ -197,6 +207,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
+    public CaseDataResponse getCase(String authorizationToken) throws WorkflowException {
+        return getCaseWorkflow.run(authorizationToken);
+    }
+
+    @Override
     public UserDetails linkRespondent(String authToken, String caseId, String pin) throws WorkflowException {
         return linkRespondentWorkflow.run(authToken, caseId, pin);
     }
@@ -229,6 +244,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> sendPetitionerSubmissionNotificationEmail(
             CreateEvent caseDetailsRequest) throws WorkflowException {
         return sendPetitionerSubmissionNotificationWorkflow.run(caseDetailsRequest);
+    }
+
+    @Override
+    public Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(
+            CreateEvent caseDetailsRequest) throws WorkflowException {
+        return sendPetitionerGenericEmailNotificationWorkflow.run(caseDetailsRequest);
     }
 
     @Override
