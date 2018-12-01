@@ -92,7 +92,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
     public void givenValidCaseData_whenReceivedBulkPrint_thenReturnExpectedCaseData() throws Exception {
 
         Map response = postToRestService(
-            serverUrl + issueContextPath,
+            serverUrl + issueContextPath+"?generateAosInvitation=true",
             citizenHeaders,
             ResourceLoader.loadJson(FIXTURES_ISSUE_PETITION_CCD_CALLBACK_AOS_INVITATION_JSON)
         ).getBody().as(Map.class);
