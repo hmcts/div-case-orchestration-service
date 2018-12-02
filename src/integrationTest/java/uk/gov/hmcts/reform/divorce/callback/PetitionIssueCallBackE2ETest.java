@@ -21,9 +21,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     private static final String SUBMIT_COMPLETE_CASE = "submit-complete-case.json";
     private static final String PAYMENT_MADE = "payment-made.json";
     private static final String PAYMENT_EVENT_ID = "paymentMade";
-    //TODO: use this when the COS goes live
-    //private static final String ISSUE_EVENT_ID = "issueFromSubmitted";
-    private static final String ISSUE_EVENT_ID = "testIssuePetitionCOS";
+    private static final String ISSUE_EVENT_ID = "issueFromSubmitted";
 
     private static final String PETITION = "petition";
     private static final String D8_MINI_PETITION_FILE_NAME_FORMAT = "d8petition%d.pdf";

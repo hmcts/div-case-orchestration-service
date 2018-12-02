@@ -79,6 +79,13 @@ public interface CaseMaintenanceClient {
             @RequestParam(value = "checkCcd") boolean checkCcd);
 
     @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/casemaintenance/version/1/case"
+    )
+    CaseDetails getCase(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
+
+    @RequestMapping(
             method = RequestMethod.DELETE,
             value = "/casemaintenance/version/1/drafts"
     )

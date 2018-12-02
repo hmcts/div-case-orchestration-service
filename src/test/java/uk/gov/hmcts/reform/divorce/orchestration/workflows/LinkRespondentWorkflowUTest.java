@@ -48,7 +48,8 @@ public class LinkRespondentWorkflowUTest {
             updateRespondentDetails
         };
 
-        when(classUnderTest.execute(tasks, userDetails, pinPair, authTokenPair, caseIdPair)).thenReturn(userDetails);
+        when(classUnderTest.execute(tasks, userDetails, pinPair, authTokenPair, caseIdPair))
+                .thenReturn(userDetails);
 
         UserDetails actual = classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
 
