@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
@@ -16,10 +17,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateResponden
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerGenericEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
@@ -78,6 +82,9 @@ public class CaseOrchestrationServiceImplTest {
     private SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
 
     @Mock
+    private SendPetitionerGenericEmailNotificationWorkflow sendPetitionerGenericEmailNotificationWorkflow;
+
+    @Mock
     private SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
 
     @Mock
@@ -97,6 +104,12 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private SubmitDnCaseWorkflow submitDnCaseWorkflow;
+
+    @Mock
+    private GetCaseWorkflow getCaseWorkflow;
+
+    @Mock
+    private RetrieveAosCaseWorkflow retrieveAosCaseWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -158,6 +171,28 @@ public class CaseOrchestrationServiceImplTest {
 
         when(retrieveDraftWorkflow.run(AUTH_TOKEN, true)).thenReturn(testExpectedPayload);
         assertEquals(testExpectedPayload,classUnderTest.getDraft(AUTH_TOKEN, true));
+    }
+
+    @Test
+    public void whenRetrieveAosCase_thenProceedAsExpected() throws WorkflowException {
+        final CaseDataResponse caseDataResponse = CaseDataResponse.builder().build();
+
+        when(retrieveAosCaseWorkflow.run(true, AUTH_TOKEN)).thenReturn(caseDataResponse);
+
+        assertEquals(caseDataResponse, classUnderTest.retrieveAosCase(true, AUTH_TOKEN));
+
+        verify(retrieveAosCaseWorkflow).run(true, AUTH_TOKEN);
+    }
+
+    @Test
+    public void whenGetCase_thenProceedAsExpected() throws WorkflowException {
+        final CaseDataResponse caseDataResponse = CaseDataResponse.builder().build();
+
+        when(getCaseWorkflow.run(AUTH_TOKEN)).thenReturn(caseDataResponse);
+
+        assertEquals(caseDataResponse, classUnderTest.getCase(AUTH_TOKEN));
+
+        verify(getCaseWorkflow).run(AUTH_TOKEN);
     }
 
     @SuppressWarnings("unchecked")
@@ -293,6 +328,18 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(requestPayload, actual);
 
         verify(sendPetitionerSubmissionNotificationWorkflow).run(createEventRequest);
+    }
+
+    @Test
+    public void givenCaseData_whenSendPetitionerGenericEmailNotification_thenReturnPayload() throws Exception {
+        // given
+        when(sendPetitionerGenericEmailNotificationWorkflow.run(createEventRequest))
+                .thenReturn(requestPayload);
+        // when
+        Map<String, Object> actual = classUnderTest.sendPetitionerGenericUpdateNotificationEmail(createEventRequest);
+        // then
+        assertEquals(requestPayload, actual);
+        verify(sendPetitionerGenericEmailNotificationWorkflow).run(createEventRequest);
     }
 
     @Test

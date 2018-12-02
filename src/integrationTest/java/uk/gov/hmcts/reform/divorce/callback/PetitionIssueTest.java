@@ -45,7 +45,7 @@ public class PetitionIssueTest extends IntegrationTest {
             "data.D8DocumentsGenerated[1].value.DocumentType";
     private static final String D8_AOS_INVITATION_DOCUMENT_FILENAME_PATH =
             "data.D8DocumentsGenerated[1].value.DocumentLink.document_filename";
-    private static final String AOS_INVITATION = "aosinvitation";
+    private static final String AOS_INVITATION = "aos";
     private static final String D8_AOS_INVITATION_FILE_NAME_FORMAT = "aosinvitation%s.pdf";
 
     private static final String CASE_ERROR_KEY = "errors";

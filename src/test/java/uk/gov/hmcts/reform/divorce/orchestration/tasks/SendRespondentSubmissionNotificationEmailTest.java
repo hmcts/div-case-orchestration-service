@@ -64,12 +64,12 @@ public class SendRespondentSubmissionNotificationEmailTest {
     @Before
     public void setUp() throws TaskException {
         testCourt = new Court();
-        testCourt.setDivorceCentreName("East Midlands Regional Divorce Centre");
-        testCourt.setPoBox("PO Box 10447");
-        testCourt.setCourtCity("Nottingham");
-        testCourt.setPostCode("NG2 9QN");
+        testCourt.setDivorceCentreName("West Midlands Regional Divorce Centre");
+        testCourt.setPoBox("PO Box 3650");
+        testCourt.setCourtCity("Stoke-on-Trent");
+        testCourt.setPostCode("ST4 9NH");
 
-        when(taskCommons.getCourt("eastMidlands")).thenReturn(testCourt);
+        when(taskCommons.getCourt("westMidlands")).thenReturn(testCourt);
     }
 
     @SuppressWarnings("unchecked")
@@ -97,7 +97,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
                 hasEntry("first name", "Ted"),
                 hasEntry("last name", "Jones"),
                 hasEntry("husband or wife", "wife"),
-                hasEntry("RDC name", testCourt.getDivorceCentreName()),
+                hasEntry("RDC name", testCourt.getIdentifiableCentreName()),
                 hasEntry("court address", testCourt.getFormattedAddress()),
                 hasEntry("form submission date limit", "20 September 2018")
         ));
@@ -162,7 +162,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
                 hasEntry("first name", "Sarah"),
                 hasEntry("last name", "Jones"),
                 hasEntry("husband or wife", "husband"),
-                hasEntry("RDC name", testCourt.getDivorceCentreName())
+                hasEntry("RDC name", testCourt.getIdentifiableCentreName())
         ));
         assertThat(templateParameters.size(), equalTo(5));
         checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);

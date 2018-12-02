@@ -26,6 +26,8 @@ public interface CaseOrchestrationService {
     CaseDataResponse retrieveAosCase(boolean checkCcd, String authorizationToken) throws WorkflowException;
 
 
+    CaseDataResponse getCase(String authorizationToken) throws WorkflowException;
+
     UserDetails linkRespondent(String authToken, String caseId, String pin)
         throws WorkflowException;
 
@@ -41,6 +43,9 @@ public interface CaseOrchestrationService {
     Map<String,Object> deleteDraft(String authorizationToken) throws WorkflowException;
 
     Map<String, Object> sendPetitionerSubmissionNotificationEmail(CreateEvent caseDetailsRequest)
+            throws WorkflowException;
+
+    Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(CreateEvent caseDetailsRequest)
             throws WorkflowException;
 
     Map<String, Object> sendRespondentSubmissionNotificationEmail(CreateEvent caseDetailsRequest)

@@ -33,6 +33,7 @@ public class OrchestrationConstants {
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
     public static final String START_AOS_EVENT_ID = "startAos";
+    public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
     public static final String COMPLETE_AOS_EVENT_ID = "aosSubmittedNoAdmissionNoConsent";
     public static final String AWAITING_DN_AOS_EVENT_ID = "aosSubmittedUndefended";
     public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";
@@ -49,6 +50,9 @@ public class OrchestrationConstants {
     public static final String DN_RECEIVED = "dnReceived";
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
     public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
+    public static final String AOS_AWAITING = "AosAwaiting";
+    public static final String AOS_OVERDUE = "AosOverdue";
+    public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CCD_DUE_DATE = "dueDate";
 
@@ -75,7 +79,7 @@ public class OrchestrationConstants {
 
     // Document Generator
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";
-    public static final String DOCUMENT_TYPE_INVITATION = "aosinvitation";
+    public static final String DOCUMENT_TYPE_INVITATION = "aos";
     public static final String DOCUMENT_TYPE_PETITION = "petition";
     public static final String INVITATION_FILE_NAME_FORMAT = "aosinvitation%s";
     public static final String MINI_PETITION_FILE_NAME_FORMAT = "d8petition%s";
