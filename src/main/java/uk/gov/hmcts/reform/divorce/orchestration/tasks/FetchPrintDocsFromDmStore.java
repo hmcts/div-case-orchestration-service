@@ -67,27 +67,18 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
         return caseData;
     }
 
-    private RequestConfig getProxyConfig() {
-        return RequestConfig.custom().setProxy(new HttpHost("proxyout.reform.hmcts.net",
-            8080)).build();
-
-    }
-
     private void populateDocumentBytes(TaskContext context, Map<String, GeneratedDocumentInfo> generatedDocumentInfos) {
         CaseDetails caseDetails = (CaseDetails) context.getTransientObject(CASE_DETAILS_JSON_KEY);
         for (GeneratedDocumentInfo generatedDocumentInfo : generatedDocumentInfos.values()) {
 
-            CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build();
             byte[] bytes = null;
-            try {
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                 CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build()) {
                 HttpGet request = new HttpGet(generatedDocumentInfo.getUrl());
-                /** Enable this if you are running tests locally */
-                //request.setConfig(getProxyConfig());
                 request.setHeader(SERVICE_AUTHORIZATION, authTokenGenerator.generate());
                 request.setHeader(USER_ROLES, CASEWORKER_DIVORCE);
                 CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(request);
                 InputStream is = closeableHttpResponse.getEntity().getContent();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                 byte[] byteChunk = new byte[4096];
                 int readBytes;
@@ -100,12 +91,6 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
 
                 log.error("Failed to get bytes from document store for document {} in case Id {}",
                     generatedDocumentInfo.getUrl(), caseDetails.getCaseId());
-            } finally {
-                try {
-                    closeableHttpClient.close();
-                } catch (IOException e) {
-                    log.error("failed to read bytes {} ", e.getMessage());
-                }
             }
             generatedDocumentInfo.setBytes(bytes);
         }
