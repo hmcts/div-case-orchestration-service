@@ -157,13 +157,13 @@ public class SendRespondentSubmissionNotificationEmailTest {
                 eq("respondent@divorce.co.uk"),
                 templateParametersCaptor.capture());
         Map<String, String> templateParameters = templateParametersCaptor.getValue();
+        assertThat(templateParameters, hasEntry("case number", FORMATTED_CASE_ID));
         assertThat(templateParameters, allOf(
                 hasEntry("email address", "respondent@divorce.co.uk"),
                 hasEntry("first name", "Sarah"),
                 hasEntry("last name", "Jones"),
                 hasEntry("husband or wife", "husband"),
-                hasEntry("RDC name", testCourt.getIdentifiableCentreName()),
-                hasEntry("ref", caseId)
+                hasEntry("RDC name", testCourt.getIdentifiableCentreName())
         ));
         assertThat(templateParameters.size(), equalTo(6));
         checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);
@@ -202,4 +202,5 @@ public class SendRespondentSubmissionNotificationEmailTest {
                 amountOfPropertiesChecked,
                 equalTo(amountOfPropertiesRetrieved));
     }
+
 }
