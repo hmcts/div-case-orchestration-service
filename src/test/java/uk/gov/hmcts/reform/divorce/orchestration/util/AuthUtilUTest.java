@@ -10,13 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 public class AuthUtilUTest {
 
-    @Test
-    public void testConstructorPrivate() throws Exception {
-        Constructor<AuthUtil> constructor = AuthUtil.class.getDeclaredConstructor();
-        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-        constructor.setAccessible(true);
-        constructor.newInstance();
-    }
 
     @Test
     public void givenTokenIsNull_whenGetBearToken_thenReturnNull() {
