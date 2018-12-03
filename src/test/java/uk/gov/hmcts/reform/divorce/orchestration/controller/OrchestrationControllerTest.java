@@ -252,7 +252,7 @@ public class OrchestrationControllerTest {
     }
 
 
-        @Test(expected = WorkflowException.class)
+    @Test(expected = WorkflowException.class)
     public void givenThrowsException_whenRetrieveAosCase_thenThrowWorkflowException() throws WorkflowException {
 
         when(caseOrchestrationService.retrieveAosCase(TEST_CHECK_CCD, AUTH_TOKEN))

@@ -194,7 +194,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             payment.setPaymentReference(paymentUpdate.getPaymentReference());
             payment.setPaymentDate(paymentUpdate.getDateCreated());
             Optional.ofNullable(paymentUpdate.getAmount())
-                .map(amt -> amt *1000)
+                .map(amt -> amt * 1000)
                 .map(String::valueOf)
                 .ifPresent(payment::setPaymentAmount);
             payment.setPaymentStatus(paymentUpdate.getStatus());
