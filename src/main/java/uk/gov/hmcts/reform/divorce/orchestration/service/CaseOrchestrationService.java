@@ -4,6 +4,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 
 import java.util.Map;
@@ -20,8 +21,10 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> submit(Map<String, Object> divorceSession, String authToken) throws WorkflowException;
 
-    Map<String, Object> update(Map<String, Object> divorceEventSession,
+    Map<String, Object>  update(Map<String, Object> divorceEventSession,
                                String authToken, String caseId) throws WorkflowException;
+
+    Map<String, Object>  update(PaymentUpdate paymentUpdate) throws WorkflowException;
 
     CaseDataResponse retrieveAosCase(boolean checkCcd, String authorizationToken) throws WorkflowException;
 
