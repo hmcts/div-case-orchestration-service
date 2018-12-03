@@ -175,6 +175,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
                 pinResponse.getPin()
             );
 
+
         assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
 
         Response caseResponse = retrieveAosCase(respondentUserDetails.getAuthToken());
