@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Base64.getEncoder;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 public class BulkPrinter implements Task<Map<String, Object>> {
 
-    private static final String XEROX_TYPE_PARAMETER = "CMC001";
+    private static final String XEROX_TYPE_PARAMETER = "DIV001";
 
     private static final String DOCUMENTS_GENERATED = "DocumentsGenerated";
 
@@ -39,8 +39,6 @@ public class BulkPrinter implements Task<Map<String, Object>> {
     private static final String ADDITIONAL_DATA_CASE_IDENTIFIER_KEY = "caseIdentifier";
 
     private static final String ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
-
-    private static final String DATA_APPLICATION_PDF_BASE_64 = "data:application/pdf;base64,";
 
     private final SendLetterApi sendLetterApi;
 
@@ -68,9 +66,9 @@ public class BulkPrinter implements Task<Map<String, Object>> {
             CaseDetails caseDetails = (CaseDetails) context.getTransientObject(CASE_DETAILS_JSON_KEY);
             Map<String, GeneratedDocumentInfo> generatedDocumentInfoList =
                 (Map<String, GeneratedDocumentInfo>) context.getTransientObject(DOCUMENTS_GENERATED);
-            String miniPetition = convertToBase64String(generatedDocumentInfoList.get(DOCUMENT_TYPE_PETITION)
+            String miniPetition = getEncoder().encodeToString(generatedDocumentInfoList.get(DOCUMENT_TYPE_PETITION)
                 .getBytes());
-            String aosLetter = convertToBase64String(generatedDocumentInfoList.get(DOCUMENT_TYPE_INVITATION)
+            String aosLetter = getEncoder().encodeToString(generatedDocumentInfoList.get(DOCUMENT_TYPE_INVITATION)
                 .getBytes());
             sendToBulkPrint(context, caseDetails, miniPetition, aosLetter);
         } else {
@@ -108,10 +106,4 @@ public class BulkPrinter implements Task<Map<String, Object>> {
         return additionalData;
     }
 
-    private String convertToBase64String(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(DATA_APPLICATION_PDF_BASE_64);
-        sb.append(new String(Base64.encodeBase64(bytes, false)));
-        return sb.toString();
-    }
 }

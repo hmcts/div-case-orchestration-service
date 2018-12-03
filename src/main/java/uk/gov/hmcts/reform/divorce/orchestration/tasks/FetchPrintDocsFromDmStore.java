@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -68,16 +69,21 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
         CaseDetails caseDetails = (CaseDetails) context.getTransientObject(CASE_DETAILS_JSON_KEY);
         for (GeneratedDocumentInfo generatedDocumentInfo : generatedDocumentInfos.values()) {
 
-            CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build();
             byte[] bytes = null;
-            try {
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                 CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build()) {
                 HttpGet request = new HttpGet(generatedDocumentInfo.getUrl());
                 request.setHeader(SERVICE_AUTHORIZATION, authTokenGenerator.generate());
                 request.setHeader(USER_ROLES, CASEWORKER_DIVORCE);
                 CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(request);
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                closeableHttpResponse.getEntity().writeTo(byteArrayOutputStream);
-                bytes = byteArrayOutputStream.toByteArray();
+                InputStream is = closeableHttpResponse.getEntity().getContent();
+
+                byte[] byteChunk = new byte[4096];
+                int readBytes;
+                while ( (readBytes = is.read(byteChunk)) > 0 ) {
+                    baos.write(byteChunk, 0, readBytes);
+                }
+                bytes = baos.toByteArray();
 
             } catch (IOException e) {
 
@@ -87,7 +93,6 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
             generatedDocumentInfo.setBytes(bytes);
         }
     }
-
 
     /**
      * I'm not using object mapper here to keep it consistent with rest of code, when we migrate the formatter
