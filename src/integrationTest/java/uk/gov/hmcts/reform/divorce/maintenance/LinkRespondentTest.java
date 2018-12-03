@@ -14,12 +14,11 @@ import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AOS_STARTED;
-import static org.junit.Assert.assertEquals;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AOS_STARTED;
 
 public class LinkRespondentTest extends RetrieveAosCaseSupport {
     private static final String PIN_USER_FIRST_NAME = "pinuserfirstname";

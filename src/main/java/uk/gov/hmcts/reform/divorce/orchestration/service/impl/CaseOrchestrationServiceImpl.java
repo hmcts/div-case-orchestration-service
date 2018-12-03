@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintW
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCallbackWorkflow;
@@ -46,6 +47,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 @Service
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
+
     public static final String CASE_ID_IS = "Case ID is: {}";
     public static final String PAYMENT_MADE = "paymentMade";
     public static final String SUCCESS = "success";
@@ -71,6 +73,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
     private final DNSubmittedWorkflow dnSubmittedWorkflow;
     private final AuthUtil authUtil;
+    private final GetCaseWorkflow getCaseWorkflow;
 
     @Autowired
     public CaseOrchestrationServiceImpl(CcdCallbackWorkflow ccdCallbackWorkflow,
@@ -96,6 +99,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow,
                                         DNSubmittedWorkflow submitDNWorkflow,
                                         SubmitDnCaseWorkflow submitDnCaseWorkflow,
+                                        GetCaseWorkflow getCaseWorkflow,
                                         AuthUtil authUtil) {
 
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
@@ -119,6 +123,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         this.submitDnCaseWorkflow = submitDnCaseWorkflow;
         this.dnSubmittedWorkflow = submitDNWorkflow;
         this.authUtil = authUtil;
+        this.getCaseWorkflow = getCaseWorkflow;
+
     }
 
     @Override
@@ -248,6 +254,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public CaseDataResponse retrieveAosCase(boolean checkCcd, String authorizationToken) throws WorkflowException {
         return retrieveAosCaseWorkflow.run(checkCcd, authorizationToken);
+    }
+
+    @Override
+    public CaseDataResponse getCase(String authorizationToken) throws WorkflowException {
+        return getCaseWorkflow.run(authorizationToken);
     }
 
     @Override

@@ -279,6 +279,20 @@ public class OrchestrationControllerTest {
     }
 
     @Test
+    public void whenGetCase_thenReturnExpectedResponse() throws WorkflowException {
+        final CaseDataResponse caseDataResponse = CaseDataResponse.builder().build();
+
+        when(caseOrchestrationService.getCase(AUTH_TOKEN)).thenReturn(caseDataResponse);
+
+        ResponseEntity<CaseDataResponse> response = classUnderTest.retrieveCase(AUTH_TOKEN);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(caseDataResponse, response.getBody());
+
+        verify(caseOrchestrationService).getCase(AUTH_TOKEN);
+    }
+
+    @Test
     public void givenLinkResponseIsNull_whenLinkRespondent_thenReturnUnAuthorised() throws WorkflowException {
         when(caseOrchestrationService.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN)).thenReturn(null);
 
