@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
@@ -234,7 +235,24 @@ public class OrchestrationControllerTest {
         assertEquals(expectedResponse, response.getBody());
     }
 
-    @Test(expected = WorkflowException.class)
+    @Test
+    public void whenPaymentUpdate_thenReturnCaseResponse() throws Exception {
+
+        final Map<String, Object> submissionData = Collections.singletonMap(ID, TEST_CASE_ID);
+        PaymentUpdate paymentUpdate = new PaymentUpdate();
+        paymentUpdate.setStatus("success");
+        paymentUpdate.setCaseReference("123123");
+        when(caseOrchestrationService.update(paymentUpdate))
+            .thenReturn(submissionData);
+
+        ResponseEntity<CaseResponse> response = classUnderTest
+            .paymentUpdate(paymentUpdate);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    }
+
+
+        @Test(expected = WorkflowException.class)
     public void givenThrowsException_whenRetrieveAosCase_thenThrowWorkflowException() throws WorkflowException {
 
         when(caseOrchestrationService.retrieveAosCase(TEST_CHECK_CCD, AUTH_TOKEN))
@@ -420,6 +438,7 @@ public class OrchestrationControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }
+
 
     @Test
     public void whenSubmitAos_thenProceedAsExpected() throws WorkflowException {

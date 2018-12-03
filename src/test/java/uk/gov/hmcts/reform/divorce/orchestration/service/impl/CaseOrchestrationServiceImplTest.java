@@ -11,7 +11,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
@@ -30,7 +34,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -104,6 +110,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
+
+    @Mock
+    private AuthUtil authUtil;
 
     private CreateEvent createEventRequest;
 
@@ -271,6 +280,39 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(requestPayload, actual);
 
         verify(updateToCCDWorkflow).run(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
+    }
+
+    @Test
+    public void givenCaseDataValid_whenPaymentUpdate_thenReturnPayload() throws Exception {
+        PaymentUpdate paymentUpdate  = new PaymentUpdate();
+        paymentUpdate.setCaseReference("1232132");
+        paymentUpdate.setStatus("success");
+        Fee fee =new Fee();
+        fee.setCode("X243");
+        paymentUpdate.setFees(Arrays.asList(fee, fee));
+        paymentUpdate.setChannel("online");
+
+        // given
+        when(updateToCCDWorkflow.run(requestPayload, AUTH_TOKEN, TEST_CASE_ID))
+            .thenReturn(requestPayload);
+
+        when(authUtil.getCitizenToken()).thenReturn("testtoken");
+
+        // when
+        Map<String, Object> actual = classUnderTest.update(paymentUpdate);
+
+        // then
+        assertEquals(requestPayload, actual);
+
+        Map<String, Object> divSession = new HashMap<>();
+        Payment payment = new Payment();
+        payment.setPaymentFeeId("X243");
+        payment.setPaymentChannel("online");
+        payment.setPaymentStatus("success");
+        divSession.put("eventData", payment);
+        divSession.put("eventId", "paymentMade");
+
+        verify(updateToCCDWorkflow).run(divSession, "testtoken", "1232132");
     }
 
     @Test

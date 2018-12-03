@@ -7,8 +7,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
@@ -30,16 +33,23 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 
 @Slf4j
 @Service
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public static final String CASE_ID_IS = "Case ID is: {}";
+    public static final String PAYMENT_MADE = "paymentMade";
+    public static final String SUCCESS = "success";
+    public static final String ONLINE = "online";
     private final CcdCallbackWorkflow ccdCallbackWorkflow;
     private final CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
     private final RetrieveDraftWorkflow retrieveDraftWorkflow;
@@ -60,6 +70,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SubmitAosCaseWorkflow submitAosCaseWorkflow;
     private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
     private final DNSubmittedWorkflow dnSubmittedWorkflow;
+    private final AuthUtil authUtil;
 
     @Autowired
     public CaseOrchestrationServiceImpl(CcdCallbackWorkflow ccdCallbackWorkflow,
@@ -75,16 +86,17 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                         ProcessPbaPaymentWorkflow processPbaPaymentWorkflow,
                                         SolicitorCreateWorkflow solicitorCreateWorkflow,
                                         SendPetitionerSubmissionNotificationWorkflow
-                                                    sendPetitionerSubmissionNotificationWorkflow,
+                                                sendPetitionerSubmissionNotificationWorkflow,
                                         SendPetitionerGenericEmailNotificationWorkflow
-                                                    sendPetitionerGenericEmailNotificationWorkflow,
+                                                sendPetitionerGenericEmailNotificationWorkflow,
                                         SendRespondentSubmissionNotificationWorkflow
-                                                    sendRespondentSubmissionNotificationWorkflow,
+                                                sendRespondentSubmissionNotificationWorkflow,
                                         RespondentSubmittedCallbackWorkflow aosRespondedWorkflow,
                                         SubmitAosCaseWorkflow submitAosCaseWorkflow,
                                         CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow,
                                         DNSubmittedWorkflow submitDNWorkflow,
-                                        SubmitDnCaseWorkflow submitDnCaseWorkflow) {
+                                        SubmitDnCaseWorkflow submitDnCaseWorkflow,
+                                        AuthUtil authUtil) {
 
         this.ccdCallbackWorkflow = ccdCallbackWorkflow;
         this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
@@ -106,6 +118,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         this.ccdCallbackBulkPrintWorkflow = ccdCallbackBulkPrintWorkflow;
         this.submitDnCaseWorkflow = submitDnCaseWorkflow;
         this.dnSubmittedWorkflow = submitDNWorkflow;
+        this.authUtil = authUtil;
     }
 
     @Override
@@ -162,6 +175,42 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         log.info("Case ID is: {}", payload.get(ID));
         return payload;
     }
+
+
+    @Override
+    public Map<String, Object> update(PaymentUpdate paymentUpdate) throws WorkflowException {
+        Map<String, Object> payload  = new HashMap<>();
+
+        if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS)) {
+            Payment payment = new Payment();
+            payment.setPaymentChannel(ONLINE);
+            payment.setPaymentTransactionId(paymentUpdate.getExternalReference());
+            payment.setPaymentReference(paymentUpdate.getPaymentReference());
+            payment.setPaymentDate(paymentUpdate.getDateCreated());
+            Optional.ofNullable(paymentUpdate.getAmount())
+                .map(amt -> amt *1000)
+                .map(String::valueOf)
+                .ifPresent(payment::setPaymentAmount);
+            payment.setPaymentStatus(paymentUpdate.getStatus());
+            Optional.ofNullable(paymentUpdate.getFees())
+                .filter(list -> !list.isEmpty())
+                .map(list -> list.get(0))
+                .ifPresent(fee -> payment.setPaymentFeeId(fee.getCode()));
+            payment.setPaymentSiteId(paymentUpdate.getSiteId());
+            Map<String, Object> divSession = new HashMap<>();
+            divSession.put(CASE_EVENT_DATA_JSON_KEY, payment);
+            divSession.put(CASE_EVENT_ID_JSON_KEY, PAYMENT_MADE);
+            payload = updateToCCDWorkflow.run(divSession, authUtil.getCitizenToken(), paymentUpdate.getCaseReference());
+            log.info("Case ID is: {}", payload.get(ID));
+        } else  {
+
+            log.info("Ignoring payment update as it was not successful payment on case {}",
+                paymentUpdate.getCaseReference());
+        }
+
+        return payload;
+    }
+
 
     @Override
     public Map<String, Object> getDraft(String authToken, Boolean checkCcd) throws WorkflowException {
