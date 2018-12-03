@@ -318,7 +318,7 @@ public class CaseOrchestrationServiceImplTest {
         PaymentUpdate paymentUpdate  = new PaymentUpdate();
         paymentUpdate.setCaseReference("1232132");
         paymentUpdate.setStatus("success");
-        Fee fee =new Fee();
+        Fee fee = new Fee();
         fee.setCode("X243");
         paymentUpdate.setFees(Arrays.asList(fee, fee));
         paymentUpdate.setChannel("online");
@@ -335,11 +335,12 @@ public class CaseOrchestrationServiceImplTest {
         // then
         assertEquals(requestPayload, actual);
 
-        Map<String, Object> divSession = new HashMap<>();
+
         Payment payment = new Payment();
         payment.setPaymentFeeId("X243");
         payment.setPaymentChannel("online");
         payment.setPaymentStatus("success");
+        final Map<String, Object> divSession = new HashMap<>();
         divSession.put("eventData", payment);
         divSession.put("eventId", "paymentMade");
 
