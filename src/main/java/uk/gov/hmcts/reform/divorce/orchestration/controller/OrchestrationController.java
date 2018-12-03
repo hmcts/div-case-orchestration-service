@@ -26,11 +26,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +43,8 @@ import javax.ws.rs.core.MediaType;
 
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERATE_AOS_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
@@ -85,10 +90,26 @@ public class OrchestrationController {
                         .build());
     }
 
-    @PostMapping(path = "/bulk-print",
+    @PostMapping(path = "/payment-update",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles bulk print callback from CCD")
+    @ApiOperation(value = "Handles payment update callbacks")
     @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Payment update callback was processed successfully and updated "
+            + " to the case",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")
+    })
+    public ResponseEntity paymentUpdate(@RequestBody PaymentUpdate paymentUpdate) throws WorkflowException {
+
+        orchestrationService.update(paymentUpdate);
+        return ResponseEntity.ok().build();
+    }
+
+                                                                      @PostMapping(path = "/bulk-print",
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+                                                                      @ApiOperation(value = "Handles bulk print callback from CCD")
+                                                                      @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback was processed successFully or in case of an error message is "
             + "attached to the case",
             response = CcdCallbackResponse.class),
@@ -97,7 +118,7 @@ public class OrchestrationController {
         })
     public ResponseEntity<CcdCallbackResponse> bulkPrint(
         @RequestHeader(value = "Authorization") String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+                                                                      @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
 
         Map<String, Object> response = orchestrationService.ccdCallbackBulkPrintHandler(caseDetailsRequest,
             authorizationToken);
