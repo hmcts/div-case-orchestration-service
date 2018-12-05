@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,7 +205,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .ifPresent(fee -> payment.setPaymentFeeId(fee.getCode()));
             payment.setPaymentSiteId(paymentUpdate.getSiteId());
             Map<String, Object> divSession = new HashMap<>();
-            divSession.put(CASE_EVENT_DATA_JSON_KEY, payment);
+            Map<String, Object> paymentData = new HashMap<>();
+            paymentData.put("payment", payment);
+            divSession.put(CASE_EVENT_DATA_JSON_KEY, paymentData);
             divSession.put(CASE_EVENT_ID_JSON_KEY, PAYMENT_MADE);
             payload = updateToCCDWorkflow.run(divSession, authUtil.getCitizenToken(), paymentUpdate.getCaseReference());
             log.info("Case ID is: {}", payload.get(ID));
@@ -213,7 +216,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             log.info("Ignoring payment update as it was not successful payment on case {}",
                 paymentUpdate.getCaseReference());
         }
-
         return payload;
     }
 
