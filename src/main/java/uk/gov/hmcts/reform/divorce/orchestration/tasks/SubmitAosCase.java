@@ -23,6 +23,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_DEFENDS_DIVORCE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UNREASONABLE_BEHAVIOUR;
 
 @Component
 public class SubmitAosCase implements Task<Map<String, Object>> {
@@ -75,6 +77,10 @@ public class SubmitAosCase implements Task<Map<String, Object>> {
         }
 
         if (YES_VALUE.equalsIgnoreCase((String)aosCase.get(RESP_ADMIT_OR_CONSENT_CCD_FIELD))) {
+            return AWAITING_DN_AOS_EVENT_ID;
+        }
+
+        if(UNREASONABLE_BEHAVIOUR.equalsIgnoreCase((String)aosCase.get(REASON_FOR_DIVORCE))) {
             return AWAITING_DN_AOS_EVENT_ID;
         }
 

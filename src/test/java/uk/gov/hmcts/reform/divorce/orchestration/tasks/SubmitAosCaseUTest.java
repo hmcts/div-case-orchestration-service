@@ -107,6 +107,20 @@ public class SubmitAosCaseUTest {
     }
 
     @Test
+    public void givenBehaviourNoConsentAndNoDefend_whenExecute_thenProceedAsExpected() {
+        final Map<String, Object> divorceSession = getCaseData(NO_VALUE, false);
+        divorceSession.put("reasonForDivorce", "unreasonable-behaviour");
+
+        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETE_AOS_EVENT_ID, divorceSession))
+                .thenReturn(CASE_UPDATE_RESPONSE);
+
+        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
+
+        // we let the case proceed to awaiting DN for unreasonable behaviour regardless of whether they admit or not
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession);
+    }
+
+    @Test
     public void givenConsentAndNoDefend_whenExecute_thenProceedAsExpected() {
         final Map<String, Object> divorceSession = getCaseData(YES_VALUE, false);
 

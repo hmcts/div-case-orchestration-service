@@ -55,6 +55,8 @@ public class OrchestrationConstants {
     public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CCD_DUE_DATE = "dueDate";
+    public static final String REASON_FOR_DIVORCE = "reasonForDivorce";
+    public static final String UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
