@@ -27,10 +27,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETE_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_DEFENDS_DIVORCE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UNREASONABLE_BEHAVIOUR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -98,6 +100,7 @@ public class SubmitAosCaseUTest {
     public void givenNoConsentAndNoDefend_whenExecute_thenProceedAsExpected() {
         final Map<String, Object> divorceSession = getCaseData(NO_VALUE, false);
 
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true)).thenReturn(AOS_CASE_DETAILS);
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETE_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
@@ -109,7 +112,15 @@ public class SubmitAosCaseUTest {
     @Test
     public void givenBehaviourNoConsentAndNoDefend_whenExecute_thenProceedAsExpected() {
         final Map<String, Object> divorceSession = getCaseData(NO_VALUE, false);
-        divorceSession.put("reasonForDivorce", "unreasonable-behaviour");
+        final CaseDetails aosCaseDetails =
+                CaseDetails.builder()
+                        .caseData(
+                                Collections.singletonMap(
+                                        D8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR
+                                )
+                        ).build();
+
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true)).thenReturn(aosCaseDetails);
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
                 .thenReturn(CASE_UPDATE_RESPONSE);
