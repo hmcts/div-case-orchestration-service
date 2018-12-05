@@ -19,12 +19,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETE_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_DEFENDS_DIVORCE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UNREASONABLE_BEHAVIOUR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
 public class SubmitAosCase implements Task<Map<String, Object>> {
@@ -80,7 +80,7 @@ public class SubmitAosCase implements Task<Map<String, Object>> {
             return AWAITING_DN_AOS_EVENT_ID;
         }
 
-        if(UNREASONABLE_BEHAVIOUR.equalsIgnoreCase((String)aosCase.get(REASON_FOR_DIVORCE))) {
+        if (UNREASONABLE_BEHAVIOUR.equalsIgnoreCase((String)aosCase.get(REASON_FOR_DIVORCE))) {
             return AWAITING_DN_AOS_EVENT_ID;
         }
 
