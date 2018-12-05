@@ -6,8 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.verification.VerificationMode;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.AuthenticateUserResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.TokenExchangeResponse;
@@ -18,7 +16,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
