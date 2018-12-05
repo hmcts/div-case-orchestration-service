@@ -213,7 +213,7 @@ public class UpdateRespondentDetailsUTest {
                         .build();
     }
 
-    private Map<String, Object> createDataToUpdate(){
+    private Map<String, Object> createDataToUpdate() {
         return ImmutableMap.of(
                 RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
                 RECEIVED_AOS_FROM_RESP, YES_VALUE,
