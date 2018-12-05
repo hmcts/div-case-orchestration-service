@@ -6,10 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.quality.Strictness;
-import org.mockito.verification.VerificationMode;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -345,7 +342,7 @@ public class CaseOrchestrationServiceImplTest {
         payment.setPaymentChannel("online");
         payment.setPaymentStatus("success");
         final Map<String, Object> divSession = new HashMap<>();
-        divSession.put("eventData", payment);
+        divSession.put("eventData", Collections.singletonMap("payment", payment));
         divSession.put("eventId", "paymentMade");
 
         verify(updateToCCDWorkflow).run(divSession, "testtoken", "1232132");
