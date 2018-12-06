@@ -20,13 +20,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REISSUE_FROM_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -61,7 +59,11 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
                 true);
 
         String eventId = getEventId(caseDetails.getState());
-        if (eventId == START_AOS_EVENT_ID || eventId == REISSUE_FROM_OVERDUE || eventId == AOS_START_FROM_OVERDUE) {
+
+        boolean standardAosFlow = START_AOS_EVENT_ID.equals(eventId)
+                || AOS_START_FROM_OVERDUE.equals(eventId);
+
+        if (standardAosFlow) {
             updateFields.put(CCD_DUE_DATE, CcdUtil.getCurrentDatePlusDays(daysToComplete));
         }
 
@@ -80,8 +82,6 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
         switch (state) {
             case AOS_AWAITING:
                 return START_AOS_EVENT_ID;
-            case AWAITING_REISSUE:
-                return REISSUE_FROM_OVERDUE;
             case AOS_OVERDUE:
                 return AOS_START_FROM_OVERDUE;
             default:
