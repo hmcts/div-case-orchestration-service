@@ -113,7 +113,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path("id"));
-        assertEquals("AosCompleted", cosResponse.path("state"));
+        assertEquals("AwaitingDecreeNisi", cosResponse.path("state"));
         assertDueDate(userDetails, String.valueOf(caseDetails.getId()), false);
     }
 
