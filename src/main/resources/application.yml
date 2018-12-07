@@ -54,7 +54,7 @@ send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
 
 bulk-print:
-   dueDate: 32
+   dueDate: 30
 
 uk:
   gov:
