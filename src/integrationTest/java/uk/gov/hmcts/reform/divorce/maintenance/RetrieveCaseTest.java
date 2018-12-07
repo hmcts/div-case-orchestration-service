@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.divorce.util.RestUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 

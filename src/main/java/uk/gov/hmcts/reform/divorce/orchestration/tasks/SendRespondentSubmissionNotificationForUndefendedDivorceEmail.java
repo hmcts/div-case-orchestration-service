@@ -17,7 +17,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
 
 @Component
@@ -42,6 +44,8 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
         String divorceUnitKey = getMandatoryPropertyValueAsString(caseDataPayload, DIVORCE_UNIT_JSON_KEY);
         Court court = taskCommons.getCourt(divorceUnitKey);
 
+        String caseId = getCaseId(context);
+        templateFields.put("case number", formatCaseIdToReferenceNumber(caseId));
         templateFields.put("email address", respondentEmailAddress);
         templateFields.put("first name", respondentFirstName);
         templateFields.put("last name", respondentLastName);
@@ -55,5 +59,4 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
 
         return caseDataPayload;
     }
-
 }

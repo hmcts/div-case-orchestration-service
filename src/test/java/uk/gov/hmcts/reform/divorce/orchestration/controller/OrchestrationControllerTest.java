@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
 import java.util.ArrayList;
