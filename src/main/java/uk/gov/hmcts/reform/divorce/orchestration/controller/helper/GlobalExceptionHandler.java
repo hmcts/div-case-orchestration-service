@@ -56,6 +56,10 @@ class GlobalExceptionHandler {
     }
 
     private ResponseEntity<Object> handleFeignException(FeignException exception) {
+        int status = exception.status();
+        if (status == HttpStatus.MULTIPLE_CHOICES.value()) {
+            return ResponseEntity.status(exception.status()).body(null);
+        }
         return ResponseEntity.status(exception.status()).body(exception.getMessage());
     }
 }

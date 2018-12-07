@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.util.RestUtil;
 import java.util.HashMap;
 import java.util.Map;
 
+import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 
@@ -56,6 +57,20 @@ public class RetrieveCaseTest extends CcdSubmissionSupport {
         assertEquals("AwaitingPayment", cosResponse.path(STATE_KEY));
         assertEquals(loadJsonToObject(PAYLOAD_CONTEXT_PATH + "divorce-session.json", Map.class),
             cosResponse.path(DATA_KEY));
+    }
+
+
+    @Test
+    public void givenMultipleSubmittedCaseInCcd_whenGetCase_thenReturn300() {
+        UserDetails userDetails = createCitizenUser();
+
+        submitCase("submit-complete-case.json", userDetails);
+        submitCase("submit-complete-case.json", userDetails);
+
+        Response cosResponse = retrieveCase(userDetails.getAuthToken());
+
+        assertEquals(HttpStatus.MULTIPLE_CHOICES.value(), cosResponse.getStatusCode());
+        assertEquals(cosResponse.getBody().asString(), "");
     }
 
     private Response retrieveCase(String userToken) {

@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -271,6 +273,18 @@ public class OrchestrationControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(caseDataResponse, response.getBody());
 
+        verify(caseOrchestrationService).getCase(AUTH_TOKEN);
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void givenMultipleCases_whenGetCase_thenReturnExpectedResponse() throws WorkflowException {
+        when(caseOrchestrationService.getCase(AUTH_TOKEN))
+            .thenThrow(new WorkflowException("error"));
+
+        ResponseEntity<CaseDataResponse> response = classUnderTest.retrieveCase(AUTH_TOKEN);
+
+        assertEquals(HttpStatus.MULTIPLE_CHOICES, response.getStatusCode());
+        assertNull(response.getBody());
         verify(caseOrchestrationService).getCase(AUTH_TOKEN);
     }
 
