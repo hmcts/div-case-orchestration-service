@@ -20,7 +20,7 @@ public class Self {
 
     @JsonProperty("href")
     private String href;
-    @JsonProperty("method")
+    @JsonProperty("methAod")
     private String method;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();

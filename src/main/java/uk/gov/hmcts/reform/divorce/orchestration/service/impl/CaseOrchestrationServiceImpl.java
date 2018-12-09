@@ -34,7 +34,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +53,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public static final String PAYMENT_MADE = "paymentMade";
     public static final String SUCCESS = "success";
     public static final String ONLINE = "online";
+    public static final String PAYMENT = "payment";
     private final CcdCallbackWorkflow ccdCallbackWorkflow;
     private final CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
     private final RetrieveDraftWorkflow retrieveDraftWorkflow;
@@ -205,9 +206,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .ifPresent(fee -> payment.setPaymentFeeId(fee.getCode()));
             payment.setPaymentSiteId(paymentUpdate.getSiteId());
             Map<String, Object> divSession = new HashMap<>();
-            Map<String, Object> paymentData = new HashMap<>();
-            paymentData.put("payment", payment);
-            divSession.put(CASE_EVENT_DATA_JSON_KEY, paymentData);
+            divSession.put(CASE_EVENT_DATA_JSON_KEY, Collections.singletonMap(PAYMENT, payment));
             divSession.put(CASE_EVENT_ID_JSON_KEY, PAYMENT_MADE);
             payload = updateToCCDWorkflow.run(divSession, authUtil.getCitizenToken(), paymentUpdate.getCaseReference());
             log.info("Case ID is: {}", payload.get(ID));
