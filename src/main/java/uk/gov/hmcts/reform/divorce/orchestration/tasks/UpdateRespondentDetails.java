@@ -42,6 +42,9 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
     @Qualifier("idamClient")
     private IdamClient idamClient;
 
+    @Autowired
+    private AuthUtil authUtil;
+
     @Override
     public UserDetails execute(TaskContext context, UserDetails payload) throws TaskException {
 
