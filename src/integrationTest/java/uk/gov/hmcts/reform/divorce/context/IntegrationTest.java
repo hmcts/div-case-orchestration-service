@@ -43,8 +43,8 @@ public abstract class IntegrationTest {
         synchronized (this) {
             if (caseWorkerUser == null) {
                 caseWorkerUser = getUserDetails(CASE_WORKER_USERNAME, CASE_WORKER_PASSWORD,
-                        CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_ROLE,
-                        CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE, CITIZEN_ROLE);
+                    CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_ROLE,
+                    CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE, CITIZEN_ROLE);
             }
 
             return caseWorkerUser;

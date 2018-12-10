@@ -119,8 +119,6 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     @Test
-    @Ignore
-    //TODO Work in progress, skipped meanwhile to unblock the build
     public void givenAosOverdueState_whenLinkRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
@@ -132,12 +130,10 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             "submit-unlinked-case.json",
             createCaseWorkerUser(),
             ImmutablePair.of("AosLetterHolderId", pinResponse.getUserId()));
-
-        updateCase(String.valueOf(caseDetails.getId()), null, "referToLegalAdvisorGA");
-        updateCase(String.valueOf(caseDetails.getId()), null, "orderRefusedGeneralApplication");
+        updateCase(String.valueOf(caseDetails.getId()), null, "testAosAwaiting");
+        updateCase(String.valueOf(caseDetails.getId()), null, "aosNotReceived");
 
         final UserDetails respondentUserDetails = createCitizenUser();
-
         Response linkResponse =
             linkRespondent(
                 respondentUserDetails.getAuthToken(),
