@@ -30,6 +30,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
@@ -116,6 +118,7 @@ public class UpdateRespondentDetailsUTest {
                 .build();
 
         final Map<String, Object> caseData = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
+
         final CaseDetails caseDetails =
             CaseDetails.builder()
                 .caseId(TEST_CASE_ID)
@@ -140,5 +143,55 @@ public class UpdateRespondentDetailsUTest {
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID,
             LINK_RESPONDENT_GENERIC_EVENT_ID, dataToUpdate);
         verify(caseMaintenanceClient).retrieveAosCase(AUTH_TOKEN, true);
+    }
+
+    @Test
+    public void givenCaseOnAosOverdueState_whenUpdateRespondentDetails_thenRespondentDetailsIsUpdated() {
+        final UserDetails payload = UserDetails.builder().build();
+
+        final TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+
+        final UserDetails respondentDetails = createTestUserDetails();
+
+        final CaseDetails caseDetails = createTestCaseDetails(AOS_OVERDUE);
+
+        final Map<String, Object> dataToUpdate = createDataToUpdate();
+
+        when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN))
+                .thenReturn(respondentDetails);
+        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, true))
+                .thenReturn(caseDetails);
+
+        UserDetails result = classUnderTest.execute(taskContext, payload);
+        Assert.assertEquals(payload, result);
+
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_OVERDUE, dataToUpdate);
+    }
+
+    private UserDetails createTestUserDetails() {
+        return UserDetails.builder()
+                .id(TEST_USER_ID)
+                .email(TEST_EMAIL)
+                .build();
+    }
+
+    private CaseDetails createTestCaseDetails(String state) {
+        Map<String, Object> caseData = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
+        return CaseDetails.builder()
+                        .caseId(TEST_CASE_ID)
+                        .state(state)
+                        .caseData(caseData)
+                        .build();
+    }
+
+    private Map<String, Object> createDataToUpdate() {
+        return ImmutableMap.of(
+                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
+                RECEIVED_AOS_FROM_RESP, YES_VALUE,
+                RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate(),
+                CCD_DUE_DATE, CcdUtil.getCurrentDatePlusDays(DUE_DATE_OFFSET_IN_DAYS)
+        );
     }
 }

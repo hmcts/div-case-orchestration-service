@@ -43,7 +43,6 @@ public class OrchestrationConstants {
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
     public static final String D_8_INFERRED_PETITIONER_GENDER = "D8InferredPetitionerGender";
-    public static final String DATE_AOS_RECEIVED_FROM_RESP = "ReceivedAOSfromRespDate";
     public static final String YES_VALUE = "Yes";
     public static final String NO_VALUE = "No";
     public static final String ISSUE_DATE = "IssueDate";
@@ -52,9 +51,11 @@ public class OrchestrationConstants {
     public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
     public static final String AOS_AWAITING = "AosAwaiting";
     public static final String AOS_OVERDUE = "AosOverdue";
-    public static final String AWAITING_REISSUE = "AwaitingReissue";
+    public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
     public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CCD_DUE_DATE = "dueDate";
+    public static final String D8_REASON_FOR_DIVORCE = "D8ReasonForDivorce";
+    public static final String UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
