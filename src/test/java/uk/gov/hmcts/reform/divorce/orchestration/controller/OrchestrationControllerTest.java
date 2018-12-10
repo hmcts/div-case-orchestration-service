@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -280,10 +279,8 @@ public class OrchestrationControllerTest {
         when(caseOrchestrationService.getCase(AUTH_TOKEN))
             .thenThrow(new WorkflowException("error"));
 
-        ResponseEntity<CaseDataResponse> response = classUnderTest.retrieveCase(AUTH_TOKEN);
+        classUnderTest.retrieveCase(AUTH_TOKEN);
 
-        assertEquals(HttpStatus.MULTIPLE_CHOICES, response.getStatusCode());
-        assertNull(response.getBody());
         verify(caseOrchestrationService).getCase(AUTH_TOKEN);
     }
 
