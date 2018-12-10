@@ -113,6 +113,18 @@ public class RetrieveCaseITest {
     }
 
     @Test
+    public void givenMultipleCases_whenGetCase_thenPropagateException() throws Exception {
+        stubGetMultipleCaseFromCMS();
+
+        webClient.perform(get(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .param(CHECK_CCD, String.valueOf(TEST_CHECK_CCD))
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isMultipleChoices())
+            .andExpect(content().string(""));
+    }
+
+    @Test
     public void givenAllGoesWellProceedAsExpected_whenGetCase_thenPropagateException() throws Exception {
         stubGetCaseFromCMS(CASE_DETAILS);
 
@@ -134,6 +146,10 @@ public class RetrieveCaseITest {
 
     private void stubGetCaseFromCMS(CaseDetails caseDetails) {
         stubGetCaseFromCMS(HttpStatus.OK, convertObjectToJsonString(caseDetails));
+    }
+
+    private void stubGetMultipleCaseFromCMS() {
+        stubGetCaseFromCMS(HttpStatus.MULTIPLE_CHOICES, "");
     }
 
     private void stubGetCaseFromCMS(HttpStatus status, String message) {

@@ -241,8 +241,6 @@ public class OrchestrationControllerTest {
             .thenThrow(new WorkflowException("error"));
 
         classUnderTest.retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD);
-
-        verify(caseOrchestrationService).retrieveAosCase(TEST_CHECK_CCD, AUTH_TOKEN);
     }
 
     @Test
@@ -280,8 +278,6 @@ public class OrchestrationControllerTest {
             .thenThrow(new WorkflowException("error"));
 
         classUnderTest.retrieveCase(AUTH_TOKEN);
-
-        verify(caseOrchestrationService).getCase(AUTH_TOKEN);
     }
 
     @Test

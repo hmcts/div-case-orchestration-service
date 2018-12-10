@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.CaseNotF
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
+import java.util.Optional;
+
 @ControllerAdvice
 @Slf4j
 class GlobalExceptionHandler {
@@ -56,10 +58,9 @@ class GlobalExceptionHandler {
     }
 
     private ResponseEntity<Object> handleFeignException(FeignException exception) {
-        int status = exception.status();
-        if (status == HttpStatus.MULTIPLE_CHOICES.value()) {
-            return ResponseEntity.status(exception.status()).body(null);
-        }
-        return ResponseEntity.status(exception.status()).body(exception.getMessage());
+        return Optional.of(exception.status())
+            .filter(i -> i == 300)
+            .map(status -> ResponseEntity.status(exception.status()).body(null))
+            .orElse(ResponseEntity.status(exception.status()).body(exception.getMessage()));
     }
 }
