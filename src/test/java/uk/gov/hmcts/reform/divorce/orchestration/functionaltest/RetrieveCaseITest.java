@@ -148,17 +148,17 @@ public class RetrieveCaseITest {
         stubGetCaseFromCMS(HttpStatus.OK, convertObjectToJsonString(caseDetails));
     }
 
-    private void stubGetMultipleCaseFromCMS() {
-        stubGetCaseFromCMS(HttpStatus.MULTIPLE_CHOICES, "");
-    }
-
     private void stubGetCaseFromCMS(HttpStatus status, String message) {
         maintenanceServiceServer.stubFor(WireMock.get(GET_CASE_CONTEXT_PATH)
-            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-            .willReturn(aResponse()
-                .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withBody(message)));
+                .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(status.value())
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                        .withBody(message)));
+    }
+
+    private void stubGetMultipleCaseFromCMS() {
+        stubGetCaseFromCMS(HttpStatus.MULTIPLE_CHOICES, "");
     }
 
     private void stubFormatterServerEndpoint() {

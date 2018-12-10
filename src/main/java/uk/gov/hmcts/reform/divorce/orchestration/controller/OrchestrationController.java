@@ -231,7 +231,7 @@ public class OrchestrationController {
         @ApiResponse(code = 200, message = "Case details fetched successfully",
             response = CaseDataResponse.class),
         @ApiResponse(code = 300, message = "Multiple Cases"),
-        @ApiResponse(code = 400, message = "No Case found"),
+        @ApiResponse(code = 404, message = "No Case found"),
         @ApiResponse(code = 400, message = "Bad Request")
         })
     public ResponseEntity<CaseDataResponse> retrieveCase(

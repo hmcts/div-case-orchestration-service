@@ -273,7 +273,7 @@ public class OrchestrationControllerTest {
     }
 
     @Test(expected = WorkflowException.class)
-    public void givenMultipleCases_whenGetCase_thenReturnExpectedResponse() throws WorkflowException {
+    public void givenThrowsException_whenGetCase_thenReturnExpectedResponse() throws WorkflowException {
         when(caseOrchestrationService.getCase(AUTH_TOKEN))
             .thenThrow(new WorkflowException("error"));
 
