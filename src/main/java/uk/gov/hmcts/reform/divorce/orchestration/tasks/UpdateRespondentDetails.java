@@ -18,8 +18,8 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
@@ -44,14 +44,8 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
 
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) {
-        String eventId;
 
         Map<String, Object> updateFields = new HashMap<>();
-
-        CaseDetails caseDetails = caseMaintenanceClient.retrievePetition(
-                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
-                true);
-
         UserDetails respondentDetails =
             idamClient.retrieveUserDetails(
                 AuthUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
@@ -60,15 +54,17 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
         updateFields.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         updateFields.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
 
-        boolean standardAosFlow = caseDetails.getState().equals(AOS_AWAITING)
-            || caseDetails.getState().equals(AOS_OVERDUE)
-            || caseDetails.getState().equals(AWAITING_REISSUE);
+        CaseDetails caseDetails = caseMaintenanceClient.retrievePetition(
+                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
+                true);
+
+        String eventId = getEventId(caseDetails.getState());
+
+        boolean standardAosFlow = START_AOS_EVENT_ID.equals(eventId)
+                || AOS_START_FROM_OVERDUE.equals(eventId);
 
         if (standardAosFlow) {
-            eventId = START_AOS_EVENT_ID;
             updateFields.put(CCD_DUE_DATE, CcdUtil.getCurrentDatePlusDays(daysToComplete));
-        } else {
-            eventId = LINK_RESPONDENT_GENERIC_EVENT_ID;
         }
 
         caseMaintenanceClient.updateCase(
@@ -80,4 +76,18 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
 
         return payLoad;
     }
+
+    private String getEventId(String state) {
+
+        switch (state) {
+            case AOS_AWAITING:
+                return START_AOS_EVENT_ID;
+            case AOS_OVERDUE:
+                return AOS_START_FROM_OVERDUE;
+            default:
+                return LINK_RESPONDENT_GENERIC_EVENT_ID;
+        }
+    }
+
+
 }
