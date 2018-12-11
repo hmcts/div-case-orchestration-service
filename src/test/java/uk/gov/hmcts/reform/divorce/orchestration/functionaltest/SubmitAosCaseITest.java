@@ -41,7 +41,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CHECK
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETE_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
@@ -64,7 +63,6 @@ public class SubmitAosCaseITest {
     private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
 
     private static final String AOS_RESPONSE_DATE = "2018-10-22";
-    private static final String AOS_DUE_DATE = "2018-11-12";
 
     private static final CaseDetails AOS_CASE_DETAILS =
         CaseDetails.builder()
@@ -138,7 +136,6 @@ public class SubmitAosCaseITest {
         final String caseDataString = convertObjectToJsonString(caseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
-        stubRetrieveAosCaseFromCMS(convertObjectToJsonString(AOS_CASE_DETAILS));
         stubMaintenanceServerEndpointForUpdate(OK, AWAITING_ANSWER_AOS_EVENT_ID, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -156,7 +153,6 @@ public class SubmitAosCaseITest {
         final String caseDataString = convertObjectToJsonString(caseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
-        stubRetrieveAosCaseFromCMS(convertObjectToJsonString(AOS_CASE_DETAILS));
         stubMaintenanceServerEndpointForUpdate(OK, AWAITING_ANSWER_AOS_EVENT_ID, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -174,6 +170,7 @@ public class SubmitAosCaseITest {
         final String caseDataString = convertObjectToJsonString(caseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
+        stubRetrieveAosCaseFromCMS(convertObjectToJsonString(AOS_CASE_DETAILS));
         stubMaintenanceServerEndpointForUpdate(OK, COMPLETE_AOS_EVENT_ID, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -237,10 +234,8 @@ public class SubmitAosCaseITest {
 
         if (defended) {
             caseData.put(RESP_DEFENDS_DIVORCE_CCD_FIELD, YES_VALUE);
-            caseData.put(CCD_DUE_DATE, AOS_DUE_DATE);
         } else {
             caseData.put(RESP_DEFENDS_DIVORCE_CCD_FIELD, NO_VALUE);
-            caseData.put(CCD_DUE_DATE, null);
         }
 
         return caseData;
