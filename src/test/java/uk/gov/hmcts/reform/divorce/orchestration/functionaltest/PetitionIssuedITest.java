@@ -272,7 +272,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(CREATE_EVENT))
-            .param(GENERATE_AOS_INVITATION, "true")
+            .param(GENERATE_AOS_INVITATION, "false")
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
@@ -305,11 +305,68 @@ public class PetitionIssuedITest extends IdamTestSupport {
                 .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
                 .build();
 
+        final DocumentUpdateRequest documentUpdateRequest =
+            DocumentUpdateRequest.builder()
+                .documents(Arrays.asList(generatedMiniPetitionInfo))
+                .caseData(CASE_DATA)
+                .build();
+
+        final Map<String, Object> formattedCaseData = Collections.emptyMap();
+
+        stubSignIn();
+        stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
+        stubValidationServerEndpoint(HttpStatus.OK,
+            ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
+            convertObjectToJsonString(validationResponse));
+        stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionInfo);
+
+        stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(CREATE_EVENT))
+            .param(GENERATE_AOS_INVITATION, "true")
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
+    }
+
+    @Test
+    public void givenGenerateInvitationIsTrueAndIsServiceCentre_whenPetitionIssued_thenReturnCaseExpectedChanges()
+        throws Exception {
+
+        CreateEvent createEventWithServiceCentre = CREATE_EVENT;
+        createEventWithServiceCentre.getCaseDetails().getCaseData().put("D8DivorceUnit", "serviceCentre");
+
+        final ValidationResponse validationResponse = ValidationResponse.builder().build();
+
+        final PinRequest pinRequest =
+            PinRequest.builder()
+                .firstName(RESPONDENT_FIRST_NAME)
+                .lastName(RESPONDENT_LAST_NAME)
+                .build();
+
+        final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
+
+        final GenerateDocumentRequest generateMiniPetitionRequest =
+            GenerateDocumentRequest.builder()
+                .template(MINI_PETITION_TEMPLATE_NAME)
+                .values(Collections.singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
+                        createEventWithServiceCentre.getCaseDetails()))
+                .build();
+
+        final GeneratedDocumentInfo generatedMiniPetitionInfo =
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_PETITION)
+                .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
+                .build();
+
         final GenerateDocumentRequest generateAosInvitationRequest =
             GenerateDocumentRequest.builder()
                 .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
                 .values(ImmutableMap.of(
-                    DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS,
+                    DOCUMENT_CASE_DETAILS_JSON_KEY, createEventWithServiceCentre.getCaseDetails(),
                     ACCESS_CODE, TEST_PIN_CODE))
                 .build();
 
@@ -323,7 +380,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
                 .documents(Arrays.asList(generatedMiniPetitionInfo, generatedAosInvitationInfo))
-                .caseData(CASE_DATA)
+                .caseData(createEventWithServiceCentre.getCaseDetails().getCaseData())
                 .build();
 
         final Map<String, Object> formattedCaseData = Collections.emptyMap();
@@ -331,7 +388,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
         stubValidationServerEndpoint(HttpStatus.OK,
-            ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
+            ValidationRequest.builder().data(createEventWithServiceCentre.getCaseDetails().getCaseData())
+                .formId(FORM_ID).build(),
             convertObjectToJsonString(validationResponse));
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionInfo);
         stubDocumentGeneratorServerEndpoint(generateAosInvitationRequest, generatedAosInvitationInfo);
@@ -339,7 +397,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
 
         webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(CREATE_EVENT))
+            .content(convertObjectToJsonString(createEventWithServiceCentre))
             .param(GENERATE_AOS_INVITATION, "true")
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
