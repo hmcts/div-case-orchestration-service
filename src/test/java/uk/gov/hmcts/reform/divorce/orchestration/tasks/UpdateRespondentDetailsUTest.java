@@ -161,7 +161,7 @@ public class UpdateRespondentDetailsUTest {
 
         when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN))
                 .thenReturn(respondentDetails);
-        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, true))
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true))
                 .thenReturn(caseDetails);
 
         UserDetails result = classUnderTest.execute(taskContext, payload);
