@@ -40,15 +40,19 @@ public class SubmitAosCaseUTest {
     private static final Map<String, Object> EXPECTED_OUTPUT = Collections.emptyMap();
     private static final Map<String, Object> CASE_UPDATE_RESPONSE = new HashMap<>();
     private static final TaskContext TASK_CONTEXT = new DefaultTaskContext();
+    private static final String AOS_INITIAL_DUE_DATE = "2018-10-30";
     private static final String AOS_RESPONSE_DATE = "2018-10-22";
     private static final String AOS_DUE_DATE = "2018-11-12";
 
     private static final CaseDetails AOS_CASE_DETAILS =
         CaseDetails.builder()
             .caseData(
-                Collections.singletonMap(
-                    RECEIVED_AOS_FROM_RESP_DATE, AOS_RESPONSE_DATE
-                )
+                Collections.unmodifiableMap(new HashMap<String, String>() {
+                    {
+                        put(RECEIVED_AOS_FROM_RESP_DATE, AOS_RESPONSE_DATE);
+                        put(CCD_DUE_DATE, AOS_INITIAL_DUE_DATE);
+                    }
+                })
             ).build();
 
     @Mock
@@ -152,7 +156,7 @@ public class SubmitAosCaseUTest {
             caseData.put(CCD_DUE_DATE, AOS_DUE_DATE);
         } else {
             caseData.put(RESP_DEFENDS_DIVORCE_CCD_FIELD, NO_VALUE);
-            caseData.put(CCD_DUE_DATE, null);
+            caseData.put(CCD_DUE_DATE, AOS_INITIAL_DUE_DATE);
         }
 
         return caseData;

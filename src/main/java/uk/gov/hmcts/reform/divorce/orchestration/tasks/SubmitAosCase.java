@@ -39,13 +39,11 @@ public class SubmitAosCase implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context, Map<String, Object> submissionData) {
         String authToken = (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY);
         String eventId = getAosCompleteEventId(authToken, submissionData);
-        String dueDate = null;
 
         if (AWAITING_ANSWER_AOS_EVENT_ID.equals(eventId)) {
-            dueDate = getAosDueDate(authToken);
+            String dueDate = getAosDueDate(authToken);
+            submissionData.put(CCD_DUE_DATE, dueDate);
         }
-
-        submissionData.put(CCD_DUE_DATE, dueDate);
 
         Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
             authToken,

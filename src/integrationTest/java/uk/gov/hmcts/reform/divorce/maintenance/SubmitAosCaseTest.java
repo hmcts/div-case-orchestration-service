@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
@@ -23,6 +22,7 @@ import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 public class SubmitAosCaseTest extends CcdSubmissionSupport {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-aos/";
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
+    private static final String AOS_INITIAL_DUE_DATE = "2018-10-30";
     private static final String AOS_RECEIVED_DATE = "2018-10-22";
     private static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
     private static final String CCD_DUE_DATE = "dueDate";
@@ -139,7 +139,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
             String dueDate = new LocalDate(AOS_RECEIVED_DATE).plusDays(daysToRespond).toString(CCD_DATE_FORMAT);
             assertEquals(dueDate, caseDetails.getData().get(CCD_DUE_DATE));
         } else {
-            assertNull(caseDetails.getData().get(CCD_DUE_DATE));
+            assertEquals(AOS_INITIAL_DUE_DATE, caseDetails.getData().get(CCD_DUE_DATE));
         }
     }
 }
