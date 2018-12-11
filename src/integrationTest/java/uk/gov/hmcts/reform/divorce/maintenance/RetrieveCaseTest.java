@@ -58,6 +58,20 @@ public class RetrieveCaseTest extends CcdSubmissionSupport {
             cosResponse.path(DATA_KEY));
     }
 
+
+    @Test
+    public void givenMultipleSubmittedCaseInCcd_whenGetCase_thenReturn300() {
+        UserDetails userDetails = createCitizenUser();
+
+        submitCase("submit-complete-case.json", userDetails);
+        submitCase("submit-complete-case.json", userDetails);
+
+        Response cosResponse = retrieveCase(userDetails.getAuthToken());
+
+        assertEquals(HttpStatus.MULTIPLE_CHOICES.value(), cosResponse.getStatusCode());
+        assertEquals(cosResponse.getBody().asString(), "");
+    }
+
     private Response retrieveCase(String userToken) {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());

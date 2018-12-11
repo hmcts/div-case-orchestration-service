@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -50,6 +51,18 @@ public class GlobalExceptionHandlerUTest {
 
         assertEquals(STATUS_CODE, actual.getStatusCodeValue());
         assertEquals(TEST_ERROR, actual.getBody());
+    }
+
+    @Test
+    public void givenCauseForMultiCases_whenHandleWorkFlowException_thenReturnFeignStatus() {
+        final FeignException feignException = getMultiFeignException();
+
+        final WorkflowException workflowException = new WorkflowException("", feignException);
+
+        ResponseEntity<Object> actual = classUnderTest.handleWorkFlowException(workflowException);
+
+        assertEquals(HttpStatus.MULTIPLE_CHOICES.value(), actual.getStatusCodeValue());
+        assertNull(actual.getBody());
     }
 
     @Test
@@ -126,6 +139,14 @@ public class GlobalExceptionHandlerUTest {
 
         when(feignException.status()).thenReturn(GlobalExceptionHandlerUTest.STATUS_CODE);
         when(feignException.getMessage()).thenReturn(TEST_ERROR);
+        return feignException;
+    }
+
+    private FeignException getMultiFeignException() {
+        final FeignException feignException = mock(FeignException.class);
+
+        when(feignException.status()).thenReturn(HttpStatus.MULTIPLE_CHOICES.value());
+        when(feignException.getMessage()).thenReturn("");
         return feignException;
     }
 }
