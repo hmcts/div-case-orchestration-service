@@ -99,6 +99,16 @@ public class PetitionIssueTest extends IntegrationTest {
             "ccd-callback-aos-invitation.json", true);
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
+        assertGeneratedDocumentsExists(cosResponse, false);
+        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
+    }
+
+    @Test
+    public void givenGenerateAosTrueAndServiceCentre_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
+        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
+            "ccd-callback-aos-invitation-service-centre.json", true);
+
+        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertGeneratedDocumentsExists(cosResponse, true);
         assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
