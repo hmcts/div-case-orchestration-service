@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -32,7 +33,6 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
 
     private static final String EMAIL_DESCRIPTION = "respondent submission notification email - defended divorce";
 
-    private static final String EAST_MIDLANDS_DIVORCE_UNIT = "eastMidlands";
     private static final DateTimeFormatter CLIENT_FACING_DATE_FORMAT = DateTimeFormatter
             .ofLocalizedDate(FormatStyle.LONG)
             .withLocale(Locale.UK);
@@ -50,7 +50,8 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         String petitionerInferredGender = getMandatoryPropertyValueAsString(caseDataPayload,
                 D_8_INFERRED_PETITIONER_GENDER);
         String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
-        Court court = taskCommons.getCourt(EAST_MIDLANDS_DIVORCE_UNIT);
+        String divorceUnitKey = getMandatoryPropertyValueAsString(caseDataPayload, DIVORCE_UNIT_JSON_KEY);
+        Court court = taskCommons.getCourt(divorceUnitKey);
 
         String caseId = getCaseId(context);
         templateFields.put("case number", formatCaseIdToReferenceNumber(caseId));
@@ -59,7 +60,7 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         templateFields.put("first name", respondentFirstName);
         templateFields.put("last name", respondentLastName);
         templateFields.put("husband or wife", petitionerRelationshipToRespondent);
-        templateFields.put("RDC name", court.getDivorceCentreName());
+        templateFields.put("RDC name", court.getIdentifiableCentreName());
         templateFields.put("court address", court.getFormattedAddress());
 
         String formSubmissionDateLimit = getDueDate(caseDataPayload);

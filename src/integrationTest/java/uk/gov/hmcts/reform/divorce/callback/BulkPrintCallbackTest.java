@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.support.CcdClientSupport;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
@@ -24,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails.builder;
 import static uk.gov.hmcts.reform.divorce.util.RestUtil.postToRestService;
 
 @Slf4j
@@ -92,19 +92,19 @@ public class BulkPrintCallbackTest extends IntegrationTest {
     public void givenValidCaseData_whenReceivedBulkPrint_thenReturnExpectedCaseData() throws Exception {
 
         Map response = postToRestService(
-            serverUrl + issueContextPath,
+            serverUrl + issueContextPath + "?generateAosInvitation=true",
             citizenHeaders,
             ResourceLoader.loadJson(FIXTURES_ISSUE_PETITION_CCD_CALLBACK_AOS_INVITATION_JSON)
         ).getBody().as(Map.class);
         CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(builder().caseData(
+        createEvent.setCaseDetails(CaseDetails.builder().caseData(
             (Map) response.get("data")).caseId("323").state("submitted").build()
         );
         ResponseBody body = postToRestService(serverUrl + "/bulk-print", caseworkerHeaders,
             ResourceLoader.objectToJson(createEvent)).getBody();
         String result = ((Map) body.jsonPath().get("data")).get("dueDate").toString();
         assertEquals("Due date is not as expected ",
-            LocalDate.now().plus(9, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
+            LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
         log.info(result);
 
     }
