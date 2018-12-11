@@ -20,6 +20,8 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_SERVICE_CENTRE;
 
 @Component
 public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
@@ -55,7 +57,7 @@ public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
         tasks.add(petitionGenerator);
         tasks.add(idamPinGenerator);
 
-        if (generateAosInvitation) {
+        if (generateAosInvitation && isServiceCentreDivorceUnit(caseDetailsRequest.getCaseDetails().getCaseData())) {
             tasks.add(respondentLetterGenerator);
         }
 
@@ -67,5 +69,9 @@ public class CcdCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetailsRequest.getCaseDetails())
         );
+    }
+
+    private boolean isServiceCentreDivorceUnit(Map<String, Object> caseData) {
+        return DIVORCE_UNIT_SERVICE_CENTRE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_UNIT_JSON_KEY)));
     }
 }
