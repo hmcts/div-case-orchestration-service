@@ -25,9 +25,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SubmitAosCase implements Task<Map<String, Object>> {
 
-    @Value("${aos.responded.awaiting-answer.days-to-respond}")
-    private int daysToRespond;
-
     @Autowired
     private CaseMaintenanceClient caseMaintenanceClient;
 

@@ -14,8 +14,6 @@ server:
 aos:
   responded:
     days-to-complete: 7
-    awaiting-answer:
-      days-to-respond: 21
 
 case:
   formatter:
