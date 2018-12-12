@@ -55,11 +55,6 @@ public class UpdateRespondentDetailsUTest {
     @InjectMocks
     private UpdateRespondentDetails classUnderTest;
 
-    @Before
-    public void setup() {
-        ReflectionTestUtils.setField(classUnderTest, "daysToComplete", DUE_DATE_OFFSET_IN_DAYS);
-    }
-
     @Test
     public void whenAosAwaiting_thenProceedAsExpected() {
         final UserDetails payload = UserDetails.builder().build();
@@ -86,8 +81,7 @@ public class UpdateRespondentDetailsUTest {
             ImmutableMap.of(
                 RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
                 RECEIVED_AOS_FROM_RESP, YES_VALUE,
-                RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate(),
-                CCD_DUE_DATE, CcdUtil.getCurrentDatePlusDays(DUE_DATE_OFFSET_IN_DAYS)
+                RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
             );
 
         when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
@@ -190,8 +184,7 @@ public class UpdateRespondentDetailsUTest {
         return ImmutableMap.of(
                 RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
                 RECEIVED_AOS_FROM_RESP, YES_VALUE,
-                RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate(),
-                CCD_DUE_DATE, CcdUtil.getCurrentDatePlusDays(DUE_DATE_OFFSET_IN_DAYS)
+                RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
         );
     }
 }
