@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
@@ -21,7 +20,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
@@ -31,9 +29,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class UpdateRespondentDetails implements Task<UserDetails> {
-
-    @Value("${aos.responded.days-to-complete}")
-    private int daysToComplete;
 
     @Autowired
     private CaseMaintenanceClient caseMaintenanceClient;
@@ -60,13 +55,6 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
 
         String eventId = getEventId(caseDetails.getState());
 
-        boolean standardAosFlow = START_AOS_EVENT_ID.equals(eventId)
-                || AOS_START_FROM_OVERDUE.equals(eventId);
-
-        if (standardAosFlow) {
-            updateFields.put(CCD_DUE_DATE, CcdUtil.getCurrentDatePlusDays(daysToComplete));
-        }
-
         caseMaintenanceClient.updateCase(
             (String)context.getTransientObject(AUTH_TOKEN_JSON_KEY),
             (String)context.getTransientObject(CASE_ID_JSON_KEY),
@@ -88,6 +76,4 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
                 return LINK_RESPONDENT_GENERIC_EVENT_ID;
         }
     }
-
-
 }
