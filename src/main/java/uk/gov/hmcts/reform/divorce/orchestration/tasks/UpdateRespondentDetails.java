@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
@@ -77,6 +76,4 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
                 return LINK_RESPONDENT_GENERIC_EVENT_ID;
         }
     }
-
-
 }
