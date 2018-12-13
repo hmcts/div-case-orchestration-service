@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.TokenExchangeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,13 +36,15 @@ public class IdamPinGeneratorTest {
 
     @Mock
     private IdamClient idamClient;
+    @Mock
+    private AuthUtil authUtil;
     private Map<String, Object> payload;
     private TaskContext context;
     private Pin pin;
 
     @Before
     public void setUp() {
-        idamPinGenerator = new IdamPinGenerator(idamClient);
+        idamPinGenerator = new IdamPinGenerator(idamClient, authUtil);
 
         pin = Pin.builder()
                 .userId(TEST_USER_ID)
