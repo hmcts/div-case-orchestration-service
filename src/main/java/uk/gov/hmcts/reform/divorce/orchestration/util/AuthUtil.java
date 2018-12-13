@@ -72,7 +72,7 @@ public class AuthUtil {
         return BASIC + Base64.getEncoder().encodeToString(authorisation.getBytes());
     }
 
-    public static String getBearToken(String token) {
+    public String getBearToken(String token) {
         if (StringUtils.isBlank(token)) {
             return token;
         }
