@@ -47,7 +47,7 @@ public class AuthUtil {
         return getIdamOauth2Token(citizenUserName, citizenPassword);
     }
 
-    private String getIdamOauth2Token(String username, String password) {
+    public String getIdamOauth2Token(String username, String password) {
         String basicAuthHeader = getBasicAuthHeader(username, password);
         AuthenticateUserResponse authenticateUserResponse = idamClient.authenticateUser(
             basicAuthHeader,
