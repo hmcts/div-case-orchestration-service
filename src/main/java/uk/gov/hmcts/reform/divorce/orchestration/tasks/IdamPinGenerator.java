@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.TokenExchangeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.util.Base64;
 import java.util.Map;
@@ -44,9 +45,12 @@ public class IdamPinGenerator implements Task<Map<String, Object>> {
 
     private final IdamClient idamClient;
 
+    private final AuthUtil authUtil;
+
     @Autowired
-    public IdamPinGenerator(@Qualifier("idamClient") IdamClient idamClient) {
+    public IdamPinGenerator(@Qualifier("idamClient") IdamClient idamClient, AuthUtil authUtil) {
         this.idamClient = idamClient;
+        this.authUtil = authUtil;
     }
 
     @Override
@@ -56,7 +60,7 @@ public class IdamPinGenerator implements Task<Map<String, Object>> {
                 .firstName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_FIRST_NAME, "")))
                 .lastName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_LAST_NAME, "")))
                 .build(),
-            getIdamOauth2Token(citizenUserName, citizenPassword));
+            authUtil.getIdamOauth2Token(citizenUserName, citizenPassword));
 
         context.setTransientObject(PIN, pin.getPin());
         caseData.put(RESPONDENT_LETTER_HOLDER_ID, pin.getUserId());
@@ -64,28 +68,4 @@ public class IdamPinGenerator implements Task<Map<String, Object>> {
         return caseData;
     }
 
-    private String getIdamOauth2Token(String username, String password) {
-        String basicAuthHeader = getBasicAuthHeader(username, password);
-        AuthenticateUserResponse authenticateUserResponse = idamClient.authenticateUser(
-                basicAuthHeader,
-                CODE,
-                authClientId,
-                authRedirectUrl
-        );
-
-        TokenExchangeResponse tokenExchangeResponse = idamClient.exchangeCode(
-                authenticateUserResponse.getCode(),
-                AUTHORIZATION_CODE,
-                authRedirectUrl,
-                authClientId,
-                authClientSecret
-        );
-
-        return BEARER + tokenExchangeResponse.getAccessToken();
-    }
-
-    private String getBasicAuthHeader(String username, String password) {
-        String authorisation = username + ":" + password;
-        return BASIC + Base64.getEncoder().encodeToString(authorisation.getBytes());
-    }
 }
