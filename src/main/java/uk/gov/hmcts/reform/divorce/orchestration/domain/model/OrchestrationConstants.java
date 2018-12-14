@@ -51,7 +51,9 @@ public class OrchestrationConstants {
     public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
     public static final String AOS_AWAITING = "AosAwaiting";
     public static final String AOS_OVERDUE = "AosOverdue";
+    public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
+    public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
     public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CCD_DUE_DATE = "dueDate";
     public static final String D8_REASON_FOR_DIVORCE = "D8ReasonForDivorce";

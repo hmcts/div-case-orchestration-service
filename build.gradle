@@ -130,6 +130,23 @@ def versions = [
         jsonPathAssert                  : '2.2.0'
 ]
 
+configurations {
+    all {
+        resolutionStrategy {
+            eachDependency { DependencyResolveDetails details ->
+                if (details.requested.name == 'jul-to-slf4j') {
+                    details.useTarget('org.slf4j:jul-to-slf4j:1.8.0-beta2')
+                }
+                if (details.requested.name == 'slf4j-api') {
+                    details.useTarget('org.slf4j:slf4j-api:1.8.0-beta2')
+                }
+            }
+        }
+    }
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-web')
