@@ -139,7 +139,7 @@ dependencies {
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
     compile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
     compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: versions.javaxWsRs
-    
+
     compile group: 'org.springframework', name: 'spring-context-support'
     compile (group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
             {
