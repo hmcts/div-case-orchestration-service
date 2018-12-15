@@ -109,7 +109,7 @@ def versions = [
         commonsIo                       : '2.5',
         commonsLang3                    : '3.7',
         springfoxSwagger                : '2.7.0',
-        lombok                          : '1.18.4',
+        lombok                          : '1.16.16',
         puppyCrawl                      : '7.6',
         reformsJavaLogging              : '3.0.1',
         serviceTokenGenerator           : '1.0.4',
@@ -129,23 +129,6 @@ def versions = [
         javaxWsRs                       : '2.1.1',
         jsonPathAssert                  : '2.2.0'
 ]
-
-configurations {
-    all {
-        resolutionStrategy {
-            eachDependency { DependencyResolveDetails details ->
-                if (details.requested.name == 'jul-to-slf4j') {
-                    details.useTarget('org.slf4j:jul-to-slf4j:1.8.0-beta2')
-                }
-                if (details.requested.name == 'slf4j-api') {
-                    details.useTarget('org.slf4j:slf4j-api:1.8.0-beta2')
-                }
-            }
-        }
-    }
-    integrationTestCompile.extendsFrom testCompile
-    integrationTestRuntime.extendsFrom testRuntime
-}
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator')
