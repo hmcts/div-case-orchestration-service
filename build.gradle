@@ -109,7 +109,7 @@ def versions = [
         commonsIo                       : '2.5',
         commonsLang3                    : '3.7',
         springfoxSwagger                : '2.7.0',
-        lombok                          : '1.16.16',
+        lombok                          : '1.18.4',
         puppyCrawl                      : '7.6',
         reformsJavaLogging              : '3.0.1',
         serviceTokenGenerator           : '1.0.4',
