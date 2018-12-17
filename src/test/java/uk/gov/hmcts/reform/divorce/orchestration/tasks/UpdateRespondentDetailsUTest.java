@@ -32,7 +32,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_OVERDUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
@@ -168,6 +170,31 @@ public class UpdateRespondentDetailsUTest {
         Assert.assertEquals(payload, result);
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_OVERDUE, dataToUpdate);
+    }
+
+    @Test
+    public void givenCaseOnReissueState_whenUpdateRespondentDetails_thenStartAosFromReissueEventIsTriggered() {
+        final UserDetails payload = UserDetails.builder().build();
+
+        final TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+
+        final UserDetails respondentDetails = createTestUserDetails();
+
+        final CaseDetails caseDetails = createTestCaseDetails(AWAITING_REISSUE);
+
+        final Map<String, Object> dataToUpdate = createDataToUpdate();
+
+        when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN))
+                .thenReturn(respondentDetails);
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true))
+                .thenReturn(caseDetails);
+
+        UserDetails result = classUnderTest.execute(taskContext, payload);
+        Assert.assertEquals(payload, result);
+
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_REISSUE, dataToUpdate);
     }
 
     private UserDetails createTestUserDetails() {

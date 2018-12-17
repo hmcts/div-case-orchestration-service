@@ -63,7 +63,8 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
         String eventId = getEventId(caseDetails.getState());
 
         boolean standardAosFlow = START_AOS_EVENT_ID.equals(eventId)
-                || AOS_START_FROM_OVERDUE.equals(eventId);
+                || AOS_START_FROM_OVERDUE.equals(eventId)
+                || AOS_START_FROM_REISSUE.equals(eventId);
 
         if (standardAosFlow) {
             updateFields.put(CCD_DUE_DATE, CcdUtil.getCurrentDatePlusDays(daysToComplete));
