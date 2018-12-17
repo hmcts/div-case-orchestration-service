@@ -12,11 +12,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 
 @Component
 public class SendPetitionerSubmissionNotificationEmail implements Task<Map<String, Object>> {
@@ -47,7 +48,8 @@ public class SendPetitionerSubmissionNotificationEmail implements Task<Map<Strin
             Court court = taskCommons.getCourt(divorceUnitKey);
             templateVars.put("RDC name", court.getIdentifiableCentreName());
 
-            templateVars.put("CCD reference", (String) caseData.get(D_8_CASE_REFERENCE));
+            String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
+            templateVars.put("CCD reference", formatCaseIdToReferenceNumber(caseId));
 
             emailService.sendPetitionerSubmissionNotificationEmail(petitionerEmail, templateVars);
         }

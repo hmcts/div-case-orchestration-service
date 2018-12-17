@@ -56,7 +56,6 @@ public class DnSubmittedEmailNotificationTaskUTest {
                 D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID
         );
         TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_FAMILY_MAN_ID);
         Map<String, String> notificationTemplateVars = ImmutableMap.of(
             NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME,
             NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME,
