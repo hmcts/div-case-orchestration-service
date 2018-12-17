@@ -92,7 +92,7 @@ tasks.withType(Checkstyle).each { checkstyleTask ->
     }
 }
 
-configurations {     
+configurations {
     integrationTestCompile.extendsFrom testCompile
     integrationTestRuntime.extendsFrom testRuntime
 }
