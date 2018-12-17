@@ -8,7 +8,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
@@ -52,7 +51,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
@@ -97,9 +95,6 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
             .caseData(CASE_DATA)
             .build();
 
-    @Value("${aos.responded.days-to-complete}")
-    private int daysToComplete;
-
     @Autowired
     private MockMvc webClient;
 
@@ -114,8 +109,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         caseDataAos = ImmutableMap.of(
             RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
             RECEIVED_AOS_FROM_RESP, YES_VALUE,
-            RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate(),
-            CCD_DUE_DATE, CcdUtil.getCurrentDatePlusDays(daysToComplete)
+            RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
         );
         caseDataNonAos = ImmutableMap.of(
             RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
