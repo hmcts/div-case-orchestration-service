@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
@@ -33,9 +32,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class UpdateRespondentDetails implements Task<UserDetails> {
 
-    @Value("${aos.responded.days-to-complete}")
-    private int daysToComplete;
-
     @Autowired
     private CaseMaintenanceClient caseMaintenanceClient;
 
@@ -55,7 +51,7 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
         updateFields.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         updateFields.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
 
-        CaseDetails caseDetails = caseMaintenanceClient.retrievePetition(
+        CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(
                 String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
                 true);
 
