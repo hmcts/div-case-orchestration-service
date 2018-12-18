@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
@@ -57,6 +57,7 @@ public class AosRespondentSubmittedITest {
     private static final String RESPONDENT_FEMALE_GENDER = "female";
     private static final String EVENT_ID = "event-id";
     private static final String CASE_ID = "case-id";
+    private static final String D8_ID = "d8-id";
     private static final String RELATIONSHIP = "wife";
 
     @Autowired
@@ -77,8 +78,8 @@ public class AosRespondentSubmittedITest {
     public void givenWithoutPetitionerEmail_whenPerformAOSReceived_thenReturnBadRequestResponse()
             throws Exception {
         mockEmailClient("null");
-        Map<String, Object> caseDetailMap =   ImmutableMap.of(
-                ID, CASE_ID,
+        Map<String, Object> caseDetailMap = ImmutableMap.of(
+                D_8_CASE_REFERENCE, D8_ID,
                 D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME,
                 D_8_PETITIONER_LAST_NAME, PETITIONER_LAST_NAME,
                 D_8_INFERRED_RESPONDENT_GENDER, RESPONDENT_FEMALE_GENDER
@@ -112,7 +113,8 @@ public class AosRespondentSubmittedITest {
                 D_8_PETITIONER_EMAIL, D_8_PETITIONER_EMAIL,
                 D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME,
                 D_8_PETITIONER_LAST_NAME, PETITIONER_LAST_NAME,
-                D_8_INFERRED_RESPONDENT_GENDER, RESPONDENT_FEMALE_GENDER
+                D_8_INFERRED_RESPONDENT_GENDER, RESPONDENT_FEMALE_GENDER,
+                D_8_CASE_REFERENCE, D8_ID
         );
 
         CreateEvent caseEvent = CreateEvent.builder().eventId(CASE_ID)
@@ -140,7 +142,8 @@ public class AosRespondentSubmittedITest {
                 D_8_PETITIONER_EMAIL, D_8_PETITIONER_EMAIL,
                 D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME,
                 D_8_PETITIONER_LAST_NAME, PETITIONER_LAST_NAME,
-                D_8_INFERRED_RESPONDENT_GENDER, RESPONDENT_FEMALE_GENDER
+                D_8_INFERRED_RESPONDENT_GENDER, RESPONDENT_FEMALE_GENDER,
+                D_8_CASE_REFERENCE, D8_ID
         );
 
         CreateEvent caseEvent = CreateEvent.builder().eventId(EVENT_ID)
@@ -172,7 +175,7 @@ public class AosRespondentSubmittedITest {
         notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, PETITIONER_FIRST_NAME);
         notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, PETITIONER_LAST_NAME);
         notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, RELATIONSHIP);
-        notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, CASE_ID);
+        notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, D8_ID);
         when(mockClient.sendEmail(any(), eq(email), eq(notificationTemplateVars), any()))
                 .thenThrow(new NotificationClientException(new Exception("error")));
     }

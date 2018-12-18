@@ -21,15 +21,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RespondentSubmittedCallbackWorkflowUTest {
@@ -54,6 +46,7 @@ public class RespondentSubmittedCallbackWorkflowUTest {
                         D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME,
                         D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME,
                         D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL,
+                        D_8_CASE_REFERENCE, TestConstants.TEST_CASE_ID,
                         D_8_INFERRED_RESPONDENT_GENDER, "male"))
                 .build();
         CreateEvent caseEvent = CreateEvent.builder().caseDetails(caseDetails).build();
