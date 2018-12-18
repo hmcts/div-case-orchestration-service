@@ -67,7 +67,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public abstract class LinkRespondentIdamITest extends IdamTestSupport {
-    private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveCase";
+    private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
     private static final String API_URL = "/link-respondent/" + TEST_CASE_ID + "/" + TEST_PIN;
     private static final String LINK_RESPONDENT_CONTEXT_PATH = "/casemaintenance/version/1/link-respondent/"
         + TEST_CASE_ID + "/" + TEST_LETTER_HOLDER_ID_CODE;
