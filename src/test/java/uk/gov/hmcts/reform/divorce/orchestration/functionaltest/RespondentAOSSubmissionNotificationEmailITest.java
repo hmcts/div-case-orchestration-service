@@ -33,7 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_DEFENDS_DIVORCE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -119,8 +119,8 @@ public class RespondentAOSSubmissionNotificationEmailITest {
                 .andExpect(content().string(allOf(
                         isJson(),
                         hasJsonPath("$.data", is(nullValue())),
-                        hasJsonPath("$.errors", hasItem(String.format("%s field doesn't contain a valid value",
-                            RESP_DEFENDS_DIVORCE_CCD_FIELD)))
+                        hasJsonPath("$.errors", hasItem(String.format("%s field doesn't contain a valid value: null",
+                            RESP_WILL_DEFEND_DIVORCE)))
                 )));
     }
 

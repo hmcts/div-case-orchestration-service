@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_DEFENDS_DIVORCE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
@@ -32,7 +32,7 @@ public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflo
 
     public Map<String, Object> run(CreateEvent caseRequestDetails) throws WorkflowException {
         Map<String, Object> caseData = caseRequestDetails.getCaseDetails().getCaseData();
-        String defended = (String)caseData.get(RESP_DEFENDS_DIVORCE_CCD_FIELD);
+        String defended = (String)caseData.get(RESP_WILL_DEFEND_DIVORCE);
 
         Task[] tasks;
 
@@ -41,8 +41,8 @@ public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflo
         } else if (NO_VALUE.equalsIgnoreCase(defended)) {
             tasks = new Task[]{sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask};
         } else {
-            String errorMessage = String.format("%s field doesn't contain a valid value",
-                RESP_DEFENDS_DIVORCE_CCD_FIELD);
+            String errorMessage = String.format("%s field doesn't contain a valid value: %s",
+                RESP_WILL_DEFEND_DIVORCE, defended);
             log.error(errorMessage);
             throw new WorkflowException(errorMessage);
         }
