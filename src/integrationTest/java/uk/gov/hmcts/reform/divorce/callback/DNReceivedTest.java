@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class    DNReceivedTest extends IntegrationTest {
+public class DNReceivedTest extends IntegrationTest {
 
     private static final String BASE_CASE_RESPONSE = "fixtures/submit-dn/dn-submitted.json";
     private static final String ERROR_CASE_RESPONSE = "fixtures/submit-dn/dn-submitted-error.json";
