@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration;
 
 public class TestConstants {
     public static final String TEST_CASE_ID = "test.case.id";
+    public static final String TEST_CASE_FAMILY_MAN_ID = "test.family.man.id";
     public static final String TEST_STATE = "test.state";
     public static final String TEST_PIN = "abcd1234";
     public static final String TEST_DOC_URL = "test.doc.url";

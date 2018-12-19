@@ -1,3 +1,7 @@
+provider "azurerm" {
+  version = "1.19.0"
+}
+
 locals {
   aseName                     = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
   local_env                   = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
@@ -17,7 +21,7 @@ locals {
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
   idam_strategic_enabled = "false"
-  
+
   asp_name = "${var.env == "prod" ? "div-cos-prod" : "${var.raw_product}-${var.env}"}"
   asp_rg = "${var.env == "prod" ? "div-cos-prod" : "${var.raw_product}-${var.env}"}"
 }
