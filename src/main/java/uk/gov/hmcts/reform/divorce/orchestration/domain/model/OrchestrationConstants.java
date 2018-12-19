@@ -58,6 +58,10 @@ public class OrchestrationConstants {
     public static final String CCD_DUE_DATE = "dueDate";
     public static final String D8_REASON_FOR_DIVORCE = "D8ReasonForDivorce";
     public static final String UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
+    public static final String D_8_PAYMENTS = "Payments";
+
+    // Divorce Session
+    public static final String DIVORCE_SESSION_EXISTING_PAYMENTS = "existingPayments";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
