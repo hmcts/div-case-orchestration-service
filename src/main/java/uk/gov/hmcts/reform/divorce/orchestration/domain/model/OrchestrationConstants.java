@@ -107,6 +107,7 @@ public class OrchestrationConstants {
     // Validation
     public static final String ERROR_STATUS = "error";
     public static final String FORM_ID = "case-progression";
+    public static final String UPDATE_REPONDENT_DATA_ERROR_KEY = "respondent.data.not.updated_Error";
     public static final String SOLICITOR_VALIDATION_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData_Error";
     public static final String VALIDATION_ERROR_KEY
