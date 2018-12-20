@@ -96,7 +96,7 @@ public interface CaseMaintenanceClient {
 
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/casemaintenance/version/1/retrieveCaseById/{caseId}"
+            value = "/casemaintenance/version/1/case/{caseId}"
     )
     CaseDetails retrievePetitionById(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
