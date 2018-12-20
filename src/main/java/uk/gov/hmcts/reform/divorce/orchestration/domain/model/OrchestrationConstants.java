@@ -34,7 +34,6 @@ public class OrchestrationConstants {
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
     public static final String START_AOS_EVENT_ID = "startAos";
     public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
-    public static final String COMPLETE_AOS_EVENT_ID = "aosSubmittedNoAdmissionNoConsent";
     public static final String AWAITING_DN_AOS_EVENT_ID = "aosSubmittedUndefended";
     public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";
     public static final String D_8_INFERRED_RESPONDENT_GENDER = "D8InferredRespondentGender";
@@ -55,8 +54,6 @@ public class OrchestrationConstants {
     public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
     public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CCD_DUE_DATE = "dueDate";
-    public static final String D8_REASON_FOR_DIVORCE = "D8ReasonForDivorce";
-    public static final String UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
