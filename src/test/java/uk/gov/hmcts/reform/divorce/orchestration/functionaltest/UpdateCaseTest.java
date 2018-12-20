@@ -55,7 +55,7 @@ public class UpdateCaseTest {
     private static final String API_URL = String.format("/updateCase/%s", CASE_ID);
 
     private static final String RETRIEVE_CASE_CONTEXT_PATH = String.format(
-        "/casemaintenance/version/1/retrieveCaseById/%s",
+        "/casemaintenance/version/1/case/%s",
         CASE_ID
     );
     private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
