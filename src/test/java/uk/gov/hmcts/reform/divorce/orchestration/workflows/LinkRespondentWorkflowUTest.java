@@ -1,26 +1,33 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.UnlinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateRespondentDetails;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_REPONDENT_DATA_ERROR_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LinkRespondentWorkflowUTest {
@@ -30,29 +37,71 @@ public class LinkRespondentWorkflowUTest {
     private LinkRespondent linkRespondent;
     @Mock
     private UpdateRespondentDetails updateRespondentDetails;
+    @Mock
+    private UnlinkRespondent unlinkRespondent;
 
     @InjectMocks
     private LinkRespondentWorkflow classUnderTest;
 
     @Test
-    public void whenRun_thenProceedAsExpected() throws WorkflowException {
+    public void whenRun_thenProceedAsExpected() throws Exception {
         final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
 
-        final ImmutablePair<String, Object>  pinPair = ImmutablePair.of(PIN, TEST_PIN);
-        final ImmutablePair<String, Object>  authTokenPair = ImmutablePair.of(AUTH_TOKEN_JSON_KEY, TEST_TOKEN);
-        final ImmutablePair<String, Object>  caseIdPair = ImmutablePair.of(CASE_ID_JSON_KEY, TEST_CASE_ID);
-
-        final Task[] tasks = new Task[] {
-            retrievePinUserDetails,
-            linkRespondent,
-            updateRespondentDetails
-        };
-
-        when(classUnderTest.execute(tasks, userDetails, pinPair, authTokenPair, caseIdPair))
-                .thenReturn(userDetails);
+        when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(linkRespondent.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(updateRespondentDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
 
         UserDetails actual = classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
 
         assertEquals(userDetails, actual);
+        verify(retrievePinUserDetails, times(1)).execute(classUnderTest.getContext(), userDetails);
+        verify(linkRespondent, times(1)).execute(classUnderTest.getContext(), userDetails);
+        verify(updateRespondentDetails, times(1)).execute(classUnderTest.getContext(), userDetails);
+        verify(unlinkRespondent, never()).execute(any(), any());
+    }
+
+    @Test
+    public void whenUpdateRespondentDetailsFails_thenCallUnlinkRespondent() throws Exception {
+        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+
+        when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(linkRespondent.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(updateRespondentDetails.execute(any(), eq(userDetails))).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                TaskContext context = invocation.getArgument(0);
+                context.setTransientObject(UPDATE_REPONDENT_DATA_ERROR_KEY, userDetails);
+                throw new TaskException("Case update failed");
+            }
+        });
+
+        try {
+            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
+            fail("WorkflowException expected");
+        } catch (WorkflowException e) {
+            //    Exception expected
+        }
+
+        verify(unlinkRespondent, times(1)).execute(any(), eq(userDetails));
+    }
+
+    @Test
+    public void whenLinkRespondentFails_thenOtherTaskAreNotCalled() throws Exception {
+        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+
+        when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(linkRespondent.execute(any(), eq(userDetails))).thenThrow(new RuntimeException("Error"));
+
+        try {
+            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
+            fail("WorkflowException expected");
+        } catch (RuntimeException e) {
+            //    Exception expected
+        }
+
+        verify(retrievePinUserDetails, times(1)).execute(classUnderTest.getContext(), userDetails);
+        verify(linkRespondent, times(1)).execute(classUnderTest.getContext(), userDetails);
+        verify(updateRespondentDetails, never()).execute(any(), any());
+        verify(unlinkRespondent, never()).execute(any(), any());
     }
 }

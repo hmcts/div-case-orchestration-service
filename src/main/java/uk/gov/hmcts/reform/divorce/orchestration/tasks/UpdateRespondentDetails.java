@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
@@ -27,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_REPONDENT_DATA_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
@@ -40,31 +43,36 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
     private IdamClient idamClient;
 
     @Override
-    public UserDetails execute(TaskContext context, UserDetails payLoad) {
+    public UserDetails execute(TaskContext context, UserDetails payload) throws TaskException {
 
         Map<String, Object> updateFields = new HashMap<>();
-        UserDetails respondentDetails =
-            idamClient.retrieveUserDetails(
-                AuthUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
+        try {
+            UserDetails respondentDetails =
+                idamClient.retrieveUserDetails(
+                    AuthUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
 
-        updateFields.put(RESPONDENT_EMAIL_ADDRESS, respondentDetails.getEmail());
-        updateFields.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        updateFields.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
+            updateFields.put(RESPONDENT_EMAIL_ADDRESS, respondentDetails.getEmail());
+            updateFields.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+            updateFields.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
 
-        CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(
-                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
-                true);
+            CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(
+                    String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
+                    true);
 
-        String eventId = getEventId(caseDetails.getState());
+            String eventId = getEventId(caseDetails.getState());
 
-        caseMaintenanceClient.updateCase(
-            (String)context.getTransientObject(AUTH_TOKEN_JSON_KEY),
-            (String)context.getTransientObject(CASE_ID_JSON_KEY),
-            eventId,
-            updateFields
-        );
+            caseMaintenanceClient.updateCase(
+                (String)context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+                (String)context.getTransientObject(CASE_ID_JSON_KEY),
+                eventId,
+                updateFields
+            );
+        } catch (FeignException ex) {
+            context.setTransientObject(UPDATE_REPONDENT_DATA_ERROR_KEY, payload);
+            throw new TaskException("Case update failed", ex);
+        }
 
-        return payLoad;
+        return payload;
     }
 
     private String getEventId(String state) {

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Collections;
@@ -54,7 +55,7 @@ public class UpdateRespondentDetailsUTest {
     private UpdateRespondentDetails classUnderTest;
 
     @Test
-    public void whenAosAwaiting_thenProceedAsExpected() {
+    public void whenAosAwaiting_thenProceedAsExpected() throws TaskException {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
@@ -96,7 +97,7 @@ public class UpdateRespondentDetailsUTest {
     }
 
     @Test
-    public void whenNonStandardState_thenProceedAsExpected() {
+    public void whenNonStandardState_thenProceedAsExpected() throws TaskException {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
@@ -138,7 +139,7 @@ public class UpdateRespondentDetailsUTest {
     }
 
     @Test
-    public void givenCaseOnAosOverdueState_whenUpdateRespondentDetails_thenRespondentDetailsIsUpdated() {
+    public void givenCaseOnAosOverdueState_whenUpdateRespondentDetails_thenRespondentDetailsIsUpdated() throws TaskException {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
@@ -163,7 +164,7 @@ public class UpdateRespondentDetailsUTest {
     }
 
     @Test
-    public void givenCaseOnReissueState_whenUpdateRespondentDetails_thenStartAosFromReissueEventIsTriggered() {
+    public void givenCaseOnReissueState_whenUpdateRespondentDetails_thenStartAosFromReissueEventIsTriggered() throws TaskException {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
