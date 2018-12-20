@@ -61,6 +61,15 @@ public interface CaseMaintenanceClient {
         @PathVariable("letterHolderId") String letterHolderId);
 
     @RequestMapping(
+            method = RequestMethod.DELETE,
+            value = "/casemaintenance/version/1/link-respondent/{caseId}",
+            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    void unlinkRespondent(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
+            @PathVariable("caseId") String caseId);
+
+    @RequestMapping(
             method = RequestMethod.PUT,
             value = "/casemaintenance/version/1/drafts",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
