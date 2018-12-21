@@ -37,7 +37,7 @@ public class OrchestrationConstants {
     public static final String AWAITING_DN_AOS_EVENT_ID = "aosSubmittedUndefended";
     public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";
     public static final String D_8_INFERRED_RESPONDENT_GENDER = "D8InferredRespondentGender";
-    public static final String RESP_WILL_DEFEND_DIVORCE = "respWillDefendDivorce";
+    public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
     public static final String D_8_INFERRED_PETITIONER_GENDER = "D8InferredPetitionerGender";
