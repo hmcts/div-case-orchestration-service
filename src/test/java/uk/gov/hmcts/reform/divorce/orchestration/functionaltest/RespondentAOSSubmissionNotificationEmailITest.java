@@ -137,7 +137,8 @@ public class RespondentAOSSubmissionNotificationEmailITest {
                 .andExpect(content().string(allOf(
                         isJson(),
                         hasJsonPath("$.data", is(nullValue())),
-                        hasJsonPath("$.errors", hasItem("Could not evaluate value of mandatory property \"caseId\""))
+                        hasJsonPath("$.errors",
+                                hasItem("Could not evaluate value of mandatory property \"D8caseReference\""))
                 )));
     }
 

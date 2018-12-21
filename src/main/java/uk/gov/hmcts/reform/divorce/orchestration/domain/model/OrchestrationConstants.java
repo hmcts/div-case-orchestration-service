@@ -22,6 +22,7 @@ public class OrchestrationConstants {
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";
+    public static final String D_8_CASE_REFERENCE = "D8caseReference";
     public static final String CASE_ID_JSON_KEY = "caseId";
     public static final String CASE_STATE_JSON_KEY = "state";
     public static final String CREATED_DATE_JSON_KEY = "createdDate";
@@ -103,6 +104,7 @@ public class OrchestrationConstants {
     // Validation
     public static final String ERROR_STATUS = "error";
     public static final String FORM_ID = "case-progression";
+    public static final String UPDATE_REPONDENT_DATA_ERROR_KEY = "respondent.data.not.updated_Error";
     public static final String SOLICITOR_VALIDATION_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData_Error";
     public static final String VALIDATION_ERROR_KEY

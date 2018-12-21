@@ -35,6 +35,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
@@ -42,7 +43,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @RunWith(MockitoJUnitRunner.class)
 public class SendRespondentSubmissionNotificationEmailTest {
 
-    private static final String FORMATTED_CASE_ID = "0123-4567-8901-2345";
+    private static final String FORMATTED_CASE_ID = "LV17D80101";
 
     @Rule
     public ExpectedException expectedException = none();
@@ -109,14 +110,15 @@ public class SendRespondentSubmissionNotificationEmailTest {
     public void testExceptionIsThrown_WhenCaseIdIsMissing_ForDefendedDivorce()
             throws IOException, TaskException {
         expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Could not evaluate value of mandatory property \"caseId\"");
+        expectedException.expectMessage("Could not evaluate value of mandatory property \"D8caseReference\"");
 
         CreateEvent incomingPayload = getJsonFromResourceFile(
                 "/jsonExamples/payloads/defendedDivorceAOSMissingCaseId.json", CreateEvent.class);
         Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
-        String caseId = incomingPayload.getCaseDetails().getCaseId();
+        String caseId = (String) incomingPayload.getCaseDetails().getCaseData()
+                .get(D_8_CASE_REFERENCE);
         DefaultTaskContext context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, caseId);
+        context.setTransientObject(D_8_CASE_REFERENCE, caseId);
 
         defendedDivorceNotificationEmailTask.execute(context, caseData);
     }
