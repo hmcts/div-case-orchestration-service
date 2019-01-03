@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
@@ -18,22 +19,21 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_OVERDUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_REPONDENT_DATA_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
 public class UpdateRespondentDetails implements Task<UserDetails> {
-
-    @Value("${aos.responded.days-to-complete}")
-    private int daysToComplete;
 
     @Autowired
     private CaseMaintenanceClient caseMaintenanceClient;
@@ -43,41 +43,49 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
     private IdamClient idamClient;
 
     @Override
-    public UserDetails execute(TaskContext context, UserDetails payLoad) {
-        String eventId;
+    public UserDetails execute(TaskContext context, UserDetails payload) throws TaskException {
 
         Map<String, Object> updateFields = new HashMap<>();
+        try {
+            UserDetails respondentDetails =
+                idamClient.retrieveUserDetails(
+                    AuthUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
 
-        CaseDetails caseDetails = caseMaintenanceClient.retrievePetition(
-                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
-                true);
+            updateFields.put(RESPONDENT_EMAIL_ADDRESS, respondentDetails.getEmail());
+            updateFields.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+            updateFields.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
 
-        UserDetails respondentDetails =
-            idamClient.retrieveUserDetails(
-                AuthUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
+            CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(
+                    String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
+                    true);
 
-        updateFields.put(RESPONDENT_EMAIL_ADDRESS, respondentDetails.getEmail());
-        updateFields.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        updateFields.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
+            String eventId = getEventId(caseDetails.getState());
 
-        boolean standardAosFlow = caseDetails.getState().equals(AOS_AWAITING)
-            || caseDetails.getState().equals(AOS_OVERDUE)
-            || caseDetails.getState().equals(AWAITING_REISSUE);
-
-        if (standardAosFlow) {
-            eventId = START_AOS_EVENT_ID;
-            updateFields.put(CCD_DUE_DATE, CcdUtil.getCurrentDatePlusDays(daysToComplete));
-        } else {
-            eventId = LINK_RESPONDENT_GENERIC_EVENT_ID;
+            caseMaintenanceClient.updateCase(
+                (String)context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+                (String)context.getTransientObject(CASE_ID_JSON_KEY),
+                eventId,
+                updateFields
+            );
+        } catch (FeignException ex) {
+            context.setTransientObject(UPDATE_REPONDENT_DATA_ERROR_KEY, payload);
+            throw new TaskException("Case update failed", ex);
         }
 
-        caseMaintenanceClient.updateCase(
-            (String)context.getTransientObject(AUTH_TOKEN_JSON_KEY),
-            (String)context.getTransientObject(CASE_ID_JSON_KEY),
-            eventId,
-            updateFields
-        );
+        return payload;
+    }
 
-        return payLoad;
+    private String getEventId(String state) {
+
+        switch (state) {
+            case AOS_AWAITING:
+                return START_AOS_EVENT_ID;
+            case AOS_OVERDUE:
+                return AOS_START_FROM_OVERDUE;
+            case AWAITING_REISSUE:
+                return AOS_START_FROM_REISSUE;
+            default:
+                return LINK_RESPONDENT_GENERIC_EVENT_ID;
+        }
     }
 }

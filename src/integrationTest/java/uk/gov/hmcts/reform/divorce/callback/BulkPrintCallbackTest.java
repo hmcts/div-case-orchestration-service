@@ -104,7 +104,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
             ResourceLoader.objectToJson(createEvent)).getBody();
         String result = ((Map) body.jsonPath().get("data")).get("dueDate").toString();
         assertEquals("Due date is not as expected ",
-            LocalDate.now().plus(9, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
+            LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
         log.info(result);
 
     }

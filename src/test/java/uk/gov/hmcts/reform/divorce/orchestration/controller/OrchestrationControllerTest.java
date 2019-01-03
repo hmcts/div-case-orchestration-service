@@ -241,8 +241,6 @@ public class OrchestrationControllerTest {
             .thenThrow(new WorkflowException("error"));
 
         classUnderTest.retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD);
-
-        verify(caseOrchestrationService).retrieveAosCase(TEST_CHECK_CCD, AUTH_TOKEN);
     }
 
     @Test
@@ -272,6 +270,14 @@ public class OrchestrationControllerTest {
         assertEquals(caseDataResponse, response.getBody());
 
         verify(caseOrchestrationService).getCase(AUTH_TOKEN);
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void givenThrowsException_whenGetCase_thenReturnExpectedResponse() throws WorkflowException {
+        when(caseOrchestrationService.getCase(AUTH_TOKEN))
+            .thenThrow(new WorkflowException("error"));
+
+        classUnderTest.retrieveCase(AUTH_TOKEN);
     }
 
     @Test

@@ -13,12 +13,6 @@ spring:
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
 
-aos:
-  responded:
-    days-to-complete: ${AOS_RESPONDED_DAYS_TO_COMPLETE:7}
-    awaiting-answer:
-      days-to-respond: ${AOS_RESPONDED_AWAITING_ANSWER_DAYS_TO_RESPOND:21}
-
 case:
   formatter:
     service:
@@ -54,7 +48,7 @@ send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
 
 bulk-print:
-   dueDate: 9
+  dueDate: 30
 
 uk:
   gov:

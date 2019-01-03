@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -42,6 +43,8 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
         String divorceUnitKey = getMandatoryPropertyValueAsString(caseDataPayload, DIVORCE_UNIT_JSON_KEY);
         Court court = taskCommons.getCourt(divorceUnitKey);
 
+        String caseId = getMandatoryPropertyValueAsString(caseDataPayload, D_8_CASE_REFERENCE);
+        templateFields.put("case number", caseId);
         templateFields.put("email address", respondentEmailAddress);
         templateFields.put("first name", respondentFirstName);
         templateFields.put("last name", respondentLastName);
@@ -55,5 +58,4 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
 
         return caseDataPayload;
     }
-
 }

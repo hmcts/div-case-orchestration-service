@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
@@ -35,9 +36,8 @@ public class SendPetitionerNotificationEmailTest {
     private static final String SERVICE_CENTRE_KEY = "serviceCentre";
     private static final String SERVICE_CENTRE_DISPLAY_NAME = "Courts and Tribunals Service Centre";
 
-    private static final String UNFORMATTED_CASE_ID = "0123456789012345";
-    private static final String FORMATTED_CASE_ID = "0123-4567-8901-2345";
-    private static final String SHORT_CASE_ID = "0123456789";
+    private static final String D8_CASE_ID = "LV17D80101";
+    private static final String UNFORMATTED_CASE_ID = "0123456789";
 
     @Mock
     EmailService emailService;
@@ -58,6 +58,8 @@ public class SendPetitionerNotificationEmailTest {
     @Before
     public void setup() throws TaskException {
         testData = new HashMap<>();
+        testData.put(D_8_CASE_REFERENCE, D8_CASE_ID);
+        testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
         testData.put(D_8_PETITIONER_EMAIL, TEST_USER_EMAIL);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
@@ -71,7 +73,7 @@ public class SendPetitionerNotificationEmailTest {
         expectedTemplateVars.put("email address", TEST_USER_EMAIL);
         expectedTemplateVars.put("first name", TEST_PETITIONER_FIRST_NAME);
         expectedTemplateVars.put("last name", TEST_PETITIONER_LAST_NAME);
-        expectedTemplateVars.put("CCD reference", FORMATTED_CASE_ID);
+        expectedTemplateVars.put("CCD reference", D8_CASE_ID);
 
         mockTestCourtsLookup();
     }
@@ -98,8 +100,7 @@ public class SendPetitionerNotificationEmailTest {
 
     @Test
     public void shouldCallEmailServiceWithNoCaseIdFormatWhenNoUnableToFormatIdForGenericUpdate() {
-        context.setTransientObject(CASE_ID_JSON_KEY, SHORT_CASE_ID);
-        expectedTemplateVars.replace("CCD reference", SHORT_CASE_ID);
+        expectedTemplateVars.replace("CCD reference", D8_CASE_ID);
 
         when(emailService.sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars))
                 .thenReturn(null);
@@ -112,6 +113,7 @@ public class SendPetitionerNotificationEmailTest {
     @Test
     public void shouldCallEmailService_WithCourtName_WhenCaseIsAssignedToCourt() throws TaskException {
         expectedTemplateVars.put("RDC name", TEST_COURT_DISPLAY_NAME);
+        expectedTemplateVars.replace("CCD reference", UNFORMATTED_CASE_ID);
 
         when(emailService.sendPetitionerSubmissionNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars))
                 .thenReturn(null);
@@ -124,6 +126,7 @@ public class SendPetitionerNotificationEmailTest {
     @Test
     public void shouldCallEmailService_WithServiceCentreName_WhenCaseIsAssignedToServiceCentre() throws TaskException {
         testData.put(DIVORCE_UNIT_JSON_KEY, SERVICE_CENTRE_KEY);
+        expectedTemplateVars.replace("CCD reference", UNFORMATTED_CASE_ID);
         expectedTemplateVars.put("RDC name", SERVICE_CENTRE_DISPLAY_NAME);
 
         when(emailService.sendPetitionerSubmissionNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars))
@@ -136,8 +139,7 @@ public class SendPetitionerNotificationEmailTest {
 
     @Test
     public void shouldCallEmailServiceWithNoCaseIdFormatWhenNoUnableToFormatIdForSubmission() throws TaskException {
-        context.setTransientObject(CASE_ID_JSON_KEY, SHORT_CASE_ID);
-        expectedTemplateVars.replace("CCD reference", SHORT_CASE_ID);
+        expectedTemplateVars.replace("CCD reference", UNFORMATTED_CASE_ID);
         expectedTemplateVars.put("RDC name", TEST_COURT_DISPLAY_NAME);
 
         when(emailService.sendPetitionerSubmissionNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars))

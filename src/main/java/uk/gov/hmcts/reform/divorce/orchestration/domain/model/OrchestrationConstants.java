@@ -22,6 +22,7 @@ public class OrchestrationConstants {
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";
+    public static final String D_8_CASE_REFERENCE = "D8caseReference";
     public static final String CASE_ID_JSON_KEY = "caseId";
     public static final String CASE_STATE_JSON_KEY = "state";
     public static final String CREATED_DATE_JSON_KEY = "createdDate";
@@ -43,7 +44,6 @@ public class OrchestrationConstants {
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
     public static final String D_8_INFERRED_PETITIONER_GENDER = "D8InferredPetitionerGender";
-    public static final String DATE_AOS_RECEIVED_FROM_RESP = "ReceivedAOSfromRespDate";
     public static final String YES_VALUE = "Yes";
     public static final String NO_VALUE = "No";
     public static final String ISSUE_DATE = "IssueDate";
@@ -53,8 +53,12 @@ public class OrchestrationConstants {
     public static final String AOS_AWAITING = "AosAwaiting";
     public static final String AOS_OVERDUE = "AosOverdue";
     public static final String AWAITING_REISSUE = "AwaitingReissue";
+    public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
+    public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
     public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CCD_DUE_DATE = "dueDate";
+    public static final String D8_REASON_FOR_DIVORCE = "D8ReasonForDivorce";
+    public static final String UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
@@ -74,8 +78,9 @@ public class OrchestrationConstants {
     public static final String STATEMENT_OF_TRUTH = "D8StatementOfTruth";
 
     // Courts
-    public static final String DIVORCE_UNIT_JSON_KEY = "D8DivorceUnit";
     public static final String DIVORCE_CENTRE_SITEID_JSON_KEY = "D8SelectedDivorceCentreSiteId";
+    public static final String DIVORCE_UNIT_JSON_KEY = "D8DivorceUnit";
+    public static final String DIVORCE_UNIT_SERVICE_CENTRE = "serviceCentre";
 
     // Document Generator
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";
@@ -103,6 +108,7 @@ public class OrchestrationConstants {
     // Validation
     public static final String ERROR_STATUS = "error";
     public static final String FORM_ID = "case-progression";
+    public static final String UPDATE_REPONDENT_DATA_ERROR_KEY = "respondent.data.not.updated_Error";
     public static final String SOLICITOR_VALIDATION_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData_Error";
     public static final String VALIDATION_ERROR_KEY
