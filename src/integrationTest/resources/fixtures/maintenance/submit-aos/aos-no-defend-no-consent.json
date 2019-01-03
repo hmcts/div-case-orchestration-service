@@ -1,7 +1,7 @@
 {
     "respConfirmReadPetition" : "YES",
     "respAdmitOrConsentToFact" : "NO",
-    "respWillDefendDivorce" : "NO",
+    "respWillDefendDivorce" : "No",
     "respJurisdictionAgree" : "NO",
     "respJurisdictionDisagreeReason" : "Some Jurisdiction disagree reason",
     "respJurisdictionRespCountryOfResidence" : "UK",
