@@ -3,7 +3,7 @@
     "id": "0123456789012345",
     "case_data": {
       "RespEmailAddress": "simulate-delivered@notifications.service.gov.uk",
-      "RespDefendsDivorce": "Yes",
+      "RespWillDefendDivorce": "Yes",
       "D8RespondentFirstName": "Ted",
       "D8RespondentLastName": "Jones",
       "D8InferredPetitionerGender": "female",
