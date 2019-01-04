@@ -101,6 +101,14 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_REFERENCE_JSON_KEY = "D8SolicitorReference";
     public static final String SOLICITOR_STATEMENT_OF_TRUTH = "solSignStatementofTruth";
 
+    //Payment
+    public static final String PAYMENTS = "Payments";
+    public static final String EXISTING_PAYMENTS = "existingPayments";
+
+    public static final String PAYMENT_REFERENCE = "paymentReference";
+    public static final String PAYMENT_STATUS = "paymentStatus";
+    public static final String SUCCESS_PAYMENT_STATUS = "success";
+
     // Validation
     public static final String ERROR_STATUS = "error";
     public static final String FORM_ID = "case-progression";

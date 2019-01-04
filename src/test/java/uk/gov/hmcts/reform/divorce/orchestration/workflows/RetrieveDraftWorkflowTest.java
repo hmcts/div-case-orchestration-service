@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCaseIdAndStateOnSession;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPaymentOnSession;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,9 @@ public class RetrieveDraftWorkflowTest {
     @Mock
     private SetCaseIdAndStateOnSession setCaseIdAndStateOnSession;
 
+    @Mock
+    private  SetPaymentOnSession setPaymentOnSession;
+
     @InjectMocks
     private RetrieveDraftWorkflow target;
 
@@ -55,12 +59,16 @@ public class RetrieveDraftWorkflowTest {
                 eq(casePayload))).thenReturn(draftPayload);
         when(setCaseIdAndStateOnSession.execute(argThat(contextWithAuthTokenMatcher),
                 eq(draftPayload))).thenReturn(draftPayload);
+        when(setPaymentOnSession.execute(argThat(contextWithAuthTokenMatcher),
+                eq(draftPayload))).thenReturn(draftPayload);
 
         assertEquals(draftPayload, target.run(AUTH_TOKEN, true));
 
         verify(retrieveDraft).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
         verify(caseDataToDivorceFormatter).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
         verify(setCaseIdAndStateOnSession).execute(argThat(contextWithAuthTokenMatcher),eq(draftPayload));
+        verify(setPaymentOnSession).execute(argThat(contextWithAuthTokenMatcher),eq(draftPayload));
+
     }
 
 }
