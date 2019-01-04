@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_DEFENDS_DIVORCE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -102,7 +102,7 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
             WorkflowException {
         expectedException.expect(WorkflowException.class);
         expectedException.expectMessage(String.format("%s field doesn't contain a valid value",
-            RESP_DEFENDS_DIVORCE_CCD_FIELD));
+            RESP_WILL_DEFEND_DIVORCE));
 
         CreateEvent caseRequestDetails = getJsonFromResourceFile(
                 "/jsonExamples/payloads/unclearAcknowledgementOfService.json", CreateEvent.class);
