@@ -2,7 +2,7 @@
   "case_details": {
     "id": "0123456789012345",
     "case_data": {
-      "RespDefendsDivorce": "Yes",
+      "RespWillDefendDivorce": "Yes",
       "D8RespondentFirstName": "Ted",
       "D8RespondentLastName": "Jones",
       "D8InferredPetitionerGender": "female",

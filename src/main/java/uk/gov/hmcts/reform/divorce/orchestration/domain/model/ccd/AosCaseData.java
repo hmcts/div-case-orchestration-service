@@ -18,8 +18,8 @@ public class AosCaseData {
     @JsonProperty("RespAdmitOrConsentToFact")
     private String respAdmitOrConsentToFact;
 
-    @JsonProperty("RespDefendsDivorce")
-    private String respDefendsDivorce;
+    @JsonProperty("RespWillDefendDivorce")
+    private String respWillDefendDivorce;
 
     @JsonProperty("RespJurisdictionDisagreeReason")
     private String respJurisdictionDisagreeReason;
