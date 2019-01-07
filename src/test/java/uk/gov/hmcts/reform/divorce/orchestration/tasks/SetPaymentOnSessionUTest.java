@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EXISTING_PAYMENTS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
@@ -49,9 +50,37 @@ public class SetPaymentOnSessionUTest {
         assertEquals(testData, setPaymentOnSession.execute(context, testData));
     }
 
+    @Test
+    public void givenCaseWithFailedPayment_whenSetPaymentRefOnSession_thenReturnSessionWithPaymentRef() {
+        Map<String, Object>  testData = Maps.newHashMap(PAYMENT,
+                ImmutableMap.of(
+                        PAYMENT_REFERENCE, "ref2",
+                        PAYMENT_STATUS, "fail"
+                )
+        );
+
+        Map<String, Object> resultData = new HashMap<>(testData);
+        assertEquals(resultData, setPaymentOnSession.execute(context, testData));
+    }
 
     @Test
     public void givenCaseWithSuccessfulPayment_whenSetPaymentRefOnSession_thenReturnSessionWithPaymentRef() {
+        Map<String, Object>  testData = Maps.newHashMap(PAYMENT,
+                ImmutableMap.of(
+                        PAYMENT_REFERENCE, "ref2",
+                        PAYMENT_STATUS, SUCCESS_STATUS
+                )
+        );
+
+        Map<String, Object> resultData = new HashMap<>(testData);
+        resultData.put(PAYMENT_REFERENCE, "ref2");
+
+        assertEquals(resultData, setPaymentOnSession.execute(context, testData));
+    }
+
+
+    @Test
+    public void givenCaseWithSuccessfulExistingPayment_whenSetPaymentRefOnSession_thenReturnSessionWithPaymentRef() {
         Map<String, Object>  testData = Maps.newHashMap(EXISTING_PAYMENTS,
                 Arrays.asList(ImmutableMap.of(
                             PAYMENT_REFERENCE, "ref1",
