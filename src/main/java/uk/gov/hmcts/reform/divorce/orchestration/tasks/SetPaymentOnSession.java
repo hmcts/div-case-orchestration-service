@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EXISTING_PAYMENTS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.INITIATED_PAYMENT_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_STATUS;
@@ -28,37 +29,47 @@ public class SetPaymentOnSession implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         String caseId = String.valueOf(context.getTransientObject(CASE_ID_JSON_KEY));
-        String successPaymentRef = null;
+        String paymentRef = getPaymentByStatus(caseData, SUCCESS_PAYMENT_STATUS);
 
-        Map<String, Object> paymentElement = (Map<String, Object>) caseData.get(PAYMENT);
-
-        if (paymentElement != null && isSuccessPayment(paymentElement)) {
-            successPaymentRef = (String) paymentElement.get(PAYMENT_REFERENCE);
+        if (StringUtils.isEmpty(paymentRef)) {
+            paymentRef = getPaymentByStatus(caseData, INITIATED_PAYMENT_STATUS);
         }
 
-        if (StringUtils.isEmpty(successPaymentRef)) {
 
-            Stream<Map<String, Object>> paymentMaps = Optional
-                    .ofNullable((List<Map<String, Object>>) caseData.get(EXISTING_PAYMENTS))
-                    .orElse(Collections.emptyList())
-                    .stream();
-            successPaymentRef = paymentMaps
-                    .filter(this::isSuccessPayment)
-                    .findFirst()
-                    .map(successPayment -> (String)successPayment.get(PAYMENT_REFERENCE))
-                    .orElse(Strings.EMPTY);
-        }
-
-        if (StringUtils.isNotEmpty(successPaymentRef)) {
-            log.info("Case Id {} has successful payment with ref {}", caseId, successPaymentRef);
-            caseData.put(SESSION_PAYMENT_REFERENCE, successPaymentRef);
+        if (StringUtils.isNotEmpty(paymentRef)) {
+            log.info("Case Id {} has successful payment with ref {}", caseId, paymentRef);
+            caseData.put(SESSION_PAYMENT_REFERENCE, paymentRef);
         }
 
         return caseData;
     }
 
-    private boolean isSuccessPayment(Map<String, Object> paymentObject) {
-        return SUCCESS_PAYMENT_STATUS.equalsIgnoreCase(String.valueOf(paymentObject.get(PAYMENT_STATUS)));
+    private String getPaymentByStatus(Map<String, Object> divorceCase,final  String status) {
+        Map<String, Object> paymentElement = (Map<String, Object>) divorceCase.get(PAYMENT);
+
+        String casePaymentRef = null;
+        if (paymentElement != null && isPaymentInStatus(paymentElement, status)) {
+            casePaymentRef = (String) paymentElement.get(PAYMENT_REFERENCE);
+        }
+
+        if (StringUtils.isEmpty(casePaymentRef)) {
+
+            Stream<Map<String, Object>> paymentMaps = Optional
+                    .ofNullable((List<Map<String, Object>>) divorceCase.get(EXISTING_PAYMENTS))
+                    .orElse(Collections.emptyList())
+                    .stream();
+            casePaymentRef = paymentMaps
+                    .filter(paymentObject ->isPaymentInStatus(paymentObject, status))
+                    .findFirst()
+                    .map(successPayment -> (String)successPayment.get(PAYMENT_REFERENCE))
+                    .orElse(Strings.EMPTY);
+        }
+        return casePaymentRef;
+
+    }
+
+    private boolean isPaymentInStatus(Map<String, Object> paymentObject, String expectedState) {
+        return expectedState.equalsIgnoreCase(String.valueOf(paymentObject.get(PAYMENT_STATUS)));
     }
 
 }
