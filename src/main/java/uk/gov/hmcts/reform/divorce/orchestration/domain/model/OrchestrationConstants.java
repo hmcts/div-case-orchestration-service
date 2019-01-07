@@ -104,10 +104,10 @@ public class OrchestrationConstants {
     //Payment
     public static final String PAYMENT = "payment";
     public static final String EXISTING_PAYMENTS = "existingPayments";
-
-    public static final String PAYMENT_REFERENCE = "paymentReference";
-    public static final String PAYMENT_STATUS = "paymentStatus";
+    public static final String PAYMENT_REFERENCE = "PaymentReference";
+    public static final String PAYMENT_STATUS = "PaymentStatus";
     public static final String SUCCESS_PAYMENT_STATUS = "success";
+    public static final String SESSION_PAYMENT_REFERENCE = "payment_reference";
 
     // Validation
     public static final String ERROR_STATUS = "error";

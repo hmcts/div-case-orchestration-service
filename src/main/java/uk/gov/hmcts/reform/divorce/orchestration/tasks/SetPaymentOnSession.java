@@ -18,6 +18,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SESSION_PAYMENT_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_PAYMENT_STATUS;
 
 @Component
@@ -50,7 +51,7 @@ public class SetPaymentOnSession implements Task<Map<String, Object>> {
 
         if (StringUtils.isNotEmpty(successPaymentRef)) {
             log.info("Case Id {} has successful payment with ref {}", caseId, successPaymentRef);
-            caseData.put(PAYMENT_REFERENCE, successPaymentRef);
+            caseData.put(SESSION_PAYMENT_REFERENCE, successPaymentRef);
         }
 
         return caseData;
