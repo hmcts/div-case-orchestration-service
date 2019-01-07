@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SESSION_PAYMENT_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -73,7 +74,7 @@ public class SetPaymentOnSessionUTest {
         );
 
         Map<String, Object> resultData = new HashMap<>(testData);
-        resultData.put(PAYMENT_REFERENCE, "ref2");
+        resultData.put(SESSION_PAYMENT_REFERENCE, "ref2");
 
         assertEquals(resultData, setPaymentOnSession.execute(context, testData));
     }
@@ -95,7 +96,7 @@ public class SetPaymentOnSessionUTest {
         );
 
         Map<String, Object> resultData = new HashMap<>(testData);
-        resultData.put(PAYMENT_REFERENCE, "ref2");
+        resultData.put(SESSION_PAYMENT_REFERENCE, "ref2");
 
         assertEquals(resultData, setPaymentOnSession.execute(context, testData));
     }
