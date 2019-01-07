@@ -44,6 +44,7 @@ public class SetPaymentOnSession implements Task<Map<String, Object>> {
         return caseData;
     }
 
+    @SuppressWarnings("unchecked")
     private String getPaymentByStatus(Map<String, Object> divorceCase,final  String status) {
         Map<String, Object> paymentElement = (Map<String, Object>) divorceCase.get(PAYMENT);
 
@@ -59,7 +60,7 @@ public class SetPaymentOnSession implements Task<Map<String, Object>> {
                     .orElse(Collections.emptyList())
                     .stream();
             casePaymentRef = paymentMaps
-                    .filter(paymentObject ->isPaymentInStatus(paymentObject, status))
+                    .filter(paymentObject -> isPaymentInStatus(paymentObject, status))
                     .findFirst()
                     .map(successPayment -> (String)successPayment.get(PAYMENT_REFERENCE))
                     .orElse(Strings.EMPTY);
