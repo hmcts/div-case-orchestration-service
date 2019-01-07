@@ -54,6 +54,10 @@ public class UpdateCaseTest {
 
     private static final String API_URL = String.format("/updateCase/%s", CASE_ID);
 
+    private static final String RETRIEVE_CASE_CONTEXT_PATH = String.format(
+        "/casemaintenance/version/1/case/%s",
+        CASE_ID
+    );
     private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
     private static final String UPDATE_CONTEXT_PATH = String.format(
         "/casemaintenance/version/1/updateCase/%s/%s",
@@ -85,6 +89,7 @@ public class UpdateCaseTest {
     public void givenEventDataAndAuth_whenEventDataIsSubmitted_thenReturnSuccess() throws Exception {
         Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
 
+        stubMaintenanceServerEndpointForRetrieveCaseById();
         stubFormatterServerEndpoint();
         stubMaintenanceServerEndpointForUpdate(responseData);
 
@@ -118,6 +123,15 @@ public class UpdateCaseTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    private void stubMaintenanceServerEndpointForRetrieveCaseById() {
+        maintenanceServiceServer.stubFor(WireMock.get(RETRIEVE_CASE_CONTEXT_PATH)
+                .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                        .withBody(convertObjectToJsonString(caseData))));
     }
 
     private void stubFormatterServerEndpoint() {
