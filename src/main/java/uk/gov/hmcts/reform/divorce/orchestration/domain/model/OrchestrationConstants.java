@@ -102,7 +102,7 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_STATEMENT_OF_TRUTH = "solSignStatementofTruth";
 
     //Payment
-    public static final String PAYMENTS = "Payments";
+    public static final String PAYMENT = "payment";
     public static final String EXISTING_PAYMENTS = "existingPayments";
 
     public static final String PAYMENT_REFERENCE = "paymentReference";
