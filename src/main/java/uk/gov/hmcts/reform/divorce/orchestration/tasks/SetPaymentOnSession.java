@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -19,6 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SESSION_PAYMENT_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_PAYMENT_STATUS;
 
@@ -60,6 +62,8 @@ public class SetPaymentOnSession implements Task<Map<String, Object>> {
                     .orElse(Collections.emptyList())
                     .stream();
             casePaymentRef = paymentMaps
+                    .map(paymentMapElem -> (Map<String, Object>)paymentMapElem.get(PAYMENT_VALUE))
+                    .filter(Objects::nonNull)
                     .filter(paymentObject -> isPaymentInStatus(paymentObject, status))
                     .findFirst()
                     .map(successPayment -> (String)successPayment.get(PAYMENT_REFERENCE))

@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_STATUS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SESSION_PAYMENT_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 
@@ -84,16 +85,18 @@ public class SetPaymentOnSessionUTest {
     public void givenCaseWithSuccessfulExistingPayment_whenSetPaymentRefOnSession_thenReturnSessionWithPaymentRef() {
         Map<String, Object>  testData = Maps.newHashMap(EXISTING_PAYMENTS,
                 Arrays.asList(ImmutableMap.of(
-                            PAYMENT_REFERENCE, "ref1",
-                            PAYMENT_STATUS, "nothing"
+                        PAYMENT_VALUE, ImmutableMap.of(
+                                PAYMENT_REFERENCE, "ref1",
+                                PAYMENT_STATUS, "nothing"
+                            )
                         ),
-                        (ImmutableMap.of(
+                        ImmutableMap.of(PAYMENT_VALUE,ImmutableMap.of(
                                 PAYMENT_REFERENCE, "ref2",
                                 PAYMENT_STATUS, SUCCESS_STATUS
+                            )
                         )
 
-                ))
-        );
+                ));
 
         Map<String, Object> resultData = new HashMap<>(testData);
         resultData.put(SESSION_PAYMENT_REFERENCE, "ref2");
