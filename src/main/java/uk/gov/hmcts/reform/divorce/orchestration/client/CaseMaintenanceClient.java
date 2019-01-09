@@ -95,6 +95,14 @@ public interface CaseMaintenanceClient {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
 
     @RequestMapping(
+            method = RequestMethod.GET,
+            value = "/casemaintenance/version/1/case/{caseId}"
+    )
+    CaseDetails retrievePetitionById(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
+            @PathVariable("caseId") String caseId);
+
+    @RequestMapping(
             method = RequestMethod.DELETE,
             value = "/casemaintenance/version/1/drafts"
     )
