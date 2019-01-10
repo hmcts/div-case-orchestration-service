@@ -1,8 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.client.PaymentClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
@@ -29,6 +34,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkfl
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdatePaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
 import java.util.List;
@@ -39,6 +45,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private static final String CASE_ID_IS = "Case ID is: {}";
 
@@ -63,55 +70,14 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
     private final DNSubmittedWorkflow dnSubmittedWorkflow;
     private final GetCaseWorkflow getCaseWorkflow;
+    private final UpdatePaymentWorkflow updatePaymentWorflow;
 
     @Autowired
-    public CaseOrchestrationServiceImpl(CcdCallbackWorkflow ccdCallbackWorkflow,
-                                        AuthenticateRespondentWorkflow authenticateRespondentWorkflow,
-                                        SubmitToCCDWorkflow submitToCCDWorkflow,
-                                        UpdateToCCDWorkflow updateToCCDWorkflow,
-                                        RetrieveAosCaseWorkflow retrieveAosCaseWorkflow,
-                                        LinkRespondentWorkflow linkRespondentWorkflow,
-                                        RetrieveDraftWorkflow retrieveDraftWorkflow,
-                                        SaveDraftWorkflow saveDraftWorkflow,
-                                        DeleteDraftWorkflow deleteDraftWorkflow,
-                                        SetOrderSummaryWorkflow setOrderSummaryWorkflow,
-                                        ProcessPbaPaymentWorkflow processPbaPaymentWorkflow,
-                                        SolicitorCreateWorkflow solicitorCreateWorkflow,
-                                        SendPetitionerSubmissionNotificationWorkflow
-                                                    sendPetitionerSubmissionNotificationWorkflow,
-                                        SendPetitionerGenericEmailNotificationWorkflow
-                                                    sendPetitionerGenericEmailNotificationWorkflow,
-                                        SendRespondentSubmissionNotificationWorkflow
-                                                    sendRespondentSubmissionNotificationWorkflow,
-                                        RespondentSubmittedCallbackWorkflow aosRespondedWorkflow,
-                                        SubmitAosCaseWorkflow submitAosCaseWorkflow,
-                                        CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow,
-                                        DNSubmittedWorkflow submitDNWorkflow,
-                                        SubmitDnCaseWorkflow submitDnCaseWorkflow,
-                                        GetCaseWorkflow getCaseWorkflow) {
-
-        this.ccdCallbackWorkflow = ccdCallbackWorkflow;
-        this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
-        this.submitToCCDWorkflow = submitToCCDWorkflow;
-        this.updateToCCDWorkflow = updateToCCDWorkflow;
-        this.retrieveDraftWorkflow = retrieveDraftWorkflow;
-        this.saveDraftWorkflow = saveDraftWorkflow;
-        this.deleteDraftWorkflow = deleteDraftWorkflow;
-        this.retrieveAosCaseWorkflow = retrieveAosCaseWorkflow;
-        this.linkRespondentWorkflow = linkRespondentWorkflow;
-        this.aosRespondedWorkflow = aosRespondedWorkflow;
-        this.setOrderSummaryWorkflow = setOrderSummaryWorkflow;
-        this.processPbaPaymentWorkflow = processPbaPaymentWorkflow;
-        this.solicitorCreateWorkflow = solicitorCreateWorkflow;
-        this.sendPetitionerSubmissionNotificationWorkflow = sendPetitionerSubmissionNotificationWorkflow;
-        this.sendPetitionerGenericEmailNotificationWorkflow = sendPetitionerGenericEmailNotificationWorkflow;
-        this.sendRespondentSubmissionNotificationWorkflow = sendRespondentSubmissionNotificationWorkflow;
-        this.submitAosCaseWorkflow = submitAosCaseWorkflow;
-        this.ccdCallbackBulkPrintWorkflow = ccdCallbackBulkPrintWorkflow;
-        this.submitDnCaseWorkflow = submitDnCaseWorkflow;
-        this.dnSubmittedWorkflow = submitDNWorkflow;
-        this.getCaseWorkflow = getCaseWorkflow;
-    }
+    private PaymentClient paymentClient;
+    @Autowired
+    private AuthTokenGenerator serviceAuthGenerator;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
     public Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest,
@@ -170,7 +136,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> getDraft(String authToken, Boolean checkCcd) throws WorkflowException {
-        return retrieveDraftWorkflow.run(authToken, checkCcd);
+        Map<String, Object> caseData = retrieveDraftWorkflow.run(authToken, checkCcd);
+//        Map<String, Object> paymentData = updatePaymentWorflow.run(authToken, caseData);
+
+        return caseData;
     }
 
     @Override
@@ -324,4 +293,19 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                     .build();
         }
     }
+
+    @Override
+    public String getPaymentData(String auth, String paymentRef) {
+
+        try {
+            return new ObjectMapper().writeValueAsString(
+             paymentClient.checkPayment(auth,
+                    serviceAuthGenerator.generate(),
+                    paymentRef));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
+
 }

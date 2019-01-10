@@ -10,10 +10,10 @@ public class DefaultWorkflow<T> extends AbstractWorkflow<T> {
     public T executeInternal(Task[] tasks, T payload) throws WorkflowException {
         try {
             for (Task<T> task: tasks) {
-                payload = task.execute(getContext(), payload);
                 if (getContext().getStatus()) {
                     break;
                 }
+                payload = task.execute(getContext(), payload);
             }
         } catch (TaskException e) {
             throw new WorkflowException(e.getMessage(), e);

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.testutil;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -21,5 +22,9 @@ public class ObjectMapperTestUtil {
                      ObjectMapperTestUtil.class.getResourceAsStream(filePath)) {
             return objectMapper.readValue(resourceAsStream, clazz);
         }
+    }
+
+    public static <T> T getJsonFromString(String string, TypeReference<T> clazz) throws IOException {
+        return objectMapper.readValue(string, clazz);
     }
 }

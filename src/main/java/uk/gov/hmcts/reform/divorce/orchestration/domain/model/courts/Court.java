@@ -41,6 +41,10 @@ public class Court {
     @Setter
     private String postCode;
 
+    @JsonProperty("siteId")
+    @Setter
+    private String siteId;
+
     private String formattedAddress;
 
     public String getFormattedAddress() {

@@ -67,6 +67,10 @@ public class OrchestrationConstants {
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
     public static final String SUCCESS_STATUS = "success";
 
+    //Case state
+    public static final String AWAITING_PAYMENT = "AwaitingPayment";
+
+
     //Notification
     public static final String NOTIFICATION_EMAIL = "email_address";
     public static final String NOTIFICATION_TEMPLATE = "notification_template";
@@ -112,11 +116,15 @@ public class OrchestrationConstants {
     public static final String EXISTING_PAYMENTS = "existingPayments";
     public static final String PAYMENT_REFERENCE = "PaymentReference";
     public static final String PAYMENT_STATUS = "PaymentStatus";
+    public static final String STATUS_FROM_PAYMENT= "status";
     public static final String PAYMENT_VALUE = "value";
     public static final String SUCCESS_PAYMENT_STATUS = "success";
     public static final String SESSION_PAYMENT_REFERENCE = "payment_reference";
     public static final String INITIATED_PAYMENT_STATUS = "Initiated";
+    public static final String PENDING_SUCCESSFUL_PAYMENT = "pendingSuccessfulPayment";
+    public static final String PENDING_SUCCESSFUL_INITIATED_PAYMENT = "pendingSuccessfulInitiatedPayment";
 
+    public static final String PAYMENT_SERVICE_REFERENCE = "reference";
 
     // Validation
     public static final String ERROR_STATUS = "error";

@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCaseIdAndStateOnSession;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPaymentOnSession;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPaymentInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class RetrieveDraftWorkflowTest {
     private SetCaseIdAndStateOnSession setCaseIdAndStateOnSession;
 
     @Mock
-    private  SetPaymentOnSession setPaymentOnSession;
+    private GetPaymentInfo setPaymentOnSession;
 
     @InjectMocks
     private RetrieveDraftWorkflow target;
