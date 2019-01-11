@@ -317,7 +317,7 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenCaseDataValid_whenPaymentUpdate_thenReturnPayload() throws Exception {
         PaymentUpdate paymentUpdate  = new PaymentUpdate();
-        paymentUpdate.setCaseReference("1232132");
+        paymentUpdate.setCcdCaseNumber("1232132");
         paymentUpdate.setStatus("success");
         Fee fee = new Fee();
         fee.setCode("X243");
