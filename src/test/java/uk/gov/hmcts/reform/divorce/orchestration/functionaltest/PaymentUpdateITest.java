@@ -108,7 +108,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
         stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById();
         stubFormatterServerEndpoint();
-        
+
         Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
         stubMaintenanceServerEndpointForUpdate(responseData);
 

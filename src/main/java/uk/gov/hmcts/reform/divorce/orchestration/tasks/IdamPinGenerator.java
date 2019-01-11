@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
@@ -20,24 +19,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class IdamPinGenerator implements Task<Map<String, Object>> {
-    private static final String BEARER = "Bearer ";
-    private static final String AUTHORIZATION_CODE = "authorization_code";
-    private static final String CODE = "code";
-
-    @Value("${idam.api.redirect-url}")
-    private String authRedirectUrl;
-
-    @Value("${auth2.client.id}")
-    private String authClientId;
-
-    @Value("${auth2.client.secret}")
-    private String authClientSecret;
-
-    @Value("${idam.citizen.username}")
-    private String citizenUserName;
-
-    @Value("${idam.citizen.password}")
-    private String citizenPassword;
 
     private final IdamClient idamClient;
 
@@ -56,7 +37,7 @@ public class IdamPinGenerator implements Task<Map<String, Object>> {
                 .firstName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_FIRST_NAME, "")))
                 .lastName(String.valueOf(caseData.getOrDefault(D_8_PETITIONER_LAST_NAME, "")))
                 .build(),
-            authUtil.getIdamOauth2Token(citizenUserName, citizenPassword));
+            authUtil.getCitizenToken());
 
         context.setTransientObject(PIN, pin.getPin());
         caseData.put(RESPONDENT_LETTER_HOLDER_ID, pin.getUserId());
