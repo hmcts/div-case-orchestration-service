@@ -86,6 +86,12 @@ public class IdamTestSupport {
     @Value("${idam.citizen.password}")
     private String citizenPassword;
 
+    @Value("${idam.caseworker.username}")
+    private String caseworkerUserName;
+
+    @Value("${idam.caseworker.password}")
+    private String caseworkerPassword;
+
     @Value("${idam.strategic.enabled}")
     private boolean sidamEnabled;
 
@@ -116,6 +122,18 @@ public class IdamTestSupport {
         try {
             stubAuthoriseEndpoint(getBasicAuthHeader(citizenUserName, citizenPassword),
                 convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
+
+            stubTokenExchangeEndpoint(HttpStatus.OK, TEST_CODE, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    void stubSignInForCaseworker() {
+        try {
+            stubAuthoriseEndpoint(getBasicAuthHeader(caseworkerUserName, caseworkerPassword),
+                    convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
 
             stubTokenExchangeEndpoint(HttpStatus.OK, TEST_CODE, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
 

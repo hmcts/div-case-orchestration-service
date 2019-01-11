@@ -148,7 +148,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             payment.setPaymentTransactionId(paymentUpdate.getExternalReference());
 
             Optional.ofNullable(paymentUpdate.getAmount())
-                .map(amt -> amt * 1000)
+                .map(amt -> amt * 100)
                 .map(String::valueOf)
                 .ifPresent(payment::setPaymentAmount);
 
@@ -161,11 +161,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             updateEvent.put(CASE_EVENT_DATA_JSON_KEY, Collections.singletonMap(PAYMENT, payment));
             updateEvent.put(CASE_EVENT_ID_JSON_KEY, PAYMENT_MADE);
 
-            payload = updateToCCDWorkflow.run(updateEvent, authUtil.getCaseworkerToken(), paymentUpdate.getCaseReference());
+            payload = updateToCCDWorkflow.run(updateEvent, authUtil.getCaseworkerToken(), paymentUpdate.getCcdCaseNumber());
             log.info("Case ID is: {}", payload.get(ID));
         } else  {
             log.info("Ignoring payment update as it was not successful payment on case {}",
-                paymentUpdate.getCaseReference());
+                paymentUpdate.getCcdCaseNumber());
         }
         return payload;
     }
