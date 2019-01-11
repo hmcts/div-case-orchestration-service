@@ -94,7 +94,7 @@ public class OrchestrationController {
                         .build());
     }
 
-    @PostMapping(path = "/payment-update",
+    @PutMapping(path = "/payment-update",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles payment update callbacks")
     @ApiResponses(value = {
