@@ -1,0 +1,14 @@
+{
+  "channel": "online",
+  "dateCreated": "2001-02-02T00:00:00.000Z",
+  "paymentReference": "RC-1234-5678-1234-0987",
+  "siteId": "AA01",
+  "status": "success",
+  "externalReference": "externalReference",
+  "amount": "550.00",
+  "fees": [{
+    "code": "FEE0002",
+    "version": "1",
+    "calculatedAmount": "550.00"
+  }]
+}
