@@ -52,7 +52,7 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
         try {
             UserDetails respondentDetails =
                 idamClient.retrieveUserDetails(
-                    AuthUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
+                    authUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
 
             updateFields.put(RESPONDENT_EMAIL_ADDRESS, respondentDetails.getEmail());
             updateFields.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);

@@ -4,12 +4,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.AuthenticateUserResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.TokenExchangeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
@@ -22,8 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
@@ -32,20 +30,22 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 public class IdamPinGeneratorTest {
-    private IdamPinGenerator idamPinGenerator;
 
     @Mock
     private IdamClient idamClient;
+
     @Mock
     private AuthUtil authUtil;
+
+    @InjectMocks
+    private IdamPinGenerator idamPinGenerator;
+
     private Map<String, Object> payload;
     private TaskContext context;
     private Pin pin;
 
     @Before
     public void setUp() {
-        idamPinGenerator = new IdamPinGenerator(idamClient, authUtil);
-
         pin = Pin.builder()
                 .userId(TEST_USER_ID)
                 .pin(TEST_PIN)
@@ -61,12 +61,8 @@ public class IdamPinGeneratorTest {
     public void executeShouldReturnUpdatedPayloadForValidCase() {
         //given
         when(idamClient.createPin(any(), anyString())).thenReturn(pin);
-        AuthenticateUserResponse authenticateUserResponse = AuthenticateUserResponse.builder().code(TEST_CODE).build();
-        when(idamClient.authenticateUser(anyString(), anyString(), any(), any()))
-                .thenReturn(authenticateUserResponse);
-        TokenExchangeResponse tokenExchangeResponse = TokenExchangeResponse.builder().accessToken(AUTH_TOKEN).build();
-        when(idamClient.exchangeCode(anyString(), anyString(), any(), any(), any()))
-                .thenReturn(tokenExchangeResponse);
+        when(authUtil.getIdamOauth2Token(any(), any()))
+                .thenReturn(BEARER_AUTH_TOKEN);
 
         //when
         Map<String, Object> response = idamPinGenerator.execute(context, payload);

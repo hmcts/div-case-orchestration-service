@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.util.Base64;
 
@@ -41,11 +42,16 @@ public class RetrievePinUserDetailsFromTacticalIdamUTest {
     @Mock
     private TacticalIdamClient idamClient;
 
+    @Mock
+    private AuthUtil authUtil;
+
     @InjectMocks
     private RetrievePinUserDetailsFromTacticalIdam classUnderTest;
 
     @Before
     public void setup() {
+        when(authUtil.getBearToken(BEARER_AUTH_TOKEN)).thenCallRealMethod();
+        ReflectionTestUtils.setField(classUnderTest, "authUtil", authUtil);
         ReflectionTestUtils.setField(classUnderTest, "authClientId", AUTH_CLIENT_ID);
         ReflectionTestUtils.setField(classUnderTest, "authClientSecret", AUTH_CLIENT_SECRET);
         ReflectionTestUtils.setField(classUnderTest, "authRedirectUrl", AUTH_REDIRECT_URL);
