@@ -105,11 +105,11 @@ public class PaymentUpdateITest extends IdamTestSupport {
 
     @Test
     public void givenEventDataAndAuth_whenEventDataIsSubmitted_thenReturnSuccess() throws Exception {
-        Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
-
         stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById();
         stubFormatterServerEndpoint();
+        
+        Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
         stubMaintenanceServerEndpointForUpdate(responseData);
 
         webClient.perform(put(API_URL)

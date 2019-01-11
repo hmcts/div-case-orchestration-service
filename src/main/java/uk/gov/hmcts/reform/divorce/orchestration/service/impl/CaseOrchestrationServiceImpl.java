@@ -161,7 +161,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             updateEvent.put(CASE_EVENT_DATA_JSON_KEY, Collections.singletonMap(PAYMENT, payment));
             updateEvent.put(CASE_EVENT_ID_JSON_KEY, PAYMENT_MADE);
 
-            payload = updateToCCDWorkflow.run(updateEvent, authUtil.getCaseworkerToken(), paymentUpdate.getCcdCaseNumber());
+            payload = updateToCCDWorkflow.run(updateEvent,
+                    authUtil.getCaseworkerToken(), paymentUpdate.getCcdCaseNumber());
             log.info("Case ID is: {}", payload.get(ID));
         } else  {
             log.info("Ignoring payment update as it was not successful payment on case {}",
