@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -154,6 +155,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             payment.setPaymentTransactionId(paymentUpdate.getExternalReference());
 
             Optional.ofNullable(paymentUpdate.getAmount())
+                .map(BigDecimal::intValueExact)
                 .map(amt -> amt * 100)
                 .map(String::valueOf)
                 .ifPresent(payment::setPaymentAmount);
@@ -167,7 +169,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             updateEvent.put(CASE_EVENT_DATA_JSON_KEY, Collections.singletonMap(PAYMENT, payment));
             updateEvent.put(CASE_EVENT_ID_JSON_KEY, PAYMENT_MADE);
 
-            payload = updateToCCDWorkflow.run(updateEvent, authUtil.getCaseworkerToken(), paymentUpdate.getCcdCaseNumber());
+            payload = updateToCCDWorkflow.run(updateEvent,
+                    authUtil.getCaseworkerToken(), paymentUpdate.getCcdCaseNumber());
             log.info("Case ID is: {}", payload.get(ID));
         } else  {
             log.info("Ignoring payment update as it was not successful payment on case {}",

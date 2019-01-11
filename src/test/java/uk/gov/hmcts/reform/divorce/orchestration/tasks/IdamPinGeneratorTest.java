@@ -61,7 +61,7 @@ public class IdamPinGeneratorTest {
     public void executeShouldReturnUpdatedPayloadForValidCase() {
         //given
         when(idamClient.createPin(any(), anyString())).thenReturn(pin);
-        when(authUtil.getIdamOauth2Token(any(), any()))
+        when(authUtil.getCitizenToken())
                 .thenReturn(BEARER_AUTH_TOKEN);
 
         //when

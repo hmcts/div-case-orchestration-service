@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -85,7 +86,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
         paymentUpdate.setSiteId("siteId");
         paymentUpdate.setStatus("success");
         paymentUpdate.setExternalReference("externalReference");
-        paymentUpdate.setAmount(550);
+        paymentUpdate.setAmount(new BigDecimal(550.00));
 
         Fee fee = new Fee();
         fee.setCode("X243");
@@ -105,11 +106,11 @@ public class PaymentUpdateITest extends IdamTestSupport {
 
     @Test
     public void givenEventDataAndAuth_whenEventDataIsSubmitted_thenReturnSuccess() throws Exception {
-        Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
-
         stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById();
         stubFormatterServerEndpoint();
+
+        Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
         stubMaintenanceServerEndpointForUpdate(responseData);
 
         webClient.perform(put(API_URL)

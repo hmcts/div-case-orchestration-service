@@ -1,0 +1,38 @@
+{
+  "amount":550.00,
+  "date_created":"2001-01-01T00:00:00.000+0000",
+  "date_updated":"2001-01-01T00:00:00.000+0000",
+  "currency":"GBP",
+  "ccd_case_number":"1111111111111111",
+  "payment_reference":"RC-1234-5678-1234-0987",
+  "channel":"online",
+  "method":"card",
+  "external_provider":"gov pay",
+  "status":"Success",
+  "external_reference":"externalReference",
+  "site_id":"AA01",
+  "service_name":"Divorce",
+  "payment_group_reference":"2018-11111111111",
+  "fees":[
+    {
+      "code":"FEE0002",
+      "version":"4",
+      "volume":1,
+      "calculated_amount":550.00,
+      "memo_line":"GOV - App for divorce/nullity of marriage or CP",
+      "natural_account_code":"1111111111"
+    }
+  ],
+  "status_histories":[
+    {
+      "status":"Initiated",
+      "external_status":"created",
+      "date_created":"2001-01-01T00:00:00.000+0000"
+    },
+    {
+      "status":"Success",
+      "external_status":"success",
+      "date_created":"2001-01-01T00:00:00.000+0000"
+    }
+  ]
+}

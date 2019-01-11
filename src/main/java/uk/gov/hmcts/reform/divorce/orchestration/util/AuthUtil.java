@@ -53,7 +53,9 @@ public class AuthUtil {
         return getIdamOauth2Token(citizenUserName, citizenPassword);
     }
 
-    public String getCaseworkerToken() { return getIdamOauth2Token(caseworkerUserName, caseworkerPassword); }
+    public String getCaseworkerToken() {
+        return getIdamOauth2Token(caseworkerUserName, caseworkerPassword);
+    }
 
     public String getIdamOauth2Token(String username, String password) {
         String basicAuthHeader = getBasicAuthHeader(username, password);
