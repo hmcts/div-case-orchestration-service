@@ -328,7 +328,7 @@ public class CaseOrchestrationServiceImplTest {
         when(updateToCCDWorkflow.run(any(), any(), any()))
             .thenReturn(requestPayload);
 
-        when(authUtil.getCitizenToken()).thenReturn("testtoken");
+        when(authUtil.getCaseworkerToken()).thenReturn("testtoken");
 
         // when
         Map<String, Object> actual = classUnderTest.update(paymentUpdate);

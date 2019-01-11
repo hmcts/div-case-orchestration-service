@@ -36,6 +36,12 @@ public class AuthUtil {
     @Value("${idam.citizen.password}")
     private String citizenPassword;
 
+    @Value("${idam.caseworker.username}")
+    private String caseworkerUserName;
+
+    @Value("${idam.caseworker.password}")
+    private String caseworkerPassword;
+
     private final IdamClient idamClient;
 
     @Autowired
@@ -43,9 +49,11 @@ public class AuthUtil {
         this.idamClient = idamClient;
     }
 
-    public String  getCitizenToken() {
+    public String getCitizenToken() {
         return getIdamOauth2Token(citizenUserName, citizenPassword);
     }
+
+    public String getCaseworkerToken() { return getIdamOauth2Token(caseworkerUserName, caseworkerPassword); }
 
     public String getIdamOauth2Token(String username, String password) {
         String basicAuthHeader = getBasicAuthHeader(username, password);
