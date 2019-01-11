@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Collections;
@@ -48,11 +50,20 @@ public class UpdateRespondentDetailsUTest {
 
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
+
+    @Mock
+    private AuthUtil authUtil;
+
     @Mock
     private IdamClient idamClient;
 
     @InjectMocks
     private UpdateRespondentDetails classUnderTest;
+
+    @Before
+    public void setup() {
+        when(authUtil.getBearToken(AUTH_TOKEN)).thenCallRealMethod();
+    }
 
     @Test
     public void whenAosAwaiting_thenProceedAsExpected() throws TaskException {

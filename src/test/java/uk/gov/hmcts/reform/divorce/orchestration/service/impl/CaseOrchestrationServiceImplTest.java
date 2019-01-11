@@ -341,11 +341,11 @@ public class CaseOrchestrationServiceImplTest {
         payment.setPaymentFeeId("X243");
         payment.setPaymentChannel("online");
         payment.setPaymentStatus("success");
-        final Map<String, Object> divSession = new HashMap<>();
-        divSession.put("eventData", Collections.singletonMap("payment", payment));
-        divSession.put("eventId", "paymentMade");
+        final Map<String, Object> updateEvent = new HashMap<>();
+        updateEvent.put("eventData", Collections.singletonMap("payment", payment));
+        updateEvent.put("eventId", "paymentMade");
 
-        verify(updateToCCDWorkflow).run(divSession, "testtoken", "1232132");
+        verify(updateToCCDWorkflow).run(updateEvent, "testtoken", "1232132");
     }
 
     @Test

@@ -141,26 +141,29 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS)) {
             Payment payment = new Payment();
             payment.setPaymentChannel(ONLINE);
-            payment.setPaymentTransactionId(paymentUpdate.getExternalReference());
-            payment.setPaymentReference(paymentUpdate.getPaymentReference());
             payment.setPaymentDate(paymentUpdate.getDateCreated());
+            payment.setPaymentReference(paymentUpdate.getPaymentReference());
+            payment.setPaymentSiteId(paymentUpdate.getSiteId());
+            payment.setPaymentStatus(paymentUpdate.getStatus());
+            payment.setPaymentTransactionId(paymentUpdate.getExternalReference());
+
             Optional.ofNullable(paymentUpdate.getAmount())
                 .map(amt -> amt * 1000)
                 .map(String::valueOf)
                 .ifPresent(payment::setPaymentAmount);
-            payment.setPaymentStatus(paymentUpdate.getStatus());
+
             Optional.ofNullable(paymentUpdate.getFees())
                 .filter(list -> !list.isEmpty())
                 .map(list -> list.get(0))
                 .ifPresent(fee -> payment.setPaymentFeeId(fee.getCode()));
-            payment.setPaymentSiteId(paymentUpdate.getSiteId());
-            Map<String, Object> divSession = new HashMap<>();
-            divSession.put(CASE_EVENT_DATA_JSON_KEY, Collections.singletonMap(PAYMENT, payment));
-            divSession.put(CASE_EVENT_ID_JSON_KEY, PAYMENT_MADE);
-            payload = updateToCCDWorkflow.run(divSession, authUtil.getCitizenToken(), paymentUpdate.getCaseReference());
+
+            Map<String, Object> updateEvent = new HashMap<>();
+            updateEvent.put(CASE_EVENT_DATA_JSON_KEY, Collections.singletonMap(PAYMENT, payment));
+            updateEvent.put(CASE_EVENT_ID_JSON_KEY, PAYMENT_MADE);
+
+            payload = updateToCCDWorkflow.run(updateEvent, authUtil.getCitizenToken(), paymentUpdate.getCaseReference());
             log.info("Case ID is: {}", payload.get(ID));
         } else  {
-
             log.info("Ignoring payment update as it was not successful payment on case {}",
                 paymentUpdate.getCaseReference());
         }

@@ -21,10 +21,10 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> submit(Map<String, Object> divorceSession, String authToken) throws WorkflowException;
 
-    Map<String, Object>  update(Map<String, Object> divorceEventSession,
+    Map<String, Object> update(Map<String, Object> divorceEventSession,
                                String authToken, String caseId) throws WorkflowException;
 
-    Map<String, Object>  update(PaymentUpdate paymentUpdate) throws WorkflowException;
+    Map<String, Object> update(PaymentUpdate paymentUpdate) throws WorkflowException;
 
     CaseDataResponse retrieveAosCase(boolean checkCcd, String authorizationToken) throws WorkflowException;
 
