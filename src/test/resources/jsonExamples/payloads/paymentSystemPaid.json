@@ -1,0 +1,27 @@
+{
+  "amount" : 550,
+  "description" : "Filing an application for a divorce, nullity or civil partnership dissolution – fees order 1.2.",
+  "reference" : "RC-1547-0733-1813-9545",
+  "currency" : "GBP",
+  "ccd_case_number" : "1547073120300616",
+  "channel" : "online",
+  "method" : "card",
+  "external_provider" : "gov pay",
+  "status" : "success",
+  "external_reference" : "06kd1v30vm45hqvggphdjqbeqa",
+  "site_id" : "AA04",
+  "service_name" : "Divorce",
+  "payment_group_reference" : "2019-15470733181",
+  "fees" : [ {
+    "code" : "FEE0002",
+    "version" : "4",
+    "volume" : 1,
+    "calculated_amount" : 550.0
+  } ],
+  "_links" : {
+    "self" : {
+      "href" : "http://payment-api-aat.service.core-compute-aat.internal/card-payments/RC-1547-0733-1813-9545",
+      "method" : "GET"
+    }
+  }
+}

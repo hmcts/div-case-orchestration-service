@@ -24,6 +24,13 @@ public class ObjectMapperTestUtil {
         }
     }
 
+    public static <T> T getJsonFromResourceFile(String filePath, TypeReference<T> clazz) throws IOException {
+        try (InputStream resourceAsStream =
+                 ObjectMapperTestUtil.class.getResourceAsStream(filePath)) {
+            return objectMapper.readValue(resourceAsStream, clazz);
+        }
+    }
+
     public static <T> T getJsonFromString(String string, TypeReference<T> clazz) throws IOException {
         return objectMapper.readValue(string, clazz);
     }

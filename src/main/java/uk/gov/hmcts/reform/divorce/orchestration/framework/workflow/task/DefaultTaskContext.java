@@ -10,11 +10,18 @@ public class DefaultTaskContext implements TaskContext {
 
     private boolean status;
 
-    private Map<String, Object> transientObjects = new HashMap<>();
+    private Map<String, Object> transientObjects;
 
     public DefaultTaskContext() {
         this.status = false;
+        transientObjects = new HashMap<>();
     }
+
+    public DefaultTaskContext(DefaultTaskContext context) {
+        this.status = context.getStatus();
+        this.transientObjects = new HashMap<>(context.getTransientObjects());
+    }
+
 
     @Override
     public void setTaskFailed(boolean status) {

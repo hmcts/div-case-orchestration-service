@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.divorce.orchestration.client.PaymentClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -34,6 +33,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
@@ -53,9 +53,6 @@ public class OrchestrationController {
 
     @Autowired
     private CaseOrchestrationService orchestrationService;
-
-    @Autowired
-    private PaymentClient paymentClient;
 
     @PostMapping(path = "/petition-issued",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
@@ -478,18 +475,4 @@ public class OrchestrationController {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();
     }
-
-    @PostMapping(path = "/test/{paymentRef}")
-    @ApiOperation(value = "Decree nisi submitted confirmation notification ")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Notification sent successful"),
-            @ApiResponse(code = 401, message = "User Not Authenticated"),
-            @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<String> test(
-            @RequestHeader("Authorization")
-            @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
-            @RequestParam @ApiParam("paymentRef") String paymentRef) throws WorkflowException {
-        return ResponseEntity.ok(orchestrationService.getPaymentData(authorizationToken, paymentRef));
-    }
-
 }

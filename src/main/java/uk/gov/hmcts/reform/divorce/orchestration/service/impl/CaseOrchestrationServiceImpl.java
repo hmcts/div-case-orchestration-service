@@ -1,13 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.client.PaymentClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
@@ -34,7 +29,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkfl
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdatePaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
 import java.util.List;
@@ -70,14 +64,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
     private final DNSubmittedWorkflow dnSubmittedWorkflow;
     private final GetCaseWorkflow getCaseWorkflow;
-    private final UpdatePaymentWorkflow updatePaymentWorflow;
-
-    @Autowired
-    private PaymentClient paymentClient;
-    @Autowired
-    private AuthTokenGenerator serviceAuthGenerator;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Override
     public Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest,
@@ -136,10 +122,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> getDraft(String authToken, Boolean checkCcd) throws WorkflowException {
-        Map<String, Object> caseData = retrieveDraftWorkflow.run(authToken, checkCcd);
-//        Map<String, Object> paymentData = updatePaymentWorflow.run(authToken, caseData);
-
-        return caseData;
+        return retrieveDraftWorkflow.run(authToken, checkCcd);
     }
 
     @Override
@@ -293,19 +276,4 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                     .build();
         }
     }
-
-    @Override
-    public String getPaymentData(String auth, String paymentRef) {
-
-        try {
-            return new ObjectMapper().writeValueAsString(
-             paymentClient.checkPayment(auth,
-                    serviceAuthGenerator.generate(),
-                    paymentRef));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return e.getMessage();
-        }
-    }
-
 }

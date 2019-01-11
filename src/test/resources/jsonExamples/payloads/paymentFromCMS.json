@@ -1,0 +1,10 @@
+{
+  "PaymentDate": "2019-01-09",
+  "PaymentFeeId": "FEE0002",
+  "PaymentAmount": "55000",
+  "PaymentSiteId": "AA04",
+  "PaymentStatus": "Initiated",
+  "PaymentChannel": "online",
+  "PaymentReference": "RC-1547-0733-1813-9545",
+  "PaymentTransactionId": "06kd1v30vm45hqvggphdjqbeqa"
+}

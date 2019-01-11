@@ -66,6 +66,4 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> submitDnCase(Map<String, Object> divorceSession, String authorizationToken, String caseId)
             throws WorkflowException;
-
-    String getPaymentData(String auth, String paymentRef);
 }
