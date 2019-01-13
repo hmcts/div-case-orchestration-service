@@ -20,7 +20,7 @@
   } ],
   "_links" : {
     "self" : {
-      "href" : "http://payment-api-aat.service.core-compute-aat.internal/card-payments/RC-1547-0733-1813-9545",
+      "href" : "http://paymentapy.com",
       "method" : "GET"
     }
   }

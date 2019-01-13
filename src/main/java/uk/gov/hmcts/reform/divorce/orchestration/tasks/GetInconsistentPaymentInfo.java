@@ -63,12 +63,9 @@ public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         Object payment = null;
         if (AWAITING_PAYMENT.equalsIgnoreCase((String) context.getTransientObject(CASE_STATE_JSON_KEY))) {
-            String caseId = String.valueOf(context.getTransientObject(CASE_ID_JSON_KEY));
-            Map<String, Object> successPaymentFromSession = getSuccessPaymentElement(caseData);
+            Map<String, Object> successPaymentFromSession = searchSuccessStatePayment(caseData);
 
             if (successPaymentFromSession != null) {
-                String reference = (String) successPaymentFromSession.get(PAYMENT_REFERENCE);
-                log.info("Case Id {} has successful payment with ref {}", caseId, reference);
                 payment = mapPaymentFromCCDModel(successPaymentFromSession);
             } else {
                 String auth = context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString();
@@ -85,6 +82,9 @@ public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
         if (payment == null) {
             context.setTaskFailed(true);
         } else {
+            String caseId = String.valueOf(context.getTransientObject(CASE_ID_JSON_KEY));
+            String reference = (String) ((Map) payment).get(PAYMENT_REFERENCE);
+            log.info("Case Id {} has successful payment with ref {}", caseId, reference);
             paymentMap = ImmutableMap.of(
                 PAYMENT, payment,
                 DIVORCE_SESSION_EXISTING_PAYMENTS, caseData.get(D_8_PAYMENTS)
@@ -118,7 +118,7 @@ public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> getSuccessPaymentElement(Map<String, Object> divorceCase) {
+    private Map<String, Object> searchSuccessStatePayment(Map<String, Object> divorceCase) {
         return getStreamFromExistingPayments(divorceCase)
             .map(paymentMapElem -> (Map<String, Object>) paymentMapElem.get(PAYMENT_VALUE))
             .filter(Objects::nonNull)
@@ -140,13 +140,6 @@ public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
             .findFirst();
     }
 
-    @SuppressWarnings("unchecked")
-    private Stream<Map<String, Object>> getStreamFromExistingPayments(Map<String, Object> divorceCase) {
-        return Optional.ofNullable((List<Map<String, Object>>) divorceCase.get(D_8_PAYMENTS))
-            .orElse(Collections.emptyList())
-            .stream();
-    }
-
     private Map<String, Object> getSuccessPaymentOnInitiatedState(
         String auth,
         String serviceToken,
@@ -162,6 +155,13 @@ public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
             }
         }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Stream<Map<String, Object>> getStreamFromExistingPayments(Map<String, Object> divorceCase) {
+        return Optional.ofNullable((List<Map<String, Object>>) divorceCase.get(D_8_PAYMENTS))
+            .orElse(Collections.emptyList())
+            .stream();
     }
 
     private boolean matchPaymentState(String expectedStatus, Map<String, Object> paymentObject) {

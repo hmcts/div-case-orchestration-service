@@ -26,6 +26,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -65,7 +66,11 @@ public class GetInconsistentPaymentInfoUTest {
     private static final String PAYMENT_REFERENCE = "RC-1547-0733-1813-9545";
     private static final String PAYMENT_AMOUNT = "55000";
     private static final String PAYMENT_SITE_ID = "AA04";
+    private static final String PAYMENT_DATE = "09012019";
     private static final String PAYMENT_ID = "1";
+    private static final String PAYLOADS_PAYMENT_FROM_CMS_JSON = "/jsonExamples/payloads/paymentFromCMS.json";
+    private static final String PAYLOADS_PAYMENT_FROM_PAYMENT_JSON = "/jsonExamples/payloads/paymentSystemPaid.json";
+
 
     @InjectMocks
     private GetInconsistentPaymentInfo target;
@@ -99,6 +104,7 @@ public class GetInconsistentPaymentInfoUTest {
             )));
 
         assertNull(target.execute(context, testData));
+        assertTrue(context.getStatus());
     }
 
     @Test
@@ -122,7 +128,7 @@ public class GetInconsistentPaymentInfoUTest {
 
         TaskContext taskContext = createTaskContext(TEST_CASE_ID, AWAITING_PAYMENT);
         Map<String, Object> response = target.execute(taskContext, testObjectData);
-        validateResponse(getExpectedPayment("09012019"), response);
+        validateResponse(getExpectedPayment(PAYMENT_DATE), response);
     }
 
     private void validateResponse(Map<String, Object> expectedPayment, Map<String, Object> response) {
@@ -154,9 +160,8 @@ public class GetInconsistentPaymentInfoUTest {
     }
 
     private Map<String, Object> getDraftObject(String status) throws Exception {
-        String paymentTemplatePath = "/jsonExamples/payloads/paymentFromCMS.json";
         Map<String, Object> paymentObject = ObjectMapperTestUtil
-            .getJsonFromResourceFile(paymentTemplatePath, new TypeReference<HashMap<String, Object>>() {});
+            .getJsonFromResourceFile(PAYLOADS_PAYMENT_FROM_CMS_JSON, new TypeReference<HashMap<String, Object>>() {});
         paymentObject.put(PAYMENT_STATUS, status);
 
         Map<String, Object> paymentList = ImmutableMap.of(
@@ -170,8 +175,8 @@ public class GetInconsistentPaymentInfoUTest {
     }
 
     private Map<String, Object> getPaymentSystemResponse() throws IOException {
-        String paymentPath = "/jsonExamples/payloads/paymentSystemPaid.json";
-        return ObjectMapperTestUtil.getJsonFromResourceFile(paymentPath, new TypeReference<HashMap<String, Object>>() {
+        return ObjectMapperTestUtil.getJsonFromResourceFile(PAYLOADS_PAYMENT_FROM_PAYMENT_JSON,
+            new TypeReference<HashMap<String, Object>>() {
         });
     }
 }
