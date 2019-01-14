@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class PaymentUpdate {
     @JsonProperty("account_number")
     private String accountNumber;
     @JsonProperty("amount")
-    private Integer amount;
+    private BigDecimal amount;
     @JsonProperty("case_reference")
     private String caseReference;
     @JsonProperty("ccd_case_number")
@@ -119,12 +120,12 @@ public class PaymentUpdate {
     }
 
     @JsonProperty("amount")
-    public Integer getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
     @JsonProperty("amount")
-    public void setAmount(Integer amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

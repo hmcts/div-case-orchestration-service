@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ import java.util.Map;
 public class Fee {
 
     @JsonProperty("calculated_amount")
-    private Integer calculatedAmount;
+    private BigDecimal calculatedAmount;
     @JsonProperty("ccd_case_number")
     private String ccdCaseNumber;
     @JsonProperty("code")
@@ -44,12 +45,12 @@ public class Fee {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("calculated_amount")
-    public Integer getCalculatedAmount() {
+    public BigDecimal getCalculatedAmount() {
         return calculatedAmount;
     }
 
     @JsonProperty("calculated_amount")
-    public void setCalculatedAmount(Integer calculatedAmount) {
+    public void setCalculatedAmount(BigDecimal calculatedAmount) {
         this.calculatedAmount = calculatedAmount;
     }
 

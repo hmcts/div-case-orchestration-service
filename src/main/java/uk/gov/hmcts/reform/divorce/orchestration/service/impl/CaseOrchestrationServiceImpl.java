@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -148,6 +149,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             payment.setPaymentTransactionId(paymentUpdate.getExternalReference());
 
             Optional.ofNullable(paymentUpdate.getAmount())
+                .map(BigDecimal::intValueExact)
                 .map(amt -> amt * 100)
                 .map(String::valueOf)
                 .ifPresent(payment::setPaymentAmount);

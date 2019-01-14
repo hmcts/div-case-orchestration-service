@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -85,7 +86,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
         paymentUpdate.setSiteId("siteId");
         paymentUpdate.setStatus("success");
         paymentUpdate.setExternalReference("externalReference");
-        paymentUpdate.setAmount(550);
+        paymentUpdate.setAmount(new BigDecimal(550.00));
 
         Fee fee = new Fee();
         fee.setCode("X243");

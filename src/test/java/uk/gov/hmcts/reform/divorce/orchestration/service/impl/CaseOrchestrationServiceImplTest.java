@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -319,6 +320,7 @@ public class CaseOrchestrationServiceImplTest {
         PaymentUpdate paymentUpdate  = new PaymentUpdate();
         paymentUpdate.setCcdCaseNumber("1232132");
         paymentUpdate.setStatus("success");
+        paymentUpdate.setAmount(new BigDecimal(550.00));
         Fee fee = new Fee();
         fee.setCode("X243");
         paymentUpdate.setFees(Arrays.asList(fee, fee));
@@ -341,6 +343,7 @@ public class CaseOrchestrationServiceImplTest {
         payment.setPaymentFeeId("X243");
         payment.setPaymentChannel("online");
         payment.setPaymentStatus("success");
+        payment.setPaymentAmount("55000");
         final Map<String, Object> updateEvent = new HashMap<>();
         updateEvent.put("eventData", Collections.singletonMap("payment", payment));
         updateEvent.put("eventId", "paymentMade");
