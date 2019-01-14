@@ -52,6 +52,23 @@ public class EmailService {
         return sendEmailAndReturnErrorsInResponse(emailToSend, "generic update notification");
     }
 
+    public Map<String, Object> sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(
+            String destinationAddress,
+            Map<String, String> templateVars) {
+        String templateName = EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name();
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+        return sendEmailAndReturnErrorsInResponse(emailToSend, "resp does not admit adultery update notification");
+    }
+
+    public Map<String, Object> sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(
+            String destinationAddress,
+            Map<String, String> templateVars) {
+        // TODO - Update this with correct template
+        String templateName = EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name();
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+        return sendEmailAndReturnErrorsInResponse(emailToSend, "resp does not admit adultery update notification");
+    }
+
     public void sendEmail(EmailTemplateNames emailTemplate,
                           String destinationAddress,
                           Map<String, String> templateParameters) throws NotificationClientException {

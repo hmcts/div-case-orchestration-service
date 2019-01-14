@@ -49,7 +49,7 @@ public class SendPetitionerNotificationEmailTest {
     SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail;
 
     @InjectMocks
-    SendPetitionerGenericUpdateNotificationEmail sendPetitionerGenericUpdateNotificationEmail;
+    SendPetitionerUpdateNotificationsEmail sendPetitionerUpdateNotificationsEmail;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -93,7 +93,7 @@ public class SendPetitionerNotificationEmailTest {
         when(emailService.sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars))
                 .thenReturn(null);
 
-        assertEquals(testData, sendPetitionerGenericUpdateNotificationEmail.execute(context, testData));
+        assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
 
         verify(emailService).sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars);
     }
@@ -105,7 +105,7 @@ public class SendPetitionerNotificationEmailTest {
         when(emailService.sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars))
                 .thenReturn(null);
 
-        assertEquals(testData, sendPetitionerGenericUpdateNotificationEmail.execute(context, testData));
+        assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
 
         verify(emailService).sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars);
     }

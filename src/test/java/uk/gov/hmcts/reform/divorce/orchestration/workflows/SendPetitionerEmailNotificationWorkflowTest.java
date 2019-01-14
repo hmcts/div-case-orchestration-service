@@ -10,8 +10,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerUpdateNotificationsEmail;
 
 import java.util.Collections;
 import java.util.Map;
@@ -32,7 +32,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
     private SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail;
 
     @Mock
-    private SendPetitionerGenericUpdateNotificationEmail sendPetitionerGenericUpdateNotificationEmail;
+    private SendPetitionerUpdateNotificationsEmail sendPetitionerUpdateNotificationsEmail;
 
     @InjectMocks
     private SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
@@ -68,11 +68,11 @@ public class SendPetitionerEmailNotificationWorkflowTest {
 
     @Test
     public void genericEmailTaskShouldExecuteAndReturnPayload() throws Exception {
-        when(sendPetitionerGenericUpdateNotificationEmail.execute(context, testData)).thenReturn(testData);
+        when(sendPetitionerUpdateNotificationsEmail.execute(context, testData)).thenReturn(testData);
 
         assertEquals(testData, sendPetitionerGenericEmailNotificationWorkflow.run(createEventRequest));
 
-        verify(sendPetitionerGenericUpdateNotificationEmail).execute(context, testData);
+        verify(sendPetitionerUpdateNotificationsEmail).execute(context, testData);
     }
 
     @Test

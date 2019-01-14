@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.email;
 
 public enum EmailTemplateNames {
+    AOS_RECEIVED_NO_ADMIT_ADULTERY,
     APPLIC_SUBMISSION,
     DN_SUBMISSION,
     GENERIC_UPDATE,
