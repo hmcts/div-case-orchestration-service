@@ -168,8 +168,8 @@ health:
     http:
       connect:
         timeout: 5000
-      request:
-        timeout: 5000
+        request:
+          timeout: 5000
 
 documentation:
   swagger:
