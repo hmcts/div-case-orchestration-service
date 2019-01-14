@@ -177,6 +177,6 @@ public class GetInconsistentPaymentInfoUTest {
     private Map<String, Object> getPaymentSystemResponse() throws IOException {
         return ObjectMapperTestUtil.getJsonFromResourceFile(PAYLOADS_PAYMENT_FROM_PAYMENT_JSON,
             new TypeReference<HashMap<String, Object>>() {
-        });
+            });
     }
 }
