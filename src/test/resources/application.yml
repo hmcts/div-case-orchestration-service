@@ -54,6 +54,7 @@ uk:
         key: 2409ba37-b5e6-4f03-b052-7d0f0986888d
       email:
         templates: "{
+                      AOS_RECEIVED_NO_ADMIT_ADULTERY: '015fb73a-3be2-49d8-8ed8-a4078025dae3',
                       APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c',
                       GENERIC_UPDATE: '6ee6ec29-5e88-4516-99cb-2edc30256575',
                       RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION: 'eac41143-b296-4879-ba60-a0ea6f97c757',
