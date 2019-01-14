@@ -119,7 +119,6 @@ def versions = [
         pitest                          : '1.3.2',
         puppyCrawl                      : '7.6',
         reformsJavaLogging              : '3.0.1',
-        reformSendLetterClient          : '2.1.1',
         reformSpringBootAutoConfigure   : '1.1.0',
         restAssured                     : '3.0.3',
         serenity                        : '1.5.2',
@@ -157,7 +156,7 @@ dependencies {
     compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
 
     compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: versions.reformSpringBootAutoConfigure
-    compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: versions.reformSendLetterClient
+    compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.1.1'
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: versions.reformsJavaLogging
