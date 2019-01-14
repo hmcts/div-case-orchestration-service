@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class PaymentUpdateCallbackTest extends IntegrationTest {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/callback/";
-    private static final String SUBMIT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit/";
+    private static final String SUBMIT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/update/";
 
     @Value("${case.orchestration.payment-update.context-path}")
     private String contextPath;
