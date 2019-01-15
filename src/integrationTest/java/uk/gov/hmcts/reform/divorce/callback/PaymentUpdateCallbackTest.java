@@ -52,7 +52,7 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
 
         paymentUpdate.setCcdCaseNumber(caseId);
 
-        Response response = RestUtil.postToRestService(
+        Response response = RestUtil.putToRestService(
                 serverUrl + contextPath,
                 Collections.singletonMap(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString()),
                 ResourceLoader.objectToJson(paymentUpdate)
