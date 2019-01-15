@@ -146,13 +146,14 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payload  = new HashMap<>();
 
         if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS)) {
-            Payment payment = new Payment();
-            payment.setPaymentChannel(ONLINE);
-            payment.setPaymentDate(paymentUpdate.getDateCreated());
-            payment.setPaymentReference(paymentUpdate.getPaymentReference());
-            payment.setPaymentSiteId(paymentUpdate.getSiteId());
-            payment.setPaymentStatus(paymentUpdate.getStatus());
-            payment.setPaymentTransactionId(paymentUpdate.getExternalReference());
+            Payment payment = Payment.builder()
+                .paymentChannel(ONLINE)
+                .paymentDate(paymentUpdate.getDateCreated())
+                .paymentReference(paymentUpdate.getPaymentReference())
+                .paymentSiteId(paymentUpdate.getSiteId())
+                .paymentStatus(paymentUpdate.getStatus())
+                .paymentTransactionId(paymentUpdate.getExternalReference())
+                .build();
 
             Optional.ofNullable(paymentUpdate.getAmount())
                 .map(BigDecimal::intValueExact)

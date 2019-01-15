@@ -339,7 +339,7 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(requestPayload, actual);
 
 
-        Payment payment = new Payment();
+        Payment payment = Payment.builder().build();
         payment.setPaymentFeeId("X243");
         payment.setPaymentChannel("online");
         payment.setPaymentStatus("success");

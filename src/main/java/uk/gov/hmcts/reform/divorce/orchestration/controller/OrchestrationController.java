@@ -32,16 +32,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.MediaType;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;

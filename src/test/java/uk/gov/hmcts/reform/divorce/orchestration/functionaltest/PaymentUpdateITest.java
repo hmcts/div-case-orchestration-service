@@ -74,7 +74,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(4010);
 
     private PaymentUpdate paymentUpdate = new PaymentUpdate();
-    private Payment payment = new Payment();
+    private Payment payment = Payment.builder().build();
     private Map<String, Object> caseData = new HashMap<>();
 
     @Before
