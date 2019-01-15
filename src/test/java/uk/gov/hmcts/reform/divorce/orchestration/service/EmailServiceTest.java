@@ -117,9 +117,9 @@ public class EmailServiceTest {
         emailService.sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(EMAIL_ADDRESS, null);
 
         verify(mockClient).sendEmail(
-                eq(emailTemplates.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+                eq(emailTemplates.get(EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name())),
                 eq(EMAIL_ADDRESS),
-                eq(emailTemplateVars.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+                eq(emailTemplateVars.get(EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name())),
                 anyString());
     }
 }
