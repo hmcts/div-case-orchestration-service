@@ -8,6 +8,12 @@ spring:
   resources:
     static-locations:
 
+jackson:
+  deserialization:
+    ACCEPT_SINGLE_VALUE_AS_ARRAY: true
+  serialization:
+    FAIL_ON_EMPTY_BEANS: false
+    
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
 

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -30,8 +31,6 @@ import static java.util.Arrays.asList;
 @Configuration
 public class HttpConnectionConfiguration {
 
-    @Autowired
-
     @Value("${http.connect.timeout}")
     private int httpConnectTimeout;
 
@@ -45,14 +44,7 @@ public class HttpConnectionConfiguration {
     private int healthHttpConnectRequestTimeout;
 
     @Bean
-    public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);;
-        return objectMapper;
-    }
-
-    @Bean
+    @Primary
     public MappingJackson2HttpMessageConverter jackson2HttpCoverter(@Autowired ObjectMapper objectMapper) {
         MappingJackson2HttpMessageConverter jackson2HttpConverter
             = new MappingJackson2HttpMessageConverter(objectMapper);
@@ -64,10 +56,10 @@ public class HttpConnectionConfiguration {
     public RestTemplate restTemplate(@Autowired MappingJackson2HttpMessageConverter jackson2HttpConverter) {
 
         RestTemplate restTemplate = new RestTemplate(asList(jackson2HttpConverter,
-                new FormHttpMessageConverter(),
-                new ResourceHttpMessageConverter(),
-                new ByteArrayHttpMessageConverter(),
-                new StringHttpMessageConverter()));
+            new FormHttpMessageConverter(),
+            new ResourceHttpMessageConverter(),
+            new ByteArrayHttpMessageConverter(),
+            new StringHttpMessageConverter()));
 
         restTemplate.setRequestFactory(getClientHttpRequestFactory(httpConnectTimeout, httpConnectRequestTimeout));
 
@@ -91,19 +83,19 @@ public class HttpConnectionConfiguration {
     private ClientHttpRequestFactory getClientHttpRequestFactory(
         int httpConnectTimeout, int httpConnectRequestTimeout) {
         RequestConfig config = RequestConfig.custom()
-                .setConnectTimeout(httpConnectTimeout)
-                .setConnectionRequestTimeout(httpConnectRequestTimeout)
-                .setSocketTimeout(httpConnectRequestTimeout)
-                .build();
+            .setConnectTimeout(httpConnectTimeout)
+            .setConnectionRequestTimeout(httpConnectRequestTimeout)
+            .setSocketTimeout(httpConnectRequestTimeout)
+            .build();
 
         CloseableHttpClient client = HttpClientBuilder
-                .create()
-                .useSystemProperties()
-                .addInterceptorFirst(new OutboundRequestIdSettingInterceptor())
-                .addInterceptorFirst((HttpRequestInterceptor) new OutboundRequestLoggingInterceptor())
-                .addInterceptorLast((HttpResponseInterceptor) new OutboundRequestLoggingInterceptor())
-                .setDefaultRequestConfig(config)
-                .build();
+            .create()
+            .useSystemProperties()
+            .addInterceptorFirst(new OutboundRequestIdSettingInterceptor())
+            .addInterceptorFirst((HttpRequestInterceptor) new OutboundRequestLoggingInterceptor())
+            .addInterceptorLast((HttpResponseInterceptor) new OutboundRequestLoggingInterceptor())
+            .setDefaultRequestConfig(config)
+            .build();
 
         return new HttpComponentsClientHttpRequestFactory(client);
     }
