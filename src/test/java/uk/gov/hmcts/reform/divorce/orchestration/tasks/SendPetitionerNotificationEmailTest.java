@@ -81,7 +81,6 @@ public class SendPetitionerNotificationEmailTest {
         context.setTransientObject(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
 
         expectedTemplateVars = new HashMap<>();
-
         expectedTemplateVars.put("email address", TEST_USER_EMAIL);
         expectedTemplateVars.put("first name", TEST_PETITIONER_FIRST_NAME);
         expectedTemplateVars.put("last name", TEST_PETITIONER_LAST_NAME);
@@ -117,12 +116,16 @@ public class SendPetitionerNotificationEmailTest {
 
         expectedTemplateVars.put("relationship", TEST_RELATIONSHIP);
 
-        when(emailService.sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars))
+        when(emailService.sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(
+                TEST_USER_EMAIL,
+                expectedTemplateVars))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
 
-        verify(emailService).sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars);
+        verify(emailService).sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(
+                TEST_USER_EMAIL,
+                expectedTemplateVars);
     }
 
     @Test
@@ -132,12 +135,16 @@ public class SendPetitionerNotificationEmailTest {
 
         expectedTemplateVars.put("relationship", TEST_RELATIONSHIP);
 
-        when(emailService.sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars))
+        when(emailService.sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(
+                TEST_USER_EMAIL,
+                expectedTemplateVars))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
 
-        verify(emailService).sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars);
+        verify(emailService).sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(
+                TEST_USER_EMAIL,
+                expectedTemplateVars);
     }
 
     @Test
@@ -191,25 +198,4 @@ public class SendPetitionerNotificationEmailTest {
 
         verify(emailService).sendPetitionerSubmissionNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars);
     }
-
-    /*
-        if (StringUtils.isNotBlank(petitionerEmail)) {
-            if (reasonForDivorce.equals(ADULTERY) && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
-                templateVars.put("relationship", relationship);
-
-                emailService.sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(petitionerEmail,
-                        templateVars);
-
-            } else if (reasonForDivorce.equals(SEPARATION_2_YEARS)
-                    && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
-                templateVars.put("relationship", relationship);
-
-                emailService.sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(petitionerEmail,
-                        templateVars);
-
-            } else {
-                emailService.sendPetitionerGenericUpdateNotificationEmail(petitionerEmail, templateVars);
-
-            }
-     */
 }
