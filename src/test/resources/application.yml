@@ -153,6 +153,14 @@ http:
     request:
       timeout: 60000
 
+health:
+  check:
+    http:
+      connect:
+        timeout: 5000
+        request:
+          timeout: 5000
+
 documentation:
   swagger:
     enabled: true
