@@ -38,6 +38,10 @@ public class TestConstants {
     public static final String TEST_PETITIONER_LAST_NAME = "Last";
     public static final String TEST_USER_FIRST_NAME = "user first name";
     public static final String TEST_USER_LAST_NAME = "user last name";
+    public static final String TEST_RELATIONSHIP = "wife";
+    public static final String TEST_REASON_ADULTERY = "adultery";
+    public static final String TEST_REASON_2_YEAR_SEP = "separation-2-years";
+    public static final String TEST_REASON_UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
     public static final String AOS_AWAITING_STATE = "AosAwaiting";
     public static final String AWAITING_CONSIDERATION_GENERAL_APPLICATION = "AwaitingConsiderationGeneralApplication";
     public static final String AOS_STARTED = "AosStarted";
