@@ -3,10 +3,12 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Value;
 
 @ApiModel(value = "Payment details.")
-@Data
+@Value
+@Builder
 public class Payment {
 
     @ApiModelProperty("Payment channel.")

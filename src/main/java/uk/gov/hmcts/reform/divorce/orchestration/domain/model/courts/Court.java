@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -40,6 +41,11 @@ public class Court {
     @JsonProperty("postCode")
     @Setter
     private String postCode;
+
+    @JsonProperty("siteId")
+    @Setter
+    @Getter
+    private String siteId;
 
     private String formattedAddress;
 
