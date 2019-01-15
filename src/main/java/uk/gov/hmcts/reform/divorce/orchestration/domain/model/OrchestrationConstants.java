@@ -55,8 +55,6 @@ public class OrchestrationConstants {
     public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
     public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CCD_DUE_DATE = "dueDate";
-    public static final String D8_REASON_FOR_DIVORCE = "D8ReasonForDivorce";
-    public static final String UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
     public static final String D_8_PAYMENTS = "Payments";
 
     // Divorce Session
@@ -66,6 +64,10 @@ public class OrchestrationConstants {
     public static final String PIN = "pin";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
     public static final String SUCCESS_STATUS = "success";
+
+    //Case state
+    public static final String AWAITING_PAYMENT = "AwaitingPayment";
+    public static final String PAYMENT_MADE_EVENT = "paymentMade";
 
     //Notification
     public static final String NOTIFICATION_EMAIL = "email_address";
@@ -106,6 +108,32 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_FIRM_JSON_KEY = "PetitionerSolicitorFirm";
     public static final String SOLICITOR_REFERENCE_JSON_KEY = "D8SolicitorReference";
     public static final String SOLICITOR_STATEMENT_OF_TRUTH = "solSignStatementofTruth";
+
+    //Payment
+    public static final String PAYMENT = "payment";
+    public static final String EXISTING_PAYMENTS = "existingPayments";
+    public static final String PAYMENT_REFERENCE = "PaymentReference";
+    public static final String PAYMENT_STATUS = "PaymentStatus";
+    public static final String STATUS_FROM_PAYMENT = "status";
+    public static final String PAYMENT_VALUE = "value";
+    public static final String PAYMENT_SERVICE_AMOUNT_KEY = "amount";
+    public static final String SUCCESS_PAYMENT_STATUS = "success";
+    public static final String INITIATED_PAYMENT_STATUS = "Initiated";
+    public static final String EXTERNAL_REFERENCE = "external_reference";
+
+    public static final String PAYMENT_SERVICE_REFERENCE = "reference";
+    public static final String PAYMENT_FEE_ID = "FEE0002";
+    public static final String PAYMENT_CHANNEL = "online";
+    public static final String PAYMENT_DATE_PATTERN = "ddMMyyyy";
+
+    public static final String PAYMENT_CHANNEL_KEY = "PaymentChannel";
+    public static final String PAYMENT_TRANSACTION_ID_KEY = "PaymentTransactionId";
+    public static final String PAYMENT_REFERENCE_KEY = "PaymentReference";
+    public static final String PAYMENT_DATE_KEY = "PaymentDate";
+    public static final String PAYMENT_AMOUNT_KEY = "PaymentAmount";
+    public static final String PAYMENT_STATUS_KEY = "PaymentStatus";
+    public static final String PAYMENT_FEE_ID_KEY = "PaymentFeeId";
+    public static final String PAYMENT_SITE_ID_KEY = "PaymentSiteId";
 
     // Validation
     public static final String ERROR_STATUS = "error";

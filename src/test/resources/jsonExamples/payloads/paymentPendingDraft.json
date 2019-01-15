@@ -1,0 +1,28 @@
+{
+  "id": 1547073120300616,
+  "jurisdiction": "DIVORCE",
+  "case_type_id": "DIVORCE",
+  "created_date": "2019-01-09T22:32:00.361",
+  "last_modified": "2019-01-09T22:35:21.717",
+  "state": "AwaitingPayment",
+  "locked_by_user_id": null,
+  "security_level": null,
+  "case_data": {
+    "Payments": [
+      {
+        "id": "0e4fdf6b-2895-4a8a-a718-14cad7248978",
+        "value": {
+          "PaymentDate": "2019-01-09",
+          "PaymentFeeId": "FEE0002",
+          "PaymentAmount": null,
+          "PaymentSiteId": "2",
+          "PaymentStatus": "Initiated",
+          "PaymentChannel": "online",
+          "PaymentReference": "RC-1547-0733-1813-9545",
+          "PaymentTransactionId": null
+        }
+      }
+    ],
+    "D8DivorceUnit": "westMidlands"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "createdDate": "2019-01-11",
+  "Payments": [
+    {
+      "id": "0e4fdf6b-2895-4a8a-a718-14cad7248978",
+      "value": {
+        "PaymentChannel": "online",
+        "PaymentTransactionId": "06kd1v30vm45hqvggphdjqbeqa",
+        "PaymentReference": "RC-1547-0733-1813-9545",
+        "PaymentDate": "2019-01-11",
+        "PaymentAmount": "55000",
+        "PaymentStatus": "success",
+        "PaymentFeeId": "FEE0002",
+        "PaymentSiteId": "AA02"
+      }
+    }
+  ],
+  "D8Cohort": "onlineSubmissionPrivateBeta"
+}

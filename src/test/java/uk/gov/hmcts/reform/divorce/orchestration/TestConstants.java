@@ -34,6 +34,7 @@ public class TestConstants {
     public static final String TEST_SERVICE_AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
             + ".eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ"
             + ".SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+    public static final String TEST_SERVICE_TOKEN = "testServiceToken";
     public static final String TEST_PETITIONER_FIRST_NAME = "First";
     public static final String TEST_PETITIONER_LAST_NAME = "Last";
     public static final String TEST_USER_FIRST_NAME = "user first name";

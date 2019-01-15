@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
@@ -50,6 +51,20 @@ public class DefaultWorkflowTest {
         };
 
         assertEquals("12", defaultWorkflow.execute(tasks, payload));
+    }
+
+    @Test
+    public void executeShouldStopIfContextStatusIsSetToFailed() throws Exception {
+        Task<String> taskOne = (context, payload) -> payload.concat("1");
+        Task<String> taskTwo = (context, payload) -> payload.concat("2");
+        Task<String> taskThree = (context, payload) -> payload.concat("3");
+
+        Task[] tasks = new Task[] {
+            taskOne, taskTwo, taskThree
+        };
+        DefaultTaskContext context = new DefaultTaskContext();
+        context.setTaskFailed(true);
+        assertEquals(payload, defaultWorkflow.execute(tasks, context, payload));
     }
 
     @Test

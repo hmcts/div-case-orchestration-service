@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -39,6 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private static final String CASE_ID_IS = "Case ID is: {}";
 
@@ -63,55 +64,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
     private final DNSubmittedWorkflow dnSubmittedWorkflow;
     private final GetCaseWorkflow getCaseWorkflow;
-
-    @Autowired
-    public CaseOrchestrationServiceImpl(CcdCallbackWorkflow ccdCallbackWorkflow,
-                                        AuthenticateRespondentWorkflow authenticateRespondentWorkflow,
-                                        SubmitToCCDWorkflow submitToCCDWorkflow,
-                                        UpdateToCCDWorkflow updateToCCDWorkflow,
-                                        RetrieveAosCaseWorkflow retrieveAosCaseWorkflow,
-                                        LinkRespondentWorkflow linkRespondentWorkflow,
-                                        RetrieveDraftWorkflow retrieveDraftWorkflow,
-                                        SaveDraftWorkflow saveDraftWorkflow,
-                                        DeleteDraftWorkflow deleteDraftWorkflow,
-                                        SetOrderSummaryWorkflow setOrderSummaryWorkflow,
-                                        ProcessPbaPaymentWorkflow processPbaPaymentWorkflow,
-                                        SolicitorCreateWorkflow solicitorCreateWorkflow,
-                                        SendPetitionerSubmissionNotificationWorkflow
-                                                    sendPetitionerSubmissionNotificationWorkflow,
-                                        SendPetitionerGenericEmailNotificationWorkflow
-                                                    sendPetitionerGenericEmailNotificationWorkflow,
-                                        SendRespondentSubmissionNotificationWorkflow
-                                                    sendRespondentSubmissionNotificationWorkflow,
-                                        RespondentSubmittedCallbackWorkflow aosRespondedWorkflow,
-                                        SubmitAosCaseWorkflow submitAosCaseWorkflow,
-                                        CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow,
-                                        DNSubmittedWorkflow submitDNWorkflow,
-                                        SubmitDnCaseWorkflow submitDnCaseWorkflow,
-                                        GetCaseWorkflow getCaseWorkflow) {
-
-        this.ccdCallbackWorkflow = ccdCallbackWorkflow;
-        this.authenticateRespondentWorkflow = authenticateRespondentWorkflow;
-        this.submitToCCDWorkflow = submitToCCDWorkflow;
-        this.updateToCCDWorkflow = updateToCCDWorkflow;
-        this.retrieveDraftWorkflow = retrieveDraftWorkflow;
-        this.saveDraftWorkflow = saveDraftWorkflow;
-        this.deleteDraftWorkflow = deleteDraftWorkflow;
-        this.retrieveAosCaseWorkflow = retrieveAosCaseWorkflow;
-        this.linkRespondentWorkflow = linkRespondentWorkflow;
-        this.aosRespondedWorkflow = aosRespondedWorkflow;
-        this.setOrderSummaryWorkflow = setOrderSummaryWorkflow;
-        this.processPbaPaymentWorkflow = processPbaPaymentWorkflow;
-        this.solicitorCreateWorkflow = solicitorCreateWorkflow;
-        this.sendPetitionerSubmissionNotificationWorkflow = sendPetitionerSubmissionNotificationWorkflow;
-        this.sendPetitionerGenericEmailNotificationWorkflow = sendPetitionerGenericEmailNotificationWorkflow;
-        this.sendRespondentSubmissionNotificationWorkflow = sendRespondentSubmissionNotificationWorkflow;
-        this.submitAosCaseWorkflow = submitAosCaseWorkflow;
-        this.ccdCallbackBulkPrintWorkflow = ccdCallbackBulkPrintWorkflow;
-        this.submitDnCaseWorkflow = submitDnCaseWorkflow;
-        this.dnSubmittedWorkflow = submitDNWorkflow;
-        this.getCaseWorkflow = getCaseWorkflow;
-    }
 
     @Override
     public Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest,
