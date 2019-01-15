@@ -63,10 +63,9 @@ public class EmailService {
     public Map<String, Object> sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(
             String destinationAddress,
             Map<String, String> templateVars) {
-        // TODO - Update this with correct template
-        String templateName = EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name();
+        String templateName = EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name();
         EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
-        return sendEmailAndReturnErrorsInResponse(emailToSend, "resp does not admit adultery update notification");
+        return sendEmailAndReturnErrorsInResponse(emailToSend, "resp does not consent to 2 year separation update notification");
     }
 
     public void sendEmail(EmailTemplateNames emailTemplate,
