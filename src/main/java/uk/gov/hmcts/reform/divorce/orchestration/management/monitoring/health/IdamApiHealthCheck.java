@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class IdamServiceHealthCheck extends WebServiceHealthCheck {
+public class IdamApiHealthCheck extends WebServiceHealthCheck {
     @Autowired
-    public IdamServiceHealthCheck(HttpEntityFactory httpEntityFactory,
+    public IdamApiHealthCheck(HttpEntityFactory httpEntityFactory,
                                   @Qualifier("healthCheckRestTemplate") RestTemplate restTemplate,
                                   @Value("${idam.api.url}/health") String uri) {
         super(httpEntityFactory, restTemplate, uri);
