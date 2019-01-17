@@ -64,7 +64,7 @@ public class HttpConnectionConfiguration {
         return restTemplate;
     }
 
-    @Bean(name = "healthCheckRestTemplate")
+    @Bean
     public RestTemplate healthCheckRestTemplate(@Autowired MappingJackson2HttpMessageConverter jackson2HttpConverter) {
         RestTemplate restTemplate = new RestTemplate(asList(jackson2HttpConverter,
             new FormHttpMessageConverter(),
