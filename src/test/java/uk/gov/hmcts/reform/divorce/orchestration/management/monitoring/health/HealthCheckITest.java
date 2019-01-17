@@ -171,7 +171,7 @@ public class HealthCheckITest {
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
             equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.serviceAuthHealthCheck.status").toString(),
+        assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.featureToggleServiceHealthCheck.status").toString(),
             equalTo("DOWN"));
@@ -208,7 +208,7 @@ public class HealthCheckITest {
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
             equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.serviceAuthHealthCheck.status").toString(),
+        assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.featureToggleServiceHealthCheck.status").toString(),
             equalTo("UP"));
@@ -247,7 +247,7 @@ public class HealthCheckITest {
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
             equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.serviceAuthHealthCheck.status").toString(),
+        assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
     }
@@ -282,7 +282,7 @@ public class HealthCheckITest {
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
             equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.serviceAuthHealthCheck.status").toString(),
+        assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
     }
@@ -317,7 +317,7 @@ public class HealthCheckITest {
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
             equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.serviceAuthHealthCheck.status").toString(),
+        assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
     }
@@ -352,7 +352,7 @@ public class HealthCheckITest {
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
             equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.serviceAuthHealthCheck.status").toString(),
+        assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
     }
@@ -387,7 +387,7 @@ public class HealthCheckITest {
             equalTo("DOWN"));
         assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
             equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.serviceAuthHealthCheck.status").toString(),
+        assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
     }
@@ -422,7 +422,7 @@ public class HealthCheckITest {
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
             equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.serviceAuthHealthCheck.status").toString(),
+        assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
     }
@@ -457,7 +457,7 @@ public class HealthCheckITest {
                 equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
                 equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.serviceAuthHealthCheck.status").toString(),
+        assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
                 equalTo("DOWN"));
         assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
     }
@@ -492,7 +492,7 @@ public class HealthCheckITest {
             equalTo("DOWN"));
         assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
             equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.serviceAuthHealthCheck.status").toString(),
+        assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
             equalTo("DOWN"));
         assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
     }
