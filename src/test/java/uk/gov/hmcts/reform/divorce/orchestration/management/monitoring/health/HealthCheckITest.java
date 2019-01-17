@@ -132,7 +132,7 @@ public class HealthCheckITest {
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
             equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.serviceAuthHealthCheck.status").toString(),
+        assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
 
