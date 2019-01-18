@@ -38,6 +38,9 @@ import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
 @Configuration
 @PropertySource({"classpath:application.properties"})
 public class ServiceContextConfiguration {
+
+    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     @Bean
     public IdamUtils getIdamUtil() {
         return new IdamUtils();
@@ -135,7 +138,7 @@ public class ServiceContextConfiguration {
     }
 
     private ObjectMapper customObjectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = OBJECT_MAPPER;
         objectMapper.registerModule(new JSR310Module());
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
