@@ -5,8 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import uk.gov.hmcts.reform.authorisation.healthcheck.ServiceAuthHealthIndicator;
 import uk.gov.hmcts.reform.sendletter.SendLetterAutoConfiguration;
-import uk.gov.hmcts.reform.sendletter.healthcheck.SendLetterHealthApi;
-import uk.gov.hmcts.reform.sendletter.healthcheck.SendLetterHealthIndicator;
 
 @SpringBootApplication(scanBasePackages = "uk.gov.hmcts.reform",
     exclude = {ServiceAuthHealthIndicator.class, SendLetterAutoConfiguration.class})
