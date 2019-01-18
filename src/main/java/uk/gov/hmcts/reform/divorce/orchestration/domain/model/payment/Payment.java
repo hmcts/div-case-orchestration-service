@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 
 @ApiModel(value = "Payment details.")
-@Value
+@Data
 @Builder
 public class Payment {
 

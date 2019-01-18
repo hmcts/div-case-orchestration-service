@@ -19,9 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
-
 public class PaymentUpdateCallbackTest extends IntegrationTest {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/callback/";
