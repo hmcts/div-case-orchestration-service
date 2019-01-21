@@ -13,6 +13,12 @@ spring:
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
 
+jackson:
+  deserialization:
+    ACCEPT_SINGLE_VALUE_AS_ARRAY: true
+  serialization:
+    FAIL_ON_EMPTY_BEANS: false
+
 case:
   formatter:
     service:
@@ -163,6 +169,13 @@ http:
     timeout: 60000
     request:
       timeout: 60000
+health:
+  check:
+    http:
+      connect:
+        timeout: 5000
+        request:
+          timeout: 5000
 
 documentation:
   swagger:
