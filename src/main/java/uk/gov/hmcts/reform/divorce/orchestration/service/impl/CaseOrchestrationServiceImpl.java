@@ -178,7 +178,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public CcdCallbackResponse aosReceived(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException {
         Map<String, Object> response = aosRespondedWorkflow.run(caseDetailsRequest, authToken);
-        log.error("Aos received notification completed with case Id {}.", caseDetailsRequest.getCaseDetails().getCaseId());
+        log.error("Aos received notification completed with case Id {}.",
+            caseDetailsRequest.getCaseDetails().getCaseId());
 
         if (aosRespondedWorkflow.errors().isEmpty()) {
             return CcdCallbackResponse.builder()
