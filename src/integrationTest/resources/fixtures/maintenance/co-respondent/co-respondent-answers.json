@@ -3,11 +3,14 @@
     "contactInfo": {
       "emailAddress": "co-respondent@divorce.co.uk",
       "consentToReceivingEmails": "Yes",
+      "contactMethodIsDigital": "No",
       "phoneNumber": "+4404839202839"
     },
     "aos": {
       "received": "Yes",
-      "dateReceived": "2018-12-11"
+      "dateReceived": "2018-12-11",
+      "letterHolderId": "LetterHolder123",
+      "dueDate": "2018-12-20"
     },
     "answer": {
       "received": "Yes",
@@ -15,6 +18,7 @@
     },
     "confirmReadPetition": "No",
     "statementOfTruth": "Yes",
+    "admitAdultery": "Yes",
     "defendsDivorce": "No",
     "costs": {
       "agreeToCosts": "Yes",
