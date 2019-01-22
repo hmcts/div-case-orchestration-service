@@ -325,6 +325,7 @@ public class CaseOrchestrationServiceImplTest {
         fee.setCode("X243");
         paymentUpdate.setFees(Arrays.asList(fee, fee));
         paymentUpdate.setChannel("online");
+        paymentUpdate.setDateCreated("2001-01-01T00:00:00.000+0000");
 
         // given
         when(updateToCCDWorkflow.run(any(), any(), any()))
@@ -344,6 +345,7 @@ public class CaseOrchestrationServiceImplTest {
         payment.setPaymentChannel("online");
         payment.setPaymentStatus("success");
         payment.setPaymentAmount("55000");
+        payment.setPaymentDate("01012001");
         final Map<String, Object> updateEvent = new HashMap<>();
         updateEvent.put("eventData", Collections.singletonMap("payment", payment));
         updateEvent.put("eventId", "paymentMade");
