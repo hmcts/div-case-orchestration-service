@@ -111,7 +111,7 @@ def versions = [
         springfoxSwagger                : '2.7.0',
         lombok                          : '1.16.16',
         puppyCrawl                      : '7.6',
-        reformsJavaLogging              : '4.0.0',
+        reformsJavaLogging              : '4.0.1',
         serviceTokenGenerator           : '2.0.0',
         hmctsNotify                     : '3.8.0-RELEASE',
         feignHttpClient                 : '9.5.1',
