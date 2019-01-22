@@ -81,7 +81,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
     public void setup() {
         paymentUpdate.setChannel("online");
         paymentUpdate.setCcdCaseNumber(CASE_ID);
-        paymentUpdate.setDateCreated("01012000");
+        paymentUpdate.setDateCreated("2001-01-01T00:00:00.000+0000");
         paymentUpdate.setPaymentReference("paymentReference");
         paymentUpdate.setSiteId("siteId");
         paymentUpdate.setStatus("success");
@@ -93,7 +93,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
         paymentUpdate.setFees(Arrays.asList(fee, fee));
 
         payment.setPaymentChannel("online");
-        payment.setPaymentDate(paymentUpdate.getDateCreated());
+        payment.setPaymentDate("01012001");
         payment.setPaymentReference(paymentUpdate.getPaymentReference());
         payment.setPaymentSiteId(paymentUpdate.getSiteId());
         payment.setPaymentStatus(paymentUpdate.getStatus());
