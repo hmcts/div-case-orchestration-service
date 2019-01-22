@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 
 @Slf4j
@@ -72,11 +71,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payLoad = ccdCallbackWorkflow.run(caseDetailsRequest, authToken, generateAosInvitation);
 
         if (ccdCallbackWorkflow.errors().isEmpty()) {
-            log.info("Petition issued callback for case with id: {} successfully completed",
+            log.info("Petition issued callback for case with CASE ID: {} successfully completed",
                 caseDetailsRequest.getCaseDetails().getCaseId());
             return payLoad;
         } else {
-            log.error("Petition issued callback for case with id: {} failed",
+            log.error("Petition issued callback for case with CASE ID: {} failed",
                 caseDetailsRequest.getCaseDetails().getCaseId());
             return ccdCallbackWorkflow.errors();
         }
@@ -89,11 +88,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payLoad = ccdCallbackBulkPrintWorkflow.run(caseDetailsRequest, authToken);
 
         if (ccdCallbackBulkPrintWorkflow.errors().isEmpty()) {
-            log.info("Bulk print callback for case with id: {} successfully completed",
+            log.info("Bulk print callback for case with CASE ID: {} successfully completed",
                 caseDetailsRequest.getCaseDetails().getCaseId());
             return payLoad;
         } else {
-            log.error("Bulk print callback for case with id: {} failed",
+            log.error("Bulk print callback for case with CASE ID: {} failed",
                 caseDetailsRequest.getCaseDetails().getCaseId());
             return ccdCallbackBulkPrintWorkflow.errors();
         }
@@ -109,10 +108,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payload = submitToCCDWorkflow.run(divorceSession, authToken);
 
         if (submitToCCDWorkflow.errors().isEmpty()) {
-            log.info("Case with id: {} submitted", payload.get(CASE_ID_JSON_KEY));
+            log.info("Case with CASE ID: {} submitted", payload.get(ID));
             return payload;
         } else {
-            log.info("Case with id: {} submit failed", payload.get(CASE_ID_JSON_KEY));
+            log.info("Case with CASE ID: {} submit failed", payload.get(ID));
             return submitToCCDWorkflow.errors();
         }
     }
@@ -123,12 +122,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                       String caseId) throws WorkflowException {
         Map<String, Object> payload = updateToCCDWorkflow.run(divorceSession, authToken, caseId);
 
-        log.info("Update case with id: {}", payload.get(ID));
+        log.info("Updated case with CASE ID: {}", payload.get(ID));
         return payload;
     }
 
     @Override
     public Map<String, Object> getDraft(String authToken, Boolean checkCcd) throws WorkflowException {
+        log.info("Returning draft");
         return retrieveDraftWorkflow.run(authToken, checkCcd);
     }
 
@@ -178,7 +178,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public CcdCallbackResponse aosReceived(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException {
         Map<String, Object> response = aosRespondedWorkflow.run(caseDetailsRequest, authToken);
-        log.error("Aos received notification completed with case Id {}.",
+        log.error("Aos received notification completed with CASE ID: {}.",
             caseDetailsRequest.getCaseDetails().getCaseId());
 
         if (aosRespondedWorkflow.errors().isEmpty()) {
@@ -187,7 +187,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .build();
         } else {
             Map<String, Object> workflowErrors = aosRespondedWorkflow.errors();
-            log.error("Aos received notification failed." + workflowErrors);
+            log.error("Aos received notification with CASE ID: {} failed." + workflowErrors,
+                caseDetailsRequest.getCaseDetails().getCaseId());
             return CcdCallbackResponse
                 .builder()
                 .errors(getNotificationErrors(workflowErrors))
@@ -231,10 +232,14 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payLoad = processPbaPaymentWorkflow.run(caseDetailsRequest, authToken);
 
         if (processPbaPaymentWorkflow.errors().isEmpty()) {
-            log.info("Callback pay by account for solicitor case with id: {} successfully completed",
-                payLoad.get(caseDetailsRequest.getCaseDetails().getCaseId()));
+            log.info("Callback pay by account for solicitor with CASE ID: {} successfully completed",
+                caseDetailsRequest.getCaseDetails().getCaseId());
             return payLoad;
         } else {
+            log.error("Callback pay by account for solicitor with CASE ID: {} failed. ",
+                caseDetailsRequest
+                .getCaseDetails()
+                .getCaseId());
             return processPbaPaymentWorkflow.errors();
         }
     }
@@ -250,7 +255,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         throws WorkflowException {
         Map<String, Object> payload = submitAosCaseWorkflow.run(divorceSession, authorizationToken, caseId);
 
-        log.info("Updated AOS case with ID Case ID is: {}", payload.get(ID));
+        log.info("Updated AOS with CASE ID: {}", payload.get(ID));
         return payload;
     }
 
@@ -260,7 +265,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             throws WorkflowException {
         Map<String, Object> payload = submitDnCaseWorkflow.run(divorceSession, authorizationToken, caseId);
 
-        log.info("Submit DN case ID with id: {}", payload.get(ID));
+        log.info("Submitted DN with CASE ID: {}.", payload.get(ID));
         return payload;
     }
 
@@ -269,7 +274,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> response = dnSubmittedWorkflow.run(caseDetailsRequest, authToken);
 
         if (dnSubmittedWorkflow.errors().isEmpty()) {
-            log.info("Case ID {}. DN submitted notification sent.", caseDetailsRequest
+            log.info("CASE ID: {}. DN submitted notification sent.", caseDetailsRequest
                     .getCaseDetails()
                     .getCaseId());
             return CcdCallbackResponse.builder()
@@ -277,7 +282,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                     .build();
         } else {
             Map<String, Object> workflowErrors = dnSubmittedWorkflow.errors();
-            log.error("Case ID {}. DN submitted notification failed." + workflowErrors, caseDetailsRequest
+            log.error("CASE ID: {}. DN submitted notification failed." + workflowErrors, caseDetailsRequest
                     .getCaseDetails()
                     .getCaseId());
             return CcdCallbackResponse
