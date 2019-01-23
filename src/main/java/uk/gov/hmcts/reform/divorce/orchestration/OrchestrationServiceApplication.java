@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import uk.gov.hmcts.reform.authorisation.healthcheck.ServiceAuthHealthIndicator;
 import uk.gov.hmcts.reform.sendletter.SendLetterAutoConfiguration;
 
-@SpringBootApplication(scanBasePackages = "uk.gov.hmcts.reform",
+@SpringBootApplication(scanBasePackages = {"uk.gov.hmcts.reform.divorce",  "uk.gov.hmcts.reform.logging.appinsights"},
     exclude = {ServiceAuthHealthIndicator.class, SendLetterAutoConfiguration.class})
 @EnableFeignClients(basePackages = {"uk.gov.hmcts.reform.divorce", "uk.gov.hmcts.reform.sendletter"})
 public class OrchestrationServiceApplication {
