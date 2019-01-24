@@ -36,9 +36,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,47 +142,42 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payload  = new HashMap<>();
 
         if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS)) {
-            try {
-                Date paymentDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-                        .parse(paymentUpdate.getDateCreated());
+            LocalDateTime paymentDate = LocalDateTime.parse(paymentUpdate.getDateCreated(),
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
 
-                String formattedPaymentDate = new SimpleDateFormat("ddMMyyyy")
-                        .format(paymentDate);
+            String formattedPaymentDate = DateTimeFormatter.ofPattern("ddMMyyyy").format(paymentDate);
 
-                String paymentAmount = Optional.ofNullable(paymentUpdate.getAmount())
-                        .map(BigDecimal::intValueExact)
-                        .map(amt -> amt * 100)
-                        .map(String::valueOf)
-                        .orElse(null);
+            String paymentAmount = Optional.ofNullable(paymentUpdate.getAmount())
+                    .map(BigDecimal::intValueExact)
+                    .map(amt -> amt * 100)
+                    .map(String::valueOf)
+                    .orElse(null);
 
-                String feeId = Optional.ofNullable(paymentUpdate.getFees())
-                        .filter(list -> !list.isEmpty())
-                        .map(list -> list.get(0))
-                        .orElse(new Fee()).getCode();
+            String feeId = Optional.ofNullable(paymentUpdate.getFees())
+                    .filter(list -> !list.isEmpty())
+                    .map(list -> list.get(0))
+                    .orElse(new Fee()).getCode();
 
-                Payment payment = Payment.builder()
-                    .paymentChannel(ONLINE)
-                    .paymentDate(formattedPaymentDate)
-                    .paymentReference(paymentUpdate.getPaymentReference())
-                    .paymentSiteId(paymentUpdate.getSiteId())
-                    .paymentStatus(paymentUpdate.getStatus())
-                    .paymentTransactionId(paymentUpdate.getExternalReference())
-                    .paymentAmount(paymentAmount)
-                    .paymentFeeId(feeId)
-                    .build();
+            Payment payment = Payment.builder()
+                .paymentChannel(ONLINE)
+                .paymentDate(formattedPaymentDate)
+                .paymentReference(paymentUpdate.getPaymentReference())
+                .paymentSiteId(paymentUpdate.getSiteId())
+                .paymentStatus(paymentUpdate.getStatus())
+                .paymentTransactionId(paymentUpdate.getExternalReference())
+                .paymentAmount(paymentAmount)
+                .paymentFeeId(feeId)
+                .build();
 
-                Map<String, Object> updateEvent = new HashMap<>();
-                Map<String, Object> sessionData = new HashMap<>();
-                sessionData.put(PAYMENT, payment);
-                updateEvent.put(CASE_EVENT_DATA_JSON_KEY, sessionData);
-                updateEvent.put(CASE_EVENT_ID_JSON_KEY, PAYMENT_MADE);
+            Map<String, Object> updateEvent = new HashMap<>();
+            Map<String, Object> sessionData = new HashMap<>();
+            sessionData.put(PAYMENT, payment);
+            updateEvent.put(CASE_EVENT_DATA_JSON_KEY, sessionData);
+            updateEvent.put(CASE_EVENT_ID_JSON_KEY, PAYMENT_MADE);
 
-                payload = updateToCCDWorkflow.run(updateEvent,
-                        authUtil.getCaseworkerToken(), paymentUpdate.getCcdCaseNumber());
-                log.info("Case ID is: {}", payload.get(ID));
-            } catch (ParseException exception) {
-                throw new WorkflowException("Unable to parse payment date");
-            }
+            payload = updateToCCDWorkflow.run(updateEvent,
+                    authUtil.getCaseworkerToken(), paymentUpdate.getCcdCaseNumber());
+            log.info("Case ID is: {}", payload.get(ID));
         } else  {
             log.info("Ignoring payment update as it was not successful payment on case {}",
                 paymentUpdate.getCcdCaseNumber());
