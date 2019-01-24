@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerUpdateNotificationsEmail;
 
 import java.util.Map;
 
@@ -16,18 +16,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SendPetitionerGenericEmailNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final SendPetitionerGenericUpdateNotificationEmail sendPetitionerGenericUpdateNotificationEmail;
+    private final SendPetitionerUpdateNotificationsEmail sendPetitionerUpdateNotificationsEmail;
 
     @Autowired
     public SendPetitionerGenericEmailNotificationWorkflow(
-            SendPetitionerGenericUpdateNotificationEmail sendPetitionerGenericUpdateNotificationEmail) {
-        this.sendPetitionerGenericUpdateNotificationEmail = sendPetitionerGenericUpdateNotificationEmail;
+            SendPetitionerUpdateNotificationsEmail sendPetitionerUpdateNotificationsEmail) {
+        this.sendPetitionerUpdateNotificationsEmail = sendPetitionerUpdateNotificationsEmail;
     }
 
     public Map<String, Object> run(CreateEvent caseRequestDetails) throws WorkflowException {
         return this.execute(
                 new Task[] {
-                    sendPetitionerGenericUpdateNotificationEmail,
+                    sendPetitionerUpdateNotificationsEmail,
                 },
                 caseRequestDetails.getCaseDetails().getCaseData(),
                 ImmutablePair.of(CASE_ID_JSON_KEY, caseRequestDetails.getCaseDetails().getCaseId())

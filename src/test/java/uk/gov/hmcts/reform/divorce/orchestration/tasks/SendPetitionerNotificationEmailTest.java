@@ -20,13 +20,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_REASON_2_YEAR_SEP;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_REASON_ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_REASON_UNREASONABLE_BEHAVIOUR;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendPetitionerNotificationEmailTest {
@@ -38,6 +45,8 @@ public class SendPetitionerNotificationEmailTest {
 
     private static final String D8_CASE_ID = "LV17D80101";
     private static final String UNFORMATTED_CASE_ID = "0123456789";
+    private static final String RESP_ADMIT_OR_CONSENT_TO_DIVORCE_YES = "yes";
+    private static final String RESP_ADMIT_OR_CONSENT_TO_DIVORCE_NO = "no";
 
     @Mock
     EmailService emailService;
@@ -49,7 +58,7 @@ public class SendPetitionerNotificationEmailTest {
     SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail;
 
     @InjectMocks
-    SendPetitionerGenericUpdateNotificationEmail sendPetitionerGenericUpdateNotificationEmail;
+    SendPetitionerUpdateNotificationsEmail sendPetitionerUpdateNotificationsEmail;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -63,13 +72,15 @@ public class SendPetitionerNotificationEmailTest {
         testData.put(D_8_PETITIONER_EMAIL, TEST_USER_EMAIL);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
+        testData.put(NOTIFICATION_RELATIONSHIP_KEY, TEST_RELATIONSHIP);
+        testData.put(D8_REASON_FOR_DIVORCE, TEST_REASON_UNREASONABLE_BEHAVIOUR);
+        testData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, RESP_ADMIT_OR_CONSENT_TO_DIVORCE_YES);
         testData.put(DIVORCE_UNIT_JSON_KEY, TEST_COURT_KEY);
 
         context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
 
         expectedTemplateVars = new HashMap<>();
-
         expectedTemplateVars.put("email address", TEST_USER_EMAIL);
         expectedTemplateVars.put("first name", TEST_PETITIONER_FIRST_NAME);
         expectedTemplateVars.put("last name", TEST_PETITIONER_LAST_NAME);
@@ -93,9 +104,47 @@ public class SendPetitionerNotificationEmailTest {
         when(emailService.sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars))
                 .thenReturn(null);
 
-        assertEquals(testData, sendPetitionerGenericUpdateNotificationEmail.execute(context, testData));
+        assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
 
         verify(emailService).sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars);
+    }
+
+    @Test
+    public void shouldCallEmailServiceWhenRespDoesNotAdmitAdultery() {
+        testData.replace(D8_REASON_FOR_DIVORCE, TEST_REASON_ADULTERY);
+        testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, RESP_ADMIT_OR_CONSENT_TO_DIVORCE_NO);
+
+        expectedTemplateVars.put("relationship", TEST_RELATIONSHIP);
+
+        when(emailService.sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(
+                TEST_USER_EMAIL,
+                expectedTemplateVars))
+                .thenReturn(null);
+
+        assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
+
+        verify(emailService).sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(
+                TEST_USER_EMAIL,
+                expectedTemplateVars);
+    }
+
+    @Test
+    public void shouldCallEmailServiceWhenRespDoesNotConsentTo2YrsSeparation() {
+        testData.replace(D8_REASON_FOR_DIVORCE, TEST_REASON_2_YEAR_SEP);
+        testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, RESP_ADMIT_OR_CONSENT_TO_DIVORCE_NO);
+
+        expectedTemplateVars.put("relationship", TEST_RELATIONSHIP);
+
+        when(emailService.sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(
+                TEST_USER_EMAIL,
+                expectedTemplateVars))
+                .thenReturn(null);
+
+        assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
+
+        verify(emailService).sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(
+                TEST_USER_EMAIL,
+                expectedTemplateVars);
     }
 
     @Test
@@ -105,7 +154,7 @@ public class SendPetitionerNotificationEmailTest {
         when(emailService.sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars))
                 .thenReturn(null);
 
-        assertEquals(testData, sendPetitionerGenericUpdateNotificationEmail.execute(context, testData));
+        assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
 
         verify(emailService).sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars);
     }
@@ -149,5 +198,4 @@ public class SendPetitionerNotificationEmailTest {
 
         verify(emailService).sendPetitionerSubmissionNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars);
     }
-
 }
