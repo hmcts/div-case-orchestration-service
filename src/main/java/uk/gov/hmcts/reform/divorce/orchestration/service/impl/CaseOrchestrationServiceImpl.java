@@ -149,6 +149,17 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 String formattedPaymentDate = new SimpleDateFormat("ddMMyyyy")
                         .format(paymentDate);
 
+                String paymentAmount = Optional.ofNullable(paymentUpdate.getAmount())
+                        .map(BigDecimal::intValueExact)
+                        .map(amt -> amt * 100)
+                        .map(String::valueOf)
+                        .get();
+
+                String feeId = Optional.ofNullable(paymentUpdate.getFees())
+                        .filter(list -> !list.isEmpty())
+                        .map(list -> list.get(0))
+                        .get().getCode();
+
                 Payment payment = Payment.builder()
                     .paymentChannel(ONLINE)
                     .paymentDate(formattedPaymentDate)
@@ -156,18 +167,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                     .paymentSiteId(paymentUpdate.getSiteId())
                     .paymentStatus(paymentUpdate.getStatus())
                     .paymentTransactionId(paymentUpdate.getExternalReference())
+                    .paymentAmount(paymentAmount)
+                    .paymentFeeId(feeId)
                     .build();
-
-                Optional.ofNullable(paymentUpdate.getAmount())
-                    .map(BigDecimal::intValueExact)
-                    .map(amt -> amt * 100)
-                    .map(String::valueOf)
-                    .ifPresent(payment::setPaymentAmount);
-
-                Optional.ofNullable(paymentUpdate.getFees())
-                    .filter(list -> !list.isEmpty())
-                    .map(list -> list.get(0))
-                    .ifPresent(fee -> payment.setPaymentFeeId(fee.getCode()));
 
                 Map<String, Object> updateEvent = new HashMap<>();
                 Map<String, Object> sessionData = new HashMap<>();

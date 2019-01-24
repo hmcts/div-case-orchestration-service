@@ -340,12 +340,14 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(requestPayload, actual);
 
 
-        Payment payment = Payment.builder().build();
-        payment.setPaymentFeeId("X243");
-        payment.setPaymentChannel("online");
-        payment.setPaymentStatus("success");
-        payment.setPaymentAmount("55000");
-        payment.setPaymentDate("01012001");
+        Payment payment = Payment.builder()
+                .paymentFeeId("X243")
+                .paymentChannel("online")
+                .paymentStatus("success")
+                .paymentAmount("55000")
+                .paymentDate("01012001")
+                .build();
+
         final Map<String, Object> updateEvent = new HashMap<>();
         updateEvent.put("eventData", Collections.singletonMap("payment", payment));
         updateEvent.put("eventId", "paymentMade");
