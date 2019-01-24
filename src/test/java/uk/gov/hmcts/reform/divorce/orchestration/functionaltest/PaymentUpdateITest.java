@@ -92,14 +92,16 @@ public class PaymentUpdateITest extends IdamTestSupport {
         fee.setCode("X243");
         paymentUpdate.setFees(Arrays.asList(fee, fee));
 
-        payment.setPaymentChannel("online");
-        payment.setPaymentDate("01012001");
-        payment.setPaymentReference(paymentUpdate.getPaymentReference());
-        payment.setPaymentSiteId(paymentUpdate.getSiteId());
-        payment.setPaymentStatus(paymentUpdate.getStatus());
-        payment.setPaymentTransactionId(paymentUpdate.getExternalReference());
-        payment.setPaymentAmount("55000");
-        payment.setPaymentFeeId("X243");
+        payment = Payment.builder()
+            .paymentChannel("online")
+            .paymentDate("01012001")
+            .paymentReference(paymentUpdate.getPaymentReference())
+            .paymentSiteId(paymentUpdate.getSiteId())
+            .paymentStatus(paymentUpdate.getStatus())
+            .paymentTransactionId(paymentUpdate.getExternalReference())
+            .paymentAmount("55000")
+            .paymentFeeId("X243")
+            .build();
 
         caseData.put("payment", payment);
     }
