@@ -87,4 +87,40 @@ public class EmailServiceTest {
         }
 
     }
+
+    @Test
+    public void sendGenericUpdateEmailShouldCallTheEmailClientToSendAnEmail()
+            throws NotificationClientException {
+        emailService.sendPetitionerSubmissionNotificationEmail(EMAIL_ADDRESS, null);
+
+        verify(mockClient).sendEmail(
+                eq(emailTemplates.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+                eq(EMAIL_ADDRESS),
+                eq(emailTemplateVars.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+                anyString());
+    }
+
+    @Test
+    public void sendRespDoesNotAdmitAdulteryUpdateEmailShouldCallTheEmailClientToSendAnEmail()
+            throws NotificationClientException {
+        emailService.sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(EMAIL_ADDRESS, null);
+
+        verify(mockClient).sendEmail(
+                eq(emailTemplates.get(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name())),
+                eq(EMAIL_ADDRESS),
+                eq(emailTemplateVars.get(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name())),
+                anyString());
+    }
+
+    @Test
+    public void sendRespDoesNotConsentTo2YearSepUpdateEmailShouldCallTheEmailClientToSendAnEmail()
+            throws NotificationClientException {
+        emailService.sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(EMAIL_ADDRESS, null);
+
+        verify(mockClient).sendEmail(
+                eq(emailTemplates.get(EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name())),
+                eq(EMAIL_ADDRESS),
+                eq(emailTemplateVars.get(EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name())),
+                anyString());
+    }
 }

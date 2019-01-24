@@ -22,14 +22,16 @@ public class OrchestrationConstants {
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";
-    public static final String D_8_CASE_REFERENCE = "D8caseReference";
     public static final String CASE_ID_JSON_KEY = "caseId";
     public static final String CASE_STATE_JSON_KEY = "state";
     public static final String CREATED_DATE_JSON_KEY = "createdDate";
+    public static final String D_8_CASE_REFERENCE = "D8caseReference";
     public static final String D_8_PETITIONER_FIRST_NAME = "D8PetitionerFirstName";
     public static final String D_8_PETITIONER_LAST_NAME = "D8PetitionerLastName";
     public static final String D_8_DIVORCE_UNIT = "D8DivorceUnit";
     public static final String D_8_PETITIONER_EMAIL = "D8PetitionerEmail";
+    public static final String D_8_INFERRED_PETITIONER_GENDER = "D8InferredPetitionerGender";
+    public static final String D_8_INFERRED_RESPONDENT_GENDER = "D8InferredRespondentGender";
     public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
@@ -37,11 +39,10 @@ public class OrchestrationConstants {
     public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
     public static final String AWAITING_DN_AOS_EVENT_ID = "aosSubmittedUndefended";
     public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";
-    public static final String D_8_INFERRED_RESPONDENT_GENDER = "D8InferredRespondentGender";
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
-    public static final String D_8_INFERRED_PETITIONER_GENDER = "D8InferredPetitionerGender";
+    public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "RespAdmitOrConsentToFact";
     public static final String YES_VALUE = "Yes";
     public static final String NO_VALUE = "No";
     public static final String ISSUE_DATE = "IssueDate";
@@ -55,6 +56,10 @@ public class OrchestrationConstants {
     public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
     public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CCD_DUE_DATE = "dueDate";
+    public static final String D8_REASON_FOR_DIVORCE = "D8ReasonForDivorce";
+    public static final String UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
+    public static final String ADULTERY = "adultery";
+    public static final String SEPARATION_2_YEARS = "separation-2-years";
     public static final String D_8_PAYMENTS = "Payments";
 
     // Divorce Session
