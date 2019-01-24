@@ -60,7 +60,7 @@ public class OrchestrationController {
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles Issue callback from CCD")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Callback was processed successFully or in case of an error message is "
+            @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is "
                     + "attached to the case",
                     response = CcdCallbackResponse.class),
             @ApiResponse(code = 400, message = "Bad Request"),
@@ -107,7 +107,7 @@ public class OrchestrationController {
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles bulk print callback from CCD")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Callback was processed "
-        + "successFully or in case of an error message is "
+        + "successfully or in case of an error message is "
         + "attached to the case",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
