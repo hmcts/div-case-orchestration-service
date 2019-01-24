@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -159,12 +160,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                         .map(BigDecimal::intValueExact)
                         .map(amt -> amt * 100)
                         .map(String::valueOf)
-                        .get();
+                        .orElse(null);
 
                 String feeId = Optional.ofNullable(paymentUpdate.getFees())
                         .filter(list -> !list.isEmpty())
                         .map(list -> list.get(0))
-                        .get().getCode();
+                        .orElse(new Fee()).getCode();
 
                 Payment payment = Payment.builder()
                     .paymentChannel(ONLINE)
