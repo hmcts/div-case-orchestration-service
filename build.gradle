@@ -127,12 +127,14 @@ def versions = [
         sonarPitest                     : '0.5',
         ccdStoreClient                  : '4.1.0',
         javaxWsRs                       : '2.1.1',
-        jsonPathAssert                  : '2.2.0'
+        jsonPathAssert                  : '2.2.0',
+        jacksonDatabind                 : '2.9.8'
 ]
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-web')
+    
     compile group: 'com.puppycrawl.tools', name: 'checkstyle', version: versions.puppyCrawl
     compile group: 'commons-io', name: 'commons-io', version: versions.commonsIo
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
@@ -152,6 +154,9 @@ dependencies {
     compile group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
     compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: versions.reformSpringBootAutoConfigure
     compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.1.1'
+    compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
+        force = true
+    }
 
     compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
