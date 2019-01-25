@@ -5,7 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -35,7 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
 public class SendPetitionerNotificationEmailTest {
 
     private static final String TEST_COURT_KEY = "westMidlands";
@@ -110,7 +111,10 @@ public class SendPetitionerNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallEmailServiceWhenRespDoesNotAdmitAdultery() {
+    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdulteryAnd520FeatureToggleEnabled() {
+
+        ReflectionTestUtils.setField(sendPetitionerUpdateNotificationsEmail, "featureToggle520", true);
+
         testData.replace(D8_REASON_FOR_DIVORCE, TEST_REASON_ADULTERY);
         testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, RESP_ADMIT_OR_CONSENT_TO_DIVORCE_NO);
 
@@ -129,7 +133,10 @@ public class SendPetitionerNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallEmailServiceWhenRespDoesNotConsentTo2YrsSeparation() {
+    public void shouldCallAppropriateEmailServiceWhenRespDoesNotConsentTo2YrsSeparationAnd520FeatureToggleEnabled() {
+
+        ReflectionTestUtils.setField(sendPetitionerUpdateNotificationsEmail, "featureToggle520", true);
+
         testData.replace(D8_REASON_FOR_DIVORCE, TEST_REASON_2_YEAR_SEP);
         testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, RESP_ADMIT_OR_CONSENT_TO_DIVORCE_NO);
 
@@ -145,6 +152,23 @@ public class SendPetitionerNotificationEmailTest {
         verify(emailService).sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(
                 TEST_USER_EMAIL,
                 expectedTemplateVars);
+    }
+
+    @Test
+    public void shouldCallGenericEmailServiceWhen520FeatureToggleDisabled() {
+
+        ReflectionTestUtils.setField(sendPetitionerUpdateNotificationsEmail, "featureToggle520", false);
+
+        testData.replace(D8_REASON_FOR_DIVORCE, TEST_REASON_ADULTERY);
+        testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, RESP_ADMIT_OR_CONSENT_TO_DIVORCE_NO);
+
+        when(emailService.sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(
+                TEST_USER_EMAIL,
+                expectedTemplateVars))
+                .thenReturn(null);
+
+        assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
+        verify(emailService).sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars);
     }
 
     @Test
