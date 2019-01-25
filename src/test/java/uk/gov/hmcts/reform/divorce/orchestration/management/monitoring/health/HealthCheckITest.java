@@ -13,9 +13,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpMethod;
@@ -26,13 +24,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationHealthApi;
-import uk.gov.hmcts.reform.sendletter.healthcheck.InternalHealth;
-import uk.gov.hmcts.reform.sendletter.healthcheck.SendLetterHealthApi;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.ExpectedCount.once;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -80,12 +74,6 @@ public class HealthCheckITest {
     @Value("${send-letter.url}")
     private String sendLetterHealthUrl;
 
-    @MockBean
-    private SendLetterHealthApi sendLetterHealthApi;
-
-    @MockBean
-    private ServiceAuthorisationHealthApi serviceAuthorisationHealthApi;
-
     @Autowired
     @Qualifier("healthCheckRestTemplate")
     private RestTemplate restTemplate;
@@ -126,9 +114,6 @@ public class HealthCheckITest {
         mockEndpointAndResponse(paymentServiceHealthUrl, true);
         mockEndpointAndResponse(sendLetterHealthUrl, true);
         mockEndpointAndResponse(serviceAuthHealthUrl, true);
-        when(sendLetterHealthApi.health()).thenReturn(new InternalHealth(Status.UP));
-        when(serviceAuthorisationHealthApi.health())
-            .thenReturn(new uk.gov.hmcts.reform.authorisation.healthcheck.InternalHealth(Status.UP));
 
         HttpResponse response = getHealth();
         String body = EntityUtils.toString(response.getEntity());
