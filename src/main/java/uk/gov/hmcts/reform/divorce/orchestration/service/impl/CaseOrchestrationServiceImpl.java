@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -157,12 +156,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                     .map(BigDecimal::intValueExact)
                     .map(amt -> amt * 100)
                     .map(String::valueOf)
-                    .orElse(null);
+                    .orElseThrow(() -> new WorkflowException("Missing payment amount data"));
 
             String feeId = Optional.ofNullable(paymentUpdate.getFees())
                     .filter(list -> !list.isEmpty())
                     .map(list -> list.get(0))
-                    .orElse(new Fee()).getCode();
+                    .orElseThrow(() -> new WorkflowException("Missing payment fee data"))
+                    .getCode();
 
             Payment payment = Payment.builder()
                 .paymentChannel(ONLINE)
