@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -25,10 +26,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, Object>> {
 
     private final EmailService emailService;
+    private final boolean featureToggle520;
 
     @Autowired
-    public SendPetitionerUpdateNotificationsEmail(EmailService emailService) {
+    public SendPetitionerUpdateNotificationsEmail(EmailService emailService,
+                                                  @Value("${feature-toggle.toggle.feature-toggle-520}") String featureToggle520) {
         this.emailService = emailService;
+        this.featureToggle520 = Boolean.valueOf(featureToggle520);
     }
 
     @Override
@@ -47,25 +51,28 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
         templateVars.put("CCD reference", (String) caseData.get(D_8_CASE_REFERENCE));
 
         if (StringUtils.isNotBlank(petitionerEmail)) {
-            if (reasonForDivorce.equals(ADULTERY) && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
-                templateVars.put("relationship", relationship);
+            if (featureToggle520) {
+                if (reasonForDivorce.equals(ADULTERY) && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
+                    templateVars.put("relationship", relationship);
 
-                emailService.sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(petitionerEmail,
-                        templateVars);
+                    emailService.sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(petitionerEmail,
+                            templateVars);
 
-            } else if (reasonForDivorce.equals(SEPARATION_2_YEARS)
-                    && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
-                templateVars.put("relationship", relationship);
+                } else if (reasonForDivorce.equals(SEPARATION_2_YEARS)
+                        && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
+                    templateVars.put("relationship", relationship);
 
-                emailService.sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(petitionerEmail,
-                        templateVars);
+                    emailService.sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(petitionerEmail,
+                            templateVars);
 
+                } else {
+                    emailService.sendPetitionerGenericUpdateNotificationEmail(petitionerEmail, templateVars);
+
+                }
             } else {
                 emailService.sendPetitionerGenericUpdateNotificationEmail(petitionerEmail, templateVars);
-
             }
         }
-
         return caseData;
     }
 }
