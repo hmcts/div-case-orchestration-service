@@ -156,7 +156,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             String feeId = Optional.ofNullable(paymentUpdate.getFees())
                     .filter(list -> !list.isEmpty())
                     .map(list -> list.get(0))
-                    .orElse(new Fee()).getCode();
+                    .orElse(new Fee())
+                    .getCode();
+
+            if (paymentAmount == null || feeId == null) {
+                throw new WorkflowException("Missing required payment data");
+            }
 
             Payment payment = Payment.builder()
                 .paymentChannel(ONLINE)

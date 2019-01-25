@@ -316,7 +316,7 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenCaseDataValid_whenPaymentUpdate_thenReturnPayload() throws Exception {
+    public void givenValidPaymentData_whenPaymentUpdate_thenReturnPayload() throws Exception {
         PaymentUpdate paymentUpdate  = new PaymentUpdate();
         paymentUpdate.setCcdCaseNumber("1232132");
         paymentUpdate.setStatus("success");
@@ -353,6 +353,32 @@ public class CaseOrchestrationServiceImplTest {
         updateEvent.put("eventId", "paymentMade");
 
         verify(updateToCCDWorkflow).run(updateEvent, "testtoken", "1232132");
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void givenPaymentDataWithNoAmount_whenPaymentUpdate_thenThrowWorkflowException() throws Exception {
+        PaymentUpdate paymentUpdate  = new PaymentUpdate();
+        paymentUpdate.setCcdCaseNumber("1232132");
+        paymentUpdate.setStatus("success");
+        Fee fee = new Fee();
+        fee.setCode("X243");
+        paymentUpdate.setFees(Arrays.asList(fee, fee));
+        paymentUpdate.setChannel("online");
+        paymentUpdate.setDateCreated("2001-01-01T00:00:00.000+0000");
+
+        classUnderTest.update(paymentUpdate);
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void givenPaymentDataWithNoFee_whenPaymentUpdate_thenThrowWorkflowException() throws Exception {
+        PaymentUpdate paymentUpdate  = new PaymentUpdate();
+        paymentUpdate.setCcdCaseNumber("1232132");
+        paymentUpdate.setStatus("success");
+        paymentUpdate.setAmount(new BigDecimal(550.00));
+        paymentUpdate.setChannel("online");
+        paymentUpdate.setDateCreated("2001-01-01T00:00:00.000+0000");
+
+        classUnderTest.update(paymentUpdate);
     }
 
     @Test
