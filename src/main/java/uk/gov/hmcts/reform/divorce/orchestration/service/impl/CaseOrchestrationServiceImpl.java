@@ -151,17 +151,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                     .map(BigDecimal::intValueExact)
                     .map(amt -> amt * 100)
                     .map(String::valueOf)
-                    .orElse(null);
+                    .orElseThrow(() -> new WorkflowException("Missing payment amount data"));
 
             String feeId = Optional.ofNullable(paymentUpdate.getFees())
                     .filter(list -> !list.isEmpty())
                     .map(list -> list.get(0))
-                    .orElse(new Fee())
+                    .orElseThrow(() -> new WorkflowException("Missing payment fee data"))
                     .getCode();
-
-            if (paymentAmount == null || feeId == null) {
-                throw new WorkflowException("Missing required payment data");
-            }
 
             Payment payment = Payment.builder()
                 .paymentChannel(ONLINE)
