@@ -134,7 +134,6 @@ def versions = [
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-web')
-
     compile group: 'com.puppycrawl.tools', name: 'checkstyle', version: versions.puppyCrawl
     compile group: 'commons-io', name: 'commons-io', version: versions.commonsIo
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
