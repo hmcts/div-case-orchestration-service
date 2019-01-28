@@ -50,6 +50,10 @@ variable "draft_check_ccd_enabled" {
     default = true
 }
 
+variable "feature_toggle_520" {
+  default = false
+}
+
 variable "uk_gov_notify_email_templates" {
     type = "string"
 }

@@ -29,8 +29,10 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
     private final boolean featureToggle520;
 
     @Autowired
-    public SendPetitionerUpdateNotificationsEmail(EmailService emailService,
-                                                  @Value("${feature-toggle.toggle.feature-toggle-520}") String featureToggle520) {
+    public SendPetitionerUpdateNotificationsEmail(
+            EmailService emailService,
+            @Value("${feature-toggle.toggle.feature-toggle-520}") String featureToggle520) {
+
         this.emailService = emailService;
         this.featureToggle520 = Boolean.valueOf(featureToggle520);
     }
