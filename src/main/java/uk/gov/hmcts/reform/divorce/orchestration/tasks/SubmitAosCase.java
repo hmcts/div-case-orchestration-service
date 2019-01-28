@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -23,6 +24,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class SubmitAosCase implements Task<Map<String, Object>> {
+
+    @Value("${feature-toggle.toggle.feature-toggle-520}")
+    private boolean featureToggle520;
 
     @Autowired
     private CaseMaintenanceClient caseMaintenanceClient;
@@ -50,8 +54,8 @@ public class SubmitAosCase implements Task<Map<String, Object>> {
         if (YES_VALUE.equalsIgnoreCase((String)submissionData.get(RESP_WILL_DEFEND_DIVORCE))) {
             return AWAITING_ANSWER_AOS_EVENT_ID;
 
-        } else if ((NO_VALUE.equalsIgnoreCase((String)submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT)))
-                && (ADULTERY.equalsIgnoreCase((String)submissionData.get(D_8_REASON_FOR_DIVORCE)))) {
+        } else if (featureToggle520 && (ADULTERY.equalsIgnoreCase((String)submissionData.get(D_8_REASON_FOR_DIVORCE)))
+                && (NO_VALUE.equalsIgnoreCase((String)submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT)))) {
 
             return COMPLETED_AOS_EVENT_ID;
         }
