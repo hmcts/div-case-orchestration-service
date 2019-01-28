@@ -47,7 +47,7 @@ feature-toggle:
       baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://localhost:4028}
   toggle:
     bulk-printer-toggle-name: "divorce_bulk_print"
-    feature-toggle-520: "true"
+    feature-toggle-520: ${FEATURE_TOGGLE_520:false}
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}

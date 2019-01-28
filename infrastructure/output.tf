@@ -14,6 +14,9 @@ output "draft_check_ccd_enabled" {
   value = "${var.draft_check_ccd_enabled}"
 }
 
+output "feature_toggle_520" {
+  value = "${var.feature_toggle_520}"
+}
 
 output "aos_responded_days_to_complete" {
   value = "${var.aos_responded_days_to_complete}"
