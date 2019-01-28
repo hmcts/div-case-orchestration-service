@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -79,7 +80,9 @@ public class SubmitAosCaseUTest {
     }
 
     @Test
-    public void givenNoDefendAndNoConsentToAdultery_whenExecute_thenReturnAosCompleted() {
+    public void givenNoDefendAndNoConsentToAdulteryAnd520FeatureToggleEnabled_whenExecute_thenReturnAosCompleted() {
+        ReflectionTestUtils.setField(classUnderTest, "featureToggle520", true);
+
         final Map<String, Object> divorceSession = getCaseData(NO_VALUE, false, ADULTERY);
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession))
