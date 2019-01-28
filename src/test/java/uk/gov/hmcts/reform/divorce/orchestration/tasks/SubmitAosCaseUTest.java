@@ -78,12 +78,6 @@ public class SubmitAosCaseUTest {
             .updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession);
     }
 
-    /*
-    If they defend, it will go to AosSubmittedAwaitingAnswer regardless of the other answers.
-    If they do NOT Defend,
-        goes to AosCompleted if they do not admit adultery
-        goes to AwaitingDecreeNisi if they admit it.
-     */
     @Test
     public void givenNoDefendAndNoConsentToAdultery_whenExecute_thenReturnAosCompleted() {
         final Map<String, Object> divorceSession = getCaseData(NO_VALUE, false, ADULTERY);
