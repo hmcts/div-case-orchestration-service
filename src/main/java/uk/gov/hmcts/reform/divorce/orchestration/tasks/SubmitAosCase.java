@@ -8,11 +8,16 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -44,6 +49,11 @@ public class SubmitAosCase implements Task<Map<String, Object>> {
     private String getAosCompleteEventId(Map<String, Object> submissionData) {
         if (YES_VALUE.equalsIgnoreCase((String)submissionData.get(RESP_WILL_DEFEND_DIVORCE))) {
             return AWAITING_ANSWER_AOS_EVENT_ID;
+
+        } else if ((NO_VALUE.equalsIgnoreCase((String)submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT)))
+                && (ADULTERY.equalsIgnoreCase((String)submissionData.get(D_8_REASON_FOR_DIVORCE)))) {
+
+            return COMPLETED_AOS_EVENT_ID;
         }
 
         return AWAITING_DN_AOS_EVENT_ID;

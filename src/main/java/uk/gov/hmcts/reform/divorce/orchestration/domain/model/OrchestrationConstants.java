@@ -30,6 +30,7 @@ public class OrchestrationConstants {
     public static final String D_8_PETITIONER_LAST_NAME = "D8PetitionerLastName";
     public static final String D_8_DIVORCE_UNIT = "D8DivorceUnit";
     public static final String D_8_PETITIONER_EMAIL = "D8PetitionerEmail";
+    public static final String D_8_REASON_FOR_DIVORCE = "D8ReasonForDivorce";
     public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
@@ -37,7 +38,9 @@ public class OrchestrationConstants {
     public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
     public static final String AWAITING_DN_AOS_EVENT_ID = "aosSubmittedUndefended";
     public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";
+    public static final String COMPLETED_AOS_EVENT_ID = "aosCompleted";
     public static final String D_8_INFERRED_RESPONDENT_GENDER = "D8InferredRespondentGender";
+    public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "respAdmitOrConsentToFact";
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
@@ -64,6 +67,10 @@ public class OrchestrationConstants {
     public static final String PIN = "pin";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
     public static final String SUCCESS_STATUS = "success";
+
+    // Reasons For Divorce
+    public static final String ADULTERY = "adultery";
+    public static final String SEPARATION2YRS = "separation-2-years";
 
     //Case state
     public static final String AWAITING_PAYMENT = "AwaitingPayment";
