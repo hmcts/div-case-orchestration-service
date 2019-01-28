@@ -9,7 +9,7 @@ data:
   SERVICE_AUTH_MICROSERVICE : "divorce_frontend"
   APPLICATION_INSIGHTS_IKEY : "019ed56f-e01d-4651-895d-bc6334f3d1b1"
   SERVICE_AUTH_SECRET : ${SERVICE_AUTH_SECRET}
-  CASE_FORMATTER_SERVICE_API_BASEURL : "http://div-cfs-aat.service.core-compute-aat.internal"
+  CASE_FORMATTER_SERVICE_API_BASEURL : "http://div-cfs-pr-85.service.core-compute-preview.internal"
   SERVICE_AUTH_PROVIDER_URL : "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
   CASE_VALIDATION_SERVICE_API_BASEURL : "http://div-vs-aat.service.core-compute-aat.internal"
   REFORM_SERVICE_NAME : "cos"
