@@ -12,7 +12,7 @@ public enum CourtEnum {
     private String displayName;
     private String siteId;
 
-    private CourtEnum(String id, String displayName, String siteId) {
+    CourtEnum(String id, String displayName, String siteId) {
         this.id = id;
         this.displayName = displayName;
         this.siteId = siteId;
