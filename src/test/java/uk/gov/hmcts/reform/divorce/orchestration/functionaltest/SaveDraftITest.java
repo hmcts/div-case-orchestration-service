@@ -109,8 +109,7 @@ public class SaveDraftITest {
                         .withBody(body)));
     }
 
-    private void stubEmailServerEndpoint(HttpStatus status, String body)
-            throws Exception {
+    private void stubEmailServerEndpoint(HttpStatus status, String body) {
         emailServiceServer.stubFor(WireMock.put(EMAIL_CONTEXT_PATH)
                 .willReturn(aResponse()
                         .withStatus(status.value())

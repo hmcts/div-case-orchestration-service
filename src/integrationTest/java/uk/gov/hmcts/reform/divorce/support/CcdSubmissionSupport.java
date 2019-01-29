@@ -1,12 +1,18 @@
 package uk.gov.hmcts.reform.divorce.support;
 
+import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
@@ -16,6 +22,9 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
 
     @Autowired
     protected CcdClientSupport ccdClientSupport;
+
+    @Value("${case.orchestration.maintenance.submit-aos.context-path}")
+    private String submitAosContextPath;
 
     @SuppressWarnings("unchecked")
     @SafeVarargs
@@ -47,4 +56,20 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             fileName == null ? null : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class),
             eventId, userDetails);
     }
+
+    public Response submitAosCase(String userToken, Long caseId, String requestBody) {
+        final Map<String, Object> headers = new HashMap<>();
+        headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+
+        if (userToken != null) {
+            headers.put(HttpHeaders.AUTHORIZATION, userToken);
+        }
+
+        return RestUtil.postToRestService(
+                serverUrl + submitAosContextPath + "/" + caseId,
+                headers,
+                requestBody
+        );
+    }
+
 }
