@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -24,9 +23,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class SubmitAosCase implements Task<Map<String, Object>> {
-
-    @Value("${feature-toggle.toggle.feature-toggle-520}")
-    private boolean featureToggle520;
 
     @Autowired
     private CaseMaintenanceClient caseMaintenanceClient;
