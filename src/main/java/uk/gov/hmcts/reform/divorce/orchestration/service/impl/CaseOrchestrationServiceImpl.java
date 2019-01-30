@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
@@ -63,6 +64,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
     private final DNSubmittedWorkflow dnSubmittedWorkflow;
     private final GetCaseWorkflow getCaseWorkflow;
+    private final AmendPetitionWorkflow amendPetitionWorkflow;
 
     @Override
     public Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest,
@@ -290,5 +292,16 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                     .errors(getNotificationErrors(workflowErrors))
                     .build();
         }
+    }
+
+    @Override
+    public Map<String, Object> amendPetition(String caseId, String authorisation) throws WorkflowException {
+        Map<String, Object> response = amendPetitionWorkflow.run(caseId, authorisation);
+        if (response != null) {
+            log.info("Successfully created a new draft to amend, and updated old case ");
+        } else {
+            log.error("Unable to create new amendment petition");
+        }
+        return response;
     }
 }

@@ -475,4 +475,20 @@ public class OrchestrationController {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();
     }
+
+    @PutMapping(path = "/amend-petition/{caseId}")
+    @ApiOperation(
+        value = "Creates a new draft copy of user's old case to be amended, updates old case to AmendPetition state")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200,
+            message = "The amended petition draft has been created successfully. " +
+                "The previous case has been updated to case state: AmendPetition")})
+    public ResponseEntity<Map<String, Object>> amendPetition(@RequestHeader("Authorization")
+                                                           @ApiParam(value = "JWT authorisation token issued by IDAM",
+                                                               required = true) final String authorizationToken,
+                                                             @PathVariable String caseId)
+        throws WorkflowException {
+
+        return ResponseEntity.ok(orchestrationService.amendPetition(caseId, authorizationToken));
+    }
 }

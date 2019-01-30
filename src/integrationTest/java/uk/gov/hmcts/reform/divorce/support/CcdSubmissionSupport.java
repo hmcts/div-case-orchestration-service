@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 
 public abstract class CcdSubmissionSupport extends IntegrationTest {
@@ -55,6 +56,22 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         return ccdClientSupport.updateForCitizen(caseId,
             fileName == null ? null : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class),
             eventId, userDetails);
+    }
+
+    protected Response submitDnCase(String userToken, Long caseId, String filePath, String contextPath)
+        throws Exception {
+        final Map<String, Object> headers = new HashMap<>();
+        headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+
+        if (userToken != null) {
+            headers.put(HttpHeaders.AUTHORIZATION, userToken);
+        }
+
+        return RestUtil.postToRestService(
+            serverUrl + contextPath + "/" + caseId,
+            headers,
+            filePath == null ? null : loadJson(contextPath + filePath)
+        );
     }
 
     public Response submitAosCase(String userToken, Long caseId, String requestBody) {

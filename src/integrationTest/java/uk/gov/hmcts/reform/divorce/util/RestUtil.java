@@ -31,6 +31,26 @@ public class RestUtil {
         }
     }
 
+    public static Response putToRestService(String url, Map<String, Object> headers, String requestBody,
+                                             Map<String, Object> params) {
+        if (requestBody != null) {
+            return SerenityRest.given()
+                .headers(headers)
+                .queryParams(params)
+                .body(requestBody)
+                .when()
+                .put(url)
+                .andReturn();
+        } else {
+            return SerenityRest.given()
+                .headers(headers)
+                .queryParams(params)
+                .when()
+                .put(url)
+                .andReturn();
+        }
+    }
+
     public static Response getFromRestService(String url, Map<String, Object> headers, Map<String, Object> params) {
         if (params != null) {
             return SerenityRest.given()

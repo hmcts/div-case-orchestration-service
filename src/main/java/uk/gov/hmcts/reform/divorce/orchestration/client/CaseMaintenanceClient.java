@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @FeignClient(name = "maintenance-service-client", url = "${case.maintenance.service.api.baseurl}")
 public interface CaseMaintenanceClient {
+
+    @RequestMapping(
+        method = RequestMethod.PUT,
+        value = "/casemaintenance/version/1/amended-petition-draft",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> amendPetition(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken
+    );
 
     @RequestMapping(
         method = RequestMethod.POST,

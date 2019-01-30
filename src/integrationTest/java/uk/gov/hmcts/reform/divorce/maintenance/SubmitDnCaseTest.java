@@ -27,7 +27,7 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
 
     @Test
     public void givenUserTokenIsNull_whenSubmitDn_thenReturnBadRequest() throws Exception {
-        Response cosResponse = submitDnCase(null, 1L, "dn-submit.json");
+        Response cosResponse = submitDnCase(null, 1L, "dn-submit.json", contextPath);
 
         assertEquals(BAD_REQUEST.value(), cosResponse.getStatusCode());
     }
@@ -36,7 +36,7 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
     public void givenNoCaseData_whenSubmitDn_thenReturnBadRequest() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
-        Response cosResponse = submitDnCase(userDetails.getAuthToken(), 1L, null);
+        Response cosResponse = submitDnCase(userDetails.getAuthToken(), 1L, null, contextPath);
 
         assertEquals(BAD_REQUEST.value(), cosResponse.getStatusCode());
     }
@@ -51,27 +51,10 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, "aosSubmittedUndefended", userDetails);
 
         Response cosResponse = submitDnCase(userDetails.getAuthToken(), caseDetails.getId(),
-            "dn-submit.json");
+            "dn-submit.json", contextPath);
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path("id"));
         assertEquals("AwaitingLegalAdvisorReferral", cosResponse.path("state"));
-    }
-
-
-
-    private Response submitDnCase(String userToken, Long caseId, String filePath) throws Exception {
-        final Map<String, Object> headers = new HashMap<>();
-        headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
-
-        if (userToken != null) {
-            headers.put(HttpHeaders.AUTHORIZATION, userToken);
-        }
-
-        return RestUtil.postToRestService(
-            serverUrl + contextPath + "/" + caseId,
-            headers,
-            filePath == null ? null : loadJson(PAYLOAD_CONTEXT_PATH + filePath)
-        );
     }
 }
