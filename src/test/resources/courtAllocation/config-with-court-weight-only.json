@@ -1,0 +1,12 @@
+{
+  "courtsWeightedDistribution": [
+    {
+      "courtId": "courtNumber1",
+      "weight": 1
+    },
+    {
+      "courtId": "courtNumber2",
+      "weight": 2
+    }
+  ]
+}

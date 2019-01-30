@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseCreationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMemb
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.AllocatedCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -183,16 +185,18 @@ public class OrchestrationControllerTest {
     @Test
     public void whenSubmit_thenReturnCaseResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
-        final Map<String, Object> submissionData = Collections.singletonMap(ID, TEST_CASE_ID);
-        final CaseResponse expectedResponse = CaseResponse.builder()
-            .caseId(TEST_CASE_ID)
-            .status(SUCCESS_STATUS)
-            .build();
+        final Map<String, Object> serviceReturnData = new HashMap<>();
+        serviceReturnData.put(ID, TEST_CASE_ID);
+        serviceReturnData.put("allocatedCourt", "randomlySelectedCourt");
+        when(caseOrchestrationService.submit(caseData, AUTH_TOKEN)).thenReturn(serviceReturnData);
 
-        when(caseOrchestrationService.submit(caseData, AUTH_TOKEN)).thenReturn(submissionData);
+        ResponseEntity<CaseCreationResponse> response = classUnderTest.submit(AUTH_TOKEN, caseData);
 
-        ResponseEntity<CaseResponse> response = classUnderTest.submit(AUTH_TOKEN, caseData);
-
+        final CaseCreationResponse expectedResponse = CaseCreationResponse.builder()
+                .caseId(TEST_CASE_ID)
+                .status(SUCCESS_STATUS)
+                .allocatedCourt(new AllocatedCourt("randomlySelectedCourt"))
+                .build();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }
@@ -207,7 +211,7 @@ public class OrchestrationControllerTest {
 
         when(caseOrchestrationService.submit(caseData, AUTH_TOKEN)).thenReturn(invalidResponse);
 
-        ResponseEntity<CaseResponse> response = classUnderTest.submit(AUTH_TOKEN, caseData);
+        ResponseEntity response = classUnderTest.submit(AUTH_TOKEN, caseData);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
