@@ -16,7 +16,7 @@
       "D8PetitionerPhoneNumber": "01234567890",
       "D8PetitionerFirstName": "John",
       "D8PetitionerLastName": "Smith",
-      "D8DerivedPetitionerCurrentFullName": "John Smith",
+      "PetitionerFullName": "John Smith",
       "D8PetitionerNameChangedHow": [
         "marriageCertificate"
       ],
@@ -32,7 +32,7 @@
       "D8PetitionerCorrespondenceUseHomeAddress": "YES",
       "D8RespondentFirstName": "Jane",
       "D8RespondentLastName": "Jamed",
-      "D8DerivedRespondentCurrentName": "Jane Jamed",
+      "RespondentFullName": "Jane Jamed",
       "D8RespondentHomeAddress": {
         "PostCode": "SW9 9PE"
       },

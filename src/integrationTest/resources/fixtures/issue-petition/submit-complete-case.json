@@ -13,7 +13,7 @@
   "D8PetitionerPhoneNumber":"01234567890",
   "D8PetitionerFirstName":"John",
   "D8PetitionerLastName":"Smith",
-  "D8DerivedPetitionerCurrentFullName":"John Smith",
+  "PetitionerFullName":"John Smith",
   "D8PetitionerNameChangedHow":[
     "marriageCertificate"
   ],
@@ -29,8 +29,8 @@
   "D8PetitionerCorrespondenceUseHomeAddress":"NO",
   "D8RespondentFirstName":"Jane",
   "D8RespondentLastName":"Jamed",
-  "D8DerivedRespondentCurrentName":"Jane Jamed",
-  "D8DerivedRespondentSolicitorDetails":"Justin\nCase\n90 Landor Road\nLondon\nSW9 9PE",
+  "RespondentFullName":"Jane Jamed",
+  "D8RespondentSolicitorDetails":"Justin\nCase\n90 Landor Road\nLondon\nSW9 9PE",
   "D8RespondentHomeAddress":{
     "PostCode":"SS SSS"
   },
