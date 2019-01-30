@@ -21,10 +21,11 @@ public class FormatDivorceSessionToCaseData implements Task<Map<String, Object>>
     }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> sessionData) {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
         return caseFormatterClient.transformToCCDFormat(
-            context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
-            sessionData
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
+                payload
         );
     }
+
 }
