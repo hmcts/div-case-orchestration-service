@@ -69,6 +69,29 @@ uk:
         template:
           vars: "{SAVE_DRAFT: {divorceUrl: 'https://apply-divorce.service.gov.uk'}}"
 
+courtAllocationConfigurationJson: "{
+                                     \"courtsWeightedDistribution\": [
+                                        {
+                                          \"courtId\": \"courtNumber1\",
+                                          \"weight\": 1
+                                        },
+                                        {
+                                          \"courtId\": \"courtNumber2\",
+                                          \"weight\": 2
+                                        }
+                                      ],
+                                      \"courtsForSpecificReasons\": [
+                                        {
+                                          \"reason\": \"specificReason\",
+                                          \"courtId\": \"courtNumber3\"
+                                        },
+                                        {
+                                          \"reason\": \"someOtherReason\",
+                                          \"courtId\": \"courtNumber4\"
+                                        }
+                                      ]
+                                  }"
+
 court:
   details: "{
               \"eastMidlands\":{

@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class ObjectMapperTestUtil {
-    private static ObjectMapper objectMapper = new ObjectMapper();
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static String convertObjectToJsonString(final Object object) {
         try {
@@ -26,12 +27,9 @@ public class ObjectMapperTestUtil {
 
     public static <T> T getJsonFromResourceFile(String filePath, TypeReference<T> clazz) throws IOException {
         try (InputStream resourceAsStream =
-                 ObjectMapperTestUtil.class.getResourceAsStream(filePath)) {
+                     ObjectMapperTestUtil.class.getResourceAsStream(filePath)) {
             return objectMapper.readValue(resourceAsStream, clazz);
         }
     }
 
-    public static <T> T getJsonFromString(String string, TypeReference<T> clazz) throws IOException {
-        return objectMapper.readValue(string, clazz);
-    }
 }
