@@ -2,10 +2,10 @@ package uk.gov.hmcts.reform.divorce.orchestration.courtallocation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
@@ -22,36 +22,36 @@ public class DefaultCourtAllocator implements CourtAllocator {
     private static final Random random = new Random();
 
     public DefaultCourtAllocator(CourtAllocationConfiguration courtAllocationConfig) {
-        List<CourtWeight> courtWeights = courtAllocationConfig.getCourtsWeightedDistribution();
-        List<CourtAllocationPerReason> courtsForSpecificReasons = courtAllocationConfig.getCourtsForSpecificReasons();
+        Set<CourtWeight> courtWeights = courtAllocationConfig.getCourtsWeightedDistribution();
+        Set<CourtAllocationPerReason> courtsForSpecificReasons = courtAllocationConfig.getCourtsForSpecificReasons();
 
         if (courtWeights.isEmpty() && courtsForSpecificReasons.isEmpty()) {
             throw new CourtAllocatorException("Cannot build court allocator with empty configuration.");
         }
 
         createRaffleTicketsBasedOnCourtsWeight(courtWeights);
-        specifyCourtsToHandleCertainDivorceReasons(courtsForSpecificReasons);
+        allocateCourtsToHandleCertainDivorceReasons(courtsForSpecificReasons);
     }
 
-    public DefaultCourtAllocator(List<CourtWeight> courtWeights,
-                                 List<CourtAllocationPerReason> courtAllocationForSpecificReasons) {
+    public DefaultCourtAllocator(Set<CourtWeight> courtWeights,
+                                 Set<CourtAllocationPerReason> courtAllocationForSpecificReasons) {
         this(courtWeights);
-        specifyCourtsToHandleCertainDivorceReasons(courtAllocationForSpecificReasons);
+        allocateCourtsToHandleCertainDivorceReasons(courtAllocationForSpecificReasons);
     }
 
-    public DefaultCourtAllocator(List<CourtWeight> courtWeights) {
+    public DefaultCourtAllocator(Set<CourtWeight> courtWeights) {
         createRaffleTicketsBasedOnCourtsWeight(courtWeights);
     }
 
-    private void createRaffleTicketsBasedOnCourtsWeight(List<CourtWeight> courtWeights) {
+    private void createRaffleTicketsBasedOnCourtsWeight(Set<CourtWeight> courtWeights) {
         this.raffleTicketsPerCourt = courtWeights.stream()
                 .flatMap(this::returnAdequateAmountOfRaffleTicketsPerCourt)
                 .map(CourtWeight::getCourtId)
                 .toArray(String[]::new);
     }
 
-    private void specifyCourtsToHandleCertainDivorceReasons(
-            List<CourtAllocationPerReason> courtAllocationForSpecificReasons) {
+    private void allocateCourtsToHandleCertainDivorceReasons(
+            Set<CourtAllocationPerReason> courtAllocationForSpecificReasons) {
         courtPerReasonForDivorce = courtAllocationForSpecificReasons.stream()
                 .collect(toMap(
                         CourtAllocationPerReason::getDivorceReason,

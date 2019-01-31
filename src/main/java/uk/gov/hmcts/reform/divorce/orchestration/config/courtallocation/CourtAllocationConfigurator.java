@@ -17,7 +17,7 @@ public class CourtAllocationConfigurator {
     @Autowired
     private CourtAllocationConfiguration courtAllocationConfig;
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     public CourtAllocationConfigurator(@Autowired ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
