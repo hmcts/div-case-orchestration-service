@@ -26,7 +26,7 @@ public class DefaultCourtAllocator implements CourtAllocator {
         List<CourtAllocationPerReason> courtsForSpecificReasons = courtAllocationConfig.getCourtsForSpecificReasons();
 
         if (courtWeights.isEmpty() && courtsForSpecificReasons.isEmpty()) {
-            throw new RuntimeException("Cannot build court allocator with empty configuration.");
+            throw new CourtAllocatorException("Cannot build court allocator with empty configuration.");
         }
 
         createRaffleTicketsBasedOnCourtsWeight(courtWeights);
@@ -72,7 +72,7 @@ public class DefaultCourtAllocator implements CourtAllocator {
             int randomIndex = random.nextInt(amountOfRaffleTickets);
             return raffleTicketsPerCourt[randomIndex];
         } else {
-            throw new RuntimeException("Could not find a court.");
+            throw new CourtAllocatorException("Could not find a court.");
         }
     }
 
