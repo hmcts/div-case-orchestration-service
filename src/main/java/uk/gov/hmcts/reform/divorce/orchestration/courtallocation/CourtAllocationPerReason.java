@@ -9,8 +9,8 @@ import lombok.Getter;
 @EqualsAndHashCode
 public class CourtAllocationPerReason {
 
-    private String courtId;
-    private String divorceReason;
+    private final String courtId;
+    private final String divorceReason;
 
     @JsonCreator
     public CourtAllocationPerReason(@JsonProperty("courtId") String courtId,
