@@ -38,9 +38,9 @@ public class CourtAllocationTaskTest {
 
     @Before
     public void setUp() {
-        when(courtAllocator.selectCourtForGivenDivorceReason(eq(Optional.of("testReason"))))
+        when(courtAllocator.selectCourtForGivenDivorceFact(eq(Optional.of("testReason"))))
             .thenReturn("selectedCourtForReason");
-        when(courtAllocator.selectCourtForGivenDivorceReason(Optional.empty())).thenReturn("randomlySelectedCourt");
+        when(courtAllocator.selectCourtForGivenDivorceFact(Optional.empty())).thenReturn("randomlySelectedCourt");
 
         context = new DefaultTaskContext();
     }

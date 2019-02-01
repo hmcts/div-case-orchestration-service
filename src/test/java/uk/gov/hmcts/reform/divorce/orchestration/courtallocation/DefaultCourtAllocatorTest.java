@@ -44,7 +44,7 @@ public class DefaultCourtAllocatorTest {
         BigDecimal totalNumberOfAttempts = new BigDecimal(1000000);
         HashMap<String, BigDecimal> courtsDistribution = new HashMap<>();
         for (int i = 0; i < totalNumberOfAttempts.intValue(); i++) {
-            String selectedCourt = courtAllocator.selectCourtForGivenDivorceReason(Optional.empty());
+            String selectedCourt = courtAllocator.selectCourtForGivenDivorceFact(Optional.empty());
             BigDecimal casesPerCourt = courtsDistribution.getOrDefault(selectedCourt, ZERO);
             courtsDistribution.put(selectedCourt, casesPerCourt.add(ONE));
         }
@@ -83,9 +83,9 @@ public class DefaultCourtAllocatorTest {
             )
         );
 
-        String courtForAdulteryReason = courtAllocator.selectCourtForGivenDivorceReason(Optional.of("adultery"));
-        String courtForDesertionReason = courtAllocator.selectCourtForGivenDivorceReason(Optional.of("desertion"));
-        String courtForUnreasonableBehaviourReason = courtAllocator.selectCourtForGivenDivorceReason(
+        String courtForAdulteryReason = courtAllocator.selectCourtForGivenDivorceFact(Optional.of("adultery"));
+        String courtForDesertionReason = courtAllocator.selectCourtForGivenDivorceFact(Optional.of("desertion"));
+        String courtForUnreasonableBehaviourReason = courtAllocator.selectCourtForGivenDivorceFact(
             Optional.of("unreasonable-behaviour"));
 
         assertThat(courtForAdulteryReason, is("northWest"));
@@ -103,8 +103,8 @@ public class DefaultCourtAllocatorTest {
             )
         );
 
-        String courtForAdulteryReason = courtAllocator.selectCourtForGivenDivorceReason(Optional.of("adultery"));
-        String courtForDesertionReason = courtAllocator.selectCourtForGivenDivorceReason(Optional.of("desertion"));
+        String courtForAdulteryReason = courtAllocator.selectCourtForGivenDivorceFact(Optional.of("adultery"));
+        String courtForDesertionReason = courtAllocator.selectCourtForGivenDivorceFact(Optional.of("desertion"));
 
         assertThat(courtForAdulteryReason, is("northWest"));
         assertThat(courtForDesertionReason, is("serviceCentre"));
@@ -137,7 +137,7 @@ public class DefaultCourtAllocatorTest {
             new CourtWeight("westMidlands", 0),
             new CourtWeight("southWest", 0)
         ));
-        defaultCourtAllocator.selectCourtForGivenDivorceReason(Optional.empty());
+        defaultCourtAllocator.selectCourtForGivenDivorceFact(Optional.empty());
     }
 
     @Test
@@ -150,7 +150,7 @@ public class DefaultCourtAllocatorTest {
                 new CourtAllocationPerReason("northWest", "adultery")
             )
         );
-        defaultCourtAllocator.selectCourtForGivenDivorceReason(Optional.of("unknown-reason"));
+        defaultCourtAllocator.selectCourtForGivenDivorceFact(Optional.of("unknown-reason"));
     }
 
     @Test

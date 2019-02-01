@@ -150,7 +150,7 @@ public class OriginalCourtAllocatorTest {
         CourtAllocator courtAllocator = new OriginalCourtAllocator(caseDistribution, localCourts);
 
         for (int i = 0; i < iterations; i++) {
-            assertThat(courtAllocator.selectCourtForGivenDivorceReason(Optional.of(fact)), is(court));
+            assertThat(courtAllocator.selectCourtForGivenDivorceFact(Optional.of(fact)), is(court));
         }
     }
 
@@ -171,7 +171,7 @@ public class OriginalCourtAllocatorTest {
             });
 
             for (int i = 0; i < (count * caseDistribution.get(fact)); i++) {
-                String selectedCourt = courtAllocator.selectCourtForGivenDivorceReason(Optional.of(fact));
+                String selectedCourt = courtAllocator.selectCourtForGivenDivorceFact(Optional.of(fact));
                 factDetail.put(selectedCourt, factDetail.get(selectedCourt) + 1);
             }
             factsAllocation.put(fact, factDetail);

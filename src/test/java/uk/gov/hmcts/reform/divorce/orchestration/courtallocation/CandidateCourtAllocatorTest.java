@@ -180,18 +180,16 @@ public class CandidateCourtAllocatorTest {
         CourtAllocator courtAllocator = new CandidateCourtAllocator(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
 
         for (int i = 0; i < iterations; i++) {
-            assertThat(courtAllocator.selectCourtForGivenDivorceReason(Optional.of(fact)), is(court));
+            assertThat(courtAllocator.selectCourtForGivenDivorceFact(Optional.of(fact)), is(court));
         }
     }
 
     @Test
     public void givenOneMillionRecordsTheDataShouldBeDistributedAsExpected() {
-        double count = 1000000;
-
-//        Map<String, Map> localCourts = new HashMap(courts);
         CourtAllocator courtAllocator = new CandidateCourtAllocator(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
 
         Map<String, Map<String, Integer>> factsAllocation = new HashMap();
+        double count = 1000000;
 
         divorceRatioPerFact.keySet().forEach(fact -> {
             Map<String, Integer> factDetail = factsAllocation.getOrDefault(fact, new HashMap<>());
@@ -201,15 +199,23 @@ public class CandidateCourtAllocatorTest {
             });
 
             for (int i = 0; i < (count * divorceRatioPerFact.get(fact)); i++) {
-                String selectedCourt = courtAllocator.selectCourtForGivenDivorceReason(Optional.of(fact));
-                factDetail.put(selectedCourt, factDetail.get(selectedCourt) + 1);
+                String selectedCourt = courtAllocator.selectCourtForGivenDivorceFact(Optional.of(fact));
+
+                if (!factDetail.containsKey(selectedCourt)) {
+                    throw new RuntimeException(String.format("No fact detail assigned to \"%s\" court", selectedCourt));
+                } else {
+                    factDetail.put(selectedCourt, factDetail.get(selectedCourt) + 1);
+                }
             }
             factsAllocation.put(fact, factDetail);
         });
 
         divorceRatioPerFact.keySet().forEach(fact -> {
             desiredWorkloadPerCourt.keySet().forEach(courtName -> {
-                assertThat("Fact " + fact + " for court " + courtName + " didn't match", new BigDecimal(Math.abs(expectedFactsCourtPercentage.get(fact).get(courtName).doubleValue() - (factsAllocation.get(fact).get(courtName).doubleValue() / count))).compareTo(new BigDecimal(errorMargin)) == -1, is(true));
+                assertThat("Fact " + fact + " for court " + courtName + " didn't match",
+                    new BigDecimal(Math.abs(expectedFactsCourtPercentage.get(fact).get(courtName).doubleValue() - (factsAllocation.get(fact).get(courtName).doubleValue() / count))).compareTo(new BigDecimal(errorMargin)) == -1,
+                    is(true)
+                );
             });
         });
     }

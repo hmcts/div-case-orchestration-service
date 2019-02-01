@@ -40,7 +40,7 @@ public class OriginalCourtAllocator implements CourtAllocator {
     }
 
     @Override
-    public String selectCourtForGivenDivorceReason(Optional<String> fact) {
+    public String selectCourtForGivenDivorceFact(Optional<String> fact) {
         String selectedCourt = enumeratedDistributions.get(fact.get()).sample();
         return selectedCourt;
     }

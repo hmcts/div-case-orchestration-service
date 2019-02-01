@@ -60,8 +60,8 @@ public class DefaultCourtAllocator implements CourtAllocator {
     }
 
     @Override
-    public String selectCourtForGivenDivorceReason(Optional<String> reasonForDivorce) {
-        return reasonForDivorce
+    public String selectCourtForGivenDivorceFact(Optional<String> divorceFact) {
+        return divorceFact
                 .map(courtPerReasonForDivorce::get)
                 .orElseGet(this::selectCourtRandomly);
     }

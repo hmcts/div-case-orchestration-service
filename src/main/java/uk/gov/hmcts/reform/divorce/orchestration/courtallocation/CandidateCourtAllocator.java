@@ -25,9 +25,10 @@ public class CandidateCourtAllocator implements CourtAllocator {
     }
 
     @Override
-    public String selectCourtForGivenDivorceReason(Optional<String> reasonForDivorce) {
+    public String selectCourtForGivenDivorceFact(Optional<String> divorceFact) {//TODO - happy using Optionals but maybe the parameter should just be a string - since I always expect it, but don't need it to make a decision
         //TODO - make tests pass
-        return null;
+        return divorceFact.map(factSpecificCourtWeightedDistributor::selectCourt)
+            .orElseGet(genericCourtWeightedDistributor::selectCourt);
     }
 
 }

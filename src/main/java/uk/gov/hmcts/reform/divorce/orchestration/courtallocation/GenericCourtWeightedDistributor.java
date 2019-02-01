@@ -5,4 +5,9 @@ package uk.gov.hmcts.reform.divorce.orchestration.courtallocation;
  * configured to be allocated to courts in a specific way.
  */
 public class GenericCourtWeightedDistributor {
+
+    public String selectCourt() {
+        return null;
+    }
+
 }
