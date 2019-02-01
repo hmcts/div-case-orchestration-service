@@ -21,7 +21,7 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.17.0'
     id 'io.spring.dependency-management' version '1.0.6.RELEASE'
     id 'jacoco'
-    id 'org.owasp.dependencycheck' version '3.2.1'
+    id 'org.owasp.dependencycheck' version '4.0.2'
     id 'com.jfrog.bintray' version '1.8.0'
     id 'org.sonarqube' version '2.5'
     id 'org.springframework.boot' version '2.0.5.RELEASE'
@@ -128,7 +128,8 @@ def versions = [
         ccdStoreClient                  : '4.1.0',
         javaxWsRs                       : '2.1.1',
         jsonPathAssert                  : '2.2.0',
-        jacksonDatabind                 : '2.9.8'
+        jacksonDatabind                 : '2.9.8',
+        guava                           : '27.0.1-jre'
 ]
 
 dependencies {
@@ -184,6 +185,18 @@ dependencies {
     compile group: 'org.pitest', name: 'pitest', version: versions.pitest
     compile group:'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
     compile group:'org.codehaus.sonar-plugins', name:'sonar-pitest-plugin', version: versions.sonarPitest
+
+    compile (group: 'com.google.guava', name:'guava', version: versions.guava) {
+	        force = true
+	}
+
+    compile (group: 'org.bouncycastle', name:'bcpkix-jdk15on', version: '1.60') {
+	        force = true
+	}
+
+    compile (group: 'org.springframework.security', name:'spring-security-rsa', version: '1.0.8.RELEASE') {
+	        force = true
+	}
 
     //integration test
     integrationTestCompile group: 'com.mashape.unirest', name: 'unirest-java', version: versions.unirest
