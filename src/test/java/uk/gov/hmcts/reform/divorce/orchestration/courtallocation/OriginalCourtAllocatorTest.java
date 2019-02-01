@@ -11,8 +11,10 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-public class PFEClonedCourtAllocatorTest {
-
+/*
+ * These are the tests copied from PFE
+ */
+public class OriginalCourtAllocatorTest {
 
     private Map<String, Double> caseDistribution;
     private Map<String, Map> courts;
@@ -32,8 +34,6 @@ public class PFEClonedCourtAllocatorTest {
         courts = defineCourts();
 
         expectedFactsCourtPercentage = defineExpectedFactsCourtPercentage();
-
-        //TODO - tempConfig = cloneDeep(CONF.commonProps);
     }
 
     private Map<String, Map> defineCourts() {
@@ -115,24 +115,24 @@ public class PFEClonedCourtAllocatorTest {
         return expectedFactsCourtPercentage;
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = RuntimeException.class)
     public void errorWhenTotalFactsAllocationGreaterThanCourtAllocation() {
         Map<String, Map>  localCourts = new HashMap(courts);
         Map ctsc = localCourts.get("CTSC");
         Map divorceFactsRatio = (Map) ctsc.get("divorceFactsRatio");
         divorceFactsRatio.put("adultery", 0.8);
 
-        CourtAllocator pfeClonedCourtAllocator = new PFEClonedCourtAllocator(caseDistribution, localCourts);
+        new OriginalCourtAllocator(caseDistribution, localCourts);
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = RuntimeException.class)
     public void errorWhenFactsAllocationGreaterThanOneHundredPercent() {
         Map<String, Map>  localCourts = new HashMap(courts);
         Map ctsc = localCourts.get("southWest");
         Map divorceFactsRatio = (Map) ctsc.get("divorceFactsRatio");
         divorceFactsRatio.put("unreasonable-behaviour", 0.4);
 
-        CourtAllocator pfeClonedCourtAllocator = new PFEClonedCourtAllocator(caseDistribution, localCourts);
+        new OriginalCourtAllocator(caseDistribution, localCourts);
     }
 
     @Test
@@ -147,10 +147,10 @@ public class PFEClonedCourtAllocatorTest {
         divorceFactsRatio.put("separation-2-years", 0.0);
         divorceFactsRatio.put(fact, 1.0);
 
-        CourtAllocator pfeClonedCourtAllocator = new PFEClonedCourtAllocator(caseDistribution, localCourts);
+        CourtAllocator courtAllocator = new OriginalCourtAllocator(caseDistribution, localCourts);
 
         for (int i = 0; i < iterations; i++) {
-            assertThat(pfeClonedCourtAllocator.selectCourtForGivenDivorceReason(Optional.of(fact)), is(court));
+            assertThat(courtAllocator.selectCourtForGivenDivorceReason(Optional.of(fact)), is(court));
         }
     }
 
@@ -159,7 +159,7 @@ public class PFEClonedCourtAllocatorTest {
         double count = 1000000;
 
         Map<String, Map> localCourts = new HashMap(courts);
-        CourtAllocator pfeClonedCourtAllocator = new PFEClonedCourtAllocator(caseDistribution, localCourts);
+        CourtAllocator courtAllocator = new OriginalCourtAllocator(caseDistribution, localCourts);
 
         Map<String, Map<String, Integer>> factsAllocation = new HashMap();
 
@@ -171,7 +171,7 @@ public class PFEClonedCourtAllocatorTest {
             });
 
             for (int i = 0; i < (count * caseDistribution.get(fact)); i++) {
-                String selectedCourt = pfeClonedCourtAllocator.selectCourtForGivenDivorceReason(Optional.of(fact));
+                String selectedCourt = courtAllocator.selectCourtForGivenDivorceReason(Optional.of(fact));
                 factDetail.put(selectedCourt, factDetail.get(selectedCourt) + 1);
             }
             factsAllocation.put(fact, factDetail);

@@ -13,7 +13,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class PFEClonedCourtAllocator implements CourtAllocator {
+//TODO - only send one implementation of this
+public class OriginalCourtAllocator implements CourtAllocator {
 
     private Map<String, Double> caseDistribution;
     private Map<String, Map> courts;
@@ -24,7 +25,7 @@ public class PFEClonedCourtAllocator implements CourtAllocator {
 
     private final Map<String, EnumeratedDistribution<String>> enumeratedDistributions;
 
-    public PFEClonedCourtAllocator(Map<String, Double> caseDistribution, Map<String, Map> courts) {
+    public OriginalCourtAllocator(Map<String, Double> caseDistribution, Map<String, Map> courts) {
         this.caseDistribution = caseDistribution;
         this.courts = courts;
 
