@@ -113,6 +113,18 @@ public class RetrieveCaseITest {
     }
 
     @Test
+    public void givenMultipleCases_whenGetCase_thenPropagateException() throws Exception {
+        stubGetMultipleCaseFromCMS();
+
+        webClient.perform(get(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .param(CHECK_CCD, String.valueOf(TEST_CHECK_CCD))
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isMultipleChoices())
+            .andExpect(content().string(""));
+    }
+
+    @Test
     public void givenAllGoesWellProceedAsExpected_whenGetCase_thenPropagateException() throws Exception {
         stubGetCaseFromCMS(CASE_DETAILS);
 
@@ -138,11 +150,15 @@ public class RetrieveCaseITest {
 
     private void stubGetCaseFromCMS(HttpStatus status, String message) {
         maintenanceServiceServer.stubFor(WireMock.get(GET_CASE_CONTEXT_PATH)
-            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-            .willReturn(aResponse()
-                .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withBody(message)));
+                .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(status.value())
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                        .withBody(message)));
+    }
+
+    private void stubGetMultipleCaseFromCMS() {
+        stubGetCaseFromCMS(HttpStatus.MULTIPLE_CHOICES, "");
     }
 
     private void stubFormatterServerEndpoint() {

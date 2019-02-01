@@ -39,7 +39,7 @@ public class GenericEmailNotificationUTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void whenExecuteEmailTask_thenEmailServiceIsCalled() throws Exception {
+    public void whenExecuteEmailTask_thenEmailServiceIsCalled() throws NotificationClientException {
         TaskContext context = new DefaultTaskContext();
 
         Map<String, String>  vars = mock(Map.class);
@@ -60,7 +60,7 @@ public class GenericEmailNotificationUTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void givenError_whenExecuteEmailTask_thenReturnErrorInTaskContext() throws Exception {
+    public void givenError_whenExecuteEmailTask_thenReturnErrorInTaskContext() throws NotificationClientException {
         TaskContext context = new DefaultTaskContext();
 
         Map<String, String>  vars = mock(Map.class);

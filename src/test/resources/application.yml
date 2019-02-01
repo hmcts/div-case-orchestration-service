@@ -8,14 +8,14 @@ spring:
   resources:
     static-locations:
 
+jackson:
+  deserialization:
+    ACCEPT_SINGLE_VALUE_AS_ARRAY: true
+  serialization:
+    FAIL_ON_EMPTY_BEANS: false
+    
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
-
-aos:
-  responded:
-    days-to-complete: 7
-    awaiting-answer:
-      days-to-respond: 21
 
 case:
   formatter:
@@ -119,9 +119,9 @@ court:
                 \"poBox\": \"PO Box 10447\",
                 \"postCode\": \"NG2 9QN\",
                 \"openingHours\": \"Telephone Enquiries from: 8.30am to 5pm\",
-                \"email\": \"divorce@justice.gov.uk\",
+                \"email\": \"divorcecase@justice.gov.uk\",
                 \"phoneNumber\": \"0300 303 0642\",
-                \"siteId\": \"CTSC\"
+                \"siteId\": \"AA01\"
               }
            }"
 
@@ -158,6 +158,14 @@ http:
     timeout: 60000
     request:
       timeout: 60000
+
+health:
+  check:
+    http:
+      connect:
+        timeout: 5000
+        request:
+          timeout: 5000
 
 documentation:
   swagger:

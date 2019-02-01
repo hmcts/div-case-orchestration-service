@@ -8,7 +8,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
@@ -26,14 +25,18 @@ import java.util.Collections;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.delete;
+import static com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -52,7 +55,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
@@ -69,10 +71,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public abstract class LinkRespondentIdamITest extends IdamTestSupport {
-    private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveCase";
+    private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
     private static final String API_URL = "/link-respondent/" + TEST_CASE_ID + "/" + TEST_PIN;
     private static final String LINK_RESPONDENT_CONTEXT_PATH = "/casemaintenance/version/1/link-respondent/"
         + TEST_CASE_ID + "/" + TEST_LETTER_HOLDER_ID_CODE;
+    private static final String UNLINK_USER_CONTEXT_PATH = "/casemaintenance/version/1/link-respondent/"
+            + TEST_CASE_ID;
     private static final String UPDATE_CONTEXT_PATH_AOS = String.format(
         "/casemaintenance/version/1/updateCase/%s/%s",
         TEST_CASE_ID,
@@ -97,9 +101,6 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
             .caseData(CASE_DATA)
             .build();
 
-    @Value("${aos.responded.days-to-complete}")
-    private int daysToComplete;
-
     @Autowired
     private MockMvc webClient;
 
@@ -114,8 +115,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         caseDataAos = ImmutableMap.of(
             RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
             RECEIVED_AOS_FROM_RESP, YES_VALUE,
-            RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate(),
-            CCD_DUE_DATE, CcdUtil.getCurrentDatePlusDays(daysToComplete)
+            RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
         );
         caseDataNonAos = ImmutableMap.of(
             RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
@@ -216,6 +216,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
         stubMaintenanceServerEndpointForUpdateAos(BAD_REQUEST, TEST_ERROR);
         stubRetrieveCaseFromCMS(CASE_DETAILS_AOS);
+        stubMaintenanceServerEndpointForRemoveUser(OK);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -256,6 +257,24 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
             .andExpect(status().isOk());
     }
 
+    @Test
+    public void givenErrorUpdatingRespondentDetails_whenLinkRespondent_thenNoChangesAreDone() throws Exception {
+        stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
+        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
+        stubMaintenanceServerEndpointForLinkRespondent(OK);
+        stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
+        stubMaintenanceServerEndpointForUpdateNotAos(INTERNAL_SERVER_ERROR, convertObjectToJsonString(caseDataNonAos));
+        stubRetrieveCaseFromCMS(CASE_DETAILS_NO_AOS);
+        stubMaintenanceServerEndpointForRemoveUser(OK);
+
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
+                .andExpect(status().is5xxServerError());
+
+        verify(deleteRequestedFor(urlEqualTo(UNLINK_USER_CONTEXT_PATH)));
+    }
 
     private void stubMaintenanceServerEndpointForLinkRespondent(HttpStatus status) {
         maintenanceServiceServer.stubFor(post(LINK_RESPONDENT_CONTEXT_PATH)
@@ -284,6 +303,14 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withBody(response)));
+    }
+
+    private void stubMaintenanceServerEndpointForRemoveUser(HttpStatus status) {
+        maintenanceServiceServer.stubFor(delete(urlEqualTo(UNLINK_USER_CONTEXT_PATH))
+                .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(status.value())
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)));
     }
 
     private void stubRetrieveCaseFromCMS(CaseDetails caseDetails) {

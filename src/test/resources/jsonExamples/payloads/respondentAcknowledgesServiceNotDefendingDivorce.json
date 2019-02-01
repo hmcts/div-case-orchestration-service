@@ -3,12 +3,13 @@
     "id": "0123456789012345",
     "case_data": {
       "RespEmailAddress": "respondent@divorce.co.uk",
-      "RespDefendsDivorce": "No",
+      "RespWillDefendDivorce": "No",
       "D8RespondentFirstName": "Sarah",
       "D8RespondentLastName": "Jones",
       "D8InferredPetitionerGender": "male",
       "D8DivorceUnit": "westMidlands",
-      "ReceivedAOSfromRespDate": "2018-09-20"
+      "ReceivedAOSfromRespDate": "2018-09-20",
+      "D8caseReference": "LV17D80101"
     }
   }
 }

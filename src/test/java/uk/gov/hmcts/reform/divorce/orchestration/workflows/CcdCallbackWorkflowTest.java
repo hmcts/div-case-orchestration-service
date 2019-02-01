@@ -75,6 +75,7 @@ public class CcdCallbackWorkflowTest {
 
         payload = new HashMap<>();
         payload.put("D8ScreenHasMarriageBroken", "YES");
+        payload.put("D8DivorceUnit", "serviceCentre");
         payload.put(PIN,TEST_PIN);
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -98,13 +99,33 @@ public class CcdCallbackWorkflowTest {
 
 
     @Test
-    public void givenAosInvitationGenerateIsTrue_whenRun_thenProceedAsExpected() throws WorkflowException {
+    public void givenAosInvitationGenerateIsTrueAndIsServiceCentre_whenRun_thenProceedAsExpected() throws WorkflowException {
         //Given
         when(validateCaseData.execute(context, payload)).thenReturn(payload);
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(idamPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
+        when(caseFormatterAddPDF.execute(context, payload)).thenReturn(payload);
+
+        //When
+        Map<String, Object> response = ccdCallbackWorkflow.run(createEventRequest, AUTH_TOKEN, true);
+
+        //Then
+        assertNotNull(response);
+        assertEquals(3, response.size());
+        assertTrue(response.containsKey(PIN));
+    }
+
+    @Test
+    public void givenAosInvitationGenerateIsTrueAndIsNotServiceCentre_whenRun_thenProceedAsExpected() throws WorkflowException {
+        payload.remove("D8DivorceUnit");
+
+        //Given
+        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(setIssueDate.execute(context, payload)).thenReturn(payload);
+        when(petitionGenerator.execute(context, payload)).thenReturn(payload);
+        when(idamPinGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddPDF.execute(context, payload)).thenReturn(payload);
 
         //When
@@ -130,7 +151,7 @@ public class CcdCallbackWorkflowTest {
 
         //Then
         assertNotNull(response);
-        assertEquals(2, response.size());
+        assertEquals(3, response.size());
         assertTrue(response.containsKey(PIN));
 
         verifyZeroInteractions(respondentLetterGenerator);

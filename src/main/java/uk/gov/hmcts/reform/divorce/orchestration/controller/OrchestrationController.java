@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
@@ -231,7 +232,7 @@ public class OrchestrationController {
         @ApiResponse(code = 200, message = "Case details fetched successfully",
             response = CaseDataResponse.class),
         @ApiResponse(code = 300, message = "Multiple Cases"),
-        @ApiResponse(code = 400, message = "No Case found"),
+        @ApiResponse(code = 404, message = "No Case found"),
         @ApiResponse(code = 400, message = "Bad Request")
         })
     public ResponseEntity<CaseDataResponse> retrieveCase(

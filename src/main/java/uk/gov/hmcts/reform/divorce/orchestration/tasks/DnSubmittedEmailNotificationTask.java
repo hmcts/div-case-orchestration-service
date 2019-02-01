@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
@@ -38,7 +38,7 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> data) {
 
-        String caseId = Objects.toString(context.getTransientObject(CASE_ID_JSON_KEY), null);
+        String caseId = Objects.toString(data.get(D_8_CASE_REFERENCE), null);
         String firstName = Objects.toString(data.get(D_8_PETITIONER_FIRST_NAME), null);
         String lastName = Objects.toString(data.get(D_8_PETITIONER_LAST_NAME), null);
         String emailAddress = Objects.toString(data.get(D_8_PETITIONER_EMAIL), null);

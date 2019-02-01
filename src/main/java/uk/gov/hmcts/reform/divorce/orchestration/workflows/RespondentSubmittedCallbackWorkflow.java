@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
@@ -40,10 +41,10 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
 
     public Map<String, Object> run(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException {
         CaseDetails caseDetails = caseDetailsRequest.getCaseDetails();
-        String ref = caseDetailsRequest.getCaseDetails().getCaseId();
+        String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
 
-        String firstName = getFieldAsStringOrNull(caseDetails,D_8_PETITIONER_FIRST_NAME);
-        String lastName = getFieldAsStringOrNull(caseDetails,D_8_PETITIONER_LAST_NAME);
+        String firstName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_FIRST_NAME);
+        String lastName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_LAST_NAME);
         String relationship = getRespondentRelationship(caseDetails);
 
         Map<String, String> notificationTemplateVars = new HashMap<>();

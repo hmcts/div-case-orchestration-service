@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.management.monitoring.health;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.http.HttpEntity;
@@ -19,7 +20,8 @@ public abstract class WebServiceHealthCheck implements HealthIndicator {
     private final RestTemplate restTemplate;
     private final String uri;
 
-    WebServiceHealthCheck(HttpEntityFactory httpEntityFactory, RestTemplate restTemplate, String uri) {
+    WebServiceHealthCheck(HttpEntityFactory httpEntityFactory,
+                          @Qualifier("healthCheckRestTemplate") RestTemplate restTemplate, String uri) {
         this.httpEntityFactory = httpEntityFactory;
         this.restTemplate = restTemplate;
         this.uri = uri;
