@@ -18,7 +18,7 @@ import static org.hamcrest.number.BigDecimalCloseTo.closeTo;
 /*
  * These are the tests copied from PFE
  */
-public class CandidateCourtAllocatorTest {
+public class CandidateCourtAllocatorTestWithOriginalValues {
 
     private BigDecimal errorMargin = new BigDecimal("0.005");
 
@@ -31,7 +31,7 @@ public class CandidateCourtAllocatorTest {
     @Before
     public void setUp() {
         desiredWorkloadPerCourt = new HashMap<>();//TODO - I'll have to change this as it makes no sense - double check with Qiang
-        desiredWorkloadPerCourt.put("CTSC", new BigDecimal("0.4"));//TODO - change CTSC to serviceCentre
+        desiredWorkloadPerCourt.put("CTSC", new BigDecimal("0.51"));//TODO - change CTSC to serviceCentre
         desiredWorkloadPerCourt.put("eastMidlands", new BigDecimal("0"));
         desiredWorkloadPerCourt.put("westMidlands", new BigDecimal("0"));
         desiredWorkloadPerCourt.put("southWest", new BigDecimal("0.30"));
@@ -51,7 +51,7 @@ public class CandidateCourtAllocatorTest {
         specificCourtsAllocationPerFact.put("unreasonable-behaviour", unreasonableBehaviourCourtsAllocation);
 
         HashMap<String, BigDecimal> separation5YearsCourtsAllocation = new HashMap<>();
-        separation5YearsCourtsAllocation.put("CTSC", new BigDecimal("0.11"));
+        separation5YearsCourtsAllocation.put("CTSC", new BigDecimal("1"));
         specificCourtsAllocationPerFact.put("separation-5-years", separation5YearsCourtsAllocation);
 
         expectedFactsCourtPercentage = defineExpectedFactsCourtPercentage();
@@ -69,27 +69,27 @@ public class CandidateCourtAllocatorTest {
         expectedFactsCourtPercentage.put("unreasonable-behaviour", unreasonableBehaviourFactsCourtPercentage);
 
         HashMap<Object, Double> separation2YearsFactsCourtPercentage = new HashMap<>();
-        separation2YearsFactsCourtPercentage.put("CTSC", 0.042);//TODO - check if old tests pass
+        separation2YearsFactsCourtPercentage.put("CTSC", 0.0);
         separation2YearsFactsCourtPercentage.put("eastMidlands", 0.0);
         separation2YearsFactsCourtPercentage.put("westMidlands", 0.0);
-        separation2YearsFactsCourtPercentage.put("southWest", 0.164);
-        separation2YearsFactsCourtPercentage.put("northWest", 0.164);
+        separation2YearsFactsCourtPercentage.put("southWest", 0.185);
+        separation2YearsFactsCourtPercentage.put("northWest", 0.185);
         expectedFactsCourtPercentage.put("separation-2-years", separation2YearsFactsCourtPercentage);
 
         HashMap<Object, Double> separation5YearsFactsCourtPercentage = new HashMap<>();
-        separation5YearsFactsCourtPercentage.put("CTSC", 0.082);
+        separation5YearsFactsCourtPercentage.put("CTSC", 0.21);
         separation5YearsFactsCourtPercentage.put("eastMidlands", 0.0);
         separation5YearsFactsCourtPercentage.put("westMidlands", 0.0);
-        separation5YearsFactsCourtPercentage.put("southWest", 0.093);//TODO - not sure this is right... - problem is - just because 11% of 5ys cases are handled by CTSC, it doesn't mean that the other ones shouldn't also be handled by it as unspecified courts
-        separation5YearsFactsCourtPercentage.put("northWest", 0.093);
+        separation5YearsFactsCourtPercentage.put("southWest", 0.0);
+        separation5YearsFactsCourtPercentage.put("northWest", 0.0);
         expectedFactsCourtPercentage.put("separation-5-years", separation5YearsFactsCourtPercentage);
 
         HashMap<Object, Double> adulteryFactsCourtPercentage = new HashMap<>();
-        adulteryFactsCourtPercentage.put("CTSC", 0.013);
+        adulteryFactsCourtPercentage.put("CTSC", 0.0);
         adulteryFactsCourtPercentage.put("eastMidlands", 0.0);
         adulteryFactsCourtPercentage.put("westMidlands", 0.0);
-        adulteryFactsCourtPercentage.put("southWest", 0.049);
-        adulteryFactsCourtPercentage.put("northWest", 0.049);
+        adulteryFactsCourtPercentage.put("southWest", 0.055);
+        adulteryFactsCourtPercentage.put("northWest", 0.055);
         expectedFactsCourtPercentage.put("adultery", adulteryFactsCourtPercentage);
 
         HashMap<Object, Double> desertionFactsCourtPercentage = new HashMap<>();

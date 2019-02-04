@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.courtallocation;
 
+import org.hamcrest.number.BigDecimalCloseTo;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -8,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.lang.String.format;
+import static java.math.BigDecimal.ONE;
+import static java.math.BigDecimal.ZERO;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.IsCloseTo.closeTo;
@@ -98,11 +102,6 @@ public class OriginalCourtAllocatorTest {
 
 
         HashMap<Object, Double> adulteryFactsCourtPercentage = new HashMap<>();
-        adulteryFactsCourtPercentage.put("CTSC", 0.0);
-        adulteryFactsCourtPercentage.put("eastMidlands", 0.0);
-        adulteryFactsCourtPercentage.put("westMidlands", 0.0);
-        adulteryFactsCourtPercentage.put("southWest", 0.055);
-        adulteryFactsCourtPercentage.put("northWest", 0.055);
         expectedFactsCourtPercentage.put("adultery", adulteryFactsCourtPercentage);
 
         HashMap<Object, Double> desertionFactsCourtPercentage = new HashMap<>();
@@ -193,7 +192,7 @@ public class OriginalCourtAllocatorTest {
         CourtAllocator courtAllocator = new OriginalCourtAllocator(caseDistribution, localCourts);
 
         Map<String, Map<String, Integer>> factsAllocation = new HashMap();
-
+        HashMap<String, BigDecimal> courtsDistribution = new HashMap<>();
         caseDistribution.keySet().forEach(fact -> {
             Map<String, Integer> factDetail = factsAllocation.getOrDefault(fact, new HashMap<>());
 
@@ -203,9 +202,22 @@ public class OriginalCourtAllocatorTest {
 
             for (int i = 0; i < (count * caseDistribution.get(fact)); i++) {
                 String selectedCourt = courtAllocator.selectCourtForGivenDivorceFact(Optional.of(fact));
+
+                BigDecimal casesPerCourt = courtsDistribution.getOrDefault(selectedCourt, ZERO);
+                courtsDistribution.put(selectedCourt, casesPerCourt.add(ONE));
+
                 factDetail.put(selectedCourt, factDetail.get(selectedCourt) + 1);
             }
             factsAllocation.put(fact, factDetail);
+        });
+
+        //Check court allocation - TODO - maybe I should remove it later
+        BigDecimal acceptableError = new BigDecimal(errorMargin).multiply(new BigDecimal(count));
+        courts.entrySet().stream().forEach(e -> {
+            assertThat(format("Court %s was not selected as many times as it was expected to have been.", e.getKey()),
+                courtsDistribution.getOrDefault(e.getKey(), ZERO),
+                BigDecimalCloseTo.closeTo(new BigDecimal((Double) e.getValue().get("weight")).multiply(new BigDecimal(count)), acceptableError)
+            );
         });
 
         caseDistribution.keySet().forEach(fact -> {
