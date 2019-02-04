@@ -42,19 +42,20 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
                 ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "issued-case.json", Map.class),
                 citizenUser
         );
-        String caseId = issuedCase.getId().toString();
 
         // testAwaitingDecreeNisi
         // dnReceived
         // refertoLegalAdvisor
         // dnRefused (AwaitingConsideration)
+        String caseId = issuedCase.getId().toString();
         final CaseDetails caseDetails = submitCase("submit-complete-case.json", citizenUser);
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, citizenUser);
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, "aosSubmittedUndefended", citizenUser);
+        updateCaseForCitizen(caseId, null, TEST_AOS_STARTED_EVENT_ID, citizenUser);
+        updateCaseForCitizen(caseId, null, "aosSubmittedUndefended", citizenUser);
 
         submitDnCase(citizenUser.getAuthToken(), issuedCase.getId(),
             "dn-submit.json", dnContextPath);
+
         updateCase(caseId, null, "refertoLegalAdvisor");
         updateCase(caseId, null, "dnRefused");
 

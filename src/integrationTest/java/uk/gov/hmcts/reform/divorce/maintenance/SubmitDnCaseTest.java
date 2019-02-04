@@ -1,25 +1,17 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
-import org.apache.http.entity.ContentType;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
-import uk.gov.hmcts.reform.divorce.util.RestUtil;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
-import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
 public class SubmitDnCaseTest extends CcdSubmissionSupport {
-    private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-dn/";
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
 
     @Value("${case.orchestration.maintenance.submit-dn.context-path}")

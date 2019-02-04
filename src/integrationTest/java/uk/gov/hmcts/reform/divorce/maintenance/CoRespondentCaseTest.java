@@ -51,7 +51,8 @@ public class CoRespondentCaseTest extends RetrieveAosCaseSupport {
         JSONAssert.assertEquals(requestCoRespondentAnswersJson, responseCoRespondentAnswersJson, false);
     }
 
-    private void updateCaseWithCoRespondentAnswers(UserDetails userDetails, CaseDetails caseDetails, String requestBody) {
+    private void updateCaseWithCoRespondentAnswers(
+        UserDetails userDetails, CaseDetails caseDetails, String requestBody) {
         Response cosResponse = submitAosCase(userDetails.getAuthToken(), caseDetails.getId(), requestBody);
 
         assertThat(cosResponse.getStatusCode(), is(OK.value()));
