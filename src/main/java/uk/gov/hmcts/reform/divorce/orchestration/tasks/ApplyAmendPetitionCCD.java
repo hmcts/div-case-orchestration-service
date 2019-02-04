@@ -11,7 +11,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
 @Slf4j
