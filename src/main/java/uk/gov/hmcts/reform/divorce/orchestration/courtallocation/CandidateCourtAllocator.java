@@ -20,7 +20,7 @@ public class CandidateCourtAllocator implements CourtAllocator {
         this.divorceRatioPerFact = divorceRatioPerFact;
         this.specificCourtsAllocationPerFact = specificCourtsAllocationPerFact;
 
-        this.factSpecificCourtWeightedDistributor = new FactSpecificCourtWeightedDistributor();
+        this.factSpecificCourtWeightedDistributor = new FactSpecificCourtWeightedDistributor(specificCourtsAllocationPerFact);
         this.genericCourtWeightedDistributor = new GenericCourtWeightedDistributor();
     }
 
