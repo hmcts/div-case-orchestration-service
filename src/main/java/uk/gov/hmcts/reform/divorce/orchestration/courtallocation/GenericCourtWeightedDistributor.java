@@ -24,25 +24,70 @@ public class GenericCourtWeightedDistributor {//TODO - maybe unspecified, rather
     private EnumeratedDistribution<String> genericCourtDistribution;
 
     public GenericCourtWeightedDistributor(Map<String, BigDecimal> desiredWorkloadPerCourt, Map<String, BigDecimal> divorceRatioPerFact, Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact) {
-        Map<String, BigDecimal> finalUnspecifiedCourtsWorkload = new HashMap<>(desiredWorkloadPerCourt);
+        final Map<String, BigDecimal> courtsWorkload = new HashMap<>(desiredWorkloadPerCourt);
 
         if (!MapUtils.isEmpty(specificCourtsAllocationPerFact)) {
-            Map<String, BigDecimal> percentageOfCasesPerSpecifiedCourt = retrievePercentageOfCasesPerSpecifiedCourt(divorceRatioPerFact, specificCourtsAllocationPerFact);
+            Map<String, BigDecimal> percentageOfCasesPerFactSpecificCourt = retrievePercentageOfCasesPerSpecifiedCourt(divorceRatioPerFact, specificCourtsAllocationPerFact);
+            Set<String> specifiedCourts = percentageOfCasesPerFactSpecificCourt.keySet();
 
-            //Remaining percentage
-            BigDecimal remainingPercentageOfCasesToBeHandledByUnspecifiedCourts = calculateRemainingPercentageToBeHandledByUnspecifiedCourts(percentageOfCasesPerSpecifiedCourt);
+            //Deduct from specified courts the percentage being handled due to specific facts
+            Map<String, BigDecimal> specifiedCourtsDiscountedGenericAllocation = courtsWorkload.entrySet().stream()
+                .filter(e -> specifiedCourts.contains(e.getKey()))
+                .peek(e -> {
+                    BigDecimal currentPercentage = e.getValue();
+                    BigDecimal percentageOfCasesWithSpecifiedFactHandledByCourt = percentageOfCasesPerFactSpecificCourt.getOrDefault(e.getKey(), BigDecimal.ZERO);//TODO - cater for cases that end up with less than 0%
+                    BigDecimal discountedPercentage = currentPercentage.subtract(percentageOfCasesWithSpecifiedFactHandledByCourt);
+                    e.setValue(discountedPercentage);
+                }).collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    Map.Entry::getValue
+                ));//TODO - could be stream?
 
-            //Get percentage to be handled by unspecified courts
-            Set<String> specifiedCourts = percentageOfCasesPerSpecifiedCourt.keySet();
-            finalUnspecifiedCourtsWorkload = desiredWorkloadPerCourt.entrySet().stream()
+            Map<String, BigDecimal> unspecifiedCourtsGenericAllocation = courtsWorkload.entrySet().stream()
                 .filter(e -> !specifiedCourts.contains(e.getKey()))
                 .collect(Collectors.toMap(
                     Map.Entry::getKey,
-                    e -> e.getValue().divide(remainingPercentageOfCasesToBeHandledByUnspecifiedCourts, 3, DOWN)
+                    Map.Entry::getValue
+                ));//TODO - could be stream?
+//            Stream<Map.Entry<String, BigDecimal>> deductedGenericCourtAllocation = percentageOfCasesPerSpecifiedCourt.entrySet().stream().peek(e -> {
+//                BigDecimal courtWorkloadPercentage = courtsWorkload.get(e.getKey());
+//                BigDecimal percentageOfCasesWithSpecifiedFactHandledByCourt = e.getValue();
+//                BigDecimal discountedPercentage = courtWorkloadPercentage.subtract(percentageOfCasesWithSpecifiedFactHandledByCourt);
+//                e.setValue(discountedPercentage);
+//            });
+
+            //Remaining percentage
+            BigDecimal percentageOfTotalCasesForAllSpecifiedCourts = percentageOfCasesPerFactSpecificCourt.values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal sumOfPercentagesInGenericDistributionForSpecifiedCourts = specifiedCourtsDiscountedGenericAllocation.values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);//TODO - would this be the allocated court percentage?
+            BigDecimal remainingPercentageOfCasesToBeHandledByCourts = BigDecimal.ONE.subtract(percentageOfTotalCasesForAllSpecifiedCourts)
+                //.subtract(sumOfPercentagesInGenericDistributionForSpecifiedCourts)
+                ;
+
+//            Set<String> specifiedCourts = percentageOfCasesPerSpecifiedCourt.keySet();
+
+            //Rebalance generic court allocation
+            //Get percentage to be handled by unspecified courts
+            //TODO - courts that have been specified should no longer be rebalanced
+            Map<String, BigDecimal> tempRenameMe = new HashMap<>();
+            tempRenameMe.putAll(unspecifiedCourtsGenericAllocation);
+            tempRenameMe.putAll(specifiedCourtsDiscountedGenericAllocation);
+
+            Map<String, BigDecimal> rebalancedGenericCourtAllocation = tempRenameMe.entrySet().stream()
+//                .filter(e -> !specifiedCourts.contains(e.getKey()))//TODO - Could I use anyMatch?
+                .collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    e -> e.getValue().divide(remainingPercentageOfCasesToBeHandledByCourts, 3, DOWN)
                 ));
+
+//            rebalancedGenericCourtAllocation.putAll(specifiedCourtsDiscountedGenericAllocation);
+
+            setUnspecifiedCourtsDistributionBasedOnCourtsWorkload(rebalancedGenericCourtAllocation);
+        } else {
+            setUnspecifiedCourtsDistributionBasedOnCourtsWorkload(courtsWorkload);
         }
 
-        setUnspecifiedCourtsDistributionBasedOnCourtsWorkload(finalUnspecifiedCourtsWorkload);
         //TODO - test what happens if enumeration items don't reach 100% or pass 100% percent - this can happen by a bit
     }
 
@@ -66,12 +111,6 @@ public class GenericCourtWeightedDistributor {//TODO - maybe unspecified, rather
             }
         }
         return percentageOfTotalCasesTakenBySpecifiedCourts;
-    }
-
-    private BigDecimal calculateRemainingPercentageToBeHandledByUnspecifiedCourts(Map<String, BigDecimal> percentageOfTotalCasesPerSpecifiedCourt) {
-        BigDecimal percentageOfTotalCasesForAllSpecifiedCourts = percentageOfTotalCasesPerSpecifiedCourt.values().stream()
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-        return BigDecimal.ONE.subtract(percentageOfTotalCasesForAllSpecifiedCourts);
     }
 
     private void setUnspecifiedCourtsDistributionBasedOnCourtsWorkload(Map<String, BigDecimal> workloadPerCourt) {

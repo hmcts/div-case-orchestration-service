@@ -25,7 +25,7 @@ public class GenericCourtWeightedDistributorTest {
     @Before
     public void setUp() {
         desiredWorkloadPerCourt = new HashMap<>();
-        desiredWorkloadPerCourt.put("court1", new BigDecimal("0.3"));//TODO - understand how this works in PFE - for now, let's use percentage
+        desiredWorkloadPerCourt.put("court1", new BigDecimal("0.3"));
         desiredWorkloadPerCourt.put("court2", new BigDecimal("0.3"));
         desiredWorkloadPerCourt.put("court3", new BigDecimal("0.4"));
 
