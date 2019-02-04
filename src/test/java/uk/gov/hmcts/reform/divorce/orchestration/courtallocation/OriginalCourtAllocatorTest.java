@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.number.IsCloseTo.closeTo;
 
 /*
  * These are the tests copied from PFE
@@ -180,6 +181,42 @@ public class OriginalCourtAllocatorTest {
         caseDistribution.keySet().forEach(fact -> {
             localCourts.keySet().forEach(courtName -> {
                 assertThat("Fact " + fact + " for court " + courtName + " didn't match", new BigDecimal(Math.abs(expectedFactsCourtPercentage.get(fact).get(courtName).doubleValue() - (factsAllocation.get(fact).get(courtName).doubleValue() / count))).compareTo(new BigDecimal(errorMargin)) == -1, is(true));
+            });
+        });
+    }
+
+    @Test
+    public void givenOneMillionRecordsTheDataShouldBeDistributedAsExpected_CandidateVersion() {//TODO - candidate version - delete this before merging to master
+        double count = 1000000;
+
+        Map<String, Map> localCourts = new HashMap(courts);
+        CourtAllocator courtAllocator = new OriginalCourtAllocator(caseDistribution, localCourts);
+
+        Map<String, Map<String, Integer>> factsAllocation = new HashMap();
+
+        caseDistribution.keySet().forEach(fact -> {
+            Map<String, Integer> factDetail = factsAllocation.getOrDefault(fact, new HashMap<>());
+
+            localCourts.keySet().forEach(courtName -> {
+                factDetail.put(courtName, 0);
+            });
+
+            for (int i = 0; i < (count * caseDistribution.get(fact)); i++) {
+                String selectedCourt = courtAllocator.selectCourtForGivenDivorceFact(Optional.of(fact));
+                factDetail.put(selectedCourt, factDetail.get(selectedCourt) + 1);
+            }
+            factsAllocation.put(fact, factDetail);
+        });
+
+        caseDistribution.keySet().forEach(fact -> {
+            localCourts.keySet().forEach(courtName -> {
+                double expectedPercentageOfCasesWithGivenFactDistributedToGivenCourt = expectedFactsCourtPercentage.get(fact).get(courtName).doubleValue();//TODO - total of cases?
+                double actualAllocationForGivenFactAndGivenCourt = factsAllocation.get(fact).get(courtName);//TODO - this is an int, not a double
+                double actualPercentageOfTotalCasesAllocatedToGivenFactAndCourt = actualAllocationForGivenFactAndGivenCourt / count;
+                assertThat("Fact " + fact + " for court " + courtName + " didn't match",
+                    actualPercentageOfTotalCasesAllocatedToGivenFactAndCourt,
+                    closeTo(expectedPercentageOfCasesWithGivenFactDistributedToGivenCourt, errorMargin)
+                );
             });
         });
     }

@@ -10,15 +10,16 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.number.BigDecimalCloseTo.closeTo;
 
 /*
  * These are the tests copied from PFE
  */
 public class CandidateCourtAllocatorTest {
 
-    private Map<String, Double> divorceRatioPerFact;
+    private Map<String, BigDecimal> divorceRatioPerFact;
 
-    private double errorMargin = 0.005;
+    private BigDecimal errorMargin = new BigDecimal("0.005");
     private Map<String, Map<String, Double>> expectedFactsCourtPercentage;
     private Map<String, BigDecimal> desiredWorkloadPerCourt;
     private Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact;
@@ -33,11 +34,11 @@ public class CandidateCourtAllocatorTest {
         desiredWorkloadPerCourt.put("northWest", new BigDecimal("0.30"));//TODO - isn't this a percentage? how does this work?
 
         divorceRatioPerFact = new HashMap();
-        divorceRatioPerFact.put("unreasonable-behaviour", 0.30);
-        divorceRatioPerFact.put("separation-2-years", 0.37);
-        divorceRatioPerFact.put("separation-5-years", 0.21);
-        divorceRatioPerFact.put("adultery", 0.11);
-        divorceRatioPerFact.put("desertion", 0.01);
+        divorceRatioPerFact.put("unreasonable-behaviour", new BigDecimal(0.30));
+        divorceRatioPerFact.put("separation-2-years", new BigDecimal(0.37));
+        divorceRatioPerFact.put("separation-5-years", new BigDecimal(0.21));
+        divorceRatioPerFact.put("adultery", new BigDecimal(0.11));
+        divorceRatioPerFact.put("desertion", new BigDecimal(0.01));
 
         specificCourtsAllocationPerFact = new HashMap<>();
         HashMap<String, BigDecimal> unreasonableBehaviourCourtsAllocation = new HashMap<>();
@@ -188,17 +189,16 @@ public class CandidateCourtAllocatorTest {
     public void givenOneMillionRecordsTheDataShouldBeDistributedAsExpected() {
         CourtAllocator courtAllocator = new CandidateCourtAllocator(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
 
-        Map<String, Map<String, Integer>> factsAllocation = new HashMap();
-        double count = 1000000;
-
+        BigDecimal numberOfAttempts = new BigDecimal(1000000);
+        Map<String, Map<String, Integer>> actualFactsAllocation = new HashMap();
         divorceRatioPerFact.keySet().forEach(fact -> {
-            Map<String, Integer> factDetail = factsAllocation.getOrDefault(fact, new HashMap<>());
+            Map<String, Integer> factDetail = actualFactsAllocation.getOrDefault(fact, new HashMap<>());
 
             desiredWorkloadPerCourt.keySet().forEach(courtName -> {
                 factDetail.put(courtName, 0);
             });
 
-            for (int i = 0; i < (count * divorceRatioPerFact.get(fact)); i++) {
+            for (int i = 0; i < divorceRatioPerFact.get(fact).multiply(numberOfAttempts).intValue(); i++) {
                 String selectedCourt = courtAllocator.selectCourtForGivenDivorceFact(Optional.of(fact));
 
                 if (!factDetail.containsKey(selectedCourt)) {
@@ -207,14 +207,17 @@ public class CandidateCourtAllocatorTest {
                     factDetail.put(selectedCourt, factDetail.get(selectedCourt) + 1);
                 }
             }
-            factsAllocation.put(fact, factDetail);
+            actualFactsAllocation.put(fact, factDetail);
         });
 
         divorceRatioPerFact.keySet().forEach(fact -> {
             desiredWorkloadPerCourt.keySet().forEach(courtName -> {
+                BigDecimal expectedPercentageOfCasesWithGivenFactDistributedToGivenCourt = new BigDecimal(expectedFactsCourtPercentage.get(fact).get(courtName).doubleValue());//TODO - total of cases?
+                BigDecimal actualAllocationForGivenFactAndGivenCourt = new BigDecimal(actualFactsAllocation.get(fact).get(courtName));//TODO - this is an int, not a double
+                BigDecimal actualPercentageOfTotalCasesAllocatedToGivenFactAndCourt = actualAllocationForGivenFactAndGivenCourt.divide(numberOfAttempts);
                 assertThat("Fact " + fact + " for court " + courtName + " didn't match",
-                    new BigDecimal(Math.abs(expectedFactsCourtPercentage.get(fact).get(courtName).doubleValue() - (factsAllocation.get(fact).get(courtName).doubleValue() / count))).compareTo(new BigDecimal(errorMargin)) == -1,
-                    is(true)
+                    actualPercentageOfTotalCasesAllocatedToGivenFactAndCourt,
+                    closeTo(expectedPercentageOfCasesWithGivenFactDistributedToGivenCourt, errorMargin)
                 );
             });
         });
