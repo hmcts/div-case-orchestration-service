@@ -1,57 +1,52 @@
 package uk.gov.hmcts.reform.divorce.orchestration.courtallocation;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.util.Pair;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static java.math.RoundingMode.DOWN;
 
 /**
  * This class handles court distribution for cases which have facts which were not
  * configured to be allocated to courts in a specific way.
+ * <p>
+ * The percentages in this class are relative to the total amount of cases.
  */
-public class GenericCourtWeightedDistributor {
+public class GenericCourtWeightedDistributor {//TODO - maybe unspecified, rather than generic
 
     private EnumeratedDistribution<String> genericCourtDistribution;
 
     public GenericCourtWeightedDistributor(Map<String, BigDecimal> desiredWorkloadPerCourt, Map<String, BigDecimal> divorceRatioPerFact, Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact) {
-        List<Pair<String, Double>> courtDistribution = desiredWorkloadPerCourt.entrySet().stream()
-            .map(e -> new Pair<>(e.getKey(), e.getValue().doubleValue()))
-            .collect(Collectors.toList());
-        this.genericCourtDistribution = new EnumeratedDistribution<>(courtDistribution);
+        Map<String, BigDecimal> finalUnspecifiedCourtsWorkload = new HashMap<>(desiredWorkloadPerCourt);
 
-        Map<String, BigDecimal> percentagesOfTotalCasesPerSpecifiedCourt = calculatePercentageOfTotalCasesTakenBySpecifiedCourts(divorceRatioPerFact, specificCourtsAllocationPerFact);
-        //TODO - bigdecimal is not quite right
-        //Recalculate generic distribution
+        if (!MapUtils.isEmpty(specificCourtsAllocationPerFact)) {
+            Map<String, BigDecimal> percentageOfCasesPerSpecifiedCourt = retrievePercentageOfCasesPerSpecifiedCourt(divorceRatioPerFact, specificCourtsAllocationPerFact);
 
-        //Remainder percentage
-        BigDecimal totalPercentageOfCasesTakenBySpecifiedCourts = percentagesOfTotalCasesPerSpecifiedCourt.values()
-            .stream()
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal remainderPercentageToBeHandledByUnspecifiedCourts = BigDecimal.ONE.subtract(totalPercentageOfCasesTakenBySpecifiedCourts);
+            //Remaining percentage
+            BigDecimal remainingPercentageOfCasesToBeHandledByUnspecifiedCourts = calculateRemainingPercentageToBeHandledByUnspecifiedCourts(percentageOfCasesPerSpecifiedCourt);
 
-        //Get unspecified courts
-        Map<String, BigDecimal> newPercentagesOfTotalCasesHandledPerUnspecifiedCourt = desiredWorkloadPerCourt.entrySet().stream()
-            .filter(e -> !percentagesOfTotalCasesPerSpecifiedCourt.keySet().contains(e.getKey()))
-            .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().divide(remainderPercentageToBeHandledByUnspecifiedCourts, 3, RoundingMode.DOWN)));
+            //Get percentage to be handled by unspecified courts
+            Set<String> specifiedCourts = percentageOfCasesPerSpecifiedCourt.keySet();
+            finalUnspecifiedCourtsWorkload = desiredWorkloadPerCourt.entrySet().stream()
+                .filter(e -> !specifiedCourts.contains(e.getKey()))
+                .collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    e -> e.getValue().divide(remainingPercentageOfCasesToBeHandledByUnspecifiedCourts, 3, DOWN)
+                ));
+        }
 
-        //Add specified courts
-//        HashMap<String, BigDecimal> rebalancedDesiredWorkloadPerCourt = new HashMap<>(percentagesOfTotalCasesPerSpecifiedCourt);
-//        rebalancedDesiredWorkloadPerCourt.putAll(newPercentagesOfTotalCasesHandledPerUnspecifiedCourt);
-
-        //TODO - copied from top
-        List<Pair<String, Double>> courtDistribution2 = newPercentagesOfTotalCasesHandledPerUnspecifiedCourt.entrySet().stream()
-            .map(e -> new Pair<>(e.getKey(), e.getValue().doubleValue()))
-            .collect(Collectors.toList());
-        this.genericCourtDistribution = new EnumeratedDistribution<>(courtDistribution2);//TODO - refactor names
+        setUnspecifiedCourtsDistributionBasedOnCourtsWorkload(finalUnspecifiedCourtsWorkload);
         //TODO - test what happens if enumeration items don't reach 100% or pass 100% percent - this can happen by a bit
     }
 
-    private Map<String, BigDecimal> calculatePercentageOfTotalCasesTakenBySpecifiedCourts(Map<String, BigDecimal> divorceRatioPerFact, Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact) {
+    private Map<String, BigDecimal> retrievePercentageOfCasesPerSpecifiedCourt(Map<String, BigDecimal> divorceRatioPerFact, Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact) {
         Map<String, BigDecimal> percentageOfTotalCasesTakenBySpecifiedCourts = new HashMap<>();
         for (Map.Entry<String, Map<String, BigDecimal>> courtFactDistributionPerFact : specificCourtsAllocationPerFact.entrySet()) {
             String fact = courtFactDistributionPerFact.getKey();
@@ -71,6 +66,19 @@ public class GenericCourtWeightedDistributor {
             }
         }
         return percentageOfTotalCasesTakenBySpecifiedCourts;
+    }
+
+    private BigDecimal calculateRemainingPercentageToBeHandledByUnspecifiedCourts(Map<String, BigDecimal> percentageOfTotalCasesPerSpecifiedCourt) {
+        BigDecimal percentageOfTotalCasesForAllSpecifiedCourts = percentageOfTotalCasesPerSpecifiedCourt.values().stream()
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return BigDecimal.ONE.subtract(percentageOfTotalCasesForAllSpecifiedCourts);
+    }
+
+    private void setUnspecifiedCourtsDistributionBasedOnCourtsWorkload(Map<String, BigDecimal> workloadPerCourt) {
+        List<Pair<String, Double>> courtDistribution = workloadPerCourt.entrySet().stream()
+            .map(e -> new Pair<>(e.getKey(), e.getValue().doubleValue()))
+            .collect(Collectors.toList());
+        this.genericCourtDistribution = new EnumeratedDistribution<>(courtDistribution);
     }
 
     public String selectCourt() {
