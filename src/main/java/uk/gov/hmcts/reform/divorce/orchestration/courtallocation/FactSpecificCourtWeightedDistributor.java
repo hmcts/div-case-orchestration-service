@@ -20,7 +20,6 @@ public class FactSpecificCourtWeightedDistributor {
     private final Map<String, EnumeratedDistribution<String>> distributionPerFact;
 
     public FactSpecificCourtWeightedDistributor(Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact) {
-        //TODO - maybe we should have a unit test for this
         //TODO - What happens if facts are duplicated?
         distributionPerFact = specificCourtsAllocationPerFact.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> {
             String fact = entry.getKey();
