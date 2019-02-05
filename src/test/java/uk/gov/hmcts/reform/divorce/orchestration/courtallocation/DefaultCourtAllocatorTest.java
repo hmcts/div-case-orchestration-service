@@ -23,10 +23,10 @@ import static org.junit.rules.ExpectedException.none;
 
 public class DefaultCourtAllocatorTest {
 
-    private final BigDecimal acceptedDeviation = new BigDecimal("0.005");//TODO - delete default court allocation and use the other one
+    private final BigDecimal acceptedDeviation = new BigDecimal("0.005");//TODO - delete default court allocation and use the other one - but leave the original one for reference
 
     @Rule
-    public ExpectedException expectedException = none();
+    public ExpectedException expectedException = none();//TODO - check whether there are test from here that I want to reuse in the new suite - before I delete this.
 
     @Test
     public void shouldApplyRandomWeightedSelectionToCourts() {
