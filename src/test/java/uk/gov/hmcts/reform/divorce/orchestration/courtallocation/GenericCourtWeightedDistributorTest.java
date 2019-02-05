@@ -61,7 +61,7 @@ public class GenericCourtWeightedDistributorTest {
     }
 
     @Test
-    public void shouldAllocateNoGenericCasesToCourtOne_SinceItsCapacityIsTakenByFactSpecificAllocation() {//TODO - test what happens if I overallocate
+    public void shouldAllocateNoGenericCasesToCourtOne_SinceItsCapacityIsTakenByFactSpecificAllocation() {
         HashMap<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = new HashMap<>();
         HashMap<String, BigDecimal> unreasonableBehaviourAllocation = new HashMap<>();
         unreasonableBehaviourAllocation.put("court1", BigDecimal.ONE);
@@ -82,9 +82,8 @@ public class GenericCourtWeightedDistributorTest {
         BigDecimal acceptableError = acceptedDeviation.multiply(totalNumberOfAttempts);
         assertThat(courtsDistribution.keySet(), hasSize(2));
         assertThat(courtsDistribution.keySet(), not(contains("court1")));
-
         assertThat(courtsDistribution.get("court2"), closeTo(new BigDecimal("0.43").multiply(totalNumberOfAttempts), acceptableError));
-        assertThat(courtsDistribution.get("court3"), closeTo(new BigDecimal("0.57").multiply(totalNumberOfAttempts), acceptableError));//TODO - make expected object
+        assertThat(courtsDistribution.get("court3"), closeTo(new BigDecimal("0.57").multiply(totalNumberOfAttempts), acceptableError));
     }
 
 }

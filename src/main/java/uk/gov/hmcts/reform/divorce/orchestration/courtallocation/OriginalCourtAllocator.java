@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-//TODO - only send one implementation of this
+//TODO - only send one implementation of this - ask Qiang?
 public class OriginalCourtAllocator implements CourtAllocator {
 
     private Map<String, Double> caseDistribution;

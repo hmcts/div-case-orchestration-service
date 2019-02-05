@@ -16,9 +16,9 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.BigDecimalCloseTo.closeTo;
 
 /**
- * These are the tests copied from PFE. The expected data was remodelled to fit the new model,
- * but the behaviour is the same with the increased assurance that the end court allocation result
- * respects the desired workload.
+ * These are the tests copied from PFE and rewritten in Java as closely to what the JS version is as possible.
+ * The expected data was remodelled to fit the new model, but the behaviour is the same with the
+ * increased assurance that the end court allocation result respects the desired workload.
  */
 public class CourtAllocatorOriginalTest {
 
@@ -33,9 +33,9 @@ public class CourtAllocatorOriginalTest {
     @Before
     public void setUp() {
         desiredWorkloadPerCourt = new HashMap<>();//TODO - Change this to a value that makes more sense in the new test, if I can leave it like it is
-        desiredWorkloadPerCourt.put("CTSC", new BigDecimal("0.51"));//TODO - change CTSC to serviceCentre
-        desiredWorkloadPerCourt.put("eastMidlands", new BigDecimal("0"));
-        desiredWorkloadPerCourt.put("westMidlands", new BigDecimal("0"));
+        desiredWorkloadPerCourt.put("serviceCentre", new BigDecimal("0.51"));
+        desiredWorkloadPerCourt.put("eastMidlands", ZERO);
+        desiredWorkloadPerCourt.put("westMidlands", ZERO);
         desiredWorkloadPerCourt.put("southWest", new BigDecimal("0.245"));
         desiredWorkloadPerCourt.put("northWest", new BigDecimal("0.245"));
 
@@ -48,21 +48,21 @@ public class CourtAllocatorOriginalTest {
 
         specificCourtsAllocationPerFact = new HashMap<>();
         HashMap<String, BigDecimal> unreasonableBehaviourCourtsAllocation = new HashMap<>();
-        unreasonableBehaviourCourtsAllocation.put("CTSC", new BigDecimal("1"));
+        unreasonableBehaviourCourtsAllocation.put("serviceCentre", ONE);
         specificCourtsAllocationPerFact.put("unreasonable-behaviour", unreasonableBehaviourCourtsAllocation);
 
         HashMap<String, BigDecimal> separation5YearsCourtsAllocation = new HashMap<>();
-        separation5YearsCourtsAllocation.put("CTSC", new BigDecimal("1"));//TODO - should write a test that uses percentages other than 100% for court allocation
+        separation5YearsCourtsAllocation.put("serviceCentre", ONE);//TODO - should write a test that uses percentages other than 100% for court allocation
         specificCourtsAllocationPerFact.put("separation-5-years", separation5YearsCourtsAllocation);
 
         expectedFactsCourtPercentage = defineExpectedFactsCourtPercentage();
     }
 
-    private Map<String, Map<String, Double>> defineExpectedFactsCourtPercentage() {//TODO - think of different way to assess this
+    private Map<String, Map<String, Double>> defineExpectedFactsCourtPercentage() {
         //This is the percentage of the total of cases
         Map expectedFactsCourtPercentage = new HashMap();
         HashMap<Object, Double> unreasonableBehaviourFactsCourtPercentage = new HashMap<>();
-        unreasonableBehaviourFactsCourtPercentage.put("CTSC", 0.3);
+        unreasonableBehaviourFactsCourtPercentage.put("serviceCentre", 0.3);
         unreasonableBehaviourFactsCourtPercentage.put("eastMidlands", 0.0);
         unreasonableBehaviourFactsCourtPercentage.put("westMidlands", 0.0);
         unreasonableBehaviourFactsCourtPercentage.put("southWest", 0.0);
@@ -70,7 +70,7 @@ public class CourtAllocatorOriginalTest {
         expectedFactsCourtPercentage.put("unreasonable-behaviour", unreasonableBehaviourFactsCourtPercentage);
 
         HashMap<Object, Double> separation2YearsFactsCourtPercentage = new HashMap<>();
-        separation2YearsFactsCourtPercentage.put("CTSC", 0.0);//TODO - check if old tests pass
+        separation2YearsFactsCourtPercentage.put("serviceCentre", 0.0);
         separation2YearsFactsCourtPercentage.put("eastMidlands", 0.0);
         separation2YearsFactsCourtPercentage.put("westMidlands", 0.0);
         separation2YearsFactsCourtPercentage.put("southWest", 0.185);
@@ -78,15 +78,15 @@ public class CourtAllocatorOriginalTest {
         expectedFactsCourtPercentage.put("separation-2-years", separation2YearsFactsCourtPercentage);
 
         HashMap<Object, Double> separation5YearsFactsCourtPercentage = new HashMap<>();
-        separation5YearsFactsCourtPercentage.put("CTSC", 0.21);
+        separation5YearsFactsCourtPercentage.put("serviceCentre", 0.21);
         separation5YearsFactsCourtPercentage.put("eastMidlands", 0.0);
         separation5YearsFactsCourtPercentage.put("westMidlands", 0.0);
-        separation5YearsFactsCourtPercentage.put("southWest", 0.0);//TODO - not sure this is right... - problem is - just because 11% of 5ys cases are handled by CTSC, it doesn't mean that the other ones shouldn't also be handled by it as unspecified courts
+        separation5YearsFactsCourtPercentage.put("southWest", 0.0);
         separation5YearsFactsCourtPercentage.put("northWest", 0.0);
         expectedFactsCourtPercentage.put("separation-5-years", separation5YearsFactsCourtPercentage);
 
         HashMap<Object, Double> adulteryFactsCourtPercentage = new HashMap<>();
-        adulteryFactsCourtPercentage.put("CTSC", 0.0);
+        adulteryFactsCourtPercentage.put("serviceCentre", 0.0);
         adulteryFactsCourtPercentage.put("eastMidlands", 0.0);
         adulteryFactsCourtPercentage.put("westMidlands", 0.0);
         adulteryFactsCourtPercentage.put("southWest", 0.055);
@@ -94,7 +94,7 @@ public class CourtAllocatorOriginalTest {
         expectedFactsCourtPercentage.put("adultery", adulteryFactsCourtPercentage);
 
         HashMap<Object, Double> desertionFactsCourtPercentage = new HashMap<>();
-        desertionFactsCourtPercentage.put("CTSC", 0.0);
+        desertionFactsCourtPercentage.put("serviceCentre", 0.0);
         desertionFactsCourtPercentage.put("eastMidlands", 0.0);
         desertionFactsCourtPercentage.put("westMidlands", 0.0);
         desertionFactsCourtPercentage.put("southWest", 0.005);
@@ -103,11 +103,12 @@ public class CourtAllocatorOriginalTest {
 
         return expectedFactsCourtPercentage;
     }
+
     //TODO - do we need a test for when court is overallocated?
-    @Test(expected = RuntimeException.class)//TODO - should I make this throw an exception specific to court allocation
+    @Test(expected = RuntimeException.class)//TODO - should I make this throw an exception specific to court allocation - rewrite test in different class and then change this
     public void errorWhenTotalFactsAllocationGreaterThanCourtAllocation() {
         Map<String, BigDecimal> adulteryCourtsAllocation = specificCourtsAllocationPerFact.getOrDefault("adultery", new HashMap<>());
-        adulteryCourtsAllocation.put("CTSC", new BigDecimal("0.8"));
+        adulteryCourtsAllocation.put("serviceCentre", new BigDecimal("0.8"));
         specificCourtsAllocationPerFact.put("adultery", adulteryCourtsAllocation);
 
         new CandidateCourtAllocator(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
@@ -126,14 +127,14 @@ public class CourtAllocatorOriginalTest {
     public void whenFactAllocatedToSameOneCourtReturnSameCourt() {
         int iterations = 10;
         String fact = "unreasonable-behaviour";
-        String court = "CTSC";
+        String court = "serviceCentre";
 
         Map<String, BigDecimal> separationTwoYearsCourtsAllocation = specificCourtsAllocationPerFact.getOrDefault("separation-2-years", new HashMap<>());
-        separationTwoYearsCourtsAllocation.put(court, new BigDecimal("0"));
+        separationTwoYearsCourtsAllocation.put(court, ZERO);
         specificCourtsAllocationPerFact.put("separation-2-years", separationTwoYearsCourtsAllocation);
 
         Map<String, BigDecimal> unreasonableBehaviourCourtsAllocation = specificCourtsAllocationPerFact.getOrDefault(fact, new HashMap<>());
-        unreasonableBehaviourCourtsAllocation.put(court, new BigDecimal("1"));
+        unreasonableBehaviourCourtsAllocation.put(court, ONE);
         specificCourtsAllocationPerFact.put(fact, unreasonableBehaviourCourtsAllocation);
 
         CourtAllocator courtAllocator = new CandidateCourtAllocator(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
@@ -182,8 +183,8 @@ public class CourtAllocatorOriginalTest {
 
         divorceRatioPerFact.keySet().forEach(fact -> {
             desiredWorkloadPerCourt.keySet().forEach(courtName -> {
-                BigDecimal expectedPercentageOfCasesWithGivenFactDistributedToGivenCourt = new BigDecimal(expectedFactsCourtPercentage.get(fact).get(courtName).doubleValue());//TODO - total of cases?
-                BigDecimal actualAllocationForGivenFactAndGivenCourt = new BigDecimal(actualFactsAllocation.get(fact).get(courtName));//TODO - this is an int, not a double
+                BigDecimal expectedPercentageOfCasesWithGivenFactDistributedToGivenCourt = new BigDecimal(expectedFactsCourtPercentage.get(fact).get(courtName).doubleValue());
+                BigDecimal actualAllocationForGivenFactAndGivenCourt = new BigDecimal(actualFactsAllocation.get(fact).get(courtName));
                 BigDecimal actualPercentageOfTotalCasesAllocatedToGivenFactAndCourt = actualAllocationForGivenFactAndGivenCourt.divide(numberOfAttempts);
                 assertThat(String.format("Fact %s for court %s didn't match", fact, courtName),
                     actualPercentageOfTotalCasesAllocatedToGivenFactAndCourt,

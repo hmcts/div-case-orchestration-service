@@ -57,7 +57,6 @@ public class GenericCourtWeightedDistributor {
         } else {
             setUnspecifiedCourtsDistributionBasedOnCourtsWorkload(courtsWorkload.entrySet().stream());
         }
-        //TODO - test what happens if enumeration items don't reach 100% or pass 100% percent - this can happen by a bit
     }
 
     private Map<String, BigDecimal> retrievePercentageOfCasesPerSpecifiedCourt(Map<String, BigDecimal> divorceRatioPerFact, Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact) {
