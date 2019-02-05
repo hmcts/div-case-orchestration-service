@@ -15,7 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.BigDecimalCloseTo.closeTo;
 
-/*
+/**
  * These are the tests copied from PFE. The expected data was remodelled to fit the new model,
  * but the behaviour is the same with the increased assurance that the end court allocation result
  * respects the desired workload.
@@ -103,14 +103,9 @@ public class CourtAllocatorOriginalTest {
 
         return expectedFactsCourtPercentage;
     }
-
-    @Test(expected = RuntimeException.class)
+    //TODO - do we need a test for when court is overallocated?
+    @Test(expected = RuntimeException.class)//TODO - should I make this throw an exception specific to court allocation
     public void errorWhenTotalFactsAllocationGreaterThanCourtAllocation() {
-//        Map<String, Map>  localCourts = new HashMap(courts);
-//        Map ctsc = localCourts.get("CTSC");
-//        Map divorceFactsRatio = (Map) ctsc.get("divorceFactsRatio");
-//        divorceFactsRatio.put("adultery", 0.8);
-        //TODO - actually - maybe I should make a copy before changing this
         Map<String, BigDecimal> adulteryCourtsAllocation = specificCourtsAllocationPerFact.getOrDefault("adultery", new HashMap<>());
         adulteryCourtsAllocation.put("CTSC", new BigDecimal("0.8"));
         specificCourtsAllocationPerFact.put("adultery", adulteryCourtsAllocation);
@@ -118,13 +113,8 @@ public class CourtAllocatorOriginalTest {
         new CandidateCourtAllocator(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = CourtAllocatorException.class)
     public void errorWhenFactsAllocationGreaterThanOneHundredPercent() {
-//        Map<String, Map>  localCourts = new HashMap(courts);
-//        Map ctsc = localCourts.get("southWest");
-//        Map divorceFactsRatio = (Map) ctsc.get("divorceFactsRatio");
-//        divorceFactsRatio.put("unreasonable-behaviour", 0.4);
-        //TODO - actually - maybe I should make a copy before changing this
         Map<String, BigDecimal> unreasonableBehaviourCourtsAllocation = specificCourtsAllocationPerFact.getOrDefault("unreasonable-behaviour", new HashMap<>());
         unreasonableBehaviourCourtsAllocation.put("southWest", new BigDecimal("0.4"));
         specificCourtsAllocationPerFact.put("unreasonable-behaviour", unreasonableBehaviourCourtsAllocation);
@@ -138,12 +128,6 @@ public class CourtAllocatorOriginalTest {
         String fact = "unreasonable-behaviour";
         String court = "CTSC";
 
-//        Map<String, Map>  localCourts = new HashMap(courts);
-//        Map ctsc = localCourts.get(court);
-//        Map divorceFactsRatio = (Map) ctsc.get("divorceFactsRatio");
-//        divorceFactsRatio.put("separation-2-years", 0.0);
-//        divorceFactsRatio.put(fact, 1.0);
-        //TODO - actually - maybe I should make a copy before changing this
         Map<String, BigDecimal> separationTwoYearsCourtsAllocation = specificCourtsAllocationPerFact.getOrDefault("separation-2-years", new HashMap<>());
         separationTwoYearsCourtsAllocation.put(court, new BigDecimal("0"));
         specificCourtsAllocationPerFact.put("separation-2-years", separationTwoYearsCourtsAllocation);
