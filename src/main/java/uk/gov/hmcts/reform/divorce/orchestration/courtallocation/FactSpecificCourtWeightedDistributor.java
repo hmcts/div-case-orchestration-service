@@ -28,7 +28,7 @@ public class FactSpecificCourtWeightedDistributor {
 
             BigDecimal totalAllocationForFact = courtAllocationForFact.values().stream()
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-            if (totalAllocationForFact.compareTo(BigDecimal.ONE) >= 0) {
+            if (totalAllocationForFact.compareTo(BigDecimal.ONE) > 0) {
                 throw new CourtAllocatorException(format("Configured fact allocation for \"%s\" went over 100%%.", fact));
             }
 
