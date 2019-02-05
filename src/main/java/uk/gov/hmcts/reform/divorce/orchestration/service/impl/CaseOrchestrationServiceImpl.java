@@ -35,8 +35,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,11 +145,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payload  = new HashMap<>();
 
         if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS)) {
-            LocalDateTime paymentDate = LocalDateTime.parse(paymentUpdate.getDateCreated(),
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
-
-            String formattedPaymentDate = DateTimeFormatter.ofPattern("ddMMyyyy").format(paymentDate);
-
             String paymentAmount = Optional.ofNullable(paymentUpdate.getAmount())
                     .map(BigDecimal::intValueExact)
                     .map(amt -> amt * 100)
@@ -166,7 +159,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
             Payment payment = Payment.builder()
                 .paymentChannel(ONLINE)
-                .paymentDate(formattedPaymentDate)
                 .paymentReference(paymentUpdate.getPaymentReference())
                 .paymentSiteId(paymentUpdate.getSiteId())
                 .paymentStatus(paymentUpdate.getStatus())

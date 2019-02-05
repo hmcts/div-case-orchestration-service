@@ -325,7 +325,6 @@ public class CaseOrchestrationServiceImplTest {
         fee.setCode("X243");
         paymentUpdate.setFees(Arrays.asList(fee, fee));
         paymentUpdate.setChannel("online");
-        paymentUpdate.setDateCreated("2001-01-01T00:00:00.000+0000");
 
         // given
         when(updateToCCDWorkflow.run(any(), any(), any()))
@@ -345,7 +344,6 @@ public class CaseOrchestrationServiceImplTest {
                 .paymentChannel("online")
                 .paymentStatus("success")
                 .paymentAmount("55000")
-                .paymentDate("01012001")
                 .build();
 
         final Map<String, Object> updateEvent = new HashMap<>();
@@ -364,7 +362,6 @@ public class CaseOrchestrationServiceImplTest {
         fee.setCode("X243");
         paymentUpdate.setFees(Arrays.asList(fee, fee));
         paymentUpdate.setChannel("online");
-        paymentUpdate.setDateCreated("2001-01-01T00:00:00.000+0000");
 
         classUnderTest.update(paymentUpdate);
     }
