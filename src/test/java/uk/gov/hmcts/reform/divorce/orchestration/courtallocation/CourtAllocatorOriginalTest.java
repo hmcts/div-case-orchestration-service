@@ -16,9 +16,11 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.BigDecimalCloseTo.closeTo;
 
 /*
- * These are the tests copied from PFE
+ * These are the tests copied from PFE. The expected data was remodelled to fit the new model,
+ * but the behaviour is the same with the increased assurance that the end court allocation result
+ * respects the desired workload.
  */
-public class CandidateCourtAllocatorTest {
+public class CourtAllocatorOriginalTest {
 
     private BigDecimal errorMargin = new BigDecimal("0.005");
 
@@ -30,7 +32,7 @@ public class CandidateCourtAllocatorTest {
 
     @Before
     public void setUp() {
-        desiredWorkloadPerCourt = new HashMap<>();//TODO - I'll have to change this as it makes no sense - double check with Qiang
+        desiredWorkloadPerCourt = new HashMap<>();//TODO - Change this to a value that makes more sense in the new test, if I can leave it like it is
         desiredWorkloadPerCourt.put("CTSC", new BigDecimal("0.51"));//TODO - change CTSC to serviceCentre
         desiredWorkloadPerCourt.put("eastMidlands", new BigDecimal("0"));
         desiredWorkloadPerCourt.put("westMidlands", new BigDecimal("0"));
@@ -50,7 +52,7 @@ public class CandidateCourtAllocatorTest {
         specificCourtsAllocationPerFact.put("unreasonable-behaviour", unreasonableBehaviourCourtsAllocation);
 
         HashMap<String, BigDecimal> separation5YearsCourtsAllocation = new HashMap<>();
-        separation5YearsCourtsAllocation.put("CTSC", new BigDecimal("1"));
+        separation5YearsCourtsAllocation.put("CTSC", new BigDecimal("1"));//TODO - should write a test that uses percentages other than 100% for court allocation
         specificCourtsAllocationPerFact.put("separation-5-years", separation5YearsCourtsAllocation);
 
         expectedFactsCourtPercentage = defineExpectedFactsCourtPercentage();
@@ -158,7 +160,7 @@ public class CandidateCourtAllocatorTest {
     }
 
     @Test
-    public void givenOneMillionRecordsTheDataShouldBeDistributedAsExpected() {
+    public void givenOneMillionRecordsTheDataShouldBeDistributedAsExpectedByOriginalTest() {
         CourtAllocator courtAllocator = new CandidateCourtAllocator(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
 
         BigDecimal numberOfAttempts = new BigDecimal(1000000);
@@ -194,7 +196,6 @@ public class CandidateCourtAllocatorTest {
             );
         });
 
-        //TODO - will comment for a bit
         divorceRatioPerFact.keySet().forEach(fact -> {
             desiredWorkloadPerCourt.keySet().forEach(courtName -> {
                 BigDecimal expectedPercentageOfCasesWithGivenFactDistributedToGivenCourt = new BigDecimal(expectedFactsCourtPercentage.get(fact).get(courtName).doubleValue());//TODO - total of cases?
@@ -206,9 +207,7 @@ public class CandidateCourtAllocatorTest {
                 );
             });
         });
-
         //TODO - this is how I think it should be: We should assess that the percentages indicated were followed: i.e. at least 11% of 5ys went to CTSC and 100% of UB went to CTSC
-
     }
 
 }

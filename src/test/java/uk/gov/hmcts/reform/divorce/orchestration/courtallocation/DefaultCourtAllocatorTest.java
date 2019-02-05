@@ -23,7 +23,7 @@ import static org.junit.rules.ExpectedException.none;
 
 public class DefaultCourtAllocatorTest {
 
-    private final BigDecimal acceptedDeviation = new BigDecimal("0.005");
+    private final BigDecimal acceptedDeviation = new BigDecimal("0.005");//TODO - delete default court allocation and use the other one
 
     @Rule
     public ExpectedException expectedException = none();

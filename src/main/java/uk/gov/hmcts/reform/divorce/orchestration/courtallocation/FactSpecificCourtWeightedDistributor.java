@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+import static java.math.BigDecimal.ONE;
+
 /**
  * This class handles court distribution for cases which have facts which were configured
  * to be allocated to courts in a specific way.
@@ -20,17 +23,21 @@ public class FactSpecificCourtWeightedDistributor {
         //TODO - maybe we should have a unit test for this
         //TODO - What happens if facts are duplicated?
         distributionPerFact = specificCourtsAllocationPerFact.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey(), entry -> {
-            Map<String, BigDecimal> value = entry.getValue();
-            List<Pair<String, BigDecimal>> allocationPerCourt = value.entrySet().stream()
-                .map(e -> new Pair<String, BigDecimal>(e.getKey(), e.getValue()))
+            String fact = entry.getKey();
+            Map<String, BigDecimal> courtAllocationForFact = entry.getValue();
+
+            BigDecimal totalAllocationForFact = courtAllocationForFact.values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            if (totalAllocationForFact.compareTo(BigDecimal.ONE) >= 0) {
+                throw new CourtAllocatorException(format("Configured fact allocation for \"%s\" went over 100%%.", fact));
+            }
+
+            List<Pair<String, BigDecimal>> allocationPerCourt = courtAllocationForFact.entrySet().stream()
+                .map(e -> new Pair<>(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
 
             //Get total allocated percentage and allocate the rest to "no court"
-            BigDecimal remainingAllocation = allocationPerCourt.stream()
-                .map(Pair::getValue)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .subtract(BigDecimal.ONE)
-                .abs();
+            BigDecimal remainingAllocation = ONE.subtract(totalAllocationForFact).abs();
             allocationPerCourt.add(new Pair(null, remainingAllocation));
 
             List<Pair<String, Double>> listWithDoubles = allocationPerCourt.stream()
