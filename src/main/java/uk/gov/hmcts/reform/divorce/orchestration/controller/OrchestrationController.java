@@ -482,7 +482,9 @@ public class OrchestrationController {
     @ApiResponses(value = {
         @ApiResponse(code = 200,
             message = "The amended petition draft has been created successfully. "
-                + "The previous case has been updated to case state: AmendPetition")})
+                + "The previous case has been updated to case state: AmendPetition"),
+        @ApiResponse(code = 404,
+            message = "No draft was created as no existing case found.")})
     public ResponseEntity<Map<String, Object>> amendPetition(@RequestHeader("Authorization")
                                                            @ApiParam(value = "JWT authorisation token issued by IDAM",
                                                                required = true) final String authorizationToken,

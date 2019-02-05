@@ -12,10 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REJECTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
 
 @Component
 public class AmendPetitionWorkflow extends DefaultWorkflow<Map<String, Object>> {
@@ -31,8 +28,9 @@ public class AmendPetitionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         this.updateCaseInCCD = updateCaseInCCD;
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, Object> run(String caseId, String authToken) throws WorkflowException {
-        return this.execute(
+        this.execute(
                 new Task[]{
                     amendPetitionDraft,
                     updateCaseInCCD
@@ -42,5 +40,8 @@ public class AmendPetitionWorkflow extends DefaultWorkflow<Map<String, Object>> 
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, DN_REJECTED)
         );
+
+        return (Map<String, Object>) getContext()
+            .getTransientObject(NEW_AMENDED_PETITION_DRAFT_KEY);
     }
 }

@@ -24,6 +24,8 @@ public class OrchestrationConstants {
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";
     public static final String D_8_CASE_REFERENCE = "D8caseReference";
     public static final String CASE_ID_JSON_KEY = "caseId";
+    public static final String PREVIOUS_CASE_ID_JSON_KEY = "caseId";
+    public static final String NEW_AMENDED_PETITION_DRAFT_KEY = "newAmendedPetitionDraft";
     public static final String CASE_STATE_JSON_KEY = "state";
     public static final String CREATED_DATE_JSON_KEY = "createdDate";
     public static final String D_8_PETITIONER_FIRST_NAME = "D8PetitionerFirstName";
