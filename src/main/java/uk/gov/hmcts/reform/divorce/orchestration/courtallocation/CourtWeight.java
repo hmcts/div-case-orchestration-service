@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.math.BigDecimal;
+
 /**
  * Court weight uses positive integer weight as the court weight as opposed to decimal percentual representation.
  * <p/>

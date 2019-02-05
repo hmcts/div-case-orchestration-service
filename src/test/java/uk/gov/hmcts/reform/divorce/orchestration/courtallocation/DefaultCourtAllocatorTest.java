@@ -14,6 +14,7 @@ import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.String.format;
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
@@ -158,7 +159,7 @@ public class DefaultCourtAllocatorTest {
         expectedException.expect(CourtAllocatorException.class);
         expectedException.expectMessage("Cannot build court allocator with empty configuration.");
 
-        new DefaultCourtAllocator(new CourtAllocationConfiguration());
+        new DefaultCourtAllocator(new CourtAllocationConfiguration(emptyMap(), emptyMap(), emptyMap()));
     }
 
 }

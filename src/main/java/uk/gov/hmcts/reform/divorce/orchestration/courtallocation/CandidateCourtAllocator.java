@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Optional;
 
-public class CandidateCourtAllocator implements CourtAllocator {
+public class CandidateCourtAllocator implements CourtAllocator {//TODO - last thing - change this name
 
     private final FactSpecificCourtWeightedDistributor factSpecificCourtWeightedDistributor;
     private final GenericCourtWeightedDistributor genericCourtWeightedDistributor;

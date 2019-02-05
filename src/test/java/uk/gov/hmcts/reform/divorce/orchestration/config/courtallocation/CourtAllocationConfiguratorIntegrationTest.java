@@ -20,6 +20,7 @@ public class CourtAllocationConfiguratorIntegrationTest {
     @Autowired
     private CourtAllocationConfiguration courtAllocationConfiguration;
 
+    //TODO - make these pass
     @Test
     public void shouldSetUpConfigurationObjectWithEnvironmentVariableContents() {
         assertThat(courtAllocationConfiguration.getCourtsWeightedDistribution(), containsInAnyOrder(
