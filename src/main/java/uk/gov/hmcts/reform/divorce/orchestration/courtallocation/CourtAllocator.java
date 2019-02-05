@@ -4,6 +4,6 @@ import java.util.Optional;
 
 public interface CourtAllocator {
 
-    String selectCourtForGivenDivorceFact(Optional<String> divorceFact);
+    String selectCourtForGivenDivorceFact(Optional<String> fact);
 
 }

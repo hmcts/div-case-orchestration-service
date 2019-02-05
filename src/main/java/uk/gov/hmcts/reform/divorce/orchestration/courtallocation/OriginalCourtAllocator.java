@@ -45,9 +45,8 @@ public class OriginalCourtAllocator implements CourtAllocator {
     }
 
 
-    BiFunction<String, String, Double> _getDivorceFactRatioForCourt = (courtName, fact) -> {
-        return ((Map<String, Double>) courts.get(courtName).get("divorceFactsRatio")).get(fact);
-    };
+    BiFunction<String, String, Double> _getDivorceFactRatioForCourt = (courtName, fact) ->
+        ((Map<String, Double>) courts.get(courtName).get("divorceFactsRatio")).get(fact);
 
     Consumer initialiseAllocationRemainingForFact = fact -> {
         if (!allocationPerFactLeft.containsKey(fact)) {
