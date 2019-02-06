@@ -48,7 +48,7 @@
     "children"
   ],
   "D8LegalProceedingsDetails":"The legal proceeding details",
-  "D8ReasonForDivorce":"unreasonable-behaviour",
+  "D8ReasonForDivorce":"adultery",
   "D8DerivedStatementOfCase":"My wife is having an affair this week.",
   "D8ReasonForDivorceBehaviourDetails":"My wife is having an affair this week.",
   "D8ReasonForDivorceAdulteryIsNamed":"NO",
@@ -80,7 +80,7 @@
   "D8ReasonForDivorceEnableAdultery":"YES",
   "D8ClaimsCostsAppliedForFees":"YES",
   "D8StatementOfTruth":"YES",
-  "D8ReasonForDivorceClaimingAdultery":"NO",
+  "D8ReasonForDivorceClaimingAdultery":"YES",
   "D8MarriageCanDivorce":"YES",
   "D8MarriagePetitionerName":"John Doe",
   "D8MarriageRespondentName":"Jenny Benny",

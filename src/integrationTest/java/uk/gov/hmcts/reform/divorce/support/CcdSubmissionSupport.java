@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 
 public abstract class CcdSubmissionSupport extends IntegrationTest {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/issue-petition/";
+    private static final String DN_DATA_PATH = "fixtures/maintenance/submit-dn/";
 
     @Autowired
     protected CcdClientSupport ccdClientSupport;
@@ -70,7 +71,7 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         return RestUtil.postToRestService(
             serverUrl + contextPath + "/" + caseId,
             headers,
-            filePath == null ? null : loadJson(contextPath + filePath)
+            filePath == null ? null : loadJson(DN_DATA_PATH + filePath)
         );
     }
 

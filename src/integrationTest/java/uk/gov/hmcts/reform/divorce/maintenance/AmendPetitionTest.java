@@ -37,6 +37,8 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
     @Test
     public void givenValidCase_whenAmendPetition_newDraftPetitionIsReturned() throws Exception {
         UserDetails citizenUser = createCitizenUser();
+        UserDetails caseworkerUser = createCaseWorkerUser();
+
 
         CaseDetails issuedCase = ccdClientSupport.submitCase(
                 ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "issued-case.json", Map.class),
@@ -48,12 +50,11 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         // refertoLegalAdvisor
         // dnRefused (AwaitingConsideration)
         String caseId = issuedCase.getId().toString();
-        final CaseDetails caseDetails = submitCase("submit-complete-case.json", citizenUser);
 
         updateCaseForCitizen(caseId, null, TEST_AOS_STARTED_EVENT_ID, citizenUser);
         updateCaseForCitizen(caseId, null, "aosSubmittedUndefended", citizenUser);
 
-        submitDnCase(citizenUser.getAuthToken(), issuedCase.getId(),
+        Response submitDnResponse = submitDnCase(citizenUser.getAuthToken(), issuedCase.getId(),
             "dn-submit.json", dnContextPath);
 
         updateCase(caseId, null, "refertoLegalAdvisor");
