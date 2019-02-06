@@ -107,7 +107,8 @@ public class CourtAllocatorOriginalTest {
     //TODO - should I make this throw an exception specific to court allocation - rewrite test in different class and then change this
     @Test(expected = RuntimeException.class)
     public void errorWhenTotalFactsAllocationGreaterThanCourtAllocation() {
-        Map<String, BigDecimal> adulteryCourtsAllocation = specificCourtsAllocationPerFact.getOrDefault("adultery", new HashMap<>());
+        Map<String, BigDecimal> adulteryCourtsAllocation =
+            specificCourtsAllocationPerFact.getOrDefault("adultery", new HashMap<>());
         adulteryCourtsAllocation.put("serviceCentre", new BigDecimal("0.8"));
         specificCourtsAllocationPerFact.put("adultery", adulteryCourtsAllocation);
 
@@ -116,7 +117,8 @@ public class CourtAllocatorOriginalTest {
 
     @Test(expected = CourtAllocatorException.class)
     public void errorWhenFactsAllocationGreaterThanOneHundredPercent() {
-        Map<String, BigDecimal> unreasonableBehaviourCourtsAllocation = specificCourtsAllocationPerFact.getOrDefault("unreasonable-behaviour", new HashMap<>());
+        Map<String, BigDecimal> unreasonableBehaviourCourtsAllocation =
+            specificCourtsAllocationPerFact.getOrDefault("unreasonable-behaviour", new HashMap<>());
         unreasonableBehaviourCourtsAllocation.put("southWest", new BigDecimal("0.4"));
         specificCourtsAllocationPerFact.put("unreasonable-behaviour", unreasonableBehaviourCourtsAllocation);
 
@@ -129,15 +131,18 @@ public class CourtAllocatorOriginalTest {
         String fact = "unreasonable-behaviour";
         String court = "serviceCentre";
 
-        Map<String, BigDecimal> separationTwoYearsCourtsAllocation = specificCourtsAllocationPerFact.getOrDefault("separation-2-years", new HashMap<>());
+        Map<String, BigDecimal> separationTwoYearsCourtsAllocation =
+            specificCourtsAllocationPerFact.getOrDefault("separation-2-years", new HashMap<>());
         separationTwoYearsCourtsAllocation.put(court, ZERO);
         specificCourtsAllocationPerFact.put("separation-2-years", separationTwoYearsCourtsAllocation);
 
-        Map<String, BigDecimal> unreasonableBehaviourCourtsAllocation = specificCourtsAllocationPerFact.getOrDefault(fact, new HashMap<>());
+        Map<String, BigDecimal> unreasonableBehaviourCourtsAllocation =
+            specificCourtsAllocationPerFact.getOrDefault(fact, new HashMap<>());
         unreasonableBehaviourCourtsAllocation.put(court, ONE);
         specificCourtsAllocationPerFact.put(fact, unreasonableBehaviourCourtsAllocation);
 
-        CourtAllocator courtAllocator = new DefaultCourtAllocator(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
+        CourtAllocator courtAllocator =
+            new DefaultCourtAllocator(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
 
         for (int i = 0; i < iterations; i++) {
             assertThat(courtAllocator.selectCourtForGivenDivorceFact(Optional.of(fact)), is(court));
@@ -146,7 +151,8 @@ public class CourtAllocatorOriginalTest {
 
     @Test
     public void givenOneMillionRecordsTheDataShouldBeDistributedAsExpectedByOriginalTest() {
-        CourtAllocator courtAllocator = new DefaultCourtAllocator(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
+        CourtAllocator courtAllocator =
+            new DefaultCourtAllocator(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
 
         BigDecimal numberOfAttempts = new BigDecimal(1000000);
         Map<String, Map<String, Integer>> actualFactsAllocation = new HashMap();
@@ -181,17 +187,18 @@ public class CourtAllocatorOriginalTest {
             );
         });
 
-        divorceRatioPerFact.keySet().forEach(fact -> {
-            desiredWorkloadPerCourt.keySet().forEach(courtName -> {
-                BigDecimal expectedPercentageOfCasesWithGivenFactDistributedToGivenCourt = new BigDecimal(expectedFactsCourtPercentage.get(fact).get(courtName).doubleValue());
-                BigDecimal actualAllocationForGivenFactAndGivenCourt = new BigDecimal(actualFactsAllocation.get(fact).get(courtName));
-                BigDecimal actualPercentageOfTotalCasesAllocatedToGivenFactAndCourt = actualAllocationForGivenFactAndGivenCourt.divide(numberOfAttempts);
-                assertThat(String.format("Fact %s for court %s didn't match", fact, courtName),
-                    actualPercentageOfTotalCasesAllocatedToGivenFactAndCourt,
-                    closeTo(expectedPercentageOfCasesWithGivenFactDistributedToGivenCourt, errorMargin)
-                );
-            });
-        });
+        divorceRatioPerFact.keySet().forEach(fact -> desiredWorkloadPerCourt.keySet().forEach(courtName -> {
+            BigDecimal expectedPercentageOfCasesWithGivenFactDistributedToGivenCourt =
+                new BigDecimal(expectedFactsCourtPercentage.get(fact).get(courtName).doubleValue());
+            BigDecimal actualAllocationForGivenFactAndGivenCourt =
+                new BigDecimal(actualFactsAllocation.get(fact).get(courtName));
+            BigDecimal actualPercentageOfTotalCasesAllocatedToGivenFactAndCourt =
+                actualAllocationForGivenFactAndGivenCourt.divide(numberOfAttempts);
+            assertThat(String.format("Fact %s for court %s didn't match", fact, courtName),
+                actualPercentageOfTotalCasesAllocatedToGivenFactAndCourt,
+                closeTo(expectedPercentageOfCasesWithGivenFactDistributedToGivenCourt, errorMargin)
+            );
+        }));
     }
 
 }

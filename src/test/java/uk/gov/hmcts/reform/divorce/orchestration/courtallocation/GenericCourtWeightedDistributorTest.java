@@ -39,7 +39,8 @@ public class GenericCourtWeightedDistributorTest {
 
     @Test
     public void shouldFollowDesiredWorkloadWhenNoSpecificFactConfigurationIsSet() {
-        GenericCourtWeightedDistributor genericCourtWeightedDistributor = new GenericCourtWeightedDistributor(desiredWorkloadPerCourt, divorceRatioPerFact, null);
+        GenericCourtWeightedDistributor genericCourtWeightedDistributor =
+            new GenericCourtWeightedDistributor(desiredWorkloadPerCourt, divorceRatioPerFact, null);
 
         //Run 1M times
         BigDecimal totalNumberOfAttempts = new BigDecimal(1000000);
@@ -67,7 +68,8 @@ public class GenericCourtWeightedDistributorTest {
         unreasonableBehaviourAllocation.put("court1", BigDecimal.ONE);
         specificCourtsAllocationPerFact.put("unreasonable-behaviour", unreasonableBehaviourAllocation);
 
-        GenericCourtWeightedDistributor genericCourtWeightedDistributor = new GenericCourtWeightedDistributor(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
+        GenericCourtWeightedDistributor genericCourtWeightedDistributor = new GenericCourtWeightedDistributor(
+            desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
 
         //Run 1M times
         BigDecimal totalNumberOfAttempts = new BigDecimal(1000000);
@@ -82,6 +84,7 @@ public class GenericCourtWeightedDistributorTest {
         BigDecimal acceptableError = acceptedDeviation.multiply(totalNumberOfAttempts);
         assertThat(courtsDistribution.keySet(), hasSize(2));
         assertThat(courtsDistribution.keySet(), not(contains("court1")));
+        //TODO magic percentages
         assertThat(courtsDistribution.get("court2"), closeTo(new BigDecimal("0.43").multiply(totalNumberOfAttempts), acceptableError));
         assertThat(courtsDistribution.get("court3"), closeTo(new BigDecimal("0.57").multiply(totalNumberOfAttempts), acceptableError));
     }

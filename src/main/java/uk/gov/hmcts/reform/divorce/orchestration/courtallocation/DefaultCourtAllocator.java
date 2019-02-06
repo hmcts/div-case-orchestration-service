@@ -12,8 +12,10 @@ public class DefaultCourtAllocator implements CourtAllocator {
     public DefaultCourtAllocator(Map<String, BigDecimal> desiredWorkloadPerCourt,
                                  Map<String, BigDecimal> divorceRatioPerFact,
                                  Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact) {
-        this.factSpecificCourtWeightedDistributor = new FactSpecificCourtWeightedDistributor(specificCourtsAllocationPerFact);
-        this.genericCourtWeightedDistributor = new GenericCourtWeightedDistributor(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
+        this.factSpecificCourtWeightedDistributor =
+            new FactSpecificCourtWeightedDistributor(specificCourtsAllocationPerFact);
+        this.genericCourtWeightedDistributor = new GenericCourtWeightedDistributor(desiredWorkloadPerCourt,
+            divorceRatioPerFact, specificCourtsAllocationPerFact);
     }
 
     @Override

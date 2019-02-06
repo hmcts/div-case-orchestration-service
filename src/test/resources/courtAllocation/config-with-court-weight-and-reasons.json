@@ -37,7 +37,7 @@
       "courts": [
         {
           "courtId": "courtNumber3",
-          "percentageOfCasesWithThisFactThisCourtWillHandle": 1
+          "percentageOfCasesWithThisFactCourtWillHandle": 1
         }
       ]
     },
@@ -46,7 +46,7 @@
       "courts": [
         {
           "courtId": "courtNumber4",
-          "percentageOfCasesWithThisFactThisCourtWillHandle": 1
+          "percentageOfCasesWithThisFactCourtWillHandle": 1
         }
       ]
     }

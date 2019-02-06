@@ -16,7 +16,8 @@ public class EnumeratedDistributionExplorationTest {
 
     @Test
     public void testUnallocatedPercentageBehaviour_ShouldNeverReturnNull() {
-        EnumeratedDistribution<String> enumeratedDistribution = new EnumeratedDistribution<>(asList(new Pair<>("test", 0.5)));
+        EnumeratedDistribution<String> enumeratedDistribution =
+            new EnumeratedDistribution<>(asList(new Pair("test", 0.5)));
 
         Map<String, Integer> courtAllocation = new HashMap<>();
         for (int i = 0; i < 1000000; i++) {

@@ -87,7 +87,7 @@ courtAllocationConfigurationJson: "
                                           \"courts\": [
                                             {
                                               \"courtId\": \"serviceCentre\",
-                                              \"percentageOfCasesWithThisFactThisCourtWillHandle\": 1
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 1
                                             }
                                           ]
                                         },
@@ -96,7 +96,7 @@ courtAllocationConfigurationJson: "
                                           \"courts\": [
                                             {
                                               \"courtId\": \"eastMidlands\",
-                                              \"percentageOfCasesWithThisFactThisCourtWillHandle\": 1
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 1
                                             }
                                           ]
                                         }

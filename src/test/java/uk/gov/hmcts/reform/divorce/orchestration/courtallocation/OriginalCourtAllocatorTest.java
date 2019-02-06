@@ -39,8 +39,7 @@ public class OriginalCourtAllocatorTest {
     }
 
     private Map<String, Map> defineCourts() {
-        Map<String, Map> courts = new HashMap<>();
-        HashMap<Object, Object> ctscCourtDetail = new HashMap<>();
+        Map<Object, Object> ctscCourtDetail = new HashMap<>();
         ctscCourtDetail.put("weight", 0.51);
         HashMap<String, Double> ctscDivorceFactsRatio = new HashMap<>();
         ctscDivorceFactsRatio.put("unreasonable-behaviour", 1.0);
@@ -50,68 +49,69 @@ public class OriginalCourtAllocatorTest {
         ctscDivorceFactsRatio.put("desertion", 0.0);
         ctscCourtDetail.put("divorceFactsRatio", ctscDivorceFactsRatio);
 
-        courts.put("serviceCentre", ctscCourtDetail);
-
-        HashMap<Object, Object> eastMidlandsDetail = new HashMap<>();
+        Map<Object, Object> eastMidlandsDetail = new HashMap<>();
         eastMidlandsDetail.put("weight", 0.0);
-        courts.put("eastMidlands", eastMidlandsDetail);
 
-        HashMap<Object, Object> westMidlandsDetail = new HashMap<>();
+        Map<Object, Object> westMidlandsDetail = new HashMap<>();
         westMidlandsDetail.put("weight", 0.0);
-        courts.put("westMidlands", westMidlandsDetail);
 
-        HashMap<Object, Object> southWestDetail = new HashMap<>();
+        Map<Object, Object> southWestDetail = new HashMap<>();
         southWestDetail.put("weight", 0.30);
-        courts.put("southWest", southWestDetail);
 
-        HashMap<Object, Object> northWestDetail = new HashMap<>();
+        Map<Object, Object> northWestDetail = new HashMap<>();
         northWestDetail.put("weight", 0.30);
+
+        Map<String, Map> courts = new HashMap<>();
+        courts.put("serviceCentre", ctscCourtDetail);
+        courts.put("eastMidlands", eastMidlandsDetail);
+        courts.put("westMidlands", westMidlandsDetail);
+        courts.put("southWest", southWestDetail);
         courts.put("northWest", northWestDetail);
 
         return courts;
     }
 
     private Map<String, Map<String, Double>> defineExpectedFactsCourtPercentage() {
-        Map expectedFactsCourtPercentage = new HashMap();
-        HashMap<Object, Double> unreasonableBehaviourFactsCourtPercentage = new HashMap<>();
+        Map<Object, Double> unreasonableBehaviourFactsCourtPercentage = new HashMap<>();
         unreasonableBehaviourFactsCourtPercentage.put("serviceCentre", 0.3);
         unreasonableBehaviourFactsCourtPercentage.put("eastMidlands", 0.0);
         unreasonableBehaviourFactsCourtPercentage.put("westMidlands", 0.0);
         unreasonableBehaviourFactsCourtPercentage.put("southWest", 0.0);
         unreasonableBehaviourFactsCourtPercentage.put("northWest", 0.0);
-        expectedFactsCourtPercentage.put("unreasonable-behaviour", unreasonableBehaviourFactsCourtPercentage);
 
-        HashMap<Object, Double> separation2YearsFactsCourtPercentage = new HashMap<>();
+        Map<Object, Double> separation2YearsFactsCourtPercentage = new HashMap<>();
         separation2YearsFactsCourtPercentage.put("serviceCentre", 0.0);
         separation2YearsFactsCourtPercentage.put("eastMidlands", 0.0);
         separation2YearsFactsCourtPercentage.put("westMidlands", 0.0);
         separation2YearsFactsCourtPercentage.put("southWest", 0.185);
         separation2YearsFactsCourtPercentage.put("northWest", 0.185);
-        expectedFactsCourtPercentage.put("separation-2-years", separation2YearsFactsCourtPercentage);
 
-        HashMap<Object, Double> separation5YearsFactsCourtPercentage = new HashMap<>();
+        Map<Object, Double> separation5YearsFactsCourtPercentage = new HashMap<>();
         separation5YearsFactsCourtPercentage.put("serviceCentre", 0.21);
         separation5YearsFactsCourtPercentage.put("eastMidlands", 0.0);
         separation5YearsFactsCourtPercentage.put("westMidlands", 0.0);
         separation5YearsFactsCourtPercentage.put("southWest", 0.0);
         separation5YearsFactsCourtPercentage.put("northWest", 0.0);
-        expectedFactsCourtPercentage.put("separation-5-years", separation5YearsFactsCourtPercentage);
 
-
-        HashMap<Object, Double> adulteryFactsCourtPercentage = new HashMap<>();
+        Map<Object, Double> adulteryFactsCourtPercentage = new HashMap<>();
         adulteryFactsCourtPercentage.put("serviceCentre", 0.0);
         adulteryFactsCourtPercentage.put("eastMidlands", 0.0);
         adulteryFactsCourtPercentage.put("westMidlands", 0.0);
         adulteryFactsCourtPercentage.put("southWest", 0.055);
         adulteryFactsCourtPercentage.put("northWest", 0.055);
-        expectedFactsCourtPercentage.put("adultery", adulteryFactsCourtPercentage);
 
-        HashMap<Object, Double> desertionFactsCourtPercentage = new HashMap<>();
+        Map<Object, Double> desertionFactsCourtPercentage = new HashMap<>();
         desertionFactsCourtPercentage.put("serviceCentre", 0.0);
         desertionFactsCourtPercentage.put("eastMidlands", 0.0);
         desertionFactsCourtPercentage.put("westMidlands", 0.0);
         desertionFactsCourtPercentage.put("southWest", 0.005);
         desertionFactsCourtPercentage.put("northWest", 0.005);
+
+        Map expectedFactsCourtPercentage = new HashMap();
+        expectedFactsCourtPercentage.put("unreasonable-behaviour", unreasonableBehaviourFactsCourtPercentage);
+        expectedFactsCourtPercentage.put("separation-2-years", separation2YearsFactsCourtPercentage);
+        expectedFactsCourtPercentage.put("separation-5-years", separation5YearsFactsCourtPercentage);
+        expectedFactsCourtPercentage.put("adultery", adulteryFactsCourtPercentage);
         expectedFactsCourtPercentage.put("desertion", desertionFactsCourtPercentage);
 
         return expectedFactsCourtPercentage;
@@ -179,7 +179,12 @@ public class OriginalCourtAllocatorTest {
 
         caseDistribution.keySet().forEach(fact -> {
             localCourts.keySet().forEach(courtName -> {
-                assertThat("Fact " + fact + " for court " + courtName + " didn't match", new BigDecimal(Math.abs(expectedFactsCourtPercentage.get(fact).get(courtName).doubleValue() - (factsAllocation.get(fact).get(courtName).doubleValue() / count))).compareTo(new BigDecimal(errorMargin)) == -1, is(true));
+                assertThat("Fact " + fact + " for court " + courtName + " didn't match",
+                    new BigDecimal(Math.abs(
+                        expectedFactsCourtPercentage.get(fact).get(courtName).doubleValue()
+                            - (factsAllocation.get(fact).get(courtName).doubleValue() / count)
+                    )).compareTo(new BigDecimal(errorMargin)) == -1,
+                    is(true));
             });
         });
     }

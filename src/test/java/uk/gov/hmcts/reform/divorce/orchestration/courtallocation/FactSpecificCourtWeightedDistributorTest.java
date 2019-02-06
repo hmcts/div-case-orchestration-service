@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.equalTo;
@@ -17,18 +18,19 @@ import static org.junit.rules.ExpectedException.none;
 
 public class FactSpecificCourtWeightedDistributorTest {
 
+    private final BigDecimal acceptedDeviation = new BigDecimal("0.005");
+
     @Rule
     public ExpectedException expectedException = none();
 
-    private final BigDecimal acceptedDeviation = new BigDecimal("0.005");
-
     @Test
     public void shouldReturnCourtsAccordinglyWithFullAllocation() {
-        HashMap<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = new HashMap<>();
-        HashMap<String, BigDecimal> factOneCourtAllocation = new HashMap<>();
+        Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = new HashMap<>();
+        Map<String, BigDecimal> factOneCourtAllocation = new HashMap<>();
         factOneCourtAllocation.put("court1", ONE);
         specificCourtsAllocationPerFact.put("fact1", factOneCourtAllocation);
-        FactSpecificCourtWeightedDistributor factSpecificCourtWeightedDistributor = new FactSpecificCourtWeightedDistributor(specificCourtsAllocationPerFact);
+        FactSpecificCourtWeightedDistributor factSpecificCourtWeightedDistributor =
+            new FactSpecificCourtWeightedDistributor(specificCourtsAllocationPerFact);
 
         Map<String, Integer> courtAllocation = new HashMap<>();
         for (int i = 0; i < 1000000; i++) {
@@ -41,12 +43,13 @@ public class FactSpecificCourtWeightedDistributorTest {
 
     @Test
     public void shouldReturnCourtsAccordinglyWithPartialAllocation() {
-        HashMap<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = new HashMap<>();
-        HashMap<String, BigDecimal> factTwoCourtAllocation = new HashMap<>();
+        Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = new HashMap<>();
+        Map<String, BigDecimal> factTwoCourtAllocation = new HashMap<>();
         BigDecimal courtAllocation = new BigDecimal("0.5");
         factTwoCourtAllocation.put("court2", courtAllocation);
         specificCourtsAllocationPerFact.put("fact2", factTwoCourtAllocation);
-        FactSpecificCourtWeightedDistributor factSpecificCourtWeightedDistributor = new FactSpecificCourtWeightedDistributor(specificCourtsAllocationPerFact);
+        FactSpecificCourtWeightedDistributor factSpecificCourtWeightedDistributor =
+            new FactSpecificCourtWeightedDistributor(specificCourtsAllocationPerFact);
 
         Map<String, BigDecimal> courtsAllocation = new HashMap<>();
         BigDecimal numberOfAttempts = new BigDecimal("1000000");
@@ -65,12 +68,13 @@ public class FactSpecificCourtWeightedDistributorTest {
         expectedException.expect(CourtAllocatorException.class);
         expectedException.expectMessage("Configured fact allocation for \"fact1\" went over 100%.");
 
-        HashMap<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = new HashMap<>();
-        HashMap<String, BigDecimal> courtAllocationForFact = new HashMap<>();
+        Map<String, BigDecimal> courtAllocationForFact = new HashMap<>();
         courtAllocationForFact.put("court1", new BigDecimal("0.5"));
         courtAllocationForFact.put("court2", new BigDecimal("0.5"));
         courtAllocationForFact.put("court3", new BigDecimal("0.5"));
-        specificCourtsAllocationPerFact.put("fact1", courtAllocationForFact);
+        Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact =
+            singletonMap("fact1", courtAllocationForFact);
+
         new FactSpecificCourtWeightedDistributor(specificCourtsAllocationPerFact);
     }
 

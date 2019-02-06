@@ -31,11 +31,15 @@ public class OriginalCourtAllocator implements CourtAllocator {
         calculatePreAllocations.run();
         allocateRemainders.run();
 
-        enumeratedDistributions = weightPerFactPerCourt.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e1 -> {
-            Map<String, Double> weightPerCourtForFact = e1.getValue();
-            List<Pair<String, Double>> weightedList = weightPerCourtForFact.entrySet().stream().map(e -> new Pair<>(e.getKey(), e.getValue())).collect(Collectors.toList());
-            return new EnumeratedDistribution(weightedList);
-        }));
+        enumeratedDistributions = weightPerFactPerCourt.entrySet().stream().collect(Collectors.toMap(
+            e -> e.getKey(),
+            e -> {
+                Map<String, Double> weightPerCourtForFact = e.getValue();
+                List<Pair<String, Double>> weightedList = weightPerCourtForFact.entrySet().stream()
+                    .map(entry -> new Pair<>(entry.getKey(), entry.getValue()))
+                    .collect(Collectors.toList());
+                return new EnumeratedDistribution(weightedList);
+            }));
     }
 
     @Override
@@ -45,7 +49,7 @@ public class OriginalCourtAllocator implements CourtAllocator {
     }
 
 
-    BiFunction<String, String, Double> _getDivorceFactRatioForCourt = (courtName, fact) ->
+    BiFunction<String, String, Double> getDivorceFactRatioForCourt = (courtName, fact) ->
         ((Map<String, Double>) courts.get(courtName).get("divorceFactsRatio")).get(fact);
 
     Consumer initialiseAllocationRemainingForFact = fact -> {
@@ -68,7 +72,8 @@ public class OriginalCourtAllocator implements CourtAllocator {
 
     BiConsumer<String, String> updateAllocationRemainingForCourt = (fact, courtName) -> {
         remainingWeightForCourt.put(courtName,
-            remainingWeightForCourt.get(courtName) - (_getDivorceFactRatioForCourt.apply(courtName, fact) * caseDistribution.get(fact))
+            remainingWeightForCourt.get(courtName)
+                - (getDivorceFactRatioForCourt.apply(courtName, fact) * caseDistribution.get(fact))
         );
 
         // this will fail when the allocation configuration is not validation
@@ -80,7 +85,7 @@ public class OriginalCourtAllocator implements CourtAllocator {
 
     BiConsumer<String, String> updateAllocationRemainingForFact = (fact, courtName) -> {
         allocationPerFactLeft.put(fact,
-            allocationPerFactLeft.get(fact) - _getDivorceFactRatioForCourt.apply(courtName, fact)
+            allocationPerFactLeft.get(fact) - getDivorceFactRatioForCourt.apply(courtName, fact)
         );
 
         // this will fail when the allocation configuration is not validation
@@ -91,7 +96,7 @@ public class OriginalCourtAllocator implements CourtAllocator {
     };
 
     BiConsumer<String, String> updateWeightPerFactPerCourt = (fact, courtName) -> {
-        weightPerFactPerCourt.get(fact).put(courtName, _getDivorceFactRatioForCourt.apply(courtName, fact));
+        weightPerFactPerCourt.get(fact).put(courtName, getDivorceFactRatioForCourt.apply(courtName, fact));
     };
 
     Supplier<Map<String, Double>> calculateTotalUnAllocatedWeightPerFact = () -> {
@@ -99,12 +104,14 @@ public class OriginalCourtAllocator implements CourtAllocator {
 
         caseDistribution.keySet().forEach(fact -> {
             courts.keySet().forEach(courtName -> {
-                if (!weightPerFactPerCourt.containsKey(fact) || !weightPerFactPerCourt.get(fact).containsKey(courtName)) {
+                if (!weightPerFactPerCourt.containsKey(fact)
+                    || !weightPerFactPerCourt.get(fact).containsKey(courtName)) {
                     if (!totalWeightPerFact.containsKey(fact)) {
                         totalWeightPerFact.put(fact, 0.0);
                     }
 
-                    totalWeightPerFact.put(fact, totalWeightPerFact.get(fact) + (Double) courts.get(courtName).get("weight"));
+                    totalWeightPerFact.put(fact,
+                        totalWeightPerFact.get(fact) + (Double) courts.get(courtName).get("weight"));
                 }
             });
         });
@@ -112,11 +119,13 @@ public class OriginalCourtAllocator implements CourtAllocator {
         return totalWeightPerFact;
     };
 
-    private void distributeRemainingFactsAllocationToCourts(String fact, String courtName, Map<String, Double> totalWeightPerFact) {
+    private void distributeRemainingFactsAllocationToCourts(String fact, String courtName,
+                                                            Map<String, Double> totalWeightPerFact) {
         if (!weightPerFactPerCourt.get(fact).containsKey(courtName)) {
             if (totalWeightPerFact.containsKey(fact)) {
                 weightPerFactPerCourt.get(fact).put(courtName,
-                    allocationPerFactLeft.get(fact) * remainingWeightForCourt.get(courtName) / totalWeightPerFact.get(fact)
+                    allocationPerFactLeft.get(fact)
+                        * (remainingWeightForCourt.get(courtName) / totalWeightPerFact.get(fact))
                 );
             } else {
                 weightPerFactPerCourt.get(fact).put(courtName, 0.0);
@@ -131,7 +140,8 @@ public class OriginalCourtAllocator implements CourtAllocator {
             courts.keySet().forEach(courtName -> {
                 initialiseAllocationRemainingForCourt.accept(courtName);
 
-                if (courts.get(courtName).containsKey("divorceFactsRatio") && _getDivorceFactRatioForCourt.apply(courtName, fact) != null) {
+                if (courts.get(courtName).containsKey("divorceFactsRatio")
+                    && getDivorceFactRatioForCourt.apply(courtName, fact) != null) {
                     initialiseWeightPerFactPerCourt.accept(fact);
                     updateAllocationRemainingForCourt.accept(fact, courtName);
                     updateWeightPerFactPerCourt.accept(fact, courtName);

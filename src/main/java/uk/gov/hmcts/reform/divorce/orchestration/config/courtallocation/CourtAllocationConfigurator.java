@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.DefaultCourtAllocator;
 import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.CourtAllocationConfiguration;
 import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.CourtAllocator;
+import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.DefaultCourtAllocator;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -42,7 +42,8 @@ public class CourtAllocationConfigurator {
 
         Map<String, BigDecimal> divorceRatioPerFact = prepareDivorceRatioPerFact();
 
-        Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = prepareSpecificCourtsAllocationPerFact(parsedJson);
+        Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact =
+            prepareSpecificCourtsAllocationPerFact(parsedJson);
 
         return new CourtAllocationConfiguration(desiredWorkloadPerCourt,
             divorceRatioPerFact,
@@ -84,7 +85,7 @@ public class CourtAllocationConfigurator {
                     pair -> pair.getValue().stream()
                         .collect(toMap(
                             m -> (String) m.get("courtId"),
-                            m -> new BigDecimal(String.valueOf(m.get("percentageOfCasesWithThisFactThisCourtWillHandle")))
+                            m -> new BigDecimal(String.valueOf(m.get("percentageOfCasesWithThisFactCourtWillHandle")))
                         ))
                 ));
         } else {

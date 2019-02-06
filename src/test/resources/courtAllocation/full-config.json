@@ -49,11 +49,11 @@
       "courts": [
         {
           "courtId": "eastMidlands",
-          "percentageOfCasesWithThisFactThisCourtWillHandle": 0.3
+          "percentageOfCasesWithThisFactCourtWillHandle": 0.3
         },
         {
           "courtId": "westMidlands",
-          "percentageOfCasesWithThisFactThisCourtWillHandle": 0.3
+          "percentageOfCasesWithThisFactCourtWillHandle": 0.3
         }
       ]
     },
@@ -62,11 +62,11 @@
       "courts": [
         {
           "courtId": "serviceCentre",
-          "percentageOfCasesWithThisFactThisCourtWillHandle": 1
+          "percentageOfCasesWithThisFactCourtWillHandle": 1
         },
         {
           "courtId": "westMidlands",
-          "percentageOfCasesWithThisFactThisCourtWillHandle": 0
+          "percentageOfCasesWithThisFactCourtWillHandle": 0
         }
       ]
     }
