@@ -76,48 +76,26 @@ uk:
 
 courtAllocationConfigurationJson: "
                                   {
-                                    \"divorceFactsRatio\":[
-                                      {
-                                        \"fact\": \"unreasonable-behaviour\",
-                                        \"forecastPercentageOfTotalCases\": 0.3
-                                      },
-                                      {
-                                        \"fact\": \"5-year-separation\",
-                                        \"forecastPercentageOfTotalCases\": 0.2
-                                      },
-                                      {
-                                        \"fact\": \"2-year-separation\",
-                                        \"forecastPercentageOfTotalCases\": 0.3
-                                      },
-                                      {
-                                        \"fact\": \"adultery\",
-                                        \"forecastPercentageOfTotalCases\": 0.2
-                                      },
-                                      {
-                                        \"fact\": \"desertion\",
-                                        \"forecastPercentageOfTotalCases\": 0.1
-                                      }
-                                    ],
                                     \"courtsDesiredWorkloadDistribution\": [
                                       {
                                         \"courtId\": \"eastMidlands\",
-                                        \"percentageOfTotalCases\": 0.2
+                                        \"percentageOfTotalCases\": 0
                                       },
                                       {
                                         \"courtId\": \"southWest\",
-                                        \"percentageOfTotalCases\": 0.2
+                                        \"percentageOfTotalCases\": 0.245
                                       },
                                       {
                                         \"courtId\": \"northWest\",
-                                        \"percentageOfTotalCases\": 0.2
+                                        \"percentageOfTotalCases\": 0.245
                                       },
                                       {
                                         \"courtId\": \"westMidlands\",
-                                        \"percentageOfTotalCases\": 0.2
+                                        \"percentageOfTotalCases\": 0
                                       },
                                       {
                                         \"courtId\": \"serviceCentre\",
-                                        \"percentageOfTotalCases\": 0.2
+                                        \"percentageOfTotalCases\": 0.51
                                       }
                                     ],
                                     \"factSpecificCourtAllocation\": [
@@ -125,25 +103,17 @@ courtAllocationConfigurationJson: "
                                           \"fact\": \"unreasonable-behaviour\",
                                           \"courts\": [
                                             {
-                                              \"courtId\": \"eastMidlands\",
-                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 0.3
-                                            },
-                                            {
-                                              \"courtId\": \"westMidlands\",
-                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 0.3
+                                              \"courtId\": \"serviceCentre\",
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 1
                                             }
                                           ]
                                         },
                                         {
-                                          \"fact\": \"adultery\",
+                                          \"fact\": \"separation-5-years\",
                                           \"courts\": [
                                             {
                                               \"courtId\": \"serviceCentre\",
                                               \"percentageOfCasesWithThisFactCourtWillHandle\": 1
-                                            },
-                                            {
-                                              \"courtId\": \"westMidlands\",
-                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 0
                                             }
                                           ]
                                         }
