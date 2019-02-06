@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.config.courtallocation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
@@ -17,11 +16,9 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toMap;
 
 @Configuration
 public class CourtAllocationConfigurator {
@@ -29,46 +26,79 @@ public class CourtAllocationConfigurator {
     @Autowired
     private CourtAllocationConfiguration courtAllocationConfig;
 
-    private final ObjectMapper objectMapper;
-
-    public CourtAllocationConfigurator(@Autowired ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    @Bean
+    public CourtAllocator configureCourtAllocationFromEnvironmentVariable() {
+        return new CandidateCourtAllocator(courtAllocationConfig.getDesiredWorkloadPerCourt(),
+            courtAllocationConfig.getDivorceRatioPerFact(),
+            courtAllocationConfig.getSpecificCourtsAllocationPerFact());
     }
 
     @Bean
-    public CourtAllocationConfiguration setUpEnvironmentCourtAllocationConfiguration(
-        @Value("${courtAllocationConfigurationJson}") String courtAllocationConfigJson) {//TODO - refactor
-        com.jayway.jsonpath.Configuration parserConfiguration = com.jayway.jsonpath.Configuration.builder().options(Option.DEFAULT_PATH_LEAF_TO_NULL).build();
-        DocumentContext parsedJson = JsonPath.parse(courtAllocationConfigJson, parserConfiguration);
+    public CourtAllocationConfiguration setUpCourtAllocationConfiguration(
+        @Value("${courtAllocationConfigurationJson}") String courtAllocationConfigJson) {
+        DocumentContext parsedJson = parseJsonConfiguration(courtAllocationConfigJson);
 
-        List<Map> courtsDesiredWorkloadDistribution = parsedJson.read("courtsDesiredWorkloadDistribution", List.class);//TODO- i think I could remove class
-        Map<String, BigDecimal> desiredWorkloadPerCourt = courtsDesiredWorkloadDistribution.stream()
-            .flatMap(m -> Stream.of(Pair.of((String) m.get("courtId"), new BigDecimal(String.valueOf(m.get("percentageOfTotalCases"))))))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));//TODO - shouldn't it be pair?
+        Map<String, BigDecimal> desiredWorkloadPerCourt = prepareDesiredWorkloadPerCourt(parsedJson);
 
-        List<Map> factSpecificCourtAllocation = Optional.ofNullable((List<Map>) parsedJson.read("factSpecificCourtAllocation"))
-            .orElse(emptyList());
-        Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = factSpecificCourtAllocation.stream()
-            .flatMap(m -> Stream.of(Pair.of((String) m.get("fact"), (List<Map>) m.get("courts"))))
-            .collect(Collectors.toMap(Pair::getKey, pair -> pair.getValue().stream().collect(Collectors.toMap(m -> (String) m.get("courtId"), m -> new BigDecimal(String.valueOf(m.get("percentageOfCasesWithThisFactThisCourtWillHandle")))))));
+        Map<String, BigDecimal> divorceRatioPerFact = prepareDivorceRatioPerFact();
 
-        Map<String, BigDecimal> divorceRatioPerFact = new HashMap<>();//TODO - check if values are accurate according to environment variables in PFE
-        divorceRatioPerFact.put("unreasonable-behaviour", new BigDecimal("0.30"));
-        divorceRatioPerFact.put("separation-2-years", new BigDecimal("0.37"));
-        divorceRatioPerFact.put("separation-5-years", new BigDecimal("0.21"));
-        divorceRatioPerFact.put("adultery", new BigDecimal("0.11"));
-        divorceRatioPerFact.put("desertion", new BigDecimal("0.01"));//TODO - extract to private method
+        Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = prepareSpecificCourtsAllocationPerFact(parsedJson);
 
         return new CourtAllocationConfiguration(desiredWorkloadPerCourt,
             divorceRatioPerFact,
             specificCourtsAllocationPerFact);
     }
 
-    @Bean
-    public CourtAllocator configureCourtAllocationFromEnvironmentVariable() {
-        return new CandidateCourtAllocator(courtAllocationConfig.getDesiredWorkloadPerCourt(),
-            courtAllocationConfig.getDivorceRatioPerFact(),
-            courtAllocationConfig.getSpecificCourtsAllocationPerFact());
+    private Map<String, BigDecimal> prepareDesiredWorkloadPerCourt(DocumentContext parsedJson) {
+        List<Map> courtsDesiredWorkloadDistribution = parsedJson.read("courtsDesiredWorkloadDistribution");
+        return courtsDesiredWorkloadDistribution.stream()
+            .flatMap(m -> Stream.of(Pair.of(
+                String.valueOf(m.get("courtId")), new BigDecimal(String.valueOf(m.get("percentageOfTotalCases")))
+            )))
+            .collect(toMap(Pair::getKey, Pair::getValue));
+    }
+
+    private Map<String, BigDecimal> prepareDivorceRatioPerFact() {
+        Map<String, BigDecimal> divorceRatioPerFact = new HashMap<>();//TODO - check if values are accurate according to environment variables in PFE
+
+        divorceRatioPerFact.put("unreasonable-behaviour", new BigDecimal("0.30"));
+        divorceRatioPerFact.put("separation-2-years", new BigDecimal("0.37"));
+        divorceRatioPerFact.put("separation-5-years", new BigDecimal("0.21"));
+        divorceRatioPerFact.put("adultery", new BigDecimal("0.11"));
+        divorceRatioPerFact.put("desertion", new BigDecimal("0.01"));
+
+        return divorceRatioPerFact;
+    }
+
+    private Map<String, Map<String, BigDecimal>> prepareSpecificCourtsAllocationPerFact(DocumentContext parsedJson) {
+        Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact;
+
+        List<Map> factSpecificCourtAllocation = parsedJson.read("factSpecificCourtAllocation");
+        if (factSpecificCourtAllocation != null) {
+            specificCourtsAllocationPerFact = factSpecificCourtAllocation.stream()
+                .flatMap(m -> Stream.of(Pair.of(
+                    String.valueOf(m.get("fact")), (List<Map>) m.get("courts")
+                )))
+                .collect(toMap(
+                    Pair::getKey,
+                    pair -> pair.getValue().stream()
+                        .collect(toMap(
+                            m -> (String) m.get("courtId"),
+                            m -> new BigDecimal(String.valueOf(m.get("percentageOfCasesWithThisFactThisCourtWillHandle")))
+                        ))
+                ));
+        } else {
+            specificCourtsAllocationPerFact = new HashMap<>();
+        }
+
+        return specificCourtsAllocationPerFact;
+    }
+
+    private DocumentContext parseJsonConfiguration(String courtAllocationConfigJson) {
+        com.jayway.jsonpath.Configuration parserConfiguration = com.jayway.jsonpath.Configuration.builder()
+            .options(Option.DEFAULT_PATH_LEAF_TO_NULL)
+            .build();
+        return JsonPath.parse(courtAllocationConfigJson, parserConfiguration);
     }
 
 }
