@@ -1,13 +1,25 @@
 package uk.gov.hmcts.reform.divorce.orchestration.courtallocation;
 
+import org.apache.commons.math3.distribution.EnumeratedDistribution;
+import org.apache.commons.math3.util.Pair;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static java.math.BigDecimal.ONE;
+import static java.math.BigDecimal.ZERO;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.core.Is.is;
 import static org.junit.rules.ExpectedException.none;
 
 /**
@@ -16,8 +28,56 @@ import static org.junit.rules.ExpectedException.none;
  */
 public class DefaultCourtAllocatorFurtherTests {
 
+    private BigDecimal errorMargin = new BigDecimal("0.005");
+
     @Rule
     public ExpectedException expectedException = none();
+
+    @Test
+    public void shouldRespectDesiredWorkload_RegardlessOfFactRatio_OrFactSpecificAllocation() {
+        final BigDecimal desiredWorkload = new BigDecimal("0.5");
+        Map<String, BigDecimal> desiredWorkloadPerCourt = new HashMap<>();
+        desiredWorkloadPerCourt.put("court1", desiredWorkload);
+        desiredWorkloadPerCourt.put("court2", desiredWorkload);
+
+        Map<String, BigDecimal> divorceRatioPerFact = new HashMap<>();
+        divorceRatioPerFact.put("fact1", new BigDecimal("0.4"));
+        divorceRatioPerFact.put("fact2", new BigDecimal("0.6"));
+        List<Pair<String, Double>> pairs = divorceRatioPerFact.entrySet().stream()
+            .map(e -> new Pair<>(e.getKey(), e.getValue().doubleValue()))
+            .collect(Collectors.toList());
+        EnumeratedDistribution<String> factsDistribution = new EnumeratedDistribution<>(pairs);
+
+        Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = new HashMap<>();
+        specificCourtsAllocationPerFact.put("fact1", singletonMap("court1", new BigDecimal("0.3")));
+
+        CourtAllocator courtAllocator =
+            new DefaultCourtAllocator(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
+
+        BigDecimal numberOfAttempts = new BigDecimal(1000000);
+        Map<String, BigDecimal> courtAllocation = new HashMap<>();
+        for (int i = 0; i < numberOfAttempts.intValue(); i++) {
+            Optional<String> fact = Optional.of(factsDistribution.sample());
+            String selectedCourt = courtAllocator.selectCourtForGivenDivorceFact(fact);
+            courtAllocation.put(selectedCourt, courtAllocation.getOrDefault(selectedCourt, ZERO).add(ONE));
+        }
+
+        assertThat(courtAllocation.get("court1"), closeTo(
+            desiredWorkload.multiply(numberOfAttempts), errorMargin.multiply(numberOfAttempts)
+        ));
+        assertThat(courtAllocation.get("court2"), closeTo(
+            desiredWorkload.multiply(numberOfAttempts), errorMargin.multiply(numberOfAttempts)
+        ));
+    }
+
+    @Test
+    public void shouldSelectCourt_IfUnknownReasonIsUsed() {
+        CourtAllocator defaultCourtAllocator =
+            new DefaultCourtAllocator(singletonMap("court1", ONE), emptyMap(), emptyMap());
+        String selectedCourt = defaultCourtAllocator.selectCourtForGivenDivorceFact(Optional.of("unknown-reason"));
+
+        assertThat(selectedCourt, is("court1"));
+    }
 
     @Test
     public void errorWhenTotalFactsAllocationGreaterThanCourtAllocation() {
@@ -35,55 +95,22 @@ public class DefaultCourtAllocatorFurtherTests {
             divorceRatioPerFact, specificCourtsAllocationPerFact);
     }
 
-//    desiredWorkloadPerCourt = new HashMap<>();TODO - Change this to a value that makes more sense in the new test,
-//     TODO - if I can leave it like it is
+    @Test
+    public void shouldThrowException_IfNoWorkloadIsConfiguredForCourts() {
+        expectedException.expect(CourtAllocatorException.class);
+        expectedException.expectMessage("No workload was configured for any courts.");
 
-//        desiredWorkloadPerCourt.put("serviceCentre", new BigDecimal("0.51"));
-//        desiredWorkloadPerCourt.put("eastMidlands", ZERO);
-//        desiredWorkloadPerCourt.put("westMidlands", ZERO);
-//        desiredWorkloadPerCourt.put("southWest", new BigDecimal("0.245"));
-//        desiredWorkloadPerCourt.put("northWest", new BigDecimal("0.245"));
+        CourtAllocator defaultCourtAllocator =
+            new DefaultCourtAllocator(singletonMap("court1", ZERO), emptyMap(), emptyMap());
+        defaultCourtAllocator.selectCourtForGivenDivorceFact(Optional.empty());
+    }
 
-    //TODO - should write a test that uses percentages other than 100% for court allocation
+    @Test
+    public void shouldThrowException_WhenUsingEmptyConfiguration() {
+        expectedException.expect(CourtAllocatorException.class);
+        expectedException.expectMessage("No workload was configured for any courts.");
 
-    //TODO - should I use the name "random" more?
-    //TODO - rewrite these tests
-//
-//    @Test
-//    public void shouldThrowException_IfCourtIsNotFound() {
-//        expectedException.expect(RuntimeException.class);
-//        expectedException.expectMessage("Could not find a court.");
-//
-//        CourtAllocator defaultCourtAllocator = new DefaultCourtAllocator(newHashSet(
-//            new CourtWeight("eastMidlands", 0),
-//            new CourtWeight("westMidlands", 0),
-//            new CourtWeight("southWest", 0)
-//        ));
-//        defaultCourtAllocator.selectCourtForGivenDivorceFact(Optional.empty());
-//    }
-//
-//    @Test
-//    public void shouldThrowException_IfUnknownReasonIsUsed_AndCourtAllocatorIsOnlyConfiguredForSpecificReasons() {
-//        expectedException.expect(CourtAllocatorException.class);
-//        expectedException.expectMessage("Could not find a court.");
-//
-//        CourtAllocator defaultCourtAllocator = new DefaultCourtAllocator(newHashSet(),
-//            newHashSet(
-//                new CourtAllocationPerReason("northWest", "adultery")
-//            )
-//        );
-//        defaultCourtAllocator.selectCourtForGivenDivorceFact(Optional.of("unknown-reason"));
-//    }
-//
-//    @Test
-//    public void shouldThrowException_WhenUsingEmptyConfiguration() {
-//        expectedException.expect(CourtAllocatorException.class);
-//        expectedException.expectMessage("Cannot build court allocator with empty configuration.");
-//
-//        new DefaultCourtAllocator(new CourtAllocationConfiguration(emptyMap(), emptyMap(), emptyMap()));
-//    }//TODO
-
-    //TODO - this is how I think it should be: We should assess that the percentages indicated were followed:
-    // TODO i.e. at least 11% of 5ys went to CTSC and 100% of UB went to CTSC
+        new DefaultCourtAllocator(emptyMap(), emptyMap(), emptyMap());
+    }
 
 }

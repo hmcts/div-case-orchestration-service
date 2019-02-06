@@ -35,6 +35,10 @@ public class GenericCourtWeightedDistributor {
 
         final Map<String, BigDecimal> courtsWorkload = new HashMap<>(desiredWorkloadPerCourt);
 
+        if (courtsWorkload.values().stream().reduce(ZERO, BigDecimal::add).compareTo(ZERO) <= 0) {
+            throw new CourtAllocatorException("No workload was configured for any courts.");
+        }
+
         if (!MapUtils.isEmpty(specificCourtsAllocationPerFact)) {
             Map<String, BigDecimal> courtsWorkloadForSpecifiedFacts = retrieveCourtsWorkloadForSpecifiedFacts(
                 divorceRatioPerFact, specificCourtsAllocationPerFact);

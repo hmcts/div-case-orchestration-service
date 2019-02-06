@@ -9,6 +9,7 @@ import java.util.Map;
 
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
+import static java.math.RoundingMode.DOWN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
@@ -61,8 +62,12 @@ public class GenericCourtWeightedDistributorTest {
         });
     }
 
+    /*
+     * This will test that Generic allocation should allocate no cases to Court One and that cases are proportionately
+     * distributed between the other courts, since court one's capacity is taken by fact specific allocation.
+     */
     @Test
-    public void shouldAllocateNoGenericCasesToCourtOne_SinceItsCapacityIsTakenByFactSpecificAllocation() {
+    public void shouldWorkAsExpected_WhenOneCourtIsFullyAllocatedToSpecificFacts() {
         HashMap<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = new HashMap<>();
         HashMap<String, BigDecimal> unreasonableBehaviourAllocation = new HashMap<>();
         unreasonableBehaviourAllocation.put("court1", BigDecimal.ONE);
@@ -84,9 +89,19 @@ public class GenericCourtWeightedDistributorTest {
         BigDecimal acceptableError = acceptedDeviation.multiply(totalNumberOfAttempts);
         assertThat(courtsDistribution.keySet(), hasSize(2));
         assertThat(courtsDistribution.keySet(), not(contains("court1")));
-        //TODO magic percentages
-        assertThat(courtsDistribution.get("court2"), closeTo(new BigDecimal("0.43").multiply(totalNumberOfAttempts), acceptableError));
-        assertThat(courtsDistribution.get("court3"), closeTo(new BigDecimal("0.57").multiply(totalNumberOfAttempts), acceptableError));
+
+        BigDecimal remainingWorkloadDiscountingUnreasonableBehaviour = ONE.subtract(divorceRatioPerFact.get("unreasonable-behaviour"));
+        BigDecimal courtTwoProportionalGenericAllocation = desiredWorkloadPerCourt.get("court2")
+            .divide(remainingWorkloadDiscountingUnreasonableBehaviour, 3, DOWN);
+        assertThat(courtsDistribution.get("court2"), closeTo(
+            courtTwoProportionalGenericAllocation.multiply(totalNumberOfAttempts), acceptableError
+        ));
+
+        BigDecimal courtThreeProportionalGenericAllocation = desiredWorkloadPerCourt.get("court3")
+            .divide(remainingWorkloadDiscountingUnreasonableBehaviour, 3, DOWN);
+        assertThat(courtsDistribution.get("court3"), closeTo(
+            courtThreeProportionalGenericAllocation.multiply(totalNumberOfAttempts), acceptableError
+        ));
     }
 
 }
