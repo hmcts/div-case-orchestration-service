@@ -12,7 +12,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REJECTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NEW_AMENDED_PETITION_DRAFT_KEY;
 
 @Component
 public class AmendPetitionWorkflow extends DefaultWorkflow<Map<String, Object>> {
