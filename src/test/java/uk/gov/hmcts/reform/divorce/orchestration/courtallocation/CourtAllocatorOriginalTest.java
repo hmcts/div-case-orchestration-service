@@ -104,8 +104,7 @@ public class CourtAllocatorOriginalTest {
         return expectedFactsCourtPercentage;
     }
 
-    //TODO - should I make this throw an exception specific to court allocation - rewrite test in different class and then change this
-    @Test(expected = RuntimeException.class)
+    @Test(expected = CourtAllocatorException.class)
     public void errorWhenTotalFactsAllocationGreaterThanCourtAllocation() {
         Map<String, BigDecimal> adulteryCourtsAllocation =
             specificCourtsAllocationPerFact.getOrDefault("adultery", new HashMap<>());

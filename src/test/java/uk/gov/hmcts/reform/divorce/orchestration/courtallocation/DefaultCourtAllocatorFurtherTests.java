@@ -1,10 +1,39 @@
 package uk.gov.hmcts.reform.divorce.orchestration.courtallocation;
 
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.math.BigDecimal;
+import java.util.Map;
+
+import static java.util.Collections.singletonMap;
+import static org.junit.rules.ExpectedException.none;
+
 /**
  * These are further tests written for the CourtAllocator implementation.
  * I didn't want to change the original tests for now, hence a separate class for further tests.
  */
 public class DefaultCourtAllocatorFurtherTests {
+
+    @Rule
+    public ExpectedException expectedException = none();
+
+    @Test
+    public void errorWhenTotalFactsAllocationGreaterThanCourtAllocation() {
+        expectedException.expect(CourtAllocatorException.class);
+        expectedException.expectMessage("Court \"court1\" was overallocated. Desired workload is 0.30 but total allocation was 0.35");
+
+        Map<String, BigDecimal> desiredWorkloadPerCourt = singletonMap("court1", new BigDecimal("0.30"));
+        Map<String, BigDecimal> divorceRatioPerFact = singletonMap("fact1", new BigDecimal("0.35"));
+        Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = singletonMap(
+            "fact1",
+            singletonMap("court1", BigDecimal.ONE)
+        );
+
+        new DefaultCourtAllocator(desiredWorkloadPerCourt,
+            divorceRatioPerFact, specificCourtsAllocationPerFact);
+    }
 
 //    desiredWorkloadPerCourt = new HashMap<>();TODO - Change this to a value that makes more sense in the new test,
 //     TODO - if I can leave it like it is
@@ -16,9 +45,6 @@ public class DefaultCourtAllocatorFurtherTests {
 //        desiredWorkloadPerCourt.put("northWest", new BigDecimal("0.245"));
 
     //TODO - should write a test that uses percentages other than 100% for court allocation
-
-    //TODO - do we need a test for when court is overallocated?
-
 
     //TODO - should I use the name "random" more?
     //TODO - rewrite these tests

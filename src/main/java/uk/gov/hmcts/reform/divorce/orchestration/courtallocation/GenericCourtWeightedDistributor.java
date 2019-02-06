@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.DOWN;
 
@@ -20,7 +21,7 @@ import static java.math.RoundingMode.DOWN;
  * This class handles court distribution for cases which have facts which were not
  * configured to be allocated to courts in a specific way or that have less than 100% of the
  * specified fact being handled by specific courts.
- *
+ * <p>
  * The percentages in this class are relative to the total amount of cases.
  * </p>
  */
@@ -28,7 +29,7 @@ public class GenericCourtWeightedDistributor {
 
     private EnumeratedDistribution<String> genericCourtDistribution;
 
-    public GenericCourtWeightedDistributor(Map<String, BigDecimal> desiredWorkloadPerCourt,
+    public GenericCourtWeightedDistributor(final Map<String, BigDecimal> desiredWorkloadPerCourt,
                                            Map<String, BigDecimal> divorceRatioPerFact,
                                            Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact) {
 
@@ -48,9 +49,18 @@ public class GenericCourtWeightedDistributor {
                         BigDecimal desiredWorkloadForCourt = e.getValue();
                         BigDecimal courtWorkloadForSpecifiedFacts =
                             courtsWorkloadForSpecifiedFacts.getOrDefault(courtId, ZERO);
-                        BigDecimal remainingCourtWorkload = desiredWorkloadForCourt
-                            .subtract(courtWorkloadForSpecifiedFacts);
-                        e.setValue(remainingCourtWorkload);
+
+                        if (desiredWorkloadForCourt.compareTo(courtWorkloadForSpecifiedFacts) >= 0) {
+                            BigDecimal remainingCourtWorkload = desiredWorkloadForCourt
+                                .subtract(courtWorkloadForSpecifiedFacts);
+
+                            e.setValue(remainingCourtWorkload);
+                        } else {
+                            throw new CourtAllocatorException(format(
+                                "Court \"%s\" was overallocated. Desired workload is %s but total allocation was %s",
+                                courtId, desiredWorkloadForCourt, courtWorkloadForSpecifiedFacts
+                            ));
+                        }
                     });
 
             Stream<Map.Entry<String, BigDecimal>> unspecifiedCourtsGenericAllocation =
