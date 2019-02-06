@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.CandidateCourtAllocator;
+import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.DefaultCourtAllocator;
 import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.CourtAllocationConfiguration;
 import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.CourtAllocator;
 
@@ -28,7 +28,7 @@ public class CourtAllocationConfigurator {
 
     @Bean
     public CourtAllocator configureCourtAllocationFromEnvironmentVariable() {
-        return new CandidateCourtAllocator(courtAllocationConfig.getDesiredWorkloadPerCourt(),
+        return new DefaultCourtAllocator(courtAllocationConfig.getDesiredWorkloadPerCourt(),
             courtAllocationConfig.getDivorceRatioPerFact(),
             courtAllocationConfig.getSpecificCourtsAllocationPerFact());
     }
