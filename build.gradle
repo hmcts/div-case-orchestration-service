@@ -132,6 +132,8 @@ def versions = [
 ]
 
 dependencies {
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-web')
     
