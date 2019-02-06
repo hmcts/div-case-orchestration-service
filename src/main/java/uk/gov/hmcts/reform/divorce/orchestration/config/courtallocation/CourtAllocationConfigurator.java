@@ -59,13 +59,13 @@ public class CourtAllocationConfigurator {
     }
 
     private Map<String, BigDecimal> prepareDivorceRatioPerFact() {
-        Map<String, BigDecimal> divorceRatioPerFact = new HashMap<>();//TODO - check if values are accurate according to environment variables in PFE
+        Map<String, BigDecimal> divorceRatioPerFact = new HashMap<>();
 
         divorceRatioPerFact.put("unreasonable-behaviour", new BigDecimal("0.30"));
         divorceRatioPerFact.put("separation-2-years", new BigDecimal("0.37"));
         divorceRatioPerFact.put("separation-5-years", new BigDecimal("0.21"));
-        divorceRatioPerFact.put("adultery", new BigDecimal("0.11"));
-        divorceRatioPerFact.put("desertion", new BigDecimal("0.01"));
+        divorceRatioPerFact.put("desertion", new BigDecimal("0.11"));
+        divorceRatioPerFact.put("adultery", new BigDecimal("0.01"));
 
         return divorceRatioPerFact;
     }

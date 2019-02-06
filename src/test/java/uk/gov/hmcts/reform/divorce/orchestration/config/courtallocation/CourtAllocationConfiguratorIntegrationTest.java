@@ -29,8 +29,8 @@ public class CourtAllocationConfiguratorIntegrationTest {
             hasEntry(equalTo("unreasonable-behaviour"), comparesEqualTo(new BigDecimal("0.30"))),
             hasEntry(equalTo("separation-2-years"), comparesEqualTo(new BigDecimal("0.37"))),
             hasEntry(equalTo("separation-5-years"), comparesEqualTo(new BigDecimal("0.21"))),
-            hasEntry(equalTo("adultery"), comparesEqualTo(new BigDecimal("0.11"))),
-            hasEntry(equalTo("desertion"), comparesEqualTo(new BigDecimal("0.01")))
+            hasEntry(equalTo("desertion"), comparesEqualTo(new BigDecimal("0.11"))),
+            hasEntry(equalTo("adultery"), comparesEqualTo(new BigDecimal("0.01")))
         ));
         assertThat(courtAllocationConfiguration.getDesiredWorkloadPerCourt(), allOf(
             hasEntry(equalTo("serviceCentre"), comparesEqualTo(new BigDecimal("0.33"))),
