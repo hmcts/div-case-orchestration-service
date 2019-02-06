@@ -82,7 +82,8 @@ public class DefaultCourtAllocatorFurtherTests {
     @Test
     public void errorWhenTotalFactsAllocationGreaterThanCourtAllocation() {
         expectedException.expect(CourtAllocatorException.class);
-        expectedException.expectMessage("Court \"court1\" was overallocated. Desired workload is 0.30 but total allocation was 0.35");
+        expectedException.expectMessage(
+            "Court \"court1\" was overallocated. Desired workload is 0.30 but total allocation was 0.35");
 
         Map<String, BigDecimal> desiredWorkloadPerCourt = singletonMap("court1", new BigDecimal("0.30"));
         Map<String, BigDecimal> divorceRatioPerFact = singletonMap("fact1", new BigDecimal("0.35"));

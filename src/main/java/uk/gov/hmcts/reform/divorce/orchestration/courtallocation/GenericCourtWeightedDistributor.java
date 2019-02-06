@@ -17,13 +17,12 @@ import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.DOWN;
 
 /**
- * <p>
  * This class handles court distribution for cases which have facts which were not
  * configured to be allocated to courts in a specific way or that have less than 100% of the
  * specified fact being handled by specific courts.
- * <p>
- * The percentages in this class are relative to the total amount of cases.
- * </p>
+ *
+ * <p>The percentages in this class are relative to the total amount of cases.
+ *
  */
 public class GenericCourtWeightedDistributor {
 

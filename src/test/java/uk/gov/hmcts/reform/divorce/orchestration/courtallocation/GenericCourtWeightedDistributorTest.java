@@ -10,6 +10,7 @@ import java.util.Map;
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.DOWN;
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
@@ -68,10 +69,10 @@ public class GenericCourtWeightedDistributorTest {
      */
     @Test
     public void shouldWorkAsExpected_WhenOneCourtIsFullyAllocatedToSpecificFacts() {
-        HashMap<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = new HashMap<>();
-        HashMap<String, BigDecimal> unreasonableBehaviourAllocation = new HashMap<>();
-        unreasonableBehaviourAllocation.put("court1", BigDecimal.ONE);
-        specificCourtsAllocationPerFact.put("unreasonable-behaviour", unreasonableBehaviourAllocation);
+        String fact = "unreasonable-behaviour";
+        Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = singletonMap(fact,
+            singletonMap("court1", BigDecimal.ONE)
+        );
 
         GenericCourtWeightedDistributor genericCourtWeightedDistributor = new GenericCourtWeightedDistributor(
             desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
@@ -85,20 +86,21 @@ public class GenericCourtWeightedDistributorTest {
             courtsDistribution.put(selectedCourt, casesPerCourt.add(ONE));
         }
 
-        //Assert results are as expected
+        //Assert court one was not allocated
         BigDecimal acceptableError = acceptedDeviation.multiply(totalNumberOfAttempts);
         assertThat(courtsDistribution.keySet(), hasSize(2));
         assertThat(courtsDistribution.keySet(), not(contains("court1")));
 
-        BigDecimal remainingWorkloadDiscountingUnreasonableBehaviour = ONE.subtract(divorceRatioPerFact.get("unreasonable-behaviour"));
+        //Assert other courts got selected proportionately
+        BigDecimal remainingWorkloadDiscountingSpecificFact = ONE.subtract(divorceRatioPerFact.get(fact));
         BigDecimal courtTwoProportionalGenericAllocation = desiredWorkloadPerCourt.get("court2")
-            .divide(remainingWorkloadDiscountingUnreasonableBehaviour, 3, DOWN);
+            .divide(remainingWorkloadDiscountingSpecificFact, 3, DOWN);
         assertThat(courtsDistribution.get("court2"), closeTo(
             courtTwoProportionalGenericAllocation.multiply(totalNumberOfAttempts), acceptableError
         ));
 
         BigDecimal courtThreeProportionalGenericAllocation = desiredWorkloadPerCourt.get("court3")
-            .divide(remainingWorkloadDiscountingUnreasonableBehaviour, 3, DOWN);
+            .divide(remainingWorkloadDiscountingSpecificFact, 3, DOWN);
         assertThat(courtsDistribution.get("court3"), closeTo(
             courtThreeProportionalGenericAllocation.multiply(totalNumberOfAttempts), acceptableError
         ));

@@ -60,14 +60,12 @@ public class CourtAllocatorOriginalTest {
 
     private Map<String, Map<String, Double>> defineExpectedFactsCourtPercentage() {
         //This is the percentage of the total of cases
-        Map expectedFactsCourtPercentage = new HashMap();
         HashMap<Object, Double> unreasonableBehaviourFactsCourtPercentage = new HashMap<>();
         unreasonableBehaviourFactsCourtPercentage.put("serviceCentre", 0.3);
         unreasonableBehaviourFactsCourtPercentage.put("eastMidlands", 0.0);
         unreasonableBehaviourFactsCourtPercentage.put("westMidlands", 0.0);
         unreasonableBehaviourFactsCourtPercentage.put("southWest", 0.0);
         unreasonableBehaviourFactsCourtPercentage.put("northWest", 0.0);
-        expectedFactsCourtPercentage.put("unreasonable-behaviour", unreasonableBehaviourFactsCourtPercentage);
 
         HashMap<Object, Double> separation2YearsFactsCourtPercentage = new HashMap<>();
         separation2YearsFactsCourtPercentage.put("serviceCentre", 0.0);
@@ -75,7 +73,6 @@ public class CourtAllocatorOriginalTest {
         separation2YearsFactsCourtPercentage.put("westMidlands", 0.0);
         separation2YearsFactsCourtPercentage.put("southWest", 0.185);
         separation2YearsFactsCourtPercentage.put("northWest", 0.185);
-        expectedFactsCourtPercentage.put("separation-2-years", separation2YearsFactsCourtPercentage);
 
         HashMap<Object, Double> separation5YearsFactsCourtPercentage = new HashMap<>();
         separation5YearsFactsCourtPercentage.put("serviceCentre", 0.21);
@@ -83,7 +80,6 @@ public class CourtAllocatorOriginalTest {
         separation5YearsFactsCourtPercentage.put("westMidlands", 0.0);
         separation5YearsFactsCourtPercentage.put("southWest", 0.0);
         separation5YearsFactsCourtPercentage.put("northWest", 0.0);
-        expectedFactsCourtPercentage.put("separation-5-years", separation5YearsFactsCourtPercentage);
 
         HashMap<Object, Double> adulteryFactsCourtPercentage = new HashMap<>();
         adulteryFactsCourtPercentage.put("serviceCentre", 0.0);
@@ -91,7 +87,6 @@ public class CourtAllocatorOriginalTest {
         adulteryFactsCourtPercentage.put("westMidlands", 0.0);
         adulteryFactsCourtPercentage.put("southWest", 0.055);
         adulteryFactsCourtPercentage.put("northWest", 0.055);
-        expectedFactsCourtPercentage.put("adultery", adulteryFactsCourtPercentage);
 
         HashMap<Object, Double> desertionFactsCourtPercentage = new HashMap<>();
         desertionFactsCourtPercentage.put("serviceCentre", 0.0);
@@ -99,8 +94,13 @@ public class CourtAllocatorOriginalTest {
         desertionFactsCourtPercentage.put("westMidlands", 0.0);
         desertionFactsCourtPercentage.put("southWest", 0.005);
         desertionFactsCourtPercentage.put("northWest", 0.005);
-        expectedFactsCourtPercentage.put("desertion", desertionFactsCourtPercentage);
 
+        Map expectedFactsCourtPercentage = new HashMap();
+        expectedFactsCourtPercentage.put("unreasonable-behaviour", unreasonableBehaviourFactsCourtPercentage);
+        expectedFactsCourtPercentage.put("separation-2-years", separation2YearsFactsCourtPercentage);
+        expectedFactsCourtPercentage.put("separation-5-years", separation5YearsFactsCourtPercentage);
+        expectedFactsCourtPercentage.put("adultery", adulteryFactsCourtPercentage);
+        expectedFactsCourtPercentage.put("desertion", desertionFactsCourtPercentage);
         return expectedFactsCourtPercentage;
     }
 
@@ -126,7 +126,6 @@ public class CourtAllocatorOriginalTest {
 
     @Test
     public void whenFactAllocatedToSameOneCourtReturnSameCourt() {
-        int iterations = 10;
         String fact = "unreasonable-behaviour";
         String court = "serviceCentre";
 
@@ -143,6 +142,7 @@ public class CourtAllocatorOriginalTest {
         CourtAllocator courtAllocator =
             new DefaultCourtAllocator(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact);
 
+        int iterations = 10;
         for (int i = 0; i < iterations; i++) {
             assertThat(courtAllocator.selectCourtForGivenDivorceFact(Optional.of(fact)), is(court));
         }
