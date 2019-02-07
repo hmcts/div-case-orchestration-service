@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.math.BigDecimal.ONE;
+import static java.math.BigDecimal.ZERO;
 
 /**
  * This class handles court distribution for cases which have facts which were configured
@@ -27,8 +28,8 @@ public class FactSpecificCourtWeightedDistributor {
                 Map<String, BigDecimal> courtAllocationForFact = entry.getValue();
 
                 BigDecimal totalAllocationForFact = courtAllocationForFact.values().stream()
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-                if (totalAllocationForFact.compareTo(BigDecimal.ONE) > 0) {
+                    .reduce(ZERO, BigDecimal::add);
+                if (totalAllocationForFact.compareTo(ONE) > 0) {
                     throw new CourtAllocatorException(
                         format("Configured fact allocation for \"%s\" went over 100%%.", fact));
                 }

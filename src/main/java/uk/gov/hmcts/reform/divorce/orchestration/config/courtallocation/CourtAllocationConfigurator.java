@@ -19,6 +19,12 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.SELECTED_COURT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.DESERTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_FIVE_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.UNREASONABLE_BEHAVIOUR;
 
 @Configuration
 public class CourtAllocationConfigurator {
@@ -62,11 +68,11 @@ public class CourtAllocationConfigurator {
     private Map<String, BigDecimal> prepareDivorceRatioPerFact() {
         Map<String, BigDecimal> divorceRatioPerFact = new HashMap<>();
 
-        divorceRatioPerFact.put("unreasonable-behaviour", new BigDecimal("0.30"));
-        divorceRatioPerFact.put("separation-2-years", new BigDecimal("0.37"));
-        divorceRatioPerFact.put("separation-5-years", new BigDecimal("0.21"));
-        divorceRatioPerFact.put("desertion", new BigDecimal("0.11"));
-        divorceRatioPerFact.put("adultery", new BigDecimal("0.01"));
+        divorceRatioPerFact.put(UNREASONABLE_BEHAVIOUR, new BigDecimal("0.30"));
+        divorceRatioPerFact.put(SEPARATION_TWO_YEARS, new BigDecimal("0.37"));
+        divorceRatioPerFact.put(SEPARATION_FIVE_YEARS, new BigDecimal("0.21"));
+        divorceRatioPerFact.put(DESERTION, new BigDecimal("0.11"));
+        divorceRatioPerFact.put(ADULTERY, new BigDecimal("0.01"));
 
         return divorceRatioPerFact;
     }
@@ -78,7 +84,7 @@ public class CourtAllocationConfigurator {
         if (factSpecificCourtAllocation != null) {
             specificCourtsAllocationPerFact = factSpecificCourtAllocation.stream()
                 .flatMap(m -> Stream.of(Pair.of(
-                    String.valueOf(m.get("fact")), (List<Map>) m.get("courts")
+                    String.valueOf(m.get("fact")), (List<Map>) m.get(SELECTED_COURT_KEY)
                 )))
                 .collect(toMap(
                     Pair::getKey,

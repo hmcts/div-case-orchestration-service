@@ -11,11 +11,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.REASON_FOR_DIVORCE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.SELECTED_COURT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow.SELECTED_COURT;
+
 @Slf4j
 @Component
 public class CourtAllocationTask implements Task<Map<String, Object>> {
-
-    private static final String SELECTED_COURT_KEY = "courts";
 
     @Autowired
     private CourtAllocator courtAllocator;
@@ -24,7 +26,9 @@ public class CourtAllocationTask implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
         log.trace("Will select a court for case.");
 
-        Optional<String> reasonForDivorce = Optional.ofNullable((String) payload.get("reasonForDivorce"));
+        String reasonForDivorce = Optional.ofNullable(payload.get(REASON_FOR_DIVORCE_KEY))
+            .map(String.class::cast)
+            .orElse(null);
         String selectedCourt = courtAllocator.selectCourtForGivenDivorceFact(reasonForDivorce);
 
         log.info("Court {} selected for case.", selectedCourt);
@@ -32,7 +36,7 @@ public class CourtAllocationTask implements Task<Map<String, Object>> {
         HashMap<String, Object> mapToReturn = new HashMap<>(payload);
         mapToReturn.put(SELECTED_COURT_KEY, selectedCourt);
 
-        context.setTransientObject("selectedCourt", selectedCourt);
+        context.setTransientObject(SELECTED_COURT, selectedCourt);
 
         return mapToReturn;
     }

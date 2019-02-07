@@ -192,12 +192,11 @@ public class OrchestrationControllerTest {
 
         ResponseEntity<CaseCreationResponse> response = classUnderTest.submit(AUTH_TOKEN, caseData);
 
-        final CaseCreationResponse expectedResponse = CaseCreationResponse.builder()
-                .caseId(TEST_CASE_ID)
-                .status(SUCCESS_STATUS)
-                .allocatedCourt(new AllocatedCourt("randomlySelectedCourt"))
-                .build();
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        final CaseCreationResponse expectedResponse = new CaseCreationResponse();
+        expectedResponse.setCaseId(TEST_CASE_ID);
+        expectedResponse.setStatus(SUCCESS_STATUS);
+        expectedResponse.setAllocatedCourt(new AllocatedCourt("randomlySelectedCourt"));
         assertEquals(expectedResponse, response.getBody());
     }
 
@@ -331,8 +330,8 @@ public class OrchestrationControllerTest {
     public void whenPetitionUpdatedCallback_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
+            .caseData(caseData)
+            .build();
         final CreateEvent createEvent = new CreateEvent();
         createEvent.setCaseDetails(caseDetails);
         when(caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(createEvent)).thenReturn(caseData);
@@ -346,8 +345,8 @@ public class OrchestrationControllerTest {
     public void whenRespondentSubmittedCallback_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
+            .caseData(caseData)
+            .build();
         final CreateEvent createEvent = new CreateEvent();
         createEvent.setCaseDetails(caseDetails);
         when(caseOrchestrationService.sendRespondentSubmissionNotificationEmail(createEvent)).thenReturn(caseData);
