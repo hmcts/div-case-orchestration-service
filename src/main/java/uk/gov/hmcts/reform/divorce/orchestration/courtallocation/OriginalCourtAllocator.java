@@ -32,20 +32,21 @@ public class OriginalCourtAllocator implements CourtAllocator {
         allocateRemainders.run();
 
         enumeratedDistributions = weightPerFactPerCourt.entrySet().stream().collect(Collectors.toMap(
-            e -> e.getKey(),
+            Map.Entry::getKey,
             e -> {
                 Map<String, Double> weightPerCourtForFact = e.getValue();
                 List<Pair<String, Double>> weightedList = weightPerCourtForFact.entrySet().stream()
                     .map(entry -> new Pair<>(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toList());
-                return new EnumeratedDistribution(weightedList);
+                return new EnumeratedDistribution<>(weightedList);
             }));
     }
 
     @Override
     public String selectCourtForGivenDivorceFact(Optional<String> fact) {
-        String selectedCourt = enumeratedDistributions.get(fact.get()).sample();
-        return selectedCourt;
+        return fact.map(enumeratedDistributions::get)
+            .map(EnumeratedDistribution::sample)
+            .orElse(null);
     }
 
 
@@ -79,7 +80,7 @@ public class OriginalCourtAllocator implements CourtAllocator {
         // this will fail when the allocation configuration is not validation
         // it should break the deployment and it is the expected behaviour
         if (remainingWeightForCourt.get(courtName) < 0) {
-            throw new RuntimeException("Total weightage exceeded for court " + courtName);
+            throw new CourtAllocatorException("Total weightage exceeded for court " + courtName);
         }
     };
 
@@ -91,18 +92,17 @@ public class OriginalCourtAllocator implements CourtAllocator {
         // this will fail when the allocation configuration is not validation
         // it should break the deployment and it is the expected behaviour
         if (allocationPerFactLeft.get(fact) < 0) {
-            throw new RuntimeException("Total weightage exceeded for fact " + fact);
+            throw new CourtAllocatorException("Total weightage exceeded for fact " + fact);
         }
     };
 
-    BiConsumer<String, String> updateWeightPerFactPerCourt = (fact, courtName) -> {
+    BiConsumer<String, String> updateWeightPerFactPerCourt = (fact, courtName) ->
         weightPerFactPerCourt.get(fact).put(courtName, getDivorceFactRatioForCourt.apply(courtName, fact));
-    };
 
     Supplier<Map<String, Double>> calculateTotalUnAllocatedWeightPerFact = () -> {
         Map<String, Double> totalWeightPerFact = new HashMap();
 
-        caseDistribution.keySet().forEach(fact -> {
+        caseDistribution.keySet().forEach(fact ->
             courts.keySet().forEach(courtName -> {
                 if (!weightPerFactPerCourt.containsKey(fact)
                     || !weightPerFactPerCourt.get(fact).containsKey(courtName)) {
@@ -113,8 +113,7 @@ public class OriginalCourtAllocator implements CourtAllocator {
                     totalWeightPerFact.put(fact,
                         totalWeightPerFact.get(fact) + (Double) courts.get(courtName).get("weight"));
                 }
-            });
-        });
+            }));
 
         return totalWeightPerFact;
     };
@@ -133,7 +132,7 @@ public class OriginalCourtAllocator implements CourtAllocator {
         }
     }
 
-    Runnable calculatePreAllocations = () -> {
+    Runnable calculatePreAllocations = () ->
         caseDistribution.keySet().forEach(fact -> {
             initialiseAllocationRemainingForFact.accept(fact);
 
@@ -149,17 +148,14 @@ public class OriginalCourtAllocator implements CourtAllocator {
                 }
             });
         });
-    };
 
     Runnable allocateRemainders = () -> {
         Map<String, Double> totalWeightPerFact = calculateTotalUnAllocatedWeightPerFact.get();
 
-        caseDistribution.keySet().forEach(fact -> {
-            courts.keySet().forEach(courtName -> {
-                initialiseWeightPerFactPerCourt.accept(fact);
-                distributeRemainingFactsAllocationToCourts(fact, courtName, totalWeightPerFact);
-            });
-        });
+        caseDistribution.keySet().forEach(fact -> courts.keySet().forEach(courtName -> {
+            initialiseWeightPerFactPerCourt.accept(fact);
+            distributeRemainingFactsAllocationToCourts(fact, courtName, totalWeightPerFact);
+        }));
     };
 
 }

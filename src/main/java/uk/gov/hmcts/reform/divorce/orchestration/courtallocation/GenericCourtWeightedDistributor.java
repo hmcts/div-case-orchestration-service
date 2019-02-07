@@ -22,7 +22,6 @@ import static java.math.RoundingMode.DOWN;
  * specified fact being handled by specific courts.
  *
  * <p>The percentages in this class are relative to the total amount of cases.
- *
  */
 public class GenericCourtWeightedDistributor {
 
@@ -47,9 +46,9 @@ public class GenericCourtWeightedDistributor {
             Stream<Map.Entry<String, BigDecimal>> specifiedCourtsRemainingAllocation =
                 courtsWorkload.entrySet().stream()
                     .filter(e -> specifiedCourts.contains(e.getKey()))
-                    .peek(e -> {
-                        String courtId = e.getKey();
-                        BigDecimal desiredWorkloadForCourt = e.getValue();
+                    .map(entry -> {
+                        String courtId = entry.getKey();
+                        BigDecimal desiredWorkloadForCourt = entry.getValue();
                         BigDecimal courtWorkloadForSpecifiedFacts =
                             courtsWorkloadForSpecifiedFacts.getOrDefault(courtId, ZERO);
 
@@ -57,13 +56,15 @@ public class GenericCourtWeightedDistributor {
                             BigDecimal remainingCourtWorkload = desiredWorkloadForCourt
                                 .subtract(courtWorkloadForSpecifiedFacts);
 
-                            e.setValue(remainingCourtWorkload);
+                            entry.setValue(remainingCourtWorkload);
                         } else {
                             throw new CourtAllocatorException(format(
                                 "Court \"%s\" was overallocated. Desired workload is %s but total allocation was %s",
                                 courtId, desiredWorkloadForCourt, courtWorkloadForSpecifiedFacts
                             ));
                         }
+
+                        return entry;
                     });
 
             Stream<Map.Entry<String, BigDecimal>> unspecifiedCourtsGenericAllocation =
@@ -76,7 +77,10 @@ public class GenericCourtWeightedDistributor {
             Stream<Map.Entry<String, BigDecimal>> rebalancedGenericCourtAllocation = Stream.concat(
                 unspecifiedCourtsGenericAllocation,
                 specifiedCourtsRemainingAllocation
-            ).peek(entry -> entry.setValue(entry.getValue().divide(remainingWorkload, 3, DOWN)));
+            ).map(entry -> {
+                entry.setValue(entry.getValue().divide(remainingWorkload, 3, DOWN));
+                return entry;
+            });
 
             setRebalancedCourtsWorkload(rebalancedGenericCourtAllocation);
         } else {
