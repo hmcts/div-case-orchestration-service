@@ -138,10 +138,9 @@ public class OrchestrationController {
         if (serviceResponse.containsKey(VALIDATION_ERROR_KEY)) {
             endpointResponse = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } else {
-            CaseCreationResponse caseCreationResponse = CaseCreationResponse.builder()
-                .caseId(serviceResponse.get(ID).toString())
-                .status(SUCCESS_STATUS)
-                .build();
+            CaseCreationResponse caseCreationResponse = new CaseCreationResponse();
+            caseCreationResponse.setCaseId(String.valueOf(serviceResponse.get(ID)));
+            caseCreationResponse.setStatus(SUCCESS_STATUS);
 
             Optional.ofNullable(serviceResponse.get(ALLOCATED_COURT_KEY))
                 .map(String.class::cast)

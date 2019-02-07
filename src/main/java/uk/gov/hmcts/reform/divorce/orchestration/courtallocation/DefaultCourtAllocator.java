@@ -19,8 +19,9 @@ public class DefaultCourtAllocator implements CourtAllocator {
     }
 
     @Override
-    public String selectCourtForGivenDivorceFact(Optional<String> fact) {
-        return fact.map(factSpecificCourtWeightedDistributor::selectCourt)
+    public String selectCourtForGivenDivorceFact(String fact) {
+        return Optional.ofNullable(fact)
+            .map(factSpecificCourtWeightedDistributor::selectCourt)
             .orElseGet(genericCourtWeightedDistributor::selectCourt);
     }
 

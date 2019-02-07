@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.courtallocation;
 
-import lombok.Getter;
+import lombok.Value;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
-@Getter
+@Value
 public class CourtAllocationConfiguration {
 
     private Map<String, BigDecimal> desiredWorkloadPerCourt;

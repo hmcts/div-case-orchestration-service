@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow.SELECTED_COURT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FormatDivorceSessionToCaseDataTest {
@@ -48,7 +49,7 @@ public class FormatDivorceSessionToCaseDataTest {
     @Test
     public void shouldCallCaseFormatterClientTransformToCCDFormat() {
         when(caseFormatterClient.transformToCCDFormat(eq(AUTH_TOKEN), any())).thenReturn(testData);
-        context.setTransientObject("selectedCourt", "randomlySelectedCourt");
+        context.setTransientObject(SELECTED_COURT, "randomlySelectedCourt");
 
         assertEquals(testData, formatDivorceSessionToCaseData.execute(context, testData));
     }

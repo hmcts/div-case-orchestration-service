@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CourtAllocationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft;
@@ -28,7 +26,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.REASON_FOR_DIVORCE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow.SELECTED_COURT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SubmitToCCDWorkflowTest {
@@ -51,23 +50,15 @@ public class SubmitToCCDWorkflowTest {
     @InjectMocks
     private SubmitToCCDWorkflow submitToCCDWorkflow;
 
-    private TaskContext context;
-
-    @Before
-    public void setup() {
-        context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-    }
-
     @Test
     public void runShouldExecuteTasks_AddCourtToContext_AndReturnPayloadWithAllocatedCourt() throws Exception {
-        Map<String, Object> incomingPayload = singletonMap("reasonForDivorce", "adultery");
+        Map<String, Object> incomingPayload = singletonMap(REASON_FOR_DIVORCE_KEY, "adultery");
         when(courtAllocationTask.execute(any(), eq(incomingPayload))).thenAnswer(invocation -> {
             Arrays.stream(invocation.getArguments())
                     .filter(TaskContext.class::isInstance)
                     .map(TaskContext.class::cast)
                     .findFirst()
-                    .ifPresent(cont -> cont.setTransientObject("selectedCourt", "randomlySelectedCourt"));
+                    .ifPresent(cont -> cont.setTransientObject(SELECTED_COURT, "randomlySelectedCourt"));
 
             return incomingPayload;
         });
@@ -91,7 +82,7 @@ public class SubmitToCCDWorkflowTest {
 
     private static ArgumentMatcher<TaskContext> isContextContainingCourtInfo() {
         return cxt -> {
-            String selectedCourt = (String) cxt.getTransientObject("selectedCourt");
+            String selectedCourt = (String) cxt.getTransientObject(SELECTED_COURT);
             return "randomlySelectedCourt".equals(selectedCourt);
         };
     }

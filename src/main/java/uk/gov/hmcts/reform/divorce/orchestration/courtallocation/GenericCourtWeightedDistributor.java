@@ -5,6 +5,7 @@ import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.util.Pair;
 
 import java.math.BigDecimal;
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,15 +57,13 @@ public class GenericCourtWeightedDistributor {
                             BigDecimal remainingCourtWorkload = desiredWorkloadForCourt
                                 .subtract(courtWorkloadForSpecifiedFacts);
 
-                            entry.setValue(remainingCourtWorkload);
+                            return new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), remainingCourtWorkload);
                         } else {
                             throw new CourtAllocatorException(format(
                                 "Court \"%s\" was overallocated. Desired workload is %s but total allocation was %s",
                                 courtId, desiredWorkloadForCourt, courtWorkloadForSpecifiedFacts
                             ));
                         }
-
-                        return entry;
                     });
 
             Stream<Map.Entry<String, BigDecimal>> unspecifiedCourtsGenericAllocation =
@@ -77,10 +76,8 @@ public class GenericCourtWeightedDistributor {
             Stream<Map.Entry<String, BigDecimal>> rebalancedGenericCourtAllocation = Stream.concat(
                 unspecifiedCourtsGenericAllocation,
                 specifiedCourtsRemainingAllocation
-            ).map(entry -> {
-                entry.setValue(entry.getValue().divide(remainingWorkload, 3, DOWN));
-                return entry;
-            });
+            ).map(entry -> new AbstractMap.SimpleImmutableEntry<>(
+                entry.getKey(), entry.getValue().divide(remainingWorkload, 3, DOWN)));
 
             setRebalancedCourtsWorkload(rebalancedGenericCourtAllocation);
         } else {

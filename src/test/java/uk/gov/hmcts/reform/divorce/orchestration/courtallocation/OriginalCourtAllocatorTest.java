@@ -6,14 +6,13 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 /**
  * These are the tests copied from PFE. They also test the adaptation of the PFE Court allocation algorithm.
- * Even though that implementation is not being used, I'm leaving it in for reference, at least until
+ * Even though that implementation is not being used, I'm leaving it in as reference, at least until
  * the solution is stable and we're more confident we can remove it.
  */
 public class OriginalCourtAllocatorTest {
@@ -21,7 +20,7 @@ public class OriginalCourtAllocatorTest {
     private Map<String, Double> caseDistribution;
     private Map<String, Map> courts;
 
-    private double errorMargin = 0.005;
+    private static final double errorMargin = 0.005;
     private Map<String, Map<String, Double>> expectedFactsCourtPercentage;
 
     @Before
@@ -41,7 +40,7 @@ public class OriginalCourtAllocatorTest {
     private Map<String, Map> defineCourts() {
         Map<Object, Object> ctscCourtDetail = new HashMap<>();
         ctscCourtDetail.put("weight", 0.51);
-        HashMap<String, Double> ctscDivorceFactsRatio = new HashMap<>();
+        Map<String, Double> ctscDivorceFactsRatio = new HashMap<>();
         ctscDivorceFactsRatio.put("unreasonable-behaviour", 1.0);
         ctscDivorceFactsRatio.put("separation-2-years", 0.0);
         ctscDivorceFactsRatio.put("separation-5-years", 1.0);
@@ -152,7 +151,7 @@ public class OriginalCourtAllocatorTest {
         CourtAllocator courtAllocator = new OriginalCourtAllocator(caseDistribution, localCourts);
 
         for (int i = 0; i < iterations; i++) {
-            assertThat(courtAllocator.selectCourtForGivenDivorceFact(Optional.of(fact)), is(court));
+            assertThat(courtAllocator.selectCourtForGivenDivorceFact(fact), is(court));
         }
     }
 
@@ -171,7 +170,7 @@ public class OriginalCourtAllocatorTest {
             localCourts.keySet().forEach(courtName -> factDetail.put(courtName, 0));
 
             for (int i = 0; i < (count * caseDistribution.get(fact)); i++) {
-                String selectedCourt = courtAllocator.selectCourtForGivenDivorceFact(Optional.of(fact));
+                String selectedCourt = courtAllocator.selectCourtForGivenDivorceFact(fact);
                 factDetail.put(selectedCourt, factDetail.get(selectedCourt) + 1);
             }
             factsAllocation.put(fact, factDetail);

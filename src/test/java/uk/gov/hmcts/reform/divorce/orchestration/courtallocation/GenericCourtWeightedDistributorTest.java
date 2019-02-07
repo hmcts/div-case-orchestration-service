@@ -32,11 +32,11 @@ public class GenericCourtWeightedDistributorTest {
         desiredWorkloadPerCourt.put("court3", new BigDecimal("0.4"));
 
         divorceRatioPerFact = new HashMap();
-        divorceRatioPerFact.put("unreasonable-behaviour", new BigDecimal(0.30));
-        divorceRatioPerFact.put("separation-2-years", new BigDecimal(0.37));
-        divorceRatioPerFact.put("separation-5-years", new BigDecimal(0.21));
-        divorceRatioPerFact.put("adultery", new BigDecimal(0.11));
-        divorceRatioPerFact.put("desertion", new BigDecimal(0.01));
+        divorceRatioPerFact.put("unreasonable-behaviour", new BigDecimal("0.30"));
+        divorceRatioPerFact.put("separation-2-years", new BigDecimal("0.37"));
+        divorceRatioPerFact.put("separation-5-years", new BigDecimal("0.21"));
+        divorceRatioPerFact.put("adultery", new BigDecimal("0.11"));
+        divorceRatioPerFact.put("desertion", new BigDecimal("0.01"));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class GenericCourtWeightedDistributorTest {
     public void shouldWorkAsExpected_WhenOneCourtIsFullyAllocatedToSpecificFacts() {
         String fact = "unreasonable-behaviour";
         Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = singletonMap(fact,
-            singletonMap("court1", BigDecimal.ONE)
+            singletonMap("court1", ONE)
         );
 
         GenericCourtWeightedDistributor genericCourtWeightedDistributor = new GenericCourtWeightedDistributor(

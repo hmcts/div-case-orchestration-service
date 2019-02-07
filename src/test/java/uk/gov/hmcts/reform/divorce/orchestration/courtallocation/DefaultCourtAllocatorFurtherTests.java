@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ONE;
@@ -28,7 +27,7 @@ import static org.junit.rules.ExpectedException.none;
  */
 public class DefaultCourtAllocatorFurtherTests {
 
-    private BigDecimal errorMargin = new BigDecimal("0.005");
+    private final BigDecimal errorMargin = new BigDecimal("0.005");
 
     @Rule
     public ExpectedException expectedException = none();
@@ -57,7 +56,7 @@ public class DefaultCourtAllocatorFurtherTests {
         BigDecimal numberOfAttempts = new BigDecimal(1000000);
         Map<String, BigDecimal> courtAllocation = new HashMap<>();
         for (int i = 0; i < numberOfAttempts.intValue(); i++) {
-            Optional<String> fact = Optional.of(factsDistribution.sample());
+            String fact = factsDistribution.sample();
             String selectedCourt = courtAllocator.selectCourtForGivenDivorceFact(fact);
             courtAllocation.put(selectedCourt, courtAllocation.getOrDefault(selectedCourt, ZERO).add(ONE));
         }
@@ -74,7 +73,7 @@ public class DefaultCourtAllocatorFurtherTests {
     public void shouldSelectCourt_IfUnknownReasonIsUsed() {
         CourtAllocator defaultCourtAllocator =
             new DefaultCourtAllocator(singletonMap("court1", ONE), emptyMap(), emptyMap());
-        String selectedCourt = defaultCourtAllocator.selectCourtForGivenDivorceFact(Optional.of("unknown-reason"));
+        String selectedCourt = defaultCourtAllocator.selectCourtForGivenDivorceFact("unknown-reason");
 
         assertThat(selectedCourt, is("court1"));
     }
@@ -89,7 +88,7 @@ public class DefaultCourtAllocatorFurtherTests {
         Map<String, BigDecimal> divorceRatioPerFact = singletonMap("fact1", new BigDecimal("0.35"));
         Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = singletonMap(
             "fact1",
-            singletonMap("court1", BigDecimal.ONE)
+            singletonMap("court1", ONE)
         );
 
         new DefaultCourtAllocator(desiredWorkloadPerCourt,
@@ -103,7 +102,7 @@ public class DefaultCourtAllocatorFurtherTests {
 
         CourtAllocator defaultCourtAllocator =
             new DefaultCourtAllocator(singletonMap("court1", ZERO), emptyMap(), emptyMap());
-        defaultCourtAllocator.selectCourtForGivenDivorceFact(Optional.empty());
+        defaultCourtAllocator.selectCourtForGivenDivorceFact(null);
     }
 
     @Test
