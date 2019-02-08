@@ -81,8 +81,7 @@ public class DeleteDraftITest {
                 .andExpect(content().string("{}"));
     }
 
-    private void stubCmsServerEndpoint(HttpStatus status, String body)
-            throws Exception {
+    private void stubCmsServerEndpoint(HttpStatus status, String body) {
         cmsServiceServer.stubFor(WireMock.delete(CMS_CONTEXT_PATH)
                 .willReturn(aResponse()
                         .withStatus(status.value())

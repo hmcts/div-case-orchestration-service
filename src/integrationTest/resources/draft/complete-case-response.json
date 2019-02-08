@@ -173,5 +173,6 @@
   "marriageDateMonth" : 2,
   "marriageCanDivorce" : "true",
   "financialOrderFor" : [ "petitioner", "children" ],
-  "petitionerConsent": "Yes"
+  "petitionerConsent": "Yes",
+  "respondentContactDetailsConfidential": "share"
 }
