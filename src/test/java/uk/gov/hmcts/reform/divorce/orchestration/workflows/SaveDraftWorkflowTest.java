@@ -22,9 +22,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SEND_EMAIL;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SaveDraftWorkflowTest {
@@ -39,7 +38,7 @@ public class SaveDraftWorkflowTest {
 
     private static final ArgumentMatcher<TaskContext> CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER =
         argument -> argument.getTransientObject(AUTH_TOKEN_JSON_KEY) != null
-        && argument.getTransientObject(NOTIFICATION_EMAIL) != null;
+        && argument.getTransientObject(NOTIFICATION_SEND_EMAIL) != null;
 
     @SuppressWarnings("unchecked")
     @Test
@@ -53,7 +52,7 @@ public class SaveDraftWorkflowTest {
         when(emailNotification.execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER), eq(draftSavedPayload)))
                 .thenReturn(emailNotificationPayload);
 
-        assertEquals(emailNotificationPayload, target.run(payload, AUTH_TOKEN, TEST_USER_EMAIL));
+        assertEquals(emailNotificationPayload, target.run(payload, AUTH_TOKEN, true));
 
         verify(saveToDraftStore).execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER),
                 eq(payload));
@@ -72,7 +71,7 @@ public class SaveDraftWorkflowTest {
                     context.setTaskFailed(true);
                     return draftSavedPayload;
                 });
-        target.run(payload, AUTH_TOKEN, TEST_USER_EMAIL);
+        target.run(payload, AUTH_TOKEN, true);
 
         verify(saveToDraftStore).execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER), eq(payload));
         verify(emailNotification, never()).execute(any(TaskContext.class), any());
