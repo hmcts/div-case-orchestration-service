@@ -62,7 +62,7 @@ public interface CosApiClient {
     )
     void saveDraft(@RequestHeader(AUTHORIZATION) String authorisation,
                                   @RequestBody JsonNode caseDataContent,
-                   @RequestParam(name = "notificationEmail") String notificationEmail
+                   @RequestParam(name = "sendEmail") boolean sendEmail
    );
 
     @RequestMapping(
