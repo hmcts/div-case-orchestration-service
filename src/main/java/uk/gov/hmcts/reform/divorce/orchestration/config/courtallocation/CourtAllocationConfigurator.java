@@ -20,11 +20,6 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.SELECTED_COURT_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.DESERTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_FIVE_YEARS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.UNREASONABLE_BEHAVIOUR;
 
 @Configuration
 public class CourtAllocationConfigurator {
@@ -46,13 +41,13 @@ public class CourtAllocationConfigurator {
 
         Map<String, BigDecimal> desiredWorkloadPerCourt = prepareDesiredWorkloadPerCourt(parsedJson);
 
-        Map<String, BigDecimal> divorceRatioPerFact = prepareDivorceRatioPerFact();
+        DivorceCasesRatio divorceCasesRatio = new DivorceCasesRatio();
 
         Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact =
             prepareSpecificCourtsAllocationPerFact(parsedJson);
 
         return new CourtAllocationConfiguration(desiredWorkloadPerCourt,
-            divorceRatioPerFact,
+            divorceCasesRatio.getDivorceRatioPerFact(),
             specificCourtsAllocationPerFact);
     }
 
@@ -63,18 +58,6 @@ public class CourtAllocationConfigurator {
                 String.valueOf(m.get("courtId")), new BigDecimal(String.valueOf(m.get("percentageOfTotalCases")))
             )))
             .collect(toMap(Pair::getKey, Pair::getValue));
-    }
-
-    private Map<String, BigDecimal> prepareDivorceRatioPerFact() {
-        Map<String, BigDecimal> divorceRatioPerFact = new HashMap<>();
-
-        divorceRatioPerFact.put(UNREASONABLE_BEHAVIOUR, new BigDecimal("0.30"));
-        divorceRatioPerFact.put(SEPARATION_TWO_YEARS, new BigDecimal("0.37"));
-        divorceRatioPerFact.put(SEPARATION_FIVE_YEARS, new BigDecimal("0.21"));
-        divorceRatioPerFact.put(DESERTION, new BigDecimal("0.11"));
-        divorceRatioPerFact.put(ADULTERY, new BigDecimal("0.01"));
-
-        return divorceRatioPerFact;
     }
 
     private Map<String, Map<String, BigDecimal>> prepareSpecificCourtsAllocationPerFact(DocumentContext parsedJson) {
