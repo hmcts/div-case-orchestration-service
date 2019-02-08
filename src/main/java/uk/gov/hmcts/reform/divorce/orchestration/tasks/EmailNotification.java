@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_SESSION_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SEND_EMAIL;
 
 @Component
@@ -28,8 +28,8 @@ public class EmailNotification  implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> draft) {
         boolean sendEmail = Boolean.parseBoolean(String.valueOf(context.getTransientObject(NOTIFICATION_SEND_EMAIL)));
-        String emailAddress = String.valueOf(draft.get(DIVORCE_SESSION_PETITIONER_EMAIL));
-        if (StringUtils.isNotBlank(emailAddress) && sendEmail) {
+        String emailAddress = String.valueOf((context.getTransientObject(NOTIFICATION_EMAIL)));
+        if (sendEmail && StringUtils.isNotBlank(emailAddress)) {
             return emailService.sendSaveDraftConfirmationEmail(emailAddress);
         }
         return new LinkedHashMap<>();
