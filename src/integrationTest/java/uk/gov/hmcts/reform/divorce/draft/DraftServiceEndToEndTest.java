@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.SELECTED_COURT_KEY;
 
 public class DraftServiceEndToEndTest extends IntegrationTest {
 
@@ -34,7 +35,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     private static final String BASE_CASE_RESPONSE = "draft/complete-case-response.json";
 
     private static final String NO_VALID_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib"
-            + "mFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+        + "mFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
     private static final String PETITIONER_EMAIL_KEY = "petitionerEmail";
 
@@ -65,8 +66,8 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     public void givenNotAuthenticated_whenGetDraft_thenNotAuthenticatedError() {
         try {
             draftsSubmissionSupport.getUserDraft(UserDetails.builder()
-                    .authToken(NO_VALID_TOKEN)
-                    .build(), true);
+                .authToken(NO_VALID_TOKEN)
+                .build(), true);
             fail("Not authenticated error expected");
         } catch (FeignException error) {
             assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
@@ -77,8 +78,8 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     public void givenNotAuthenticated_whenSafeDraft_thenNotAuthenticatedError() {
         try {
             draftsSubmissionSupport.saveDraft(UserDetails.builder()
-                    .authToken(NO_VALID_TOKEN)
-                    .build(), SAVE_DRAFT_FILE);
+                .authToken(NO_VALID_TOKEN)
+                .build(), SAVE_DRAFT_FILE);
             fail("Not authenticated error expected");
         } catch (FeignException error) {
             assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
@@ -89,8 +90,8 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     public void givenNotAuthenticated_whenDeleteDraft_thenNotAuthenticatedError() {
         try {
             draftsSubmissionSupport.deleteDraft(UserDetails.builder()
-                    .authToken(NO_VALID_TOKEN)
-                    .build());
+                .authToken(NO_VALID_TOKEN)
+                .build());
             fail("Not authenticated error expected");
         } catch (FeignException error) {
             assertEquals(HttpStatus.UNAUTHORIZED.value(), error.status());
@@ -136,7 +137,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
         assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
 
-        String caseId = (String)draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
+        String caseId = (String) draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
 
         Map<String, Object> draftFromCMS = cmsClientSupport.getDrafts(user);
         List response = (List) draftFromCMS.get(CMS_DATA_KEY);
@@ -152,7 +153,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
 
         final String caseId =
-            (String)draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
+            (String) draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
 
         Map<String, Object> draftFromCMS = cmsClientSupport.getDrafts(user);
         List response = (List) draftFromCMS.get(CMS_DATA_KEY);
@@ -189,6 +190,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
         // Add dynamic fields if not missing.
         expectedDraft.put(CASE_ID_JSON_KEY, caseId);
+        expectedDraft.put(SELECTED_COURT_KEY, userDraft.get(SELECTED_COURT_KEY));
         expectedDraft.put(CASE_STATE_JSON_KEY, userDraft.get(CASE_STATE_JSON_KEY));
         expectedDraft.put(PETITIONER_EMAIL_KEY, user.getEmailAddress());
         expectedDraft.put(CREATED_DATE, userDraft.get(CREATED_DATE));
