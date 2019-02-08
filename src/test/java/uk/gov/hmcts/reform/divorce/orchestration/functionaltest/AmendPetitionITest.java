@@ -28,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REJECTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -47,7 +47,7 @@ public class AmendPetitionITest {
     private static final String CMS_UPDATE_CONTEXT_PATH = String.format(
         "/casemaintenance/version/1/updateCase/%s/%s",
         CASE_ID,
-        DN_REJECTED
+        AMEND_PETITION_EVENT
     );
 
     @Autowired
