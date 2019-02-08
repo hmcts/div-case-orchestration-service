@@ -60,6 +60,16 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         assertEquals(oldCase.getState(), AMEND_PETITION_STATE);
     }
 
+    @Test
+    public void givenNoCaseForUser_whenAmendPetition_thenRetuen404() {
+        UserDetails citizenUser = createCitizenUser();
+
+        String caseId = "111111";
+
+        Response cosResponse = amendPetition(citizenUser.getAuthToken(), caseId);
+        assertEquals(HttpStatus.NOT_FOUND.value(), cosResponse.getStatusCode());
+    }
+
     private Response amendPetition(String userToken, String caseId) {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
