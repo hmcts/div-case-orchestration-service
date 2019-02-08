@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.DOWN;
 
@@ -26,6 +27,8 @@ import static java.math.RoundingMode.DOWN;
  */
 public class GenericCourtWeightedDistributor {
 
+    private static final int SCALE = 3;
+
     private EnumeratedDistribution<String> genericCourtDistribution;
 
     public GenericCourtWeightedDistributor(final Map<String, BigDecimal> desiredWorkloadPerCourt,
@@ -34,8 +37,11 @@ public class GenericCourtWeightedDistributor {
 
         final Map<String, BigDecimal> courtsWorkload = new HashMap<>(desiredWorkloadPerCourt);
 
-        if (courtsWorkload.values().stream().reduce(ZERO, BigDecimal::add).compareTo(ZERO) <= 0) {
+        BigDecimal totalPercentageDistributedToCourts = courtsWorkload.values().stream().reduce(ZERO, BigDecimal::add);
+        if (totalPercentageDistributedToCourts.compareTo(ZERO) <= 0) {
             throw new CourtAllocatorException("No workload was configured for any courts.");
+        } else if (totalPercentageDistributedToCourts.compareTo(ONE) != 0) {
+            throw new CourtAllocatorException("Desired workloads per court need to amount to 100%.");
         }
 
         if (!MapUtils.isEmpty(specificCourtsAllocationPerFact)) {
@@ -77,7 +83,7 @@ public class GenericCourtWeightedDistributor {
                 unspecifiedCourtsGenericAllocation,
                 specifiedCourtsRemainingAllocation
             ).map(entry -> new AbstractMap.SimpleImmutableEntry<>(
-                entry.getKey(), entry.getValue().divide(remainingWorkload, 3, DOWN)));
+                entry.getKey(), entry.getValue().divide(remainingWorkload, SCALE, DOWN)));
 
             setRebalancedCourtsWorkload(rebalancedGenericCourtAllocation);
         } else {
@@ -116,8 +122,8 @@ public class GenericCourtWeightedDistributor {
 
     private BigDecimal calculateRemainingWorkload(Map<String, BigDecimal> courtWorkloadForSpecifiedFacts) {
         BigDecimal totalFactSpecificWorkload = courtWorkloadForSpecifiedFacts.values().stream()
-            .reduce(ZERO, BigDecimal::add).subtract(BigDecimal.ONE).abs();
-        return BigDecimal.ONE.subtract(totalFactSpecificWorkload);
+            .reduce(ZERO, BigDecimal::add).subtract(ONE).abs();
+        return ONE.subtract(totalFactSpecificWorkload);
     }
 
     private void setRebalancedCourtsWorkload(Stream<Map.Entry<String, BigDecimal>> rebalancedCourtsWorkload) {

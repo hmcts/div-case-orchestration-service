@@ -74,7 +74,7 @@ courtAllocationConfigurationJson: "
                                     \"courtsDesiredWorkloadDistribution\": [
                                       {
                                         \"courtId\": \"serviceCentre\",
-                                        \"percentageOfTotalCases\": 0.33
+                                        \"percentageOfTotalCases\": 0.34
                                       },
                                       {
                                         \"courtId\": \"eastMidlands\",
