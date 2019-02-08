@@ -58,7 +58,7 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
         Map<String, Object> response = new HashMap<>(returnFromExecution);
         response.put(ALLOCATED_COURT_KEY, selectedCourtId);
 
-        String caseId = (String) returnFromExecution.get(ID);
+        String caseId = String.valueOf(returnFromExecution.get(ID));
         log.info("Allocated case with CASE ID: {} to court: {}", caseId, selectedCourtId);
 
         return response;
