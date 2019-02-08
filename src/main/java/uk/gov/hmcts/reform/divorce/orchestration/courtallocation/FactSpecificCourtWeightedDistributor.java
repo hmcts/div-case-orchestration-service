@@ -6,6 +6,7 @@ import org.apache.commons.math3.util.Pair;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -51,12 +52,9 @@ public class FactSpecificCourtWeightedDistributor {
         ));
     }
 
-    public String selectCourt(String divorceFact) {
-        if (distributionPerFact.containsKey(divorceFact)) {
-            return distributionPerFact.get(divorceFact).sample();
-        } else {
-            return null;
-        }
+    public Optional<String> selectCourt(String divorceFact) {
+        return Optional.ofNullable(distributionPerFact.get(divorceFact))
+            .map(EnumeratedDistribution::sample);
     }
 
 }

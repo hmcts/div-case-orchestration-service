@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.courtallocation;
 
 import java.math.BigDecimal;
 import java.util.Map;
-import java.util.Optional;
 
 public class DefaultCourtAllocator implements CourtAllocator {
 
@@ -20,8 +19,7 @@ public class DefaultCourtAllocator implements CourtAllocator {
 
     @Override
     public String selectCourtForGivenDivorceFact(String fact) {
-        return Optional.ofNullable(fact)
-            .map(factSpecificCourtWeightedDistributor::selectCourt)
+        return factSpecificCourtWeightedDistributor.selectCourt(fact)
             .orElseGet(genericCourtWeightedDistributor::selectCourt);
     }
 

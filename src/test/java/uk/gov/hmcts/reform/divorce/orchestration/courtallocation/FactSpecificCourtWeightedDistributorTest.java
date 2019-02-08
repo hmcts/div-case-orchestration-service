@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
@@ -34,8 +35,8 @@ public class FactSpecificCourtWeightedDistributorTest {
 
         Map<String, Integer> courtAllocation = new HashMap<>();
         for (int i = 0; i < 1000000; i++) {
-            String factOneCourtChoice = factSpecificCourtWeightedDistributor.selectCourt("fact1");
-            courtAllocation.put(factOneCourtChoice, courtAllocation.getOrDefault(factOneCourtChoice, 0) + 1);
+            factSpecificCourtWeightedDistributor.selectCourt("fact1").ifPresent(selectedCourt ->
+                courtAllocation.put(selectedCourt, courtAllocation.getOrDefault(selectedCourt, 0) + 1));
         }
 
         assertThat(courtAllocation.get("court1"), equalTo(1000000));
@@ -54,13 +55,29 @@ public class FactSpecificCourtWeightedDistributorTest {
         Map<String, BigDecimal> courtsAllocation = new HashMap<>();
         BigDecimal numberOfAttempts = new BigDecimal("1000000");
         for (int i = 0; i < numberOfAttempts.intValue(); i++) {
-            String factOneCourtChoice = factSpecificCourtWeightedDistributor.selectCourt("fact2");
-            courtsAllocation.put(factOneCourtChoice, courtsAllocation.getOrDefault(factOneCourtChoice, ZERO).add(ONE));
+            String selectedCourt = factSpecificCourtWeightedDistributor.selectCourt("fact2").orElse(null);
+            courtsAllocation.put(selectedCourt, courtsAllocation.getOrDefault(selectedCourt, ZERO).add(ONE));
         }
 
         BigDecimal errorMargin = acceptedDeviation.multiply(numberOfAttempts);
         assertThat(courtsAllocation.get("court2"), closeTo(courtAllocation.multiply(numberOfAttempts), errorMargin));
         assertThat(courtsAllocation.get(null), closeTo(courtAllocation.multiply(numberOfAttempts), errorMargin));
+    }
+
+    @Test
+    public void shouldReturnEmptyOptional_IfUnknownFactIsPassed() {
+        FactSpecificCourtWeightedDistributor factSpecificCourtWeightedDistributor =
+            new FactSpecificCourtWeightedDistributor(singletonMap("fact1", singletonMap("court1", ONE)));
+
+        assertThat(factSpecificCourtWeightedDistributor.selectCourt("unknown-fact").isPresent(), equalTo(false));
+    }
+
+    @Test
+    public void shouldReturnEmptyOptional_IfNullFactIsPassed() {
+        FactSpecificCourtWeightedDistributor factSpecificCourtWeightedDistributor =
+            new FactSpecificCourtWeightedDistributor(emptyMap());
+
+        assertThat(factSpecificCourtWeightedDistributor.selectCourt(null).isPresent(), equalTo(false));
     }
 
     @Test
