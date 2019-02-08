@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.divorce.orchestration.courtallocation;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -10,19 +12,25 @@ import java.util.Map;
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.DOWN;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
+import static org.junit.rules.ExpectedException.none;
 
 public class GenericCourtWeightedDistributorTest {
 
+    private static final int SCALE = 3;
     private final BigDecimal acceptedDeviation = new BigDecimal("0.005");
 
     private Map<String, BigDecimal> desiredWorkloadPerCourt;
     private Map<String, BigDecimal> divorceRatioPerFact;
+
+    @Rule
+    public ExpectedException expectedException = none();
 
     @Before
     public void setUp() {
@@ -94,16 +102,24 @@ public class GenericCourtWeightedDistributorTest {
         //Assert other courts got selected proportionately
         BigDecimal remainingWorkloadDiscountingSpecificFact = ONE.subtract(divorceRatioPerFact.get(fact));
         BigDecimal courtTwoProportionalGenericAllocation = desiredWorkloadPerCourt.get("court2")
-            .divide(remainingWorkloadDiscountingSpecificFact, 3, DOWN);
+            .divide(remainingWorkloadDiscountingSpecificFact, SCALE, DOWN);
         assertThat(courtsDistribution.get("court2"), closeTo(
             courtTwoProportionalGenericAllocation.multiply(totalNumberOfAttempts), acceptableError
         ));
 
         BigDecimal courtThreeProportionalGenericAllocation = desiredWorkloadPerCourt.get("court3")
-            .divide(remainingWorkloadDiscountingSpecificFact, 3, DOWN);
+            .divide(remainingWorkloadDiscountingSpecificFact, SCALE, DOWN);
         assertThat(courtsDistribution.get("court3"), closeTo(
             courtThreeProportionalGenericAllocation.multiply(totalNumberOfAttempts), acceptableError
         ));
+    }
+
+    @Test
+    public void shouldThrowExceptionIfDesiredCourtAllocationIsLessThanFull() {
+        expectedException.expect(CourtAllocatorException.class);
+        expectedException.expectMessage("Desired workloads per court need to amount to 100%.");
+
+        new GenericCourtWeightedDistributor(singletonMap("court1", new BigDecimal("0.5")), emptyMap(), emptyMap());
     }
 
 }

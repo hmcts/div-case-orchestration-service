@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.Divor
  */
 public class DivorceCasesRatio {
 
-    private Map<String, BigDecimal> divorceRatioPerFact = new HashMap<>();
+    private final Map<String, BigDecimal> divorceRatioPerFact = new HashMap<>();
 
     public DivorceCasesRatio() {
         divorceRatioPerFact.put(UNREASONABLE_BEHAVIOUR, new BigDecimal("0.30"));

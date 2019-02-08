@@ -40,7 +40,7 @@ public class FactSpecificCourtWeightedDistributor {
                     .collect(Collectors.toList());
 
                 //Get total allocated percentage and allocate the rest to "no court"
-                BigDecimal remainingAllocation = ONE.subtract(totalAllocationForFact).abs();
+                BigDecimal remainingAllocation = ONE.subtract(totalAllocationForFact);
                 allocationPerCourt.add(new Pair<>(null, remainingAllocation));
 
                 List<Pair<String, Double>> listWithDoubles = allocationPerCourt.stream()

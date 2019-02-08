@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.REASON_FOR_DIVORCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.SELECTED_COURT_KEY;
@@ -26,9 +25,7 @@ public class CourtAllocationTask implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
         log.trace("Will select a court for case.");
 
-        String reasonForDivorce = Optional.ofNullable(payload.get(REASON_FOR_DIVORCE_KEY))
-            .map(String.class::cast)
-            .orElse(null);
+        String reasonForDivorce = (String) payload.get(REASON_FOR_DIVORCE_KEY);
         String selectedCourt = courtAllocator.selectCourtForGivenDivorceFact(reasonForDivorce);
 
         log.info("Court {} selected for case.", selectedCourt);
