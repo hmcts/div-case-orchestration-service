@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,8 +17,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 
+@Slf4j
 @Component
 public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
@@ -54,6 +57,9 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
         String selectedCourtId = (String) getContext().getTransientObject(SELECTED_COURT);
         Map<String, Object> response = new HashMap<>(returnFromExecution);
         response.put(ALLOCATED_COURT_KEY, selectedCourtId);
+
+        String caseId = (String) returnFromExecution.get(ID);
+        log.info("Allocated case with CASE ID: {} to court: {}", caseId, selectedCourtId);
 
         return response;
     }
