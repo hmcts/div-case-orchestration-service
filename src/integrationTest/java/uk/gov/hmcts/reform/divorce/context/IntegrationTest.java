@@ -25,6 +25,7 @@ public abstract class IntegrationTest {
     private static final String PASSWORD = "PassW0rd";
 
     private UserDetails caseWorkerUser;
+    private UserDetails caseWorkerStrictUser;
 
     @Value("${case.orchestration.service.base.uri}")
     protected String serverUrl;
@@ -48,6 +49,20 @@ public abstract class IntegrationTest {
             }
 
             return caseWorkerUser;
+        }
+    }
+
+    protected UserDetails createUniqueCaseWorkerUser() {
+        synchronized (this) {
+            if (caseWorkerStrictUser == null) {
+                final String uuid = UUID.randomUUID().toString();
+                final String caseWorkerEmail = uuid + CASE_WORKER_USERNAME;
+                caseWorkerStrictUser = getUserDetails(caseWorkerEmail, CASE_WORKER_PASSWORD,
+                    CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_ROLE,
+                    CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE);
+            }
+
+            return caseWorkerStrictUser;
         }
     }
 
