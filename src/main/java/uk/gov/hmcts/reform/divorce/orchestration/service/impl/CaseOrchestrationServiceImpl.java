@@ -175,7 +175,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
             payload = updateToCCDWorkflow.run(updateEvent,
                     authUtil.getCaseworkerToken(), paymentUpdate.getCcdCaseNumber());
-            log.info("Case ID is: {}", payload.get(ID));
+            log.info("Case ID is: {}. Payment updated with payment reference {}",
+                    payload.get(ID),
+                    payment.getPaymentReference());
         } else  {
             log.info("Ignoring payment update as it was not successful payment on case {}",
                 paymentUpdate.getCcdCaseNumber());
