@@ -14,11 +14,11 @@ import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 public class SubmitAosCaseTest extends CcdSubmissionSupport {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-aos/";
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
-    private static final String ID = "id"
-    private static final String STATE = "state"
-    private static final String AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer"
-    private static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi"
-    private static final String AOS_COMPLETED = "aosCompleted"
+    private static final String ID = "id";
+    private static final String STATE = "state";
+    private static final String AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer";
+    private static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
+    private static final String AOS_COMPLETED = "aosCompleted";
 
     @Test
     public void givenUserTokenIsNull_whenSubmitAos_thenReturnBadRequest() throws Exception {

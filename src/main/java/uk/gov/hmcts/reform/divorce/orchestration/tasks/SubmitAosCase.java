@@ -50,8 +50,8 @@ public class SubmitAosCase implements Task<Map<String, Object>> {
         if (YES_VALUE.equalsIgnoreCase((String)submissionData.get(RESP_WILL_DEFEND_DIVORCE))) {
             return AWAITING_ANSWER_AOS_EVENT_ID;
 
-        } else if ((ADULTERY.equalsIgnoreCase((String)submissionData.get(D_8_REASON_FOR_DIVORCE)))
-                && (NO_VALUE.equalsIgnoreCase((String)submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT)))) {
+        } else if (ADULTERY.equalsIgnoreCase((String)submissionData.get(D_8_REASON_FOR_DIVORCE))
+                && NO_VALUE.equalsIgnoreCase((String)submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT))) {
 
             return COMPLETED_AOS_EVENT_ID;
         }
