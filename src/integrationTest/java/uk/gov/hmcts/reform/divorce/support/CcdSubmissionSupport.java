@@ -52,27 +52,17 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             eventId, createCaseWorkerUser());
     }
 
+    protected CaseDetails updateCaseWithCaseworkerStrict(String caseId, String fileName, String eventId) {
+        return ccdClientSupport.update(caseId,
+            fileName == null ? null : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class),
+            eventId, createUniqueCaseWorkerUser());
+    }
+
     protected CaseDetails updateCaseForCitizen(String caseId, String fileName, String eventId,
                                                UserDetails userDetails) {
         return ccdClientSupport.updateForCitizen(caseId,
             fileName == null ? null : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class),
             eventId, userDetails);
-    }
-
-    protected Response submitDnCase(String userToken, Long caseId, String filePath, String contextPath)
-        throws Exception {
-        final Map<String, Object> headers = new HashMap<>();
-        headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
-
-        if (userToken != null) {
-            headers.put(HttpHeaders.AUTHORIZATION, userToken);
-        }
-
-        return RestUtil.postToRestService(
-            serverUrl + contextPath + "/" + caseId,
-            headers,
-            filePath == null ? null : loadJson(DN_DATA_PATH + filePath)
-        );
     }
 
     public Response submitAosCase(String userToken, Long caseId, String requestBody) {
