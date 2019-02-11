@@ -159,7 +159,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
             Payment payment = Payment.builder()
                 .paymentChannel(ONLINE)
-                .paymentReference(paymentUpdate.getPaymentReference())
+                .paymentReference(paymentUpdate.getReference())
                 .paymentSiteId(paymentUpdate.getSiteId())
                 .paymentStatus(paymentUpdate.getStatus())
                 .paymentTransactionId(paymentUpdate.getExternalReference())

@@ -81,7 +81,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
     public void setup() {
         paymentUpdate.setChannel("online");
         paymentUpdate.setCcdCaseNumber(CASE_ID);
-        paymentUpdate.setPaymentReference("paymentReference");
+        paymentUpdate.setReference("paymentReference");
         paymentUpdate.setSiteId("siteId");
         paymentUpdate.setStatus("success");
         paymentUpdate.setExternalReference("externalReference");
@@ -93,7 +93,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
 
         payment = Payment.builder()
             .paymentChannel("online")
-            .paymentReference(paymentUpdate.getPaymentReference())
+            .paymentReference(paymentUpdate.getReference())
             .paymentSiteId(paymentUpdate.getSiteId())
             .paymentStatus(paymentUpdate.getStatus())
             .paymentTransactionId(paymentUpdate.getExternalReference())
