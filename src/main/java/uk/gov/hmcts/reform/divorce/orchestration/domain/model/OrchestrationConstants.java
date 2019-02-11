@@ -40,7 +40,7 @@ public class OrchestrationConstants {
     public static final String START_AOS_EVENT_ID = "startAos";
     public static final String AWAITING_DN_AOS_EVENT_ID = "aosSubmittedUndefended";
     public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";
-    public static final String COMPLETED_AOS_EVENT_ID = "aosCompleted";
+    public static final String COMPLETED_AOS_EVENT_ID = "aosReceivedNoAdConStarted";
     public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "respAdmitOrConsentToFact";
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
