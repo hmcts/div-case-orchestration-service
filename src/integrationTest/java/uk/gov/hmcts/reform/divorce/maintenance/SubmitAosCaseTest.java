@@ -104,12 +104,12 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
     public void givenNoConsentAndNoDefendAndReasonIsAdultery_thenProceedAsExpected() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
-        final CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);
+        final CaseDetails caseDetails = submitCase("submit-complete-case-reason-adultery.json", userDetails);
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, userDetails);
 
         Response cosResponse = submitAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-                loadJson(PAYLOAD_CONTEXT_PATH + "aos-no-defend-no-consent-adultery.json"));
+                loadJson(PAYLOAD_CONTEXT_PATH + "aos-no-defend-no-consent.json"));
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path(ID));
