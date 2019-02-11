@@ -61,7 +61,7 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
     }
 
     @Test
-    public void givenNoCaseForUser_whenAmendPetition_thenRetuen404() {
+    public void givenNoCaseForUser_whenAmendPetition_thenReturn404() {
         UserDetails citizenUser = createCitizenUser();
 
         String caseId = "111111";
