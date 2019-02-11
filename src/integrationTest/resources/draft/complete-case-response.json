@@ -172,6 +172,7 @@
   "marriedInUk" : "Yes",
   "marriageDateMonth" : 2,
   "marriageCanDivorce" : "true",
+  "respondentContactDetailsConfidential" : "share",
   "financialOrderFor" : [ "petitioner", "children" ],
   "petitionerConsent": "Yes"
 }
