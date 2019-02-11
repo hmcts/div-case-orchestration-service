@@ -18,7 +18,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
     private static final String STATE = "state";
     private static final String AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer";
     private static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
-    private static final String AOS_COMPLETED = "aosCompleted";
+    private static final String AOS_COMPLETED = "AosCompleted";
 
     @Test
     public void givenUserTokenIsNull_whenSubmitAos_thenReturnBadRequest() throws Exception {
