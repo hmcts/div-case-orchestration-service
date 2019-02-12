@@ -70,7 +70,8 @@ public class OrchestrationConstants {
 
     // Reasons For Divorce
     public static final String ADULTERY = "adultery";
-    public static final String SEPARATION2YRS = "separation-2-years";
+    public static final String SEPARATION_2_YEARS = "separation-2-years";
+    public static final String UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
 
     //Case state
     public static final String AWAITING_PAYMENT = "AwaitingPayment";
