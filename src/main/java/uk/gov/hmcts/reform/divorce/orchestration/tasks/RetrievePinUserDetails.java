@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
@@ -23,6 +24,9 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
     @Value("${idam.api.redirect-url}")
     private String authRedirectUrl;
 
+    @Autowired
+    private AuthUtil authUtil;
+
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) throws TaskException {
         String pinCode = authenticatePinUser(
@@ -30,7 +34,7 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
             authClientId,
             authRedirectUrl);
 
-        String pinAuthToken = AuthUtil.getBearToken(
+        String pinAuthToken = authUtil.getBearToken(
             getIdamClient().exchangeCode(
                 pinCode,
                 AUTHORIZATION_CODE,

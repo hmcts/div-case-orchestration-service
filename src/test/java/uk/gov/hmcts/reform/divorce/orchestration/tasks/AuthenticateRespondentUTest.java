@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,11 +31,15 @@ public class AuthenticateRespondentUTest {
     @Mock
     private IdamClient idamClient;
 
+    @Mock
+    private AuthUtil authUtil;
+
     @InjectMocks
     private AuthenticateRespondent classUnderTest;
 
     @Before
     public void setup() {
+        Mockito.when(authUtil.getBearToken(AUTH_TOKEN)).thenCallRealMethod();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
     }
 

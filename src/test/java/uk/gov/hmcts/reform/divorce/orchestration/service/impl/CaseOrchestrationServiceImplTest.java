@@ -12,7 +12,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
@@ -33,10 +37,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -113,6 +121,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
+
+    @Mock
+    private AuthUtil authUtil;
 
     private CreateEvent createEventRequest;
 
@@ -302,6 +313,69 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(requestPayload, actual);
 
         verify(updateToCCDWorkflow).run(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
+    }
+
+    @Test
+    public void givenValidPaymentData_whenPaymentUpdate_thenReturnPayload() throws Exception {
+        PaymentUpdate paymentUpdate  = new PaymentUpdate();
+        paymentUpdate.setCcdCaseNumber("1232132");
+        paymentUpdate.setStatus("success");
+        paymentUpdate.setAmount(new BigDecimal(550.00));
+        Fee fee = new Fee();
+        fee.setCode("X243");
+        paymentUpdate.setFees(Arrays.asList(fee, fee));
+        paymentUpdate.setChannel("online");
+
+        // given
+        when(updateToCCDWorkflow.run(any(), any(), any()))
+            .thenReturn(requestPayload);
+
+        when(authUtil.getCaseworkerToken()).thenReturn("testtoken");
+
+        // when
+        Map<String, Object> actual = classUnderTest.update(paymentUpdate);
+
+        // then
+        assertEquals(requestPayload, actual);
+
+
+        Payment payment = Payment.builder()
+                .paymentFeeId("X243")
+                .paymentChannel("online")
+                .paymentStatus("success")
+                .paymentAmount("55000")
+                .build();
+
+        final Map<String, Object> updateEvent = new HashMap<>();
+        updateEvent.put("eventData", Collections.singletonMap("payment", payment));
+        updateEvent.put("eventId", "paymentMade");
+
+        verify(updateToCCDWorkflow).run(updateEvent, "testtoken", "1232132");
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void givenPaymentDataWithNoAmount_whenPaymentUpdate_thenThrowWorkflowException() throws Exception {
+        PaymentUpdate paymentUpdate  = new PaymentUpdate();
+        paymentUpdate.setCcdCaseNumber("1232132");
+        paymentUpdate.setStatus("success");
+        Fee fee = new Fee();
+        fee.setCode("X243");
+        paymentUpdate.setFees(Arrays.asList(fee, fee));
+        paymentUpdate.setChannel("online");
+
+        classUnderTest.update(paymentUpdate);
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void givenPaymentDataWithNoFee_whenPaymentUpdate_thenThrowWorkflowException() throws Exception {
+        PaymentUpdate paymentUpdate  = new PaymentUpdate();
+        paymentUpdate.setCcdCaseNumber("1232132");
+        paymentUpdate.setStatus("success");
+        paymentUpdate.setAmount(new BigDecimal(550.00));
+        paymentUpdate.setChannel("online");
+        paymentUpdate.setDateCreated("2001-01-01T00:00:00.000+0000");
+
+        classUnderTest.update(paymentUpdate);
     }
 
     @Test

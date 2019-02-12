@@ -169,6 +169,9 @@ idam:
   citizen:
     username: dummy
     password: dummy
+  caseworker:
+    username: dummy
+    password: dummy
   strategic:
     enabled: false
   s2s-auth:
