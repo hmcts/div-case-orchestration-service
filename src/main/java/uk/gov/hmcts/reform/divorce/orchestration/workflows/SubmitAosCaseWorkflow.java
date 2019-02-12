@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToAosCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateExistingCollections;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitAosCase;
 
 import java.util.Map;
@@ -16,6 +17,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class SubmitAosCaseWorkflow extends DefaultWorkflow<Map<String, Object>> {
+
+    @Autowired
+    private PopulateExistingCollections populateExistingCollections;
 
     @Autowired
     private FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData;
@@ -28,6 +32,7 @@ public class SubmitAosCaseWorkflow extends DefaultWorkflow<Map<String, Object>> 
                                    String caseId) throws WorkflowException {
         return this.execute(
             new Task[] {
+                populateExistingCollections,
                 formatDivorceSessionToAosCaseData,
                 submitAosCase
             },
