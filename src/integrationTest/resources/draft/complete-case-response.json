@@ -174,5 +174,6 @@
   "marriageCanDivorce" : "true",
   "respondentContactDetailsConfidential" : "share",
   "financialOrderFor" : [ "petitioner", "children" ],
-  "petitionerConsent": "Yes"
+  "petitionerConsent": "Yes",
+  "respondentContactDetailsConfidential": "share"
 }

@@ -15,12 +15,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 
 public abstract class CcdSubmissionSupport extends IntegrationTest {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/issue-petition/";
-    private static final String DN_DATA_PATH = "fixtures/maintenance/submit-dn/";
 
     @Autowired
     protected CcdClientSupport ccdClientSupport;

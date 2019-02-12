@@ -1,0 +1,30 @@
+{
+  "links":{
+    "self":{
+      "href":"[http://payment-api-aat.service.core-compute-aat.internal/card-payments/RC-1111-1111-1111-1111",
+      "method":"GET",
+      "methAod":"GET"
+    }
+  },
+  "amount":550,
+  "ccd_case_number":"1111111111111111",
+  "channel":"online",
+  "currency":"GBP",
+  "description":"Filing](http://payment-api-aat.service.core-compute-aat.internal/card-payments/RC-1111-1111-1111-1111%22,%22method%22:%22GET%22,%22methAod%22:%22GET%22%7D%7D,%22amount%22:550,%22ccd_case_number%22:%221111111111111111%22,%22channel%22:%22online%22,%22currency%22:%22GBP%22,%22description%22:%22Filing) an application for a divorce, nullity or civil partnership dissolution – fees order 1.2.",
+  "external_provider":"gov pay",
+  "external_reference":"externalReference",
+  "fees":[
+    {
+      "calculated_amount":550,
+      "code":"FEE0002",
+      "version":"4",
+      "volume":1
+    }
+  ],
+  "method":"card",
+  "payment_group_reference":"2011-11111111111",
+  "reference":"RC-1111-1111-1111-1111",
+  "service_name":"Divorce",
+  "site_id":"CTSC",
+  "status":"Success"
+}
