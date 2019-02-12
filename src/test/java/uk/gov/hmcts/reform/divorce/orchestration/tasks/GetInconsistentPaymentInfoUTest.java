@@ -164,14 +164,12 @@ public class GetInconsistentPaymentInfoUTest {
             .getJsonFromResourceFile(PAYLOADS_PAYMENT_FROM_CMS_JSON, new TypeReference<HashMap<String, Object>>() {});
         paymentObject.put(PAYMENT_STATUS, status);
 
-        Map<String, Object> paymentList = ImmutableMap.of(
+        return ImmutableMap.of(
             IS_DRAFT_KEY, Boolean.FALSE.toString(),
             D_8_PAYMENTS, Arrays.asList(ImmutableMap.of(
                 ID, PAYMENT_ID,
                 PAYMENT_VALUE, paymentObject
             )));
-
-        return paymentList;
     }
 
     private Map<String, Object> getPaymentSystemResponse() throws IOException {

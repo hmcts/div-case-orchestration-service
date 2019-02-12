@@ -17,7 +17,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 
@@ -27,7 +26,13 @@ import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static org.hamcrest.CoreMatchers.containsString;
+import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.core.Is.is;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -54,16 +59,19 @@ public class SubmitCaseTest {
     private static final String SUBMISSION_CONTEXT_PATH = "/casemaintenance/version/1/submit";
     private static final String DELETE_DRAFT_CONTEXT_PATH = "/casemaintenance/version/1/drafts";
 
+    private static final String COURT_ID_JSON_PATH = "$.courts";
+
     private static final String AUTH_TOKEN = "authToken";
 
-    private static final Map<String, Object> CASE_DATA = Collections.emptyMap();
-
     private static final String FORM_ID = "case-progression";
+
+    private static final Map<String, Object> CASE_DATA = Collections.emptyMap();
 
     private static final ValidationRequest validationRequest = ValidationRequest.builder()
             .data(CASE_DATA)
             .formId(FORM_ID)
             .build();
+
     private static final ValidationResponse validationResponse = ValidationResponse.builder().build();
 
     @Autowired
@@ -86,10 +94,6 @@ public class SubmitCaseTest {
         stubValidationServerEndpoint();
         stubMaintenanceServerEndpointForSubmit(responseData);
         stubMaintenanceServerEndpointForDeleteDraft(HttpStatus.OK);
-        CaseResponse submissionResonse = CaseResponse.builder()
-                .caseId(TEST_CASE_ID)
-                .status(SUCCESS_STATUS)
-                .build();
 
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, AUTH_TOKEN)
@@ -97,7 +101,13 @@ public class SubmitCaseTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(content().string(containsString(convertObjectToJsonString(submissionResonse))));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().string(allOf(
+                    isJson(),
+                    hasJsonPath("$.caseId", equalTo(TEST_CASE_ID)),
+                    hasJsonPath("$.status", equalTo(SUCCESS_STATUS)),
+                    hasJsonPath("$.allocatedCourt.courtId", is(notNullValue()))
+                )));
     }
 
     @Test
@@ -136,7 +146,7 @@ public class SubmitCaseTest {
 
     private void stubFormatterServerEndpoint() {
         formatterServiceServer.stubFor(WireMock.post(CCD_FORMAT_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(CASE_DATA)))
+                .withRequestBody(matchingJsonPath(COURT_ID_JSON_PATH))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
@@ -168,4 +178,5 @@ public class SubmitCaseTest {
                 .willReturn(aResponse()
                         .withStatus(status.value())));
     }
+
 }
