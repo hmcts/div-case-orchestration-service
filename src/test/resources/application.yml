@@ -69,6 +69,40 @@ uk:
         template:
           vars: "{SAVE_DRAFT: {divorceUrl: 'https://apply-divorce.service.gov.uk'}}"
 
+courtAllocationConfigurationJson: "
+                                  {
+                                    \"courtsDesiredWorkloadDistribution\": [
+                                      {
+                                        \"courtId\": \"serviceCentre\",
+                                        \"percentageOfTotalCases\": 0.34
+                                      },
+                                      {
+                                        \"courtId\": \"eastMidlands\",
+                                        \"percentageOfTotalCases\": 0.66
+                                      }
+                                    ],
+                                    \"factSpecificCourtAllocation\": [
+                                        {
+                                          \"fact\": \"unreasonable-behaviour\",
+                                          \"courts\": [
+                                            {
+                                              \"courtId\": \"serviceCentre\",
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 1
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          \"fact\": \"separation-2-years\",
+                                          \"courts\": [
+                                            {
+                                              \"courtId\": \"eastMidlands\",
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 1
+                                            }
+                                          ]
+                                        }
+                                    ]
+                                  }"
+
 court:
   details: "{
               \"eastMidlands\":{
