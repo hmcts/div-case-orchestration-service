@@ -14,6 +14,7 @@ import static java.util.stream.Collectors.toMap;
 /**
  * These are the court allocator copied from PFE. I'm leaving it in as reference, at least until
  * the solution is stable and we're more confident we can remove it.
+ * @deprecated Copied from PFE
  */
 @Deprecated
 public class OriginalCourtAllocator implements CourtAllocator {
