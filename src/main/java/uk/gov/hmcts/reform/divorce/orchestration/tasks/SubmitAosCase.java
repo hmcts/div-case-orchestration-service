@@ -30,7 +30,7 @@ public class SubmitAosCase implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> submissionData) {
         String authToken = (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY);
-        String eventId = getAosCompleteEventId(submissionData);
+        String eventId = getAosCompleteEventId(context, submissionData);
 
         Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
             authToken,
@@ -46,11 +46,11 @@ public class SubmitAosCase implements Task<Map<String, Object>> {
         return updateCase;
     }
 
-    private String getAosCompleteEventId(Map<String, Object> submissionData) {
+    private String getAosCompleteEventId(TaskContext context, Map<String, Object> submissionData) {
         if (YES_VALUE.equalsIgnoreCase((String)submissionData.get(RESP_WILL_DEFEND_DIVORCE))) {
             return AWAITING_ANSWER_AOS_EVENT_ID;
 
-        } else if (ADULTERY.equalsIgnoreCase((String)submissionData.get(D_8_REASON_FOR_DIVORCE))
+        } else if (ADULTERY.equalsIgnoreCase((String)context.getTransientObject(D_8_REASON_FOR_DIVORCE))
                 && NO_VALUE.equalsIgnoreCase((String)submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT))) {
 
             return COMPLETED_AOS_EVENT_ID;

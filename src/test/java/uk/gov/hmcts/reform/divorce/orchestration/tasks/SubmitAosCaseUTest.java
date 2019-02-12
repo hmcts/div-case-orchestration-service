@@ -38,6 +38,7 @@ public class SubmitAosCaseUTest {
     private static final Map<String, Object> EXPECTED_OUTPUT = Collections.emptyMap();
     private static final Map<String, Object> CASE_UPDATE_RESPONSE = new HashMap<>();
     private static final TaskContext TASK_CONTEXT = new DefaultTaskContext();
+    private static Map<String, Object> DIVORCE_SESSION = new HashMap<>();
 
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
@@ -54,70 +55,74 @@ public class SubmitAosCaseUTest {
 
     @Test
     public void givenDefendAndConsent_whenExecute_thenReturnAosSubmittedDefended() {
-        final Map<String, Object> divorceSession = getCaseData(YES_VALUE, true, SEPARATION2YRS);
+        DIVORCE_SESSION = getCaseData(YES_VALUE, true);
+        TASK_CONTEXT.setTransientObject(D_8_REASON_FOR_DIVORCE, SEPARATION2YRS);
 
-        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
+        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, DIVORCE_SESSION))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
-        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
+        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, DIVORCE_SESSION));
 
         verify(caseMaintenanceClient)
-            .updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession);
+            .updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, DIVORCE_SESSION);
     }
 
     @Test
     public void givenDefendAndNoConsent_whenExecute_thenReturnAosSubmittedDefended() {
-        final Map<String, Object> divorceSession = getCaseData(NO_VALUE, true, SEPARATION2YRS);
+        DIVORCE_SESSION = getCaseData(NO_VALUE, true);
+        TASK_CONTEXT.setTransientObject(D_8_REASON_FOR_DIVORCE, SEPARATION2YRS);
 
-        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
+        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, DIVORCE_SESSION))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
-        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
+        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, DIVORCE_SESSION));
 
         verify(caseMaintenanceClient)
-            .updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession);
+            .updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, DIVORCE_SESSION);
     }
 
     @Test
     public void givenNoDefendAndNoConsentToAdultery_whenExecute_thenReturnAosCompleted() {
-        final Map<String, Object> divorceSession = getCaseData(NO_VALUE, false, ADULTERY);
+        DIVORCE_SESSION = getCaseData(NO_VALUE, false);
+        TASK_CONTEXT.setTransientObject(D_8_REASON_FOR_DIVORCE, ADULTERY);
 
-        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession))
+        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, DIVORCE_SESSION))
                 .thenReturn(CASE_UPDATE_RESPONSE);
 
-        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
+        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, DIVORCE_SESSION));
 
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, DIVORCE_SESSION);
     }
 
     @Test
     public void givenNoDefendAndConsentsToAdultery_whenExecute_thenReturnAosSubmittedUndefended() {
-        final Map<String, Object> divorceSession = getCaseData(YES_VALUE, false, ADULTERY);
+        DIVORCE_SESSION = getCaseData(YES_VALUE, false);
+        TASK_CONTEXT.setTransientObject(D_8_REASON_FOR_DIVORCE, ADULTERY);
 
-        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
+        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, DIVORCE_SESSION))
                 .thenReturn(CASE_UPDATE_RESPONSE);
 
-        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
+        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, DIVORCE_SESSION));
 
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, DIVORCE_SESSION);
     }
 
     @Test
     public void givenNoDefendAndConsentsWhenNotAdultery_whenExecute_thenReturnAosSubmittedUndefended() {
-        final Map<String, Object> divorceSession = getCaseData(YES_VALUE, false, SEPARATION2YRS);
+        DIVORCE_SESSION = getCaseData(YES_VALUE, false);
+        TASK_CONTEXT.setTransientObject(D_8_REASON_FOR_DIVORCE, SEPARATION2YRS);
 
-        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
+        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, DIVORCE_SESSION))
                 .thenReturn(CASE_UPDATE_RESPONSE);
 
-        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
+        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, DIVORCE_SESSION));
 
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, DIVORCE_SESSION);
     }
 
-    private Map<String, Object> getCaseData(String consent, boolean defended, String reasonForDivorce) {
+    private Map<String, Object> getCaseData(String consent, boolean defended) {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, consent);
-        caseData.put(D_8_REASON_FOR_DIVORCE, reasonForDivorce);
 
         if (defended) {
             caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);

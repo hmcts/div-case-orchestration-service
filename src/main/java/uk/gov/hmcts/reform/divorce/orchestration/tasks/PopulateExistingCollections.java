@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_SESSION_EXISTING_PAYMENTS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PAYMENTS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 
 @Component
 public class PopulateExistingCollections implements Task<Map<String, Object>> {
@@ -35,6 +36,8 @@ public class PopulateExistingCollections implements Task<Map<String, Object>> {
 
         if (Objects.nonNull(cmsContent.getCaseData())) {
             sessionData.put(DIVORCE_SESSION_EXISTING_PAYMENTS, cmsContent.getCaseData().get(D_8_PAYMENTS));
+            // This is for submit AOS case
+            context.setTransientObject(D_8_REASON_FOR_DIVORCE, cmsContent.getCaseData().get(D_8_REASON_FOR_DIVORCE));
         }
 
         return sessionData;
