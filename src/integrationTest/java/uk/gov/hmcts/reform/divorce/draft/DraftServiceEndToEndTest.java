@@ -190,7 +190,6 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         // Add dynamic fields if not missing.
         expectedDraft.put(CASE_ID_JSON_KEY, caseId);
         expectedDraft.put(CASE_STATE_JSON_KEY, userDraft.get(CASE_STATE_JSON_KEY));
-        expectedDraft.put(PETITIONER_EMAIL_KEY, user.getEmailAddress());
         expectedDraft.put(CREATED_DATE, userDraft.get(CREATED_DATE));
 
         assertEquals(expectedDraft, userDraft);
