@@ -51,7 +51,7 @@ feature-toggle:
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
-F
+
 bulk-print:
   dueDate: 9
 
