@@ -211,8 +211,8 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> payload = mock(Map.class);
         Map<String, Object> testExpectedPayload = mock(Map.class);
 
-        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, true)).thenReturn(testExpectedPayload);
-        assertEquals(testExpectedPayload,classUnderTest.saveDraft(payload, AUTH_TOKEN, true));
+        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, Boolean.TRUE.toString())).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload,classUnderTest.saveDraft(payload, AUTH_TOKEN, Boolean.TRUE.toString()));
     }
 
     @SuppressWarnings("unchecked")
@@ -222,10 +222,10 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> payload = mock(Map.class);
         Map<String, Object> workflowResponsePayload = mock(Map.class);
 
-        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, true)).thenReturn(workflowResponsePayload);
+        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, Boolean.TRUE.toString())).thenReturn(workflowResponsePayload);
         when(saveDraftWorkflow.errors()).thenReturn(expectedErrors);
 
-        assertEquals(expectedErrors,classUnderTest.saveDraft(payload, AUTH_TOKEN, true));
+        assertEquals(expectedErrors,classUnderTest.saveDraft(payload, AUTH_TOKEN, Boolean.TRUE.toString()));
     }
 
     @SuppressWarnings("unchecked")

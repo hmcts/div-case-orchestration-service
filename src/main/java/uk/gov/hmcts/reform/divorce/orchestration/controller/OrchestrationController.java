@@ -219,9 +219,10 @@ public class OrchestrationController {
         @RequestBody
         @NotNull Map<String, Object> payload,
         @RequestParam(value = "sendEmail", required = false)
-        @ApiParam(value = "The email address that will receive the notification that the draft has been saved")
-        final boolean sendEmail) throws WorkflowException {
+        @ApiParam(value = "Determines if the petitioner should receive the notification that the draft has been saved")
+        final String sendEmail) throws WorkflowException {
 
+        // Deprecation Warning: sendEmail as String instead of Boolean to be backwards compatible with current PFE
         return ResponseEntity.ok(orchestrationService.saveDraft(payload, authorizationToken, sendEmail));
     }
 

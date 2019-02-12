@@ -57,7 +57,7 @@ public class SaveDraftWorkflowTest {
         when(emailNotification.execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER), eq(draftSavedPayload)))
                 .thenReturn(emailNotificationPayload);
 
-        assertEquals(emailNotificationPayload, target.run(payload, AUTH_TOKEN, true));
+        assertEquals(emailNotificationPayload, target.run(payload, AUTH_TOKEN, Boolean.TRUE.toString()));
 
         verify(saveToDraftStore).execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER),
                 eq(payload));
@@ -76,7 +76,7 @@ public class SaveDraftWorkflowTest {
                     context.setTaskFailed(true);
                     return draftSavedPayload;
                 });
-        target.run(payload, AUTH_TOKEN, true);
+        target.run(payload, AUTH_TOKEN, Boolean.TRUE.toString());
 
         verify(saveToDraftStore).execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER), eq(payload));
         verify(emailNotification, never()).execute(any(TaskContext.class), any());
