@@ -33,7 +33,20 @@ public class EmailNotificationTest {
     public void givenSendEmailTrue_whenExecuteEmailNotificationTask_thenSendSaveDraftConfirmationEmailIsCalled() {
         TaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(NOTIFICATION_SEND_EMAIL, true);
+        context.setTransientObject(NOTIFICATION_SEND_EMAIL, Boolean.TRUE.toString());
+        context.setTransientObject(NOTIFICATION_EMAIL, TEST_USER_EMAIL);
+        Map<String, Object> payload = mock(Map.class);
+
+        target.execute(context, payload);
+
+        verify(emailService).sendSaveDraftConfirmationEmail(TEST_USER_EMAIL);
+    }
+
+    @Test
+    public void givenSendEmailIsString_whenExecuteEmailNotificationTask_thenSendSaveDraftConfirmationEmailIsCalled() {
+        TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(NOTIFICATION_SEND_EMAIL, TEST_USER_EMAIL);
         context.setTransientObject(NOTIFICATION_EMAIL, TEST_USER_EMAIL);
         Map<String, Object> payload = mock(Map.class);
 
@@ -46,7 +59,20 @@ public class EmailNotificationTest {
     public void givenSendEmailFalse_whenExecuteEmailNotificationTask_thenSendSaveDraftConfirmationEmailNotCalled() {
         TaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(NOTIFICATION_SEND_EMAIL, false);
+        context.setTransientObject(NOTIFICATION_SEND_EMAIL, Boolean.FALSE.toString());
+        context.setTransientObject(NOTIFICATION_EMAIL, TEST_USER_EMAIL);
+        Map<String, Object> payload = mock(Map.class);
+
+        target.execute(context, payload);
+
+        verify(emailService, never()).sendSaveDraftConfirmationEmail(TEST_USER_EMAIL);
+    }
+
+    @Test
+    public void givenSendEmailNull_whenExecuteEmailNotificationTask_thenSendSaveDraftConfirmationEmailNotCalled() {
+        TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(NOTIFICATION_SEND_EMAIL, null);
         context.setTransientObject(NOTIFICATION_EMAIL, TEST_USER_EMAIL);
         Map<String, Object> payload = mock(Map.class);
 
@@ -59,7 +85,7 @@ public class EmailNotificationTest {
     public void givenBlankEmail_whenExecuteEmailNotificationTask_thenSendSaveDraftConfirmationEmailNotCalled() {
         TaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(NOTIFICATION_SEND_EMAIL, true);
+        context.setTransientObject(NOTIFICATION_SEND_EMAIL, Boolean.TRUE.toString());
         Map<String, Object> payload = mock(Map.class);
 
         target.execute(context, payload);

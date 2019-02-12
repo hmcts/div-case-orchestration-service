@@ -32,7 +32,7 @@ public class SaveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     public Map<String, Object> run(Map<String, Object> payLoad,
                                    String authToken,
-                                   boolean sendEmail) throws WorkflowException {
+                                   String sendEmail) throws WorkflowException {
         return this.execute(
                 new Task[]{
                     saveToDraftStore,
