@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 public class AmendPetitionTest extends CcdSubmissionSupport {
 
-    private static final String PREVIOUS_CASE_REF_KEY = "previousCaseId";
+    private static final String PREVIOUS_CASE_ID_KEY = "previousCaseId";
     private static final String D8_REASON_DIVORCE = "D8ReasonForDivorce";
     private static final String PREVIOUS_REASONS_KEY = "previousReasonsForDivorce";
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/amend-petition/";
@@ -58,13 +58,12 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         Response cosResponse = amendPetition(citizenUser.getAuthToken(), caseId);
         uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails oldCase;
         oldCase = cmsClient.retrievePetitionById(citizenUser.getAuthToken(), caseId);
-        String oldCaseRef = oldCase.getCaseData().get(D_8_CASE_REFERENCE).toString();
         Map<String, Object> newDraftDocument = (Map<String, Object>) cosResponse.getBody().as(Map.class);
         List<String> previousReasons = (ArrayList<String>) newDraftDocument.get(PREVIOUS_REASONS_KEY);
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertTrue(previousReasons.contains(oldCase.getCaseData().get(D8_REASON_DIVORCE)));
-        assertEquals(oldCaseRef, cosResponse.path(PREVIOUS_CASE_REF_KEY));
+        assertEquals(oldCase.getCaseId(), cosResponse.path(PREVIOUS_CASE_ID_KEY).toString());
         assertEquals(oldCase.getState(), AMEND_PETITION_STATE);
     }
 
