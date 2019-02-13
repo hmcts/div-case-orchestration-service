@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -100,7 +101,7 @@ public class SubmitAosCaseUTest {
 
     private Map<String, Object> getCaseData(String consent, boolean defended) {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(RESP_WILL_DEFEND_DIVORCE, consent);
+        caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, consent);
 
         if (defended) {
             caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);

@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseCreationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMemb
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.AllocatedCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
@@ -184,17 +186,18 @@ public class OrchestrationControllerTest {
     @Test
     public void whenSubmit_thenReturnCaseResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
-        final Map<String, Object> submissionData = Collections.singletonMap(ID, TEST_CASE_ID);
-        final CaseResponse expectedResponse = CaseResponse.builder()
-            .caseId(TEST_CASE_ID)
-            .status(SUCCESS_STATUS)
-            .build();
+        final Map<String, Object> serviceReturnData = new HashMap<>();
+        serviceReturnData.put(ID, TEST_CASE_ID);
+        serviceReturnData.put("allocatedCourt", "randomlySelectedCourt");
+        when(caseOrchestrationService.submit(caseData, AUTH_TOKEN)).thenReturn(serviceReturnData);
 
-        when(caseOrchestrationService.submit(caseData, AUTH_TOKEN)).thenReturn(submissionData);
-
-        ResponseEntity<CaseResponse> response = classUnderTest.submit(AUTH_TOKEN, caseData);
+        ResponseEntity<CaseCreationResponse> response = classUnderTest.submit(AUTH_TOKEN, caseData);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        final CaseCreationResponse expectedResponse = new CaseCreationResponse();
+        expectedResponse.setCaseId(TEST_CASE_ID);
+        expectedResponse.setStatus(SUCCESS_STATUS);
+        expectedResponse.setAllocatedCourt(new AllocatedCourt("randomlySelectedCourt"));
         assertEquals(expectedResponse, response.getBody());
     }
 
@@ -208,7 +211,7 @@ public class OrchestrationControllerTest {
 
         when(caseOrchestrationService.submit(caseData, AUTH_TOKEN)).thenReturn(invalidResponse);
 
-        ResponseEntity<CaseResponse> response = classUnderTest.submit(AUTH_TOKEN, caseData);
+        ResponseEntity response = classUnderTest.submit(AUTH_TOKEN, caseData);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -345,8 +348,8 @@ public class OrchestrationControllerTest {
     public void whenPetitionUpdatedCallback_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
+            .caseData(caseData)
+            .build();
         final CreateEvent createEvent = new CreateEvent();
         createEvent.setCaseDetails(caseDetails);
         when(caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(createEvent)).thenReturn(caseData);
@@ -360,8 +363,8 @@ public class OrchestrationControllerTest {
     public void whenRespondentSubmittedCallback_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
+            .caseData(caseData)
+            .build();
         final CreateEvent createEvent = new CreateEvent();
         createEvent.setCaseDetails(caseDetails);
         when(caseOrchestrationService.sendRespondentSubmissionNotificationEmail(createEvent)).thenReturn(caseData);

@@ -39,10 +39,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_SESSION_EXISTING_PAYMENTS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -59,9 +65,11 @@ public class SubmitAosCaseITest {
     private static final String FORMAT_TO_AOS_CASE_CONTEXT_PATH = "/caseformatter/version/1/to-aos-submit-format";
     private static final String UPDATE_CONTEXT_PATH = "/casemaintenance/version/1/updateCase/" + TEST_CASE_ID + "/";
     private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
-
     private static final String AOS_RESPONSE_DATE = "2018-10-22";
-
+    private static final String RETRIEVE_CASE_CONTEXT_PATH = String.format(
+            "/casemaintenance/version/1/case/%s",
+            TEST_CASE_ID
+    );
     private static final CaseDetails AOS_CASE_DETAILS =
         CaseDetails.builder()
             .caseData(
@@ -100,8 +108,10 @@ public class SubmitAosCaseITest {
     @Test
     public void givenCaseFormatterFails_whenSubmitAos_thenPropagateTheException() throws Exception {
         final Map<String, Object> caseData = getCaseData(YES_VALUE, true);
+        final Map<String, Object> cmsData = Collections.emptyMap();
 
         stubFormatterServerEndpoint(BAD_REQUEST, caseData, TEST_ERROR);
+        stubMaintenanceServerEndpointForRetrieveCaseById(cmsData);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -115,9 +125,11 @@ public class SubmitAosCaseITest {
     @Test
     public void givenCaseUpdateFails_whenSubmitAos_thenPropagateTheException() throws Exception {
         final Map<String, Object> caseData = getCaseData(YES_VALUE, false);
+        final Map<String, Object> cmsData = Collections.emptyMap();
 
         stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
         stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, AWAITING_DN_AOS_EVENT_ID, caseData, TEST_ERROR);
+        stubMaintenanceServerEndpointForRetrieveCaseById(cmsData);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -132,9 +144,11 @@ public class SubmitAosCaseITest {
     public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData(YES_VALUE, true);
         final String caseDataString = convertObjectToJsonString(caseData);
+        final Map<String, Object> cmsData = Collections.emptyMap();
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, AWAITING_ANSWER_AOS_EVENT_ID, caseData, caseDataString);
+        stubMaintenanceServerEndpointForRetrieveCaseById(cmsData);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -149,9 +163,11 @@ public class SubmitAosCaseITest {
     public void givenNoConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData(NO_VALUE, true);
         final String caseDataString = convertObjectToJsonString(caseData);
+        final Map<String, Object> cmsData = Collections.emptyMap();
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, AWAITING_ANSWER_AOS_EVENT_ID, caseData, caseDataString);
+        stubMaintenanceServerEndpointForRetrieveCaseById(cmsData);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -166,9 +182,14 @@ public class SubmitAosCaseITest {
     public void givenNoConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData(NO_VALUE, false);
         final String caseDataString = convertObjectToJsonString(caseData);
+        final Map<String, Object> cmsData = new HashMap<>();
+
+        cmsData.put(CCD_CASE_DATA_FIELD, Collections.singletonMap(D_8_REASON_FOR_DIVORCE, ADULTERY));
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
         stubRetrieveAosCaseFromCMS(convertObjectToJsonString(AOS_CASE_DETAILS));
+        stubMaintenanceServerEndpointForRetrieveCaseById(cmsData);
+        stubMaintenanceServerEndpointForUpdate(OK, COMPLETED_AOS_EVENT_ID, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -183,9 +204,11 @@ public class SubmitAosCaseITest {
     public void givenConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData(YES_VALUE, false);
         final String caseDataString = convertObjectToJsonString(caseData);
+        final Map<String, Object> cmsData = Collections.emptyMap();
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, AWAITING_DN_AOS_EVENT_ID, caseData, caseDataString);
+        stubMaintenanceServerEndpointForRetrieveCaseById(cmsData);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -216,6 +239,15 @@ public class SubmitAosCaseITest {
                 .withBody(response)));
     }
 
+    private void stubMaintenanceServerEndpointForRetrieveCaseById(Map<String, Object> cmsData) {
+        maintenanceServiceServer.stubFor(WireMock.get(RETRIEVE_CASE_CONTEXT_PATH)
+            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(convertObjectToJsonString(cmsData))));
+    }
+
     private void stubRetrieveAosCaseFromCMS(String message) {
         maintenanceServiceServer.stubFor(WireMock.get(RETRIEVE_AOS_CASE_CONTEXT_PATH + "?checkCcd=" + TEST_CHECK_CCD)
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
@@ -227,7 +259,8 @@ public class SubmitAosCaseITest {
 
     private Map<String, Object> getCaseData(String consent, boolean defended) {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(RESP_WILL_DEFEND_DIVORCE, consent);
+        caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, consent);
+        caseData.put(DIVORCE_SESSION_EXISTING_PAYMENTS, null);
 
         if (defended) {
             caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);

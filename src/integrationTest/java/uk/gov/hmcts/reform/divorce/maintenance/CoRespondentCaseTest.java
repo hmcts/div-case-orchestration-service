@@ -41,18 +41,19 @@ public class CoRespondentCaseTest extends RetrieveAosCaseSupport {
         assertThat(cosResponse.path(STATE_KEY), is("DNAwaiting"));
 
         String requestCoRespondentAnswersJson = objectMapper.readTree(requestBodyJson)
-                .get("coRespondentAnswers")
-                .toString();
+            .get("coRespondentAnswers")
+            .toString();
         String responseJson = cosResponse.getBody().asString();
         String responseCoRespondentAnswersJson = objectMapper.readTree(responseJson)
-                .get("data")
-                .get("coRespondentAnswers")
-                .toString();
+            .get("data")
+            .get("coRespondentAnswers")
+            .toString();
         JSONAssert.assertEquals(requestCoRespondentAnswersJson, responseCoRespondentAnswersJson, false);
     }
 
-    private void updateCaseWithCoRespondentAnswers(
-        UserDetails userDetails, CaseDetails caseDetails, String requestBody) {
+    private void updateCaseWithCoRespondentAnswers(UserDetails userDetails,
+                                                   CaseDetails caseDetails,
+                                                   String requestBody) {
         Response cosResponse = submitAosCase(userDetails.getAuthToken(), caseDetails.getId(), requestBody);
 
         assertThat(cosResponse.getStatusCode(), is(OK.value()));
