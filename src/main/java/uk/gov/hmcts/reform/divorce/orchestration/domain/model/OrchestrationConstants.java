@@ -39,6 +39,7 @@ public class OrchestrationConstants {
     public static final String D_8_INFERRED_RESPONDENT_GENDER = "D8InferredRespondentGender";
     public static final String D_8_INFERRED_PETITIONER_GENDER = "D8InferredPetitionerGender";
     public static final String D_8_REASON_FOR_DIVORCE = "D8ReasonForDivorce";
+    public static final String D_8_CO_RESPONDENT_NAMED = "D8ReasonForDivorceAdulteryWishToName";
     public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
@@ -79,8 +80,10 @@ public class OrchestrationConstants {
     public static final String DIVORCE_SESSION_PETITIONER_EMAIL = "petitionerEmail";
 
     public static final String ID = "id";
-    public static final String PIN = "pin";
+    public static final String RESPONDENT_PIN = "pin";
+    public static final String CO_RESPONDENT_PIN = "coRespondentPin";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
+    public static final String CO_RESPONDENT_LETTER_HOLDER_ID = "CoRespLetterHolderId";
     public static final String SUCCESS_STATUS = "success";
 
     // Reasons For Divorce
@@ -115,12 +118,16 @@ public class OrchestrationConstants {
 
     // Document Generator
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";
-    public static final String DOCUMENT_TYPE_INVITATION = "aos";
+    public static final String DOCUMENT_TYPE_RESPONDENT_INVITATION = "aos";
     public static final String DOCUMENT_TYPE_PETITION = "petition";
-    public static final String INVITATION_FILE_NAME_FORMAT = "aosinvitation%s";
+    public static final String RESPONDENT_INVITATION_FILE_NAME_FORMAT = "aosinvitation%s";
     public static final String MINI_PETITION_FILE_NAME_FORMAT = "d8petition%s";
     public static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
     public static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
+    public static final String DOCUMENT_TYPE_CO_RESPONDENT_INVITATION = "aoscr";
+    public static final String CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT = "co-respondentaosinvitation%s";
+    public static final String CO_RESPONDENT_INVITATION_TEMPLATE_NAME = "co-respondentinvitation";
+    public static final String PETITION_ISSUE_FEE_FOR_LETTER = "petitionIssueFee";
 
     // Fees
     public static final String CURRENCY = "GBP";
