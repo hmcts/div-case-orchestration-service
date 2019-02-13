@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo ${TEST_URL}
-zap-api-scan.py -g functional-output/config.txt -t ${TEST_URL}/v2/api-docs -f openapi -u ${SecurityRules} -P 1001 -l FAIL
+zap-api-scan.py -t ${TEST_URL}/v2/api-docs -f openapi -u ${SecurityRules} -P 1001 -l FAIL -g functional-output/config.txt
 cat zap.out
 zap-cli --zap-url http://0.0.0.0 -p 1001 report -o /zap/api-report.html -f html
 cp /zap/api-report.html functional-output/
