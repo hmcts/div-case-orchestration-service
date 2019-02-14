@@ -193,7 +193,6 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         expectedDraft.put(SELECTED_COURT_KEY, userDraft.get(SELECTED_COURT_KEY));
         expectedDraft.put(CASE_STATE_JSON_KEY, userDraft.get(CASE_STATE_JSON_KEY));
         expectedDraft.put(CREATED_DATE, userDraft.get(CREATED_DATE));
-        expectedDraft.put(PETITIONER_EMAIL_KEY, user.getEmailAddress());
 
         assertEquals(expectedDraft, userDraft);
     }
