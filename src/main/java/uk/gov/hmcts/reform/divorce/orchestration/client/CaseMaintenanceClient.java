@@ -19,6 +19,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public interface CaseMaintenanceClient {
 
     @RequestMapping(
+        method = RequestMethod.PUT,
+        value = "/casemaintenance/version/1/amended-petition-draft",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> amendPetition(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken
+    );
+
+    @RequestMapping(
         method = RequestMethod.POST,
         value = "/casemaintenance/version/1/submit",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE

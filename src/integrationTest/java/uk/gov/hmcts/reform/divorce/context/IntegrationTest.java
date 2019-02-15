@@ -16,6 +16,7 @@ import java.util.UUID;
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
     private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER@notifications.service.gov.uk";
+    private static final String CASE_WORKER_ONLY_USERNAME = "TEST_CASE_WORKER_ONLY@notifications.service.gov.uk";
     private static final String CASE_WORKER_PASSWORD = "CASE_WORKER_PASSWORD";
     private static final String CITIZEN_ROLE = "citizen";
     private static final String CASEWORKER_DIVORCE_ROLE = "caseworker-divorce";
@@ -25,6 +26,7 @@ public abstract class IntegrationTest {
     private static final String PASSWORD = "PassW0rd";
 
     private UserDetails caseWorkerUser;
+    private UserDetails caseWorkerStrictUser;
 
     @Value("${case.orchestration.service.base.uri}")
     protected String serverUrl;
@@ -48,6 +50,18 @@ public abstract class IntegrationTest {
             }
 
             return caseWorkerUser;
+        }
+    }
+
+    protected UserDetails createOnlyCaseWorkerUser() {
+        synchronized (this) {
+            if (caseWorkerStrictUser == null) {
+                caseWorkerStrictUser = getUserDetails(CASE_WORKER_ONLY_USERNAME, CASE_WORKER_PASSWORD,
+                    CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_ROLE,
+                    CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE);
+            }
+
+            return caseWorkerStrictUser;
         }
     }
 

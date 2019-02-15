@@ -23,6 +23,8 @@ public class OrchestrationConstants {
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";
     public static final String CASE_ID_JSON_KEY = "caseId";
+    public static final String PREVIOUS_CASE_ID_JSON_KEY = "caseId";
+    public static final String NEW_AMENDED_PETITION_DRAFT_KEY = "newAmendedPetitionDraft";
     public static final String CASE_STATE_JSON_KEY = "state";
     public static final String CREATED_DATE_JSON_KEY = "createdDate";
     public static final String D_8_DIVORCE_UNIT = "D8DivorceUnit";
@@ -49,6 +51,7 @@ public class OrchestrationConstants {
     public static final String NO_VALUE = "No";
     public static final String ISSUE_DATE = "IssueDate";
     public static final String DN_RECEIVED = "dnReceived";
+    public static final String AMEND_PETITION_EVENT = "amendPetition";
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
     public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
     public static final String AOS_AWAITING = "AosAwaiting";

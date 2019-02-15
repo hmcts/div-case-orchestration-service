@@ -510,4 +510,20 @@ public class OrchestrationControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }
+
+    @Test
+    public void whenAmendPetition_thenReturnDraftAndUpdateState() throws Exception {
+        final String caseId = "test.id";
+        final Map<String, Object> caseData = Collections.singletonMap(
+            "previousCaseId", caseId
+        );
+
+        when(caseOrchestrationService.amendPetition(caseId, AUTH_TOKEN)).thenReturn(caseData);
+
+        ResponseEntity<Map<String, Object>> response = classUnderTest
+            .amendPetition(AUTH_TOKEN, caseId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(caseData, response.getBody());
+    }
 }
