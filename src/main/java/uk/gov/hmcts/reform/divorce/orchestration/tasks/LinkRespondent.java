@@ -37,7 +37,7 @@ public class LinkRespondent implements Task<UserDetails> {
                 String.valueOf(context.getTransientObject(RESPONDENT_LETTER_HOLDER_ID))
             );
         }
-        
+
         return payLoad;
     }
 }
