@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
@@ -118,6 +119,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private RetrieveAosCaseWorkflow retrieveAosCaseWorkflow;
+
+    @Mock
+    private AmendPetitionWorkflow amendPetitionWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -541,6 +545,15 @@ public class CaseOrchestrationServiceImplTest {
         CcdCallbackResponse ccdResponse = classUnderTest.dnSubmitted(createEventRequest, AUTH_TOKEN);
 
         assertEquals(expectedResponse, ccdResponse);
+    }
+
+    @Test
+    public void givenCaseId_whenAmendPetition_thenReturnDraft() throws Exception {
+        when(amendPetitionWorkflow.run(TEST_CASE_ID, AUTH_TOKEN)).thenReturn(requestPayload);
+
+        assertEquals(requestPayload, classUnderTest.amendPetition(TEST_CASE_ID, AUTH_TOKEN));
+
+        verify(amendPetitionWorkflow).run(TEST_CASE_ID, AUTH_TOKEN);
     }
 
 

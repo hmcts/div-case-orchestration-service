@@ -1,11 +1,10 @@
 {
-    "hasBeenChanges" : "yes",
+    "PetitionChangedYesNoDN" : "YES",
     "PetitionChangedDetailsDN" : "Some details about this dn changes",
     "ConfirmPetitionDN" : "YES",
-    "DivorceCostsOptionDN" : "YES",
+    "DivorceCostsOptionDN" : "differentAmount",
+    "CostsDifferentDetails" : "I want to pay 60%",
     "statementOfTruthDN" : "YES",
-    "statementOfTruthChanges" : "YES",
-    "statementOfTruthNoChanges" : "NO",
     "AdulteryLifeIntolerable" : "YES",
     "AdulteryDateFoundOut" : "2018-10-04",
     "AdulteryLivedApartSinceEventDN" : "NO",
@@ -15,9 +14,9 @@
     "BehaviourLivedApartSinceEventDN" : "NO",
     "BehaviourTimeLivedTogetherDetailsDN" : "Since we've met in a bar",
     "DesertionLivedApartSinceEventDN" : "NO",
-    "DesertionTimeLivedTogetherDetailsDN" : "Since we've met in a club",
+    "DesertionTimeLivedTogetherDetailsDN" : "Since we've met in a bar",
     "SeparationLivedApartSinceEventDN" : "NO",
-    "SeparationTimeLivedTogetherDetailsDN" : "Since we've met in a restaurant",
+    "SeparationTimeLivedTogetherDetailsDN" : "Since we've met in a bar",
     "DocumentsUploadedDN" : [
         {
             "id" : null,
@@ -49,5 +48,6 @@
                 "DocumentEmailContent": ""
             }
         }
-    ]
+    ],
+    "DocumentsUploadedQuestionDN" : "YES"
 }
