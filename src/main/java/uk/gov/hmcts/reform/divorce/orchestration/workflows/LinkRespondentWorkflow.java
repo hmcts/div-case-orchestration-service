@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateRespondentDetails;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_REPONDENT_DATA_ERROR_KEY;
 
@@ -37,7 +38,7 @@ public class LinkRespondentWorkflow extends DefaultWorkflow<UserDetails> {
         this.unlinkRespondent = unlinkRespondent;
     }
 
-    public UserDetails run(String authToken, String caseId, String pin) throws WorkflowException {
+    public UserDetails run(String authToken, String caseId, String pin, boolean isCorespondent) throws WorkflowException {
         final UserDetails userDetail = UserDetails.builder().authToken(authToken).build();
 
         try {
@@ -50,7 +51,8 @@ public class LinkRespondentWorkflow extends DefaultWorkflow<UserDetails> {
                 userDetail,
                 ImmutablePair.of(PIN, pin),
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-                ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
+                ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
+                ImmutablePair.of(IS_CO_RESPONDENT, isCorespondent)
             );
         } catch (WorkflowException e) {
             if (this.errors().containsKey(UPDATE_REPONDENT_DATA_ERROR_KEY)) {

@@ -17,6 +17,9 @@ public class OrchestrationConstants {
     //Issue Petition
     public  static final String GENERATE_AOS_INVITATION = "generateAosInvitation";
 
+    // Linking Case
+    public  static final String IS_CO_RESPONDENT = "isCoRespondent";
+
     // Core Case Data
     public static final String CHECK_CCD = "checkCcd";
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
@@ -36,6 +39,7 @@ public class OrchestrationConstants {
     public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
+    public static final String CO_RESPONDENT_EMAIL_ADDRESS = "CoRespEmailAddress";
     public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
     public static final String START_AOS_EVENT_ID = "startAos";
     public static final String AWAITING_DN_AOS_EVENT_ID = "aosSubmittedUndefended";
@@ -50,7 +54,9 @@ public class OrchestrationConstants {
     public static final String ISSUE_DATE = "IssueDate";
     public static final String DN_RECEIVED = "dnReceived";
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
+    public static final String RECEIVED_AOS_FROM_CO_RESP = "ReceivedAosFromCoResp";
     public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
+    public static final String RECEIVED_AOS_FROM_CO_RESP_DATE = "ReceivedAosFromCoRespDate";
     public static final String AOS_AWAITING = "AosAwaiting";
     public static final String AOS_OVERDUE = "AosOverdue";
     public static final String AWAITING_REISSUE = "AwaitingReissue";

@@ -34,6 +34,9 @@ public interface CaseOrchestrationService {
     UserDetails linkRespondent(String authToken, String caseId, String pin)
         throws WorkflowException;
 
+    UserDetails linkCoRespondent(String authToken, String caseId, String pin)
+        throws WorkflowException;
+
     CcdCallbackResponse aosReceived(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException;
 
 

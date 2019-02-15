@@ -232,13 +232,18 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public UserDetails linkRespondent(String authToken, String caseId, String pin) throws WorkflowException {
-        return linkRespondentWorkflow.run(authToken, caseId, pin);
+        return linkRespondentWorkflow.run(authToken, caseId, pin, false);
+    }
+
+    @Override
+    public UserDetails linkCoRespondent(String authToken, String caseId, String pin) throws WorkflowException {
+        return linkRespondentWorkflow.run(authToken, caseId, pin, true);
     }
 
     @Override
     public CcdCallbackResponse aosReceived(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException {
         Map<String, Object> response = aosRespondedWorkflow.run(caseDetailsRequest, authToken);
-        log.error("Aos received notification completed with CASE ID: {}.",
+        log.info("Aos received notification completed with CASE ID: {}.",
             caseDetailsRequest.getCaseDetails().getCaseId());
 
         if (aosRespondedWorkflow.errors().isEmpty()) {
