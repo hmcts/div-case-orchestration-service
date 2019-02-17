@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_REPONDENT_DATA_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_RESPONDENT_DATA_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
@@ -84,7 +84,7 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
                 updateFields
             );
         } catch (FeignException ex) {
-            context.setTransientObject(UPDATE_REPONDENT_DATA_ERROR_KEY, payload);
+            context.setTransientObject(UPDATE_RESPONDENT_DATA_ERROR_KEY, payload);
             throw new TaskException("Case update failed", ex);
         }
 

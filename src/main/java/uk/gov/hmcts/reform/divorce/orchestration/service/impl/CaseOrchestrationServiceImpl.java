@@ -31,8 +31,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmiss
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitAosCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -74,7 +75,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
     private final SendCoRespondSubmissionNotificationWorkflow sendCoRespondSubmissionNotificationWorkflow;
     private final RespondentSubmittedCallbackWorkflow aosRespondedWorkflow;
-    private final SubmitAosCaseWorkflow submitAosCaseWorkflow;
+    private final SubmitRespondentAosCaseWorkflow submitRespondentAosCaseWorkflow;
+    private final SubmitCoRespondentAosWorkflow submitCoRespondentAosWorkflow;
     private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
     private final DNSubmittedWorkflow dnSubmittedWorkflow;
     private final GetCaseWorkflow getCaseWorkflow;
@@ -336,13 +338,19 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> submitAosCase(Map<String, Object> divorceSession, String authorizationToken,
-                                             String caseId)
+    public Map<String, Object> submitRespondentAosCase(Map<String, Object> divorceSession, String authorizationToken,
+                                                       String caseId)
         throws WorkflowException {
-        Map<String, Object> payload = submitAosCaseWorkflow.run(divorceSession, authorizationToken, caseId);
+        Map<String, Object> payload = submitRespondentAosCaseWorkflow.run(divorceSession, authorizationToken, caseId);
 
-        log.info("Updated AOS with CASE ID: {}", payload.get(ID));
+        log.info("Updated respondent AOS with CASE ID: {}", payload.get(ID));
         return payload;
+    }
+
+    @Override
+    public Map<String, Object> submitCoRespondentAosCase(final Map<String, Object> divorceSession, final String authorizationToken)
+        throws WorkflowException {
+        return submitCoRespondentAosWorkflow.run(divorceSession, authorizationToken);
     }
 
     @Override

@@ -61,7 +61,10 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> solicitorCreate(CreateEvent caseDetailsRequest) throws WorkflowException;
 
-    Map<String, Object> submitAosCase(Map<String, Object> payload, String authorizationToken, String caseId)
+    Map<String, Object> submitRespondentAosCase(Map<String, Object> payload, String authorizationToken, String caseId)
+        throws WorkflowException;
+
+    Map<String, Object> submitCoRespondentAosCase(Map<String, Object> payload, String authorizationToken)
         throws WorkflowException;
 
     CcdCallbackResponse dnSubmitted(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException;

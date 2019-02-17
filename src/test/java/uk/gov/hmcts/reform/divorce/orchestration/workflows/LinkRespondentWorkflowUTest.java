@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_REPONDENT_DATA_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_RESPONDENT_DATA_ERROR_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LinkRespondentWorkflowUTest {
@@ -72,7 +72,7 @@ public class LinkRespondentWorkflowUTest {
         when(linkRespondent.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(updateRespondentDetails.execute(any(), eq(userDetails))).thenAnswer(invocation -> {
             TaskContext context = invocation.getArgument(0);
-            context.setTransientObject(UPDATE_REPONDENT_DATA_ERROR_KEY, userDetails);
+            context.setTransientObject(UPDATE_RESPONDENT_DATA_ERROR_KEY, userDetails);
             throw new TaskException("Case update failed");
         });
 

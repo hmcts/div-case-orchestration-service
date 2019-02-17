@@ -9,7 +9,7 @@
     "confirmReadPetition": "No",
     "statementOfTruth": "Yes",
     "admitAdultery": "Yes",
-    "defendsDivorce": "No",
+    "defendsDivorce": "Yes",
     "costs": {
       "agreeToCosts": "Yes",
       "reason": "It's the right thing to do..."

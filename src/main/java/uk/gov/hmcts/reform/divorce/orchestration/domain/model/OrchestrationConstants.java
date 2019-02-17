@@ -40,6 +40,12 @@ public class OrchestrationConstants {
     public static final String D_8_CO_RESPONDENT_NAMED = "D8ReasonForDivorceAdulteryWishToName";
     public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
+    public static final String NOT_RECEIVED_AOS_EVENT_ID = "aosNotReceived";
+    public static final String CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID = "co-RespAOSReceivedAwaiting";
+    public static final String CO_RESPONDENT_SUBMISSION_AOS_STARTED_EVENT_ID = "co-RespAOSReceivedStarted";
+    public static final String CO_RESPONDENT_SUBMISSION_AOS_SUBMIT_AWAIT_EVENT_ID = "co-RespAOSReceivedAwaitingAnswer";
+    public static final String CO_RESPONDENT_SUBMISSION_AOS_OVERDUE_EVENT_ID = "co-RespAOSReceivedOverdue";
+    public static final String CO_RESPONDENT_SUBMISSION_AOS_DEFENDED_EVENT_ID = "co-RespAOSReceivedDefended";
     public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "RespAdmitOrConsentToFact";
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
@@ -64,8 +70,13 @@ public class OrchestrationConstants {
 
     // CCD Case States
     public static final String AOS_AWAITING = "AosAwaiting";
+    public static final String AOS_STARTED = "AosStarted";
+    public static final String AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer";
     public static final String AOS_OVERDUE = "AosOverdue";
+    public static final String DEFENDED = "DefendedDivorce";
     public static final String AWAITING_REISSUE = "AwaitingReissue";
+    public static final String CO_RESPONDENT_DUE_DATE = "DueDateCoResp";
+    public static final String CO_RESPONDENT_DEFENDS_DIVORCE = "CoRespDefendsDivorce";
 
     // CCD Respondent Fields
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
@@ -181,7 +192,7 @@ public class OrchestrationConstants {
     // Validation
     public static final String ERROR_STATUS = "error";
     public static final String FORM_ID = "case-progression";
-    public static final String UPDATE_REPONDENT_DATA_ERROR_KEY = "respondent.data.not.updated_Error";
+    public static final String UPDATE_RESPONDENT_DATA_ERROR_KEY = "respondent.data.not.updated_Error";
     public static final String SOLICITOR_VALIDATION_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData_Error";
     public static final String VALIDATION_ERROR_KEY

@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateRespondentDetails;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_REPONDENT_DATA_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_RESPONDENT_DATA_ERROR_KEY;
 
 @Component
 @Slf4j
@@ -58,7 +58,7 @@ public class LinkRespondentWorkflow extends DefaultWorkflow<UserDetails> {
                 ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
             );
         } catch (WorkflowException e) {
-            if (this.errors().containsKey(UPDATE_REPONDENT_DATA_ERROR_KEY)) {
+            if (this.errors().containsKey(UPDATE_RESPONDENT_DATA_ERROR_KEY)) {
                 rollbackOperation(userDetail, caseId);
             }
             throw e;
