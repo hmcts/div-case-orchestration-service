@@ -38,7 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_CO_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
@@ -73,7 +73,7 @@ public class UpdateRespondentDetailsUTest {
         final TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        taskContext.setTransientObject(IS_CO_RESPONDENT, false);
+        taskContext.setTransientObject(IS_RESPONDENT, true);
 
         final UserDetails respondentDetails =
             UserDetails.builder()
@@ -116,7 +116,7 @@ public class UpdateRespondentDetailsUTest {
         final TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        taskContext.setTransientObject(IS_CO_RESPONDENT, false);
+        taskContext.setTransientObject(IS_RESPONDENT, true);
 
         final UserDetails respondentDetails =
             UserDetails.builder()
@@ -159,7 +159,7 @@ public class UpdateRespondentDetailsUTest {
         final TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        taskContext.setTransientObject(IS_CO_RESPONDENT, false);
+        taskContext.setTransientObject(IS_RESPONDENT, true);
 
         final UserDetails respondentDetails = createTestUserDetails();
 
@@ -185,7 +185,7 @@ public class UpdateRespondentDetailsUTest {
         final TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        taskContext.setTransientObject(IS_CO_RESPONDENT, false);
+        taskContext.setTransientObject(IS_RESPONDENT, true);
 
         final UserDetails respondentDetails = createTestUserDetails();
 

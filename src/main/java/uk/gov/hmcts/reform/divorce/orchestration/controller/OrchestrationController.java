@@ -311,29 +311,6 @@ public class OrchestrationController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @PostMapping(path = "/link-co-respondent/{caseId}/{pin}")
-    @ApiOperation(value = "Authorize the respondent")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Respondent Authenticated"),
-        @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 401, message = "User Not Authenticated"),
-        @ApiResponse(code = 404, message = "Case Not found")})
-    public ResponseEntity<UserDetails> linkCoRespondent(
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken,
-        @ApiParam("Unique identifier of the session that was submitted to CCD")
-        @PathVariable("caseId") String caseId,
-        @ApiParam(value = "Pin", required = true)
-        @PathVariable("pin") String pin) throws WorkflowException {
-
-        UserDetails linkRespondent = orchestrationService.linkCoRespondent(authorizationToken, caseId, pin);
-
-        if (linkRespondent != null) {
-            return ResponseEntity.ok().build();
-        }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
     @PostMapping(path = "/petition-updated",
         consumes = MediaType.APPLICATION_JSON,
         produces = MediaType.APPLICATION_JSON)

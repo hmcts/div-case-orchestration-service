@@ -18,7 +18,7 @@ public class OrchestrationConstants {
     public  static final String GENERATE_AOS_INVITATION = "generateAosInvitation";
 
     // Linking Case
-    public  static final String IS_CO_RESPONDENT = "isCoRespondent";
+    public  static final String IS_RESPONDENT = "isRespondent";
 
     // Core Case Data
     public static final String CHECK_CCD = "checkCcd";
@@ -65,13 +65,14 @@ public class OrchestrationConstants {
     public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CCD_DUE_DATE = "dueDate";
     public static final String D_8_PAYMENTS = "Payments";
+    public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
+    public static final String CO_RESPONDENT_LETTER_HOLDER_ID = "CoRespLetterHolderId";
 
     // Divorce Session
     public static final String DIVORCE_SESSION_EXISTING_PAYMENTS = "existingPayments";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
-    public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
     public static final String SUCCESS_STATUS = "success";
 
     // Reasons For Divorce

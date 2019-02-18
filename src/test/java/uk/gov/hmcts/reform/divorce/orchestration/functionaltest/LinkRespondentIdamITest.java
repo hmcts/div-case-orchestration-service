@@ -72,11 +72,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public abstract class LinkRespondentIdamITest extends IdamTestSupport {
     private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
-    private static final String API_URL_RESP = "/link-respondent/" + TEST_CASE_ID + "/" + TEST_PIN;
-    private static final String API_URL_CO_RESP = "/link-co-respondent/" + TEST_CASE_ID + "/" + TEST_PIN;
+    private static final String RETRIEVE_CASE_CONTEXT_PATH = "/casemaintenance/version/1/case/" + TEST_CASE_ID;
+    private static final String API_URL = "/link-respondent/" + TEST_CASE_ID + "/" + TEST_PIN;
     private static final String LINK_RESPONDENT_CONTEXT_PATH = "/casemaintenance/version/1/link-respondent/"
-        + TEST_CASE_ID + "/" + TEST_LETTER_HOLDER_ID_CODE;
-    private static final String LINK_CO_RESPONDENT_CONTEXT_PATH = "/casemaintenance/version/1/link-co-respondent/"
         + TEST_CASE_ID + "/" + TEST_LETTER_HOLDER_ID_CODE;
     private static final String UNLINK_USER_CONTEXT_PATH = "/casemaintenance/version/1/link-respondent/"
             + TEST_CASE_ID;
@@ -129,7 +127,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
 
     @Test
     public void givenAuthTokenIsNull_whenLinkRespondent_thenReturnBadRequest() throws Exception {
-        webClient.perform(MockMvcRequestBuilders.post(API_URL_RESP)
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
             .andExpect(status().isBadRequest());
     }
@@ -138,7 +136,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
     public void givenPinAuthFails_whenLinkRespondent_thenReturnBadRequest() throws Exception {
         stubPinAuthoriseEndpoint(UNAUTHORIZED, TEST_ERROR);
 
-        webClient.perform(MockMvcRequestBuilders.post(API_URL_RESP)
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
             .andExpect(status().isUnauthorized());
@@ -149,7 +147,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
         stubTokenExchangeEndpoint(BAD_REQUEST, TEST_CODE, TEST_ERROR);
 
-        webClient.perform(MockMvcRequestBuilders.post(API_URL_RESP)
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
             .andExpect(status().isBadRequest())
@@ -162,7 +160,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(BAD_REQUEST, BEARER_AUTH_TOKEN_1, TEST_ERROR);
 
-        webClient.perform(MockMvcRequestBuilders.post(API_URL_RESP)
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
             .andExpect(status().isBadRequest())
@@ -175,7 +173,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, null);
 
-        webClient.perform(MockMvcRequestBuilders.post(API_URL_RESP)
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
             .andExpect(status().isUnauthorized());
@@ -188,7 +186,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(UNAUTHORIZED);
 
-        webClient.perform(MockMvcRequestBuilders.post(API_URL_RESP)
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
             .andExpect(status().isUnauthorized());
@@ -203,7 +201,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubUserDetailsEndpoint(UNAUTHORIZED, BEARER_AUTH_TOKEN, TEST_ERROR);
         stubRetrieveCaseFromCMS(CASE_DETAILS_AOS);
 
-        webClient.perform(MockMvcRequestBuilders.post(API_URL_RESP)
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
             .andExpect(status().isUnauthorized())
@@ -220,8 +218,10 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubMaintenanceServerEndpointForUpdateAos(BAD_REQUEST, TEST_ERROR);
         stubRetrieveCaseFromCMS(CASE_DETAILS_AOS);
         stubMaintenanceServerEndpointForRemoveUser(OK);
+        stubSignInForCaseworker();
+        stubRetrieveCaseByIdFromCMS(HttpStatus.OK, convertObjectToJsonString(CASE_DETAILS_AOS));
 
-        webClient.perform(MockMvcRequestBuilders.post(API_URL_RESP)
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
             .andExpect(status().isBadRequest())
@@ -238,7 +238,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubMaintenanceServerEndpointForUpdateAos(OK, convertObjectToJsonString(caseDataAos));
         stubRetrieveCaseFromCMS(CASE_DETAILS_AOS);
 
-        webClient.perform(MockMvcRequestBuilders.post(API_URL_RESP)
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
             .andExpect(status().isOk());
@@ -254,7 +254,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubMaintenanceServerEndpointForUpdateNotAos(OK, convertObjectToJsonString(caseDataNonAos));
         stubRetrieveCaseFromCMS(CASE_DETAILS_NO_AOS);
 
-        webClient.perform(MockMvcRequestBuilders.post(API_URL_RESP)
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
             .andExpect(status().isOk());
@@ -271,7 +271,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubRetrieveCaseFromCMS(CASE_DETAILS_NO_AOS);
         stubMaintenanceServerEndpointForRemoveUser(OK);
 
-        webClient.perform(MockMvcRequestBuilders.post(API_URL_RESP)
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
                 .header(AUTHORIZATION, AUTH_TOKEN)
                 .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
                 .andExpect(status().is5xxServerError());
@@ -322,6 +322,14 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
 
     private void stubRetrieveCaseFromCMS(HttpStatus status, String message) {
         maintenanceServiceServer.stubFor(get(urlEqualTo(RETRIEVE_AOS_CASE_CONTEXT_PATH + "?checkCcd=true"))
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(message)));
+    }
+
+    private void stubRetrieveCaseByIdFromCMS(HttpStatus status, String message) {
+        maintenanceServiceServer.stubFor(get(urlEqualTo(RETRIEVE_CASE_CONTEXT_PATH))
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)

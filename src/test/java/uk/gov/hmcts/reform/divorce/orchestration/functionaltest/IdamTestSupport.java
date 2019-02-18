@@ -62,7 +62,11 @@ public class IdamTestSupport {
     private static final UserDetails USER_DETAILS =
         UserDetails.builder().id(TEST_USER_ID).email(TEST_EMAIL).build();
 
+    private static final UserDetails CASEWORKER_DETAILS =
+        UserDetails.builder().id(TEST_USER_ID).email(TEST_EMAIL).build();
+
     static final String USER_DETAILS_JSON = convertObjectToJsonString(USER_DETAILS);
+    static final String CASEWORKER_DETAILS_JSON = convertObjectToJsonString(CASEWORKER_DETAILS);
 
     private static final TokenExchangeResponse TOKEN_EXCHANGE_RESPONSE =
         TokenExchangeResponse.builder()

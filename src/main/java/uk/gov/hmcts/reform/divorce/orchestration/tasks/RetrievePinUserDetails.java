@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 
@@ -50,6 +52,10 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
             throw new TaskException(new AuthenticationError("Invalid pin"));
         }
 
+        final String letterHolderId = pinUserDetails.getId();
+        final String coRespondentLetterHolderId = (String) context.getTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID);
+        final boolean isRespondent = !letterHolderId.equals(coRespondentLetterHolderId);
+        context.setTransientObject(IS_RESPONDENT, isRespondent);
         context.setTransientObject(RESPONDENT_LETTER_HOLDER_ID, pinUserDetails.getId());
 
         return pinUserDetails;

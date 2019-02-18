@@ -383,12 +383,12 @@ public class CaseOrchestrationServiceImplTest {
     public void whenLinkRespondent_thenProceedAsExpected() throws WorkflowException {
         final UserDetails userDetails = UserDetails.builder().build();
 
-        when(linkRespondentWorkflow.run(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN, TEST_NOT_CO_RESPONDENT))
+        when(linkRespondentWorkflow.run(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN))
             .thenReturn(userDetails);
 
         assertEquals(userDetails, classUnderTest.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN));
 
-        verify(linkRespondentWorkflow).run(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN, TEST_NOT_CO_RESPONDENT);
+        verify(linkRespondentWorkflow).run(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN);
     }
 
     @Test

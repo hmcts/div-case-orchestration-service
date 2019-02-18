@@ -4,7 +4,6 @@ import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.entity.ContentType;
 import org.joda.time.LocalDate;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 
 public class LinkRespondentTest extends RetrieveAosCaseSupport {
     private static final String PIN_USER_FIRST_NAME = "pinuserfirstname";
@@ -93,7 +94,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             createCaseWorkerUser(),
             ImmutablePair.of("AosLetterHolderId", pinResponse.getUserId()));
 
-        updateCase(String.valueOf(caseDetails.getId()), null, "testAosAwaiting");
+        updateCase(String.valueOf(caseDetails.getId()), null, "issueAos");
 
         final UserDetails respondentUserDetails = createCitizenUser();
 
@@ -125,7 +126,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             "submit-unlinked-case.json",
             createCaseWorkerUser(),
             ImmutablePair.of("AosLetterHolderId", pinResponse.getUserId()));
-        updateCase(String.valueOf(caseDetails.getId()), null, "testAosAwaiting");
+        updateCase(String.valueOf(caseDetails.getId()), null, "issueAos");
         updateCase(String.valueOf(caseDetails.getId()), null, "aosNotReceived");
 
         final UserDetails respondentUserDetails = createCitizenUser();
@@ -146,8 +147,6 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     @Test
-    @Ignore
-    //TODO Work in progress, skipped meanwhile to unblock the build
     public void givenValidCaseDetails_whenLinkRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
@@ -158,9 +157,42 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         final CaseDetails caseDetails = submitCase(
             "submit-unlinked-case.json",
             createCaseWorkerUser(),
-            ImmutablePair.of("AosLetterHolderId", pinResponse.getUserId()));
+            ImmutablePair.of(RESPONDENT_LETTER_HOLDER_ID, pinResponse.getUserId()));
 
-        updateCase(String.valueOf(caseDetails.getId()), null, "referToLegalAdvisorGA");
+        updateCase(String.valueOf(caseDetails.getId()), null, "issueAos");
+
+        final UserDetails respondentUserDetails = createCitizenUser();
+
+        Response linkResponse =
+            linkRespondent(
+                respondentUserDetails.getAuthToken(),
+                caseDetails.getId(),
+                pinResponse.getPin()
+            );
+
+        assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
+
+        Response caseResponse = retrieveAosCase(respondentUserDetails.getAuthToken());
+
+        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
+
+        assertCaseDetails(respondentUserDetails, String.valueOf(caseDetails.getId()));
+    }
+
+    @Test
+    public void givenValidCaseDetails_whenLinkCoRespondent_thenCaseShouldBeLinked() {
+        final UserDetails petitionerUserDetails = createCitizenUser();
+
+        final PinResponse pinResponse =
+            idamTestSupportUtil.generatePin(PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME,
+                petitionerUserDetails.getAuthToken());
+
+        final CaseDetails caseDetails = submitCase(
+            "submit-unlinked-case.json",
+            createCaseWorkerUser(),
+            ImmutablePair.of(CO_RESPONDENT_LETTER_HOLDER_ID, pinResponse.getUserId()));
+
+        updateCase(String.valueOf(caseDetails.getId()), null, "issueAos");
 
         final UserDetails respondentUserDetails = createCitizenUser();
 

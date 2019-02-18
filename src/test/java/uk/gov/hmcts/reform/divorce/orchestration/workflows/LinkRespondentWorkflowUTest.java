@@ -25,8 +25,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_IS_CO_RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_NOT_CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_REPONDENT_DATA_ERROR_KEY;
@@ -53,7 +51,7 @@ public class LinkRespondentWorkflowUTest {
         when(linkRespondent.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(updateRespondentDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
 
-        UserDetails actual = classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN, TEST_NOT_CO_RESPONDENT);
+        UserDetails actual = classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
 
         assertEquals(userDetails, actual);
         verify(retrievePinUserDetails, times(1)).execute(classUnderTest.getContext(), userDetails);
@@ -70,7 +68,7 @@ public class LinkRespondentWorkflowUTest {
         when(linkRespondent.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(updateRespondentDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
 
-        UserDetails actual = classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN, TEST_IS_CO_RESPONDENT);
+        UserDetails actual = classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
 
         assertEquals(userDetails, actual);
         verify(retrievePinUserDetails, times(1)).execute(classUnderTest.getContext(), userDetails);
@@ -95,7 +93,7 @@ public class LinkRespondentWorkflowUTest {
         });
 
         try {
-            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN, TEST_NOT_CO_RESPONDENT);
+            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
             fail("WorkflowException expected");
         } catch (WorkflowException e) {
             //    Exception expected
@@ -120,7 +118,7 @@ public class LinkRespondentWorkflowUTest {
         });
 
         try {
-            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN, TEST_IS_CO_RESPONDENT);
+            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
             fail("WorkflowException expected");
         } catch (WorkflowException e) {
             //    Exception expected
@@ -137,7 +135,7 @@ public class LinkRespondentWorkflowUTest {
         when(linkRespondent.execute(any(), eq(userDetails))).thenThrow(new RuntimeException("Error"));
 
         try {
-            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN, TEST_NOT_CO_RESPONDENT);
+            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
             fail("WorkflowException expected");
         } catch (RuntimeException e) {
             //    Exception expected
@@ -157,7 +155,7 @@ public class LinkRespondentWorkflowUTest {
         when(linkRespondent.execute(any(), eq(userDetails))).thenThrow(new RuntimeException("Error"));
 
         try {
-            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN, TEST_IS_CO_RESPONDENT);
+            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
             fail("WorkflowException expected");
         } catch (RuntimeException e) {
             //    Exception expected

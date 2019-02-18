@@ -11,6 +11,7 @@ public class TestConstants {
     public static String TEST_EVENT_ID = "test.event.id";
     public static String AUTH_TOKEN = "test.auth.token";
     public static String BEARER_AUTH_TOKEN = "Bearer test.auth.token";
+    public static String CASEWORKER_AUTH_TOKEN = "Bearer caseworker.auth.token";
     public static String AUTH_TOKEN_1 = "test.auth.token1";
     public static String TEST_EMAIL = "test.email";
     public static String BEARER_AUTH_TOKEN_1 = "Bearer test.auth.token1";
@@ -42,6 +43,4 @@ public class TestConstants {
     public static final String AOS_AWAITING_STATE = "AosAwaiting";
     public static final String AWAITING_CONSIDERATION_GENERAL_APPLICATION = "AwaitingConsiderationGeneralApplication";
     public static final String AOS_STARTED = "AosStarted";
-    public static final boolean TEST_NOT_CO_RESPONDENT = false;
-    public static final boolean TEST_IS_CO_RESPONDENT = true;
 }
