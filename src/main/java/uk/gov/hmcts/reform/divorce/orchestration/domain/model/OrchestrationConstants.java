@@ -65,6 +65,7 @@ public class OrchestrationConstants {
 
     // Divorce Session
     public static final String DIVORCE_SESSION_EXISTING_PAYMENTS = "existingPayments";
+    public static final String DIVORCE_SESSION_PETITIONER_EMAIL = "petitionerEmail";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
@@ -81,6 +82,7 @@ public class OrchestrationConstants {
 
     //Notification
     public static final String NOTIFICATION_EMAIL = "email_address";
+    public static final String NOTIFICATION_SEND_EMAIL = "send_email";
     public static final String NOTIFICATION_TEMPLATE = "notification_template";
     public static final String NOTIFICATION_TEMPLATE_VARS = "notification_template_vars";
     public static final String NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY = "first name";
