@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
 
@@ -219,11 +218,12 @@ public class OrchestrationController {
         @ApiParam(value = "The case draft", required = true)
         @RequestBody
         @NotNull Map<String, Object> payload,
-        @RequestParam(value = "notificationEmail", required = false)
-        @ApiParam(value = "The email address that will receive the notification that the draft has been saved")
-        @Email final String notificationEmail) throws WorkflowException {
+        @RequestParam(value = "sendEmail", required = false)
+        @ApiParam(value = "Determines if the petitioner should receive the notification that the draft has been saved")
+        final String sendEmail) throws WorkflowException {
 
-        return ResponseEntity.ok(orchestrationService.saveDraft(payload, authorizationToken, notificationEmail));
+        // Deprecation Warning: sendEmail as String instead of Boolean to be backwards compatible with current PFE
+        return ResponseEntity.ok(orchestrationService.saveDraft(payload, authorizationToken, sendEmail));
     }
 
     @DeleteMapping(path = "/draftsapi/version/1")
