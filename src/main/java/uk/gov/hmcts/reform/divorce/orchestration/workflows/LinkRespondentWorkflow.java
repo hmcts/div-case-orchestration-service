@@ -63,7 +63,7 @@ public class LinkRespondentWorkflow extends DefaultWorkflow<UserDetails> {
     }
 
     private void rollbackOperation(UserDetails userDetail, String caseId) throws WorkflowException {
-        log.error("Can not link respondent for caseId {} and user {}", caseId, userDetail.getId());
+        log.error("Cannot link respondent for caseId {} and user {}", caseId, userDetail.getId());
         this.execute(
             new Task[]{
                 unlinkRespondent

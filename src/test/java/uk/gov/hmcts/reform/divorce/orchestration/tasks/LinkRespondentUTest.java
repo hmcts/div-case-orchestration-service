@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,6 +37,8 @@ public class LinkRespondentUTest {
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         taskContext.setTransientObject(RESPONDENT_LETTER_HOLDER_ID, RESPONDENT_LETTER_HOLDER_ID);
+        taskContext.setTransientObject(RESPONDENT_LETTER_HOLDER_ID, RESPONDENT_LETTER_HOLDER_ID);
+        taskContext.setTransientObject(IS_CO_RESPONDENT, false);
 
         doNothing().when(caseMaintenanceClient).linkRespondent(AUTH_TOKEN, TEST_CASE_ID, RESPONDENT_LETTER_HOLDER_ID);
 

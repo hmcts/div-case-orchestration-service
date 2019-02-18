@@ -312,7 +312,7 @@ public class OrchestrationControllerTest {
     }
 
     @Test
-    public void givenLinkResponseIsNotNull_whenLinkRespondent_thenReturnUnAuthorised() throws WorkflowException {
+    public void givenLinkResponseIsNotNull_whenLinkRespondent_thenReturnOk() throws WorkflowException {
         final UserDetails expected = UserDetails.builder().build();
 
         when(caseOrchestrationService.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN)).thenReturn(expected);
@@ -322,6 +322,29 @@ public class OrchestrationControllerTest {
         assertEquals(HttpStatus.OK, actual.getStatusCode());
 
         verify(caseOrchestrationService).linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN);
+    }
+
+    @Test
+    public void givenLinkResponseIsNull_whenLinkCoRespondent_thenReturnUnAuthorised() throws WorkflowException {
+        when(caseOrchestrationService.linkCoRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN)).thenReturn(null);
+
+        assertEquals(HttpStatus.UNAUTHORIZED,
+            classUnderTest.linkCoRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN).getStatusCode());
+
+        verify(caseOrchestrationService).linkCoRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN);
+    }
+
+    @Test
+    public void givenLinkResponseIsNotNull_whenLinkCoRespondent_thenReturnOk() throws WorkflowException {
+        final UserDetails expected = UserDetails.builder().build();
+
+        when(caseOrchestrationService.linkCoRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN)).thenReturn(expected);
+
+        ResponseEntity<UserDetails> actual = classUnderTest.linkCoRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN);
+
+        assertEquals(HttpStatus.OK, actual.getStatusCode());
+
+        verify(caseOrchestrationService).linkCoRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN);
     }
 
     @Test

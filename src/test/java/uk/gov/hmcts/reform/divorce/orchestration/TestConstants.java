@@ -42,4 +42,6 @@ public class TestConstants {
     public static final String AOS_AWAITING_STATE = "AosAwaiting";
     public static final String AWAITING_CONSIDERATION_GENERAL_APPLICATION = "AwaitingConsiderationGeneralApplication";
     public static final String AOS_STARTED = "AosStarted";
+    public static final boolean TEST_NOT_CO_RESPONDENT = false;
+    public static final boolean TEST_IS_CO_RESPONDENT = true;
 }

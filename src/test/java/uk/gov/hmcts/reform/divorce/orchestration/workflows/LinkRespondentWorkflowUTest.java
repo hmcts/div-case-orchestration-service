@@ -25,6 +25,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_IS_CO_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_NOT_CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_REPONDENT_DATA_ERROR_KEY;
@@ -44,14 +46,31 @@ public class LinkRespondentWorkflowUTest {
     private LinkRespondentWorkflow classUnderTest;
 
     @Test
-    public void whenRun_thenProceedAsExpected() throws Exception {
+    public void whenRunLinkRespondent_thenProceedAsExpected() throws Exception {
         final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
 
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(linkRespondent.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(updateRespondentDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
 
-        UserDetails actual = classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
+        UserDetails actual = classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN, TEST_NOT_CO_RESPONDENT);
+
+        assertEquals(userDetails, actual);
+        verify(retrievePinUserDetails, times(1)).execute(classUnderTest.getContext(), userDetails);
+        verify(linkRespondent, times(1)).execute(classUnderTest.getContext(), userDetails);
+        verify(updateRespondentDetails, times(1)).execute(classUnderTest.getContext(), userDetails);
+        verify(unlinkRespondent, never()).execute(any(), any());
+    }
+
+    @Test
+    public void whenRunLinkCoRespondent_thenProceedAsExpected() throws Exception {
+        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+
+        when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(linkRespondent.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(updateRespondentDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
+
+        UserDetails actual = classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN, TEST_IS_CO_RESPONDENT);
 
         assertEquals(userDetails, actual);
         verify(retrievePinUserDetails, times(1)).execute(classUnderTest.getContext(), userDetails);
@@ -76,7 +95,32 @@ public class LinkRespondentWorkflowUTest {
         });
 
         try {
-            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
+            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN, TEST_NOT_CO_RESPONDENT);
+            fail("WorkflowException expected");
+        } catch (WorkflowException e) {
+            //    Exception expected
+        }
+
+        verify(unlinkRespondent, times(1)).execute(any(), eq(userDetails));
+    }
+
+    @Test
+    public void whenUpdateCoRespondentDetailsFails_thenCallUnlinkRespondent() throws Exception {
+        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+
+        when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(linkRespondent.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(updateRespondentDetails.execute(any(), eq(userDetails))).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                TaskContext context = invocation.getArgument(0);
+                context.setTransientObject(UPDATE_REPONDENT_DATA_ERROR_KEY, userDetails);
+                throw new TaskException("Case update failed");
+            }
+        });
+
+        try {
+            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN, TEST_IS_CO_RESPONDENT);
             fail("WorkflowException expected");
         } catch (WorkflowException e) {
             //    Exception expected
@@ -93,7 +137,27 @@ public class LinkRespondentWorkflowUTest {
         when(linkRespondent.execute(any(), eq(userDetails))).thenThrow(new RuntimeException("Error"));
 
         try {
-            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
+            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN, TEST_NOT_CO_RESPONDENT);
+            fail("WorkflowException expected");
+        } catch (RuntimeException e) {
+            //    Exception expected
+        }
+
+        verify(retrievePinUserDetails, times(1)).execute(classUnderTest.getContext(), userDetails);
+        verify(linkRespondent, times(1)).execute(classUnderTest.getContext(), userDetails);
+        verify(updateRespondentDetails, never()).execute(any(), any());
+        verify(unlinkRespondent, never()).execute(any(), any());
+    }
+
+    @Test
+    public void whenLinkCoRespondentFails_thenOtherTaskAreNotCalled() throws Exception {
+        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+
+        when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(linkRespondent.execute(any(), eq(userDetails))).thenThrow(new RuntimeException("Error"));
+
+        try {
+            classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN, TEST_IS_CO_RESPONDENT);
             fail("WorkflowException expected");
         } catch (RuntimeException e) {
             //    Exception expected

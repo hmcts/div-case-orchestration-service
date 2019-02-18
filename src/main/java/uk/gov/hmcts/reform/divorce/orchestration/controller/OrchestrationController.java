@@ -311,7 +311,7 @@ public class OrchestrationController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @PostMapping(path = "/link-corespondent/{caseId}/{pin}")
+    @PostMapping(path = "/link-co-respondent/{caseId}/{pin}")
     @ApiOperation(value = "Authorize the respondent")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Respondent Authenticated"),
@@ -325,7 +325,7 @@ public class OrchestrationController {
         @ApiParam(value = "Pin", required = true)
         @PathVariable("pin") String pin) throws WorkflowException {
 
-        UserDetails linkRespondent = orchestrationService.linkRespondent(authorizationToken, caseId, pin);
+        UserDetails linkRespondent = orchestrationService.linkCoRespondent(authorizationToken, caseId, pin);
 
         if (linkRespondent != null) {
             return ResponseEntity.ok().build();
