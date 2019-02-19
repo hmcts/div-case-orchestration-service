@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
@@ -31,10 +32,11 @@ public class SubmitAosCase implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context, Map<String, Object> submissionData) {
         String authToken = (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY);
         String eventId = getAosCompleteEventId(context, submissionData);
+        String caseIDJsonKey = (String) context.getTransientObject(CASE_ID_JSON_KEY);
 
         Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
             authToken,
-            (String) context.getTransientObject(CASE_ID_JSON_KEY),
+            caseIDJsonKey,
             eventId,
             submissionData
         );
@@ -47,11 +49,16 @@ public class SubmitAosCase implements Task<Map<String, Object>> {
     }
 
     private String getAosCompleteEventId(TaskContext context, Map<String, Object> submissionData) {
-        if (YES_VALUE.equalsIgnoreCase((String)submissionData.get(RESP_WILL_DEFEND_DIVORCE))) {
+        String respWillDefendDivorce = (String)submissionData.get(RESP_WILL_DEFEND_DIVORCE);
+        String d8ReasonForDivorce = (String)context.getTransientObject(D_8_REASON_FOR_DIVORCE);
+        String respAdmitOrConsentToFact = (String)submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT);
+
+        if (YES_VALUE.equalsIgnoreCase(respWillDefendDivorce)) {
             return AWAITING_ANSWER_AOS_EVENT_ID;
 
-        } else if (ADULTERY.equalsIgnoreCase((String)context.getTransientObject(D_8_REASON_FOR_DIVORCE))
-                && NO_VALUE.equalsIgnoreCase((String)submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT))) {
+        } else if ((ADULTERY.equalsIgnoreCase(d8ReasonForDivorce)
+                || SEPARATION_2YRS.equalsIgnoreCase(d8ReasonForDivorce))
+                && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
 
             return COMPLETED_AOS_EVENT_ID;
         }
