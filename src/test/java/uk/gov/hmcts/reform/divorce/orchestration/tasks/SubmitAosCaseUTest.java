@@ -19,14 +19,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UNREASONABLE_BEHAVIOUR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,7 +55,7 @@ public class SubmitAosCaseUTest {
 
     @Test
     public void givenConsentAndDefend_whenExecute_thenProceedAsExpected() {
-        final Map<String, Object> divorceSession = getCaseData(YES_VALUE, true);
+        final Map<String, Object> divorceSession = getCaseData(true, true);
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
@@ -63,7 +68,7 @@ public class SubmitAosCaseUTest {
 
     @Test
     public void givenNoConsentAndDefend_whenExecute_thenProceedAsExpected() {
-        final Map<String, Object> divorceSession = getCaseData(NO_VALUE, true);
+        final Map<String, Object> divorceSession = getCaseData(false, true);
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
@@ -76,7 +81,8 @@ public class SubmitAosCaseUTest {
 
     @Test
     public void givenBehaviourNoConsentAndNoDefend_whenExecute_thenProceedAsExpected() {
-        final Map<String, Object> divorceSession = getCaseData(NO_VALUE, false);
+        final Map<String, Object> divorceSession = getCaseData(false, false);
+        TASK_CONTEXT.setTransientObject(D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
                 .thenReturn(CASE_UPDATE_RESPONSE);
@@ -88,8 +94,34 @@ public class SubmitAosCaseUTest {
     }
 
     @Test
+    public void givenAdulteryNoConsentAndNoDefend_whenExecute_thenProceedAsExpected() {
+        final Map<String, Object> divorceSession = getCaseData(false, false);
+        TASK_CONTEXT.setTransientObject(D_8_REASON_FOR_DIVORCE, ADULTERY);
+
+        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession))
+                .thenReturn(CASE_UPDATE_RESPONSE);
+
+        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
+
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession);
+    }
+
+    @Test
+    public void given2YearSepNoConsentAndNoDefend_whenExecute_thenProceedAsExpected() {
+        final Map<String, Object> divorceSession = getCaseData(false, false);
+        TASK_CONTEXT.setTransientObject(D_8_REASON_FOR_DIVORCE, SEPARATION_2YRS);
+
+        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession))
+                .thenReturn(CASE_UPDATE_RESPONSE);
+
+        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
+
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession);
+    }
+
+    @Test
     public void givenConsentAndNoDefend_whenExecute_thenProceedAsExpected() {
-        final Map<String, Object> divorceSession = getCaseData(YES_VALUE, false);
+        final Map<String, Object> divorceSession = getCaseData(true, false);
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
@@ -99,9 +131,14 @@ public class SubmitAosCaseUTest {
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession);
     }
 
-    private Map<String, Object> getCaseData(String consent, boolean defended) {
+    private Map<String, Object> getCaseData(boolean consented, boolean defended) {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, consent);
+
+        if (consented) {
+            caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+        } else {
+            caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+        }
 
         if (defended) {
             caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
