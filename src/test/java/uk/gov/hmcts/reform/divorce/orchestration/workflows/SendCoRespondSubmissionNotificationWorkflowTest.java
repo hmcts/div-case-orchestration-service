@@ -63,9 +63,6 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
     @InjectMocks
     private SendCoRespondSubmissionNotificationWorkflow classToTest;
 
-    public void setUp(){
-    }
-
     @Test
     public void givenUndefendedCoResp_whenSendEmail_thenSendUndefendedTemplate() throws WorkflowException {
 
