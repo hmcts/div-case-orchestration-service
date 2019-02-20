@@ -18,7 +18,7 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
     private static final String CO_DEFENDED_CASE_RESPONSE = "fixtures/co-resp-case/co-resp-defend.json";
     private static final String CO_UNDEFENDED_CASE_RESPONSE = "fixtures/co-resp-case/co-resp-undefend.json";
 
-    private static final String ERROR_CASE_RESPONSE = "fixtures/retrieve-co-resp-case/co-resp-received-error.json";
+    private static final String ERROR_CASE_RESPONSE = "fixtures/co-resp-case/co-resp-received-error.json";
     private static final String CASE_DATA = "case_data";
     private static final String ERRORS = "errors";
 
