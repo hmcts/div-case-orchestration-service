@@ -441,7 +441,7 @@ public class OrchestrationController {
         return ResponseEntity.ok(orchestrationService.aosReceived(caseDetailsRequest, authorizationToken));
     }
 
-    @PostMapping(path = "/coresp-received")
+    @PostMapping(path = "/co-respondent-received")
     @ApiOperation(value = "Co-Respondent confirmation notification ")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Notification sent successful"),

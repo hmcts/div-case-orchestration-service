@@ -21,7 +21,7 @@ public interface CosApiClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/coresp-received",
+        value = "/co-respondent-received",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> coRespReceived(@RequestHeader(AUTHORIZATION) String authorisation,

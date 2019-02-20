@@ -62,7 +62,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class CoRespondentSubmittedITest {
-    private static final String API_URL = "/coresp-received";
+    private static final String API_URL = "/co-respondent-received";
+
     private static final String USER_TOKEN = "anytoken";
 
     private static final String CO_RESP_FIRST_NAME = "any-name";
