@@ -11,7 +11,7 @@ public class TestConstants {
     public static String TEST_EVENT_ID = "test.event.id";
     public static String AUTH_TOKEN = "test.auth.token";
     public static String BEARER_AUTH_TOKEN = "Bearer test.auth.token";
-    public static String CASEWORKER_AUTH_TOKEN = "Bearer caseworker.auth.token";
+    public static String CASEWORKER_AUTH_TOKEN = "caseworker.auth.token";
     public static String AUTH_TOKEN_1 = "test.auth.token1";
     public static String TEST_EMAIL = "test.email";
     public static String BEARER_AUTH_TOKEN_1 = "Bearer test.auth.token1";

@@ -232,7 +232,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public UserDetails linkRespondent(String authToken, String caseId, String pin) throws WorkflowException {
-        return linkRespondentWorkflow.run(authToken, caseId, pin);
+        return (UserDetails) linkRespondentWorkflow.run(authToken, caseId, pin);
     }
 
     @Override

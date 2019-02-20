@@ -10,7 +10,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
@@ -53,10 +57,16 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
         }
 
         final String letterHolderId = pinUserDetails.getId();
-        final String coRespondentLetterHolderId = (String) context.getTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID);
+        final Map<String, Object> caseData = (HashMap) context.getTransientObject(CCD_CASE_DATA);
+        final String coRespondentLetterHolderId = (String) caseData.get(CO_RESPONDENT_LETTER_HOLDER_ID);
         final boolean isRespondent = !letterHolderId.equals(coRespondentLetterHolderId);
         context.setTransientObject(IS_RESPONDENT, isRespondent);
-        context.setTransientObject(RESPONDENT_LETTER_HOLDER_ID, pinUserDetails.getId());
+
+        if (isRespondent) {
+            context.setTransientObject(RESPONDENT_LETTER_HOLDER_ID, pinUserDetails.getId());
+        } else {
+            context.setTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID, pinUserDetails.getId());
+        }
 
         return pinUserDetails;
     }
