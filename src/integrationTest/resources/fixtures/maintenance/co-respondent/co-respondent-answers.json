@@ -1,0 +1,28 @@
+{
+  "coRespondentAnswers": {
+    "contactInfo": {
+      "emailAddress": "co-respondent@divorce.co.uk",
+      "consentToReceivingEmails": "Yes",
+      "contactMethodIsDigital": "No",
+      "phoneNumber": "+4404839202839"
+    },
+    "aos": {
+      "received": "Yes",
+      "dateReceived": "2018-12-11",
+      "letterHolderId": "LetterHolder123",
+      "dueDate": "2018-12-20"
+    },
+    "answer": {
+      "received": "Yes",
+      "dateReceived": "2018-12-12"
+    },
+    "confirmReadPetition": "No",
+    "statementOfTruth": "Yes",
+    "admitAdultery": "Yes",
+    "defendsDivorce": "No",
+    "costs": {
+      "agreeToCosts": "Yes",
+      "reason": "It's the right thing to do..."
+    }
+  }
+}

@@ -265,13 +265,13 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
             .state(AOS_AWAITING_STATE)
             .caseData(caseData)
             .build();
+        stubRetrieveCaseFromCMS(caseDetailsCoResp);
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
         stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
         stubMaintenanceServerEndpointForUpdateAos(OK, convertObjectToJsonString(caseDataCoResponentUpdate));
-        stubRetrieveCaseFromCMS(caseDetailsCoResp);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
