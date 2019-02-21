@@ -58,8 +58,6 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
         assertEquals("AwaitingLegalAdvisorReferral", cosResponse.path("state"));
     }
 
-
-
     private Response submitDnCase(String userToken, Long caseId, String filePath) throws Exception {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());

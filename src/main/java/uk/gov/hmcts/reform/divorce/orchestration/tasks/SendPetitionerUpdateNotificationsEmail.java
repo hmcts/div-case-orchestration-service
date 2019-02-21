@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 
 @Component
 public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, Object>> {
@@ -60,7 +60,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
                     emailService.sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(petitionerEmail,
                             templateVars);
 
-                } else if (reasonForDivorce.equals(SEPARATION_2_YEARS)
+                } else if (reasonForDivorce.equals(SEPARATION_2YRS)
                         && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
                     templateVars.put("relationship", relationship);
 

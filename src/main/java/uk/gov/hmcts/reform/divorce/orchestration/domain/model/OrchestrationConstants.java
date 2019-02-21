@@ -23,6 +23,8 @@ public class OrchestrationConstants {
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";
     public static final String CASE_ID_JSON_KEY = "caseId";
+    public static final String PREVIOUS_CASE_ID_JSON_KEY = "caseId";
+    public static final String NEW_AMENDED_PETITION_DRAFT_KEY = "newAmendedPetitionDraft";
     public static final String CASE_STATE_JSON_KEY = "state";
     public static final String CREATED_DATE_JSON_KEY = "createdDate";
     public static final String D_8_DIVORCE_UNIT = "D8DivorceUnit";
@@ -50,6 +52,7 @@ public class OrchestrationConstants {
     public static final String NO_VALUE = "No";
     public static final String ISSUE_DATE = "IssueDate";
     public static final String DN_RECEIVED = "dnReceived";
+    public static final String AMEND_PETITION_EVENT = "amendPetition";
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
     public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
     public static final String AOS_AWAITING = "AosAwaiting";
@@ -63,6 +66,7 @@ public class OrchestrationConstants {
 
     // Divorce Session
     public static final String DIVORCE_SESSION_EXISTING_PAYMENTS = "existingPayments";
+    public static final String DIVORCE_SESSION_PETITIONER_EMAIL = "petitionerEmail";
 
     public static final String ID = "id";
     public static final String PIN = "pin";
@@ -71,7 +75,7 @@ public class OrchestrationConstants {
 
     // Reasons For Divorce
     public static final String ADULTERY = "adultery";
-    public static final String SEPARATION_2_YEARS = "separation-2-years";
+    public static final String SEPARATION_2YRS = "separation-2-years";
     public static final String UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
 
     //Case state
@@ -80,6 +84,7 @@ public class OrchestrationConstants {
 
     //Notification
     public static final String NOTIFICATION_EMAIL = "email_address";
+    public static final String NOTIFICATION_SEND_EMAIL = "send_email";
     public static final String NOTIFICATION_TEMPLATE = "notification_template";
     public static final String NOTIFICATION_TEMPLATE_VARS = "notification_template_vars";
     public static final String NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY = "first name";

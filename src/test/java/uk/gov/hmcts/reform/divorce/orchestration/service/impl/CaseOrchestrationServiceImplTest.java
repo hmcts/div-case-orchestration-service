@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
@@ -55,7 +56,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 
 
@@ -118,6 +118,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private RetrieveAosCaseWorkflow retrieveAosCaseWorkflow;
+
+    @Mock
+    private AmendPetitionWorkflow amendPetitionWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -212,8 +215,8 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> payload = mock(Map.class);
         Map<String, Object> testExpectedPayload = mock(Map.class);
 
-        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, TEST_USER_EMAIL)).thenReturn(testExpectedPayload);
-        assertEquals(testExpectedPayload,classUnderTest.saveDraft(payload, AUTH_TOKEN, TEST_USER_EMAIL));
+        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, Boolean.TRUE.toString())).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload,classUnderTest.saveDraft(payload, AUTH_TOKEN, Boolean.TRUE.toString()));
     }
 
     @SuppressWarnings("unchecked")
@@ -223,10 +226,10 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> payload = mock(Map.class);
         Map<String, Object> workflowResponsePayload = mock(Map.class);
 
-        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, TEST_USER_EMAIL)).thenReturn(workflowResponsePayload);
+        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, Boolean.TRUE.toString())).thenReturn(workflowResponsePayload);
         when(saveDraftWorkflow.errors()).thenReturn(expectedErrors);
 
-        assertEquals(expectedErrors,classUnderTest.saveDraft(payload, AUTH_TOKEN, TEST_USER_EMAIL));
+        assertEquals(expectedErrors,classUnderTest.saveDraft(payload, AUTH_TOKEN, Boolean.TRUE.toString()));
     }
 
     @SuppressWarnings("unchecked")
@@ -541,6 +544,15 @@ public class CaseOrchestrationServiceImplTest {
         CcdCallbackResponse ccdResponse = classUnderTest.dnSubmitted(createEventRequest, AUTH_TOKEN);
 
         assertEquals(expectedResponse, ccdResponse);
+    }
+
+    @Test
+    public void givenCaseId_whenAmendPetition_thenReturnDraft() throws Exception {
+        when(amendPetitionWorkflow.run(TEST_CASE_ID, AUTH_TOKEN)).thenReturn(requestPayload);
+
+        assertEquals(requestPayload, classUnderTest.amendPetition(TEST_CASE_ID, AUTH_TOKEN));
+
+        verify(amendPetitionWorkflow).run(TEST_CASE_ID, AUTH_TOKEN);
     }
 
 

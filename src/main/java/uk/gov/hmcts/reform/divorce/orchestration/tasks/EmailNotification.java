@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SEND_EMAIL;
 
 @Component
 public class EmailNotification  implements Task<Map<String, Object>> {
@@ -26,10 +27,19 @@ public class EmailNotification  implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> draft) {
-        String emailAddress = String.valueOf(context.getTransientObject(NOTIFICATION_EMAIL));
-        if (StringUtils.isNotBlank(emailAddress) && "null" != emailAddress) {
+        boolean sendEmail = parseBooleanFromString(String.valueOf(context.getTransientObject(NOTIFICATION_SEND_EMAIL)));
+        String emailAddress = String.valueOf((context.getTransientObject(NOTIFICATION_EMAIL)));
+        if (sendEmail && StringUtils.isNotBlank(emailAddress)) {
             return emailService.sendSaveDraftConfirmationEmail(emailAddress);
         }
         return new LinkedHashMap<>();
+    }
+
+    // For temporary backwards compatibility
+    private boolean parseBooleanFromString(String email) {
+        // Email is not just whitespace, is not null string (from String.valueOf) and not false
+        return StringUtils.isNotBlank(email)
+                && !"null".equalsIgnoreCase(email)
+                && !Boolean.FALSE.toString().equalsIgnoreCase(email);
     }
 }
