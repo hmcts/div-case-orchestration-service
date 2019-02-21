@@ -32,6 +32,7 @@ public class OrchestrationConstants {
     public static final String D_8_PETITIONER_EMAIL = "D8PetitionerEmail";
     public static final String D_8_INFERRED_RESPONDENT_GENDER = "D8InferredRespondentGender";
     public static final String D_8_INFERRED_PETITIONER_GENDER = "D8InferredPetitionerGender";
+    public static final String D_8_DIVORCED_WHO = "D8DivorceWho";
     public static final String D_8_REASON_FOR_DIVORCE = "D8ReasonForDivorce";
     public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String CCD_CASE_DATA_FIELD = "case_data";

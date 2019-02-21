@@ -13,11 +13,11 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCED_WHO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2_YEARS;
@@ -43,7 +43,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
         String reasonForDivorce = (String) caseData.get(D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = (String) caseData.get(RESP_ADMIT_OR_CONSENT_TO_FACT);
-        String relationship = (String) caseData.get(NOTIFICATION_RELATIONSHIP_KEY);
+        String relationship = (String) caseData.get(D_8_DIVORCED_WHO);
 
         Map<String, String> templateVars = new HashMap<>();
 

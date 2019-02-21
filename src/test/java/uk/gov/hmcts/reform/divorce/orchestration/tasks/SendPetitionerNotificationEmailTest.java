@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCED_WHO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
@@ -76,6 +77,7 @@ public class SendPetitionerNotificationEmailTest {
         testData.put(D_8_REASON_FOR_DIVORCE, TEST_REASON_UNREASONABLE_BEHAVIOUR);
         testData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
         testData.put(DIVORCE_UNIT_JSON_KEY, TEST_COURT_KEY);
+        testData.put(D_8_DIVORCED_WHO, TEST_RELATIONSHIP);
 
         context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
