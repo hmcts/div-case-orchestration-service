@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -31,9 +32,9 @@ import static org.springframework.http.HttpStatus.FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LOCATION_HEADER;
@@ -145,13 +146,15 @@ public class RetrievePinUserDetailsFromStrategicIdamUTest {
                 .build();
 
         final UserDetails payload = UserDetails.builder().build();
-        final CaseDetails caseDetails = CaseDetails.builder().caseData(new HashMap<>()).build();
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
 
         final TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(PIN, TEST_PIN);
         taskContext.setTransientObject(CCD_CASE_DATA, caseDetails.getCaseData());
 
-        final UserDetails pinUserDetails = UserDetails.builder().id(TEST_USER_ID).build();
+        final UserDetails pinUserDetails = UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
 
         when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL))
             .thenReturn(idamRedirectResponse);
@@ -164,7 +167,7 @@ public class RetrievePinUserDetailsFromStrategicIdamUTest {
         UserDetails actual = classUnderTest.execute(taskContext, payload);
 
         assertEquals(pinUserDetails, actual);
-        assertEquals(TEST_USER_ID, taskContext.getTransientObject(RESPONDENT_LETTER_HOLDER_ID));
+        assertEquals(TEST_LETTER_HOLDER_ID_CODE, taskContext.getTransientObject(RESPONDENT_LETTER_HOLDER_ID));
 
         verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL);
         verify(idamClient)

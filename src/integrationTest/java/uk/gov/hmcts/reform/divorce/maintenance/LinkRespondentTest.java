@@ -4,7 +4,6 @@ import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.entity.ContentType;
 import org.joda.time.LocalDate;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -200,7 +199,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         assertEquals(userDetails.getEmailAddress(), caseDetails.getData().get(CO_RESPONDENT_EMAIL_ADDRESS));
         assertEquals(YES_VALUE, caseDetails.getData().get(RECEIVED_AOS_FROM_CO_RESP));
-        assertEquals(LocalDate.now().toString(CCD_DATE_FORMAT), caseDetails.getData().get(RECEIVED_AOS_FROM_CO_RESP_DATE));
+        assertEquals(LocalDate.now().toString(CCD_DATE_FORMAT),
+            caseDetails.getData().get(RECEIVED_AOS_FROM_CO_RESP_DATE));
     }
 
     private Response linkRespondent(String userToken, Long caseId, String pin) {

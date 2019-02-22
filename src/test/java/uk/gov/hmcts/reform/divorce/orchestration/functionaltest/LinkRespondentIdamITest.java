@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,6 +65,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -94,18 +94,22 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         TEST_CASE_ID,
         LINK_RESPONDENT_GENERIC_EVENT_ID
     );
-    private static final Map<String, Object> CASE_DATA = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
+    private static final Map<String, Object> CASE_DATA_RESPONDENT =
+        ImmutableMap.of(
+            D_8_DIVORCE_UNIT, TEST_COURT,
+            RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE
+        );
     private static final CaseDetails CASE_DETAILS_AOS =
         CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .state(AOS_AWAITING_STATE)
-            .caseData(CASE_DATA)
+            .caseData(CASE_DATA_RESPONDENT)
             .build();
     private static final CaseDetails CASE_DETAILS_NO_AOS =
         CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .state(AWAITING_CONSIDERATION_GENERAL_APPLICATION)
-            .caseData(CASE_DATA)
+            .caseData(CASE_DATA_RESPONDENT)
             .build();
 
     @Autowired

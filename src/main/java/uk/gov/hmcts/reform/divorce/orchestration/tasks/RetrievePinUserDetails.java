@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
@@ -14,12 +15,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 
+@Slf4j
 public abstract class RetrievePinUserDetails implements Task<UserDetails> {
     @Value("${auth2.client.id}")
     private String authClientId;
@@ -59,13 +62,21 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
         final String letterHolderId = pinUserDetails.getId();
         final Map<String, Object> caseData = (HashMap) context.getTransientObject(CCD_CASE_DATA);
         final String coRespondentLetterHolderId = (String) caseData.get(CO_RESPONDENT_LETTER_HOLDER_ID);
-        final boolean isRespondent = !letterHolderId.equals(coRespondentLetterHolderId);
-        context.setTransientObject(IS_RESPONDENT, isRespondent);
+        final String respondentLetterHolderId = (String) caseData.get(RESPONDENT_LETTER_HOLDER_ID);
+        final boolean isRespondent = letterHolderId.equals(respondentLetterHolderId);
+        final boolean isCoRespondent = letterHolderId.equals(coRespondentLetterHolderId);
+
 
         if (isRespondent) {
             context.setTransientObject(RESPONDENT_LETTER_HOLDER_ID, pinUserDetails.getId());
-        } else {
+            context.setTransientObject(IS_RESPONDENT, true);
+        } else if (isCoRespondent) {
             context.setTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID, pinUserDetails.getId());
+            context.setTransientObject(IS_RESPONDENT, false);
+        } else {
+            final String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
+            log.error("Letter holder ID [{}] not associated with case [{}]", letterHolderId, caseId);
+            throw new TaskException(new AuthenticationError("Letter holder ID not found in case"));
         }
 
         return pinUserDetails;

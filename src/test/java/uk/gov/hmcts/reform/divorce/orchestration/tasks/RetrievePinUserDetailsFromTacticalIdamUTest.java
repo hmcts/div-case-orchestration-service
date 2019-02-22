@@ -20,15 +20,16 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CODE;
@@ -113,14 +114,16 @@ public class RetrievePinUserDetailsFromTacticalIdamUTest {
                 .accessToken(BEARER_AUTH_TOKEN)
                 .build();
 
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
         final UserDetails payload = UserDetails.builder().build();
-        final CaseDetails caseDetails = CaseDetails.builder().caseData(new HashMap<>()).build();
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
 
         final TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(PIN, TEST_PIN);
         taskContext.setTransientObject(CCD_CASE_DATA, caseDetails.getCaseData());
 
-        final UserDetails pinUserDetails = UserDetails.builder().id(TEST_USER_ID).build();
+        final UserDetails pinUserDetails = UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
 
         when(idamClient.authenticatePinUser(pinAuthToken, CODE, AUTH_CLIENT_ID, AUTH_REDIRECT_URL))
             .thenReturn(authenticateUserResponse);
@@ -133,7 +136,7 @@ public class RetrievePinUserDetailsFromTacticalIdamUTest {
         UserDetails actual = classUnderTest.execute(taskContext, payload);
 
         assertEquals(pinUserDetails, actual);
-        assertEquals(TEST_USER_ID, taskContext.getTransientObject(RESPONDENT_LETTER_HOLDER_ID));
+        assertEquals(TEST_LETTER_HOLDER_ID_CODE, taskContext.getTransientObject(RESPONDENT_LETTER_HOLDER_ID));
 
         verify(idamClient).authenticatePinUser(pinAuthToken, CODE, AUTH_CLIENT_ID, AUTH_REDIRECT_URL);
         verify(idamClient)
