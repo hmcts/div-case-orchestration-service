@@ -75,8 +75,9 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
             context.setTransientObject(IS_RESPONDENT, false);
         } else {
             final String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
-            log.error("Letter holder ID [{}] not associated with case [{}]", letterHolderId, caseId);
-            throw new TaskException(new AuthenticationError("Letter holder ID not found in case"));
+            throw new TaskException(new AuthenticationError(
+                String.format("Letter holder ID [%s] not associated with case [%s]", letterHolderId, caseId)
+            ));
         }
 
         return pinUserDetails;
