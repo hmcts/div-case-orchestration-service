@@ -441,6 +441,16 @@ public class OrchestrationController {
         return ResponseEntity.ok(orchestrationService.aosReceived(caseDetailsRequest, authorizationToken));
     }
 
+    @PostMapping(path = "/co-respondent-received")
+    @ApiOperation(value = "Co-Respondent confirmation notification ")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Notification sent successful"),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> corespReceived(
+        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+        return ResponseEntity.ok(orchestrationService.sendCoRespReceivedNotificationEmail(caseDetailsRequest));
+    }
+
     @PostMapping(path = "/submit-aos/{caseId}",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles AOS submission")

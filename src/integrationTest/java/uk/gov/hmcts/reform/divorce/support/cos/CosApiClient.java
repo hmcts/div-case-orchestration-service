@@ -20,6 +20,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public interface CosApiClient {
 
     @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/co-respondent-received",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> coRespReceived(@RequestHeader(AUTHORIZATION) String authorisation,
+                                    @RequestBody Map<String, Object> caseDataContent
+    );
+
+
+    @RequestMapping(
             method = RequestMethod.POST,
             value = "/aos-received",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE

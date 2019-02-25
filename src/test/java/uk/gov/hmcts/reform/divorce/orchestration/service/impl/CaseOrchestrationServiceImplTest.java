@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWork
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerGenericEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
@@ -94,6 +95,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
+
+    @Mock
+    private SendCoRespondSubmissionNotificationWorkflow sendCoRespondSubmissionNotificationWorkflow;
 
     @Mock
     private SetOrderSummaryWorkflow setOrderSummaryWorkflow;
@@ -523,6 +527,21 @@ public class CaseOrchestrationServiceImplTest {
                 .thenReturn(createEventRequest.getCaseDetails().getCaseData());
 
         CcdCallbackResponse ccdResponse = classUnderTest.dnSubmitted(createEventRequest, AUTH_TOKEN);
+
+        assertEquals(expectedResponse, ccdResponse);
+    }
+
+    @Test
+    public void givenNoError_whenExecuteCoRespReceivedWorkflow_thenReturnCaseData() throws WorkflowException {
+        CcdCallbackResponse expectedResponse =  CcdCallbackResponse.builder()
+            .data(createEventRequest.getCaseDetails().getCaseData())
+            .build();
+
+        when(sendCoRespondSubmissionNotificationWorkflow
+            .run(createEventRequest))
+            .thenReturn(createEventRequest.getCaseDetails().getCaseData());
+
+        CcdCallbackResponse ccdResponse = classUnderTest.sendCoRespReceivedNotificationEmail(createEventRequest);
 
         assertEquals(expectedResponse, ccdResponse);
     }

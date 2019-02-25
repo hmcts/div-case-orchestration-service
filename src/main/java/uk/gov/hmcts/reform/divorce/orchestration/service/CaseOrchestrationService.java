@@ -71,4 +71,6 @@ public interface CaseOrchestrationService {
             throws WorkflowException;
 
     Map<String, Object> amendPetition(String caseId, String authorisation) throws WorkflowException;
+
+    CcdCallbackResponse sendCoRespReceivedNotificationEmail(CreateEvent caseDetailsRequest) throws WorkflowException;
 }
