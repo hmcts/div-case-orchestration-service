@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCa
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerGenericEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
@@ -71,6 +72,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
     private final SendPetitionerGenericEmailNotificationWorkflow sendPetitionerGenericEmailNotificationWorkflow;
     private final SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
+    private final SendCoRespondSubmissionNotificationWorkflow sendCoRespondSubmissionNotificationWorkflow;
     private final RespondentSubmittedCallbackWorkflow aosRespondedWorkflow;
     private final SubmitAosCaseWorkflow submitAosCaseWorkflow;
     private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
@@ -257,6 +259,28 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .build();
         }
     }
+
+    @Override
+    public CcdCallbackResponse sendCoRespReceivedNotificationEmail(CreateEvent caseDetailsRequest) throws WorkflowException {
+        Map<String, Object> response = sendCoRespondSubmissionNotificationWorkflow.run(caseDetailsRequest);
+        log.info("Co-respondent received notification completed with CASE ID: {}.",
+            caseDetailsRequest.getCaseDetails().getCaseId());
+
+        if (sendCoRespondSubmissionNotificationWorkflow.errors().isEmpty()) {
+            return CcdCallbackResponse.builder()
+                .data(response)
+                .build();
+        } else {
+            Map<String, Object> workflowErrors = sendCoRespondSubmissionNotificationWorkflow.errors();
+            log.error("Co-respondent received notification with CASE ID: {} failed." + workflowErrors,
+                caseDetailsRequest.getCaseDetails().getCaseId());
+            return CcdCallbackResponse
+                .builder()
+                .errors(getNotificationErrors(workflowErrors))
+                .build();
+        }
+    }
+
 
     private List<String> getNotificationErrors(Map<String, Object> notificationErrors) {
         return notificationErrors.entrySet()

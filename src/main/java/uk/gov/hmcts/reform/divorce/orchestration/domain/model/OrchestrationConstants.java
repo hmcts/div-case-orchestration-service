@@ -1,5 +1,9 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrchestrationConstants {
 
     public static final String LINE_SEPARATOR = System.lineSeparator();
@@ -63,6 +67,13 @@ public class OrchestrationConstants {
     public static final String CCD_DUE_DATE = "dueDate";
     public static final String D_8_PAYMENTS = "Payments";
 
+    //CCD co-respondent
+    public static final String CO_RESP_EMAIL_ADDRESS = "CoRespEmailAddress";
+    public static final String CO_RESP_DEFENDS_DIVORCE = "CoRespDefendsDivorce";
+    public static final String D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME = "D8ReasonForDivorceAdultery3rdPartyFName";
+    public static final String D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME = "D8ReasonForDivorceAdultery3rdPartyLName";
+    public static final String DUE_DATE_CO_RESP = "dueDateCoResp";
+
     // Divorce Session
     public static final String DIVORCE_SESSION_EXISTING_PAYMENTS = "existingPayments";
     public static final String DIVORCE_SESSION_PETITIONER_EMAIL = "petitionerEmail";
@@ -90,7 +101,10 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_ADDRESSEE_LAST_NAME_KEY = "last name";
     public static final String NOTIFICATION_RELATIONSHIP_KEY = "relationship";
     public static final String NOTIFICATION_REFERENCE_KEY = "ref";
-
+    public static final String NOTIFICATION_CASE_NUMBER_KEY = "case number";
+    public static final String NOTIFICATION_RDC_NAME_KEY = "RDC name";
+    public static final String NOTIFICATION_COURT_ADDRESS_KEY = "court address";
+    public static final String NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY = "form submission date limit";
     public static final String IS_DRAFT_KEY =   "fetchedDraft";
     public static final String STATEMENT_OF_TRUTH = "D8StatementOfTruth";
 
