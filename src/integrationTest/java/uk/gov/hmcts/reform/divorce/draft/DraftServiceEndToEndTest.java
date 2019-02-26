@@ -15,7 +15,10 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.collection.IsIn.isIn;
+import static org.hamcrest.core.Every.everyItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -194,7 +197,9 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         expectedDraft.put(CASE_STATE_JSON_KEY, userDraft.get(CASE_STATE_JSON_KEY));
         expectedDraft.put(CREATED_DATE, userDraft.get(CREATED_DATE));
 
-        assertEquals(expectedDraft, userDraft);
+        assertThat(userDraft.entrySet(), everyItem(isIn(expectedDraft.entrySet())));
+        assertThat(expectedDraft.entrySet(), everyItem(isIn(userDraft.entrySet())));
+
     }
 
     @SuppressWarnings("unchecked")
