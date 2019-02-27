@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -37,6 +37,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -55,11 +56,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -72,6 +78,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public abstract class LinkRespondentIdamITest extends IdamTestSupport {
     private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
+    private static final String RETRIEVE_CASE_CONTEXT_PATH = "/casemaintenance/version/1/case/" + TEST_CASE_ID;
     private static final String API_URL = "/link-respondent/" + TEST_CASE_ID + "/" + TEST_PIN;
     private static final String LINK_RESPONDENT_CONTEXT_PATH = "/casemaintenance/version/1/link-respondent/"
         + TEST_CASE_ID + "/" + TEST_LETTER_HOLDER_ID_CODE;
@@ -87,18 +94,22 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         TEST_CASE_ID,
         LINK_RESPONDENT_GENERIC_EVENT_ID
     );
-    private static final Map<String, Object> CASE_DATA = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
+    private static final Map<String, Object> CASE_DATA_RESPONDENT =
+        ImmutableMap.of(
+            D_8_DIVORCE_UNIT, TEST_COURT,
+            RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE
+        );
     private static final CaseDetails CASE_DETAILS_AOS =
         CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .state(AOS_AWAITING_STATE)
-            .caseData(CASE_DATA)
+            .caseData(CASE_DATA_RESPONDENT)
             .build();
     private static final CaseDetails CASE_DETAILS_NO_AOS =
         CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .state(AWAITING_CONSIDERATION_GENERAL_APPLICATION)
-            .caseData(CASE_DATA)
+            .caseData(CASE_DATA_RESPONDENT)
             .build();
 
     @Autowired
@@ -109,6 +120,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
 
     private Map<String, Object> caseDataAos;
     private Map<String, Object> caseDataNonAos;
+    private Map<String, Object> caseDataCoResponentUpdate;
 
     @Before
     public void setup() {
@@ -121,6 +133,11 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
             RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
             RECEIVED_AOS_FROM_RESP, YES_VALUE,
             RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
+        );
+        caseDataCoResponentUpdate = ImmutableMap.of(
+            CO_RESP_EMAIL_ADDRESS, TEST_EMAIL,
+            RECEIVED_AOS_FROM_CO_RESP, YES_VALUE,
+            RECEIVED_AOS_FROM_CO_RESP_DATE, CcdUtil.getCurrentDate()
         );
     }
 
@@ -217,6 +234,8 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubMaintenanceServerEndpointForUpdateAos(BAD_REQUEST, TEST_ERROR);
         stubRetrieveCaseFromCMS(CASE_DETAILS_AOS);
         stubMaintenanceServerEndpointForRemoveUser(OK);
+        stubSignInForCaseworker();
+        stubRetrieveCaseByIdFromCMS(HttpStatus.OK, convertObjectToJsonString(CASE_DETAILS_AOS));
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -239,6 +258,61 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
             .header(AUTHORIZATION, AUTH_TOKEN)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    public void givenAllGoesWell_whenLinkCoRespondent_thenProceedAsExpected() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(CO_RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
+        CaseDetails caseDetailsCoResp = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(AOS_AWAITING_STATE)
+            .caseData(caseData)
+            .build();
+        stubRetrieveCaseFromCMS(caseDetailsCoResp);
+        stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
+        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
+        stubMaintenanceServerEndpointForLinkRespondent(OK);
+        stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
+        stubMaintenanceServerEndpointForUpdateAos(OK, convertObjectToJsonString(caseDataCoResponentUpdate));
+
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void givenNoCaseFound_whenLinkRespondent_thenReturn404() throws Exception {
+        stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
+        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
+        stubMaintenanceServerEndpointForLinkRespondent(OK);
+        stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
+        stubMaintenanceServerEndpointForUpdateAos(OK, convertObjectToJsonString(caseDataCoResponentUpdate));
+        stubRetrieveCaseFromCMS(NOT_FOUND, convertObjectToJsonString(""));
+
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void givenLinkingFails_whenLinkRespondent_thenReturn404() throws Exception {
+        stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
+        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
+        stubMaintenanceServerEndpointForLinkRespondent(NOT_FOUND);
+        stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
+        stubMaintenanceServerEndpointForUpdateAos(OK, convertObjectToJsonString(caseDataCoResponentUpdate));
+        stubRetrieveCaseFromCMS(CASE_DETAILS_AOS);
+
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -319,6 +393,14 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
 
     private void stubRetrieveCaseFromCMS(HttpStatus status, String message) {
         maintenanceServiceServer.stubFor(get(urlEqualTo(RETRIEVE_AOS_CASE_CONTEXT_PATH + "?checkCcd=true"))
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(message)));
+    }
+
+    private void stubRetrieveCaseByIdFromCMS(HttpStatus status, String message) {
+        maintenanceServiceServer.stubFor(get(urlEqualTo(RETRIEVE_CASE_CONTEXT_PATH))
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)

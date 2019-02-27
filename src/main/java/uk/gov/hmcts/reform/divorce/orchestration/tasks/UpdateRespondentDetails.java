@@ -24,7 +24,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
@@ -50,19 +54,28 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
 
         Map<String, Object> updateFields = new HashMap<>();
         try {
-            UserDetails respondentDetails =
+            boolean isRespondent = (boolean) context.getTransientObject(IS_RESPONDENT);
+            String eventId;
+
+            UserDetails linkedUser =
                 idamClient.retrieveUserDetails(
                     authUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
 
-            updateFields.put(RESPONDENT_EMAIL_ADDRESS, respondentDetails.getEmail());
-            updateFields.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-            updateFields.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
-
             CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(
-                    String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
-                    true);
+                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
+                true);
 
-            String eventId = getEventId(caseDetails.getState());
+            if (isRespondent) {
+                updateFields.put(RESPONDENT_EMAIL_ADDRESS, linkedUser.getEmail());
+                updateFields.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+                updateFields.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
+                eventId = getEventId(caseDetails.getState());
+            } else {
+                updateFields.put(CO_RESP_EMAIL_ADDRESS, linkedUser.getEmail());
+                updateFields.put(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
+                updateFields.put(RECEIVED_AOS_FROM_CO_RESP_DATE, CcdUtil.getCurrentDate());
+                eventId = LINK_RESPONDENT_GENERIC_EVENT_ID;
+            }
 
             caseMaintenanceClient.updateCase(
                 (String)context.getTransientObject(AUTH_TOKEN_JSON_KEY),
