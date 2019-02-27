@@ -38,8 +38,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_C
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LOCATION_HEADER;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RetrievePinUserDetailsFromStrategicIdamUTest {
@@ -73,7 +73,7 @@ public class RetrievePinUserDetailsFromStrategicIdamUTest {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(PIN, TEST_PIN);
+        taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL))
             .thenReturn(idamRedirectResponse);
@@ -94,7 +94,7 @@ public class RetrievePinUserDetailsFromStrategicIdamUTest {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(PIN, TEST_PIN);
+        taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL))
             .thenReturn(idamRedirectResponse);
@@ -115,7 +115,7 @@ public class RetrievePinUserDetailsFromStrategicIdamUTest {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(PIN, TEST_PIN);
+        taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL))
             .thenReturn(idamRedirectResponse);
@@ -151,8 +151,8 @@ public class RetrievePinUserDetailsFromStrategicIdamUTest {
         final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
 
         final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(PIN, TEST_PIN);
         taskContext.setTransientObject(CCD_CASE_DATA, caseDetails.getCaseData());
+        taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         final UserDetails pinUserDetails = UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
 

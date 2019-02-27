@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
 
@@ -219,11 +218,12 @@ public class OrchestrationController {
         @ApiParam(value = "The case draft", required = true)
         @RequestBody
         @NotNull Map<String, Object> payload,
-        @RequestParam(value = "notificationEmail", required = false)
-        @ApiParam(value = "The email address that will receive the notification that the draft has been saved")
-        @Email final String notificationEmail) throws WorkflowException {
+        @RequestParam(value = "sendEmail", required = false)
+        @ApiParam(value = "Determines if the petitioner should receive the notification that the draft has been saved")
+        final String sendEmail) throws WorkflowException {
 
-        return ResponseEntity.ok(orchestrationService.saveDraft(payload, authorizationToken, notificationEmail));
+        // Deprecation Warning: sendEmail as String instead of Boolean to be backwards compatible with current PFE
+        return ResponseEntity.ok(orchestrationService.saveDraft(payload, authorizationToken, sendEmail));
     }
 
     @DeleteMapping(path = "/draftsapi/version/1")
@@ -441,6 +441,16 @@ public class OrchestrationController {
         return ResponseEntity.ok(orchestrationService.aosReceived(caseDetailsRequest, authorizationToken));
     }
 
+    @PostMapping(path = "/co-respondent-received")
+    @ApiOperation(value = "Co-Respondent confirmation notification ")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Notification sent successful"),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> corespReceived(
+        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+        return ResponseEntity.ok(orchestrationService.sendCoRespReceivedNotificationEmail(caseDetailsRequest));
+    }
+
     @PostMapping(path = "/submit-aos/{caseId}",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles AOS submission")
@@ -491,5 +501,23 @@ public class OrchestrationController {
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();
+    }
+
+    @PutMapping(path = "/amend-petition/{caseId}")
+    @ApiOperation(
+        value = "Creates a new draft copy of user's old case to be amended, updates old case to AmendPetition state")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200,
+            message = "The amended petition draft has been created successfully. "
+                + "The previous case has been updated to case state: AmendPetition"),
+        @ApiResponse(code = 404,
+            message = "No draft was created as no existing case found.")})
+    public ResponseEntity<Map<String, Object>> amendPetition(@RequestHeader("Authorization")
+                                                           @ApiParam(value = "JWT authorisation token issued by IDAM",
+                                                               required = true) final String authorizationToken,
+                                                             @PathVariable String caseId)
+        throws WorkflowException {
+
+        return ResponseEntity.ok(orchestrationService.amendPetition(caseId, authorizationToken));
     }
 }

@@ -27,9 +27,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_INVITATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,7 +56,7 @@ public class RespondentLetterGeneratorTest {
         final TaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-        context.setTransientObject(PIN, TEST_PIN);
+        context.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         final GenerateDocumentRequest generateDocumentRequest =
             GenerateDocumentRequest.builder()
@@ -78,7 +78,7 @@ public class RespondentLetterGeneratorTest {
             (GeneratedDocumentInfo)context.getTransientObject(RESPONDENT_INVITATION_TEMPLATE_NAME);
 
         //then
-        assertEquals(DOCUMENT_TYPE_INVITATION, response.getDocumentType());
+        assertEquals(DOCUMENT_TYPE_RESPONDENT_INVITATION, response.getDocumentType());
         assertEquals(TEST_AOS_INVITATION_FILE_NAME, response.getFileName());
 
         verify(documentGeneratorClient).generatePDF(generateDocumentRequest, AUTH_TOKEN);

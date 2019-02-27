@@ -39,6 +39,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_DRAFT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
@@ -124,6 +125,8 @@ public class RetrieveDraftITest {
 
         CASE_DATA.put("deaftProperty1", "value1");
         CASE_DATA.put("deaftProperty2", "value2");
+        CASE_DATA.put(IS_DRAFT_KEY, true);
+
         CaseDetails caseDetails = CaseDetails.builder().caseData(CASE_DATA).build();
 
         stubCmsServerEndpoint(CMS_CONTEXT_PATH, HttpStatus.OK, convertObjectToJsonString(caseDetails), HttpMethod.GET);
@@ -144,7 +147,7 @@ public class RetrieveDraftITest {
 
         CASE_DATA.put("deaftProperty1", "value1");
         CASE_DATA.put("deaftProperty2", "value2");
-
+        CASE_DATA.put(IS_DRAFT_KEY, true);
         stubCmsServerEndpoint(CMS_CONTEXT_PATH, HttpStatus.OK, convertObjectToJsonString(CASE_DETAILS), HttpMethod.GET);
         stubCfsServerEndpoint(convertObjectToJsonString(CASE_DATA));
 

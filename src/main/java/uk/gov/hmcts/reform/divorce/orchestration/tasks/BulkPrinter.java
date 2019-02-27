@@ -21,8 +21,8 @@ import java.util.Optional;
 
 import static java.util.Base64.getEncoder;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
 
 @Service
 @Slf4j
@@ -42,9 +42,9 @@ public class BulkPrinter implements Task<Map<String, Object>> {
 
     private final SendLetterApi sendLetterApi;
 
-    private AuthTokenGenerator authTokenGenerator;
+    private final AuthTokenGenerator authTokenGenerator;
 
-    private FeatureToggleServiceClient featureToggleServiceClient;
+    private final FeatureToggleServiceClient featureToggleServiceClient;
 
     @Value("${feature-toggle.toggle.bulk-printer-toggle-name}")
     private String bulkPrintFeatureToggleName;
@@ -68,7 +68,7 @@ public class BulkPrinter implements Task<Map<String, Object>> {
                 (Map<String, GeneratedDocumentInfo>) context.getTransientObject(DOCUMENTS_GENERATED);
             String miniPetition = getEncoder().encodeToString(generatedDocumentInfoList.get(DOCUMENT_TYPE_PETITION)
                 .getBytes());
-            String aosLetter = getEncoder().encodeToString(generatedDocumentInfoList.get(DOCUMENT_TYPE_INVITATION)
+            String aosLetter = getEncoder().encodeToString(generatedDocumentInfoList.get(DOCUMENT_TYPE_RESPONDENT_INVITATION)
                 .getBytes());
             sendToBulkPrint(context, caseDetails, miniPetition, aosLetter);
         } else {

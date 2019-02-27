@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
@@ -71,7 +71,7 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
                 updateFields.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
                 eventId = getEventId(caseDetails.getState());
             } else {
-                updateFields.put(CO_RESPONDENT_EMAIL_ADDRESS, linkedUser.getEmail());
+                updateFields.put(CO_RESP_EMAIL_ADDRESS, linkedUser.getEmail());
                 updateFields.put(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
                 updateFields.put(RECEIVED_AOS_FROM_CO_RESP_DATE, CcdUtil.getCurrentDate());
                 eventId = LINK_RESPONDENT_GENERIC_EVENT_ID;

@@ -56,8 +56,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
@@ -135,7 +135,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
             RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
         );
         caseDataCoResponentUpdate = ImmutableMap.of(
-            CO_RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
+            CO_RESP_EMAIL_ADDRESS, TEST_EMAIL,
             RECEIVED_AOS_FROM_CO_RESP, YES_VALUE,
             RECEIVED_AOS_FROM_CO_RESP_DATE, CcdUtil.getCurrentDate()
         );

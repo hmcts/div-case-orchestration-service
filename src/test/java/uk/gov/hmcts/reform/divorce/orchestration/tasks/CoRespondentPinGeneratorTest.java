@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,20 +15,21 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_PIN;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class IdamPinGeneratorTest {
+public class CoRespondentPinGeneratorTest {
 
     @Mock
     private IdamClient idamClient;
@@ -38,9 +38,9 @@ public class IdamPinGeneratorTest {
     private AuthUtil authUtil;
 
     @InjectMocks
-    private IdamPinGenerator idamPinGenerator;
+    private CoRespondentPinGenerator coRespondentPinGenerator;
 
-    private Map<String, Object> payload;
+    private Map<String, Object> caseData;
     private TaskContext context;
     private Pin pin;
 
@@ -51,31 +51,23 @@ public class IdamPinGeneratorTest {
                 .pin(TEST_PIN)
                 .build();
 
-        payload = new HashMap<>();
-        payload.put(PIN,TEST_PIN );
-
+        caseData = new HashMap<>();
         context = new DefaultTaskContext();
     }
 
     @Test
-    public void executeShouldReturnUpdatedPayloadForValidCase() {
+    public void executeShouldPopulatePinAndLetterHolderId() {
         //given
         when(idamClient.createPin(any(), anyString())).thenReturn(pin);
         when(authUtil.getCitizenToken())
-                .thenReturn(BEARER_AUTH_TOKEN);
+            .thenReturn(BEARER_AUTH_TOKEN);
 
         //when
-        Map<String, Object> response = idamPinGenerator.execute(context, payload);
+        Map<String, Object> response = coRespondentPinGenerator.execute(context, caseData);
 
         //then
-        assertNotNull(response);
-        assertEquals(pin.getPin(), response.get(PIN));
-        assertEquals(pin.getUserId(), response.get(RESPONDENT_LETTER_HOLDER_ID));
+        assertThat(response, is(notNullValue()));
+        assertThat(response.get(CO_RESPONDENT_LETTER_HOLDER_ID), is(pin.getUserId()));
+        assertThat(String.valueOf(context.getTransientObject(CO_RESPONDENT_PIN)), is(pin.getPin()));
     }
-
-    @After
-    public void tearDown() {
-        idamPinGenerator = null;
-    }
-
 }

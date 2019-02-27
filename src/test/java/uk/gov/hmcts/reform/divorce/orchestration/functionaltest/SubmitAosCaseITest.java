@@ -50,6 +50,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -179,7 +180,7 @@ public class SubmitAosCaseITest {
     }
 
     @Test
-    public void givenNoConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
+    public void givenAdulteryNoConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData(NO_VALUE, false);
         final String caseDataString = convertObjectToJsonString(caseData);
         final Map<String, Object> cmsData = new HashMap<>();
@@ -198,6 +199,28 @@ public class SubmitAosCaseITest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(caseDataString));
+    }
+
+    @Test
+    public void given2YearSeparationNoConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
+        final Map<String, Object> caseData = getCaseData(NO_VALUE, false);
+        final String caseDataString = convertObjectToJsonString(caseData);
+        final Map<String, Object> cmsData = new HashMap<>();
+
+        cmsData.put(CCD_CASE_DATA_FIELD, Collections.singletonMap(D_8_REASON_FOR_DIVORCE, SEPARATION_2YRS));
+
+        stubFormatterServerEndpoint(OK, caseData, caseDataString);
+        stubRetrieveAosCaseFromCMS(convertObjectToJsonString(AOS_CASE_DETAILS));
+        stubMaintenanceServerEndpointForRetrieveCaseById(cmsData);
+        stubMaintenanceServerEndpointForUpdate(OK, COMPLETED_AOS_EVENT_ID, caseData, caseDataString);
+
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .content(convertObjectToJsonString(caseData))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(caseDataString));
     }
 
     @Test

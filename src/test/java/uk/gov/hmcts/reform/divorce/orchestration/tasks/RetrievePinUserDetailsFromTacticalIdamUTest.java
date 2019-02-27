@@ -37,6 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RetrievePinUserDetailsFromTacticalIdamUTest {
@@ -79,7 +80,7 @@ public class RetrievePinUserDetailsFromTacticalIdamUTest {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(PIN, TEST_PIN);
+        taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         when(idamClient.authenticatePinUser(pinAuthToken, CODE, AUTH_CLIENT_ID, AUTH_REDIRECT_URL))
             .thenReturn(authenticateUserResponse);
@@ -121,7 +122,7 @@ public class RetrievePinUserDetailsFromTacticalIdamUTest {
         final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
 
         final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(PIN, TEST_PIN);
+        taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
         taskContext.setTransientObject(CCD_CASE_DATA, caseDetails.getCaseData());
 
         final UserDetails pinUserDetails = UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
@@ -165,7 +166,7 @@ public class RetrievePinUserDetailsFromTacticalIdamUTest {
         final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
 
         final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(PIN, TEST_PIN);
+        taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
         taskContext.setTransientObject(CCD_CASE_DATA, caseDetails.getCaseData());
 
         final UserDetails pinUserDetails = UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();

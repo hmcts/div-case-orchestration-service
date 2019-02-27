@@ -18,8 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
 
@@ -197,7 +197,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     private void assertCaseDetailsCoRespondent(UserDetails userDetails, String caseId) {
         CaseDetails caseDetails = ccdClientSupport.retrieveCase(userDetails, caseId);
 
-        assertEquals(userDetails.getEmailAddress(), caseDetails.getData().get(CO_RESPONDENT_EMAIL_ADDRESS));
+        assertEquals(userDetails.getEmailAddress(), caseDetails.getData().get(CO_RESP_EMAIL_ADDRESS));
         assertEquals(YES_VALUE, caseDetails.getData().get(RECEIVED_AOS_FROM_CO_RESP));
         assertEquals(LocalDate.now().toString(CCD_DATE_FORMAT),
             caseDetails.getData().get(RECEIVED_AOS_FROM_CO_RESP_DATE));

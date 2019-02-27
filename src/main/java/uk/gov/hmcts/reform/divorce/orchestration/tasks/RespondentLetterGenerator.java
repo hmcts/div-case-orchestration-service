@@ -16,10 +16,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_INVITATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.INVITATION_FILE_NAME_FORMAT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_FILE_NAME_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 @Component
 public class RespondentLetterGenerator implements Task<Map<String, Object>> {
@@ -31,6 +31,7 @@ public class RespondentLetterGenerator implements Task<Map<String, Object>> {
     }
 
     @Override
+    @SuppressWarnings("Duplicates")
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         CaseDetails caseDetails = (CaseDetails) context.getTransientObject(CASE_DETAILS_JSON_KEY);
 
@@ -40,14 +41,14 @@ public class RespondentLetterGenerator implements Task<Map<String, Object>> {
                     .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
                     .values(ImmutableMap.of(
                         DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails,
-                        ACCESS_CODE, context.getTransientObject(PIN))
+                        ACCESS_CODE, context.getTransientObject(RESPONDENT_PIN))
                     )
                     .build(),
                 String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY))
             );
 
-        aosInvitation.setDocumentType(DOCUMENT_TYPE_INVITATION);
-        aosInvitation.setFileName(String.format(INVITATION_FILE_NAME_FORMAT,
+        aosInvitation.setDocumentType(DOCUMENT_TYPE_RESPONDENT_INVITATION);
+        aosInvitation.setFileName(String.format(RESPONDENT_INVITATION_FILE_NAME_FORMAT,
                 caseDetails.getCaseId()));
 
         context.setTransientObject(RESPONDENT_INVITATION_TEMPLATE_NAME, aosInvitation);
