@@ -65,16 +65,17 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
         final String respondentLetterHolderId = (String) caseData.get(RESPONDENT_LETTER_HOLDER_ID);
         final boolean isRespondent = letterHolderId.equals(respondentLetterHolderId);
         final boolean isCoRespondent = letterHolderId.equals(coRespondentLetterHolderId);
-
+        final String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
 
         if (isRespondent) {
-            context.setTransientObject(RESPONDENT_LETTER_HOLDER_ID, pinUserDetails.getId());
+            context.setTransientObject(RESPONDENT_LETTER_HOLDER_ID, letterHolderId);
             context.setTransientObject(IS_RESPONDENT, true);
+            log.info("Letter holder ID [{}] is associated with respondent in case [{}]", letterHolderId, caseId);
         } else if (isCoRespondent) {
-            context.setTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID, pinUserDetails.getId());
+            context.setTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID, letterHolderId);
             context.setTransientObject(IS_RESPONDENT, false);
+            log.info("Letter holder ID [{}] is associated with co-respondent in case [{}]", letterHolderId, caseId);
         } else {
-            final String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
             throw new TaskException(new AuthenticationError(
                 String.format("Letter holder ID [%s] not associated with case [%s]", letterHolderId, caseId)
             ));
