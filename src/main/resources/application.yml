@@ -119,6 +119,15 @@ courtAllocationConfigurationJson: "
                                               \"percentageOfCasesWithThisFactCourtWillHandle\": 1
                                             }
                                           ]
+                                        },
+                                        {
+                                          \"fact\": \"desertion\",
+                                          \"courts\": [
+                                            {
+                                              \"courtId\": \"serviceCentre\",
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 1
+                                            }
+                                          ]
                                         }
                                     ]
                                   }"
