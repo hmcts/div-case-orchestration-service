@@ -10,8 +10,12 @@ output "idam_api_baseurl" {
   value = "${var.idam_api_baseurl}"
 }
 
-output "idam.s2s-auth.url" {
+output "service_auth_provider_url" {
   value = "${local.idam_s2s_url}"
+}
+
+output "case_maintenance_service_api_baseurl" {
+  value = "${local.case_maintenance_service_baseurl}"
 }
 
 output "draft_check_ccd_enabled" {
