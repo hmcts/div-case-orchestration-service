@@ -50,8 +50,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
@@ -165,7 +165,7 @@ public class BulkPrintTest {
     private CreateEvent createCaseEventWithDocuments() {
         CASE_DATA.put("D8DocumentsGenerated", Arrays.asList(
             newDocument("http://localhost:4020/binary", "issue", DOCUMENT_TYPE_PETITION),
-            newDocument("http://localhost:4020/binary", "aosletter", DOCUMENT_TYPE_INVITATION)
+            newDocument("http://localhost:4020/binary", "aosletter", DOCUMENT_TYPE_RESPONDENT_INVITATION)
         ));
         return new CreateEvent("abacccd", "BulkPrint", CaseDetails.builder()
             .caseData(CASE_DATA)

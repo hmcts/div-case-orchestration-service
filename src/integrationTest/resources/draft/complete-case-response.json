@@ -170,6 +170,10 @@
   "respondentFirstName" : "Jane",
   "reasonForDivorceHasMarriageDate" : "true",
   "marriedInUk" : "Yes",
+  "jurisdictionPath": [
+    "JurisdictionHabitualResidence",
+    "JurisdictionInterstitial"
+  ],
   "marriageDateMonth" : 2,
   "marriageCanDivorce" : "true",
   "respondentContactDetailsConfidential" : "share",

@@ -1,0 +1,15 @@
+{
+  "event_id" : "submitted",
+  "case_details" : {
+    "case_data" : {
+      "CoRespDefendsDivorce" : "Yes",
+      "dueDateCoResp" : "10/10/2020",
+      "D8ReasonForDivorceAdultery3rdPartyFName" : "user first name",
+      "D8ReasonForDivorceAdultery3rdPartyLName" : "user last name",
+      "D8DivorceUnit" : "eastMidlands",
+      "D8caseReference" : "LV17D80100"
+    },
+    "id" : "1517833758870511",
+    "state" : "AwaitingAOS"
+  }
+}

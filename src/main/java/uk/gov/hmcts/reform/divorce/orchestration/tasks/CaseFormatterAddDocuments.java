@@ -12,15 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_INVITATION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
 
 @Component
-public class CaseFormatterAddPDF implements Task<Map<String, Object>> {
+public class CaseFormatterAddDocuments implements Task<Map<String, Object>> {
     private final CaseFormatterClient caseFormatterClient;
 
     @Autowired
-    public CaseFormatterAddPDF(CaseFormatterClient caseFormatterClient) {
+    public CaseFormatterAddDocuments(CaseFormatterClient caseFormatterClient) {
         this.caseFormatterClient = caseFormatterClient;
     }
 
@@ -38,6 +39,13 @@ public class CaseFormatterAddPDF implements Task<Map<String, Object>> {
 
         if (respondentInvitation != null) {
             documents.add(respondentInvitation);
+        }
+
+        GeneratedDocumentInfo coRespondentInvitation
+            = (GeneratedDocumentInfo) context.getTransientObject(CO_RESPONDENT_INVITATION_TEMPLATE_NAME);
+
+        if (coRespondentInvitation != null) {
+            documents.add(coRespondentInvitation);
         }
 
         return caseFormatterClient.addDocuments(

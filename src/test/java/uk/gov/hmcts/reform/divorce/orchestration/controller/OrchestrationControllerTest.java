@@ -40,7 +40,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ERROR_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
@@ -303,25 +303,25 @@ public class OrchestrationControllerTest {
 
     @Test
     public void givenLinkResponseIsNull_whenLinkRespondent_thenReturnUnAuthorised() throws WorkflowException {
-        when(caseOrchestrationService.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN)).thenReturn(null);
+        when(caseOrchestrationService.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, RESPONDENT_PIN)).thenReturn(null);
 
         assertEquals(HttpStatus.UNAUTHORIZED,
-            classUnderTest.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN).getStatusCode());
+            classUnderTest.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, RESPONDENT_PIN).getStatusCode());
 
-        verify(caseOrchestrationService).linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN);
+        verify(caseOrchestrationService).linkRespondent(AUTH_TOKEN, TEST_CASE_ID, RESPONDENT_PIN);
     }
 
     @Test
-    public void givenLinkResponseIsNotNull_whenLinkRespondent_thenReturnUnAuthorised() throws WorkflowException {
+    public void givenLinkResponseIsNotNull_whenLinkRespondent_thenReturnOk() throws WorkflowException {
         final UserDetails expected = UserDetails.builder().build();
 
-        when(caseOrchestrationService.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN)).thenReturn(expected);
+        when(caseOrchestrationService.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, RESPONDENT_PIN)).thenReturn(expected);
 
-        ResponseEntity<UserDetails> actual = classUnderTest.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN);
+        ResponseEntity<UserDetails> actual = classUnderTest.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, RESPONDENT_PIN);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
 
-        verify(caseOrchestrationService).linkRespondent(AUTH_TOKEN, TEST_CASE_ID, PIN);
+        verify(caseOrchestrationService).linkRespondent(AUTH_TOKEN, TEST_CASE_ID, RESPONDENT_PIN);
     }
 
     @Test
@@ -525,5 +525,23 @@ public class OrchestrationControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(caseData, response.getBody());
+    }
+
+    @Test
+    public void whenCoRespondentSubmittedCallback_thenReturnCcdResponse() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+        final CreateEvent createEvent = new CreateEvent();
+        createEvent.setCaseDetails(caseDetails);
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        when(caseOrchestrationService.sendCoRespReceivedNotificationEmail(createEvent)).thenReturn(expectedResponse);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.corespReceived( createEvent);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
     }
 }

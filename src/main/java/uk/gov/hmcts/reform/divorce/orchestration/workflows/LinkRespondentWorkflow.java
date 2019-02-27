@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithId;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UnlinkRespondent;
@@ -15,7 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateRespondentDetails;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_REPONDENT_DATA_ERROR_KEY;
 
 @Component
@@ -25,16 +26,19 @@ public class LinkRespondentWorkflow extends DefaultWorkflow<UserDetails> {
     private final LinkRespondent linkRespondent;
     private final UpdateRespondentDetails updateRespondentDetails;
     private final UnlinkRespondent unlinkRespondent;
+    private final GetCaseWithId getCaseById;
 
     @Autowired
     public LinkRespondentWorkflow(RetrievePinUserDetails retrievePinUserDetails,
                                   LinkRespondent linkRespondent,
                                   UpdateRespondentDetails updateRespondentDetails,
-                                  UnlinkRespondent unlinkRespondent) {
+                                  UnlinkRespondent unlinkRespondent,
+                                  GetCaseWithId getCaseById) {
         this.retrievePinUserDetails = retrievePinUserDetails;
         this.linkRespondent = linkRespondent;
         this.updateRespondentDetails = updateRespondentDetails;
         this.unlinkRespondent = unlinkRespondent;
+        this.getCaseById = getCaseById;
     }
 
     public UserDetails run(String authToken, String caseId, String pin) throws WorkflowException {
@@ -42,13 +46,14 @@ public class LinkRespondentWorkflow extends DefaultWorkflow<UserDetails> {
 
         try {
             return this.execute(
-                new Task[]{
+                new Task[] {
+                    getCaseById,
                     retrievePinUserDetails,
                     linkRespondent,
                     updateRespondentDetails
                 },
                 userDetail,
-                ImmutablePair.of(PIN, pin),
+                ImmutablePair.of(RESPONDENT_PIN, pin),
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
                 ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
             );
@@ -61,7 +66,7 @@ public class LinkRespondentWorkflow extends DefaultWorkflow<UserDetails> {
     }
 
     private void rollbackOperation(UserDetails userDetail, String caseId) throws WorkflowException {
-        log.error("Can not link respondent for caseId {} and user {}", caseId, userDetail.getId());
+        log.error("Cannot link respondent for caseId {} and user {}", caseId, userDetail.getId());
         this.execute(
             new Task[]{
                 unlinkRespondent
