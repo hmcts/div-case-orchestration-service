@@ -15,10 +15,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCallbackWorkflow;
@@ -56,7 +56,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private static final String ONLINE = "online";
     private static final String PAYMENT = "payment";
 
-    private final CcdCallbackWorkflow ccdCallbackWorkflow;
+    private final IssueEventWorkflow issueEventWorkflow;
     private final CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
     private final RetrieveDraftWorkflow retrieveDraftWorkflow;
     private final SaveDraftWorkflow saveDraftWorkflow;
@@ -85,16 +85,16 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest,
                                                   String authToken,
                                                   boolean generateAosInvitation) throws WorkflowException {
-        Map<String, Object> payLoad = ccdCallbackWorkflow.run(caseDetailsRequest, authToken, generateAosInvitation);
+        Map<String, Object> payLoad = issueEventWorkflow.run(caseDetailsRequest, authToken, generateAosInvitation);
 
-        if (ccdCallbackWorkflow.errors().isEmpty()) {
+        if (issueEventWorkflow.errors().isEmpty()) {
             log.info("Petition issued callback for case with CASE ID: {} successfully completed",
                 caseDetailsRequest.getCaseDetails().getCaseId());
             return payLoad;
         } else {
             log.error("Petition issued callback for case with CASE ID: {} failed",
                 caseDetailsRequest.getCaseDetails().getCaseId());
-            return ccdCallbackWorkflow.errors();
+            return issueEventWorkflow.errors();
         }
     }
 

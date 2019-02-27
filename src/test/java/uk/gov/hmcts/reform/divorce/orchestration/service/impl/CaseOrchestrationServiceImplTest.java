@@ -19,10 +19,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
@@ -57,14 +57,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseOrchestrationServiceImplTest {
 
     @Mock
-    private CcdCallbackWorkflow ccdCallbackWorkflow;
+    private IssueEventWorkflow issueEventWorkflow;
 
     @Mock
     private RetrieveDraftWorkflow retrieveDraftWorkflow;
@@ -151,35 +151,35 @@ public class CaseOrchestrationServiceImplTest {
                 .eventId(TEST_EVENT_ID)
                 .token(TEST_TOKEN)
                 .build();
-        expectedPayload = Collections.singletonMap(PIN, TEST_PIN);
+        expectedPayload = Collections.singletonMap(RESPONDENT_PIN, TEST_PIN);
     }
 
     @Test
     public void givenGenerateInvitationIsTrue_whenCcdCallbackHandler_thenReturnExpected()
             throws WorkflowException {
         //given
-        when(ccdCallbackWorkflow.run(createEventRequest, AUTH_TOKEN, true)).thenReturn(expectedPayload);
+        when(issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, true)).thenReturn(expectedPayload);
 
         //when
         Map<String, Object> actual = classUnderTest.ccdCallbackHandler(createEventRequest, AUTH_TOKEN, true);
 
         //then
         assertEquals(expectedPayload, actual);
-        assertEquals(expectedPayload.get(PIN), TEST_PIN);
+        assertEquals(expectedPayload.get(RESPONDENT_PIN), TEST_PIN);
     }
 
     @Test
     public void givenGenerateInvitationIsFalse_whenCcdCallbackHandler_thenReturnExpected()
         throws WorkflowException {
         //given
-        when(ccdCallbackWorkflow.run(createEventRequest, AUTH_TOKEN, false)).thenReturn(expectedPayload);
+        when(issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, false)).thenReturn(expectedPayload);
 
         //when
         Map<String, Object> actual = classUnderTest.ccdCallbackHandler(createEventRequest, AUTH_TOKEN, false);
 
         //then
         assertEquals(expectedPayload, actual);
-        assertEquals(expectedPayload.get(PIN), TEST_PIN);
+        assertEquals(expectedPayload.get(RESPONDENT_PIN), TEST_PIN);
     }
 
     @SuppressWarnings("unchecked")
