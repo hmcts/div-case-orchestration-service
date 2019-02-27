@@ -29,9 +29,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_C
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CODE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RetrievePinUserDetailsFromTacticalIdamUTest {
@@ -74,7 +74,7 @@ public class RetrievePinUserDetailsFromTacticalIdamUTest {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(PIN, TEST_PIN);
+        taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         when(idamClient.authenticatePinUser(pinAuthToken, CODE, AUTH_CLIENT_ID, AUTH_REDIRECT_URL))
             .thenReturn(authenticateUserResponse);
@@ -113,7 +113,7 @@ public class RetrievePinUserDetailsFromTacticalIdamUTest {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(PIN, TEST_PIN);
+        taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         final UserDetails pinUserDetails = UserDetails.builder().id(TEST_USER_ID).build();
 

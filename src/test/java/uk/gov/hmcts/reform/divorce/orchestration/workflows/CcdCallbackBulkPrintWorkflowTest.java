@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CcdCallbackBulkPrintWorkflowTest {
@@ -62,7 +62,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
 
         payload = new HashMap<>();
         payload.put("D8ScreenHasMarriageBroken", "YES");
-        payload.put(PIN,TEST_PIN);
+        payload.put(RESPONDENT_PIN,TEST_PIN);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
@@ -96,7 +96,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
         //Then
         assertNotNull(response);
         assertEquals(2, response.size());
-        assertTrue(response.containsKey(PIN));
+        assertTrue(response.containsKey(RESPONDENT_PIN));
     }
 
     @After

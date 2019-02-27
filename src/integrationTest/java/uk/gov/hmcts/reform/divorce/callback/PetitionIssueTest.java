@@ -17,16 +17,18 @@ import java.util.List;
 import java.util.Map;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 public class PetitionIssueTest extends IntegrationTest {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/issue-petition/";
 
-    private static final List<String> EXPECTED_ERROR = 
+    private static final List<String> EXPECTED_ERROR =
         Collections.singletonList("D8StatementOfTruth must be 'YES'. Actual data is: null");
-    
+
     private static final String D8_MINI_PETITION_DOCUMENT_URL_PATH =
         "data.D8DocumentsGenerated[0].value.DocumentLink.document_url";
     private static final String D8_MINI_PETITION_DOCUMENT_BINARY_URL_PATH =
@@ -35,7 +37,7 @@ public class PetitionIssueTest extends IntegrationTest {
         "data.D8DocumentsGenerated[0].value.DocumentType";
     private static final String D8_MINI_PETITION_DOCUMENT_FILENAME_PATH =
         "data.D8DocumentsGenerated[0].value.DocumentLink.document_filename";
-    private static final String PETITION = "petition";
+    private static final String DOC_TYPE_PETITION = "petition";
     private static final String D8_MINI_PETITION_FILE_NAME_FORMAT = "d8petition%s.pdf";
     private static final String D8_AOS_INVITATION_DOCUMENT_URL_PATH =
             "data.D8DocumentsGenerated[1].value.DocumentLink.document_url";
@@ -45,8 +47,22 @@ public class PetitionIssueTest extends IntegrationTest {
             "data.D8DocumentsGenerated[1].value.DocumentType";
     private static final String D8_AOS_INVITATION_DOCUMENT_FILENAME_PATH =
             "data.D8DocumentsGenerated[1].value.DocumentLink.document_filename";
-    private static final String AOS_INVITATION = "aos";
+    private static final String DOC_TYPE_AOS_INVITATION = "aos";
     private static final String D8_AOS_INVITATION_FILE_NAME_FORMAT = "aosinvitation%s.pdf";
+    private static final String AOS_LETTER_HOLDER_ID = "data.AosLetterHolderId";
+
+    private static final String D8_CO_RESPONDENT_INVITATION_DOCUMENT_URL_PATH =
+        "data.D8DocumentsGenerated[2].value.DocumentLink.document_url";
+    private static final String D8_CO_RESPONDENT_INVITATION_DOCUMENT_BINARY_URL_PATH =
+        "data.D8DocumentsGenerated[2].value.DocumentLink.document_binary_url";
+    private static final String D8_CO_RESPONDENT_INVITATION_DOCUMENT_TYPE_PATH =
+        "data.D8DocumentsGenerated[2].value.DocumentType";
+    private static final String D8_CO_RESPONDENT_INVITATION_DOCUMENT_FILENAME_PATH =
+        "data.D8DocumentsGenerated[2].value.DocumentLink.document_filename";
+    private static final String DOC_TYPE_CO_RESPONDENT_INVITATION = "aoscr";
+    private static final String D8_CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT = "co-respondentaosinvitation%s.pdf";
+    private static final String CO_RESPONDENT_LETTER_HOLDER_ID = "data.CoRespLetterHolderId";
+
 
     private static final String CASE_ERROR_KEY = "errors";
     private static final String CASE_ID = "1517833758870511";
@@ -79,7 +95,7 @@ public class PetitionIssueTest extends IntegrationTest {
             "ccd-callback-aos-invitation.json", null);
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertGeneratedDocumentsExists(cosResponse, false);
+        assertGeneratedDocumentsExists(cosResponse, false, false);
         assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
 
@@ -89,7 +105,7 @@ public class PetitionIssueTest extends IntegrationTest {
             "ccd-callback-aos-invitation.json", false);
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertGeneratedDocumentsExists(cosResponse, false);
+        assertGeneratedDocumentsExists(cosResponse, false, false);
         assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
 
@@ -99,7 +115,7 @@ public class PetitionIssueTest extends IntegrationTest {
             "ccd-callback-aos-invitation.json", true);
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertGeneratedDocumentsExists(cosResponse, false);
+        assertGeneratedDocumentsExists(cosResponse, false, false);
         assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
 
@@ -109,7 +125,17 @@ public class PetitionIssueTest extends IntegrationTest {
             "ccd-callback-aos-invitation-service-centre.json", true);
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertGeneratedDocumentsExists(cosResponse, true);
+        assertGeneratedDocumentsExists(cosResponse, true, false);
+        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
+    }
+
+    @Test
+    public void givenGenerateAosTrueAndServiceCentreWithCoRespondent_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
+        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
+            "ccd-callback-aos-invitation-service-centre-with-coRespondent.json", true);
+
+        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
+        assertGeneratedDocumentsExists(cosResponse, true, true);
         assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
 
@@ -137,25 +163,37 @@ public class PetitionIssueTest extends IntegrationTest {
             );
     }
 
-    private void assertGeneratedDocumentsExists(Response cosResponse, boolean aosInvitataionExists) {
-        String petitionUri = cosResponse.path(D8_MINI_PETITION_DOCUMENT_BINARY_URL_PATH);
+    @SuppressWarnings("Duplicates")
+    private void assertGeneratedDocumentsExists(Response cosResponse, boolean aosInvitationExists, boolean coRespondentInvitationExists) {
+        assertThat(cosResponse.path(D8_MINI_PETITION_DOCUMENT_BINARY_URL_PATH), is(notNullValue()));
+        assertThat(cosResponse.path(D8_MINI_PETITION_DOCUMENT_URL_PATH), is(notNullValue()));
+        assertThat(cosResponse.path(D8_MINI_PETITION_DOCUMENT_TYPE_PATH), is(DOC_TYPE_PETITION));
+        assertThat(cosResponse.path(D8_MINI_PETITION_DOCUMENT_FILENAME_PATH), is(String.format(D8_MINI_PETITION_FILE_NAME_FORMAT, CASE_ID)));
 
-        assertNotNull(petitionUri);
-        assertNotNull(cosResponse.path(D8_MINI_PETITION_DOCUMENT_URL_PATH));
-        assertEquals(PETITION, cosResponse.path(D8_MINI_PETITION_DOCUMENT_TYPE_PATH));
-        assertEquals(String.format(D8_MINI_PETITION_FILE_NAME_FORMAT, CASE_ID),
-            cosResponse.path(D8_MINI_PETITION_DOCUMENT_FILENAME_PATH));
+        if (aosInvitationExists) {
+            assertThat(cosResponse.path(D8_AOS_INVITATION_DOCUMENT_BINARY_URL_PATH), is(notNullValue()));
+            assertThat(cosResponse.path(D8_AOS_INVITATION_DOCUMENT_URL_PATH), is(notNullValue()));
+            assertThat(cosResponse.path(D8_AOS_INVITATION_DOCUMENT_TYPE_PATH), is(DOC_TYPE_AOS_INVITATION));
+            assertThat(cosResponse.path(D8_AOS_INVITATION_DOCUMENT_FILENAME_PATH),
+                is(String.format(D8_AOS_INVITATION_FILE_NAME_FORMAT, CASE_ID)));
 
-        String aosInvitationUri = cosResponse.path(D8_AOS_INVITATION_DOCUMENT_BINARY_URL_PATH);
+            assertThat(cosResponse.path(AOS_LETTER_HOLDER_ID), is(notNullValue()));
 
-        if (aosInvitataionExists) {
-            assertNotNull(aosInvitationUri);
-            assertNotNull(cosResponse.path(D8_AOS_INVITATION_DOCUMENT_URL_PATH));
-            assertEquals(AOS_INVITATION, cosResponse.path(D8_AOS_INVITATION_DOCUMENT_TYPE_PATH));
-            assertEquals(String.format(D8_AOS_INVITATION_FILE_NAME_FORMAT, CASE_ID),
-                cosResponse.path(D8_AOS_INVITATION_DOCUMENT_FILENAME_PATH));
+
         } else {
-            assertNull(aosInvitationUri);
+            assertThat(cosResponse.path(D8_AOS_INVITATION_DOCUMENT_BINARY_URL_PATH), is(nullValue()));
+        }
+
+        if (coRespondentInvitationExists) {
+            assertThat(cosResponse.path(D8_CO_RESPONDENT_INVITATION_DOCUMENT_BINARY_URL_PATH), is(notNullValue()));
+            assertThat(cosResponse.path(D8_CO_RESPONDENT_INVITATION_DOCUMENT_URL_PATH), is(notNullValue()));
+            assertThat(cosResponse.path(D8_CO_RESPONDENT_INVITATION_DOCUMENT_TYPE_PATH), is(DOC_TYPE_CO_RESPONDENT_INVITATION));
+            assertThat(cosResponse.path(D8_CO_RESPONDENT_INVITATION_DOCUMENT_FILENAME_PATH),
+                is(String.format(D8_CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT, CASE_ID)));
+
+            assertThat(cosResponse.path(CO_RESPONDENT_LETTER_HOLDER_ID), is(notNullValue()));
+        } else {
+            assertThat(cosResponse.path(D8_CO_RESPONDENT_INVITATION_DOCUMENT_BINARY_URL_PATH), is(nullValue()));
         }
     }
 }
