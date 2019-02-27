@@ -10,7 +10,7 @@ output "idam_api_baseurl" {
   value = "${var.idam_api_baseurl}"
 }
 
-output "idam_s2s_url" {
+output "idam.s2s-auth.url" {
   value = "${local.idam_s2s_url}"
 }
 

@@ -25,7 +25,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 )
 public interface IdamClient {
 
-    @RequestMapping(method = RequestMethod.POST, value = "/pin")
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/pin",
+            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
     Pin createPin(@RequestBody PinRequest request,
                   @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation);
 
@@ -35,8 +39,7 @@ public interface IdamClient {
     @RequestMapping(
             method = RequestMethod.POST,
             value = "/oauth2/authorize",
-            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
     )
     AuthenticateUserResponse authenticateUser(
             @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation,

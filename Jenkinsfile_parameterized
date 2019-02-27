@@ -30,4 +30,9 @@ List<LinkedHashMap<String, Object>> secrets = [
 
 withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.COMPONENT, params.ENVIRONMENT, params.SUBSCRIPTION) {
         loadVaultSecrets(secrets)
+        setVaultName('div')
+
+        after('functionalTest:saat') {
+                steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        }
 }

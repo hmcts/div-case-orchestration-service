@@ -15,15 +15,16 @@ import java.util.UUID;
 @RunWith(SerenityRunner.class)
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
-    private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER@notifications.service.gov.uk";
-    private static final String CASE_WORKER_ONLY_USERNAME = "TEST_CASE_WORKER_ONLY@notifications.service.gov.uk";
-    private static final String CASE_WORKER_PASSWORD = "CASE_WORKER_PASSWORD";
+    private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER";
+    private static final String CASE_WORKER_ONLY_USERNAME = "TEST_CASE_WORKER_ONLY";
+    private static final String EMAIL_DOMAIN = "@notifications.service.gov.uk";
+    private static final String CASE_WORKER_PASSWORD = "genericPassword123";
     private static final String CITIZEN_ROLE = "citizen";
     private static final String CASEWORKER_DIVORCE_ROLE = "caseworker-divorce";
     private static final String CASEWORKER_DIVORCE_COURTADMIN_ROLE = "caseworker-divorce-courtadmin";
     private static final String CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE = "caseworker-divorce-courtadmin_beta";
     private static final String CASEWORKER_ROLE = "caseworker";
-    private static final String PASSWORD = "PassW0rd";
+    private static final String PASSWORD = "genericPassword123";
 
     private UserDetails caseWorkerUser;
     private UserDetails caseWorkerStrictUser;
@@ -44,9 +45,15 @@ public abstract class IntegrationTest {
     protected UserDetails createCaseWorkerUser() {
         synchronized (this) {
             if (caseWorkerUser == null) {
-                caseWorkerUser = getUserDetails(CASE_WORKER_USERNAME, CASE_WORKER_PASSWORD,
-                    CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_ROLE,
-                    CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE, CITIZEN_ROLE);
+                caseWorkerUser = getUserDetails(
+                        CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN,
+                        CASE_WORKER_PASSWORD,
+                        CASEWORKER_DIVORCE_ROLE,
+                        CASEWORKER_DIVORCE_COURTADMIN_ROLE,
+                        CASEWORKER_ROLE,
+                        CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE,
+                        CITIZEN_ROLE
+                );
             }
 
             return caseWorkerUser;
@@ -56,9 +63,14 @@ public abstract class IntegrationTest {
     protected UserDetails createOnlyCaseWorkerUser() {
         synchronized (this) {
             if (caseWorkerStrictUser == null) {
-                caseWorkerStrictUser = getUserDetails(CASE_WORKER_ONLY_USERNAME, CASE_WORKER_PASSWORD,
-                    CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_ROLE,
-                    CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE);
+                caseWorkerStrictUser = getUserDetails(
+                        CASE_WORKER_ONLY_USERNAME  + UUID.randomUUID() + EMAIL_DOMAIN,
+                        CASE_WORKER_PASSWORD,
+                        CASEWORKER_DIVORCE_ROLE,
+                        CASEWORKER_DIVORCE_COURTADMIN_ROLE,
+                        CASEWORKER_ROLE,
+                        CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
+                );
             }
 
             return caseWorkerStrictUser;
