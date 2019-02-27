@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import org.hamcrest.core.IsInstanceOf;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,7 +20,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.CASEWORKER_AUTH_TOKEN;
@@ -39,8 +41,12 @@ public class GetCaseByIdUTest {
     @InjectMocks
     private GetCaseWithId classUnderTest;
 
-    @Test(expected = TaskException.class)
-    public void givenNoCaseExists_whenGetCase_thenThrowException() throws TaskException {
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
+
+    @Test
+    public void givenNoCaseExists_whenGetCase_thenReturnThrowException() throws TaskException {
+
         final DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
@@ -48,6 +54,11 @@ public class GetCaseByIdUTest {
         Mockito.when(authUtil.getCaseworkerToken()).thenReturn(CASEWORKER_AUTH_TOKEN);
         Mockito.when(caseMaintenanceClient.retrievePetitionById(CASEWORKER_AUTH_TOKEN, TEST_CASE_ID))
             .thenReturn(null);
+        final String exceptionMessage = String.format("No case found with ID [%s]", TEST_CASE_ID);
+
+        thrown.expect(TaskException.class);
+        thrown.expectCause(IsInstanceOf.instanceOf(CaseNotFoundException.class));
+        thrown.expectMessage(exceptionMessage);
 
         classUnderTest.execute(context, null);
 
