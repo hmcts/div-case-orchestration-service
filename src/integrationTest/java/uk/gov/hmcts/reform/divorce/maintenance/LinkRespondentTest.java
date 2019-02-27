@@ -70,7 +70,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     @Test
-    public void givenLinkFails_whenLinkRespondent_thenReturnNotFound() {
+    public void givenPinIdNotMatching_whenLinkRespondent_thenReturnUnauthorized() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
         final PinResponse pinResponse =

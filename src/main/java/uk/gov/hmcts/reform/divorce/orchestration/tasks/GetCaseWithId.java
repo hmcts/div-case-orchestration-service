@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class GetCaseWithId implements Task<UserDetails> {
     private final CaseMaintenanceClient caseMaintenanceClient;
 
-    private AuthUtil authUtil;
+    private final AuthUtil authUtil;
 
     @Autowired
     public GetCaseWithId(CaseMaintenanceClient caseMaintenanceClient, AuthUtil authUtil) {
@@ -31,13 +31,16 @@ public class GetCaseWithId implements Task<UserDetails> {
         CaseDetails caseDetails;
 
         final String caseWorkerToken = authUtil.getCaseworkerToken();
+        final String caseId = String.valueOf(context.getTransientObject(CASE_ID_JSON_KEY));
         caseDetails = caseMaintenanceClient.retrievePetitionById(
             caseWorkerToken,
-            String.valueOf(context.getTransientObject(CASE_ID_JSON_KEY))
+            caseId
         );
 
         if (caseDetails == null) {
-            throw new TaskException(new CaseNotFoundException("No case found"));
+            throw new TaskException(
+                new CaseNotFoundException(String.format("No case found with ID [%s]", caseId))
+            );
         }
 
         context.setTransientObject(CCD_CASE_DATA, caseDetails.getCaseData());

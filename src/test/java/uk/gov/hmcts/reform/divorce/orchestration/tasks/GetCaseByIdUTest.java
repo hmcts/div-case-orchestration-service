@@ -39,9 +39,8 @@ public class GetCaseByIdUTest {
     @InjectMocks
     private GetCaseWithId classUnderTest;
 
-    @Test
-    public void givenNoCaseExists_whenGetCase_thenReturnThrowException() {
-
+    @Test(expected = TaskException.class)
+    public void givenNoCaseExists_whenGetCase_thenThrowException() throws TaskException {
         final DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
@@ -50,11 +49,7 @@ public class GetCaseByIdUTest {
         Mockito.when(caseMaintenanceClient.retrievePetitionById(CASEWORKER_AUTH_TOKEN, TEST_CASE_ID))
             .thenReturn(null);
 
-        try {
-            classUnderTest.execute(context, null);
-        } catch (TaskException taskException) {
-            assertTrue(taskException.getCause() instanceof CaseNotFoundException);
-        }
+        classUnderTest.execute(context, null);
 
         verify(caseMaintenanceClient).retrievePetitionById(CASEWORKER_AUTH_TOKEN, TEST_CASE_ID);
     }
