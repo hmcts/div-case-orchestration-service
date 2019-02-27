@@ -312,7 +312,7 @@ public class OrchestrationControllerTest {
     }
 
     @Test
-    public void givenLinkResponseIsNotNull_whenLinkRespondent_thenReturnUnAuthorised() throws WorkflowException {
+    public void givenLinkResponseIsNotNull_whenLinkRespondent_thenReturnOk() throws WorkflowException {
         final UserDetails expected = UserDetails.builder().build();
 
         when(caseOrchestrationService.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, RESPONDENT_PIN)).thenReturn(expected);
