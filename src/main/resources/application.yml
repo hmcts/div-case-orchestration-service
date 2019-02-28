@@ -86,11 +86,11 @@ courtAllocationConfigurationJson: "
                                       },
                                       {
                                         \"courtId\": \"southWest\",
-                                        \"percentageOfTotalCases\": 0.245
+                                        \"percentageOfTotalCases\": 0.24
                                       },
                                       {
                                         \"courtId\": \"northWest\",
-                                        \"percentageOfTotalCases\": 0.245
+                                        \"percentageOfTotalCases\": 0.24
                                       },
                                       {
                                         \"courtId\": \"westMidlands\",
@@ -98,7 +98,7 @@ courtAllocationConfigurationJson: "
                                       },
                                       {
                                         \"courtId\": \"serviceCentre\",
-                                        \"percentageOfTotalCases\": 0.51
+                                        \"percentageOfTotalCases\": 0.52
                                       }
                                     ],
                                     \"factSpecificCourtAllocation\": [
@@ -113,6 +113,15 @@ courtAllocationConfigurationJson: "
                                         },
                                         {
                                           \"fact\": \"separation-5-years\",
+                                          \"courts\": [
+                                            {
+                                              \"courtId\": \"serviceCentre\",
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 1
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          \"fact\": \"desertion\",
                                           \"courts\": [
                                             {
                                               \"courtId\": \"serviceCentre\",

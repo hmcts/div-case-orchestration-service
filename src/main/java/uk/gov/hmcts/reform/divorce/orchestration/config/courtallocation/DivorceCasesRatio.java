@@ -21,8 +21,8 @@ public class DivorceCasesRatio {
         divorceRatioPerFact.put(UNREASONABLE_BEHAVIOUR, new BigDecimal("0.30"));
         divorceRatioPerFact.put(SEPARATION_TWO_YEARS, new BigDecimal("0.37"));
         divorceRatioPerFact.put(SEPARATION_FIVE_YEARS, new BigDecimal("0.21"));
-        divorceRatioPerFact.put(DESERTION, new BigDecimal("0.11"));
-        divorceRatioPerFact.put(ADULTERY, new BigDecimal("0.01"));
+        divorceRatioPerFact.put(DESERTION, new BigDecimal("0.01"));
+        divorceRatioPerFact.put(ADULTERY, new BigDecimal("0.11"));
     }
 
     public Map<String, BigDecimal> getDivorceRatioPerFact() {
