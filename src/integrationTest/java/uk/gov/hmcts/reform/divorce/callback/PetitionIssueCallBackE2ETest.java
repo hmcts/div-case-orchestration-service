@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.Response;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -58,8 +57,6 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     }
 
     @Test
-    @Ignore(value = "Temporarily ignore since this test wont run in the cnp pipeline. "
-        + "The AAT config points to staging callback urls. Will reinstate this test after this PR has been merged.")
     public void givenServiceCentreCaseSubmittedWithCoRespondent_whenIssueEventFiredOnCCD_thenDocumentsAreGenerated() {
         final CaseDetails caseDetails = submitCaseAndFireIssueEvent(SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE);
 
