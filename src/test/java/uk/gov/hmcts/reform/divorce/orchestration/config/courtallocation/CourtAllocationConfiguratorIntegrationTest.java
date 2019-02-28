@@ -15,6 +15,16 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.OrderingComparison.comparesEqualTo;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum.EASTMIDLANDS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum.NORTHWEST;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum.SERVICE_CENTER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum.SOUTHWEST;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum.WESTMIDLANDS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.DESERTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_FIVE_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.UNREASONABLE_BEHAVIOUR;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -26,19 +36,25 @@ public class CourtAllocationConfiguratorIntegrationTest {
     @Test
     public void shouldSetUpConfigurationObjectWithEnvironmentVariableContents() {
         assertThat(courtAllocationConfiguration.getDivorceRatioPerFact(), allOf(
-            hasEntry(equalTo("unreasonable-behaviour"), comparesEqualTo(new BigDecimal("0.30"))),
-            hasEntry(equalTo("separation-2-years"), comparesEqualTo(new BigDecimal("0.37"))),
-            hasEntry(equalTo("separation-5-years"), comparesEqualTo(new BigDecimal("0.21"))),
-            hasEntry(equalTo("desertion"), comparesEqualTo(new BigDecimal("0.11"))),
-            hasEntry(equalTo("adultery"), comparesEqualTo(new BigDecimal("0.01")))
+            hasEntry(equalTo(UNREASONABLE_BEHAVIOUR), comparesEqualTo(new BigDecimal("0.30"))),
+            hasEntry(equalTo(SEPARATION_TWO_YEARS), comparesEqualTo(new BigDecimal("0.37"))),
+            hasEntry(equalTo(SEPARATION_FIVE_YEARS), comparesEqualTo(new BigDecimal("0.21"))),
+            hasEntry(equalTo(DESERTION), comparesEqualTo(new BigDecimal("0.01"))),
+            hasEntry(equalTo(ADULTERY), comparesEqualTo(new BigDecimal("0.11")))
         ));
         assertThat(courtAllocationConfiguration.getDesiredWorkloadPerCourt(), allOf(
-            hasEntry(equalTo("serviceCentre"), comparesEqualTo(new BigDecimal("0.34"))),
-            hasEntry(equalTo("eastMidlands"), comparesEqualTo(new BigDecimal("0.66")))
+            hasEntry(equalTo(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("0.52"))),
+            hasEntry(equalTo(SOUTHWEST.getId()), comparesEqualTo(new BigDecimal("0.24"))),
+            hasEntry(equalTo(NORTHWEST.getId()), comparesEqualTo(new BigDecimal("0.24"))),
+            hasEntry(equalTo(WESTMIDLANDS.getId()), comparesEqualTo(new BigDecimal("0"))),
+            hasEntry(equalTo(EASTMIDLANDS.getId()), comparesEqualTo(new BigDecimal("0")))
         ));
+
         assertThat(courtAllocationConfiguration.getSpecificCourtsAllocationPerFact(), allOf(
-            hasEntry(is("unreasonable-behaviour"), hasEntry(is("serviceCentre"), comparesEqualTo(BigDecimal.ONE))),
-            hasEntry(is("separation-2-years"), hasEntry(is("eastMidlands"), comparesEqualTo(BigDecimal.ONE)))
+            hasEntry(is(UNREASONABLE_BEHAVIOUR), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(BigDecimal.ONE))),
+            hasEntry(is(DESERTION), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(BigDecimal.ONE))),
+            hasEntry(is(SEPARATION_FIVE_YEARS), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(BigDecimal.ONE)))
+
         ));
     }
 
