@@ -29,7 +29,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -464,17 +466,31 @@ public class OrchestrationControllerTest {
 
 
     @Test
-    public void whenSubmitAos_thenProceedAsExpected() throws WorkflowException {
+    public void whenSubmitRespondentAos_thenProceedAsExpected() throws WorkflowException {
         final Map<String, Object> caseData = Collections.emptyMap();
 
-        when(caseOrchestrationService.submitAosCase(caseData, AUTH_TOKEN, TEST_CASE_ID)).thenReturn(caseData);
+        when(caseOrchestrationService.submitRespondentAosCase(caseData, AUTH_TOKEN, TEST_CASE_ID)).thenReturn(caseData);
 
-        ResponseEntity<Map<String, Object>> response = classUnderTest.submitAos(AUTH_TOKEN, TEST_CASE_ID, caseData);
+        ResponseEntity<Map<String, Object>> response = classUnderTest.submitRespondentAos(AUTH_TOKEN, TEST_CASE_ID, caseData);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(caseData, response.getBody());
 
-        verify(caseOrchestrationService).submitAosCase(caseData, AUTH_TOKEN, TEST_CASE_ID);
+        verify(caseOrchestrationService).submitRespondentAosCase(caseData, AUTH_TOKEN, TEST_CASE_ID);
+    }
+
+    @Test
+    public void whenSubmitCoRespondentAos_thenProceedAsExpected() throws WorkflowException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+
+        when(caseOrchestrationService.submitCoRespondentAosCase(caseData, AUTH_TOKEN)).thenReturn(caseData);
+
+        ResponseEntity<Map<String, Object>> response = classUnderTest.submitCoRespondentAos(AUTH_TOKEN, caseData);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(caseData));
+
+        verify(caseOrchestrationService).submitCoRespondentAosCase(caseData, AUTH_TOKEN);
     }
 
     @Test

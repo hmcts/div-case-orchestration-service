@@ -7,8 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToAosCaseData;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateExistingCollections;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitAosCase;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitRespondentAosCase;
 
 import java.util.Map;
 
@@ -16,25 +15,24 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
-public class SubmitAosCaseWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class SubmitRespondentAosCaseWorkflow extends DefaultWorkflow<Map<String, Object>> {
+
+    private final FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData;
+
+    private final SubmitRespondentAosCase submitRespondentAosCase;
 
     @Autowired
-    private PopulateExistingCollections populateExistingCollections;
+    public SubmitRespondentAosCaseWorkflow(final FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData,
+                                           final SubmitRespondentAosCase submitRespondentAosCase) {
+        this.formatDivorceSessionToAosCaseData = formatDivorceSessionToAosCaseData;
+        this.submitRespondentAosCase = submitRespondentAosCase;
+    }
 
-    @Autowired
-    private FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData;
-
-    @Autowired
-    private SubmitAosCase submitAosCase;
-
-    public Map<String, Object> run(Map<String, Object> payload,
-                                   String authToken,
-                                   String caseId) throws WorkflowException {
+    public Map<String, Object> run(Map<String, Object> payload, String authToken, String caseId) throws WorkflowException {
         return this.execute(
             new Task[] {
-                populateExistingCollections,
                 formatDivorceSessionToAosCaseData,
-                submitAosCase
+                submitRespondentAosCase
             },
             payload,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.CaseNotFoundException;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.ValidationException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
@@ -50,6 +51,10 @@ class GlobalExceptionHandler {
 
         if (taskException.getCause() instanceof CaseNotFoundException) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(taskException.getMessage());
+        }
+
+        if (taskException.getCause() instanceof ValidationException) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(taskException.getMessage());
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(taskException.getMessage());

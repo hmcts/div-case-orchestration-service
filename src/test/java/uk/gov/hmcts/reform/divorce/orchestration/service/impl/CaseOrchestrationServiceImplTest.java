@@ -34,8 +34,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmiss
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitAosCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
@@ -109,7 +110,10 @@ public class CaseOrchestrationServiceImplTest {
     private SolicitorCreateWorkflow solicitorCreateWorkflow;
 
     @Mock
-    private SubmitAosCaseWorkflow submitAosCaseWorkflow;
+    private SubmitRespondentAosCaseWorkflow submitRespondentAosCaseWorkflow;
+
+    @Mock
+    private SubmitCoRespondentAosWorkflow submitCoRespondentAosWorkflow;
 
     @Mock
     private DNSubmittedWorkflow dnSubmittedWorkflow;
@@ -501,11 +505,20 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void givenCaseData_whenSubmitAosCase_thenReturnPayload() throws Exception {
-        when(submitAosCaseWorkflow.run(requestPayload, AUTH_TOKEN, TEST_CASE_ID)).thenReturn(requestPayload);
+        when(submitRespondentAosCaseWorkflow.run(requestPayload, AUTH_TOKEN, TEST_CASE_ID)).thenReturn(requestPayload);
 
-        assertEquals(requestPayload, classUnderTest.submitAosCase(requestPayload, AUTH_TOKEN, TEST_CASE_ID));
+        assertEquals(requestPayload, classUnderTest.submitRespondentAosCase(requestPayload, AUTH_TOKEN, TEST_CASE_ID));
 
-        verify(submitAosCaseWorkflow).run(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
+        verify(submitRespondentAosCaseWorkflow).run(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
+    }
+
+    @Test
+    public void givenCaseData_whenSubmitCoRespondentAosCase_thenReturnPayload() throws Exception {
+        when(submitCoRespondentAosWorkflow.run(requestPayload, AUTH_TOKEN)).thenReturn(requestPayload);
+
+        assertEquals(requestPayload, classUnderTest.submitCoRespondentAosCase(requestPayload, AUTH_TOKEN));
+
+        verify(submitCoRespondentAosWorkflow).run(requestPayload, AUTH_TOKEN);
     }
 
     @Test

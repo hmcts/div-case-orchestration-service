@@ -23,8 +23,11 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
     @Autowired
     protected CcdClientSupport ccdClientSupport;
 
-    @Value("${case.orchestration.maintenance.submit-aos.context-path}")
-    private String submitAosContextPath;
+    @Value("${case.orchestration.maintenance.submit-respondent-aos.context-path}")
+    private String submitRespondentAosContextPath;
+
+    @Value("${case.orchestration.maintenance.submit-co-respondent-aos.context-path}")
+    private String submitCoRespondentAosContextPath;
 
     @SuppressWarnings("unchecked")
     @SafeVarargs
@@ -50,7 +53,7 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             eventId, createCaseWorkerUser());
     }
 
-    protected CaseDetails updateCaseWithCaseworkerStrict(String caseId, String fileName, String eventId) {
+    protected CaseDetails updateCaseForCaseWorkerOnly(String caseId, String fileName, String eventId) {
         return ccdClientSupport.update(caseId,
             fileName == null ? null : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class),
             eventId, createOnlyCaseWorkerUser());
@@ -63,19 +66,34 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             eventId, userDetails);
     }
 
-    public Response submitAosCase(String userToken, Long caseId, String requestBody) {
+    public Response submitRespondentAosCase(String userToken, Long caseId, String requestBody) {
+        final Map<String, Object> headers = populateHeaders(userToken);
+
+        return RestUtil.postToRestService(
+                serverUrl + submitRespondentAosContextPath + "/" + caseId,
+                headers,
+                requestBody
+        );
+    }
+
+    public Response submitCoRespondentAosCase(final String userToken, final String requestBody) {
+        final Map<String, Object> headers = populateHeaders(userToken);
+
+        return RestUtil.postToRestService(
+            serverUrl + submitCoRespondentAosContextPath,
+            headers,
+            requestBody
+        );
+    }
+
+    private Map<String, Object> populateHeaders(String userToken) {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 
         if (userToken != null) {
             headers.put(HttpHeaders.AUTHORIZATION, userToken);
         }
-
-        return RestUtil.postToRestService(
-                serverUrl + submitAosContextPath + "/" + caseId,
-                headers,
-                requestBody
-        );
+        return headers;
     }
 
 }

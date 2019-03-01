@@ -123,7 +123,7 @@ public class RetrieveAosCaseITest {
     }
 
     @Test
-    public void givenAllGoesWellProceedAsExpected_whenRetrieveAosCase_thenPropagateException() throws Exception {
+    public void givenAllGoesWellProceedAsExpected() throws Exception {
         stubRetrieveAosCaseFromCMS(CASE_DETAILS);
 
         stubFormatterServerEndpoint();

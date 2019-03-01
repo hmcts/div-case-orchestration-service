@@ -1,0 +1,18 @@
+{
+  "coRespondentAnswers": {
+    "contactInfo": {
+      "emailAddress": "co-respondent@divorce.co.uk",
+      "consentToReceivingEmails": "Yes",
+      "contactMethodIsDigital": "No",
+      "phoneNumber": "+4404839202839"
+    },
+    "confirmReadPetition": "No",
+    "statementOfTruth": "Yes",
+    "admitAdultery": "Yes",
+    "defendsDivorce": "Yes",
+    "costs": {
+      "agreeToCosts": "Yes",
+      "reason": "It's the right thing to do..."
+    }
+  }
+}
