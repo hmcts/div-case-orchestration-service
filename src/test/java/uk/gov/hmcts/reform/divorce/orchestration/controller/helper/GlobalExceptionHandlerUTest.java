@@ -6,11 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.CaseNotFoundException;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.ValidationException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -131,6 +134,20 @@ public class GlobalExceptionHandlerUTest {
 
         assertEquals(HttpStatus.NOT_FOUND.value(), actual.getStatusCodeValue());
         assertEquals(TEST_ERROR, actual.getBody());
+    }
+
+    @Test
+    public void givenTaskExceptionCausedByValidationException_whenHandleWorkFlowException_thenReturnBadRequest() {
+        final ValidationException validationException = new ValidationException(TEST_ERROR);
+
+        final TaskException taskException = new TaskException(TEST_ERROR, validationException);
+
+        final WorkflowException workflowException = new WorkflowException(TEST_ERROR, taskException);
+
+        ResponseEntity<Object> actual = classUnderTest.handleWorkFlowException(workflowException);
+
+        assertThat(actual.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(actual.getBody(), is(TEST_ERROR));
     }
 
 

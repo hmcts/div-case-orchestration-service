@@ -453,19 +453,34 @@ public class OrchestrationController {
 
     @PostMapping(path = "/submit-aos/{caseId}",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles AOS submission")
+    @ApiOperation(value = "Handles respondent AOS submission")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
             response = CaseResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<Map<String, Object>> submitAos(
+    public ResponseEntity<Map<String, Object>> submitRespondentAos(
         @RequestHeader(value = "Authorization") String authorizationToken,
         @PathVariable String caseId,
         @RequestBody @ApiParam("Complete Divorce Session / partial Aos data ") Map<String, Object> payload)
         throws WorkflowException {
 
         return ResponseEntity.ok(
-            orchestrationService.submitAosCase(payload, authorizationToken, caseId));
+            orchestrationService.submitRespondentAosCase(payload, authorizationToken, caseId));
+    }
+
+    @PostMapping(path = "/submit-co-respondent-aos",
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Handles Co-Respondent AOS submission")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
+            response = CaseResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<Map<String, Object>> submitCoRespondentAos(
+        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestBody @ApiParam("Co-respondent AOS data ") Map<String, Object> payload)
+        throws WorkflowException {
+
+        return ResponseEntity.ok(orchestrationService.submitCoRespondentAosCase(payload, authorizationToken));
     }
 
     @PostMapping(path = "/submit-dn/{caseId}",

@@ -20,8 +20,6 @@ public class FormatDivorceSessionToAosCaseData implements Task<Map<String, Objec
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> sessionData) {
-        return caseFormatterClient.transformToAosCaseFormat(
-            sessionData
-        );
+        return caseFormatterClient.transformToAosCaseFormat(sessionData);
     }
 }

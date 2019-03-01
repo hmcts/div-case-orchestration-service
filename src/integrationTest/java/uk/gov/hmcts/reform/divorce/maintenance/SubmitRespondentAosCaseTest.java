@@ -11,7 +11,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
-public class SubmitAosCaseTest extends CcdSubmissionSupport {
+public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-aos/";
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
     private static final String ID = "id";
@@ -33,7 +33,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
 
     @Test
     public void givenUserTokenIsNull_whenSubmitAos_thenReturnBadRequest() throws Exception {
-        Response cosResponse = submitAosCase(
+        Response cosResponse = submitRespondentAosCase(
                 null,
                 1L,
                 loadJson(PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON));
@@ -45,7 +45,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
     public void givenNoCaseData_whenSubmitAos_thenReturnBadRequest() {
         final UserDetails userDetails = createCitizenUser();
 
-        Response cosResponse = submitAosCase(userDetails.getAuthToken(),
+        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(),
                 1L,
                 null);
 
@@ -63,7 +63,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
                 TEST_AOS_STARTED_EVENT_ID,
                 userDetails);
 
-        Response cosResponse = submitAosCase(userDetails.getAuthToken(), caseDetails.getId(),
+        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
                 loadJson(PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON));
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
@@ -82,7 +82,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
                 TEST_AOS_STARTED_EVENT_ID,
                 userDetails);
 
-        Response cosResponse = submitAosCase(userDetails.getAuthToken(), caseDetails.getId(),
+        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
                 loadJson(PAYLOAD_CONTEXT_PATH + AOS_DEFEND_NO_CONSENT_JSON));
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
@@ -101,7 +101,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
                 TEST_AOS_STARTED_EVENT_ID,
                 userDetails);
 
-        Response cosResponse = submitAosCase(userDetails.getAuthToken(), caseDetails.getId(),
+        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
                 loadJson(PAYLOAD_CONTEXT_PATH + AOS_NO_DEFEND_CONSENT_JSON));
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
@@ -120,7 +120,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
                 TEST_AOS_STARTED_EVENT_ID,
                 userDetails);
 
-        Response cosResponse = submitAosCase(userDetails.getAuthToken(), caseDetails.getId(),
+        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
                 loadJson(PAYLOAD_CONTEXT_PATH + AOS_NO_DEFEND_NO_CONSENT_JSON));
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
@@ -139,7 +139,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
                 TEST_AOS_STARTED_EVENT_ID,
                 userDetails);
 
-        Response cosResponse = submitAosCase(userDetails.getAuthToken(), caseDetails.getId(),
+        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
                 loadJson(PAYLOAD_CONTEXT_PATH + AOS_NO_DEFEND_NO_CONSENT_JSON));
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
@@ -158,7 +158,7 @@ public class SubmitAosCaseTest extends CcdSubmissionSupport {
                 TEST_AOS_STARTED_EVENT_ID,
                 userDetails);
 
-        Response cosResponse = submitAosCase(userDetails.getAuthToken(), caseDetails.getId(),
+        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
                 loadJson(PAYLOAD_CONTEXT_PATH + AOS_NO_DEFEND_NO_CONSENT_JSON));
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
