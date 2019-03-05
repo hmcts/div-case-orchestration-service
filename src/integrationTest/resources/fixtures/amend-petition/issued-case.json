@@ -1,101 +1,135 @@
 {
   "createdDate":"2018-06-07",
   "D8caseReference": "LV17D80100",
-  "D8ScreenHasMarriageBroken":"YES",
-  "D8ScreenHasRespondentAddress":"YES",
-  "D8ScreenHasMarriageCert":"YES",
-  "D8ScreenHasPrinter":"YES",
-  "D8DivorceWho":"husband",
-  "D8MarriageIsSameSexCouple":"NO",
-  "D8MarriageDate":"2001-02-02",
-  "D8PetitionerNameDifferentToMarriageCert":"YES",
-  "D8PetitionerEmail":"simulate-delivered@notifications.service.gov.uk",
-  "D8PetitionerPhoneNumber":"01234567890",
-  "D8PetitionerFirstName":"John",
-  "D8PetitionerLastName":"Smith",
-  "D8DerivedPetitionerCurrentFullName":"John Smith",
-  "D8PetitionerNameChangedHow":[
-    "marriageCertificate"
-  ],
-  "D8PetitionerContactDetailsConfidential":"share",
-  "D8PetitionerHomeAddress":{
-    "PostCode":"SW9 9PE"
+  "D8DerivedRespondentHomeAddress": "82 Station Road\nLondon\nN2 2LB",
+  "D8DerivedPetitionerHomeAddress": "82 Landor Road\nLondon\nSW9 9PE",
+  "D8RespondentHomeAddress": {
+    "County": null,
+    "Country": null,
+    "PostCode": "N2 2LB",
+    "PostTown": null,
+    "AddressLine1": null,
+    "AddressLine2": null,
+    "AddressLine3": null
   },
-  "D8DerivedPetitionerHomeAddress":"82 Landor Road\nLondon\nSW9 9PE",
-  "D8PetitionerCorrespondenceAddress":{
-    "PostCode":"AB24 232"
+  "D8ScreenHasRespondentAddress": "YES",
+  "D8DivorceCostsClaim": "NO",
+  "D8ScreenHasMarriageCert": "YES",
+  "D8PetitionerHomeAddress": {
+    "County": null,
+    "Country": null,
+    "PostCode": "SW9 9PE",
+    "PostTown": null,
+    "AddressLine1": null,
+    "AddressLine2": null,
+    "AddressLine3": null
   },
-  "D8DerivedPetitionerCorrespondenceAddr":"84 Landor Road\nLondon\nSW9 9PE",
-  "D8PetitionerCorrespondenceUseHomeAddress":"NO",
-  "D8RespondentFirstName":"Jane",
-  "D8RespondentLastName":"Jamed",
-  "D8DerivedRespondentCurrentName":"Jane Jamed",
-  "D8DerivedRespondentSolicitorDetails":"Justin\nCase\n90 Landor Road\nLondon\nSW9 9PE",
-  "D8RespondentHomeAddress":{
-    "PostCode":"SS SSS"
+  "D8ScreenHasMarriageBroken": "YES",
+  "D8InferredRespondentGender": "female",
+  "D8ReasonForDivorceEnableAdultery": "YES",
+  "D8ReasonForDivorceShowAdultery": "YES",
+  "D8DerivedStatementOfCase": "A hotel\nHappened while I was in hospital",
+  "D8LivingArrangementsLiveTogether": "NO",
+  "D8ReasonForDivorceHasMarriage": "YES",
+  "D8ReasonForDivorceAdulteryWishToName": "NO",
+  "D8JurisdictionConfidentLegal": "YES",
+  "D8RespondentCorrespondenceUseHomeAddress": "Yes",
+  "D8Connections": {
+    "A": "The Petitioner and the Respondent are habitually resident in England and Wales",
+    "B": null,
+    "C": "The Respondent is habitually resident in England and Wales",
+    "D": null,
+    "E": null,
+    "F": null,
+    "G": null
   },
-  "D8DerivedRespondentHomeAddress":"88 Landor Road\nLondon\nSW9 9PE",
-  "D8RespondentCorrespondenceAddress":{
-    "PostCode":"SW9 9PE"
+  "D8PetitionerCorrespondenceAddress": {
+    "County": null,
+    "Country": null,
+    "PostCode": "SW9 9PE",
+    "PostTown": null,
+    "AddressLine1": null,
+    "AddressLine2": null,
+    "AddressLine3": null
   },
-  "D8DerivedRespondentCorrespondenceAddr":"82 Landor Road\nLondon\nSW9 9PE",
-  "D8RespondentCorrespondenceUseHomeAddress":"Solicitor",
-  "D8RespondentLivesAtLastAddress":"NO",
-  "D8LivingArrangementsLastLivedTogether":"NO",
-  "D8LivingArrangementsLiveTogether":"NO",
-  "D8LegalProceedings":"YES",
-  "D8LegalProceedingsRelated":[
-    "children"
-  ],
-  "D8LegalProceedingsDetails":"The legal proceeding details",
-  "D8ReasonForDivorce":"adultery",
-  "D8DerivedStatementOfCase":"My wife is having an affair this week.",
-  "D8ReasonForDivorceBehaviourDetails":"My wife is having an affair this week.",
-  "D8ReasonForDivorceAdulteryIsNamed":"NO",
-  "D8FinancialOrder":"YES",
-  "D8FinancialOrderFor":[
-    "petitioner",
-    "children"
-  ],
-  "D8HelpWithFeesNeedHelp":"YES",
-  "D8HelpWithFeesAppliedForFees":"YES",
-  "D8HelpWithFeesReferenceNumber":"HWF-123-456",
-  "D8DivorceCostsClaim":"YES",
-  "D8DivorceClaimFrom":[
-    "respondent"
-  ],
-  "D8JurisdictionConfidentLegal":"YES",
-  "D8JurisdictionConnection":[
+  "D8RespondentLastName": "Smith",
+  "D8PetitionerNameDifferentToMarriageCert": "NO",
+  "D8JurisdictionConnection": [
     "A",
     "C"
   ],
-  "D8JurisdictionPetitionerResidence":"YES",
-  "D8JurisdictionRespondentResidence":"YES",
-  "D8DivorceUnit":"eastMidlands",
-  "D8ReasonForDivorceShowAdultery":"YES",
-  "D8ReasonForDivorceShowUnreasonableBehavi":"YES",
-  "D8ReasonForDivorceShowTwoYearsSeparation":"YES",
-  "D8ReasonForDivorceShowDesertion":"YES",
-  "D8ReasonForDivorceLimitReasons":"NO",
-  "D8ReasonForDivorceEnableAdultery":"YES",
-  "D8ClaimsCostsAppliedForFees":"YES",
-  "D8StatementOfTruth":"YES",
-  "D8ReasonForDivorceClaimingAdultery":"YES",
-  "D8MarriageCanDivorce":"YES",
-  "D8MarriagePetitionerName":"John Doe",
-  "D8MarriageRespondentName":"Jenny Benny",
-  "D8DerivedRespondentSolicitorAddr":"90 Landor Road\nLondon\nSW9 9PE",
-  "D8DerivedLivingArrangementsLastLivedAddr":"Flat A-B\n86 Landor Road\nLondon\nSW9 9PE",
-  "D8Connections":{
-    "A":"The Petitioner and the Respondent are habitually resident in England and Wales",
-    "C":"The Respondent is habitually resident in England and Wales"
+  "D8PetitionerLastName": "Smith",
+  "D8PetitionerPhoneNumber": "12345678980",
+  "D8ReasonForDivorceShowTwoYearsSeparation": "YES",
+  "D8StatementOfTruth": "YES",
+  "D8PetitionerCorrespondenceUseHomeAddress": "YES",
+  "D8DerivedRespondentCurrentName": "Jane Smith",
+  "D8ReasonForDivorceLimitReasons": "NO",
+  "D8PetitionerEmail": "simulate-delivered@notifications.service.gov.uk",
+  "D8PetitionerConsent": "YES",
+  "D8DivorceUnit": "southWest",
+  "D8ReasonForDivorceShowDesertion": "YES",
+  "D8DerivedRespondentCorrespondenceAddr": "82 Station Road\nLondon\nN2 2LB",
+  "D8MarriagePetitionerName": "John Smith",
+  "D8ReasonForDivorceAdulteryWhenDetails": "The applicant does not know when the adultery took place",
+  "D8Cohort": "onlineSubmissionPrivateBeta",
+  "D8MarriageIsSameSexCouple": "NO",
+  "D8FinancialOrder": "NO",
+  "D8ReasonForDivorceAdulteryDetails": "Happened while I was in hospital",
+  "D8LivingArrangementsLastLivedTogether": "NEVER",
+  "D8ReasonForDivorceShowFiveYearsSeparatio": "YES",
+  "D8MarriageDate": "2001-01-01",
+  "D8HelpWithFeesNeedHelp": "NO",
+  "D8JurisdictionRespondentResidence": "YES",
+  "D8DivorceWho": "wife",
+  "D8MarriageCanDivorce": "YES",
+  "D8RespondentFirstName": "Jane",
+  "D8ReasonForDivorceShowUnreasonableBehavi": "YES",
+  "D8DocumentsUploaded": [
+    {
+      "id": "ef8bd8a0-027d-4b19-bcad-7827dc807fce",
+      "value": {
+        "DocumentLink": {
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/99acb8c6-d263-4415-bc22-8b385dfd7501",
+          "document_filename": "evolution.jpg",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/99acb8c6-d263-4415-bc22-8b385dfd7501/binary"
+        },
+        "DocumentType": "other",
+        "DocumentComment": "",
+        "DocumentFileName": "evolution.jpg",
+        "DocumentDateAdded": "2019-03-04",
+        "DocumentEmailContent": ""
+      }
+    }
+  ],
+  "D8DerivedPetitionerCorrespondenceAddr": "82 Landor Road\nLondon\nSW9 9PE",
+  "D8JurisdictionPetitionerResidence": "YES",
+  "D8MarriedInUk": "YES",
+  "D8ReasonForDivorceAdulteryKnowWhen": "NO",
+  "D8ReasonForDivorceAdulteryKnowWhere": "YES",
+  "D8PetitionerFirstName": "John",
+  "D8MarriageRespondentName": "Jane Smith",
+  "D8PetitionerContactDetailsConfidential": "share",
+  "D8ReasonForDivorceAdulteryWhereDetails": "A hotel",
+  "D8RespondentKnowsHomeAddress": "YES",
+  "D8LegalProceedings": "NO",
+  "D8JurisdictionPath": [
+    "JurisdictionHabitualResidence",
+    "JurisdictionInterstitial"
+  ],
+  "D8RespondentCorrespondenceAddress": {
+    "County": null,
+    "Country": null,
+    "PostCode": "SW9 9PE",
+    "PostTown": null,
+    "AddressLine1": null,
+    "AddressLine2": null,
+    "AddressLine3": null
   },
-  "D8ReasonForDivorceHasMarriage":"YES",
-  "D8ReasonForDivorceShowFiveYearsSeparatio":"YES",
-  "D8ReasonForDivorceClaiming5YearSeparatio":"NO",
-  "D8Cohort":"onlineSubmissionPrivateBeta",
-  "D8InferredPetitionerGender":"female",
-  "D8InferredRespondentGender":"male",
+  "D8ReasonForDivorce": "adultery",
+  "D8DerivedPetitionerCurrentFullName": "John Smith",
+  "RespondentContactDetailsConfidential": "share",
+  "D8InferredPetitionerGender": "male",
   "ReceivedAOSfromRespDate": "2018-10-22",
   "ReceivedAOSfromResp": "YES"
 }
