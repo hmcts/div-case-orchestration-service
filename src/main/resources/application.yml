@@ -64,6 +64,8 @@ uk:
         key: dummy
       email:
         templates: "{
+                      AOS_RECEIVED_NO_ADMIT_ADULTERY: '015fb73a-3be2-49d8-8ed8-a4078025dae3',
+                      AOS_RECEIVED_NO_CONSENT_2_YEARS: '845d0114-0f74-43a4-b11c-8ebeceb01c5b',
                       APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c',
                       DN_SUBMISSION: 'edf3bce9-f63a-4be0-93a9-d0c80dff7983',
                       GENERIC_UPDATE: '6ee6ec29-5e88-4516-99cb-2edc30256575',

@@ -49,7 +49,29 @@ public class EmailService {
                                                                             Map<String, String> templateVars) {
         String templateName = EmailTemplateNames.GENERIC_UPDATE.name();
         EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
-        return sendEmailAndReturnErrorsInResponse(emailToSend, "generic update notification");
+        return sendEmailAndReturnErrorsInResponse(
+                emailToSend,
+                "generic update notification");
+    }
+
+    public Map<String, Object> sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(
+            String destinationAddress,
+            Map<String, String> templateVars) {
+        String templateName = EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name();
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+        return sendEmailAndReturnErrorsInResponse(
+                emailToSend,
+                "resp does not admit adultery update notification");
+    }
+
+    public Map<String, Object> sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(
+            String destinationAddress,
+            Map<String, String> templateVars) {
+        String templateName = EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name();
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+        return sendEmailAndReturnErrorsInResponse(
+                emailToSend,
+                "resp does not consent to 2 year separation update notification");
     }
 
     public void sendEmail(EmailTemplateNames emailTemplate,
