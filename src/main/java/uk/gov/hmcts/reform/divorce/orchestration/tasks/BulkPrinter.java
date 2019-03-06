@@ -14,13 +14,14 @@ import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Arrays.asList;
 import static java.util.Base64.getEncoder;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
 
@@ -29,16 +30,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class BulkPrinter implements Task<Map<String, Object>> {
 
     private static final String XEROX_TYPE_PARAMETER = "DIV001";
-
     private static final String DOCUMENTS_GENERATED = "DocumentsGenerated";
-
-    private static final String LETTER_TYPE = "letterType";
-
-    private static final String ADDITIONAL_DATA_LETTER_TYPE_VALUE = "first-contact-pack";
-
-    private static final String ADDITIONAL_DATA_CASE_IDENTIFIER_KEY = "caseIdentifier";
-
-    private static final String ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
+    private static final String LETTER_TYPE_KEY = "letterType";
+    private static final String CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
+    private static final String CASE_IDENTIFIER_KEY = "caseIdentifier";
+    private static final String LETTER_TYPE_RESPONDENT_PACK = "respondent-aos-pack";
+    private static final String LETTER_TYPE_CO_RESPONDENT_PACK = "co-respondent-aos-pack";
 
     private final SendLetterApi sendLetterApi;
 
@@ -50,8 +47,7 @@ public class BulkPrinter implements Task<Map<String, Object>> {
     private String bulkPrintFeatureToggleName;
 
     @Autowired
-    public BulkPrinter(AuthTokenGenerator authTokenGenerator , SendLetterApi sendLetterApi,
-                       FeatureToggleServiceClient featureToggleServiceClient) {
+    public BulkPrinter(AuthTokenGenerator authTokenGenerator, SendLetterApi sendLetterApi, FeatureToggleServiceClient featureToggleServiceClient) {
         this.authTokenGenerator = authTokenGenerator;
         this.sendLetterApi = sendLetterApi;
         this.featureToggleServiceClient = featureToggleServiceClient;
@@ -70,7 +66,18 @@ public class BulkPrinter implements Task<Map<String, Object>> {
                 .getBytes());
             String aosLetter = getEncoder().encodeToString(generatedDocumentInfoList.get(DOCUMENT_TYPE_RESPONDENT_INVITATION)
                 .getBytes());
-            sendToBulkPrint(context, caseDetails, miniPetition, aosLetter);
+
+            // one time generation of auth token.
+            final String authToken = authTokenGenerator.generate();
+
+            sendRespondentPack(context, authToken, caseDetails, miniPetition, aosLetter);
+
+            final GeneratedDocumentInfo coRespondentLetter = generatedDocumentInfoList.get(DOCUMENT_TYPE_CO_RESPONDENT_INVITATION);
+            if (coRespondentLetter != null) {
+                // Co-respondent letter only exists if there is a named co-respondent in an CTSC adultery case.
+                sendCoRespondentPack(context, authToken, caseDetails, getEncoder().encodeToString(coRespondentLetter.getBytes()), miniPetition);
+            }
+
         } else {
             log.info(" Bulk print feature is toggled-off from feature toggle service");
         }
@@ -80,30 +87,50 @@ public class BulkPrinter implements Task<Map<String, Object>> {
     private boolean isBulkPrintToggleEnabled() {
         return
             Optional.ofNullable(featureToggleServiceClient.getToggle(bulkPrintFeatureToggleName).getEnable())
-            .map(Boolean::valueOf).orElse(false);
+                .map(Boolean::valueOf).orElse(false);
     }
 
-    private void sendToBulkPrint(TaskContext context, CaseDetails caseDetails, String miniPetition, String aosLetter) {
+    private void sendRespondentPack(final TaskContext context, final String authToken, final CaseDetails caseDetails, final String miniPetition,
+                                    final String aosLetter) {
         try {
+            log.info("Sending respondent pack for case {}", caseDetails.getCaseId());
+            SendLetterResponse sendLetterResponse = sendLetterApi.sendLetter(authToken,
+                new LetterWithPdfsRequest(asList(aosLetter, miniPetition), XEROX_TYPE_PARAMETER, getAdditionalData(caseDetails,
+                    LETTER_TYPE_RESPONDENT_PACK)));
+            // The order of aosLetter and miniPetition arguments is important here.
+            // Sending the aosLetter first ensures it is the first piece of paper in the envelope so that the address label is displayed.
 
-            SendLetterResponse sendLetterResponse = sendLetterApi.sendLetter(authTokenGenerator.generate(),
-                new LetterWithPdfsRequest(Arrays.asList(aosLetter, miniPetition), XEROX_TYPE_PARAMETER,
-                    wrapInMap(caseDetails)));
-            log.info("Letter service produced the following letter Id {} for a case {}",
-                    sendLetterResponse.letterId, caseDetails.getCaseId());
+            log.info("Letter service produced the following letter Id {} for case {}", sendLetterResponse.letterId, caseDetails.getCaseId());
         } catch (Exception e) {
             context.setTaskFailed(true);
-            log.error(e.getMessage());
-            context.setTransientObject(this.getClass().getName() + "_Error", "Bulk print failed");
+            log.error("Respondent pack bulk print failed for case {}", caseDetails.getCaseId(), e);
+            context.setTransientObject(this.getClass().getName() + "_Error", "Bulk print failed for respondent pack");
         }
     }
 
-    private static Map<String, Object> wrapInMap(CaseDetails caseDetails) {
-        Map<String, Object> additionalData = new HashMap<>();
-        additionalData.put(LETTER_TYPE, ADDITIONAL_DATA_LETTER_TYPE_VALUE);
-        additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, caseDetails.getCaseId());
-        additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, caseDetails.getCaseId());
-        return additionalData;
+    private void sendCoRespondentPack(final TaskContext context, final String authToken, final CaseDetails caseDetails,
+                                      final String coRespondentLetter, final String miniPetition) {
+        try {
+            log.info("Sending co-respondent pack for case {}", caseDetails.getCaseId());
+            SendLetterResponse sendLetterResponse = sendLetterApi.sendLetter(authToken,
+                new LetterWithPdfsRequest(asList(coRespondentLetter, miniPetition), XEROX_TYPE_PARAMETER, getAdditionalData(caseDetails,
+                    LETTER_TYPE_CO_RESPONDENT_PACK)));
+            // The order of coRespondentLetter and miniPetition arguments is important here.
+            // Sending the coRespondentLetter first ensures it is the first piece of paper in the envelope so that the address label is displayed.
+
+            log.info("Letter service produced the following letter Id {} for case {}", sendLetterResponse.letterId, caseDetails.getCaseId());
+        } catch (final Exception e) {
+            context.setTaskFailed(true);
+            log.error(String.format("Co-respondent pack bulk print failed for case [%s]", caseDetails.getCaseId()), e);
+            context.setTransientObject(this.getClass().getName() + "_Error", "Bulk print failed for co-respondent pack");
+        }
     }
 
+    private static Map<String, Object> getAdditionalData(final CaseDetails caseDetails, final String letterType) {
+        Map<String, Object> additionalData = new HashMap<>();
+        additionalData.put(LETTER_TYPE_KEY, letterType);
+        additionalData.put(CASE_IDENTIFIER_KEY, caseDetails.getCaseId());
+        additionalData.put(CASE_REFERENCE_NUMBER_KEY, caseDetails.getCaseId());
+        return additionalData;
+    }
 }
