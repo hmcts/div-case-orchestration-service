@@ -15,7 +15,7 @@ data:
   REFORM_SERVICE_NAME : "cos"
   IDAM_STRATEGIC_ENABLED : "false"
   UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS : "{SAVE_DRAFT: {divorceUrl: 'https://div-pfe-aat.service.core-compute-aat.internal'}}"
-  DOCUMENT_GENERATOR_SERVICE_API_BASEURL : "http://div-dgs-aat.service.core-compute-aat.internal"
+  DOCUMENT_GENERATOR_SERVICE_API_BASEURL : "http://div-dgs-pr-107.service.core-compute-preview.internal/"
   FEES_AND_PAYMENTS_SERVICE_API_BASEURL : "http://div-fps-aat.service.core-compute-aat.internal"
   IDAM_API_URL : "https://preprod-idamapi.reform.hmcts.net:3511"
   REFORM_TEAM : "div"
