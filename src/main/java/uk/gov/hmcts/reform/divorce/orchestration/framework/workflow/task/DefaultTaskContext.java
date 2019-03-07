@@ -8,29 +8,28 @@ import java.util.Map;
 @Data
 public class DefaultTaskContext implements TaskContext {
 
-    private boolean status;
+    private boolean taskFailed;
 
     private Map<String, Object> transientObjects;
 
     public DefaultTaskContext() {
-        this.status = false;
+        this.taskFailed = false;
         transientObjects = new HashMap<>();
     }
 
     public DefaultTaskContext(DefaultTaskContext context) {
-        this.status = context.getStatus();
+        this.taskFailed = context.hasTaskFailed();
         this.transientObjects = new HashMap<>(context.getTransientObjects());
     }
 
-
     @Override
     public void setTaskFailed(boolean status) {
-        this.status = status;
+        this.taskFailed = status;
     }
 
     @Override
-    public boolean getStatus() {
-        return status;
+    public boolean hasTaskFailed() {
+        return taskFailed;
     }
 
     @Override
