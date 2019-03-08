@@ -61,7 +61,7 @@ public class OrchestrationController {
 
     @PostMapping(path = "/petition-issued",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles Issue callback from CCD")
+    @ApiOperation(value = "Handles Issue event callback from CCD")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is "
                     + "attached to the case",
@@ -74,7 +74,7 @@ public class OrchestrationController {
         @RequestParam(value = GENERATE_AOS_INVITATION, required = false)
         @ApiParam(GENERATE_AOS_INVITATION) boolean generateAosInvitation,
         @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
-        Map<String, Object> response = orchestrationService.ccdCallbackHandler(caseDetailsRequest, authorizationToken,
+        Map<String, Object> response = orchestrationService.handleIssueEventCallback(caseDetailsRequest, authorizationToken,
             generateAosInvitation);
 
         if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
