@@ -165,7 +165,7 @@ public class CaseOrchestrationServiceImplTest {
         when(issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, true)).thenReturn(expectedPayload);
 
         //when
-        Map<String, Object> actual = classUnderTest.ccdCallbackHandler(createEventRequest, AUTH_TOKEN, true);
+        Map<String, Object> actual = classUnderTest.handleIssueEventCallback(createEventRequest, AUTH_TOKEN, true);
 
         //then
         assertEquals(expectedPayload, actual);
@@ -179,7 +179,7 @@ public class CaseOrchestrationServiceImplTest {
         when(issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, false)).thenReturn(expectedPayload);
 
         //when
-        Map<String, Object> actual = classUnderTest.ccdCallbackHandler(createEventRequest, AUTH_TOKEN, false);
+        Map<String, Object> actual = classUnderTest.handleIssueEventCallback(createEventRequest, AUTH_TOKEN, false);
 
         //then
         assertEquals(expectedPayload, actual);

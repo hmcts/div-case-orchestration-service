@@ -11,8 +11,8 @@ import java.util.Map;
 
 public interface CaseOrchestrationService {
 
-    Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest, String authToken,
-                                           boolean generateAosInvitation) throws WorkflowException;
+    Map<String, Object> handleIssueEventCallback(CreateEvent caseDetailsRequest, String authToken,
+                                                 boolean generateAosInvitation) throws WorkflowException;
 
     Map<String, Object> ccdCallbackBulkPrintHandler(CreateEvent caseDetailsRequest, String authToken)
         throws WorkflowException;

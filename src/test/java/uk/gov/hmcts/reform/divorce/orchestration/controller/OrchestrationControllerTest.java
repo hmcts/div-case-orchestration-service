@@ -68,7 +68,7 @@ public class OrchestrationControllerTest {
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder().data(Collections.emptyMap()).build();
 
-        when(caseOrchestrationService.ccdCallbackHandler(createEvent, AUTH_TOKEN, true))
+        when(caseOrchestrationService.handleIssueEventCallback(createEvent, AUTH_TOKEN, true))
             .thenReturn(Collections.emptyMap());
 
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.petitionIssuedCallback(AUTH_TOKEN,
@@ -131,7 +131,7 @@ public class OrchestrationControllerTest {
             .errors(expectedError)
             .build();
 
-        when(caseOrchestrationService.ccdCallbackHandler(createEvent, AUTH_TOKEN, false))
+        when(caseOrchestrationService.handleIssueEventCallback(createEvent, AUTH_TOKEN, false))
             .thenReturn(caseData);
 
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.petitionIssuedCallback(AUTH_TOKEN,
