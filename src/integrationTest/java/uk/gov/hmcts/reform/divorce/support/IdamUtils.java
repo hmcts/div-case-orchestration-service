@@ -55,11 +55,15 @@ public class IdamUtils {
         RegisterUserRequest registerUserRequest =
             RegisterUserRequest.builder()
                 .email(username)
-                .forename("test")
-                .surname("test")
+                .forename("Test")
+                .surname("User")
                 .password(password)
                 .roles(rolesList.toArray(rolesArray))
-                .userGroup(UserGroup.builder().code("caseworker").build())
+                .userGroup(UserGroup.builder().code(
+                        rolesList.get(0).getCode().equalsIgnoreCase("citizen")
+                            ? "divorce-private-beta"
+                            : "caseworker"
+                        ).build())
                 .build();
 
         SerenityRest.given()

@@ -51,8 +51,7 @@ public abstract class IntegrationTest {
                         CASEWORKER_DIVORCE_ROLE,
                         CASEWORKER_DIVORCE_COURTADMIN_ROLE,
                         CASEWORKER_ROLE,
-                        CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE,
-                        CITIZEN_ROLE
+                        CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
                 );
             }
 
@@ -98,12 +97,12 @@ public abstract class IntegrationTest {
             final String userId = idamTestSupportUtil.getUserId(authToken);
 
             return UserDetails.builder()
-                .username(username)
-                .emailAddress(username)
-                .password(password)
-                .authToken(authToken)
-                .id(userId)
-                .build();
+                    .username(username)
+                    .emailAddress(username)
+                    .password(password)
+                    .authToken(authToken)
+                    .id(userId)
+                    .build();
         }
     }
 }

@@ -6,6 +6,10 @@ output "vaultUri" {
   value = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
+output "test_environment" {
+  value = "${local.local_env}"
+}
+
 output "idam_api_baseurl" {
   value = "${var.idam_api_baseurl}"
 }
