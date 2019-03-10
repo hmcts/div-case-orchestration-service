@@ -34,11 +34,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPEC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_DEFENDS_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DEFENDS_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DUE_DATE_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
@@ -66,7 +66,7 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
     @Test
     public void givenUndefendedCoResp_whenSendEmail_thenSendUndefendedTemplate() throws WorkflowException {
 
-        CreateEvent caseEvent = createSubmittedCoEvent(ImmutableMap.of(CO_RESP_DEFENDS_DIVORCE, "No"));
+        CreateEvent caseEvent = createSubmittedCoEvent(ImmutableMap.of(CO_RESPONDENT_DEFENDS_DIVORCE, "No"));
 
         classToTest.run(caseEvent);
 
@@ -85,8 +85,8 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
     public void givenDefendedCoResp_whenSendEmail_thenSendUndefendedTemplate() throws Exception {
 
         CreateEvent caseEvent = createSubmittedCoEvent(ImmutableMap.of(
-            CO_RESP_DEFENDS_DIVORCE, "Yes",
-            DUE_DATE_CO_RESP, TEST_EXPECTED_DUE_DATE));
+            CO_RESPONDENT_DEFENDS_DIVORCE, "Yes",
+            CO_RESPONDENT_DUE_DATE, TEST_EXPECTED_DUE_DATE));
         Court court = new Court();
         court.setDivorceCentreName(TEST_COURT);
         when(taskCommons.getCourt(TEST_COURT)).thenReturn(court);

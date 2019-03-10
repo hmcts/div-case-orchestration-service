@@ -38,11 +38,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_DEFENDS_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DEFENDS_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DUE_DATE_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
@@ -97,7 +97,7 @@ public class CoRespondentSubmittedITest {
             D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, CO_RESP_FIRST_NAME,
             D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, CO_RESP_LAST_NAME,
             CO_RESP_EMAIL_ADDRESS, TEST_EMAIL,
-            CO_RESP_DEFENDS_DIVORCE, NO_VALUE
+            CO_RESPONDENT_DEFENDS_DIVORCE, NO_VALUE
         );
         CreateEvent caseEvent = CreateEvent.builder().eventId(CASE_ID)
                 .caseDetails(CaseDetails.builder()
@@ -127,8 +127,8 @@ public class CoRespondentSubmittedITest {
         caseDetailMap.put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, CO_RESP_FIRST_NAME);
         caseDetailMap.put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, CO_RESP_LAST_NAME);
         caseDetailMap.put(CO_RESP_EMAIL_ADDRESS, TEST_EMAIL);
-        caseDetailMap.put(CO_RESP_DEFENDS_DIVORCE, YES_VALUE);
-        caseDetailMap.put(DUE_DATE_CO_RESP, TEST_EXPECTED_DUE_DATE);
+        caseDetailMap.put(CO_RESPONDENT_DEFENDS_DIVORCE, YES_VALUE);
+        caseDetailMap.put(CO_RESPONDENT_DUE_DATE, TEST_EXPECTED_DUE_DATE);
         caseDetailMap.put(D_8_DIVORCE_UNIT, TEST_COURT);
 
 
