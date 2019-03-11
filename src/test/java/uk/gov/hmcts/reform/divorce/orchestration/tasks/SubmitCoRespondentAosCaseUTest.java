@@ -87,7 +87,7 @@ public class SubmitCoRespondentAosCaseUTest {
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
 
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true)).thenReturn(null);
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(null);
 
         expectedException.expect(TaskException.class);
         expectedException.expectCause(allOf(
@@ -106,7 +106,7 @@ public class SubmitCoRespondentAosCaseUTest {
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
 
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true)).thenReturn(someCaseWithState("foo"));
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(someCaseWithState("foo"));
 
         expectedException.expect(TaskException.class);
         expectedException.expectCause(allOf(
@@ -126,7 +126,7 @@ public class SubmitCoRespondentAosCaseUTest {
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
 
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true)).thenReturn(someCaseWithState(AOS_AWAITING));
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(someCaseWithState(AOS_AWAITING));
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID, submissionData))
             .thenReturn(caseUpdateResponse);
 
@@ -143,7 +143,7 @@ public class SubmitCoRespondentAosCaseUTest {
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
 
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true)).thenReturn(someCaseWithState(AOS_STARTED));
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(someCaseWithState(AOS_STARTED));
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, CO_RESPONDENT_SUBMISSION_AOS_STARTED_EVENT_ID, submissionData))
             .thenReturn(caseUpdateResponse);
 
@@ -160,7 +160,7 @@ public class SubmitCoRespondentAosCaseUTest {
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
 
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true)).thenReturn(someCaseWithState(AOS_SUBMITTED_AWAITING_ANSWER));
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(someCaseWithState(AOS_SUBMITTED_AWAITING_ANSWER));
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, CO_RESPONDENT_SUBMISSION_AOS_SUBMIT_AWAIT_EVENT_ID, submissionData))
             .thenReturn(caseUpdateResponse);
 
@@ -177,7 +177,7 @@ public class SubmitCoRespondentAosCaseUTest {
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
 
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true)).thenReturn(someCaseWithState(AOS_OVERDUE));
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(someCaseWithState(AOS_OVERDUE));
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, CO_RESPONDENT_SUBMISSION_AOS_OVERDUE_EVENT_ID, submissionData))
             .thenReturn(caseUpdateResponse);
 
@@ -194,7 +194,7 @@ public class SubmitCoRespondentAosCaseUTest {
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
 
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true)).thenReturn(someCaseWithState(DEFENDED));
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(someCaseWithState(DEFENDED));
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, CO_RESPONDENT_SUBMISSION_AOS_DEFENDED_EVENT_ID, submissionData))
             .thenReturn(caseUpdateResponse);
 
@@ -218,7 +218,7 @@ public class SubmitCoRespondentAosCaseUTest {
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
 
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true)).thenReturn(someCaseWithState(DEFENDED));
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(someCaseWithState(DEFENDED));
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, CO_RESPONDENT_SUBMISSION_AOS_DEFENDED_EVENT_ID, recalculatedSubmissionData))
             .thenReturn(caseUpdateResponse);
 
@@ -238,7 +238,7 @@ public class SubmitCoRespondentAosCaseUTest {
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
 
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true)).thenReturn(someCaseWithState(DEFENDED));
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(someCaseWithState(DEFENDED));
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, CO_RESPONDENT_SUBMISSION_AOS_DEFENDED_EVENT_ID, originalSubmissionData))
             .thenReturn(caseUpdateResponse);
 

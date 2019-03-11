@@ -36,7 +36,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
@@ -260,25 +259,25 @@ public class OrchestrationControllerTest {
     @Test(expected = WorkflowException.class)
     public void givenThrowsException_whenRetrieveAosCase_thenThrowWorkflowException() throws WorkflowException {
 
-        when(caseOrchestrationService.retrieveAosCase(TEST_CHECK_CCD, AUTH_TOKEN))
+        when(caseOrchestrationService.retrieveAosCase(AUTH_TOKEN))
             .thenThrow(new WorkflowException("error"));
 
-        classUnderTest.retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD);
+        classUnderTest.retrieveAosCase(AUTH_TOKEN);
     }
 
     @Test
     public void givenAllGoesWell_whenRetrieveAosCase_thenReturnExpectedResponse() throws WorkflowException {
         final CaseDataResponse caseDataResponse = CaseDataResponse.builder().build();
 
-        when(caseOrchestrationService.retrieveAosCase(TEST_CHECK_CCD, AUTH_TOKEN))
+        when(caseOrchestrationService.retrieveAosCase(AUTH_TOKEN))
             .thenReturn(caseDataResponse);
 
-        ResponseEntity<CaseDataResponse> actual = classUnderTest.retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD);
+        ResponseEntity<CaseDataResponse> actual = classUnderTest.retrieveAosCase(AUTH_TOKEN);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(caseDataResponse, actual.getBody());
 
-        verify(caseOrchestrationService).retrieveAosCase(TEST_CHECK_CCD, AUTH_TOKEN);
+        verify(caseOrchestrationService).retrieveAosCase(AUTH_TOKEN);
     }
 
     @Test

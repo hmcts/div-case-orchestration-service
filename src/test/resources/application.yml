@@ -13,7 +13,7 @@ jackson:
     ACCEPT_SINGLE_VALUE_AS_ARRAY: true
   serialization:
     FAIL_ON_EMPTY_BEANS: false
-    
+
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
 
@@ -251,12 +251,6 @@ management:
         health: health
       exposure:
         include: info, health, metrics
-
-draft:
-  api:
-    ccd:
-      check:
-        enabled: false
 
 logging:
   level:

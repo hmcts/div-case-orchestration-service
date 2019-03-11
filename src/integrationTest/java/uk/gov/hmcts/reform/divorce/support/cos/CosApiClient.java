@@ -62,8 +62,7 @@ public interface CosApiClient {
             value = "/draftsapi/version/1",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
-    Map<String, Object> getDraft(@RequestHeader(AUTHORIZATION) String authorisation,
-                                 @RequestParam("checkCcd") boolean checkCcd);
+    Map<String, Object> getDraft(@RequestHeader(AUTHORIZATION) String authorisation);
 
     @RequestMapping(
             method = RequestMethod.PUT,

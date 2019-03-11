@@ -392,7 +392,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
     }
 
     private void stubRetrieveCaseFromCMS(HttpStatus status, String message) {
-        maintenanceServiceServer.stubFor(get(urlEqualTo(RETRIEVE_AOS_CASE_CONTEXT_PATH + "?checkCcd=true"))
+        maintenanceServiceServer.stubFor(get(urlEqualTo(RETRIEVE_AOS_CASE_CONTEXT_PATH))
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)

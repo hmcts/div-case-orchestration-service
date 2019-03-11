@@ -70,7 +70,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         try {
             draftsSubmissionSupport.getUserDraft(UserDetails.builder()
                 .authToken(NO_VALID_TOKEN)
-                .build(), true);
+                .build());
             fail("Not authenticated error expected");
         } catch (FeignException error) {
             assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
@@ -104,7 +104,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     @Test
     public void givenUserWithoutDraft_whenRetrieveDraft_thenReturn404Status() {
         try {
-            draftsSubmissionSupport.getUserDraft(user, true);
+            draftsSubmissionSupport.getUserDraft(user);
             fail("Resource not found error expected");
         } catch (FeignException error) {
             assertEquals(HttpStatus.NOT_FOUND.value(), error.status());
@@ -127,7 +127,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         draftsSubmissionSupport.deleteDraft(user);
 
         try {
-            draftsSubmissionSupport.getUserDraft(user, true);
+            draftsSubmissionSupport.getUserDraft(user);
             fail("Resource not found error expected");
         } catch (FeignException error) {
             assertEquals(HttpStatus.NOT_FOUND.value(), error.status());
@@ -182,14 +182,14 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
     private void assertUserDraft(String draftFile, UserDetails user) {
         final Map<String, Object> expectedDraft = getDraftResponseResource(draftFile);
-        Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user, true);
+        Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user);
 
         assertEquals(expectedDraft, userDraft);
     }
 
     private void assertUserPetition(UserDetails user, String caseId) {
         final Map<String, Object> expectedDraft = getDraftResponseResource(BASE_CASE_RESPONSE);
-        Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user, true);
+        Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user);
 
         // Add dynamic fields if not missing.
         expectedDraft.put(CASE_ID_JSON_KEY, caseId);

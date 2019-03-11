@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 
 @Component
 @RequiredArgsConstructor
@@ -33,14 +32,13 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
     private final UpdatePaymentMadeCase paymentMadeEvent;
     private final FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
 
-    public Map<String, Object> run(String authToken, Boolean checkCcd) throws WorkflowException {
+    public Map<String, Object> run(String authToken) throws WorkflowException {
         Map<String, Object> caseData = this.execute(
             new Task[] {
                 retrieveDraft
             },
             new HashMap<>(),
-            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(CHECK_CCD, checkCcd)
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)
         );
         DefaultTaskContext mainContext = getContext();
         boolean paymentDataUpdated = updatePaymentEvent(caseData);

@@ -44,7 +44,6 @@ import javax.ws.rs.core.MediaType;
 
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERATE_AOS_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
@@ -196,12 +195,11 @@ public class OrchestrationController {
         @ApiResponse(code = 200, message = "A draft exists. The draft content is in the response body"),
         @ApiResponse(code = 404, message = "Draft does not exist")})
     public ResponseEntity<Map<String, Object>> retrieveDraft(
-        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
-        @RequestHeader("Authorization") final String authorizationToken,
-        @RequestParam(value = CHECK_CCD, required = false) @ApiParam(CHECK_CCD) Boolean checkCcd)
+            @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
+            @RequestHeader("Authorization") final String authorizationToken)
         throws WorkflowException {
 
-        Map<String, Object> response = orchestrationService.getDraft(authorizationToken, checkCcd);
+        Map<String, Object> response = orchestrationService.getDraft(authorizationToken);
         if (MapUtils.isEmpty(response)) {
             return ResponseEntity.notFound().build();
         }
@@ -245,11 +243,10 @@ public class OrchestrationController {
             response = CaseDataResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CaseDataResponse> retrieveAosCase(
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken,
-        @RequestParam @ApiParam(CHECK_CCD) boolean checkCcd) throws WorkflowException {
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken) throws WorkflowException {
 
-        return ResponseEntity.ok(orchestrationService.retrieveAosCase(checkCcd,
-            authorizationToken));
+        return ResponseEntity.ok(orchestrationService.retrieveAosCase(
+                authorizationToken));
     }
 
     @GetMapping(path = "/retrieve-case", produces = MediaType.APPLICATION_JSON)

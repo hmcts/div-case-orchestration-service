@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +26,7 @@ public abstract class RetrieveAosCaseSupport extends CcdSubmissionSupport {
         return RestUtil.getFromRestService(
             serverUrl + contextPathAos,
             headers,
-            Collections.singletonMap("checkCcd", true)
+            null
         );
     }
 

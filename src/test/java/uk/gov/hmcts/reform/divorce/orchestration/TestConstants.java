@@ -17,7 +17,6 @@ public class TestConstants {
     public static String TEST_EMAIL = "test.email";
     public static String BEARER_AUTH_TOKEN_1 = "Bearer test.auth.token1";
     public static String TEST_CODE = "test.code";
-    public static boolean TEST_CHECK_CCD = true;
     public static final String TEST_USER_ID = "test.user.id";
     public static final String TEST_COURT = "serviceCentre";
     public static final String TEST_ERROR = "test.error";

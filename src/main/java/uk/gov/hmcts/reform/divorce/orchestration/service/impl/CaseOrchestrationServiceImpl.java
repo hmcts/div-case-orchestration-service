@@ -193,9 +193,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
 
     @Override
-    public Map<String, Object> getDraft(String authToken, Boolean checkCcd) throws WorkflowException {
+    public Map<String, Object> getDraft(String authToken) throws WorkflowException {
         log.info("Returning draft");
-        return retrieveDraftWorkflow.run(authToken, checkCcd);
+        return retrieveDraftWorkflow.run(authToken);
     }
 
     @Override
@@ -227,8 +227,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public CaseDataResponse retrieveAosCase(boolean checkCcd, String authorizationToken) throws WorkflowException {
-        return retrieveAosCaseWorkflow.run(checkCcd, authorizationToken);
+    public CaseDataResponse retrieveAosCase(String authorizationToken) throws WorkflowException {
+        return retrieveAosCaseWorkflow.run(authorizationToken);
     }
 
     @Override

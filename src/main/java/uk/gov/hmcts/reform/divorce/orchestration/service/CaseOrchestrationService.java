@@ -26,7 +26,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> update(PaymentUpdate paymentUpdate) throws WorkflowException;
 
-    CaseDataResponse retrieveAosCase(boolean checkCcd, String authorizationToken) throws WorkflowException;
+    CaseDataResponse retrieveAosCase(String authorizationToken) throws WorkflowException;
 
 
     CaseDataResponse getCase(String authorizationToken) throws WorkflowException;
@@ -37,7 +37,7 @@ public interface CaseOrchestrationService {
     CcdCallbackResponse aosReceived(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException;
 
 
-    Map<String, Object> getDraft(String authToken, Boolean checkCcd) throws WorkflowException;
+    Map<String, Object> getDraft(String authToken) throws WorkflowException;
 
     Map<String,Object> saveDraft(Map<String, Object> payLoad,
                                  String authorizationToken,
