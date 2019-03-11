@@ -83,7 +83,7 @@ public class RetrieveDraftTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void givenCaseExistsAndCheckCcd_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMSWithCaseDetails() {
+    public void givenCaseExists_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMSWithCaseDetails() {
         TaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         Map<String, Object> payload  = mock(Map.class);

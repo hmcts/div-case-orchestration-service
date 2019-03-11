@@ -76,14 +76,6 @@ public class RetrieveAosCaseITest {
     }
 
     @Test
-    public void givenNoCheckCCdParam_whenRetrieveAosCase_thenReturnBadRequest() throws Exception {
-        webClient.perform(get(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .accept(APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
     public void givenCMSThrowsException_whenRetrieveAosCase_thenPropagateException() throws Exception {
         stubRetrieveAosCaseFromCMS(HttpStatus.INTERNAL_SERVER_ERROR, TEST_ERROR);
 
