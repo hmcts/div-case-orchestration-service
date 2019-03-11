@@ -62,7 +62,7 @@ To run all checks (including unit tests) please execute following command:
 To run all mutation tests execute the following command:
 
 ```
-/gradlew pitest
+./gradlew pitest
 
 ```
 
