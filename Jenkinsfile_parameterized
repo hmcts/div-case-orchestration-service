@@ -8,9 +8,7 @@ properties([
                 string(name: 'TYPE', defaultValue: 'java', description: ''),
                 string(name: 'ENVIRONMENT', defaultValue: 'saat', description: 'Environment where code should be build and deployed'),
                 choice(name: 'SUBSCRIPTION', choices: 'sandbox\nnonprod\nprod', description: 'Azure subscriptions available to build in')
-        ]),
-        [$class: 'GithubProjectProperty', projectUrlStr: 'github.com/hmcts/div-case-orchestration-service'],
-        pipelineTriggers([[$class: 'GitHubPushTrigger']])
+        ])
 ])
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
