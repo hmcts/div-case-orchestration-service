@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 locals {
-  aseName                     = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
+  aseName                     = "core-compute-${var.env}"
   local_env                   = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
 
   idam_s2s_url                      = "http://rpe-service-auth-provider-${local.local_env}.service.core-compute-${local.local_env}.internal"
