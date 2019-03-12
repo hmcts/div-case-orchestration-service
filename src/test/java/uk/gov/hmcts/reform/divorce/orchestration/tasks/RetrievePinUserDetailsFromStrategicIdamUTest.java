@@ -37,7 +37,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LOCATION_HEADER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
@@ -154,7 +157,10 @@ public class RetrievePinUserDetailsFromStrategicIdamUTest {
         taskContext.setTransientObject(CCD_CASE_DATA, caseDetails.getCaseData());
         taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
-        final UserDetails pinUserDetails = UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
+        final UserDetails pinUserDetails = UserDetails.builder()
+                .id(TEST_LETTER_HOLDER_ID_CODE)
+                .email("email@example.com")
+                .build();
 
         when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL))
             .thenReturn(idamRedirectResponse);
@@ -167,11 +173,54 @@ public class RetrievePinUserDetailsFromStrategicIdamUTest {
         UserDetails actual = classUnderTest.execute(taskContext, payload);
 
         assertEquals(pinUserDetails, actual);
+        assertEquals("email@example.com", taskContext.getTransientObject(RESPONDENT_EMAIL_ADDRESS));
         assertEquals(TEST_LETTER_HOLDER_ID_CODE, taskContext.getTransientObject(RESPONDENT_LETTER_HOLDER_ID));
 
         verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL);
         verify(idamClient)
             .exchangeCode(TEST_PIN_CODE, AUTHORIZATION_CODE, AUTH_REDIRECT_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET);
+        verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);
+    }
+
+    @Test
+    public void givenCoPinUserExists_whenExecute_thenProceedAsExpected() throws TaskException {
+        final Response idamRedirectResponse = buildResponse(FOUND, Collections.singletonList(AUTH_URL_WITH_REDIRECT));
+        final TokenExchangeResponse tokenExchangeResponse =
+                TokenExchangeResponse.builder()
+                        .accessToken(BEARER_AUTH_TOKEN)
+                        .build();
+
+        final UserDetails payload = UserDetails.builder().build();
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(CO_RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+
+        final TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(CCD_CASE_DATA, caseDetails.getCaseData());
+        taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
+
+        final UserDetails pinUserDetails = UserDetails.builder()
+                .id(TEST_LETTER_HOLDER_ID_CODE)
+                .email("email@example.com")
+                .build();
+
+        when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL))
+                .thenReturn(idamRedirectResponse);
+        when(
+                idamClient.exchangeCode(
+                        TEST_PIN_CODE, AUTHORIZATION_CODE, AUTH_REDIRECT_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET)
+        ).thenReturn(tokenExchangeResponse);
+        when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(pinUserDetails);
+
+        UserDetails actual = classUnderTest.execute(taskContext, payload);
+
+        assertEquals(pinUserDetails, actual);
+        assertEquals("email@example.com", taskContext.getTransientObject(CO_RESP_EMAIL_ADDRESS));
+        assertEquals(TEST_LETTER_HOLDER_ID_CODE, taskContext.getTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID));
+
+        verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL);
+        verify(idamClient)
+                .exchangeCode(TEST_PIN_CODE, AUTHORIZATION_CODE, AUTH_REDIRECT_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET);
         verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);
     }
 
