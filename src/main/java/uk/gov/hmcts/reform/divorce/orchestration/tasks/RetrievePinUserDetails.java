@@ -17,8 +17,10 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
@@ -68,10 +70,12 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
         final String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
 
         if (isRespondent) {
+            context.setTransientObject(RESPONDENT_EMAIL_ADDRESS, pinUserDetails.getEmail());
             context.setTransientObject(RESPONDENT_LETTER_HOLDER_ID, letterHolderId);
             context.setTransientObject(IS_RESPONDENT, true);
             log.info("Letter holder ID [{}] is associated with respondent in case [{}]", letterHolderId, caseId);
         } else if (isCoRespondent) {
+            context.setTransientObject(CO_RESP_EMAIL_ADDRESS, pinUserDetails.getEmail());
             context.setTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID, letterHolderId);
             context.setTransientObject(IS_RESPONDENT, false);
             log.info("Letter holder ID [{}] is associated with co-respondent in case [{}]", letterHolderId, caseId);

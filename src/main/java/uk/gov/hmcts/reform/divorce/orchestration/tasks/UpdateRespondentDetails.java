@@ -2,16 +2,13 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
-import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.HashMap;
@@ -42,13 +39,6 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
     @Autowired
     private CaseMaintenanceClient caseMaintenanceClient;
 
-    @Autowired
-    @Qualifier("idamClient")
-    private IdamClient idamClient;
-
-    @Autowired
-    private AuthUtil authUtil;
-
     @Override
     public UserDetails execute(TaskContext context, UserDetails payload) throws TaskException {
 
@@ -57,21 +47,17 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
             boolean isRespondent = (boolean) context.getTransientObject(IS_RESPONDENT);
             String eventId;
 
-            UserDetails linkedUser =
-                idamClient.retrieveUserDetails(
-                    authUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
-
             CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(
                 String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
                 true);
 
             if (isRespondent) {
-                updateFields.put(RESPONDENT_EMAIL_ADDRESS, linkedUser.getEmail());
+                updateFields.put(RESPONDENT_EMAIL_ADDRESS, context.getTransientObject(RESPONDENT_EMAIL_ADDRESS));
                 updateFields.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
                 updateFields.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
                 eventId = getEventId(caseDetails.getState());
             } else {
-                updateFields.put(CO_RESP_EMAIL_ADDRESS, linkedUser.getEmail());
+                updateFields.put(CO_RESP_EMAIL_ADDRESS, context.getTransientObject(CO_RESP_EMAIL_ADDRESS));
                 updateFields.put(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
                 updateFields.put(RECEIVED_AOS_FROM_CO_RESP_DATE, CcdUtil.getCurrentDate());
                 eventId = LINK_RESPONDENT_GENERIC_EVENT_ID;
