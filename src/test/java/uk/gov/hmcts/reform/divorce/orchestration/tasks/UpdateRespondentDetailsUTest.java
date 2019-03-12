@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Collections;
 import java.util.Map;
@@ -40,11 +39,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateRespondentDetailsUTest {
@@ -91,9 +87,7 @@ public class UpdateRespondentDetailsUTest {
 
         final Map<String, Object> dataToUpdate =
             ImmutableMap.of(
-                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
-                RECEIVED_AOS_FROM_RESP, YES_VALUE,
-                RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
+                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
             );
 
         when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
@@ -135,9 +129,7 @@ public class UpdateRespondentDetailsUTest {
 
         final Map<String, Object> dataToUpdate =
             ImmutableMap.of(
-                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
-                RECEIVED_AOS_FROM_RESP, YES_VALUE,
-                RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
+                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
             );
 
         when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
@@ -222,9 +214,7 @@ public class UpdateRespondentDetailsUTest {
 
     private Map<String, Object> createDataToUpdate() {
         return ImmutableMap.of(
-                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
-                RECEIVED_AOS_FROM_RESP, YES_VALUE,
-                RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
+                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
         );
     }
 }
