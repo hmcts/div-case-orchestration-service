@@ -125,19 +125,13 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
     @Before
     public void setup() {
         caseDataAos = ImmutableMap.of(
-            RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
-            RECEIVED_AOS_FROM_RESP, YES_VALUE,
-            RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
+            RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
         );
         caseDataNonAos = ImmutableMap.of(
-            RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
-            RECEIVED_AOS_FROM_RESP, YES_VALUE,
-            RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
+            RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
         );
         caseDataCoResponentUpdate = ImmutableMap.of(
-            CO_RESP_EMAIL_ADDRESS, TEST_EMAIL,
-            RECEIVED_AOS_FROM_CO_RESP, YES_VALUE,
-            RECEIVED_AOS_FROM_CO_RESP_DATE, CcdUtil.getCurrentDate()
+            CO_RESP_EMAIL_ADDRESS, TEST_EMAIL
         );
     }
 
