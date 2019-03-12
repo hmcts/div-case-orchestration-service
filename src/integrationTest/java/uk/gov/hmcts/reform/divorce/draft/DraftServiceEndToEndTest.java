@@ -40,8 +40,6 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     private static final String NO_VALID_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib"
         + "mFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
-    private static final String PETITIONER_EMAIL_KEY = "petitionerEmail";
-
     private static final String CREATED_DATE = "createdDate";
 
     private static final String CMS_DATA_KEY = "data";
@@ -135,18 +133,19 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     }
 
     @Test
-    public void givenUserWithDraft_whenSubmitCase_thenDraftIsDeletedAndCaseExist() {
+    public void givenUserWithDraft_whenSubmitCase_thenDraftIsDeleted() {
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
         assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
 
-        String caseId = (String) draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
+        draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
 
-        Map<String, Object> draftFromCMS = cmsClientSupport.getDrafts(user);
-        List response = (List) draftFromCMS.get(CMS_DATA_KEY);
-        assertTrue(response.isEmpty());
-
-        assertUserPetition(user, caseId);
+        try {
+            draftsSubmissionSupport.getUserDraft(user);
+            fail("Resource not found error expected");
+        } catch (FeignException error) {
+            assertEquals(HttpStatus.NOT_FOUND.value(), error.status());
+        }
     }
 
     @Test
