@@ -155,7 +155,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
         log.info("Case " + caseDetails.getId() + " created.");
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_AWAITING_EVENT_ID, userDetails);
-        updateCaseForCaseWorkerOnly(String.valueOf(caseDetails.getId()), null, NOT_RECEIVED_AOS_EVENT_ID);
+        updateCase(String.valueOf(caseDetails.getId()), null, NOT_RECEIVED_AOS_EVENT_ID);
 
 
         final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + "co-respondent-answers.json");
@@ -178,7 +178,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
         final String respondentJson = loadJson(RESPONDENT_PAYLOAD_CONTEXT_PATH + "aos-defend-consent.json");
         submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(), respondentJson);
 
-        updateCaseForCaseWorkerOnly(String.valueOf(caseDetails.getId()), null, "answerReceived");
+        updateCase(String.valueOf(caseDetails.getId()), null, "answerReceived");
 
         final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + "co-respondent-answers.json");
         submitCoRespondentAosCase(userDetails.getAuthToken(), coRespondentAnswersJson);

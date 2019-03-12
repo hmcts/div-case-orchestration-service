@@ -25,6 +25,8 @@ public abstract class IntegrationTest {
     private static final String CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE = "caseworker-divorce-courtadmin_beta";
     private static final String CASEWORKER_ROLE = "caseworker";
     private static final String PASSWORD = "genericPassword123";
+    private static final String CITIZEN_USERGROUP = "citizens";
+    private static final String CASEWORKER_USERGROUP = "caseworker";
 
     private UserDetails caseWorkerUser;
     private UserDetails caseWorkerStrictUser;
@@ -46,12 +48,10 @@ public abstract class IntegrationTest {
         synchronized (this) {
             if (caseWorkerUser == null) {
                 caseWorkerUser = getUserDetails(
-                        CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN,
-                        CASE_WORKER_PASSWORD,
-                        CASEWORKER_DIVORCE_ROLE,
-                        CASEWORKER_DIVORCE_COURTADMIN_ROLE,
-                        CASEWORKER_ROLE,
-                        CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
+                        CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN, CASE_WORKER_PASSWORD,
+                        CASEWORKER_USERGROUP,
+                        CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
+                        CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
                 );
             }
 
@@ -59,38 +59,21 @@ public abstract class IntegrationTest {
         }
     }
 
-    protected UserDetails createOnlyCaseWorkerUser() {
-        synchronized (this) {
-            if (caseWorkerStrictUser == null) {
-                caseWorkerStrictUser = getUserDetails(
-                        CASE_WORKER_ONLY_USERNAME  + UUID.randomUUID() + EMAIL_DOMAIN,
-                        CASE_WORKER_PASSWORD,
-                        CASEWORKER_DIVORCE_ROLE,
-                        CASEWORKER_DIVORCE_COURTADMIN_ROLE,
-                        CASEWORKER_ROLE,
-                        CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
-                );
-            }
-
-            return caseWorkerStrictUser;
-        }
-    }
-
     protected UserDetails createCitizenUser() {
         final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
 
-        return getUserDetails(username, PASSWORD, CITIZEN_ROLE);
+        return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, CITIZEN_ROLE);
     }
 
     protected UserDetails createCitizenUser(String role) {
         final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
 
-        return getUserDetails(username, PASSWORD, role);
+        return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, role);
     }
 
-    private UserDetails getUserDetails(String username, String password, String... role) {
+    private UserDetails getUserDetails(String username, String password, String userGroup, String... role) {
         synchronized (this) {
-            idamTestSupportUtil.createUser(username, password, role);
+            idamTestSupportUtil.createUser(username, password, userGroup, role);
 
             final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
 

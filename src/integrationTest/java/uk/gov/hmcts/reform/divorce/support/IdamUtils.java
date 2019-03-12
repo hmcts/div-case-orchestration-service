@@ -47,7 +47,7 @@ public class IdamUtils {
             .build();
     }
 
-    public void createUser(String username, String password, String... roles) {
+    public void createUser(String username, String password, String userGroup, String... roles) {
         List<UserGroup> rolesList = new ArrayList<>();
         Stream.of(roles).forEach(role -> rolesList.add(UserGroup.builder().code(role).build()));
         UserGroup[] rolesArray = new UserGroup[roles.length];
@@ -59,11 +59,7 @@ public class IdamUtils {
                 .surname("User")
                 .password(password)
                 .roles(rolesList.toArray(rolesArray))
-                .userGroup(UserGroup.builder().code(
-                        rolesList.get(0).getCode().equalsIgnoreCase("citizen")
-                            ? "divorce-private-beta"
-                            : "caseworker"
-                        ).build())
+                .userGroup(UserGroup.builder().code(userGroup).build())
                 .build();
 
         SerenityRest.given()
