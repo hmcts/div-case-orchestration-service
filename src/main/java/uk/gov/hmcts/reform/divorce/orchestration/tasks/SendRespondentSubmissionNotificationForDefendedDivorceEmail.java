@@ -7,12 +7,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
@@ -31,10 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRe
 public class SendRespondentSubmissionNotificationForDefendedDivorceEmail implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESCRIPTION = "respondent submission notification email - defended divorce";
-
-    private static final DateTimeFormatter CLIENT_FACING_DATE_FORMAT = DateTimeFormatter
-            .ofLocalizedDate(FormatStyle.LONG)
-            .withLocale(Locale.UK);
 
     @Autowired
     private TaskCommons taskCommons;
@@ -62,7 +55,7 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         templateFields.put("RDC name", court.getIdentifiableCentreName());
         templateFields.put("court address", court.getFormattedAddress());
 
-        String formSubmissionDateLimit = getDueDate(caseDataPayload);
+        String formSubmissionDateLimit = CcdUtil.getFormattedDueDate(caseDataPayload, CCD_DUE_DATE);
         templateFields.put("form submission date limit", formSubmissionDateLimit);
 
         taskCommons.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
@@ -72,11 +65,4 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
 
         return caseDataPayload;
     }
-
-    private String getDueDate(Map<String, Object> payload) throws TaskException {
-        String dateAsString = getMandatoryPropertyValueAsString(payload, CCD_DUE_DATE);
-        LocalDate dueDate = LocalDate.parse(dateAsString);
-        return dueDate.format(CLIENT_FACING_DATE_FORMAT);
-    }
-
 }

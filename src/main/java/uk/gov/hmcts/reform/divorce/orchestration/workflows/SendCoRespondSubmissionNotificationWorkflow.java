@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,8 +67,9 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
             try {
                 Court assignedCourt = taskCommons.getCourt(rdcName);
                 templateVars.put(NOTIFICATION_RDC_NAME_KEY, assignedCourt.getIdentifiableCentreName());
-                String dateLimit = (String) caseData.get(CO_RESPONDENT_DUE_DATE);
-                templateVars.put(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, dateLimit);
+                String formSubmissionDateLimit = CcdUtil.getFormattedDueDate(caseData, CO_RESPONDENT_DUE_DATE);
+
+                templateVars.put(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, formSubmissionDateLimit);
                 templateVars.put(NOTIFICATION_COURT_ADDRESS_KEY, assignedCourt.getFormattedAddress());
                 template = EmailTemplateNames.CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
             } catch (TaskException e) {

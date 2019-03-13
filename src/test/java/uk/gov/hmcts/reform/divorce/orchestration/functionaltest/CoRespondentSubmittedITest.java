@@ -38,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE_FORMATTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DEFENDS_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
@@ -156,7 +157,7 @@ public class CoRespondentSubmittedITest {
         Map<String, String> expectedExtraFields = ImmutableMap.of(
             NOTIFICATION_COURT_ADDRESS_KEY, court.getFormattedAddress(),
             NOTIFICATION_RDC_NAME_KEY, court.getIdentifiableCentreName(),
-            NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, TEST_EXPECTED_DUE_DATE
+            NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, TEST_EXPECTED_DUE_DATE_FORMATTED
         );
         verifyEmailSent(TEST_EMAIL, expectedExtraFields);
 
