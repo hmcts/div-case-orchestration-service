@@ -5,6 +5,7 @@ import net.serenitybdd.rest.SerenityRest;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.divorce.model.GeneratePinRequest;
 import uk.gov.hmcts.reform.divorce.model.PinResponse;
 import uk.gov.hmcts.reform.divorce.model.RegisterUserRequest;
@@ -84,6 +85,7 @@ public class IdamUtils {
 
         Response response = SerenityRest.given()
             .header("Authorization", authHeader)
+            .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .relaxedHTTPSValidation()
             .post(idamCodeUrl());
 
@@ -93,6 +95,7 @@ public class IdamUtils {
         }
 
         response = SerenityRest.given()
+            .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .relaxedHTTPSValidation()
             .post(idamTokenUrl(response.getBody().path("code")));
 
