@@ -21,8 +21,8 @@ import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE_DATE;
 
 public class LinkRespondentTest extends RetrieveAosCaseSupport {
     private static final String PIN_USER_FIRST_NAME = "pinuserfirstname";
@@ -201,6 +201,9 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         assertEquals(userDetails.getEmailAddress(), caseDetails.getData().get(CO_RESP_EMAIL_ADDRESS));
         assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
         assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE));
+        assertEquals(YES_VALUE, caseDetails.getData().get(CO_RESP_LINKED_TO_CASE));
+        assertEquals(LocalDate.now().toString(CCD_DATE_FORMAT),
+            caseDetails.getData().get(CO_RESP_LINKED_TO_CASE_DATE));
     }
 
     private Response linkRespondent(String userToken, Long caseId, String pin) {
