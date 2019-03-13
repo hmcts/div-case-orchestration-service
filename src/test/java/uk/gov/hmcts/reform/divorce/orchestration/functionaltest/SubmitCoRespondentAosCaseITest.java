@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import com.google.common.collect.ImmutableMap;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -51,6 +53,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DEFENDS_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
@@ -143,12 +148,12 @@ public class SubmitCoRespondentAosCaseITest {
 
     @Test
     public void givenCaseUpdateFails_whenSubmitCoRespondentAos_thenPropagateTheException() throws Exception {
-        stubFormatterServerEndpoint(OK, emptyMap(), convertObjectToJsonString(emptyMap()));
+        stubFormatterServerEndpoint(OK, emptyMap(), convertObjectToJsonString(getCoRespondentSubmitData()));
 
         final CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).state(AOS_AWAITING).build();
         stubMaintenanceServerEndpointForAosRetrieval(OK, convertObjectToJsonString(caseDetails));
 
-        stubMaintenanceServerEndpointForAosUpdate(BAD_REQUEST, emptyMap(), TEST_ERROR);
+        stubMaintenanceServerEndpointForAosUpdate(BAD_REQUEST, getCoRespondentSubmitData(), TEST_ERROR);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -161,14 +166,14 @@ public class SubmitCoRespondentAosCaseITest {
 
     @Test
     public void happyPath() throws Exception {
-        final String caseDataString = convertObjectToJsonString(emptyMap());
+        final String caseDataString = convertObjectToJsonString(getCoRespondentSubmitData());
 
         stubFormatterServerEndpoint(OK, emptyMap(), caseDataString);
 
         final CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).state(AOS_AWAITING).build();
         stubMaintenanceServerEndpointForAosRetrieval(OK, convertObjectToJsonString(caseDetails));
 
-        stubMaintenanceServerEndpointForAosUpdate(OK, emptyMap(), caseDataString);
+        stubMaintenanceServerEndpointForAosUpdate(OK, getCoRespondentSubmitData(), caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -187,6 +192,7 @@ public class SubmitCoRespondentAosCaseITest {
         when(clock.getZone()).thenReturn(UTC);
 
         final Map<String, Object> originalSubmissionData = new HashMap<>();
+        originalSubmissionData.putAll(getCoRespondentSubmitData());
         originalSubmissionData.put(CO_RESPONDENT_DEFENDS_DIVORCE, "YES");
         originalSubmissionData.put(CO_RESPONDENT_DUE_DATE, "01-01-2001");
 
@@ -198,6 +204,7 @@ public class SubmitCoRespondentAosCaseITest {
         stubMaintenanceServerEndpointForAosRetrieval(OK, convertObjectToJsonString(caseDetails));
 
         final Map<String, Object> recalculatedSubmissionData = new HashMap<>();
+        recalculatedSubmissionData.putAll(getCoRespondentSubmitData());
         recalculatedSubmissionData.put(CO_RESPONDENT_DEFENDS_DIVORCE, "YES");
         recalculatedSubmissionData.put(CO_RESPONDENT_DUE_DATE, today.plusDays(21).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         stubMaintenanceServerEndpointForAosUpdate(OK, recalculatedSubmissionData, caseDataString);
@@ -209,6 +216,11 @@ public class SubmitCoRespondentAosCaseITest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(caseDataString));
+    }
+
+    private Map<String, Object> getCoRespondentSubmitData() {
+        return ImmutableMap.of(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE,
+            RECEIVED_AOS_FROM_CO_RESP_DATE, CcdUtil.getCurrentDate());
     }
 
     private void stubFormatterServerEndpoint(HttpStatus status, Map<String, Object> caseData, String response) {
