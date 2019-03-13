@@ -12,18 +12,11 @@ import uk.gov.hmcts.reform.divorce.support.cms.CmsClientSupport;
 import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
-import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.collection.IsIn.isIn;
-import static org.hamcrest.core.Every.everyItem;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.SELECTED_COURT_KEY;
 
 public class DraftServiceEndToEndTest extends IntegrationTest {
 
@@ -149,28 +142,6 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     }
 
     @Test
-    public void givenUserWithDraftAfterSubmittedCase_whenGetDraft_thenCaseIsReturned() {
-        draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
-
-        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
-
-        final String caseId =
-            (String) draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
-
-        Map<String, Object> draftFromCMS = cmsClientSupport.getDrafts(user);
-        List response = (List) draftFromCMS.get(CMS_DATA_KEY);
-        assertTrue(response.isEmpty());
-
-        cmsClientSupport.saveDrafts(SAVE_DRAFT_FILE, user);
-
-        draftFromCMS = cmsClientSupport.getDrafts(user);
-        response = (List) draftFromCMS.get(CMS_DATA_KEY);
-        assertEquals(1, response.size());
-
-        assertUserPetition(user, caseId);
-    }
-
-    @Test
     public void givenUserWithDraft_whenUpdateDraft_thenDraftIsUpdated() {
         draftsSubmissionSupport.saveDraft(user, DRAFT_PART_1_FILE);
         assertUserDraft(DRAFT_PART_1_RESPONSE_FILE, user);
@@ -184,21 +155,6 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user);
 
         assertEquals(expectedDraft, userDraft);
-    }
-
-    private void assertUserPetition(UserDetails user, String caseId) {
-        final Map<String, Object> expectedDraft = getDraftResponseResource(BASE_CASE_RESPONSE);
-        Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user);
-
-        // Add dynamic fields if not missing.
-        expectedDraft.put(CASE_ID_JSON_KEY, caseId);
-        expectedDraft.put(SELECTED_COURT_KEY, userDraft.get(SELECTED_COURT_KEY));
-        expectedDraft.put(CASE_STATE_JSON_KEY, userDraft.get(CASE_STATE_JSON_KEY));
-        expectedDraft.put(CREATED_DATE, userDraft.get(CREATED_DATE));
-
-        assertThat(userDraft.entrySet(), everyItem(isIn(expectedDraft.entrySet())));
-        assertThat(expectedDraft.entrySet(), everyItem(isIn(userDraft.entrySet())));
-
     }
 
     @SuppressWarnings("unchecked")
