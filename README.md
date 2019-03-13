@@ -16,7 +16,7 @@ The project uses [Gradle](https://gradle.org) as a build tool but you don't have
 To build project please execute the following command:
 
 ```bash
-    ./gradlew build
+    ./gradlew clean build
 ```
 
 To get the project to build in IntelliJ IDEA, you have to:
