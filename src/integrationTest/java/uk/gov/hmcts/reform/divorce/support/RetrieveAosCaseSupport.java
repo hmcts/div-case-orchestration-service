@@ -25,8 +25,7 @@ public abstract class RetrieveAosCaseSupport extends CcdSubmissionSupport {
 
         return RestUtil.getFromRestService(
             serverUrl + contextPathAos,
-            headers,
-            null
+            headers
         );
     }
 
