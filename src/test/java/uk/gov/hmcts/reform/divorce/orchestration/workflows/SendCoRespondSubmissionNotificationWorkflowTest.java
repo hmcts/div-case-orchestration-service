@@ -31,6 +31,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE_FORMATTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -82,7 +83,7 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
     }
 
     @Test
-    public void givenDefendedCoResp_whenSendEmail_thenSendUndefendedTemplate() throws Exception {
+    public void givenDefendedCoResp_whenSendEmail_thenSendDefendedTemplate() throws Exception {
 
         CreateEvent caseEvent = createSubmittedCoEvent(ImmutableMap.of(
             CO_RESPONDENT_DEFENDS_DIVORCE, "Yes",
@@ -100,14 +101,13 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
 
         DefaultTaskContext expectedContext = createdExpectedContext(ImmutableMap.of(
                 NOTIFICATION_RDC_NAME_KEY, court.getIdentifiableCentreName(),
-                NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, TEST_EXPECTED_DUE_DATE,
+                NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, TEST_EXPECTED_DUE_DATE_FORMATTED,
                 NOTIFICATION_COURT_ADDRESS_KEY, court.getFormattedAddress()
                 ),
             EmailTemplateNames.CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION);
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
-
 
     private DefaultTaskContext createdExpectedContext(Map<String, Object> additionalData, EmailTemplateNames template) {
 
@@ -130,7 +130,6 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
 
         Map<String, Object> caseData = new HashMap<>(extraFields);
 
-
         caseData.put(D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
         caseData.put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, TEST_USER_FIRST_NAME) ;
         caseData.put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, TEST_USER_LAST_NAME);
@@ -147,5 +146,4 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
             .caseDetails(caseDetails)
             .build();
     }
-
 }
