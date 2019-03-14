@@ -85,13 +85,9 @@ public class BulkPrinter implements Task<Map<String, Object>> {
     }
 
     private boolean isBulkPrintToggleEnabled() {
-        try {
-            return Optional.ofNullable(featureToggleServiceClient.getToggle(bulkPrintFeatureToggleName).getEnable())
-                    .map(Boolean::valueOf).orElse(false);
-        } catch (Exception anyException) {
-            log.error("Exception occurred when retrieving bulk print feature flag.", anyException);
-            return false;
-        }
+        return
+            Optional.ofNullable(featureToggleServiceClient.getToggle(bulkPrintFeatureToggleName).getEnable())
+                .map(Boolean::valueOf).orElse(false);
     }
 
     private void sendRespondentPack(final TaskContext context, final String authToken, final CaseDetails caseDetails, final String miniPetition,
