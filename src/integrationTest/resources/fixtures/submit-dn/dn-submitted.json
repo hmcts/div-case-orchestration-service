@@ -77,7 +77,7 @@
       "D8LegalProceedingsRelated": [
         "children"
       ],
-      "D8PetitionerLastName": "Smith",
+      "D8PetitionerLastName": "Smith é",
       "D8ReasonForDivorceAdulteryIsNamed": "NO",
       "D8PetitionerPhoneNumber": "01234567890",
       "D8ClaimsCostsAppliedForFees": "NO",
@@ -124,7 +124,7 @@
       "D8DerivedPetitionerCorrespondenceAddr": "82 Landor Road\nLondon\nSW9 9PE",
       "D8JurisdictionPetitionerResidence": "NO",
       "D8ReasonForDivorceClaimingAdultery": "NO",
-      "D8PetitionerFirstName": "Lucas John",
+      "D8PetitionerFirstName": "Lucas é John",
       "D8MarriageRespondentName": "Jenny Benny",
       "D8PetitionerContactDetailsConfidential": "share",
       "createdDate": "2018-02-05",
