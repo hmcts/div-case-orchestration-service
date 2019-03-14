@@ -18,8 +18,6 @@ public class AosReceivedCallbackTest extends IntegrationTest {
 
     private static final String BASE_CASE_RESPONSE = "fixtures/retrieve-aos-case/aos-received.json";
     private static final String ERROR_CASE_RESPONSE = "fixtures/retrieve-aos-case/aos-received-error.json";
-    private static final String DATA = "data";
-    private static final String ERRORS = "errors";
 
     @Autowired
     private CosApiClient cosApiClient;
@@ -30,7 +28,7 @@ public class AosReceivedCallbackTest extends IntegrationTest {
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
         Map<String, Object> response = cosApiClient.aosReceived(createCaseWorkerUser().getAuthToken(), aosCase);
         assertNotNull(response.get(DATA));
-        assertEquals(((Map<String, Object>)aosCase.get("case_details")).get("case_data"), response.get(DATA));
+        assertEquals(((Map<String, Object>)aosCase.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
     }
 
     @SuppressWarnings("unchecked")
