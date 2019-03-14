@@ -26,6 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
@@ -47,7 +48,8 @@ public class RespondentSubmittedCallbackWorkflowUTest {
                 NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME,
                 NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TestConstants.TEST_USER_LAST_NAME,
                 NOTIFICATION_RELATIONSHIP_KEY, "husband",
-                NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_ID);
+                NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID
+        );
 
         CaseDetails caseDetails = CaseDetails.builder()
                 .caseId(TestConstants.TEST_CASE_ID)
@@ -55,7 +57,7 @@ public class RespondentSubmittedCallbackWorkflowUTest {
                         D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME,
                         D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME,
                         D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL,
-                        D_8_CASE_REFERENCE, TestConstants.TEST_CASE_ID,
+                        D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID,
                         D_8_INFERRED_RESPONDENT_GENDER, "male"))
                 .build();
         CreateEvent caseEvent = CreateEvent.builder().caseDetails(caseDetails).build();
@@ -65,7 +67,8 @@ public class RespondentSubmittedCallbackWorkflowUTest {
 
         verify(emailNotificationTask, times(1))
                 .execute(argThat(argument ->
-                        argument.getTransientObject(NOTIFICATION_TEMPLATE_VARS).equals(vars)),any());
+                        argument.getTransientObject(ID).equals(TestConstants.TEST_CASE_ID)
+                                && argument.getTransientObject(NOTIFICATION_TEMPLATE_VARS).equals(vars)),any());
         assertEquals(caseDetails.getCaseData(), response);
     }
 
