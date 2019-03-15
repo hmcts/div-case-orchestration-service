@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -19,8 +20,6 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
     private static final String CO_UNDEFENDED_CASE_RESPONSE = "fixtures/co-resp-case/co-resp-undefend.json";
 
     private static final String ERROR_CASE_RESPONSE = "fixtures/co-resp-case/co-resp-received-error.json";
-    private static final String CASE_DATA = "case_data";
-    private static final String ERRORS = "errors";
 
     @Autowired
     private CosApiClient cosApiClient;
@@ -30,14 +29,16 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
     public void givenUndefendedCase_whenSubmitAOS_thenReturnAOSData() {
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(CO_UNDEFENDED_CASE_RESPONSE, Map.class);
         Map<String, Object> response = cosApiClient.coRespReceived(createCaseWorkerUser().getAuthToken(), aosCase);
-        assertEquals(aosCase.get(CASE_DATA), response.get(CASE_DATA));
+        assertNotNull(response.get(DATA));
+        assertEquals(((Map<String, Object>)aosCase.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
     }
 
     @Test
     public void givenDefendedCase_whenSubmitAOS_thenReturnAOSData() {
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(CO_DEFENDED_CASE_RESPONSE, Map.class);
         Map<String, Object> response = cosApiClient.coRespReceived(createCaseWorkerUser().getAuthToken(), aosCase);
-        assertEquals(aosCase.get(CASE_DATA), response.get(CASE_DATA));
+        assertNotNull(response.get(DATA));
+        assertEquals(((Map<String, Object>)aosCase.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
     }
 
     @SuppressWarnings("unchecked")
@@ -49,7 +50,7 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
         Map<String, Object> response = cosApiClient
                 .aosReceived(createCaseWorkerUser().getAuthToken(), aosCaseWithoutEmailAddress);
 
-        assertNull(response.get(CASE_DATA));
+        assertNull(response.get(DATA));
         List<String> error = (List<String>) response.get(ERRORS);
         assertEquals(1,error.size());
         assertTrue(error.get(0).contains("email_address Not a valid email address"));

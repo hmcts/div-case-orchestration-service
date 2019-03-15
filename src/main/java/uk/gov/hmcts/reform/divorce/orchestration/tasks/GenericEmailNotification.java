@@ -13,6 +13,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.Collections;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
@@ -39,7 +40,7 @@ public class GenericEmailNotification implements Task<Map<String, Object>> {
         try {
             emailService.sendEmail(template, "submission notification", emailAddress, templateVars);
         } catch (NotificationClientException e) {
-            log.warn("Error sending email to " + emailAddress, e);
+            log.warn("Error sending email for case ID: " + context.getTransientObject(ID), e);
             context.setTransientObject(OrchestrationConstants.EMAIL_ERROR_KEY, e.getMessage());
             return Collections.emptyMap();
         }
