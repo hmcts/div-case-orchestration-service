@@ -25,6 +25,11 @@ public abstract class IntegrationTest {
     private static final String CASEWORKER_ROLE = "caseworker";
     private static final String PASSWORD = "PassW0rd";
 
+    protected static final String ERRORS = "errors";
+    protected static final String DATA = "data";
+    protected static final String CASE_DATA = "case_data";
+    protected static final String CASE_DETAILS = "case_details";
+
     private UserDetails caseWorkerUser;
     private UserDetails caseWorkerStrictUser;
 
