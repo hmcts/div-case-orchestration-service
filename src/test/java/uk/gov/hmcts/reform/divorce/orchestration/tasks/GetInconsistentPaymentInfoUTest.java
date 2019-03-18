@@ -104,7 +104,7 @@ public class GetInconsistentPaymentInfoUTest {
             )));
 
         assertNull(target.execute(context, testData));
-        assertTrue(context.getStatus());
+        assertTrue(context.hasTaskFailed());
     }
 
     @Test
