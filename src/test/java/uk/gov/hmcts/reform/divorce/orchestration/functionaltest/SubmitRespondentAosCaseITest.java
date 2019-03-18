@@ -18,6 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +47,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
@@ -172,12 +175,14 @@ public class SubmitRespondentAosCaseITest {
     @Test
     public void givenNoConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData(NO_VALUE, true);
+
         final String caseDataString = convertObjectToJsonString(caseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
 
         final Map<String, Object> existingCaseData = new HashMap<>();
         existingCaseData.put(CCD_CASE_DATA_FIELD, emptyMap());
+
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
 
         stubMaintenanceServerEndpointForUpdate(OK, AWAITING_ANSWER_AOS_EVENT_ID, caseData, caseDataString);
@@ -194,6 +199,9 @@ public class SubmitRespondentAosCaseITest {
     @Test
     public void givenAdulteryNoConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData(NO_VALUE, false);
+        caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        caseData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
+
         final String caseDataString = convertObjectToJsonString(caseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
@@ -289,6 +297,9 @@ public class SubmitRespondentAosCaseITest {
         } else {
             caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
         }
+        caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        caseData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
+
 
         return caseData;
     }
