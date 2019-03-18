@@ -93,7 +93,7 @@ public class ValidateCaseDataTest {
 
         //then
         assertNotNull(response);
-        assertTrue(context.getStatus());
+        assertTrue(context.hasTaskFailed());
     }
 
     @After

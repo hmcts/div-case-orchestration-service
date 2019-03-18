@@ -168,7 +168,7 @@ public class BulkPrinterTest {
 
         classUnderTest.execute(context, emptyMap());
 
-        assertThat(context.getStatus(), is(true));
+        assertThat(context.hasTaskFailed(), is(true));
         assertThat(context.getTransientObject(classUnderTest.getClass().getName() + "_Error"),
             is("Bulk print failed for respondent pack"));
     }
@@ -272,7 +272,7 @@ public class BulkPrinterTest {
 
         classUnderTest.execute(context, emptyMap());
 
-        assertThat(context.getStatus(), is(true));
+        assertThat(context.hasTaskFailed(), is(true));
         assertThat(context.getTransientObject(classUnderTest.getClass().getName() + "_Error"),
             is("Bulk print failed for co-respondent pack"));
     }
