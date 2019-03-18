@@ -10,12 +10,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Collections.emptyMap;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -29,6 +31,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
@@ -64,10 +68,15 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
+        Map<String, Object> expectedData  = new HashMap<>();
+        expectedData.putAll(divorceSession);
+        expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
+
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient)
-            .updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession);
+            .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(AWAITING_ANSWER_AOS_EVENT_ID), eq(expectedData));
     }
 
     @Test
@@ -80,10 +89,15 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
+        Map<String, Object> expectedData  = new HashMap<>();
+        expectedData.putAll(divorceSession);
+        expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
+
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient)
-            .updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession);
+            .updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, expectedData);
     }
 
     @Test
@@ -98,11 +112,15 @@ public class SubmitRespondentAosCaseUTest {
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
                 .thenReturn(CASE_UPDATE_RESPONSE);
+        Map<String, Object> expectedData  = new HashMap<>();
+        expectedData.putAll(divorceSession);
+        expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         // we let the case proceed to awaiting DN for unreasonable behaviour regardless of whether they admit or not
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, expectedData);
     }
 
     @Test
@@ -118,9 +136,14 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
+        Map<String, Object> expectedData  = new HashMap<>();
+        expectedData.putAll(divorceSession);
+        expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
+
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, expectedData);
     }
 
     @Test
@@ -136,9 +159,13 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
+        Map<String, Object> expectedData  = new HashMap<>();
+        expectedData.putAll(divorceSession);
+        expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, expectedData);
     }
 
     @Test
@@ -151,9 +178,14 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
+        Map<String, Object> expectedData  = new HashMap<>();
+        expectedData.putAll(divorceSession);
+        expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
+
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, expectedData);
     }
 
     private Map<String, Object> getCaseData(boolean consented, boolean defended) {
