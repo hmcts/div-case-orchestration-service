@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AOS_AWAITING_STATE;
@@ -37,11 +38,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -91,9 +93,7 @@ public class UpdateRespondentDetailsUTest {
 
         final Map<String, Object> dataToUpdate =
             ImmutableMap.of(
-                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
-                RECEIVED_AOS_FROM_RESP, YES_VALUE,
-                RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
+                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
             );
 
         when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
@@ -135,9 +135,7 @@ public class UpdateRespondentDetailsUTest {
 
         final Map<String, Object> dataToUpdate =
             ImmutableMap.of(
-                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
-                RECEIVED_AOS_FROM_RESP, YES_VALUE,
-                RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
+                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
             );
 
         when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
@@ -204,6 +202,49 @@ public class UpdateRespondentDetailsUTest {
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_REISSUE, dataToUpdate);
     }
 
+    @Test
+    public void whenCoRespondentData_whenUpdateRespondentDetails_thenUpdatedCoRespondentFields() throws TaskException {
+        final UserDetails payload = UserDetails.builder().build();
+
+        final TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        taskContext.setTransientObject(IS_RESPONDENT, false);
+
+        final UserDetails coRespondentDetails =
+            UserDetails.builder()
+                .id(TEST_USER_ID)
+                .email(TEST_EMAIL)
+                .build();
+
+        final Map<String, Object> caseData = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
+        final CaseDetails caseDetails =
+            CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
+                .state(AOS_AWAITING_STATE)
+                .caseData(caseData)
+                .build();
+
+
+        when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(coRespondentDetails);
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN))
+            .thenReturn(caseDetails);
+
+        Assert.assertEquals(payload, classUnderTest.execute(taskContext, payload));
+
+        final Map<String, Object> expectedDataToUpdate =
+            ImmutableMap.of(
+                CO_RESP_EMAIL_ADDRESS, TEST_EMAIL,
+                CO_RESP_LINKED_TO_CASE, YES_VALUE,
+                CO_RESP_LINKED_TO_CASE_DATE, CcdUtil.getCurrentDate()
+            );
+
+        verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);
+        verify(caseMaintenanceClient).updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(LINK_RESPONDENT_GENERIC_EVENT_ID), eq(expectedDataToUpdate));
+        verify(caseMaintenanceClient).retrieveAosCase(AUTH_TOKEN);
+    }
+
+
     private UserDetails createTestUserDetails() {
         return UserDetails.builder()
                 .id(TEST_USER_ID)
@@ -222,9 +263,7 @@ public class UpdateRespondentDetailsUTest {
 
     private Map<String, Object> createDataToUpdate() {
         return ImmutableMap.of(
-                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
-                RECEIVED_AOS_FROM_RESP, YES_VALUE,
-                RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
+                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
         );
     }
 }

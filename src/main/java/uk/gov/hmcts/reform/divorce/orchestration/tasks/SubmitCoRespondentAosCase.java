@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.Validati
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -30,6 +31,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AOS_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AOS_SUBMIT_AWAIT_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DEFENDED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
 public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
@@ -68,6 +72,9 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
         if (isCoRespondentDefending) {
             submissionData.put(CO_RESPONDENT_DUE_DATE, getDueDateForCoRespondent());
         }
+
+        submissionData.put(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
+        submissionData.put(RECEIVED_AOS_FROM_CO_RESP_DATE, CcdUtil.getCurrentDate());
 
         final Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
             authToken,

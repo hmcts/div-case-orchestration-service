@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.Validati
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -52,6 +53,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AOS_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AOS_SUBMIT_AWAIT_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DEFENDED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SubmitCoRespondentAosCaseUTest {
@@ -121,7 +125,7 @@ public class SubmitCoRespondentAosCaseUTest {
 
     @Test
     public void givenCaseIsAosAwaiting_whenCoRespondentSubmits_thenSubmitCorrectEvent() throws TaskException {
-        final Map<String, Object> submissionData = emptyMap();
+        final Map<String, Object> submissionData = new HashMap<>();
 
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
@@ -138,7 +142,7 @@ public class SubmitCoRespondentAosCaseUTest {
 
     @Test
     public void givenCaseIsAosStarted_whenCoRespondentSubmits_thenSubmitCorrectEvent() throws TaskException {
-        final Map<String, Object> submissionData = emptyMap();
+        final Map<String, Object> submissionData = new HashMap<>();
 
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
@@ -155,7 +159,7 @@ public class SubmitCoRespondentAosCaseUTest {
 
     @Test
     public void givenCaseIsAosSubmittedAwaitingAnswer_whenCoRespondentSubmits_thenSubmitCorrectEvent() throws TaskException {
-        final Map<String, Object> submissionData = emptyMap();
+        final Map<String, Object> submissionData = new HashMap<>();
 
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
@@ -172,7 +176,7 @@ public class SubmitCoRespondentAosCaseUTest {
 
     @Test
     public void givenCaseIsAosOverdue_whenCoRespondentSubmits_thenSubmitCorrectEvent() throws TaskException {
-        final Map<String, Object> submissionData = emptyMap();
+        final Map<String, Object> submissionData = new HashMap<>();
 
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
@@ -189,7 +193,7 @@ public class SubmitCoRespondentAosCaseUTest {
 
     @Test
     public void givenCaseIsAosDefended_whenCoRespondentSubmits_thenSubmitCorrectEvent() throws TaskException {
-        final Map<String, Object> submissionData = emptyMap();
+        final Map<String, Object> submissionData = new HashMap<>();
 
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
@@ -214,6 +218,8 @@ public class SubmitCoRespondentAosCaseUTest {
         final Map<String, Object> recalculatedSubmissionData = new HashMap<>();
         recalculatedSubmissionData.put(CO_RESPONDENT_DEFENDS_DIVORCE, "YES");
         recalculatedSubmissionData.put(CO_RESPONDENT_DUE_DATE, FIXED_DATE_TIME.plusDays(21).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        recalculatedSubmissionData.put(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
+        recalculatedSubmissionData.put(RECEIVED_AOS_FROM_CO_RESP_DATE, CcdUtil.getCurrentDate());
 
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
