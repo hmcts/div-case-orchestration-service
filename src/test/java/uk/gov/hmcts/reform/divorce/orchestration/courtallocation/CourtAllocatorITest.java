@@ -25,9 +25,6 @@ public class CourtAllocatorITest {
     private static final int SAMPLES_NUMBER = 10000;
 
     @Autowired
-    private CourtAllocationConfiguration courtAllocationConfiguration;
-
-    @Autowired
     private CourtAllocator courtAllocator;
 
     @Test
