@@ -227,7 +227,7 @@ public class UpdateRespondentDetailsUTest {
 
 
         when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(coRespondentDetails);
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, true))
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN))
             .thenReturn(caseDetails);
 
         Assert.assertEquals(payload, classUnderTest.execute(taskContext, payload));
@@ -241,7 +241,7 @@ public class UpdateRespondentDetailsUTest {
 
         verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);
         verify(caseMaintenanceClient).updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(LINK_RESPONDENT_GENERIC_EVENT_ID), eq(expectedDataToUpdate));
-        verify(caseMaintenanceClient).retrieveAosCase(AUTH_TOKEN, true);
+        verify(caseMaintenanceClient).retrieveAosCase(AUTH_TOKEN);
     }
 
 
