@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkfl
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerGenericEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
@@ -46,7 +47,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -93,6 +96,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private SendPetitionerGenericEmailNotificationWorkflow sendPetitionerGenericEmailNotificationWorkflow;
+
+    @Mock
+    private SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
 
     @Mock
     private SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
@@ -426,6 +432,16 @@ public class CaseOrchestrationServiceImplTest {
         // then
         assertEquals(requestPayload, actual);
         verify(sendPetitionerGenericEmailNotificationWorkflow).run(ccdCallbackRequest);
+    }
+
+    @Test
+    public void givenCaseData_whenSendPetitionerClarificationRequestNotification_thenReturnPayload() throws Exception {
+        when(sendPetitionerClarificationRequestNotificationWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
+
+        final Map<String, Object> actual = classUnderTest.sendPetitionerClarificationRequestNotification(ccdCallbackRequest);
+
+        assertThat(actual, is(requestPayload));
+        verify(sendPetitionerClarificationRequestNotificationWorkflow).run(ccdCallbackRequest);
     }
 
     @Test

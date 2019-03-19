@@ -531,4 +531,19 @@ public class OrchestrationController {
 
         return ResponseEntity.ok(orchestrationService.amendPetition(caseId, authorizationToken));
     }
+
+    @PostMapping(path = "/request-clarification-petitioner")
+    @ApiOperation(value = "Request clarification from petitioner via notification ")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "clarification request sent successful"),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> requestClarificationFromPetitioner(
+        @RequestBody @ApiParam("CaseData") final CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        orchestrationService.sendPetitionerClarificationRequestNotification(ccdCallbackRequest);
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
+            .build());
+    }
+
 }

@@ -135,4 +135,16 @@ public class EmailServiceTest {
                 eq(emailTemplateVars.get(EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name())),
                 anyString());
     }
+
+    @Test
+    public void sendPetitionerClarificationRequestEmailShouldCallTheEmailClientToSendAnEmail() throws NotificationClientException {
+        emailService.sendPetitionerClarificationRequestEmail(EMAIL_ADDRESS, null);
+
+        verify(mockClient).sendEmail(
+                eq(emailTemplates.get(EmailTemplateNames.PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION.name())),
+                eq(EMAIL_ADDRESS),
+                eq(emailTemplateVars.get(EmailTemplateNames.PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION.name())),
+                anyString());
+    }
+
 }

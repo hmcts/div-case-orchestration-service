@@ -28,7 +28,7 @@ public class EmailNotification  implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> draft) {
         boolean sendEmail = parseBooleanFromString(String.valueOf(context.getTransientObject(NOTIFICATION_SEND_EMAIL)));
-        String emailAddress = String.valueOf((context.getTransientObject(NOTIFICATION_EMAIL)));
+        String emailAddress = String.valueOf(context.getTransientObject(NOTIFICATION_EMAIL));
         if (sendEmail && StringUtils.isNotBlank(emailAddress)) {
             return emailService.sendSaveDraftConfirmationEmail(emailAddress);
         }

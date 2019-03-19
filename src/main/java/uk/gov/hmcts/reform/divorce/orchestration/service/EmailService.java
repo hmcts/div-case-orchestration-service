@@ -84,6 +84,12 @@ public class EmailService {
                 "resp does not consent to 2 year separation update notification");
     }
 
+    public Map<String, Object> sendPetitionerClarificationRequestEmail(final String destinationAddress, final Map<String, String> templateVars) {
+        String templateName = EmailTemplateNames.PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION.name();
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+        return sendEmailAndReturnErrorsInResponse(emailToSend,"clarification requested by LA from petitioner email notification");
+    }
+
     public void sendEmail(EmailTemplateNames emailTemplate,
                           String destinationAddress,
                           Map<String, String> templateParameters) throws NotificationClientException {
