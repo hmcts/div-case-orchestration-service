@@ -13,8 +13,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
@@ -49,7 +49,7 @@ public class SolicitorCreateITest {
                     .state(TEST_STATE)
                     .build();
 
-    private static final CreateEvent CREATE_EVENT = CreateEvent.builder()
+    private static final CcdCallbackRequest CREATE_EVENT = CcdCallbackRequest.builder()
             .caseDetails(CASE_DETAILS)
             .build();
 

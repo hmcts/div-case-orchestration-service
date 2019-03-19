@@ -16,8 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -92,7 +92,7 @@ public class AosRespondentSubmittedITest {
 
         String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
 
-        CreateEvent caseEvent = CreateEvent.builder().eventId(EVENT_ID)
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(EVENT_ID)
                 .caseDetails(CaseDetails.builder()
                         .caseId(CASE_ID)
                         .caseData(caseDetailMap)
@@ -101,7 +101,7 @@ public class AosRespondentSubmittedITest {
 
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
-                .content(ObjectMapperTestUtil.convertObjectToJsonString(caseEvent))
+                .content(ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(expectedResponse));
@@ -117,7 +117,7 @@ public class AosRespondentSubmittedITest {
                 D_8_CASE_REFERENCE, D8_ID
         );
 
-        CreateEvent caseEvent = CreateEvent.builder().eventId(CASE_ID)
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(CASE_ID)
                 .caseDetails(CaseDetails.builder()
                         .caseData(caseDetailMap)
                         .build())
@@ -125,12 +125,12 @@ public class AosRespondentSubmittedITest {
 
         CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
                 .builder()
-                .data(caseEvent.getCaseDetails().getCaseData())
+                .data(ccdCallbackRequest.getCaseDetails().getCaseData())
                 .build();
         String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
-                .content(ObjectMapperTestUtil.convertObjectToJsonString(caseEvent))
+                .content(ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(expectedResponse));
@@ -146,7 +146,7 @@ public class AosRespondentSubmittedITest {
                 D_8_CASE_REFERENCE, D8_ID
         );
 
-        CreateEvent caseEvent = CreateEvent.builder().eventId(EVENT_ID)
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(EVENT_ID)
                 .caseDetails(CaseDetails.builder()
                         .caseId(CASE_ID)
                         .caseData(caseDetailMap)
@@ -163,7 +163,7 @@ public class AosRespondentSubmittedITest {
         String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
-                .content(ObjectMapperTestUtil.convertObjectToJsonString(caseEvent))
+                .content(ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(expectedResponse));
