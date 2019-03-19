@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
-import com.google.common.collect.ImmutableMap;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,11 +19,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -35,7 +37,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_AOS_COMPLETE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
@@ -46,9 +52,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class SubmitDnCaseITest {
     private static final String API_URL = String.format("/submit-dn/%s", TEST_CASE_ID);
-
     private static final String FORMAT_TO_DN_CASE_CONTEXT_PATH = "/caseformatter/version/1/to-dn-submit-format";
     private static final String UPDATE_CONTEXT_PATH = "/casemaintenance/version/1/updateCase/" + TEST_CASE_ID + "/";
+    private static final String RETRIEVE_CASE_CONTEXT_PATH = String.format(
+            "/casemaintenance/version/1/case/%s",
+            TEST_CASE_ID
+    );
+    private static Map<String, Object> CASE_DATA = new HashMap<>();
+    private static Map<String, Object> EXISTING_CASE_DATA = new HashMap<>();
 
     @Autowired
     private MockMvc webClient;
@@ -62,7 +73,7 @@ public class SubmitDnCaseITest {
     @Test
     public void givenNoAuthToken_whenSubmitDn_thenReturnBadRequest() throws Exception {
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .content(convertObjectToJsonString(getCaseData()))
+            .content(convertObjectToJsonString(CASE_DATA))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
@@ -79,13 +90,11 @@ public class SubmitDnCaseITest {
 
     @Test
     public void givenCaseFormatterFails_whenSubmitDn_thenPropagateTheException() throws Exception {
-        final Map<String, Object> caseData = getCaseData();
-
-        stubFormatterServerEndpoint(BAD_REQUEST, caseData, TEST_ERROR);
+        stubFormatterServerEndpoint(BAD_REQUEST, CASE_DATA, TEST_ERROR);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
+            .content(convertObjectToJsonString(CASE_DATA))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
@@ -94,14 +103,15 @@ public class SubmitDnCaseITest {
 
     @Test
     public void givenCaseUpdateFails_whenSubmitDn_thenPropagateTheException() throws Exception {
-        final Map<String, Object> caseData = getCaseData();
+        stubFormatterServerEndpoint(OK, CASE_DATA, convertObjectToJsonString(CASE_DATA));
+        stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, DN_RECEIVED, CASE_DATA, TEST_ERROR);
 
-        stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
-        stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, DN_RECEIVED, caseData, TEST_ERROR);
+        EXISTING_CASE_DATA.put(CCD_CASE_DATA_FIELD, emptyMap());
+        stubMaintenanceServerEndpointForRetrieveCaseById(OK, EXISTING_CASE_DATA);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
+            .content(convertObjectToJsonString(CASE_DATA))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
@@ -109,16 +119,36 @@ public class SubmitDnCaseITest {
     }
 
     @Test
-    public void givenConsentAndDefend_whenSubmitDn_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseData();
-        final String caseDataString = convertObjectToJsonString(caseData);
+    public void givenDnReceivedAndAosNotCompleted_whenSubmitDn_thenProceedAsExpected() throws Exception {
+        final String caseDataString = convertObjectToJsonString(CASE_DATA);
 
-        stubFormatterServerEndpoint(OK, caseData, caseDataString);
-        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED, caseData, caseDataString);
+        EXISTING_CASE_DATA.put(CCD_CASE_DATA_FIELD, emptyMap());
+        stubMaintenanceServerEndpointForRetrieveCaseById(OK, EXISTING_CASE_DATA);
+        stubFormatterServerEndpoint(OK, CASE_DATA, caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED, CASE_DATA, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
+            .content(convertObjectToJsonString(CASE_DATA))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(caseDataString));
+    }
+
+    @Test
+    public void givenDnReceivedAndAosCompleted_whenSubmitDn_thenProceedAsExpected() throws Exception {
+        CASE_DATA.put(CASE_STATE_JSON_KEY, AOS_COMPLETED);
+        final String caseDataString = convertObjectToJsonString(CASE_DATA);
+
+        EXISTING_CASE_DATA.put(CCD_CASE_DATA_FIELD, CASE_DATA);
+        stubMaintenanceServerEndpointForRetrieveCaseById(OK, EXISTING_CASE_DATA);
+        stubFormatterServerEndpoint(OK, CASE_DATA, caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_AOS_COMPLETE, CASE_DATA, caseDataString);
+
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(CASE_DATA))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -145,7 +175,12 @@ public class SubmitDnCaseITest {
                 .withBody(response)));
     }
 
-    private Map<String, Object> getCaseData() {
-        return ImmutableMap.of();
+    private void stubMaintenanceServerEndpointForRetrieveCaseById(HttpStatus status, Map<String, Object> cmsData) {
+        maintenanceServiceServer.stubFor(WireMock.get(RETRIEVE_CASE_CONTEXT_PATH)
+            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(convertObjectToJsonString(cmsData))));
     }
 }
