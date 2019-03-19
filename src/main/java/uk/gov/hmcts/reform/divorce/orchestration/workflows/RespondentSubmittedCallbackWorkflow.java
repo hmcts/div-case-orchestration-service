@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
@@ -63,7 +64,8 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(NOTIFICATION_EMAIL, petitionerEmail),
             ImmutablePair.of(NOTIFICATION_TEMPLATE_VARS, notificationTemplateVars),
-            ImmutablePair.of(NOTIFICATION_TEMPLATE, EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT)
+            ImmutablePair.of(NOTIFICATION_TEMPLATE, EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT),
+            ImmutablePair.of(ID, caseDetails.getCaseId())
         );
     }
 

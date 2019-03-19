@@ -86,6 +86,10 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         );
     }
 
+    public CaseDetails retrieveCase(final UserDetails user, String caseId) {
+        return ccdClientSupport.retrieveCase(user, caseId);
+    }
+
     private Map<String, Object> populateHeaders(String userToken) {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());

@@ -86,6 +86,8 @@ public class OrchestrationConstants {
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
 
     // CCD Co-Respondent Fields
+    public static final String CO_RESP_LINKED_TO_CASE = "CoRespLinkedToCase";
+    public static final String CO_RESP_LINKED_TO_CASE_DATE = "CoRespLinkedToCaseDate";
     public static final String CO_RESPONDENT_LETTER_HOLDER_ID = "CoRespLetterHolderId";
     public static final String CO_RESP_EMAIL_ADDRESS = "CoRespEmailAddress";
     public static final String CO_RESP_DEFENDS_DIVORCE = "CoRespDefendsDivorce";
