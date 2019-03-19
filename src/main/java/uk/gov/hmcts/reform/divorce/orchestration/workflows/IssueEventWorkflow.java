@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -67,7 +67,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         this.caseFormatterAddDocuments = caseFormatterAddDocuments;
     }
 
-    public Map<String, Object> run(CreateEvent caseDetailsRequest,
+    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,
                                    String authToken, boolean generateAosInvitation) throws WorkflowException {
 
         List<Task> tasks = new ArrayList<>();
@@ -76,7 +76,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         tasks.add(setIssueDate);
         tasks.add(petitionGenerator);
 
-        final Map<String, Object> caseData = caseDetailsRequest.getCaseDetails().getCaseData();
+        final Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         if (generateAosInvitation && isServiceCentreDivorceUnit(caseData)) {
             tasks.add(respondentPinGenerator);
@@ -98,7 +98,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
             tasks.toArray(new Task[tasks.size()]),
             caseData,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetailsRequest.getCaseDetails())
+            ImmutablePair.of(CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails())
         );
     }
 

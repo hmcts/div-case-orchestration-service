@@ -4,7 +4,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -40,8 +40,8 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         this.emailNotificationTask = emailNotificationTask;
     }
 
-    public Map<String, Object> run(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException {
-        CaseDetails caseDetails = caseDetailsRequest.getCaseDetails();
+    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
 
         String firstName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_FIRST_NAME);
@@ -60,7 +60,7 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
             new Task[]{
                 emailNotificationTask
             },
-            caseDetailsRequest.getCaseDetails().getCaseData(),
+            ccdCallbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(NOTIFICATION_EMAIL, petitionerEmail),
             ImmutablePair.of(NOTIFICATION_TEMPLATE_VARS, notificationTemplateVars),

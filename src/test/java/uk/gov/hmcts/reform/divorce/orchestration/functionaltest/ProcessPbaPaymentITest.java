@@ -19,8 +19,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeValue;
@@ -91,7 +91,7 @@ public class ProcessPbaPaymentITest {
 
     private Map<String, Object> caseData;
     private CaseDetails caseDetails;
-    private CreateEvent createEvent;
+    private CcdCallbackRequest ccdCallbackRequest;
     private CreditAccountPaymentRequest request;
 
     @Before
@@ -151,7 +151,7 @@ public class ProcessPbaPaymentITest {
                         .state(TEST_STATE)
                         .build();
 
-        createEvent = CreateEvent.builder()
+        ccdCallbackRequest = CcdCallbackRequest.builder()
                         .caseDetails(caseDetails)
                         .build();
 
@@ -163,7 +163,7 @@ public class ProcessPbaPaymentITest {
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(createEvent))
+                .content(convertObjectToJsonString(ccdCallbackRequest))
                 .header(AUTHORIZATION, AUTH_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -182,7 +182,7 @@ public class ProcessPbaPaymentITest {
                 .state(TEST_STATE)
                 .build();
 
-        createEvent = CreateEvent.builder()
+        ccdCallbackRequest = CcdCallbackRequest.builder()
                 .caseDetails(caseDetails)
                 .build();
 
@@ -193,7 +193,7 @@ public class ProcessPbaPaymentITest {
                 .build();
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(createEvent))
+                .content(convertObjectToJsonString(ccdCallbackRequest))
                 .header(AUTHORIZATION, AUTH_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

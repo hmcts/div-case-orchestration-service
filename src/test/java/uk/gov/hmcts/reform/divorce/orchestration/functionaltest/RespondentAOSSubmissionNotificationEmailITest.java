@@ -13,8 +13,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
@@ -58,15 +58,15 @@ public class RespondentAOSSubmissionNotificationEmailITest {
     @Test
     public void testResponseHasDataAndNoErrors_whenEmailCanBeSent_forDefendedDivorce() throws Exception {
 
-        CreateEvent createEvent = getJsonFromResourceFile(
-                "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
-        Map<String, Object> caseData = createEvent.getCaseDetails().getCaseData();
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CcdCallbackRequest.class);
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
                 .data(caseData)
                 .build();
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(createEvent))
+                .content(convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -83,15 +83,15 @@ public class RespondentAOSSubmissionNotificationEmailITest {
 
     @Test
     public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce() throws Exception {
-        CreateEvent createEvent = getJsonFromResourceFile(
-                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CreateEvent.class);
-        Map<String, Object> caseData = createEvent.getCaseDetails().getCaseData();
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CcdCallbackRequest.class);
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
                 .data(caseData)
                 .build();
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(createEvent))
+                .content(convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -108,11 +108,11 @@ public class RespondentAOSSubmissionNotificationEmailITest {
 
     @Test
     public void testResponseHasValidationErrors_WhenItIsNotClearIfDivorceWillBeDefended() throws Exception {
-        CreateEvent createEvent = getJsonFromResourceFile(
-                "/jsonExamples/payloads/unclearAcknowledgementOfService.json", CreateEvent.class);
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/unclearAcknowledgementOfService.json", CcdCallbackRequest.class);
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(createEvent))
+                .content(convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -126,11 +126,11 @@ public class RespondentAOSSubmissionNotificationEmailITest {
 
     @Test
     public void testResponseHasValidationErrors_WhenCaseIdIsMissing_ForDefendedDivorce() throws Exception {
-        CreateEvent createEvent = getJsonFromResourceFile(
-                "/jsonExamples/payloads/defendedDivorceAOSMissingCaseId.json", CreateEvent.class);
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/defendedDivorceAOSMissingCaseId.json", CcdCallbackRequest.class);
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(createEvent))
+                .content(convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -144,11 +144,11 @@ public class RespondentAOSSubmissionNotificationEmailITest {
 
     @Test
     public void testResponseHasValidationErrors_WhenFieldsAreMissing_ForDefendedDivorce() throws Exception {
-        CreateEvent createEvent = getJsonFromResourceFile(
-                "/jsonExamples/payloads/defendedDivorceAOSMissingFields.json", CreateEvent.class);
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/defendedDivorceAOSMissingFields.json", CcdCallbackRequest.class);
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(createEvent))
+                .content(convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -163,11 +163,11 @@ public class RespondentAOSSubmissionNotificationEmailITest {
 
     @Test
     public void testResponseHasValidationErrors_WhenFieldsAreMissing_ForUndefendedDivorce() throws Exception {
-        CreateEvent createEvent = getJsonFromResourceFile(
-                "/jsonExamples/payloads/undefendedDivorceAOSMissingFields.json", CreateEvent.class);
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/undefendedDivorceAOSMissingFields.json", CcdCallbackRequest.class);
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(createEvent))
+                .content(convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -182,12 +182,12 @@ public class RespondentAOSSubmissionNotificationEmailITest {
 
     @Test
     public void testResponseHasError_IfEmailCannotBeSent() throws Exception {
-        CreateEvent createEvent = getJsonFromResourceFile(
-                "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CcdCallbackRequest.class);
         doThrow(NotificationClientException.class).when(mockClient).sendEmail(any(), any(), any(), any());
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(createEvent))
+                .content(convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())

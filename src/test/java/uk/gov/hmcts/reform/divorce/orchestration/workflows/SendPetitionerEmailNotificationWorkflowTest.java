@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmail;
@@ -40,7 +40,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
     @InjectMocks
     private SendPetitionerGenericEmailNotificationWorkflow sendPetitionerGenericEmailNotificationWorkflow;
 
-    private CreateEvent createEventRequest;
+    private CcdCallbackRequest ccdCallbackRequestRequest;
     private Map<String, Object> testData;
     private TaskContext context;
 
@@ -53,8 +53,8 @@ public class SendPetitionerEmailNotificationWorkflowTest {
             .state(TEST_STATE)
             .caseData(testData)
             .build();
-        createEventRequest =
-                CreateEvent.builder()
+        ccdCallbackRequestRequest =
+                CcdCallbackRequest.builder()
                         .eventId(TEST_EVENT_ID)
                         .token(TEST_TOKEN)
                         .caseDetails(
@@ -70,7 +70,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
     public void genericEmailTaskShouldExecuteAndReturnPayload() throws Exception {
         when(sendPetitionerUpdateNotificationsEmail.execute(context, testData)).thenReturn(testData);
 
-        assertEquals(testData, sendPetitionerGenericEmailNotificationWorkflow.run(createEventRequest));
+        assertEquals(testData, sendPetitionerGenericEmailNotificationWorkflow.run(ccdCallbackRequestRequest));
 
         verify(sendPetitionerUpdateNotificationsEmail).execute(context, testData);
     }
@@ -79,7 +79,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
     public void submissionEmailTaskShouldExecuteAndReturnPayload() throws Exception {
         when(sendPetitionerSubmissionNotificationEmail.execute(context, testData)).thenReturn(testData);
 
-        assertEquals(testData, sendPetitionerSubmissionNotificationWorkflow.run(createEventRequest));
+        assertEquals(testData, sendPetitionerSubmissionNotificationWorkflow.run(ccdCallbackRequestRequest));
 
         verify(sendPetitionerSubmissionNotificationEmail).execute(context, testData);
     }
