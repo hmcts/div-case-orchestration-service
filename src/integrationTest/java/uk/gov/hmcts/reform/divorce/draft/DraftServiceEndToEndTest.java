@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.support.cms.CmsClientSupport;
 import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -28,7 +29,6 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     private static final String DRAFT_WITH_DIVORCE_FORMAT_FILE = "draft/draft-with-divorce-format.json";
 
     private static final String BASE_CASE_TO_SUBMIT = "draft/basic-case.json";
-    private static final String BASE_CASE_RESPONSE = "draft/complete-case-response.json";
 
     private static final String NO_VALID_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib"
         + "mFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
@@ -133,12 +133,9 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
         draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
 
-        try {
-            draftsSubmissionSupport.getUserDraft(user);
-            fail("Resource not found error expected");
-        } catch (FeignException error) {
-            assertEquals(HttpStatus.NOT_FOUND.value(), error.status());
-        }
+        Map<String, Object> draftFromCMS = cmsClientSupport.getDrafts(user);
+        List response = (List) draftFromCMS.get(CMS_DATA_KEY);
+        assertEquals(0, response.size());
     }
 
     @Test
