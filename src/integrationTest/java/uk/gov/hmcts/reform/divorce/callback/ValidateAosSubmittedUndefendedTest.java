@@ -26,7 +26,7 @@ public class ValidateAosSubmittedUndefendedTest extends IntegrationTest {
     private static final List<String> EXPECTED_ERROR =
         Collections.singletonList("aosReceivedNoAdConStarted event should be used for AOS submission in this case");
 
-    @Value("${case.orchestration.validate-event.context-path}")
+    @Value("${case.orchestration.validate-aos-submitted-undefended.context-path}")
     private String contextPath;
 
     @Test
