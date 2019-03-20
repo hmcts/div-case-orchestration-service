@@ -1,0 +1,15 @@
+java:
+    applicationPort: 4012
+    # Don't modify below here
+    image: ${IMAGE_NAME}
+    ingressHost: ${SERVICE_FQDN}
+    environment:
+        REFORM_SERVICE_NAME: "cos"
+        REFORM_TEAM: "div"
+        SLOT: "PRODUCTION"
+        IDAM_CITIZEN_PASSWORD : ${IDAM_CITIZEN_PASSWORD}
+        AUTH2_CLIENT_SECRET : ${AUTH2_CLIENT_SECRET}
+        SERVICE_AUTH_MICROSERVICE : "divorce_frontend"
+
+        SERVICE_AUTH_SECRET : ${SERVICE_AUTH_SECRET}
+        IDAM_CASEWORKER_PASSWORD : ${IDAM_CASEWORKER_PASSWORD}
