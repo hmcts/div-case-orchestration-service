@@ -20,13 +20,13 @@ public class DefaultTaskContextTest {
 
     @Test
     public void defaultContextStatusIsFalseByDefault() {
-        assertFalse(defaultTaskContext.getStatus());
+        assertFalse(defaultTaskContext.hasTaskFailed());
     }
 
     @Test
     public void defaultContextStatusIsTrueWhenSetFailedIsCalled() {
         defaultTaskContext.setTaskFailed(true);
-        assertTrue(defaultTaskContext.getStatus());
+        assertTrue(defaultTaskContext.hasTaskFailed());
     }
 
 }

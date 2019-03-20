@@ -4,7 +4,7 @@ public interface TaskContext {
 
     void setTaskFailed(boolean status);
 
-    boolean getStatus();
+    boolean hasTaskFailed();
 
     void setTransientObject(String key, Object data);
 
