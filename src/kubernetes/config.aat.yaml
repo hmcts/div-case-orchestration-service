@@ -17,7 +17,7 @@ data:
   UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS : "{SAVE_DRAFT: {divorceUrl: 'https://div-pfe-aat.service.core-compute-aat.internal'}}"
   DOCUMENT_GENERATOR_SERVICE_API_BASEURL : "http://div-dgs-aat.service.core-compute-aat.internal"
   FEES_AND_PAYMENTS_SERVICE_API_BASEURL : "http://div-fps-aat.service.core-compute-aat.internal"
-  IDAM_API_URL : "https://preprod-idamapi.reform.hmcts.net:3511"
+  IDAM_API_URL : "https://idam-api.aat.platform.hmcts.net"
   REFORM_TEAM : "div"
   DRAFT_CCD_CHECK_ENABLED : "true"
   FEATURE_TOGGLE_520 : "false"
