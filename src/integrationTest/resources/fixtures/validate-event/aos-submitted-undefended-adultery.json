@@ -1,0 +1,13 @@
+{
+  "event_id" : "aosSubmittedUndefended",
+  "case_details" : {
+    "case_data" : {
+      "RespAdmitOrConsentToFact" : "No",
+      "D8ReasonForDivorce" : "Adultery",
+      "D8DivorceUnit" : "eastMidlands",
+      "D8caseReference" : "LV17D80100"
+    },
+    "id" : "1517833758870511",
+    "state" : "AosStarted"
+  }
+}

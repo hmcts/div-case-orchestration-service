@@ -399,6 +399,25 @@ public class OrchestrationControllerTest {
     }
 
     @Test
+    public void whenValidateAosSubmittedUndefended_thenReturnCcdResponse() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CreateEvent createEvent = new CreateEvent();
+        createEvent.setCaseDetails(caseDetails);
+
+        when(caseOrchestrationService.validateAosSubmittedUndefended(createEvent)).thenReturn(new ArrayList<String>());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.validateAosSubmittedUndefended(createEvent);
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
     public void whenProcessPbaPayment_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()

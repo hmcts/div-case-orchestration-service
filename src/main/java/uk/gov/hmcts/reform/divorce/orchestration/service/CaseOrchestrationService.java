@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 
+import java.util.List;
 import java.util.Map;
 
 public interface CaseOrchestrationService {
@@ -76,4 +77,6 @@ public interface CaseOrchestrationService {
     Map<String, Object> amendPetition(String caseId, String authorisation) throws WorkflowException;
 
     CcdCallbackResponse sendCoRespReceivedNotificationEmail(CreateEvent caseDetailsRequest) throws WorkflowException;
+
+    List<String> validateAosSubmittedUndefended(CreateEvent caseDetailsRequest);
 }

@@ -38,15 +38,24 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 
 @Slf4j
 @Service
@@ -395,5 +404,28 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             log.error("Unable to create new amendment petition for case {}", caseId);
         }
         return response;
+    }
+
+    @Override
+    public  List<String> validateAosSubmittedUndefended(CreateEvent caseDetailsRequest) {
+        List<String> errors = new ArrayList<>();
+
+        if (caseDetailsRequest.getEventId().equalsIgnoreCase(AWAITING_DN_AOS_EVENT_ID)) {
+            Map<String, Object> caseData = caseDetailsRequest.getCaseDetails().getCaseData();
+            final String reasonForDivorce = (String)caseData.get(D_8_REASON_FOR_DIVORCE);
+            final String respAdmitOrConsentToFact = (String)caseData.get(RESP_ADMIT_OR_CONSENT_TO_FACT);
+
+            if ((ADULTERY.equalsIgnoreCase(reasonForDivorce)
+                || SEPARATION_2YRS.equalsIgnoreCase(reasonForDivorce))
+                && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
+                log.info("CASE ID: {}. Validate Event failed: {}.", caseDetailsRequest
+                        .getCaseDetails()
+                        .getCaseId(),
+                    AWAITING_DN_AOS_EVENT_ID);
+                errors.add(String.format("%s event should be used for AOS submission in this case",
+                    COMPLETED_AOS_EVENT_ID));
+            }
+        }
+        return errors;
     }
 }

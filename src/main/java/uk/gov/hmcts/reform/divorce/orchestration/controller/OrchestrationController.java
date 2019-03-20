@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -388,6 +389,27 @@ public class OrchestrationController {
             .data(orchestrationService.setOrderSummary(caseDetailsRequest))
             .build()
         );
+    }
+
+    @PostMapping(path = "/validate-aos-submitted-undefended",
+        consumes = MediaType.APPLICATION_JSON,
+        produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Validates AosSubmittedUndefended event for the given case")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback to validate the event",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> validateAosSubmittedUndefended(
+        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) {
+        List<String> validationErrors = orchestrationService.validateAosSubmittedUndefended(caseDetailsRequest);
+
+        if (CollectionUtils.isNotEmpty(validationErrors)) {
+            return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .errors(validationErrors)
+                .build());
+        }
+
+        return ResponseEntity.ok().build();
     }
 
     @SuppressWarnings("unchecked")
