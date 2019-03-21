@@ -74,7 +74,6 @@ public class AuthenticateRespondentUTest {
             .thenReturn(
                 UserDetails.builder()
                     .roles(Arrays.asList(
-                        "letter-holder",
                         "letter-loa1"
                     ))
                     .build());
@@ -102,7 +101,6 @@ public class AuthenticateRespondentUTest {
             .thenReturn(
                 UserDetails.builder()
                     .roles(Arrays.asList(
-                        "letter-12345",
                         "letter-holder",
                         "letter-loa1"
                     ))

@@ -44,26 +44,26 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
     }
 
     protected CaseDetails submitCase(String fileName) {
-        return submitCase(fileName, createCaseWorkerUser());
+        return submitCase(fileName, createCitizenUser());
     }
 
-    protected CaseDetails updateCase(String caseId, String fileName, String eventId) {
-        return ccdClientSupport.update(caseId,
-            fileName == null ? null : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class),
-            eventId, createCaseWorkerUser());
-    }
+    protected CaseDetails updateCase(String caseId, String fileName, String eventId,
+                                     Pair<String, String>... additionalCaseData) {
+        final Map caseData =
+                fileName == null ? new HashMap() : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class);
 
-    protected CaseDetails updateCaseForCaseWorkerOnly(String caseId, String fileName, String eventId) {
-        return ccdClientSupport.update(caseId,
-            fileName == null ? null : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class),
-            eventId, createOnlyCaseWorkerUser());
+        Arrays.stream(additionalCaseData).forEach(
+            caseField -> caseData.put(caseField.getKey(), caseField.getValue())
+        );
+
+        return ccdClientSupport.update(caseId, caseData, eventId, createCaseWorkerUser());
     }
 
     protected CaseDetails updateCaseForCitizen(String caseId, String fileName, String eventId,
                                                UserDetails userDetails) {
         return ccdClientSupport.updateForCitizen(caseId,
-            fileName == null ? null : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class),
-            eventId, userDetails);
+                fileName == null ? null : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class),
+                eventId, userDetails);
     }
 
     public Response submitRespondentAosCase(String userToken, Long caseId, String requestBody) {
@@ -80,9 +80,9 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         final Map<String, Object> headers = populateHeaders(userToken);
 
         return RestUtil.postToRestService(
-            serverUrl + submitCoRespondentAosContextPath,
-            headers,
-            requestBody
+                serverUrl + submitCoRespondentAosContextPath,
+                headers,
+                requestBody
         );
     }
 
