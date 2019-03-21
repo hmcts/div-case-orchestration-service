@@ -15,7 +15,7 @@ public class RegisterUserRequest {
     private String password;
     @Builder.Default
     private int levelOfAccess = 1;
-    private String[] roles;
+    private UserGroup[] roles;
     private UserGroup userGroup;
 }
 

@@ -36,7 +36,8 @@ import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
 
 @Lazy
 @Configuration
-@PropertySource({"classpath:application.properties"})
+@PropertySource("classpath:application.properties")
+@PropertySource("classpath:application-${env}.properties")
 public class ServiceContextConfiguration {
 
     @Bean

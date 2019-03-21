@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 locals {
-  aseName                     = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
+  aseName                     = "core-compute-${var.env}"
   local_env                   = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
 
   idam_s2s_url                      = "http://rpe-service-auth-provider-${local.local_env}.service.core-compute-${local.local_env}.internal"
@@ -20,7 +20,6 @@ locals {
   previewVaultName = "${var.raw_product}-aat"
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
-  idam_strategic_enabled = "false"
 
   asp_name = "${var.env == "prod" ? "div-cos-prod" : "${var.raw_product}-${var.env}"}"
   asp_rg = "${var.env == "prod" ? "div-cos-prod" : "${var.raw_product}-${var.env}"}"
@@ -61,7 +60,7 @@ module "div-cos" {
     IDAM_CITIZEN_PASSWORD                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-password.value}"
     IDAM_CASEWORKER_USERNAME                        = "${data.azurerm_key_vault_secret.auth-idam-caseworker-username.value}"
     IDAM_CASEWORKER_PASSWORD                        = "${data.azurerm_key_vault_secret.auth-idam-caseworker-password.value}"
-    IDAM_STRATEGIC_ENABLED                          = "${local.idam_strategic_enabled}"
+    IDAM_STRATEGIC_ENABLED                          = "${var.idam_strategic_enabled}"
     UK_GOV_NOTIFY_API_KEY                           = "${data.azurerm_key_vault_secret.uk-gov-notify-api-key.value}"
     UK_GOV_NOTIFY_EMAIL_TEMPLATES                   = "${var.uk_gov_notify_email_templates}"
     UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS               = "${var.uk_gov_notify_email_template_vars}"

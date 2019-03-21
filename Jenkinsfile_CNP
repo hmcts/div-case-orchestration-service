@@ -47,6 +47,11 @@ withPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
+    // Kubernetes does not retrieve variables from the output terraform
+    before('functionalTest:preview') {
+        env.test_environment = 'aat'
+    }
+
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
