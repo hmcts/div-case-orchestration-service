@@ -221,9 +221,18 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
                 petitionerUserDetails.getAuthToken());
 
         final CaseDetails caseDetails = submitCase(
-            "submit-unlinked-case.json",
-            createCaseWorkerUser(),
-            ImmutablePair.of(CO_RESPONDENT_LETTER_HOLDER_ID, pinResponse.getUserId()));
+                "submit-unlinked-case.json",
+                petitionerUserDetails);
+
+        updateCase(String.valueOf(caseDetails.getId()),
+                null,
+                PAYMENT_REFERENCE_EVENT,
+                ImmutablePair.of(CO_RESPONDENT_LETTER_HOLDER_ID, pinResponse.getUserId()));
+
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
+                null,
+                TEST_AOS_AWAITING_EVENT,
+                petitionerUserDetails);
 
         updateCase(String.valueOf(caseDetails.getId()), null, "testAosAwaiting");
 
