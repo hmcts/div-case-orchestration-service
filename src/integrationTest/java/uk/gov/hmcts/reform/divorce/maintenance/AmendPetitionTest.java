@@ -15,19 +15,23 @@ import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class AmendPetitionTest extends CcdSubmissionSupport {
 
     private static final String PREVIOUS_CASE_ID_KEY = "previousCaseId";
-    private static final String D8_REASON_DIVORCE = "D8ReasonForDivorce";
+    private static final String PREVIOUS_ISSUE_DATE_KEY = "previousIssueDate";
     private static final String PREVIOUS_REASONS_KEY = "previousReasonsForDivorce";
+
+    private static final String ISSUE_DATE = "IssueDate";
+    private static final String D8_REASON_DIVORCE = "D8ReasonForDivorce";
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/amend-petition/";
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
     private static final String AOS_RECEIVED_NO_ADMIT_EVENT_ID = "aosReceivedNoAdConStarted";
@@ -47,8 +51,8 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         UserDetails citizenUser = createCitizenUser();
 
         CaseDetails issuedCase = ccdClientSupport.submitCase(
-                ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "issued-case.json", Map.class),
-                citizenUser
+            ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "issued-case.json", Map.class),
+            citizenUser
         );
         String caseId = issuedCase.getId().toString();
 
@@ -57,10 +61,13 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         Response cosResponse = amendPetition(citizenUser.getAuthToken(), caseId);
         uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails oldCase;
         oldCase = cmsClient.retrievePetitionById(citizenUser.getAuthToken(), caseId);
-        Map<String, Object> newDraftDocument = (Map<String, Object>) cosResponse.getBody().as(Map.class);
-        List<String> previousReasons = (ArrayList<String>) newDraftDocument.get(PREVIOUS_REASONS_KEY);
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
+
+        Map<String, Object> newDraftDocument = (Map<String, Object>) cosResponse.getBody().as(Map.class);
+        assertThat(newDraftDocument.get(PREVIOUS_ISSUE_DATE_KEY), equalTo(issuedCase.getData().get(ISSUE_DATE)));
+
+        List<String> previousReasons = (List<String>) newDraftDocument.get(PREVIOUS_REASONS_KEY);
         assertTrue(previousReasons.contains(oldCase.getCaseData().get(D8_REASON_DIVORCE)));
         assertEquals(oldCase.getCaseId(), cosResponse.path(PREVIOUS_CASE_ID_KEY).toString());
         assertEquals(oldCase.getState(), AMEND_PETITION_STATE);
