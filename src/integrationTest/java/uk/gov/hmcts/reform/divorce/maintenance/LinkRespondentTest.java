@@ -234,8 +234,6 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
                 TEST_AOS_AWAITING_EVENT,
                 petitionerUserDetails);
 
-        updateCase(String.valueOf(caseDetails.getId()), null, "testAosAwaiting");
-
         final UserDetails coRespondentUserDetails = createCitizenUser();
 
         Response linkResponse =
@@ -279,8 +277,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
         assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE));
         assertEquals(YES_VALUE, caseDetails.getData().get(CO_RESP_LINKED_TO_CASE));
-        assertEquals(LocalDate.now().toString(CCD_DATE_FORMAT),
-        caseDetails.getData().get(CO_RESP_LINKED_TO_CASE_DATE));
+        assertEquals(LocalDate.now().toString(CCD_DATE_FORMAT), caseDetails.getData().get(CO_RESP_LINKED_TO_CASE_DATE));
     }
 
     private Response linkRespondent(String userToken, Long caseId, String pin) {
