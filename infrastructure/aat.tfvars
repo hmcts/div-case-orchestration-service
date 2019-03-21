@@ -1,6 +1,7 @@
 vault_env = "preprod"
 idam_api_baseurl = "https://idam-api.aat.platform.hmcts.net"
 draft_check_ccd_enabled = "false"
+idam_strategic_enabled = "true"
 
 capacity = "2"
 
