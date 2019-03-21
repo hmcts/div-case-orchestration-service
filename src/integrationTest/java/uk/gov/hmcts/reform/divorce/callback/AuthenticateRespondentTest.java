@@ -47,7 +47,7 @@ public class AuthenticateRespondentTest extends IntegrationTest {
 
     @Test
     public void givenUserHasLetterHolderRole_whenAuthenticateUser_thenReturnOk() {
-        Response cosResponse = authenticateUser(createCitizenUser("letter-133307").getAuthToken());
+        Response cosResponse = authenticateUser(createCitizenUser("letter-holder").getAuthToken());
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
     }
