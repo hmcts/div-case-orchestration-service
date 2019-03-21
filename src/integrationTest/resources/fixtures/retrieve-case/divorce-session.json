@@ -244,5 +244,7 @@
     "street2":null,
     "postcodeError":null,
     "url":null
-  }
+  },
+  "receivedAosFromResp": "Yes",
+  "receivedAosFromRespDate": "2018-10-22"
 }
