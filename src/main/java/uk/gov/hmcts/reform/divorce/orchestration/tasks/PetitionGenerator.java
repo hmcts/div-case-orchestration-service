@@ -10,11 +10,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_FILE_NAME_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_TEMPLATE_NAME;
@@ -29,8 +31,7 @@ public class PetitionGenerator implements Task<Map<String, Object>> {
     }
 
     @Override
-    public Map<String, Object> execute(TaskContext context,
-                                       Map<String, Object> caseData) {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         CaseDetails caseDetails = (CaseDetails) context.getTransientObject(CASE_DETAILS_JSON_KEY);
         GeneratedDocumentInfo miniPetition =
                 documentGeneratorClient.generatePDF(
@@ -45,7 +46,9 @@ public class PetitionGenerator implements Task<Map<String, Object>> {
         miniPetition.setDocumentType(DOCUMENT_TYPE_PETITION);
         miniPetition.setFileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, caseDetails.getCaseId()));
 
-        context.setTransientObject(MINI_PETITION_TEMPLATE_NAME, miniPetition);
+        final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION,
+            new LinkedHashSet<>());
+        documentCollection.add(miniPetition);
 
         return caseData;
     }
