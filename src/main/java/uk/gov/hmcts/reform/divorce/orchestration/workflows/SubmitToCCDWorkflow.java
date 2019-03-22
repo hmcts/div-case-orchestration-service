@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 
 @Slf4j
 @Component
@@ -55,6 +57,10 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
             payload,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)
         );
+
+        String caseId = String.valueOf(returnFromExecution.get(ID));
+        String selectedCourtId = String.valueOf(returnFromExecution.get(ALLOCATED_COURT_KEY));
+        log.info("Allocated case with CASE ID: {} to court: {}", caseId, selectedCourtId);
 
         return returnFromExecution;
     }

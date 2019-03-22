@@ -27,7 +27,7 @@ public class CourtAllocationTask implements Task<Map<String, Object>> {
         String reasonForDivorce = (String) payload.get(REASON_FOR_DIVORCE_KEY);
         String selectedCourt = courtAllocator.selectCourtForGivenDivorceFact(reasonForDivorce);
 
-        log.info("Court {} selected for case.", selectedCourt);
+        log.trace("Court {} selected for case.", selectedCourt);
 
         HashMap<String, Object> mapToReturn = new HashMap<>(payload);
         mapToReturn.put(ALLOCATED_COURT_KEY, selectedCourt);
