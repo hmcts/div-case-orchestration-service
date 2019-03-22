@@ -22,7 +22,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RetrieveDraftTest {
@@ -40,7 +39,7 @@ public class RetrieveDraftTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         Map<String, Object> payload  = mock(Map.class);
 
-        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, false))
+        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN))
                 .thenReturn(CaseDetails.builder().build());
 
         assertNull(target.execute(context, payload));
@@ -57,7 +56,7 @@ public class RetrieveDraftTest {
                 .caseData(expectedResponse)
                 .build();
 
-        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, false)).thenReturn(clientResponse);
+        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(clientResponse);
 
         assertEquals(expectedResponse, target.execute(context, payload));
     }
@@ -75,7 +74,7 @@ public class RetrieveDraftTest {
                 .state(TEST_STATE)
                 .build();
 
-        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, false)).thenReturn(clientResponse);
+        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(clientResponse);
 
         assertEquals(expectedResponse, target.execute(context, payload));
         assertEquals(TEST_CASE_ID, context.getTransientObject(CASE_ID_JSON_KEY));
@@ -84,10 +83,9 @@ public class RetrieveDraftTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void givenCaseExistsAndCheckCcd_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMSWithCaseDetails() {
+    public void givenCaseExists_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMSWithCaseDetails() {
         TaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(CHECK_CCD, true);
         Map<String, Object> payload  = mock(Map.class);
         Map<String, Object> expectedResponse  = mock(Map.class);
         CaseDetails clientResponse  = CaseDetails.builder()
@@ -96,7 +94,7 @@ public class RetrieveDraftTest {
             .state(TEST_STATE)
             .build();
 
-        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, true)).thenReturn(clientResponse);
+        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(clientResponse);
 
         assertEquals(expectedResponse, target.execute(context, payload));
         assertEquals(TEST_CASE_ID, context.getTransientObject(CASE_ID_JSON_KEY));

@@ -49,8 +49,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class RetrieveDraftITest {
-    private static final String API_URL = "/draftsapi/version/1?checkCcd=true";
-    private static final String CMS_CONTEXT_PATH = "/casemaintenance/version/1/retrieveCase?checkCcd=true";
+    private static final String API_URL = "/draftsapi/version/1";
+    private static final String CMS_CONTEXT_PATH = "/casemaintenance/version/1/retrieveCase";
     private static final String CMS_UPDATE_CASE_PATH =
         "/casemaintenance/version/1/updateCase/1547073120300616/paymentMade";
     private static final String CFS_CONTEXT_PATH = "/caseformatter/version/1/to-divorce-format";

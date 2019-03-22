@@ -22,10 +22,6 @@ output "case_maintenance_service_api_baseurl" {
   value = "${local.case_maintenance_service_baseurl}"
 }
 
-output "draft_check_ccd_enabled" {
-  value = "${var.draft_check_ccd_enabled}"
-}
-
 output "feature_toggle_520" {
   value = "${var.feature_toggle_520}"
 }

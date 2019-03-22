@@ -17,8 +17,8 @@ public class DraftsSubmissionSupport {
     @Autowired
     private CosApiClient cosApiClient;
 
-    public Map<String, Object> getUserDraft(UserDetails userDetails, boolean checkCcd) {
-        return cosApiClient.getDraft(userDetails.getAuthToken(), checkCcd);
+    public Map<String, Object> getUserDraft(UserDetails userDetails) {
+        return cosApiClient.getDraft(userDetails.getAuthToken());
     }
 
     public void saveDraft(UserDetails userDetails, String fileName) {

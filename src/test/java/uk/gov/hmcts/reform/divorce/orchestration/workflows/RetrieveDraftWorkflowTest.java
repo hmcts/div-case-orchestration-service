@@ -76,7 +76,7 @@ public class RetrieveDraftWorkflowTest {
                 eq(casePayload))).thenReturn(draftPayload);
         when(setCaseIdAndStateOnSession.execute(argThat(contextWithAuthTokenMatcher),
                 eq(draftPayload))).thenReturn(draftPayload);
-        assertEquals(draftPayload, target.run(AUTH_TOKEN, true));
+        assertEquals(draftPayload, target.run(AUTH_TOKEN));
 
         verify(retrieveDraft).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
         verify(getInconsistentPaymentInfo).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
@@ -108,7 +108,7 @@ public class RetrieveDraftWorkflowTest {
             eq(casePayload))).thenReturn(draftPayload);
         when(setCaseIdAndStateOnSession.execute(argThat(contextWithAuthTokenMatcher),
             eq(draftPayload))).thenReturn(draftPayload);
-        assertEquals(draftPayload, target.run(AUTH_TOKEN, true));
+        assertEquals(draftPayload, target.run(AUTH_TOKEN));
 
         verify(retrieveDraft, times(2)).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
         verify(getInconsistentPaymentInfo).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));

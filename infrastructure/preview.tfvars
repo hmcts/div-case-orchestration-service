@@ -1,6 +1,5 @@
 vault_env = "preprod"
 idam_api_baseurl = "https://idam-api.aat.platform.hmcts.net"
-draft_check_ccd_enabled = "true"
 feature_toggle_520 = "true"
 idam_strategic_enabled = "true"
 
