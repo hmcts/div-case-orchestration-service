@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import com.google.common.collect.ImmutableMap;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,8 +59,6 @@ public class SubmitDnCaseITest {
             "/casemaintenance/version/1/case/%s",
             TEST_CASE_ID
     );
-    private static Map<String, Object> CASE_DATA = new HashMap<>();
-    private static Map<String, Object> EXISTING_CASE_DATA = new HashMap<>();
 
     @Autowired
     private MockMvc webClient;
@@ -73,7 +72,7 @@ public class SubmitDnCaseITest {
     @Test
     public void givenNoAuthToken_whenSubmitDn_thenReturnBadRequest() throws Exception {
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .content(convertObjectToJsonString(CASE_DATA))
+            .content(convertObjectToJsonString(getCaseData()))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
@@ -90,11 +89,13 @@ public class SubmitDnCaseITest {
 
     @Test
     public void givenCaseFormatterFails_whenSubmitDn_thenPropagateTheException() throws Exception {
-        stubFormatterServerEndpoint(BAD_REQUEST, CASE_DATA, TEST_ERROR);
+        final Map<String, Object> caseData = getCaseData();
+
+        stubFormatterServerEndpoint(BAD_REQUEST, caseData, TEST_ERROR);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(CASE_DATA))
+            .content(convertObjectToJsonString(caseData))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
@@ -103,15 +104,18 @@ public class SubmitDnCaseITest {
 
     @Test
     public void givenCaseUpdateFails_whenSubmitDn_thenPropagateTheException() throws Exception {
-        stubFormatterServerEndpoint(OK, CASE_DATA, convertObjectToJsonString(CASE_DATA));
-        stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, DN_RECEIVED, CASE_DATA, TEST_ERROR);
+        final Map<String, Object> caseData = getCaseData();
+        final Map<String, Object> existingCaseData = new HashMap<>();
 
-        EXISTING_CASE_DATA.put(CCD_CASE_DATA_FIELD, emptyMap());
-        stubMaintenanceServerEndpointForRetrieveCaseById(OK, EXISTING_CASE_DATA);
+        stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
+        stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, DN_RECEIVED, caseData, TEST_ERROR);
+
+        existingCaseData.put(CCD_CASE_DATA_FIELD, emptyMap());
+        stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(CASE_DATA))
+            .content(convertObjectToJsonString(caseData))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
@@ -120,16 +124,19 @@ public class SubmitDnCaseITest {
 
     @Test
     public void givenDnReceivedAndAosNotCompleted_whenSubmitDn_thenProceedAsExpected() throws Exception {
-        final String caseDataString = convertObjectToJsonString(CASE_DATA);
+        final Map<String, Object> caseData = getCaseData();
+        final Map<String, Object> existingCaseData = new HashMap<>();
+        final String caseDataString = convertObjectToJsonString(caseData);
 
-        EXISTING_CASE_DATA.put(CCD_CASE_DATA_FIELD, emptyMap());
-        stubMaintenanceServerEndpointForRetrieveCaseById(OK, EXISTING_CASE_DATA);
-        stubFormatterServerEndpoint(OK, CASE_DATA, caseDataString);
-        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED, CASE_DATA, caseDataString);
+        existingCaseData.put(CCD_CASE_DATA_FIELD, emptyMap());
+        stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
+
+        stubFormatterServerEndpoint(OK, caseData, caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(CASE_DATA))
+            .content(convertObjectToJsonString(caseData))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -138,17 +145,19 @@ public class SubmitDnCaseITest {
 
     @Test
     public void givenDnReceivedAndAosCompleted_whenSubmitDn_thenProceedAsExpected() throws Exception {
-        CASE_DATA.put(CASE_STATE_JSON_KEY, AOS_COMPLETED);
-        final String caseDataString = convertObjectToJsonString(CASE_DATA);
+        final Map<String, Object> caseData = new HashMap<>();
+        caseData.put(CASE_STATE_JSON_KEY, AOS_COMPLETED);
+        final String caseDataString = convertObjectToJsonString(caseData);
+        final Map<String, Object> existingCaseData = new HashMap<>();
 
-        EXISTING_CASE_DATA.put(CCD_CASE_DATA_FIELD, CASE_DATA);
-        stubMaintenanceServerEndpointForRetrieveCaseById(OK, EXISTING_CASE_DATA);
-        stubFormatterServerEndpoint(OK, CASE_DATA, caseDataString);
-        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_AOS_COMPLETE, CASE_DATA, caseDataString);
+        existingCaseData.put(CCD_CASE_DATA_FIELD, caseData);
+        stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
+        stubFormatterServerEndpoint(OK, caseData, caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_AOS_COMPLETE, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(CASE_DATA))
+            .content(convertObjectToJsonString(caseData))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -182,5 +191,9 @@ public class SubmitDnCaseITest {
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withBody(convertObjectToJsonString(cmsData))));
+    }
+
+    private Map<String, Object> getCaseData() {
+        return ImmutableMap.of();
     }
 }

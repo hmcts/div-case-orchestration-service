@@ -35,7 +35,6 @@ public class SubmitDnCaseUTest {
     private static final Map<String, Object> EXPECTED_OUTPUT = Collections.emptyMap();
     private static final Map<String, Object> CASE_UPDATE_RESPONSE = new HashMap<>();
     private static final TaskContext TASK_CONTEXT = new DefaultTaskContext();
-    private static final Map<String, Object> caseData = new HashMap<>();
 
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
@@ -52,6 +51,7 @@ public class SubmitDnCaseUTest {
 
     @Test
     public void givenDnSubmitAndAosNotComplete_whenExecute_thenProceedAsExpected() {
+        final Map<String, Object> caseData = new HashMap<>();
         final Map<String, Object> divorceSession = ImmutableMap.of();
 
         caseData.put(CASE_STATE_JSON_KEY, AWAITING_DECREE_NISI);
@@ -67,6 +67,7 @@ public class SubmitDnCaseUTest {
 
     @Test
     public void givenDnSubmitAndAosComplete_whenExecute_thenProceedAsExpected() {
+        final Map<String, Object> caseData = new HashMap<>();
         final Map<String, Object> divorceSession = ImmutableMap.of();
 
         caseData.put(CASE_STATE_JSON_KEY, AOS_COMPLETED);
