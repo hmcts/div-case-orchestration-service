@@ -10,9 +10,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.REASON_FOR_DIVORCE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.SELECTED_COURT_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow.SELECTED_COURT;
 
 @Slf4j
 @Component
@@ -31,9 +30,7 @@ public class CourtAllocationTask implements Task<Map<String, Object>> {
         log.info("Court {} selected for case.", selectedCourt);
 
         HashMap<String, Object> mapToReturn = new HashMap<>(payload);
-        mapToReturn.put(SELECTED_COURT_KEY, selectedCourt);
-
-        context.setTransientObject(SELECTED_COURT, selectedCourt);
+        mapToReturn.put(ALLOCATED_COURT_KEY, selectedCourt);
 
         return mapToReturn;
     }

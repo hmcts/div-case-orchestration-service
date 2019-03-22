@@ -9,16 +9,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CourtAllocationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DuplicateCaseValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCaseToCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 
 @Slf4j
 @Component
@@ -41,9 +39,13 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
     @Autowired
     private DeleteDraft deleteDraft;
 
+    @Autowired
+    private DuplicateCaseValidationTask duplicateCaseValidationTask;
+
     public Map<String, Object> run(Map<String, Object> payload, String authToken) throws WorkflowException {
         Map<String, Object> returnFromExecution = this.execute(
             new Task[]{
+                duplicateCaseValidationTask,
                 courtAllocationTask,
                 formatDivorceSessionToCaseData,
                 validateCaseData,
@@ -54,14 +56,7 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)
         );
 
-        String selectedCourtId = (String) getContext().getTransientObject(SELECTED_COURT);
-        Map<String, Object> response = new HashMap<>(returnFromExecution);
-        response.put(ALLOCATED_COURT_KEY, selectedCourtId);
-
-        String caseId = String.valueOf(returnFromExecution.get(ID));
-        log.info("Allocated case with CASE ID: {} to court: {}", caseId, selectedCourtId);
-
-        return response;
+        return returnFromExecution;
     }
 
 }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import com.google.common.collect.ImmutableMap;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +27,9 @@ import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.CoreMatchers.allOf;
@@ -40,6 +43,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -58,6 +63,7 @@ public class SubmitCaseTest {
     private static final String VALIDATION_CONTEXT_PATH = "/version/1/validate";
     private static final String SUBMISSION_CONTEXT_PATH = "/casemaintenance/version/1/submit";
     private static final String DELETE_DRAFT_CONTEXT_PATH = "/casemaintenance/version/1/drafts";
+    private static final String RETRIEVE_CASE_CONTEXT_PATH = "/casemaintenance/version/1/case";
 
     private static final String COURT_ID_JSON_PATH = "$.courts";
 
@@ -88,11 +94,10 @@ public class SubmitCaseTest {
 
     @Test
     public void givenCaseDataAndAuth_whenCaseDataIsSubmitted_thenReturnSuccess() throws Exception {
-        Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
-
+        stubMaintenanceServerEndpointForRetrieve(HttpStatus.NOT_FOUND, null);
         stubFormatterServerEndpoint();
         stubValidationServerEndpoint();
-        stubMaintenanceServerEndpointForSubmit(responseData);
+        stubMaintenanceServerEndpointForSubmit(Collections.singletonMap(ID, TEST_CASE_ID));
         stubMaintenanceServerEndpointForDeleteDraft(HttpStatus.OK);
 
         webClient.perform(post(API_URL)
@@ -107,6 +112,31 @@ public class SubmitCaseTest {
                     hasJsonPath("$.caseId", equalTo(TEST_CASE_ID)),
                     hasJsonPath("$.status", equalTo(SUCCESS_STATUS)),
                     hasJsonPath("$.allocatedCourt.courtId", is(notNullValue()))
+                )));
+    }
+
+    @Test
+    public void givenCaseAlreadyExists_whenCaseDataIsSubmitted_thenReturnSuccess() throws Exception {
+        Map<String, Object> retrieveCaseResponse = ImmutableMap.<String, Object>builder()
+                .put(ID, TEST_CASE_ID)
+                .put(CASE_STATE_JSON_KEY, AWAITING_PAYMENT)
+                .put("case_data", Collections.singletonMap("courts", "some-court"))
+                .build();
+
+        stubMaintenanceServerEndpointForRetrieve(HttpStatus.OK, retrieveCaseResponse);
+
+        webClient.perform(post(API_URL)
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .content(convertObjectToJsonString(CASE_DATA))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().string(allOf(
+                        isJson(),
+                        hasJsonPath("$.caseId", equalTo(TEST_CASE_ID)),
+                        hasJsonPath("$.status", equalTo(SUCCESS_STATUS)),
+                        hasJsonPath("$.allocatedCourt.courtId", equalTo("some-court"))
                 )));
     }
 
@@ -168,6 +198,14 @@ public class SubmitCaseTest {
                 .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                        .withBody(convertObjectToJsonString(response))));
+    }
+
+    private void stubMaintenanceServerEndpointForRetrieve(HttpStatus status, Map<String, Object> response) {
+        maintenanceServiceServer.stubFor(get(urlEqualTo(RETRIEVE_CASE_CONTEXT_PATH))
+                .willReturn(aResponse()
+                        .withStatus(status.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                         .withBody(convertObjectToJsonString(response))));
     }

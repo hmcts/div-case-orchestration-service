@@ -9,6 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CourtAllocationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DuplicateCaseValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCaseToCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
@@ -47,6 +48,9 @@ public class SubmitToCCDWorkflowTest {
     @Mock
     private DeleteDraft deleteDraft;
 
+    @Mock
+    private DuplicateCaseValidationTask duplicateCaseValidationTask;
+
     @InjectMocks
     private SubmitToCCDWorkflow submitToCCDWorkflow;
 
@@ -62,6 +66,7 @@ public class SubmitToCCDWorkflowTest {
 
             return incomingPayload;
         });
+        when(duplicateCaseValidationTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(formatDivorceSessionToCaseData.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(validateCaseData.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(submitCaseToCCD.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
@@ -73,6 +78,7 @@ public class SubmitToCCDWorkflowTest {
             hasEntry("Hello", "World"),
             hasEntry("allocatedCourt", "randomlySelectedCourt")
         ));
+        verify(duplicateCaseValidationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(courtAllocationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(formatDivorceSessionToCaseData).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(validateCaseData).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
