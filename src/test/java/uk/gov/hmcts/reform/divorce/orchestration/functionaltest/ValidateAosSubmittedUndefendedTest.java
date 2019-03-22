@@ -106,10 +106,15 @@ public class ValidateAosSubmittedUndefendedTest {
             .eventId(AWAITING_DN_AOS_EVENT_ID)
             .build();
 
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .data(caseData)
+            .build();
+
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(createEvent))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
     }
 }

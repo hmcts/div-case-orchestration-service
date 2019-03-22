@@ -409,7 +409,9 @@ public class OrchestrationController {
                 .build());
         }
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .data(caseDetailsRequest.getCaseDetails().getCaseData())
+                .build());
     }
 
     @SuppressWarnings("unchecked")
