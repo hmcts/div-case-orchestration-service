@@ -18,6 +18,7 @@ import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
@@ -60,6 +61,26 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
 
         ResponseBody retrieveCaseResponseBody = retrieveCase(userToken).body();
         assertThat(retrieveCaseResponseBody.path(RETRIEVED_DATA_COURT_ID_KEY), is(allocatedCourt));
+    }
+
+    @Test
+    public void givenAnExistingCase_whenSubmitIsCalled_aNewCaseIsNotCreated() throws Exception {
+        String userToken = createCitizenUser().getAuthToken();
+        Response submissionResponse = submitCase(userToken, "divorce-session-with-court-selected.json");
+
+        ResponseBody caseCreationResponseBody = submissionResponse.getBody();
+        assertThat(submissionResponse.getStatusCode(), is(HttpStatus.OK.value()));
+        String existingCaseId = caseCreationResponseBody.path(CASE_ID_KEY);
+        assertThat(existingCaseId, is(not("0")));
+        String allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
+        assertThat(allocatedCourt, is(notNullValue()));
+
+        ResponseBody retrieveCaseResponseBody = retrieveCase(userToken).body();
+        assertThat(retrieveCaseResponseBody.path(RETRIEVED_DATA_COURT_ID_KEY), is(allocatedCourt));
+
+        submissionResponse = submitCase(userToken, "divorce-session-with-court-selected.json");
+        caseCreationResponseBody = submissionResponse.getBody();
+        assertEquals(caseCreationResponseBody.path(CASE_ID_KEY), is(existingCaseId));
     }
 
     private Response submitCase(String userToken, String fileName) throws Exception {
