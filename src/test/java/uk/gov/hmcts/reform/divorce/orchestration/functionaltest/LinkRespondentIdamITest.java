@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,14 +59,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
@@ -125,19 +119,13 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
     @Before
     public void setup() {
         caseDataAos = ImmutableMap.of(
-            RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
-            RECEIVED_AOS_FROM_RESP, YES_VALUE,
-            RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
+            RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
         );
         caseDataNonAos = ImmutableMap.of(
-            RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL,
-            RECEIVED_AOS_FROM_RESP, YES_VALUE,
-            RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate()
+            RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
         );
         caseDataCoResponentUpdate = ImmutableMap.of(
-            CO_RESP_EMAIL_ADDRESS, TEST_EMAIL,
-            RECEIVED_AOS_FROM_CO_RESP, YES_VALUE,
-            RECEIVED_AOS_FROM_CO_RESP_DATE, CcdUtil.getCurrentDate()
+            CO_RESP_EMAIL_ADDRESS, TEST_EMAIL
         );
     }
 

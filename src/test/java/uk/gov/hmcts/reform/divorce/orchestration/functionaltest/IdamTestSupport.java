@@ -23,7 +23,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
@@ -106,18 +106,18 @@ public class IdamTestSupport {
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
             .willReturn(aResponse()
                 .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(message)));
     }
 
     void stubPinDetailsEndpoint(String authHeader, PinRequest pinRequest, Pin response) {
         idamServer.stubFor(post(IDAM_PIN_DETAILS_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
-            .withHeader(CONTENT_TYPE, new EqualToPattern(APPLICATION_JSON_UTF8_VALUE))
+            .withHeader(CONTENT_TYPE, new EqualToPattern(APPLICATION_JSON_VALUE))
             .withRequestBody(equalToJson(convertObjectToJsonString(pinRequest)))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(convertObjectToJsonString(response))));
     }
 
@@ -152,10 +152,10 @@ public class IdamTestSupport {
             + "&client_id=" + authClientId
             + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name()))
             .withHeader(AUTHORIZATION, new EqualToPattern(authorisation))
-            .withHeader(CONTENT_TYPE, new EqualToPattern(MediaType.APPLICATION_JSON_VALUE))
+            .withHeader(CONTENT_TYPE, new EqualToPattern(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(responseBody)));
     }
 
@@ -169,7 +169,7 @@ public class IdamTestSupport {
                 .withHeader("pin", new EqualToPattern(TEST_PIN))
                 .willReturn(aResponse()
                     .withStatus(status.value())
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withHeader(LOCATION_HEADER, PIN_AUTH_URL_WITH_REDIRECT)
                     .withBody(responseBody)));
         } else {
@@ -180,7 +180,7 @@ public class IdamTestSupport {
                 .withHeader(AUTHORIZATION, new EqualToPattern(PIN_AUTHORIZATION))
                 .willReturn(aResponse()
                     .withStatus(status.value())
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(responseBody)));
         }
     }
@@ -193,9 +193,10 @@ public class IdamTestSupport {
             + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name())
             + "&client_id=" + authClientId
             + "&client_secret=" + authClientSecret)
+            .withHeader(CONTENT_TYPE, new EqualToPattern(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
             .willReturn(aResponse()
                 .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(responseBody)));
     }
 

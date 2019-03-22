@@ -15,15 +15,23 @@ import java.util.UUID;
 @RunWith(SerenityRunner.class)
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
-    private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER@notifications.service.gov.uk";
-    private static final String CASE_WORKER_ONLY_USERNAME = "TEST_CASE_WORKER_ONLY@notifications.service.gov.uk";
-    private static final String CASE_WORKER_PASSWORD = "CASE_WORKER_PASSWORD";
+    private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER";
+    private static final String CASE_WORKER_ONLY_USERNAME = "TEST_CASE_WORKER_ONLY";
+    private static final String EMAIL_DOMAIN = "@notifications.service.gov.uk";
+    private static final String CASE_WORKER_PASSWORD = "genericPassword123";
     private static final String CITIZEN_ROLE = "citizen";
     private static final String CASEWORKER_DIVORCE_ROLE = "caseworker-divorce";
     private static final String CASEWORKER_DIVORCE_COURTADMIN_ROLE = "caseworker-divorce-courtadmin";
     private static final String CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE = "caseworker-divorce-courtadmin_beta";
     private static final String CASEWORKER_ROLE = "caseworker";
-    private static final String PASSWORD = "PassW0rd";
+    private static final String PASSWORD = "genericPassword123";
+    private static final String CITIZEN_USERGROUP = "citizens";
+    private static final String CASEWORKER_USERGROUP = "caseworker";
+
+    protected static final String ERRORS = "errors";
+    protected static final String DATA = "data";
+    protected static final String CASE_DATA = "case_data";
+    protected static final String CASE_DETAILS = "case_details";
 
     private UserDetails caseWorkerUser;
     private UserDetails caseWorkerStrictUser;
@@ -44,54 +52,45 @@ public abstract class IntegrationTest {
     protected UserDetails createCaseWorkerUser() {
         synchronized (this) {
             if (caseWorkerUser == null) {
-                caseWorkerUser = getUserDetails(CASE_WORKER_USERNAME, CASE_WORKER_PASSWORD,
-                    CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_ROLE,
-                    CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE, CITIZEN_ROLE);
+                caseWorkerUser = getUserDetails(
+                        CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN, CASE_WORKER_PASSWORD,
+                        CASEWORKER_USERGROUP,
+                        CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
+                        CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
+                );
             }
 
             return caseWorkerUser;
         }
     }
 
-    protected UserDetails createOnlyCaseWorkerUser() {
-        synchronized (this) {
-            if (caseWorkerStrictUser == null) {
-                caseWorkerStrictUser = getUserDetails(CASE_WORKER_ONLY_USERNAME, CASE_WORKER_PASSWORD,
-                    CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_ROLE,
-                    CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE);
-            }
-
-            return caseWorkerStrictUser;
-        }
-    }
-
     protected UserDetails createCitizenUser() {
         final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
 
-        return getUserDetails(username, PASSWORD, CITIZEN_ROLE);
+        return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, CITIZEN_ROLE);
     }
 
     protected UserDetails createCitizenUser(String role) {
         final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
 
-        return getUserDetails(username, PASSWORD, role);
+        return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, role);
     }
 
-    private UserDetails getUserDetails(String username, String password, String... role) {
+    private UserDetails getUserDetails(String username, String password, String userGroup, String... role) {
         synchronized (this) {
-            idamTestSupportUtil.createUser(username, password, role);
+            idamTestSupportUtil.createUser(username, password, userGroup, role);
 
             final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
 
             final String userId = idamTestSupportUtil.getUserId(authToken);
 
             return UserDetails.builder()
-                .username(username)
-                .emailAddress(username)
-                .password(password)
-                .authToken(authToken)
-                .id(userId)
-                .build();
+                    .username(username)
+                    .emailAddress(username)
+                    .password(password)
+                    .authToken(authToken)
+                    .id(userId)
+                    .build();
         }
     }
 }
