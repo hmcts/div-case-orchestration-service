@@ -112,6 +112,8 @@ def versions = [
         lombok                          : '1.16.16',
         puppyCrawl                      : '7.6',
         reformsJavaLogging              : '4.0.1',
+        reformHealth                    : '0.0.3',
+        reformPropertiesVolume          : '0.0.4',
         serviceTokenGenerator           : '2.0.0',
         hmctsNotify                     : '3.14.1-RELEASE',
         feignHttpClient                 : '9.5.1',
@@ -159,6 +161,8 @@ dependencies {
     compile group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
     compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: versions.reformSpringBootAutoConfigure
     compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.1.1'
+    compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: versions.reformHealth
+    compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: versions.reformPropertiesVolume
     compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
         force = true
     }
