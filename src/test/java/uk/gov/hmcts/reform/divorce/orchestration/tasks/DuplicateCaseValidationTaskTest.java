@@ -121,11 +121,11 @@ public class DuplicateCaseValidationTaskTest {
     public void givenCaseInAwaitingHelpWithFees_whenExecute_thenSetFieldsInPayload() {
         when(mockCaseMaintenanceClient.getCase(AUTH_TOKEN))
                 .thenReturn(
-                        CaseDetails.builder()
-                                .caseId(TEST_CASE_ID)
-                                .state(AWAITING_HWF_DECISION)
-                                .caseData(Collections.singletonMap(SELECTED_COURT_KEY, TEST_COURT))
-                                .build()
+                    CaseDetails.builder()
+                            .caseId(TEST_CASE_ID)
+                            .state(AWAITING_HWF_DECISION)
+                            .caseData(Collections.singletonMap(SELECTED_COURT_KEY, TEST_COURT))
+                            .build()
                 );
 
         HashMap<String, Object> payload = new HashMap<>();
