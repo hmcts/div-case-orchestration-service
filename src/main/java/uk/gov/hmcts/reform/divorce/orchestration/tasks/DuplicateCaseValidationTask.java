@@ -40,14 +40,18 @@ public class DuplicateCaseValidationTask implements Task<Map<String, Object>> {
                 payload.put(ALLOCATED_COURT_KEY, caseDetails.getCaseData().get(SELECTED_COURT_KEY));
                 //we fail the task to skip the next tasks in the workflow and return the existing case details
                 context.setTaskFailed(true);
-                log.warn("Case id {} in Awaiting Payment exists for this user", caseDetails.getCaseId());
+                log.warn("Case ID {} in Awaiting Payment/Awaiting HWF already exists for this user", caseDetails.getCaseId());
+            } else if(caseDetails != null) {
+                log.trace("Existing Case ID {} found but in {} state", caseDetails.getCaseId(), caseDetails.getState());
+            } else {
+                log.trace("Existing Case ID not found for user");
             }
         } catch (FeignException e) {
             if (HttpStatus.NOT_FOUND.value() != e.status()) {
+                log.error("Unexpected error while checking for duplicate case", e);
                 throw e;
             }
         }
-
         return payload;
     }
 }
