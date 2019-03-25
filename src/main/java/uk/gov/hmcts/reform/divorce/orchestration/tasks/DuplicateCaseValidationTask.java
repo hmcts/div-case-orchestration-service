@@ -13,10 +13,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_HWF_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.SELECTED_COURT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow.SELECTED_COURT;
 
 @Component
 @Slf4j
@@ -35,9 +36,12 @@ public class DuplicateCaseValidationTask implements Task<Map<String, Object>> {
             String transientObject = (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY);
             CaseDetails caseDetails = caseMaintenanceClient.getCase(transientObject);
 
-            if (caseDetails != null && AWAITING_PAYMENT.equalsIgnoreCase(caseDetails.getState())) {
+            if (caseDetails != null && (
+                    AWAITING_PAYMENT.equalsIgnoreCase(caseDetails.getState())
+                            || AWAITING_HWF_DECISION.equalsIgnoreCase(caseDetails.getState()))) {
                 payload.put(ID, caseDetails.getCaseId());
-                payload.put(ALLOCATED_COURT_KEY, caseDetails.getCaseData().get(SELECTED_COURT_KEY));
+                context.setTransientObject(SELECTED_COURT, caseDetails.getCaseData().get(SELECTED_COURT_KEY));
+
                 //we fail the task to skip the next tasks in the workflow and return the existing case details
                 context.setTaskFailed(true);
                 log.warn("Case ID {} in Awaiting Payment/Awaiting HWF already exists for this user", caseDetails.getCaseId());

@@ -26,10 +26,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_HWF_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_MADE_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.SELECTED_COURT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow.SELECTED_COURT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DuplicateCaseValidationTaskTest {
@@ -112,16 +114,16 @@ public class DuplicateCaseValidationTaskTest {
         verify(mockCaseMaintenanceClient).getCase(AUTH_TOKEN);
         assertThat(result, is(payload));
         assertEquals(TEST_CASE_ID, payload.get(ID));
-        assertEquals(TEST_COURT, payload.get(ALLOCATED_COURT_KEY));
+        assertEquals(TEST_COURT, taskContext.getTransientObject(SELECTED_COURT));
     }
 
     @Test
-    public void givenCaseNotInAwaitingPayment_whenExecute_thenDoNothing() {
+    public void givenCaseInAwaitingHelpWithFees_whenExecute_thenSetFieldsInPayload() {
         when(mockCaseMaintenanceClient.getCase(AUTH_TOKEN))
             .thenReturn(
                 CaseDetails.builder()
                         .caseId(TEST_CASE_ID)
-                        .state(AWAITING_PAYMENT)
+                        .state(AWAITING_HWF_DECISION)
                         .caseData(Collections.singletonMap(SELECTED_COURT_KEY, TEST_COURT))
                         .build()
             );
@@ -132,6 +134,25 @@ public class DuplicateCaseValidationTaskTest {
         verify(mockCaseMaintenanceClient).getCase(AUTH_TOKEN);
         assertThat(result, is(payload));
         assertEquals(TEST_CASE_ID, payload.get(ID));
-        assertEquals(TEST_COURT, payload.get(ALLOCATED_COURT_KEY));
+        assertEquals(TEST_COURT, taskContext.getTransientObject(SELECTED_COURT));
+    }
+
+    @Test
+    public void givenCaseNotInAwaitingPayment_whenExecute_thenDoNothing() {
+        when(mockCaseMaintenanceClient.getCase(AUTH_TOKEN))
+            .thenReturn(
+                CaseDetails.builder()
+                        .caseId(TEST_CASE_ID)
+                        .state(PAYMENT_MADE_EVENT)
+                        .caseData(Collections.singletonMap(SELECTED_COURT_KEY, TEST_COURT))
+                        .build()
+            );
+
+        HashMap<String, Object> payload = new HashMap<>();
+        Map<String, Object> result = duplicateCaseValidationTask.execute(taskContext, payload);
+
+        verify(mockCaseMaintenanceClient).getCase(AUTH_TOKEN);
+        assertThat(result, is(payload));
+        assertEquals(0, payload.size());
     }
 }

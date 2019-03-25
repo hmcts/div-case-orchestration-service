@@ -118,6 +118,7 @@ public class OrchestrationConstants {
 
     // Case state
     public static final String AWAITING_PAYMENT = "AwaitingPayment";
+    public static final String AWAITING_HWF_DECISION = "AwaitingHWFDecision";
     public static final String PAYMENT_MADE_EVENT = "paymentMade";
 
     // Notification
