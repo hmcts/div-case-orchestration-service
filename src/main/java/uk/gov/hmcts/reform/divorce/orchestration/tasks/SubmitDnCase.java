@@ -32,18 +32,18 @@ public class SubmitDnCase implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
 
         String authToken = (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY);
-        String caseIDJsonKey = (String) context.getTransientObject(CASE_ID_JSON_KEY);
+        String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
 
         final CaseDetails currentCaseDetails = caseMaintenanceClient.retrievePetitionById(
                 authToken,
-                caseIDJsonKey
+                caseId
         );
 
         String eventId = getDnEventId(currentCaseDetails);
 
         Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
             authToken,
-            caseIDJsonKey,
+            caseId,
             eventId,
             caseData
         );
