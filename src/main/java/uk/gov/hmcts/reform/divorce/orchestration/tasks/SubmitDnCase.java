@@ -12,7 +12,6 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_AOS_COMPLETE;
@@ -57,7 +56,7 @@ public class SubmitDnCase implements Task<Map<String, Object>> {
 
     private String getDnEventId(final CaseDetails currentCaseDetails) {
 
-        final String caseState = (String)currentCaseDetails.getCaseData().get(CASE_STATE_JSON_KEY);
+        final String caseState = currentCaseDetails.getState();
 
         if (AOS_COMPLETED.equalsIgnoreCase(caseState)) {
             return DN_RECEIVED_AOS_COMPLETE;

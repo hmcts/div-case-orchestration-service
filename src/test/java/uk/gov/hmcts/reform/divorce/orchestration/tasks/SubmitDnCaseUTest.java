@@ -25,7 +25,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_AOS_COMPLETE;
@@ -51,13 +50,10 @@ public class SubmitDnCaseUTest {
 
     @Test
     public void givenDnSubmitAndAosNotComplete_whenExecute_thenProceedAsExpected() {
-        final Map<String, Object> caseData = new HashMap<>();
         final Map<String, Object> divorceSession = ImmutableMap.of();
 
-        caseData.put(CASE_STATE_JSON_KEY, AWAITING_DECREE_NISI);
-
         when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(
-                CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build());
+                CaseDetails.builder().caseId(TEST_CASE_ID).state(AWAITING_DECREE_NISI).build());
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
@@ -67,13 +63,10 @@ public class SubmitDnCaseUTest {
 
     @Test
     public void givenDnSubmitAndAosComplete_whenExecute_thenProceedAsExpected() {
-        final Map<String, Object> caseData = new HashMap<>();
         final Map<String, Object> divorceSession = ImmutableMap.of();
 
-        caseData.put(CASE_STATE_JSON_KEY, AOS_COMPLETED);
-
         when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(
-                CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build());
+                CaseDetails.builder().caseId(TEST_CASE_ID).state(AOS_COMPLETED).build());
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 

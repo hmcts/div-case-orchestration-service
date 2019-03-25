@@ -26,7 +26,6 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -38,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
@@ -104,14 +104,17 @@ public class SubmitDnCaseITest {
 
     @Test
     public void givenCaseUpdateFails_whenSubmitDn_thenPropagateTheException() throws Exception {
-        final Map<String, Object> caseData = getCaseData();
-        final Map<String, Object> existingCaseData = new HashMap<>();
+        final Map<String, Object> caseData = new HashMap<>();
+        final String caseDataString = convertObjectToJsonString(caseData);
+        final Map<String, Object> caseDetails = new HashMap<>();
 
+        caseDetails.put(CASE_STATE_JSON_KEY, AOS_AWAITING);
+        caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
+
+        stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
+        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED, caseData, caseDataString);
         stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
         stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, DN_RECEIVED, caseData, TEST_ERROR);
-
-        existingCaseData.put(CCD_CASE_DATA_FIELD, emptyMap());
-        stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -125,12 +128,13 @@ public class SubmitDnCaseITest {
     @Test
     public void givenDnReceivedAndAosNotCompleted_whenSubmitDn_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData();
-        final Map<String, Object> existingCaseData = new HashMap<>();
         final String caseDataString = convertObjectToJsonString(caseData);
+        final Map<String, Object> caseDetails = new HashMap<>();
 
-        existingCaseData.put(CCD_CASE_DATA_FIELD, emptyMap());
-        stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
+        caseDetails.put(CASE_STATE_JSON_KEY, AOS_AWAITING);
+        caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
+        stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED, caseData, caseDataString);
 
@@ -145,13 +149,14 @@ public class SubmitDnCaseITest {
 
     @Test
     public void givenDnReceivedAndAosCompleted_whenSubmitDn_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = new HashMap<>();
-        caseData.put(CASE_STATE_JSON_KEY, AOS_COMPLETED);
+        final Map<String, Object> caseData = getCaseData();
         final String caseDataString = convertObjectToJsonString(caseData);
-        final Map<String, Object> existingCaseData = new HashMap<>();
+        final Map<String, Object> caseDetails = new HashMap<>();
 
-        existingCaseData.put(CCD_CASE_DATA_FIELD, caseData);
-        stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
+        caseDetails.put(CASE_STATE_JSON_KEY, AOS_COMPLETED);
+        caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
+
+        stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_AOS_COMPLETE, caseData, caseDataString);
 
