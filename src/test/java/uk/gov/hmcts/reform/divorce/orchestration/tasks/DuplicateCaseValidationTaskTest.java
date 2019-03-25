@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -51,7 +50,7 @@ public class DuplicateCaseValidationTaskTest {
     }
 
     @Test
-    public void givenGetCaseThrowsAnNotFoundException_whenExecute_thenDoNothing() {
+    public void givenGetCaseThrowsANotFoundException_whenExecute_thenDoNothing() {
         Response response = Response.builder()
                 .headers(Collections.emptyMap())
                 .status(HttpStatus.NOT_FOUND.value()).build();
@@ -64,7 +63,7 @@ public class DuplicateCaseValidationTaskTest {
 
         verify(mockCaseMaintenanceClient).getCase(AUTH_TOKEN);
         assertThat(result, is(payload));
-        assertEquals(0, payload.size());
+        assertThat(payload.size(), is(0));
     }
 
     @Test(expected = FeignException.class)
@@ -81,7 +80,7 @@ public class DuplicateCaseValidationTaskTest {
 
         verify(mockCaseMaintenanceClient).getCase(AUTH_TOKEN);
         assertThat(result, is(payload));
-        assertEquals(0, payload.size());
+        assertThat(payload.size(), is(0));
     }
 
     @Test
@@ -94,7 +93,7 @@ public class DuplicateCaseValidationTaskTest {
 
         verify(mockCaseMaintenanceClient).getCase(AUTH_TOKEN);
         assertThat(result, is(payload));
-        assertEquals(0, payload.size());
+        assertThat(payload.size(), is(0));
     }
 
     @Test
@@ -113,8 +112,8 @@ public class DuplicateCaseValidationTaskTest {
 
         verify(mockCaseMaintenanceClient).getCase(AUTH_TOKEN);
         assertThat(result, is(payload));
-        assertEquals(TEST_CASE_ID, payload.get(ID));
-        assertEquals(TEST_COURT, taskContext.getTransientObject(SELECTED_COURT));
+        assertThat(payload.get(ID), is(TEST_CASE_ID));
+        assertThat(taskContext.getTransientObject(SELECTED_COURT), is(TEST_COURT));
     }
 
     @Test
@@ -133,8 +132,8 @@ public class DuplicateCaseValidationTaskTest {
 
         verify(mockCaseMaintenanceClient).getCase(AUTH_TOKEN);
         assertThat(result, is(payload));
-        assertEquals(TEST_CASE_ID, payload.get(ID));
-        assertEquals(TEST_COURT, taskContext.getTransientObject(SELECTED_COURT));
+        assertThat(payload.get(ID), is(TEST_CASE_ID));
+        assertThat(taskContext.getTransientObject(SELECTED_COURT), is(TEST_COURT));
     }
 
     @Test
@@ -153,6 +152,6 @@ public class DuplicateCaseValidationTaskTest {
 
         verify(mockCaseMaintenanceClient).getCase(AUTH_TOKEN);
         assertThat(result, is(payload));
-        assertEquals(0, payload.size());
+        assertThat(payload.size(), is(0));
     }
 }
