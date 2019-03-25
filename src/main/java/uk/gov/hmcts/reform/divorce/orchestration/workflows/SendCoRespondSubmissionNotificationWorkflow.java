@@ -13,16 +13,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_DEFENDS_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DEFENDS_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DUE_DATE_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
@@ -66,8 +67,9 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
             try {
                 Court assignedCourt = taskCommons.getCourt(rdcName);
                 templateVars.put(NOTIFICATION_RDC_NAME_KEY, assignedCourt.getIdentifiableCentreName());
-                String dateLimit = (String) caseData.get(DUE_DATE_CO_RESP);
-                templateVars.put(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, dateLimit);
+                String formSubmissionDateLimit = CcdUtil.getFormattedDueDate(caseData, CO_RESPONDENT_DUE_DATE);
+
+                templateVars.put(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, formSubmissionDateLimit);
                 templateVars.put(NOTIFICATION_COURT_ADDRESS_KEY, assignedCourt.getFormattedAddress());
                 template = EmailTemplateNames.CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
             } catch (TaskException e) {
@@ -87,6 +89,6 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
     }
 
     private boolean isDefended(Map<String, Object> caseData) {
-        return "YES".equalsIgnoreCase((String)caseData.get(CO_RESP_DEFENDS_DIVORCE));
+        return "YES".equalsIgnoreCase((String)caseData.get(CO_RESPONDENT_DEFENDS_DIVORCE));
     }
 }
