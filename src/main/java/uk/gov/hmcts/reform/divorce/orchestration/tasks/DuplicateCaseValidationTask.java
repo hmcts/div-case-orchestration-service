@@ -45,7 +45,7 @@ public class DuplicateCaseValidationTask implements Task<Map<String, Object>> {
                 //we fail the task to skip the next tasks in the workflow and return the existing case details
                 context.setTaskFailed(true);
                 log.warn("Case ID {} in Awaiting Payment/Awaiting HWF already exists for this user", caseDetails.getCaseId());
-            } else if(caseDetails != null) {
+            } else if (caseDetails != null) {
                 log.trace("Existing Case ID {} found but in {} state", caseDetails.getCaseId(), caseDetails.getState());
             } else {
                 log.trace("Existing Case ID not found for user");
