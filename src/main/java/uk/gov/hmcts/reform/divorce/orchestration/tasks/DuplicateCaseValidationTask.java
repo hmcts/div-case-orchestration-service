@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_HWF_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.SELECTED_COURT_KEY;
@@ -35,7 +36,9 @@ public class DuplicateCaseValidationTask implements Task<Map<String, Object>> {
             String transientObject = (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY);
             CaseDetails caseDetails = caseMaintenanceClient.getCase(transientObject);
 
-            if (caseDetails != null && AWAITING_PAYMENT.equalsIgnoreCase(caseDetails.getState())) {
+            if (caseDetails != null && (
+                    AWAITING_PAYMENT.equalsIgnoreCase(caseDetails.getState())
+                            || AWAITING_HWF_DECISION.equalsIgnoreCase(caseDetails.getState()))) {
                 payload.put(ID, caseDetails.getCaseId());
                 context.setTransientObject(SELECTED_COURT, caseDetails.getCaseData().get(SELECTED_COURT_KEY));
 
