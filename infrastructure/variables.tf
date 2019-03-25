@@ -46,10 +46,6 @@ variable "common_tags" {
   type = "map"
 }
 
-variable "draft_check_ccd_enabled" {
-    default = true
-}
-
 variable "feature_toggle_520" {
   default = false
 }
@@ -72,4 +68,8 @@ variable "aos_responded_days_to_complete" {
 
 variable "aos_responded_awaiting_answer_days_to_respond" {
   default = 21
+}
+
+variable "idam_strategic_enabled" {
+  default = "false"
 }

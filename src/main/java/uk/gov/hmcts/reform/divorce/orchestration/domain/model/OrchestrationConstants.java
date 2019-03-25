@@ -25,7 +25,6 @@ public class OrchestrationConstants {
     public static final String IS_RESPONDENT = "isRespondent";
 
     // Core Case Data
-    public static final String CHECK_CCD = "checkCcd";
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";
@@ -76,8 +75,7 @@ public class OrchestrationConstants {
     public static final String AOS_OVERDUE = "AosOverdue";
     public static final String DEFENDED = "DefendedDivorce";
     public static final String AWAITING_REISSUE = "AwaitingReissue";
-    public static final String CO_RESPONDENT_DUE_DATE = "DueDateCoResp";
-    public static final String CO_RESPONDENT_DEFENDS_DIVORCE = "CoRespDefendsDivorce";
+
 
     // CCD Respondent Fields
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
@@ -90,12 +88,12 @@ public class OrchestrationConstants {
     public static final String CO_RESP_LINKED_TO_CASE_DATE = "CoRespLinkedToCaseDate";
     public static final String CO_RESPONDENT_LETTER_HOLDER_ID = "CoRespLetterHolderId";
     public static final String CO_RESP_EMAIL_ADDRESS = "CoRespEmailAddress";
-    public static final String CO_RESP_DEFENDS_DIVORCE = "CoRespDefendsDivorce";
+    public static final String CO_RESPONDENT_DEFENDS_DIVORCE = "CoRespDefendsDivorce";
     public static final String RECEIVED_AOS_FROM_CO_RESP = "ReceivedAosFromCoResp";
     public static final String RECEIVED_AOS_FROM_CO_RESP_DATE = "ReceivedAosFromCoRespDate";
     public static final String D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME = "D8ReasonForDivorceAdultery3rdPartyFName";
     public static final String D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME = "D8ReasonForDivorceAdultery3rdPartyLName";
-    public static final String DUE_DATE_CO_RESP = "dueDateCoResp";
+    public static final String CO_RESPONDENT_DUE_DATE = "DueDateCoResp";
 
     // Divorce Session
     public static final String DIVORCE_SESSION_EXISTING_PAYMENTS = "existingPayments";

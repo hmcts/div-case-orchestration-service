@@ -53,7 +53,7 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> submissionData) throws TaskException {
         final String authToken = (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY);
 
-        final CaseDetails currentCaseDetails = caseMaintenanceClient.retrieveAosCase(authToken, true);
+        final CaseDetails currentCaseDetails = caseMaintenanceClient.retrieveAosCase(authToken);
 
         if (currentCaseDetails == null) {
             throw new TaskException(new CaseNotFoundException("No case found for user."));

@@ -118,7 +118,7 @@ def versions = [
         hmctsNotify                     : '3.14.1-RELEASE',
         feignHttpClient                 : '9.5.1',
         reformSpringBootAutoConfigure   : '1.1.0',
-        wiremockVersion                 : '2.8.0',
+        wiremockVersion                 : '2.22.0',
         restAssured                     : '3.0.3',
         serenity                        : '1.5.2',
         serenityCucumber                : '1.1.3',

@@ -41,7 +41,6 @@ public class AuthenticateRespondent implements Task<Boolean> {
     private boolean isLetterHolderRole(String role) {
         return StringUtils.isNotBlank(role)
             && role.startsWith("letter")
-            && !"letter-holder".equals(role)
             && !role.endsWith("loa1");
     }
 }

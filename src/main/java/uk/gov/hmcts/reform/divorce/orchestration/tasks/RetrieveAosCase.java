@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 
 @Component
@@ -27,8 +26,8 @@ public class RetrieveAosCase implements Task<CaseDataResponse> {
     @Override
     public CaseDataResponse execute(TaskContext context, CaseDataResponse payload) throws TaskException {
         CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(
-            String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
-            Boolean.valueOf(String.valueOf(context.getTransientObject(CHECK_CCD))));
+            String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY))
+        );
 
         if (caseDetails == null) {
             throw new TaskException(new CaseNotFoundException("No case found"));

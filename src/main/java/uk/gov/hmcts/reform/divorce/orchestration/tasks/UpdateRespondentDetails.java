@@ -60,8 +60,8 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
                     authUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
 
             CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(
-                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
-                true);
+                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY))
+            );
 
             if (isRespondent) {
                 updateFields.put(RESPONDENT_EMAIL_ADDRESS, linkedUser.getEmail());

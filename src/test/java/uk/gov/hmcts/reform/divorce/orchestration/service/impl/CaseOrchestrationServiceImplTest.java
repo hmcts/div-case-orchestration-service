@@ -191,19 +191,19 @@ public class CaseOrchestrationServiceImplTest {
     public void givenDraftInWorkflowResponse_whenGetDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
         Map<String, Object> testExpectedPayload = mock(Map.class);
 
-        when(retrieveDraftWorkflow.run(AUTH_TOKEN, true)).thenReturn(testExpectedPayload);
-        assertEquals(testExpectedPayload,classUnderTest.getDraft(AUTH_TOKEN, true));
+        when(retrieveDraftWorkflow.run(AUTH_TOKEN)).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload,classUnderTest.getDraft(AUTH_TOKEN));
     }
 
     @Test
     public void whenRetrieveAosCase_thenProceedAsExpected() throws WorkflowException {
         final CaseDataResponse caseDataResponse = CaseDataResponse.builder().build();
 
-        when(retrieveAosCaseWorkflow.run(true, AUTH_TOKEN)).thenReturn(caseDataResponse);
+        when(retrieveAosCaseWorkflow.run(AUTH_TOKEN)).thenReturn(caseDataResponse);
 
-        assertEquals(caseDataResponse, classUnderTest.retrieveAosCase(true, AUTH_TOKEN));
+        assertEquals(caseDataResponse, classUnderTest.retrieveAosCase(AUTH_TOKEN));
 
-        verify(retrieveAosCaseWorkflow).run(true, AUTH_TOKEN);
+        verify(retrieveAosCaseWorkflow).run(AUTH_TOKEN);
     }
 
     @Test
