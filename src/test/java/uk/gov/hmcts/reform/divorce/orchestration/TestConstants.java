@@ -7,7 +7,8 @@ public class TestConstants {
     public static final String TEST_PIN = "abcd1234";
     public static final String TEST_DOC_URL = "test.doc.url";
     public static final String TEST_FILENAME = "test.filename";
-    public static final String TEST_EXPECTED_DUE_DATE = "10/10/2020";
+    public static final String TEST_EXPECTED_DUE_DATE = "2020-10-20";
+    public static final String TEST_EXPECTED_DUE_DATE_FORMATTED = "20 October 2020";
     public static String TEST_TOKEN = "test.token";
     public static String TEST_EVENT_ID = "test.event.id";
     public static String AUTH_TOKEN = "test.auth.token";
