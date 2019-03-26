@@ -59,6 +59,7 @@ public class OrchestrationConstants {
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
+    public static final String DN_RECEIVED_AOS_COMPLETE = "dnReceivedAosCompleted";
     public static final String AMEND_PETITION_EVENT = "amendPetition";
     public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
     public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
@@ -73,7 +74,9 @@ public class OrchestrationConstants {
     public static final String AOS_STARTED = "AosStarted";
     public static final String AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer";
     public static final String AOS_OVERDUE = "AosOverdue";
+    public static final String AOS_COMPLETED = "AosCompleted";
     public static final String DEFENDED = "DefendedDivorce";
+    public static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
     public static final String AWAITING_REISSUE = "AwaitingReissue";
 
 
