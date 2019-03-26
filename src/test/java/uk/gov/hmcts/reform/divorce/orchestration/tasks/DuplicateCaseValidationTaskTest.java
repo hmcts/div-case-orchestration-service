@@ -27,9 +27,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_HWF_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_MADE_EVENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.SELECTED_COURT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow.SELECTED_COURT;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -103,7 +103,7 @@ public class DuplicateCaseValidationTaskTest {
                 CaseDetails.builder()
                         .caseId(TEST_CASE_ID)
                         .state(AWAITING_PAYMENT)
-                        .caseData(Collections.singletonMap(SELECTED_COURT_KEY, TEST_COURT))
+                        .caseData(Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT))
                         .build()
             );
 
@@ -123,7 +123,7 @@ public class DuplicateCaseValidationTaskTest {
                 CaseDetails.builder()
                         .caseId(TEST_CASE_ID)
                         .state(AWAITING_HWF_DECISION)
-                        .caseData(Collections.singletonMap(SELECTED_COURT_KEY, TEST_COURT))
+                        .caseData(Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT))
                         .build()
             );
 
@@ -143,7 +143,7 @@ public class DuplicateCaseValidationTaskTest {
                 CaseDetails.builder()
                         .caseId(TEST_CASE_ID)
                         .state(PAYMENT_MADE_EVENT)
-                        .caseData(Collections.singletonMap(SELECTED_COURT_KEY, TEST_COURT))
+                        .caseData(Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT))
                         .build()
             );
 

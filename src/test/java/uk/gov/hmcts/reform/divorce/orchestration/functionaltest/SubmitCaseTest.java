@@ -120,7 +120,7 @@ public class SubmitCaseTest {
         Map<String, Object> retrieveCaseResponse = ImmutableMap.<String, Object>builder()
                 .put(ID, TEST_CASE_ID)
                 .put(CASE_STATE_JSON_KEY, AWAITING_PAYMENT)
-                .put("case_data", Collections.singletonMap("courts", "some-court"))
+                .put("case_data", Collections.singletonMap("D8DivorceUnit", "some-court"))
                 .build();
 
         stubMaintenanceServerEndpointForRetrieve(HttpStatus.OK, retrieveCaseResponse);

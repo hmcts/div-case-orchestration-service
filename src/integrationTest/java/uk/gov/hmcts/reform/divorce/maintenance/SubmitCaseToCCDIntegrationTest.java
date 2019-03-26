@@ -80,6 +80,8 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
         submissionResponse = submitCase(userToken, "divorce-session-with-court-selected.json");
         caseCreationResponseBody = submissionResponse.getBody();
         assertThat(caseCreationResponseBody.path(CASE_ID_KEY), is(existingCaseId));
+        allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
+        assertThat(allocatedCourt, is(notNullValue()));
     }
 
     private Response submitCase(String userToken, String fileName) throws Exception {
