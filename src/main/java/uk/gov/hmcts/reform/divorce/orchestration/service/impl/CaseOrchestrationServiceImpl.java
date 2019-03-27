@@ -84,9 +84,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final AmendPetitionWorkflow amendPetitionWorkflow;
 
     @Override
-    public Map<String, Object> ccdCallbackHandler(CreateEvent caseDetailsRequest,
-                                                  String authToken,
-                                                  boolean generateAosInvitation) throws WorkflowException {
+    public Map<String, Object> handleIssueEventCallback(CreateEvent caseDetailsRequest,
+                                                        String authToken,
+                                                        boolean generateAosInvitation) throws WorkflowException {
         Map<String, Object> payLoad = issueEventWorkflow.run(caseDetailsRequest, authToken, generateAosInvitation);
 
         if (issueEventWorkflow.errors().isEmpty()) {
