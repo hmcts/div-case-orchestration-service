@@ -34,7 +34,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     private static final String RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-aos/";
     private static final String TEST_AOS_AWAITING_EVENT_ID = "testAosAwaiting";
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
-    private static final String TEST_AWAITING_DN_EVENT_ID = "testAwaitingDecreeNisi";
+    private static final String AMEND_PETITION_EVENT = "amendPetition";
 
     private static final String STATE_KEY = "state";
     private static final String ID = "id";
@@ -66,7 +66,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
         final CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AWAITING_DN_EVENT_ID, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, AMEND_PETITION_EVENT, userDetails);
 
         final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + "co-respondent-answers.json");
         Response coRespondentSubmissionResponse = submitCoRespondentAosCase(userDetails.getAuthToken(), coRespondentAnswersJson);
