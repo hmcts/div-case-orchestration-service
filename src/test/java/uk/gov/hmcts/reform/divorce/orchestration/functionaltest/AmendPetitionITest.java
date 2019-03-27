@@ -67,7 +67,7 @@ public class AmendPetitionITest {
     @Test
     public void givenAmendPetitionDraftFails_thenReturnBadGateway()
             throws Exception {
-        final String errorMessage = "error message";
+        final String errorMessage = "{\"error\":\"error message\"}";
 
         stubCmsAmendPetitionDraftEndpoint(HttpStatus.BAD_GATEWAY, errorMessage);
         stubCmsUpdateCaseEndpoint(HttpStatus.OK, "");
