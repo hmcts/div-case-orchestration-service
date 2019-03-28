@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -67,12 +67,12 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
     @Test
     public void givenUndefendedCoResp_whenSendEmail_thenSendUndefendedTemplate() throws WorkflowException {
 
-        CreateEvent caseEvent = createSubmittedCoEvent(ImmutableMap.of(CO_RESPONDENT_DEFENDS_DIVORCE, "No"));
+        CcdCallbackRequest ccdCallbackRequest = createSubmittedCoEvent(ImmutableMap.of(CO_RESPONDENT_DEFENDS_DIVORCE, "No"));
 
-        classToTest.run(caseEvent);
+        classToTest.run(ccdCallbackRequest);
 
         ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
-        verify(emailTask).execute(argument.capture(), eq(caseEvent.getCaseDetails().getCaseData()));
+        verify(emailTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
         TaskContext capturedTask = argument.getValue();
 
@@ -85,17 +85,17 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
     @Test
     public void givenDefendedCoResp_whenSendEmail_thenSendDefendedTemplate() throws Exception {
 
-        CreateEvent caseEvent = createSubmittedCoEvent(ImmutableMap.of(
+        CcdCallbackRequest ccdCallbackRequest = createSubmittedCoEvent(ImmutableMap.of(
             CO_RESPONDENT_DEFENDS_DIVORCE, "Yes",
             CO_RESPONDENT_DUE_DATE, TEST_EXPECTED_DUE_DATE));
         Court court = new Court();
         court.setDivorceCentreName(TEST_COURT);
         when(taskCommons.getCourt(TEST_COURT)).thenReturn(court);
 
-        classToTest.run(caseEvent);
+        classToTest.run(ccdCallbackRequest);
 
         ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
-        verify(emailTask).execute(argument.capture(), eq(caseEvent.getCaseDetails().getCaseData()));
+        verify(emailTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
         TaskContext capturedTask = argument.getValue();
 
@@ -126,7 +126,7 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
         return expectedContext;
     }
 
-    private CreateEvent createSubmittedCoEvent(Map<String,Object> extraFields) {
+    private CcdCallbackRequest createSubmittedCoEvent(Map<String,Object> extraFields) {
 
         Map<String, Object> caseData = new HashMap<>(extraFields);
 
@@ -141,7 +141,7 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
             .caseData(caseData)
             .build();
 
-        return  CreateEvent
+        return  CcdCallbackRequest
             .builder()
             .caseDetails(caseDetails)
             .build();

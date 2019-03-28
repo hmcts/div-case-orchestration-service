@@ -26,7 +26,7 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
     private String contextPath;
 
     @Test
-    public void givenCreateEvent_whenProcessPbaPayment_thenReturnDataWithNoErrors() throws Exception {
+    public void givenCallbackRequest_whenProcessPbaPayment_thenReturnDataWithNoErrors() throws Exception {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         headers.put(HttpHeaders.AUTHORIZATION, createCaseWorkerUser().getAuthToken());

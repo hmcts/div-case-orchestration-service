@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -28,15 +28,15 @@ public class ProcessPbaPaymentWorkflow extends DefaultWorkflow<Map<String, Objec
         this.processPbaPayment = processPbaPayment;
     }
 
-    public Map<String, Object> run(CreateEvent caseDetailsRequest, String authToken) throws WorkflowException {
+    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
 
         return this.execute(new Task[] {
             validateSolicitorCaseData,
             processPbaPayment
         },
-            caseDetailsRequest.getCaseDetails().getCaseData(),
+            ccdCallbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(CASE_ID_JSON_KEY, caseDetailsRequest.getCaseDetails().getCaseId())
+            ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId())
         );
     }
 }

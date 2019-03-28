@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DnSubmittedEmailNotificationTask;
 
@@ -41,11 +41,11 @@ public class DNSubmittedWorkflowUTest {
                         D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME,
                         D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL))
                 .build();
-        CreateEvent caseEvent = CreateEvent.builder().caseDetails(caseDetails).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         when(emailNotificationTask.execute(any(),
                 eq(caseDetails.getCaseData()))).thenReturn(caseDetails.getCaseData());
-        Map<String, Object> response = classToTest.run(caseEvent, TestConstants.TEST_TOKEN);
+        Map<String, Object> response = classToTest.run(ccdCallbackRequest, TestConstants.TEST_TOKEN);
 
         assertEquals(caseDetails.getCaseData(), response);
     }
