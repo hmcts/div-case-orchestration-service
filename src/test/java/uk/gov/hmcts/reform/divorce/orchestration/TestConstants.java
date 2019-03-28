@@ -21,6 +21,7 @@ public class TestConstants {
     public static final String TEST_USER_ID = "test.user.id";
     public static final String TEST_COURT = "serviceCentre";
     public static final String TEST_ERROR = "test.error";
+    public static final String TEST_ERROR_CONTENT = "test.error.content";
     public static final String TEST_PIN_CODE = "test.pin.code";
     public static final String TEST_LETTER_HOLDER_ID_CODE = "test.letter.holder.id";
     public static final String TEST_AOS_INVITATION_FILE_NAME = "aosinvitation" + TEST_CASE_ID;
