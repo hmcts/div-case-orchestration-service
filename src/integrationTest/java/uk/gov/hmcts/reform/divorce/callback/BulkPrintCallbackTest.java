@@ -71,8 +71,8 @@ public class BulkPrintCallbackTest extends IntegrationTest {
         );
         ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders,
             ResourceLoader.objectToJson(createEvent)).getBody();
-        assertThat("Response body is not a JSON: " + response.toString(),
-                response.toString(),
+        assertThat("Response body is not a JSON: " + body.print(),
+                body.print(),
                 isJson()
         );
         String result = ((Map) body.jsonPath().get("data")).get("dueDate").toString();
