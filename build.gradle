@@ -127,7 +127,7 @@ def versions = [
         pitest                          : '1.3.2',
         gradlePitest                    : '1.3.0',
         sonarPitest                     : '0.5',
-        ccdStoreClient                  : '4.1.0',
+        ccdStoreClient                  : '4.6.2',
         javaxWsRs                       : '2.1.1',
         jsonPathAssert                  : '2.2.0',
         jacksonDatabind                 : '2.9.8',
