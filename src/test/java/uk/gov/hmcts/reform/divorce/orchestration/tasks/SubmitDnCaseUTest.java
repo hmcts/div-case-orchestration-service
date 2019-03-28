@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
@@ -20,10 +21,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_AOS_COMPLETE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SubmitDnCaseUTest {
@@ -45,12 +49,11 @@ public class SubmitDnCaseUTest {
     }
 
     @Test
-    public void givenDnSubmit_whenExecute_thenProceedAsExpected() {
+    public void givenDnSubmitAndAosNotComplete_whenExecute_thenProceedAsExpected() {
         final Map<String, Object> divorceSession = ImmutableMap.of();
 
-        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, DN_RECEIVED,
-            divorceSession))
-            .thenReturn(CASE_UPDATE_RESPONSE);
+        when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(
+                CaseDetails.builder().caseId(TEST_CASE_ID).state(AWAITING_DECREE_NISI).build());
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
@@ -58,4 +61,16 @@ public class SubmitDnCaseUTest {
             .updateCase(AUTH_TOKEN, TEST_CASE_ID, DN_RECEIVED, divorceSession);
     }
 
+    @Test
+    public void givenDnSubmitAndAosComplete_whenExecute_thenProceedAsExpected() {
+        final Map<String, Object> divorceSession = ImmutableMap.of();
+
+        when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(
+                CaseDetails.builder().caseId(TEST_CASE_ID).state(AOS_COMPLETED).build());
+
+        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
+
+        verify(caseMaintenanceClient)
+                .updateCase(AUTH_TOKEN, TEST_CASE_ID, DN_RECEIVED_AOS_COMPLETE, divorceSession);
+    }
 }
