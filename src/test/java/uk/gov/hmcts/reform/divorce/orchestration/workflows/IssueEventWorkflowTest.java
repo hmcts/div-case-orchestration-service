@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -72,7 +72,7 @@ public class IssueEventWorkflowTest {
 
     @Mock private GetPetitionIssueFee getPetitionIssueFee;
 
-    private CreateEvent createEventRequest;
+    private CcdCallbackRequest ccdCallbackRequestRequest;
     private Map<String, Object> payload;
     private TaskContext context;
 
@@ -98,8 +98,8 @@ public class IssueEventWorkflowTest {
             .caseData(payload)
             .build();
 
-        createEventRequest =
-                CreateEvent.builder()
+        ccdCallbackRequestRequest =
+                CcdCallbackRequest.builder()
                         .eventId(TEST_EVENT_ID)
                         .token(TEST_TOKEN)
                         .caseDetails(
@@ -127,7 +127,7 @@ public class IssueEventWorkflowTest {
 
 
         //When
-        Map<String, Object> response = issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, true);
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
 
         //Then
         assertThat(response, is(payload));
@@ -155,7 +155,7 @@ public class IssueEventWorkflowTest {
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, true);
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
 
         //Then
         assertThat(response, is(payload));
@@ -175,7 +175,7 @@ public class IssueEventWorkflowTest {
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, true);
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
 
         //Then
         assertThat(response, is(payload));
@@ -200,7 +200,7 @@ public class IssueEventWorkflowTest {
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, true);
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
 
         //Then
         assertThat(response, is(payload));
@@ -220,7 +220,7 @@ public class IssueEventWorkflowTest {
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, true);
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
 
         //Then
         assertThat(response, is(payload));
@@ -241,7 +241,7 @@ public class IssueEventWorkflowTest {
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, false);
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, false);
 
         //Then
         assertThat(response, is(payload));

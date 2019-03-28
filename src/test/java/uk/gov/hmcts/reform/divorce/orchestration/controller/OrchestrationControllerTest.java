@@ -11,9 +11,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseCreationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.AllocatedCourt;
@@ -62,16 +62,16 @@ public class OrchestrationControllerTest {
             .caseData(caseData)
             .build();
 
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder().data(Collections.emptyMap()).build();
 
-        when(caseOrchestrationService.handleIssueEventCallback(createEvent, AUTH_TOKEN, true))
+        when(caseOrchestrationService.handleIssueEventCallback(ccdCallbackRequest, AUTH_TOKEN, true))
             .thenReturn(Collections.emptyMap());
 
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.petitionIssuedCallback(AUTH_TOKEN,
-            true, createEvent);
+            true, ccdCallbackRequest);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
@@ -94,16 +94,16 @@ public class OrchestrationControllerTest {
             .caseData(caseData)
             .build();
 
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
 
         CcdCallbackResponse expected =
             CcdCallbackResponse.builder().errors(Collections.emptyList()).warnings(Collections.emptyList())
                 .data(Collections.emptyMap()).build();
 
-        when(caseOrchestrationService.ccdCallbackBulkPrintHandler(createEvent, AUTH_TOKEN))
+        when(caseOrchestrationService.ccdCallbackBulkPrintHandler(ccdCallbackRequest, AUTH_TOKEN))
             .thenReturn(Collections.emptyMap());
-        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.bulkPrint(AUTH_TOKEN, createEvent);
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.bulkPrint(AUTH_TOKEN, ccdCallbackRequest);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
@@ -123,18 +123,18 @@ public class OrchestrationControllerTest {
             .caseData(caseData)
             .build();
 
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .errors(expectedError)
             .build();
 
-        when(caseOrchestrationService.handleIssueEventCallback(createEvent, AUTH_TOKEN, false))
+        when(caseOrchestrationService.handleIssueEventCallback(ccdCallbackRequest, AUTH_TOKEN, false))
             .thenReturn(caseData);
 
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.petitionIssuedCallback(AUTH_TOKEN,
-            false, createEvent);
+            false, ccdCallbackRequest);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
@@ -332,12 +332,12 @@ public class OrchestrationControllerTest {
             .caseData(caseData)
             .build();
 
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
 
-        when(caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(createEvent)).thenReturn(caseData);
+        when(caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest)).thenReturn(caseData);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionSubmitted(null, createEvent);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionSubmitted(null, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
@@ -351,10 +351,10 @@ public class OrchestrationControllerTest {
         final CaseDetails caseDetails = CaseDetails.builder()
             .caseData(caseData)
             .build();
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
-        when(caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(createEvent)).thenReturn(caseData);
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionUpdated(null, createEvent);
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+        when(caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest)).thenReturn(caseData);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionUpdated(null, ccdCallbackRequest);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
@@ -366,11 +366,11 @@ public class OrchestrationControllerTest {
         final CaseDetails caseDetails = CaseDetails.builder()
             .caseData(caseData)
             .build();
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
-        when(caseOrchestrationService.sendRespondentSubmissionNotificationEmail(createEvent)).thenReturn(caseData);
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+        when(caseOrchestrationService.sendRespondentSubmissionNotificationEmail(ccdCallbackRequest)).thenReturn(caseData);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.respondentAOSSubmitted(null, createEvent);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.respondentAOSSubmitted(null, ccdCallbackRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
@@ -384,12 +384,12 @@ public class OrchestrationControllerTest {
             .caseData(caseData)
             .build();
 
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
 
-        when(caseOrchestrationService.setOrderSummary(createEvent)).thenReturn(caseData);
+        when(caseOrchestrationService.setOrderSummary(ccdCallbackRequest)).thenReturn(caseData);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.getPetitionIssueFees(createEvent);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.getPetitionIssueFees(ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
@@ -404,12 +404,12 @@ public class OrchestrationControllerTest {
             .caseData(caseData)
             .build();
 
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
 
-        when(caseOrchestrationService.processPbaPayment(createEvent, AUTH_TOKEN)).thenReturn(caseData);
+        when(caseOrchestrationService.processPbaPayment(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, createEvent);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
@@ -428,12 +428,12 @@ public class OrchestrationControllerTest {
             Collections.singletonList(ERROR_STATUS)
         );
 
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
 
-        when(caseOrchestrationService.processPbaPayment(createEvent, AUTH_TOKEN)).thenReturn(invalidResponse);
+        when(caseOrchestrationService.processPbaPayment(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(invalidResponse);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, createEvent);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
             .errors(Collections.singletonList(ERROR_STATUS))
@@ -450,12 +450,12 @@ public class OrchestrationControllerTest {
             .caseData(caseData)
             .build();
 
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
 
-        when(caseOrchestrationService.solicitorCreate(createEvent)).thenReturn(caseData);
+        when(caseOrchestrationService.solicitorCreate(ccdCallbackRequest)).thenReturn(caseData);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorCreate(createEvent);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorCreate(ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
@@ -513,14 +513,14 @@ public class OrchestrationControllerTest {
             .caseData(caseData)
             .build();
 
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
-        when(caseOrchestrationService.dnSubmitted(createEvent, AUTH_TOKEN)).thenReturn(expectedResponse);
+        when(caseOrchestrationService.dnSubmitted(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(expectedResponse);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest
-            .dnSubmitted(AUTH_TOKEN, createEvent);
+            .dnSubmitted(AUTH_TOKEN, ccdCallbackRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
@@ -548,13 +548,13 @@ public class OrchestrationControllerTest {
         final CaseDetails caseDetails = CaseDetails.builder()
             .caseData(caseData)
             .build();
-        final CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(caseDetails);
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
-        when(caseOrchestrationService.sendCoRespReceivedNotificationEmail(createEvent)).thenReturn(expectedResponse);
+        when(caseOrchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest)).thenReturn(expectedResponse);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.corespReceived( createEvent);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.corespReceived( ccdCallbackRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());

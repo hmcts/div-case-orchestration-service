@@ -20,9 +20,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ff4j.FeatureToggle;
@@ -125,8 +125,8 @@ public class BulkPrintTest {
         stubFeatureToggleService(true);
         stubSendLetterService(HttpStatus.OK);
 
-        CreateEvent createEvent = createCaseEventWithDocuments();
-        Map<String, Object> caseData = createEvent.getCaseDetails().getCaseData();
+        CcdCallbackRequest ccdCallbackRequest = createCaseEventWithDocuments();
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         caseData.put("dueDate", LocalDate.now().plus(9, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE));
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .data(caseData)
@@ -162,13 +162,13 @@ public class BulkPrintTest {
             .andExpect(content().json(convertObjectToJsonString(expected)));
     }
 
-    private CreateEvent createCaseEventWithDocuments() {
+    private CcdCallbackRequest createCaseEventWithDocuments() {
         CASE_DATA.put("D8DocumentsGenerated", Arrays.asList(
             newDocument("http://localhost:4020/binary", "issue", DOCUMENT_TYPE_PETITION),
             newDocument("http://localhost:4020/binary", "aosletter", DOCUMENT_TYPE_RESPONDENT_INVITATION),
             newDocument("http://localhost:4020/binary", "coRespondentletter", DOCUMENT_TYPE_CO_RESPONDENT_INVITATION)
         ));
-        return new CreateEvent("abacccd", "BulkPrint", CaseDetails.builder()
+        return new CcdCallbackRequest("abacccd", "BulkPrint", CaseDetails.builder()
             .caseData(CASE_DATA)
             .caseId("12345")
             .state("AOSPackGenerated").build());
@@ -179,8 +179,8 @@ public class BulkPrintTest {
         sendLetterService.resetAll();
         stubFeatureToggleService(false);
         stubSendLetterService(HttpStatus.OK);
-        CreateEvent createEvent = createCaseEventWithDocuments();
-        Map<String, Object> caseData = createEvent.getCaseDetails().getCaseData();
+        CcdCallbackRequest ccdCallbackRequest = createCaseEventWithDocuments();
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         caseData.put(DUE_DATE, LocalDate.now().plus(9, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE));
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .data(caseData)
@@ -189,7 +189,7 @@ public class BulkPrintTest {
             .build();
 
         webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(createEvent))
+            .content(convertObjectToJsonString(ccdCallbackRequest))
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))

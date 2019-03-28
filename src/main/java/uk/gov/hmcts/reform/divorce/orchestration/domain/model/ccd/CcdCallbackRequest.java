@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
-public class CreateEvent {
+public class CcdCallbackRequest {
     private String token;
     @JsonProperty("event_id")
     private String eventId;

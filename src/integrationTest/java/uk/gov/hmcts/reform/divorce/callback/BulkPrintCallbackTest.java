@@ -10,7 +10,7 @@ import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
 import java.time.LocalDate;
@@ -65,12 +65,12 @@ public class BulkPrintCallbackTest extends IntegrationTest {
             .getBody()
             .as(Map.class);
 
-        CreateEvent createEvent = new CreateEvent();
-        createEvent.setCaseDetails(CaseDetails.builder().caseData(
+        CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(CaseDetails.builder().caseData(
             (Map) response.get("data")).caseId("323").state("submitted").build()
         );
         ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders,
-            ResourceLoader.objectToJson(createEvent)).getBody();
+            ResourceLoader.objectToJson(ccdCallbackRequest)).getBody();
         assertThat("Response body is not a JSON: " + body.print(),
                 body.print(),
                 isJson()

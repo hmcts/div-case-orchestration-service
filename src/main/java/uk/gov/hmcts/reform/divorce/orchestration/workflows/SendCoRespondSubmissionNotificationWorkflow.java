@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
@@ -46,8 +46,8 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
     @Autowired
     private final TaskCommons taskCommons;
 
-    public Map<String, Object> run(CreateEvent caseRequestDetails) throws WorkflowException {
-        Map<String, Object> caseData = caseRequestDetails.getCaseDetails().getCaseData();
+    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         String caseNumber = (String) caseData.get(D_8_CASE_REFERENCE);
         String firstName = (String) caseData.get(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME);
@@ -81,7 +81,7 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
             emailTask
             },
             caseData,
-            ImmutablePair.of(CASE_ID_JSON_KEY, caseRequestDetails.getCaseDetails().getCaseId()),
+            ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId()),
             ImmutablePair.of(NOTIFICATION_EMAIL, corespondentEmail),
             ImmutablePair.of(NOTIFICATION_TEMPLATE, template),
             ImmutablePair.of(NOTIFICATION_TEMPLATE_VARS, templateVars)
