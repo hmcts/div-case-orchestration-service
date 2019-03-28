@@ -9,8 +9,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
@@ -136,7 +136,7 @@ public class CaseOrchestrationServiceImplTest {
     @Mock
     private AuthUtil authUtil;
 
-    private CreateEvent createEventRequest;
+    private CcdCallbackRequest ccdCallbackRequest;
 
     private Map<String, Object> requestPayload;
 
@@ -145,7 +145,7 @@ public class CaseOrchestrationServiceImplTest {
     @Before
     public void setUp() {
         requestPayload = Collections.emptyMap();
-        createEventRequest = CreateEvent.builder()
+        ccdCallbackRequest = CcdCallbackRequest.builder()
                 .caseDetails(
                         CaseDetails.builder()
                                 .caseData(requestPayload)
@@ -162,10 +162,10 @@ public class CaseOrchestrationServiceImplTest {
     public void givenGenerateInvitationIsTrue_whenCcdCallbackHandler_thenReturnExpected()
             throws WorkflowException {
         //given
-        when(issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, true)).thenReturn(expectedPayload);
+        when(issueEventWorkflow.run(ccdCallbackRequest, AUTH_TOKEN, true)).thenReturn(expectedPayload);
 
         //when
-        Map<String, Object> actual = classUnderTest.handleIssueEventCallback(createEventRequest, AUTH_TOKEN, true);
+        Map<String, Object> actual = classUnderTest.handleIssueEventCallback(ccdCallbackRequest, AUTH_TOKEN, true);
 
         //then
         assertEquals(expectedPayload, actual);
@@ -176,10 +176,10 @@ public class CaseOrchestrationServiceImplTest {
     public void givenGenerateInvitationIsFalse_whenCcdCallbackHandler_thenReturnExpected()
         throws WorkflowException {
         //given
-        when(issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, false)).thenReturn(expectedPayload);
+        when(issueEventWorkflow.run(ccdCallbackRequest, AUTH_TOKEN, false)).thenReturn(expectedPayload);
 
         //when
-        Map<String, Object> actual = classUnderTest.handleIssueEventCallback(createEventRequest, AUTH_TOKEN, false);
+        Map<String, Object> actual = classUnderTest.handleIssueEventCallback(ccdCallbackRequest, AUTH_TOKEN, false);
 
         //then
         assertEquals(expectedPayload, actual);
@@ -404,39 +404,39 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenCaseData_whenSendPetitionerSubmissionNotification_thenReturnPayload() throws Exception {
         // given
-        when(sendPetitionerSubmissionNotificationWorkflow.run(createEventRequest))
+        when(sendPetitionerSubmissionNotificationWorkflow.run(ccdCallbackRequest))
                 .thenReturn(requestPayload);
 
         // when
-        Map<String, Object> actual = classUnderTest.sendPetitionerSubmissionNotificationEmail(createEventRequest);
+        Map<String, Object> actual = classUnderTest.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest);
 
         // then
         assertEquals(requestPayload, actual);
 
-        verify(sendPetitionerSubmissionNotificationWorkflow).run(createEventRequest);
+        verify(sendPetitionerSubmissionNotificationWorkflow).run(ccdCallbackRequest);
     }
 
     @Test
     public void givenCaseData_whenSendPetitionerGenericEmailNotification_thenReturnPayload() throws Exception {
         // given
-        when(sendPetitionerGenericEmailNotificationWorkflow.run(createEventRequest))
+        when(sendPetitionerGenericEmailNotificationWorkflow.run(ccdCallbackRequest))
                 .thenReturn(requestPayload);
         // when
-        Map<String, Object> actual = classUnderTest.sendPetitionerGenericUpdateNotificationEmail(createEventRequest);
+        Map<String, Object> actual = classUnderTest.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest);
         // then
         assertEquals(requestPayload, actual);
-        verify(sendPetitionerGenericEmailNotificationWorkflow).run(createEventRequest);
+        verify(sendPetitionerGenericEmailNotificationWorkflow).run(ccdCallbackRequest);
     }
 
     @Test
     public void givenCaseData_whenSendRespondentSubmissionNotification_thenReturnPayload() throws Exception {
-        when(sendRespondentSubmissionNotificationWorkflow.run(createEventRequest)).thenReturn(requestPayload);
+        when(sendRespondentSubmissionNotificationWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
 
         Map<String, Object> returnedPayload = classUnderTest
-                .sendRespondentSubmissionNotificationEmail(createEventRequest);
+                .sendRespondentSubmissionNotificationEmail(ccdCallbackRequest);
 
         assertEquals(requestPayload, returnedPayload);
-        verify(sendRespondentSubmissionNotificationWorkflow).run(createEventRequest);
+        verify(sendRespondentSubmissionNotificationWorkflow).run(ccdCallbackRequest);
     }
 
     @Test
@@ -446,7 +446,7 @@ public class CaseOrchestrationServiceImplTest {
                 .thenReturn(requestPayload);
 
         // when
-        Map<String, Object> actual = classUnderTest.setOrderSummary(createEventRequest);
+        Map<String, Object> actual = classUnderTest.setOrderSummary(ccdCallbackRequest);
 
         // then
         assertEquals(requestPayload, actual);
@@ -457,34 +457,34 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenCaseData_whenProcessPbaPayment_thenReturnPayload() throws Exception {
         // given
-        when(processPbaPaymentWorkflow.run(createEventRequest, AUTH_TOKEN))
+        when(processPbaPaymentWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
                 .thenReturn(requestPayload);
 
         // when
-        Map<String, Object> actual = classUnderTest.processPbaPayment(createEventRequest, AUTH_TOKEN);
+        Map<String, Object> actual = classUnderTest.processPbaPayment(ccdCallbackRequest, AUTH_TOKEN);
 
         // then
         assertEquals(requestPayload, actual);
 
-        verify(processPbaPaymentWorkflow).run(createEventRequest, AUTH_TOKEN);
+        verify(processPbaPaymentWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
     }
 
 
     @Test
     public void givenCaseDataInvalid_whenProcessPbaPayment_thenReturnListOfErrors() throws Exception {
         // given
-        when(processPbaPaymentWorkflow.run(createEventRequest, AUTH_TOKEN))
+        when(processPbaPaymentWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
                 .thenReturn(requestPayload);
         Map<String, Object> errors = Collections.singletonMap("new_Error", "An Error");
         when(processPbaPaymentWorkflow.errors()).thenReturn(errors);
 
         // when
-        Map<String, Object> actual = classUnderTest.processPbaPayment(createEventRequest, AUTH_TOKEN);
+        Map<String, Object> actual = classUnderTest.processPbaPayment(ccdCallbackRequest, AUTH_TOKEN);
 
         // then
         assertEquals(errors, actual);
 
-        verify(processPbaPaymentWorkflow).run(createEventRequest, AUTH_TOKEN);
+        verify(processPbaPaymentWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
         verify(processPbaPaymentWorkflow, times(2)).errors();
     }
 
@@ -495,7 +495,7 @@ public class CaseOrchestrationServiceImplTest {
                 .thenReturn(requestPayload);
 
         // when
-        Map<String, Object> actual = classUnderTest.solicitorCreate(createEventRequest);
+        Map<String, Object> actual = classUnderTest.solicitorCreate(ccdCallbackRequest);
 
         // then
         assertEquals(requestPayload, actual);
@@ -533,14 +533,14 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenNoError_whenExecuteDnSubmittedWorkflow_thenReturnCaseData() throws WorkflowException {
         CcdCallbackResponse expectedResponse =  CcdCallbackResponse.builder()
-                .data(createEventRequest.getCaseDetails().getCaseData())
+                .data(ccdCallbackRequest.getCaseDetails().getCaseData())
                 .build();
 
         when(dnSubmittedWorkflow
-                .run(createEventRequest, AUTH_TOKEN))
-                .thenReturn(createEventRequest.getCaseDetails().getCaseData());
+                .run(ccdCallbackRequest, AUTH_TOKEN))
+                .thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
 
-        CcdCallbackResponse ccdResponse = classUnderTest.dnSubmitted(createEventRequest, AUTH_TOKEN);
+        CcdCallbackResponse ccdResponse = classUnderTest.dnSubmitted(ccdCallbackRequest, AUTH_TOKEN);
 
         assertEquals(expectedResponse, ccdResponse);
     }
@@ -548,14 +548,14 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenNoError_whenExecuteCoRespReceivedWorkflow_thenReturnCaseData() throws WorkflowException {
         CcdCallbackResponse expectedResponse =  CcdCallbackResponse.builder()
-            .data(createEventRequest.getCaseDetails().getCaseData())
+            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
             .build();
 
         when(sendCoRespondSubmissionNotificationWorkflow
-            .run(createEventRequest))
-            .thenReturn(createEventRequest.getCaseDetails().getCaseData());
+            .run(ccdCallbackRequest))
+            .thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
 
-        CcdCallbackResponse ccdResponse = classUnderTest.sendCoRespReceivedNotificationEmail(createEventRequest);
+        CcdCallbackResponse ccdResponse = classUnderTest.sendCoRespReceivedNotificationEmail(ccdCallbackRequest);
 
         assertEquals(expectedResponse, ccdResponse);
     }
@@ -565,8 +565,8 @@ public class CaseOrchestrationServiceImplTest {
 
         Map<String, Object> workflowError = Collections.singletonMap("ErrorKey", "Error value");
         when(dnSubmittedWorkflow
-                .run(createEventRequest, AUTH_TOKEN))
-                .thenReturn(createEventRequest.getCaseDetails().getCaseData());
+                .run(ccdCallbackRequest, AUTH_TOKEN))
+                .thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
 
         when(dnSubmittedWorkflow.errors()).thenReturn(workflowError);
 
@@ -574,7 +574,7 @@ public class CaseOrchestrationServiceImplTest {
                 .errors(Collections.singletonList("Error value"))
                 .build();
 
-        CcdCallbackResponse ccdResponse = classUnderTest.dnSubmitted(createEventRequest, AUTH_TOKEN);
+        CcdCallbackResponse ccdResponse = classUnderTest.dnSubmitted(ccdCallbackRequest, AUTH_TOKEN);
 
         assertEquals(expectedResponse, ccdResponse);
     }
@@ -591,7 +591,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @After
     public void tearDown() {
-        createEventRequest = null;
+        ccdCallbackRequest = null;
         requestPayload = null;
         expectedPayload = null;
     }

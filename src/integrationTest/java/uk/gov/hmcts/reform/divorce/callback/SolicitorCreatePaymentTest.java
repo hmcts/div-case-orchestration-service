@@ -28,7 +28,7 @@ public class SolicitorCreatePaymentTest extends IntegrationTest {
     private String contextPath;
 
     @Test
-    public void givenCreateEvent_whenSolicitorCreate_thenReturnUpdatedData() throws Exception {
+    public void givenCallbackRequest_whenSolicitorCreate_thenReturnUpdatedData() throws Exception {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 

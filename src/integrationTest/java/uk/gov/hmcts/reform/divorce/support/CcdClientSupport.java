@@ -22,7 +22,7 @@ public class CcdClientSupport {
     private String caseType;
 
     @Value("${ccd.eventid.create}")
-    private String createEventId;
+    private String CcdCallbackRequestId;
 
     @Autowired
     private CoreCaseDataApi coreCaseDataApi;
@@ -40,7 +40,7 @@ public class CcdClientSupport {
             userDetails.getId(),
             jurisdictionId,
             caseType,
-            createEventId);
+            CcdCallbackRequestId);
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
