@@ -45,8 +45,6 @@ public interface CosApiClient {
     )
     Map<String, Object> aosSubmitted(@RequestBody Map<String, Object> caseDataContent);
 
-
-
     @RequestMapping(
             method = RequestMethod.POST,
             value = "/dn-submitted",
@@ -89,4 +87,11 @@ public interface CosApiClient {
     Map<String, Object> submitCase(@RequestHeader(AUTHORIZATION) String authorisation,
                    @RequestBody JsonNode caseDataContent
     );
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/case-linked-for-hearing",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> caseLinkedForHearing(@RequestBody Map<String, Object> caseDataContent);
 }
