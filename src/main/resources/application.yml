@@ -213,7 +213,7 @@ idam:
 auth2:
   client:
     id: divorce
-    secret: dummy
+    secret: ${AUTH2_CLIENT_SECRET:dummysecret}
 
 document:
   generator:
