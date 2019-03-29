@@ -5,14 +5,14 @@
        <cve>CVE-2018-10237</cve>
     </suppress>
         <suppress>
-	        <notes><![CDATA[
-	        file name: spring-security-rsa-1.0.8.RELEASE.jar
-	        This has been updated, but it still shown some vulnerabilities that shouldn't be there
-	        Issue reported on the DependencyCheck GitHub repo
-	        https://github.com/jeremylong/DependencyCheck/issues/1665
-	        ]]>
-	        </notes>
-	        <gav regex="true">.*</gav>
+            <notes><![CDATA[
+            file name: spring-security-rsa-1.0.8.RELEASE.jar
+            This has been updated, but it still shown some vulnerabilities that shouldn't be there
+            Issue reported on the DependencyCheck GitHub repo
+            https://github.com/jeremylong/DependencyCheck/issues/1665
+            ]]>
+            </notes>
+            <gav regex="true">.*</gav>
             <cpe>cpe:/a:vmware:springsource_spring_security:1.0.8</cpe>
             <cpe>cpe:/a:pivotal_software:spring_security:1.0.8,</cpe>
             <cpe>cpe:/a:pivotal_software:spring_security_oauth:1.0.8</cpe>
