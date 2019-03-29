@@ -199,10 +199,10 @@ idam:
       context-path: /health
   citizen:
     username: dummyuser
-    password: dummypassword
+    password: ${IDAM_CITIZEN_PASSWORD:dummypassword}
   caseworker:
     username: dummyuser
-    password: dummypassword
+    password: ${IDAM_CASEWORKER_PASSWORD:dummypassword}
   strategic:
     enabled: ${IDAM_STRATEGIC_ENABLED:false}
   s2s-auth:
