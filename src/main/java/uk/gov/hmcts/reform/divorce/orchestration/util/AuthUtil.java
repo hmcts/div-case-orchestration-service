@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -9,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.AuthenticateUserResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.TokenExchangeResponse;
 
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Base64;
 
