@@ -9,11 +9,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.AuthenticateUserResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.TokenExchangeResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Base64;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BASIC;
 
 @SuppressWarnings("squid:S1118")
+@Slf4j
 @Component
 public class AuthUtil {
 
@@ -54,6 +57,8 @@ public class AuthUtil {
     }
 
     public String getCaseworkerToken() {
+        log.info(caseworkerUserName);
+        log.info(caseworkerPassword);
         return getIdamOauth2Token(caseworkerUserName, caseworkerPassword);
     }
 
