@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 
 public class AmendPetitionTest extends CcdSubmissionSupport {
+
+    //Event that allows me to add the Issue Date to the case, since it's not updatable by the citizen user
+    private static final String PAYMENT_REFERENCE_EVENT = "paymentReferenceGenerated";
 
     private static final String PREVIOUS_CASE_ID_KEY = "previousCaseId";
     private static final String PREVIOUS_ISSUE_DATE_KEY = "previousIssueDate";
@@ -59,16 +66,25 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         );
         String caseId = issuedCase.getId().toString();
 
+        updateCase(caseId,
+            null,
+            PAYMENT_REFERENCE_EVENT,
+            ImmutablePair.of(ISSUE_DATE, "2018-06-08"));
+
         updateCaseForCitizen(caseId, null, TEST_AOS_STARTED_EVENT_ID, citizenUser);
         updateCaseForCitizen(caseId, null, AOS_RECEIVED_NO_ADMIT_EVENT_ID, citizenUser);
+
         Response cosResponse = amendPetition(citizenUser.getAuthToken(), caseId);
         uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails oldCase;
         oldCase = cmsClient.retrievePetitionById(citizenUser.getAuthToken(), caseId);
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
 
-        Map<String, Object> newDraftDocument = (Map<String, Object>) cosResponse.getBody().as(Map.class);
-        assertThat(newDraftDocument.get(PREVIOUS_ISSUE_DATE_KEY), equalTo(issuedCase.getData().get(ISSUE_DATE)));
+        Map<String, Object> newDraftDocument = cosResponse.getBody().as(Map.class);
+        assertThat(newDraftDocument.get(PREVIOUS_ISSUE_DATE_KEY), allOf(
+            is(notNullValue()),
+            equalTo("2018-06-08T00:00:00.000+0000")
+        ));
 
         List<String> previousReasons = (List<String>) newDraftDocument.get(PREVIOUS_REASONS_KEY);
         assertTrue(previousReasons.contains(oldCase.getCaseData().get(D8_REASON_DIVORCE)));
