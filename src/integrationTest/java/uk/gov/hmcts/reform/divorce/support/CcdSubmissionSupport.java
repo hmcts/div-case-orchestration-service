@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.support;
 
 import io.restassured.response.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,15 @@ import uk.gov.hmcts.reform.divorce.util.RestUtil;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 
 public abstract class CcdSubmissionSupport extends IntegrationTest {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/issue-petition/";
+    protected static final String USER_DEFAULT_EMAIL = "simulate-delivered@notifications.service.gov.uk";
+    protected static final String CO_RESPONDENT_DEFAULT_EMAIL = "co-respondent@divorce.co.uk";
+    protected static final String RESPONDENT_DEFAULT_EMAIL = "respondent@divorce.co.uk";
 
     @Autowired
     protected CcdClientSupport ccdClientSupport;
@@ -76,13 +81,16 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         );
     }
 
-    public Response submitCoRespondentAosCase(final String userToken, final String requestBody) {
-        final Map<String, Object> headers = populateHeaders(userToken);
-
+    public Response submitCoRespondentAosCase(final UserDetails userDetails, final String requestBody) {
+        final Map<String, Object> headers = populateHeaders(userDetails.getAuthToken());
+        String bodyWithUser = requestBody;
+        if (StringUtils.isNotEmpty(bodyWithUser)) {
+            bodyWithUser = bodyWithUser.replaceAll(CO_RESPONDENT_DEFAULT_EMAIL, userDetails.getEmailAddress());
+        }
         return RestUtil.postToRestService(
                 serverUrl + submitCoRespondentAosContextPath,
                 headers,
-                requestBody
+                bodyWithUser
         );
     }
 

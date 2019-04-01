@@ -27,6 +27,7 @@
   "jurisdictionConfidentLegal":"Yes",
   "respondentLastName":"Jamed",
   "reasonForDivorceShowTwoYearsSeparation":"true",
+  "respEmailAddress":"respondent@divorce.co.uk",
   "petitionerCorrespondenceAddress":{
     "postcodeManual":null,
     "addressConfirmed":"true",
