@@ -49,7 +49,10 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     @Test
     public void givenUserTokenIsNull_whenSubmitCoRespondentAos_thenReturnBadRequest() throws Exception {
         final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + "co-respondent-answers.json");
-        Response cosResponse = submitCoRespondentAosCase(null, coRespondentAnswersJson);
+        final UserDetails user = UserDetails.builder()
+            .emailAddress(CO_RESP_EMAIL_ADDRESS)
+            .build();
+        Response cosResponse = submitCoRespondentAosCase(user, coRespondentAnswersJson);
 
         assertEquals(BAD_REQUEST.value(), cosResponse.getStatusCode());
     }

@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.util.RestUtil;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 
