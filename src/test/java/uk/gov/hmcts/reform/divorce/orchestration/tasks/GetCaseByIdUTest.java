@@ -27,8 +27,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -70,10 +70,9 @@ public class GetCaseByIdUTest {
         final DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        final Map<String, Object> caseData = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
         final CaseDetails cmsResponse =
             CaseDetails.builder()
-                .caseData(caseData)
+                .caseData(Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT))
                 .caseId(TEST_CASE_ID)
                 .state(TEST_STATE)
                 .build();
@@ -84,7 +83,7 @@ public class GetCaseByIdUTest {
 
         classUnderTest.execute(context, null);
 
-        assertEquals(caseData, context.getTransientObject(CCD_CASE_DATA));
+        assertEquals(cmsResponse, context.getTransientObject(CASE_DETAILS_JSON_KEY));
 
         verify(caseMaintenanceClient).retrievePetitionById(CASEWORKER_AUTH_TOKEN, TEST_CASE_ID);
     }
