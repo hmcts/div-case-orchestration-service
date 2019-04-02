@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.lang.String.format;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
@@ -36,6 +35,15 @@ public class PetitionerCertificateOfEntitlementNotification implements Task<Map<
     private static final String EMAIL_DESCRIPTION = "petitioner notification - certificate of description";
     private static final Period PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT = Period.ofWeeks(2);
 
+    private static final String PETITIONER_EMAIL_ADDRESS = "email address";
+    private static final String CASE_NUMBER = "case number";
+    private static final String FIRST_NAME = "first name";
+    private static final String LAST_NAME = "last name";
+    private static final String DATE_OF_HEARING = "date of hearing";
+    private static final String LIMIT_DATE_TO_CONTACT_COURT = "limit date to contact court";
+    private static final String COSTS_CLAIM_GRANTED = "costs claim granted";
+    private static final String COSTS_CLAIM_NOT_GRANTED = "costs claim not granted";
+
     @Autowired
     private TaskCommons taskCommons;
 
@@ -46,26 +54,24 @@ public class PetitionerCertificateOfEntitlementNotification implements Task<Map<
 
         String petitionerEmail = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_EMAIL);
         String familyManReference = getMandatoryPropertyValueAsString(payload, D_8_CASE_REFERENCE);
-        String petitionerFullName = format("%s %s",
-            getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME),
-            getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_LAST_NAME));
         LocalDate dateOfHearing = LocalDate.parse(getMandatoryPropertyValueAsString(payload, DATE_OF_HEARING_CCD_FIELD),
             ofPattern(CCD_DATE_FORMAT));
         LocalDate limitDateToContactCourt = dateOfHearing.minus(PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT);
 
         Map<String, String> templateParameters = new HashMap<>();
-        templateParameters.put("email address", petitionerEmail);
-        templateParameters.put("family man reference", familyManReference);
-        templateParameters.put("petitioner full name", petitionerFullName);
-        templateParameters.put("date of hearing", formatDateWithCustomerFacingFormat(dateOfHearing));
-        templateParameters.put("limit date to contact court",
+        templateParameters.put(PETITIONER_EMAIL_ADDRESS, petitionerEmail);
+        templateParameters.put(CASE_NUMBER, familyManReference);
+        templateParameters.put(FIRST_NAME, getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME));
+        templateParameters.put(LAST_NAME, getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_LAST_NAME));
+        templateParameters.put(DATE_OF_HEARING, formatDateWithCustomerFacingFormat(dateOfHearing));
+        templateParameters.put(LIMIT_DATE_TO_CONTACT_COURT,
             formatDateWithCustomerFacingFormat(limitDateToContactCourt));
 
         if (wasDivorceCostsClaimed(payload)) {
             if (wasCostsClaimGranted(payload)) {
-                templateParameters.put("costs claim granted", "true");
+                templateParameters.put(COSTS_CLAIM_GRANTED, "true");
             } else {
-                templateParameters.put("costs claim not granted", "true");
+                templateParameters.put(COSTS_CLAIM_NOT_GRANTED, "true");
             }
         }
 

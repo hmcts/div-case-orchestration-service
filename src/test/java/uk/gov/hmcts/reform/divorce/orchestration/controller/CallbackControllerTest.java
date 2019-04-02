@@ -10,8 +10,8 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrarionServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
 import java.util.Map;
 
@@ -33,7 +33,7 @@ public class CallbackControllerTest {
     private CallbackController controller;
 
     @Test
-    public void testCaseLinkerForHearingCallsRightServiceMethod() throws CaseOrchestrarionServiceException {
+    public void testCaseLinkerForHearingCallsRightServiceMethod() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -50,7 +50,7 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void shouldReturnOkResponse_WithErrors_AndNoCaseData_WhenExceptionIsCaught() throws CaseOrchestrarionServiceException {
+    public void shouldReturnOkResponse_WithErrors_AndNoCaseData_WhenExceptionIsCaught() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -58,7 +58,7 @@ public class CallbackControllerTest {
                 .build())
             .build();
         when(caseOrchestrationService.processCaseLinkedForHearingEvent(incomingRequest))
-            .thenThrow(new CaseOrchestrarionServiceException(new Exception("This is a test error message.")));
+            .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
         ResponseEntity<CcdCallbackResponse> response = controller.caseLinkedForHearing(null, incomingRequest);
 

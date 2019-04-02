@@ -23,11 +23,13 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
 
-        log.debug("Running {} workflow for case id {}.", CaseLinkedForHearingWorkflow.class.getName(), caseDetails.getCaseId());
-        return this.execute(new Task[]{petitionerCertificateOfEntitlementNotification},
+        Map<String, Object> returnedPayload = this.execute(new Task[]{petitionerCertificateOfEntitlementNotification},
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_KEY, caseDetails.getCaseId()));
 
+        log.info("Running workflow for case id {}.", caseDetails.getCaseId());
+
+        return returnedPayload;
     }
 
 }

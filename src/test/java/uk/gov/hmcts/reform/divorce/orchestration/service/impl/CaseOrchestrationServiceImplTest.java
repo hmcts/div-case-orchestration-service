@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrarionServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
@@ -606,7 +606,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void testServiceCallsRightWorkflowWithRightData_ForProcessingCaseLinkedBackEvent()
-        throws WorkflowException, CaseOrchestrarionServiceException {
+        throws WorkflowException, CaseOrchestrationServiceException {
         when(caseLinkedForHearingWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()))).thenReturn(requestPayload);
 
         assertThat(classUnderTest.processCaseLinkedForHearingEvent(ccdCallbackRequest), is(equalTo(requestPayload)));
@@ -614,11 +614,11 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldThrowException_ForProcessingCaseLinkedBackEvent_WhenWorkflowExceptionIsCaught()
-        throws WorkflowException, CaseOrchestrarionServiceException {
+        throws WorkflowException, CaseOrchestrationServiceException {
         when(caseLinkedForHearingWorkflow.run(eq(ccdCallbackRequest.getCaseDetails())))
             .thenThrow(new WorkflowException("This operation threw an exception."));
 
-        expectedException.expect(CaseOrchestrarionServiceException.class);
+        expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectMessage(is("This operation threw an exception."));
 
         classUnderTest.processCaseLinkedForHearingEvent(ccdCallbackRequest);

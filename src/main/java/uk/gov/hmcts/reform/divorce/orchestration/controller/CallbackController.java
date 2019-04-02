@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrarionServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
 import javax.ws.rs.core.MediaType;
 
@@ -54,7 +54,7 @@ public class CallbackController {
         try {
             callbackResponseBuilder.data(
                 caseOrchestrationService.processCaseLinkedForHearingEvent(ccdCallbackRequest));
-        } catch (CaseOrchestrarionServiceException exception) {
+        } catch (CaseOrchestrationServiceException exception) {
             log.error(format("Failed to execute service to process case linked for hearing. Case id:  %s", caseId),
                 exception);
             callbackResponseBuilder.errors(asList(exception.getMessage()));

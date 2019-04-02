@@ -152,8 +152,9 @@ public class PetitionerCertificateOfEntitlementNotificationTest {
             argThat(new HamcrestArgumentMatcher<>(
                 allOf(
                     hasEntry("email address", "petitioner@justice.uk"),
-                    hasEntry("family man reference", "HR290831"),
-                    hasEntry("petitioner full name", "James Johnson"),
+                    hasEntry("case number", "HR290831"),
+                    hasEntry("first name", "James"),
+                    hasEntry("last name", "Johnson"),
                     optionalTextParametersMatcher,
                     hasEntry("date of hearing", "21 April 2019"),
                     hasEntry("limit date to contact court", "07 April 2019")
