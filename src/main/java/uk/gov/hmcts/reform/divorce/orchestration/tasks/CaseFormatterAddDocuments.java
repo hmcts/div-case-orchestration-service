@@ -9,12 +9,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_INVITATION_TEMPLATE_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_TEMPLATE_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 
 @Component
 public class CaseFormatterAddDocuments implements Task<Map<String, Object>> {
@@ -27,31 +26,17 @@ public class CaseFormatterAddDocuments implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        List<GeneratedDocumentInfo> documents = new ArrayList<>();
 
-        GeneratedDocumentInfo miniPetition
-                = (GeneratedDocumentInfo) context.getTransientObject(MINI_PETITION_TEMPLATE_NAME);
+        final Set<GeneratedDocumentInfo> documentCollection = (Set<GeneratedDocumentInfo>) context.getTransientObject(DOCUMENT_COLLECTION);
 
-        documents.add(miniPetition);
-
-        GeneratedDocumentInfo respondentInvitation
-                = (GeneratedDocumentInfo) context.getTransientObject(RESPONDENT_INVITATION_TEMPLATE_NAME);
-
-        if (respondentInvitation != null) {
-            documents.add(respondentInvitation);
-        }
-
-        GeneratedDocumentInfo coRespondentInvitation
-            = (GeneratedDocumentInfo) context.getTransientObject(CO_RESPONDENT_INVITATION_TEMPLATE_NAME);
-
-        if (coRespondentInvitation != null) {
-            documents.add(coRespondentInvitation);
-        }
-
-        return caseFormatterClient.addDocuments(
+        if (isNotEmpty(documentCollection)) {
+            return caseFormatterClient.addDocuments(
                 DocumentUpdateRequest.builder()
-                        .caseData(caseData)
-                        .documents(documents)
-                        .build());
+                    .caseData(caseData)
+                    .documents(new ArrayList<>(documentCollection))
+                    .build());
+        }
+
+        return caseData;
     }
 }
