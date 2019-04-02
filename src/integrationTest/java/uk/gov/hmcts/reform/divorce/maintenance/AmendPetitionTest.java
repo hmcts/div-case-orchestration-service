@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.entity.ContentType;
@@ -13,6 +14,8 @@ import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.support.CcdClientSupport;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
+import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
+import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
@@ -20,14 +23,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.REASON_FOR_DIVORCE_KEY;
+import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class AmendPetitionTest extends CcdSubmissionSupport {
 
@@ -44,6 +50,12 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
     private static final String AOS_RECEIVED_NO_ADMIT_EVENT_ID = "aosReceivedNoAdConStarted";
     private static final String AMEND_PETITION_STATE = "AmendPetition";
+    private static final String CASE_ID_KEY = "caseId";
+    private static final String REASON_FOR_DIVORCE_BEHAVIOUR_DETAILS = "reasonForDivorceBehaviourDetails";
+    private static final String CLAIMS_COSTS = "claimsCosts";
+    private static final String CONFIRM_PRAYER = "confirmPrayer";
+
+    private static final String YES_VALUE = "Yes";
 
     @Autowired
     private CcdClientSupport ccdClientSupport;
@@ -51,8 +63,14 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
     @Autowired
     private CaseMaintenanceClient cmsClient;
 
+    @Autowired
+    private CosApiClient cosApiClient;
+
+    @Autowired
+    private DraftsSubmissionSupport draftsSubmissionSupport;
+
     @Value("${case.orchestration.amend-petition.context-path}")
-    private String contextPath;
+    private String amendPetitionContextPath;
 
     @Test
     public void givenValidCase_whenAmendPetition_newDraftPetitionIsReturned() {
@@ -66,30 +84,37 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         );
         String caseId = issuedCase.getId().toString();
 
-        updateCase(caseId,
-            null,
-            PAYMENT_REFERENCE_EVENT,
-            ImmutablePair.of(ISSUE_DATE, "2018-06-08"));
-
+        String testIssueDate = "2018-06-08";
+        updateCase(caseId, null, PAYMENT_REFERENCE_EVENT, ImmutablePair.of(ISSUE_DATE, testIssueDate));
         updateCaseForCitizen(caseId, null, TEST_AOS_STARTED_EVENT_ID, citizenUser);
         updateCaseForCitizen(caseId, null, AOS_RECEIVED_NO_ADMIT_EVENT_ID, citizenUser);
 
         Response cosResponse = amendPetition(citizenUser.getAuthToken(), caseId);
+        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
+        Map<String, Object> newDraftDocument = cosResponse.getBody().as(Map.class);
+
+        //Compare old case and new amended case
         uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails oldCase;
         oldCase = cmsClient.retrievePetitionById(citizenUser.getAuthToken(), caseId);
-
-        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-
-        Map<String, Object> newDraftDocument = cosResponse.getBody().as(Map.class);
-        assertThat(newDraftDocument.get(PREVIOUS_ISSUE_DATE_KEY), allOf(
-            is(notNullValue()),
-            equalTo("2018-06-08T00:00:00.000+0000")
-        ));
-
-        List<String> previousReasons = (List<String>) newDraftDocument.get(PREVIOUS_REASONS_KEY);
+        List previousReasons = (List) newDraftDocument.get(PREVIOUS_REASONS_KEY);
         assertTrue(previousReasons.contains(oldCase.getCaseData().get(D8_REASON_DIVORCE)));
-        assertEquals(oldCase.getCaseId(), cosResponse.path(PREVIOUS_CASE_ID_KEY).toString());
+        assertEquals(oldCase.getCaseId(), newDraftDocument.get(PREVIOUS_CASE_ID_KEY));
+        assertThat((String) newDraftDocument.get(PREVIOUS_ISSUE_DATE_KEY), allOf(
+            is(notNullValue()),
+            startsWith(testIssueDate)
+        ));
         assertEquals(oldCase.getState(), AMEND_PETITION_STATE);
+
+        //Fill in mandatory data that's removed from original case
+        newDraftDocument.put(REASON_FOR_DIVORCE_KEY, "unreasonable-behaviour");
+        newDraftDocument.put(REASON_FOR_DIVORCE_BEHAVIOUR_DETAILS, singletonList("my partner did unreasonable things"));
+        newDraftDocument.put(CLAIMS_COSTS, YES_VALUE);
+        newDraftDocument.put(CONFIRM_PRAYER, YES_VALUE);
+
+        //Submit amended case
+        JsonNode draftResource = ResourceLoader.jsonToObject(objectToJson(newDraftDocument), JsonNode.class);
+        Map<String, Object> submittedCase = cosApiClient.submitCase(citizenUser.getAuthToken(), draftResource);
+        assertThat(submittedCase.get(CASE_ID_KEY), is(notNullValue()));
     }
 
     @Test
@@ -111,10 +136,11 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         }
 
         return RestUtil.putToRestService(
-            serverUrl + contextPath + "/" + caseId,
+            serverUrl + amendPetitionContextPath + "/" + caseId,
             headers,
             null,
             new HashMap<>()
         );
     }
+
 }

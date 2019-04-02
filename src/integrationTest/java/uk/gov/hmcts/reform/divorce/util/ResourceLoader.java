@@ -38,4 +38,12 @@ public class ResourceLoader {
             throw new RuntimeException(e);
         }
     }
+
+    public static <T> T jsonToObject(String json, Class<T> type) {
+        try {
+            return new ObjectMapper().readValue(json, type);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -16,12 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static uk.gov.hmcts.reform.divorce.util.DateConstants.CCD_DATE_FORMATTER;
 
 public class PetitionIssueTest extends IntegrationTest {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/issue-petition/";
@@ -68,7 +68,7 @@ public class PetitionIssueTest extends IntegrationTest {
     private static final String CASE_ID = "1517833758870511";
     private static final String ISSUE_DATE = "data.IssueDate";
 
-    private static final String EXPECTED_ISSUE_DATE = LocalDate.now().format(ofPattern("yyyy-MM-dd"));
+    private static final String EXPECTED_ISSUE_DATE = LocalDate.now().format(CCD_DATE_FORMATTER);
 
     @Value("${case.orchestration.petition-issued.context-path}")
     private String contextPath;
