@@ -21,8 +21,8 @@ import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 public abstract class CcdSubmissionSupport extends IntegrationTest {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/issue-petition/";
     protected static final String USER_DEFAULT_EMAIL = "simulate-delivered@notifications.service.gov.uk";
-    protected static final String CO_RESPONDENT_DEFAULT_EMAIL = "co-respondent@divorce.co.uk";
-    protected static final String RESPONDENT_DEFAULT_EMAIL = "respondent@divorce.co.uk";
+    protected static final String CO_RESPONDENT_DEFAULT_EMAIL = "co-respondent@notifications.service.gov.uk";
+    protected static final String RESPONDENT_DEFAULT_EMAIL = "respondent@notifications.service.gov.uk";
 
     @Autowired
     protected CcdClientSupport ccdClientSupport;
