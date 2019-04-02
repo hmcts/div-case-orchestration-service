@@ -260,15 +260,17 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
     public void givenAllGoesWell_whenLinkCoRespondent_thenProceedAsExpected() throws Exception {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(CO_RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
+
+        stubSignInForCaseworker();
+        stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
+        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
+
         CaseDetails caseDetailsCoResp = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .state(AOS_AWAITING_STATE)
             .caseData(caseData)
             .build();
-        stubSignInForCaseworker();
-        stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
-        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
-        stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubRetrieveCaseByIdFromCMS(OK, convertObjectToJsonString(caseDetailsCoResp));
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);

@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.util.Collections;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
