@@ -83,10 +83,19 @@ public class PetitionerCertificateOfEntitlementNotification implements Task<Map<
             templateParameters.put(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE);
         }
 
-        taskCommons.sendEmail(EmailTemplateNames.PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION,
-            EMAIL_DESCRIPTION,
-            petitionerEmail,
-            templateParameters);
+        try {
+            taskCommons.sendEmail(EmailTemplateNames.PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION,
+                EMAIL_DESCRIPTION,
+                petitionerEmail,
+                templateParameters);
+            log.info("Petitioner notification sent for case {}", context.getTransientObject(CASE_ID_KEY));
+        } catch (TaskException exception) {
+            log.error("Failed to send petitioner notification for case {}", context.getTransientObject(CASE_ID_KEY));
+            throw exception;
+        } catch (Exception exception) {
+            log.error("Failed to send petitioner notification for case {}", context.getTransientObject(CASE_ID_KEY));
+            throw new TaskException(exception.getMessage(), exception);
+        }
 
         return payload;
     }
