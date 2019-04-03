@@ -16,8 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
@@ -38,11 +38,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_DEFENDS_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE_FORMATTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DEFENDS_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DUE_DATE_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
@@ -97,9 +98,9 @@ public class CoRespondentSubmittedITest {
             D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, CO_RESP_FIRST_NAME,
             D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, CO_RESP_LAST_NAME,
             CO_RESP_EMAIL_ADDRESS, TEST_EMAIL,
-            CO_RESP_DEFENDS_DIVORCE, NO_VALUE
+            CO_RESPONDENT_DEFENDS_DIVORCE, NO_VALUE
         );
-        CreateEvent caseEvent = CreateEvent.builder().eventId(CASE_ID)
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(CASE_ID)
                 .caseDetails(CaseDetails.builder()
                         .caseData(caseDetailMap)
                         .build())
@@ -107,12 +108,12 @@ public class CoRespondentSubmittedITest {
 
         CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
                 .builder()
-                .data(caseEvent.getCaseDetails().getCaseData())
+                .data(ccdCallbackRequest.getCaseDetails().getCaseData())
                 .build();
         String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
-                .content(ObjectMapperTestUtil.convertObjectToJsonString(caseEvent))
+                .content(ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(expectedResponse));
@@ -127,12 +128,12 @@ public class CoRespondentSubmittedITest {
         caseDetailMap.put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, CO_RESP_FIRST_NAME);
         caseDetailMap.put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, CO_RESP_LAST_NAME);
         caseDetailMap.put(CO_RESP_EMAIL_ADDRESS, TEST_EMAIL);
-        caseDetailMap.put(CO_RESP_DEFENDS_DIVORCE, YES_VALUE);
-        caseDetailMap.put(DUE_DATE_CO_RESP, TEST_EXPECTED_DUE_DATE);
+        caseDetailMap.put(CO_RESPONDENT_DEFENDS_DIVORCE, YES_VALUE);
+        caseDetailMap.put(CO_RESPONDENT_DUE_DATE, TEST_EXPECTED_DUE_DATE);
         caseDetailMap.put(D_8_DIVORCE_UNIT, TEST_COURT);
 
 
-        CreateEvent caseEvent = CreateEvent.builder().eventId(EVENT_ID)
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(EVENT_ID)
                 .caseDetails(CaseDetails.builder()
                         .caseId(CASE_ID)
                         .caseData(caseDetailMap)
@@ -141,13 +142,13 @@ public class CoRespondentSubmittedITest {
 
         CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
             .builder()
-            .data(caseEvent.getCaseDetails().getCaseData())
+            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
             .build();
 
         String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
-                .content(ObjectMapperTestUtil.convertObjectToJsonString(caseEvent))
+                .content(ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(expectedResponse));
@@ -156,7 +157,7 @@ public class CoRespondentSubmittedITest {
         Map<String, String> expectedExtraFields = ImmutableMap.of(
             NOTIFICATION_COURT_ADDRESS_KEY, court.getFormattedAddress(),
             NOTIFICATION_RDC_NAME_KEY, court.getIdentifiableCentreName(),
-            NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, TEST_EXPECTED_DUE_DATE
+            NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, TEST_EXPECTED_DUE_DATE_FORMATTED
         );
         verifyEmailSent(TEST_EMAIL, expectedExtraFields);
 

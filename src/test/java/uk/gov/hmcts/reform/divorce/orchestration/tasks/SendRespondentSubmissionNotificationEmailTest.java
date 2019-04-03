@@ -11,7 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.Invocation;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -77,8 +77,8 @@ public class SendRespondentSubmissionNotificationEmailTest {
     @Test
     public void testRightEmailIsSent_WhenRespondentChoosesToDefendDivorce()
             throws TaskException, IOException {
-        CreateEvent incomingPayload = getJsonFromResourceFile(
-                "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CreateEvent.class);
+        CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
@@ -112,8 +112,8 @@ public class SendRespondentSubmissionNotificationEmailTest {
         expectedException.expect(TaskException.class);
         expectedException.expectMessage("Could not evaluate value of mandatory property \"D8caseReference\"");
 
-        CreateEvent incomingPayload = getJsonFromResourceFile(
-                "/jsonExamples/payloads/defendedDivorceAOSMissingCaseId.json", CreateEvent.class);
+        CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
+                "/jsonExamples/payloads/defendedDivorceAOSMissingCaseId.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
         String caseId = (String) incomingPayload.getCaseDetails().getCaseData()
                 .get(D_8_CASE_REFERENCE);
@@ -131,8 +131,8 @@ public class SendRespondentSubmissionNotificationEmailTest {
                 "Could not evaluate value of mandatory property \"D8InferredPetitionerGender\""
         );
 
-        CreateEvent incomingPayload = getJsonFromResourceFile(
-                "/jsonExamples/payloads/defendedDivorceAOSMissingFields.json", CreateEvent.class);
+        CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
+                "/jsonExamples/payloads/defendedDivorceAOSMissingFields.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
@@ -144,8 +144,8 @@ public class SendRespondentSubmissionNotificationEmailTest {
     @Test
     public void testRightEmailIsSent_WhenRespondentChoosesNotToDefendDivorce()
             throws TaskException, IOException {
-        CreateEvent incomingPayload = getJsonFromResourceFile(
-                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CreateEvent.class);
+        CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
@@ -177,8 +177,8 @@ public class SendRespondentSubmissionNotificationEmailTest {
         expectedException.expect(TaskException.class);
         expectedException.expectMessage("Could not evaluate value of mandatory property \"D8DivorceUnit\"");
 
-        CreateEvent incomingPayload = getJsonFromResourceFile(
-                "/jsonExamples/payloads/undefendedDivorceAOSMissingFields.json", CreateEvent.class);
+        CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
+                "/jsonExamples/payloads/undefendedDivorceAOSMissingFields.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();

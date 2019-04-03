@@ -27,8 +27,7 @@ public abstract class RetrieveCaseSupport extends CcdSubmissionSupport {
 
         return RestUtil.getFromRestService(
                 serverUrl + retrieveCaseContextPath,
-                headers,
-                null
+                headers
         );
     }
 

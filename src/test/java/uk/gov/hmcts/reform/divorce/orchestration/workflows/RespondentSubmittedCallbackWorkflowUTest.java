@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
 
@@ -60,10 +60,10 @@ public class RespondentSubmittedCallbackWorkflowUTest {
                         D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID,
                         D_8_INFERRED_RESPONDENT_GENDER, "male"))
                 .build();
-        CreateEvent caseEvent = CreateEvent.builder().caseDetails(caseDetails).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         when(emailNotificationTask.execute(any(), any())).thenReturn(caseDetails.getCaseData());
-        Map<String, Object> response = classToTest.run(caseEvent, TestConstants.TEST_TOKEN);
+        Map<String, Object> response = classToTest.run(ccdCallbackRequest, TestConstants.TEST_TOKEN);
 
         verify(emailNotificationTask, times(1))
                 .execute(argThat(argument ->
@@ -84,10 +84,10 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         CaseDetails caseDetails = CaseDetails.builder()
                 .caseData(ImmutableMap.of())
                 .build();
-        CreateEvent caseEvent = CreateEvent.builder().caseDetails(caseDetails).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         when(emailNotificationTask.execute(any(), any())).thenReturn(caseDetails.getCaseData());
-        Map<String, Object> response = classToTest.run(caseEvent, TestConstants.TEST_TOKEN);
+        Map<String, Object> response = classToTest.run(ccdCallbackRequest, TestConstants.TEST_TOKEN);
 
         verify(emailNotificationTask, times(1)).execute(argThat(
             argument -> argument.getTransientObject(NOTIFICATION_TEMPLATE_VARS).equals(vars)),any());

@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -47,7 +47,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
 
 
-    private CreateEvent createEventRequest;
+    private CcdCallbackRequest ccdCallbackRequestRequest;
     private Map<String, Object> payload;
     private TaskContext context;
 
@@ -69,8 +69,8 @@ public class CcdCallbackBulkPrintWorkflowTest {
             .state(TEST_STATE)
             .caseData(payload)
             .build();
-        createEventRequest =
-                CreateEvent.builder()
+        ccdCallbackRequestRequest =
+                CcdCallbackRequest.builder()
                         .eventId(TEST_EVENT_ID)
                         .token(TEST_TOKEN)
                         .caseDetails(
@@ -91,7 +91,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
         when(modifyDueDate.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(createEventRequest, AUTH_TOKEN);
+        Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
 
         //Then
         assertNotNull(response);

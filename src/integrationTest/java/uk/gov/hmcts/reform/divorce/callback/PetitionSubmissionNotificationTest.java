@@ -25,7 +25,7 @@ public class PetitionSubmissionNotificationTest extends IntegrationTest {
     private String contextPath;
 
     @Test
-    public void givenCreateEvent_whenPetitionSubmitted_thenReturnCallbackResponse() throws Exception {
+    public void givenCallbackRequest_whenPetitionSubmitted_thenReturnCallbackResponse() throws Exception {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 

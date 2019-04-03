@@ -55,20 +55,11 @@ public class RestUtil {
         }
     }
 
-    public static Response getFromRestService(String url, Map<String, Object> headers, Map<String, Object> params) {
-        if (params != null) {
-            return SerenityRest.given()
-                .headers(headers)
-                .params(params)
-                .when()
-                .get(url)
-                .andReturn();
-        } else {
-            return SerenityRest.given()
-                .headers(headers)
-                .when()
-                .get(url)
-                .andReturn();
-        }
+    public static Response getFromRestService(String url, Map<String, Object> headers) {
+        return SerenityRest.given()
+            .headers(headers)
+            .when()
+            .get(url)
+            .andReturn();
     }
 }

@@ -22,6 +22,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 
 public class AmendPetitionTest extends CcdSubmissionSupport {
 
@@ -46,9 +47,11 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
     public void givenValidCase_whenAmendPetition_newDraftPetitionIsReturned() {
         UserDetails citizenUser = createCitizenUser();
 
+        Map<String, Object> caseToIssue = ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "issued-case.json", Map.class);
+        caseToIssue.put(D_8_PETITIONER_EMAIL, citizenUser.getEmailAddress());
         CaseDetails issuedCase = ccdClientSupport.submitCase(
-                ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "issued-case.json", Map.class),
-                citizenUser
+            caseToIssue,
+            citizenUser
         );
         String caseId = issuedCase.getId().toString();
 
@@ -57,6 +60,7 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         Response cosResponse = amendPetition(citizenUser.getAuthToken(), caseId);
         uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails oldCase;
         oldCase = cmsClient.retrievePetitionById(citizenUser.getAuthToken(), caseId);
+
         Map<String, Object> newDraftDocument = (Map<String, Object>) cosResponse.getBody().as(Map.class);
         List<String> previousReasons = (ArrayList<String>) newDraftDocument.get(PREVIOUS_REASONS_KEY);
 

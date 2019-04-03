@@ -221,12 +221,6 @@ document:
       api:
         baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://localhost:4007}
 
-draft:
-  api:
-    ccd:
-      check:
-        enabled: ${DRAFT_CCD_CHECK_ENABLED:true}
-
 http:
   connect:
     timeout: 60000

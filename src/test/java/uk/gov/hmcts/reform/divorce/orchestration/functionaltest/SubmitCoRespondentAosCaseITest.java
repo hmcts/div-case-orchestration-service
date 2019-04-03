@@ -68,7 +68,7 @@ public class SubmitCoRespondentAosCaseITest {
     private static final String API_URL = "/submit-co-respondent-aos";
     private static final String FORMAT_TO_AOS_CASE_CONTEXT_PATH = "/caseformatter/version/1/to-aos-submit-format";
     private static final String UPDATE_CONTEXT_PATH = "/casemaintenance/version/1/updateCase/" + TEST_CASE_ID + "/";
-    private static final String RETRIEVE_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase?checkCcd=true";
+    private static final String RETRIEVE_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
 
     @Autowired
     private MockMvc webClient;

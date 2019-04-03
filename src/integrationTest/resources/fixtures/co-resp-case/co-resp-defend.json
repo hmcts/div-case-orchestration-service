@@ -3,9 +3,9 @@
   "case_details" : {
     "case_data" : {
       "CoRespDefendsDivorce" : "Yes",
-      "dueDateCoResp" : "10/10/2020",
-      "D8ReasonForDivorceAdultery3rdPartyFName" : "user first namé",
-      "D8ReasonForDivorceAdultery3rdPartyLName" : "user last namé",
+      "DueDateCoResp" : "2020-10-20",
+      "D8ReasonForDivorceAdultery3rdPartyFName" : "user first namé with accent",
+      "D8ReasonForDivorceAdultery3rdPartyLName" : "user last namé with accent",
       "D8DivorceUnit" : "eastMidlands",
       "D8caseReference" : "LV17D80100",
       "CoRespEmailAddress" : "simulate-delivered@notifications.service.gov.uk"

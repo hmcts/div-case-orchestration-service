@@ -20,12 +20,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -40,9 +38,8 @@ public class RetrieveAosCaseUTest {
     public void givenNoCaseExists_whenRetrieveAosCase_thenReturnThrowException() {
         final DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(CHECK_CCD, TEST_CHECK_CCD);
 
-        Mockito.when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD)).thenReturn(null);
+        Mockito.when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(null);
 
         try {
             classUnderTest.execute(context, null);
@@ -51,14 +48,13 @@ public class RetrieveAosCaseUTest {
         }
 
 
-        Mockito.verify(caseMaintenanceClient).retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD);
+        Mockito.verify(caseMaintenanceClient).retrieveAosCase(AUTH_TOKEN);
     }
 
     @Test
     public void givenCaseExists_whenRetrieveAosCase_thenReturnExpectedOutput() throws TaskException {
         final DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(CHECK_CCD, TEST_CHECK_CCD);
 
         final Map<String, Object> caseData = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
 
@@ -69,7 +65,7 @@ public class RetrieveAosCaseUTest {
                 .state(TEST_STATE)
                 .build();
 
-        Mockito.when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD)).thenReturn(cmsResponse);
+        Mockito.when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(cmsResponse);
 
         CaseDataResponse actual = classUnderTest.execute(context, null);
 
@@ -78,6 +74,6 @@ public class RetrieveAosCaseUTest {
         assertEquals(TEST_STATE, actual.getState());
         assertEquals(caseData, context.getTransientObject(CCD_CASE_DATA));
 
-        Mockito.verify(caseMaintenanceClient).retrieveAosCase(AUTH_TOKEN, TEST_CHECK_CCD);
+        Mockito.verify(caseMaintenanceClient).retrieveAosCase(AUTH_TOKEN);
     }
 }

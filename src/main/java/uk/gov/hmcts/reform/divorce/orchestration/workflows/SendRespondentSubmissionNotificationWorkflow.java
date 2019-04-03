@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -30,8 +30,8 @@ public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflo
     private SendRespondentSubmissionNotificationForUndefendedDivorceEmail
             sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
 
-    public Map<String, Object> run(CreateEvent caseRequestDetails) throws WorkflowException {
-        Map<String, Object> caseData = caseRequestDetails.getCaseDetails().getCaseData();
+    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         String defended = (String)caseData.get(RESP_WILL_DEFEND_DIVORCE);
 
         Task[] tasks;
@@ -49,7 +49,7 @@ public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflo
 
         return execute(tasks,
                 caseData,
-                ImmutablePair.of(CASE_ID_JSON_KEY, caseRequestDetails.getCaseDetails().getCaseId())
+                ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId())
         );
     }
 }

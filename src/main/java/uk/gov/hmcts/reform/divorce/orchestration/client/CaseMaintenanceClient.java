@@ -55,8 +55,7 @@ public interface CaseMaintenanceClient {
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     CaseDetails retrieveAosCase(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
-        @RequestParam(value = "checkCcd") boolean checkCcd
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken
     );
 
     @RequestMapping(
@@ -93,8 +92,7 @@ public interface CaseMaintenanceClient {
             value = "/casemaintenance/version/1/retrieveCase"
     )
     CaseDetails retrievePetition(
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
-            @RequestParam(value = "checkCcd") boolean checkCcd);
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
 
     @RequestMapping(
         method = RequestMethod.GET,

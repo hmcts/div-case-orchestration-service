@@ -20,8 +20,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
@@ -102,7 +102,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
             .caseId(TEST_CASE_ID)
             .build();
 
-    private static final CreateEvent CREATE_EVENT = CreateEvent.builder()
+    private static final CcdCallbackRequest CREATE_EVENT = CcdCallbackRequest.builder()
             .caseDetails(CASE_DETAILS)
             .build();
 
@@ -131,7 +131,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
     }
 
     @Test
-    public void givenCreateEventIsNull_whenPetitionIssued_thenReturnBadRequest()
+    public void givenCallbackRequestIsNull_whenPetitionIssued_thenReturnBadRequest()
             throws Exception {
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, AUTH_TOKEN)
@@ -333,8 +333,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
     public void givenGenerateInvitationIsTrueAndIsServiceCentre_whenPetitionIssued_thenReturnCaseExpectedChanges()
         throws Exception {
 
-        CreateEvent createEventWithServiceCentre = CREATE_EVENT;
-        createEventWithServiceCentre.getCaseDetails().getCaseData().put(D_8_DIVORCE_UNIT, DIVORCE_UNIT_SERVICE_CENTRE);
+        CcdCallbackRequest ccdCallbackRequestWithServiceCentre = CREATE_EVENT;
+        ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_DIVORCE_UNIT, DIVORCE_UNIT_SERVICE_CENTRE);
 
         final ValidationResponse validationResponse = ValidationResponse.builder().build();
 
@@ -350,7 +350,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
             GenerateDocumentRequest.builder()
                 .template(MINI_PETITION_TEMPLATE_NAME)
                 .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
-                        createEventWithServiceCentre.getCaseDetails()))
+                        ccdCallbackRequestWithServiceCentre.getCaseDetails()))
                 .build();
 
         final GeneratedDocumentInfo generatedMiniPetitionResponse =
@@ -363,7 +363,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
             GenerateDocumentRequest.builder()
                 .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
                 .values(ImmutableMap.of(
-                    DOCUMENT_CASE_DETAILS_JSON_KEY, createEventWithServiceCentre.getCaseDetails(),
+                    DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
                     ACCESS_CODE, TEST_PIN_CODE))
                 .build();
 
@@ -376,7 +376,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
                 .documents(asList(generatedMiniPetitionResponse, generatedAosInvitationResponse))
-                .caseData(createEventWithServiceCentre.getCaseDetails().getCaseData())
+                .caseData(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
                 .build();
 
         final Map<String, Object> formattedCaseData = emptyMap();
@@ -384,7 +384,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
         stubValidationServerEndpoint(HttpStatus.OK,
-            ValidationRequest.builder().data(createEventWithServiceCentre.getCaseDetails().getCaseData())
+            ValidationRequest.builder().data(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
                 .formId(FORM_ID).build(),
             convertObjectToJsonString(validationResponse));
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
@@ -395,7 +395,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(createEventWithServiceCentre))
+            .content(convertObjectToJsonString(ccdCallbackRequestWithServiceCentre))
             .param(GENERATE_AOS_INVITATION, "true")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
@@ -407,10 +407,10 @@ public class PetitionIssuedITest extends IdamTestSupport {
     public void givenGenerateInvitationIsTrueAndIsServiceCentreAndCoRespondentExists_whenPetitionIssued_thenReturnCaseExpectedChanges()
         throws Exception {
 
-        CreateEvent createEventWithServiceCentre = CREATE_EVENT;
-        createEventWithServiceCentre.getCaseDetails().getCaseData().put(D_8_DIVORCE_UNIT, DIVORCE_UNIT_SERVICE_CENTRE);
-        createEventWithServiceCentre.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
-        createEventWithServiceCentre.getCaseDetails().getCaseData().put(D_8_CO_RESPONDENT_NAMED, "YES");
+        CcdCallbackRequest ccdCallbackRequestWithServiceCentre = CREATE_EVENT;
+        ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_DIVORCE_UNIT, DIVORCE_UNIT_SERVICE_CENTRE);
+        ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_CO_RESPONDENT_NAMED, "YES");
 
         final ValidationResponse validationResponse = ValidationResponse.builder().build();
 
@@ -426,7 +426,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
             GenerateDocumentRequest.builder()
                 .template(MINI_PETITION_TEMPLATE_NAME)
                 .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
-                    createEventWithServiceCentre.getCaseDetails()))
+                    ccdCallbackRequestWithServiceCentre.getCaseDetails()))
                 .build();
 
         final GeneratedDocumentInfo generatedMiniPetitionResponse =
@@ -439,7 +439,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
             GenerateDocumentRequest.builder()
                 .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
                 .values(ImmutableMap.of(
-                    DOCUMENT_CASE_DETAILS_JSON_KEY, createEventWithServiceCentre.getCaseDetails(),
+                    DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
                     ACCESS_CODE, TEST_PIN_CODE))
                 .build();
 
@@ -453,7 +453,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
             GenerateDocumentRequest.builder()
                 .template(CO_RESPONDENT_INVITATION_TEMPLATE_NAME)
                 .values(ImmutableMap.of(
-                    DOCUMENT_CASE_DETAILS_JSON_KEY, createEventWithServiceCentre.getCaseDetails(),
+                    DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
                     ACCESS_CODE, TEST_PIN_CODE,
                     PETITION_ISSUE_FEE_FOR_LETTER, "550"))
                 .build();
@@ -469,7 +469,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
         stubValidationServerEndpoint(HttpStatus.OK,
-            ValidationRequest.builder().data(createEventWithServiceCentre.getCaseDetails().getCaseData())
+            ValidationRequest.builder().data(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
                 .formId(FORM_ID).build(),
             convertObjectToJsonString(validationResponse));
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
@@ -484,14 +484,14 @@ public class PetitionIssuedITest extends IdamTestSupport {
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
                 .documents(asList(generatedMiniPetitionResponse, generatedAosInvitationResponse, generatedCoRespondentInvitationResponse))
-                .caseData(createEventWithServiceCentre.getCaseDetails().getCaseData())
+                .caseData(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
                 .build();
 
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(createEventWithServiceCentre))
+            .content(convertObjectToJsonString(ccdCallbackRequestWithServiceCentre))
             .param(GENERATE_AOS_INVITATION, "true")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))

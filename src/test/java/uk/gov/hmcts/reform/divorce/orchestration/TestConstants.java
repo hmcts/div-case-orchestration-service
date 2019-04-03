@@ -7,7 +7,8 @@ public class TestConstants {
     public static final String TEST_PIN = "abcd1234";
     public static final String TEST_DOC_URL = "test.doc.url";
     public static final String TEST_FILENAME = "test.filename";
-    public static final String TEST_EXPECTED_DUE_DATE = "10/10/2020";
+    public static final String TEST_EXPECTED_DUE_DATE = "2020-10-20";
+    public static final String TEST_EXPECTED_DUE_DATE_FORMATTED = "20 October 2020";
     public static String TEST_TOKEN = "test.token";
     public static String TEST_EVENT_ID = "test.event.id";
     public static String AUTH_TOKEN = "test.auth.token";
@@ -17,7 +18,6 @@ public class TestConstants {
     public static String TEST_EMAIL = "test.email";
     public static String BEARER_AUTH_TOKEN_1 = "Bearer test.auth.token1";
     public static String TEST_CODE = "test.code";
-    public static boolean TEST_CHECK_CCD = true;
     public static final String TEST_USER_ID = "test.user.id";
     public static final String TEST_COURT = "serviceCentre";
     public static final String TEST_ERROR = "test.error";
@@ -48,5 +48,5 @@ public class TestConstants {
     public static final String TEST_REASON_UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
     public static final String AOS_AWAITING_STATE = "AosAwaiting";
     public static final String AWAITING_CONSIDERATION_GENERAL_APPLICATION = "AwaitingConsiderationGeneralApplication";
-    public static final String AOS_STARTED = "AosStarted";
+
 }

@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataToDivorceFormatte
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveAosCase;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 
 @Component
 public class RetrieveAosCaseWorkflow extends DefaultWorkflow<CaseDataResponse> {
@@ -25,16 +24,14 @@ public class RetrieveAosCaseWorkflow extends DefaultWorkflow<CaseDataResponse> {
         this.caseDataToDivorceFormatter = caseDataToDivorceFormatter;
     }
 
-    public CaseDataResponse run(boolean checkCcd,
-                                String authToken) throws WorkflowException {
+    public CaseDataResponse run(String authToken) throws WorkflowException {
         return this.execute(
             new Task[]{
                 retrieveAosCase,
                 caseDataToDivorceFormatter
             },
             null,
-            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(CHECK_CCD, checkCcd)
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)
         );
     }
 }
