@@ -34,6 +34,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     private static final String YES_VALUE = "Yes";
     private static final String PAYMENT_REFERENCE_EVENT = "paymentReferenceGenerated";
     private static final String TEST_AOS_AWAITING_EVENT = "testAosAwaiting";
+    private static final String AOS_LETTER_HOLDER_ID = "AosLetterHolderId";
 
     @Value("${case.orchestration.maintenance.link-respondent.context-path}")
     private String contextPath;
@@ -106,7 +107,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         updateCase(String.valueOf(caseDetails.getId()),
             null,
             PAYMENT_REFERENCE_EVENT,
-            ImmutablePair.of("AosLetterHolderId", pinResponse.getUserId()));
+            ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
@@ -146,7 +147,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         updateCase(String.valueOf(caseDetails.getId()),
             null,
             PAYMENT_REFERENCE_EVENT,
-            ImmutablePair.of("AosLetterHolderId", pinResponse.getUserId()));
+            ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
