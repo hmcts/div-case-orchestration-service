@@ -44,6 +44,9 @@ public class PetitionerCertificateOfEntitlementNotification implements Task<Map<
     private static final String COSTS_CLAIM_GRANTED = "costs claim granted";
     private static final String COSTS_CLAIM_NOT_GRANTED = "costs claim not granted";
 
+    private static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
+    private static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
+
     @Autowired
     private TaskCommons taskCommons;
 
@@ -69,10 +72,15 @@ public class PetitionerCertificateOfEntitlementNotification implements Task<Map<
 
         if (wasDivorceCostsClaimed(payload)) {
             if (wasCostsClaimGranted(payload)) {
-                templateParameters.put(COSTS_CLAIM_GRANTED, "true");
+                templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE);
+                templateParameters.put(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE);
             } else {
-                templateParameters.put(COSTS_CLAIM_NOT_GRANTED, "true");
+                templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE);
+                templateParameters.put(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE);
             }
+        } else {
+            templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE);
+            templateParameters.put(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE);
         }
 
         taskCommons.sendEmail(EmailTemplateNames.PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION,

@@ -41,6 +41,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForH
 @RunWith(MockitoJUnitRunner.class)
 public class PetitionerCertificateOfEntitlementNotificationTest {
 
+    private static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
+    private static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
+
     @Mock
     private TaskCommons taskCommons;
 
@@ -69,8 +72,8 @@ public class PetitionerCertificateOfEntitlementNotificationTest {
         Map<String, Object> returnedPayload = petitionerCertificateOfEntitlementNotification.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
-            hasKey("costs claim granted"),
-            not(hasKey("costs claim not granted"))
+            hasEntry("costs claim granted", NOTIFICATION_OPTIONAL_TEXT_YES_VALUE),
+            hasEntry("costs claim not granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
         ));
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
     }
@@ -84,8 +87,8 @@ public class PetitionerCertificateOfEntitlementNotificationTest {
         Map<String, Object> returnedPayload = petitionerCertificateOfEntitlementNotification.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
-            hasKey("costs claim not granted"),
-            not(hasKey("costs claim granted"))
+            hasEntry("costs claim not granted", NOTIFICATION_OPTIONAL_TEXT_YES_VALUE),
+            hasEntry("costs claim granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
         ));
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
     }
@@ -100,8 +103,8 @@ public class PetitionerCertificateOfEntitlementNotificationTest {
         Map<String, Object> returnedPayload = petitionerCertificateOfEntitlementNotification.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
-            not(hasKey("costs claim not granted")),
-            not(hasKey("costs claim granted"))
+            hasEntry("costs claim not granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE),
+            hasEntry("costs claim granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
         ));
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
     }
@@ -116,8 +119,8 @@ public class PetitionerCertificateOfEntitlementNotificationTest {
         Map<String, Object> returnedPayload = petitionerCertificateOfEntitlementNotification.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
-            not(hasKey("costs claim not granted")),
-            not(hasKey("costs claim granted"))
+            hasEntry("costs claim not granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE),
+            hasEntry("costs claim granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
         ));
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
     }

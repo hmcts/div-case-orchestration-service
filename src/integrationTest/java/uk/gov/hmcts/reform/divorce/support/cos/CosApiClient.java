@@ -93,5 +93,6 @@ public interface CosApiClient {
         value = "/case-linked-for-hearing",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
-    Map<String, Object> caseLinkedForHearing(@RequestBody Map<String, Object> caseDataContent);
+    Map<String, Object> caseLinkedForHearing(@RequestHeader(AUTHORIZATION) String authorisation,
+                                             @RequestBody Map<String, Object> caseDataContent);
 }
