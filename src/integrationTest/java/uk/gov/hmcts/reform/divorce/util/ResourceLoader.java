@@ -25,7 +25,7 @@ public class ResourceLoader {
 
     public static <T> T loadJsonToObject(String filePath, Class<T> type) {
         try {
-            return new ObjectMapper().readValue(loadJson(filePath), type);
+            return jsonToObject(loadJson(filePath), type);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -46,4 +46,5 @@ public class ResourceLoader {
             throw new RuntimeException(e);
         }
     }
+
 }
