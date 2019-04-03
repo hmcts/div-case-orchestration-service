@@ -25,12 +25,12 @@ import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.REASON_FOR_DIVORCE_KEY;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
@@ -90,20 +90,20 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         updateCaseForCitizen(caseId, null, AOS_RECEIVED_NO_ADMIT_EVENT_ID, citizenUser);
 
         Response cosResponse = amendPetition(citizenUser.getAuthToken(), caseId);
-        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
+        assertThat(cosResponse.getStatusCode(), is(HttpStatus.OK.value()));
         Map<String, Object> newDraftDocument = cosResponse.getBody().as(Map.class);
 
         //Compare old case and new amended case
         uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails oldCase;
         oldCase = cmsClient.retrievePetitionById(citizenUser.getAuthToken(), caseId);
-        List previousReasons = (List) newDraftDocument.get(PREVIOUS_REASONS_KEY);
-        assertTrue(previousReasons.contains(oldCase.getCaseData().get(D8_REASON_DIVORCE)));
-        assertEquals(oldCase.getCaseId(), newDraftDocument.get(PREVIOUS_CASE_ID_KEY));
+        List<Object> previousReasons = (List<Object>) newDraftDocument.get(PREVIOUS_REASONS_KEY);
+        assertThat(previousReasons, hasItem(oldCase.getCaseData().get(D8_REASON_DIVORCE)));
+        assertThat(oldCase.getCaseId(), equalTo(newDraftDocument.get(PREVIOUS_CASE_ID_KEY)));
         assertThat((String) newDraftDocument.get(PREVIOUS_ISSUE_DATE_KEY), allOf(
             is(notNullValue()),
             startsWith(testIssueDate)
         ));
-        assertEquals(oldCase.getState(), AMEND_PETITION_STATE);
+        assertThat(oldCase.getState(), equalTo(AMEND_PETITION_STATE));
 
         //Fill in mandatory data that's removed from original case
         newDraftDocument.put(REASON_FOR_DIVORCE_KEY, "unreasonable-behaviour");
@@ -124,7 +124,7 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         String caseId = "111111";
 
         Response cosResponse = amendPetition(citizenUser.getAuthToken(), caseId);
-        assertEquals(HttpStatus.NOT_FOUND.value(), cosResponse.getStatusCode());
+        assertThat(cosResponse.getStatusCode(), is(HttpStatus.NOT_FOUND.value()));
     }
 
     private Response amendPetition(String userToken, String caseId) {
