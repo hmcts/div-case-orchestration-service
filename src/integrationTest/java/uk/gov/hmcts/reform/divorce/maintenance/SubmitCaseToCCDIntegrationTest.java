@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.cos.RetrieveCaseSupport;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
@@ -31,8 +32,8 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
 
     @Test
     public void givenDivorceSession_WithNoCourt_whenSubmitIsCalled_CaseIsCreated() throws Exception {
-        String userToken = createCitizenUser().getAuthToken();
-        Response submissionResponse = submitCase(userToken, "divorce-session-with-court-selected.json");
+        UserDetails userDetails = createCitizenUser();
+        Response submissionResponse = submitCase(userDetails, "divorce-session-with-court-selected.json");
 
         ResponseBody caseCreationResponseBody = submissionResponse.getBody();
         assertThat(submissionResponse.getStatusCode(), is(HttpStatus.OK.value()));
@@ -40,14 +41,14 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
         String allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
         assertThat(allocatedCourt, is(notNullValue()));
 
-        ResponseBody retrieveCaseResponseBody = retrieveCase(userToken).body();
+        ResponseBody retrieveCaseResponseBody = retrieveCase(userDetails.getAuthToken()).body();
         assertThat(retrieveCaseResponseBody.path(RETRIEVED_DATA_COURT_ID_KEY), is(allocatedCourt));
     }
 
     @Test
     public void givenDivorceSession_WithCourt_whenSubmitIsCalled_CaseIsCreated_AndCourtIsIgnored() throws Exception {
-        String userToken = createCitizenUser().getAuthToken();
-        Response submissionResponse = submitCase(userToken, "basic-divorce-session.json");
+        UserDetails userDetails = createCitizenUser();
+        Response submissionResponse = submitCase(userDetails, "basic-divorce-session.json");
 
         ResponseBody caseCreationResponseBody = submissionResponse.getBody();
         assertThat(submissionResponse.getStatusCode(), is(HttpStatus.OK.value()));
@@ -58,22 +59,27 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
                 is(not("unknown-court"))
         ));
 
-        ResponseBody retrieveCaseResponseBody = retrieveCase(userToken).body();
+        ResponseBody retrieveCaseResponseBody = retrieveCase(userDetails.getAuthToken()).body();
         assertThat(retrieveCaseResponseBody.path(RETRIEVED_DATA_COURT_ID_KEY), is(allocatedCourt));
     }
 
-    private Response submitCase(String userToken, String fileName) throws Exception {
+    private Response submitCase(UserDetails userDetails, String fileName) throws Exception {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+        headers.put(HttpHeaders.AUTHORIZATION, userDetails.getAuthToken());
 
-        if (userToken != null) {
-            headers.put(HttpHeaders.AUTHORIZATION, userToken);
+
+        String body = null;
+        if (fileName != null) {
+            body = ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + fileName)
+            .replaceAll(USER_DEFAULT_EMAIL, userDetails.getEmailAddress());
+
         }
 
         return RestUtil.postToRestService(
                 serverUrl + caseCreationContextPath,
                 headers,
-                fileName == null ? null : ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + fileName)
+                body
         );
     }
 

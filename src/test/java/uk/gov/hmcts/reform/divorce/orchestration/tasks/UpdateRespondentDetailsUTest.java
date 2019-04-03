@@ -37,6 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_REISSUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
@@ -72,11 +73,6 @@ public class UpdateRespondentDetailsUTest {
     public void whenAosAwaiting_thenProceedAsExpected() throws TaskException {
         final UserDetails payload = UserDetails.builder().build();
 
-        final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        taskContext.setTransientObject(IS_RESPONDENT, true);
-
         final UserDetails respondentDetails =
             UserDetails.builder()
                 .id(TEST_USER_ID)
@@ -96,27 +92,25 @@ public class UpdateRespondentDetailsUTest {
                 RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
             );
 
+        final TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        taskContext.setTransientObject(IS_RESPONDENT, true);
+        taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+
         when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS_EVENT_ID, dataToUpdate))
             .thenReturn(null);
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN))
-                .thenReturn(caseDetails);
 
         Assert.assertEquals(payload, classUnderTest.execute(taskContext, payload));
 
         verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS_EVENT_ID, dataToUpdate);
-        verify(caseMaintenanceClient).retrieveAosCase(AUTH_TOKEN);
     }
 
     @Test
     public void whenNonStandardState_thenProceedAsExpected() throws TaskException {
         final UserDetails payload = UserDetails.builder().build();
-
-        final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        taskContext.setTransientObject(IS_RESPONDENT, true);
 
         final UserDetails respondentDetails =
             UserDetails.builder()
@@ -138,26 +132,24 @@ public class UpdateRespondentDetailsUTest {
                 RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
             );
 
+        final TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        taskContext.setTransientObject(IS_RESPONDENT, true);
+        taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+
         when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN))
-            .thenReturn(caseDetails);
 
         Assert.assertEquals(payload, classUnderTest.execute(taskContext, payload));
 
         verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID,
             LINK_RESPONDENT_GENERIC_EVENT_ID, dataToUpdate);
-        verify(caseMaintenanceClient).retrieveAosCase(AUTH_TOKEN);
     }
 
     @Test
     public void givenCaseOnAosOverdueState_whenUpdateRespondentDetails_thenRespondentDetailsIsUpdated() throws TaskException {
         final UserDetails payload = UserDetails.builder().build();
-
-        final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        taskContext.setTransientObject(IS_RESPONDENT, true);
 
         final UserDetails respondentDetails = createTestUserDetails();
 
@@ -165,10 +157,14 @@ public class UpdateRespondentDetailsUTest {
 
         final Map<String, Object> dataToUpdate = createDataToUpdate();
 
+        final TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        taskContext.setTransientObject(IS_RESPONDENT, true);
+        taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+
         when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN))
                 .thenReturn(respondentDetails);
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN))
-                .thenReturn(caseDetails);
 
         UserDetails result = classUnderTest.execute(taskContext, payload);
         Assert.assertEquals(payload, result);
@@ -180,21 +176,19 @@ public class UpdateRespondentDetailsUTest {
     public void givenCaseOnReissueState_whenUpdateRespondentDetails_thenStartAosFromReissueEventIsTriggered() throws TaskException {
         final UserDetails payload = UserDetails.builder().build();
 
-        final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        taskContext.setTransientObject(IS_RESPONDENT, true);
-
         final UserDetails respondentDetails = createTestUserDetails();
 
         final CaseDetails caseDetails = createTestCaseDetails(AWAITING_REISSUE);
 
         final Map<String, Object> dataToUpdate = createDataToUpdate();
 
-        when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN))
-                .thenReturn(respondentDetails);
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN))
-                .thenReturn(caseDetails);
+        final TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        taskContext.setTransientObject(IS_RESPONDENT, true);
+        taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+
+        when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
 
         UserDetails result = classUnderTest.execute(taskContext, payload);
         Assert.assertEquals(payload, result);
@@ -205,11 +199,6 @@ public class UpdateRespondentDetailsUTest {
     @Test
     public void whenCoRespondentData_whenUpdateRespondentDetails_thenUpdatedCoRespondentFields() throws TaskException {
         final UserDetails payload = UserDetails.builder().build();
-
-        final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        taskContext.setTransientObject(IS_RESPONDENT, false);
 
         final UserDetails coRespondentDetails =
             UserDetails.builder()
@@ -225,10 +214,13 @@ public class UpdateRespondentDetailsUTest {
                 .caseData(caseData)
                 .build();
 
+        final TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        taskContext.setTransientObject(IS_RESPONDENT, false);
+        taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
         when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(coRespondentDetails);
-        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN))
-            .thenReturn(caseDetails);
 
         Assert.assertEquals(payload, classUnderTest.execute(taskContext, payload));
 
@@ -241,7 +233,6 @@ public class UpdateRespondentDetailsUTest {
 
         verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);
         verify(caseMaintenanceClient).updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(LINK_RESPONDENT_GENERIC_EVENT_ID), eq(expectedDataToUpdate));
-        verify(caseMaintenanceClient).retrieveAosCase(AUTH_TOKEN);
     }
 
 
