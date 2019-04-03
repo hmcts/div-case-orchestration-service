@@ -65,8 +65,8 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
 
     @Test
     public void givenAnExistingCase_whenSubmitIsCalled_aNewCaseIsNotCreated() throws Exception {
-        String userToken = createCitizenUser().getAuthToken();
-        Response submissionResponse = submitCase(userToken, "divorce-session-with-court-selected.json");
+        UserDetails userDetails = createCitizenUser();
+        Response submissionResponse = submitCase(userDetails, "divorce-session-with-court-selected.json");
 
         ResponseBody caseCreationResponseBody = submissionResponse.getBody();
         assertThat(submissionResponse.getStatusCode(), is(HttpStatus.OK.value()));
@@ -75,10 +75,10 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
         String allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
         assertThat(allocatedCourt, is(notNullValue()));
 
-        ResponseBody retrieveCaseResponseBody = retrieveCase(userToken).body();
+        ResponseBody retrieveCaseResponseBody = retrieveCase(userDetails.getAuthToken()).body();
         assertThat(retrieveCaseResponseBody.path(RETRIEVED_DATA_COURT_ID_KEY), is(allocatedCourt));
 
-        submissionResponse = submitCase(userToken, "divorce-session-with-court-selected.json");
+        submissionResponse = submitCase(userDetails, "divorce-session-with-court-selected.json");
         caseCreationResponseBody = submissionResponse.getBody();
         assertThat(caseCreationResponseBody.path(CASE_ID_KEY), is(existingCaseId));
         allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
