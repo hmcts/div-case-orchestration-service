@@ -9,6 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CourtAllocationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DuplicateCaseValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCaseToCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
@@ -47,6 +48,9 @@ public class SubmitToCCDWorkflowTest {
     @Mock
     private DeleteDraft deleteDraft;
 
+    @Mock
+    private DuplicateCaseValidationTask duplicateCaseValidationTask;
+
     @InjectMocks
     private SubmitToCCDWorkflow submitToCCDWorkflow;
 
@@ -55,13 +59,14 @@ public class SubmitToCCDWorkflowTest {
         Map<String, Object> incomingPayload = singletonMap(REASON_FOR_DIVORCE_KEY, "adultery");
         when(courtAllocationTask.execute(any(), eq(incomingPayload))).thenAnswer(invocation -> {
             Arrays.stream(invocation.getArguments())
-                .filter(TaskContext.class::isInstance)
-                .map(TaskContext.class::cast)
-                .findFirst()
-                .ifPresent(cont -> cont.setTransientObject(SELECTED_COURT, "randomlySelectedCourt"));
+                    .filter(TaskContext.class::isInstance)
+                    .map(TaskContext.class::cast)
+                    .findFirst()
+                    .ifPresent(cont -> cont.setTransientObject(SELECTED_COURT, "randomlySelectedCourt"));
 
             return incomingPayload;
         });
+        when(duplicateCaseValidationTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(formatDivorceSessionToCaseData.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(validateCaseData.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(submitCaseToCCD.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
@@ -70,9 +75,10 @@ public class SubmitToCCDWorkflowTest {
         Map<String, Object> actual = submitToCCDWorkflow.run(incomingPayload, AUTH_TOKEN);
 
         assertThat(actual, allOf(
-            hasEntry("Hello", "World"),
-            hasEntry("allocatedCourt", "randomlySelectedCourt")
+                hasEntry("Hello", "World"),
+                hasEntry("allocatedCourt", "randomlySelectedCourt")
         ));
+        verify(duplicateCaseValidationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(courtAllocationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(formatDivorceSessionToCaseData).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(validateCaseData).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
