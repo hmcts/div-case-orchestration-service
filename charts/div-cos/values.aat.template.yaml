@@ -20,3 +20,7 @@ java:
         DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-aat.service.core-compute-aat.internal"
         FEES_AND_PAYMENTS_SERVICE_API_BASEURL: "http://div-fps-aat.service.core-compute-aat.internal"
         FEATURE_TOGGLE_520: "false"
+
+    # Don't modify below here
+    image: ${IMAGE_NAME}
+    ingressHost: ${SERVICE_FQDN}
