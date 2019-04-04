@@ -71,6 +71,7 @@ public class OrchestrationConstants {
     public static final String COMPLETED_AOS_EVENT_ID = "aosReceivedNoAdConStarted";
     public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
     public static final String START_AOS_EVENT_ID = "startAos";
+    public static final String PAYMENT_MADE_EVENT = "paymentMade";
 
     // CCD Case States
     public static final String AOS_AWAITING = "AosAwaiting";
@@ -125,7 +126,6 @@ public class OrchestrationConstants {
     // Case state
     public static final String AWAITING_PAYMENT = "AwaitingPayment";
     public static final String AWAITING_HWF_DECISION = "AwaitingHWFDecision";
-    public static final String PAYMENT_MADE_EVENT = "paymentMade";
 
     // Notification
     public static final String NOTIFICATION_EMAIL = "email_address";
