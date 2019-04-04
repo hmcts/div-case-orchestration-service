@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
@@ -25,9 +24,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_SUBMITTED_AWAITING_ANSWER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DEFENDED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_RECEIVED_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.util.DateConstants.CCD_DATE_FORMATTER;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
 @Slf4j
@@ -232,7 +231,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
             .get("dueDate")
             .asText();
 
-        assertThat(dueDateSet, is(LocalDate.now().plusDays(21).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+        assertThat(dueDateSet, is(LocalDate.now().plusDays(21).format(CCD_DATE_FORMATTER)));
     }
 
     private void checkCaseAfterSuccessfulCoRespondentSubmission(final UserDetails userDetails, final String caseId, final String expectedAnswers)
