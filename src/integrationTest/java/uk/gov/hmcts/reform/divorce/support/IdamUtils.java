@@ -79,6 +79,14 @@ public class IdamUtils {
         return response.getBody().path("id").toString();
     }
 
+    public String getPin(final String letterHolderId) {
+        return SerenityRest.given()
+            .relaxedHTTPSValidation()
+            .get(idamUserBaseUrl + "/testing-support/accounts/pin/" + letterHolderId)
+            .getBody()
+            .asString();
+    }
+
     public String generateUserTokenWithNoRoles(String username, String password) {
         String userLoginDetails = String.join(":", username, password);
         final String authHeader = "Basic " + new String(Base64.getEncoder().encode(userLoginDetails.getBytes()));
