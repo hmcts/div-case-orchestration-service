@@ -31,7 +31,7 @@ public class GetCaseWithId implements Task<UserDetails> {
         CaseDetails caseDetails;
 
         final String caseWorkerToken = authUtil.getCaseworkerToken();
-        final String caseId = String.valueOf(context.getTransientObject(CASE_ID_JSON_KEY));
+        final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
         caseDetails = caseMaintenanceClient.retrievePetitionById(
             caseWorkerToken,
             caseId

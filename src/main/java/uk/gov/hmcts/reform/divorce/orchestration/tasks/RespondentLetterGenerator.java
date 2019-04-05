@@ -35,7 +35,7 @@ public class RespondentLetterGenerator implements Task<Map<String, Object>> {
     @Override
     @SuppressWarnings("Duplicates")
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        CaseDetails caseDetails = (CaseDetails) context.getTransientObject(CASE_DETAILS_JSON_KEY);
+        CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
 
         GeneratedDocumentInfo aosInvitation =
             documentGeneratorClient.generatePDF(
@@ -46,7 +46,7 @@ public class RespondentLetterGenerator implements Task<Map<String, Object>> {
                         ACCESS_CODE, context.getTransientObject(RESPONDENT_PIN))
                     )
                     .build(),
-                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY))
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY)
             );
 
         aosInvitation.setDocumentType(DOCUMENT_TYPE_RESPONDENT_INVITATION);

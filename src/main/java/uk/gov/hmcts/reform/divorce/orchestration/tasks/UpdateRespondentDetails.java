@@ -52,15 +52,15 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
 
         Map<String, Object> updateFields = new HashMap<>();
         try {
-            boolean isRespondent = (boolean) context.getTransientObject(IS_RESPONDENT);
+            boolean isRespondent = context.getTransientObject(IS_RESPONDENT);
             String eventId;
 
             UserDetails linkedUser =
                 idamClient.retrieveUserDetails(
-                    authUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
+                    authUtil.getBearToken(context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
 
             CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(
-                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY))
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY)
             );
 
             if (isRespondent) {
@@ -74,8 +74,8 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
             }
 
             caseMaintenanceClient.updateCase(
-                (String)context.getTransientObject(AUTH_TOKEN_JSON_KEY),
-                (String)context.getTransientObject(CASE_ID_JSON_KEY),
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+                context.getTransientObject(CASE_ID_JSON_KEY),
                 eventId,
                 updateFields
             );

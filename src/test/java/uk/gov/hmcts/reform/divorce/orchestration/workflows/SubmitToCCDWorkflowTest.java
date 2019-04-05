@@ -82,7 +82,7 @@ public class SubmitToCCDWorkflowTest {
 
     private static ArgumentMatcher<TaskContext> isContextContainingCourtInfo() {
         return cxt -> {
-            String selectedCourt = (String) cxt.getTransientObject(SELECTED_COURT);
+            String selectedCourt = cxt.getTransientObject(SELECTED_COURT);
             return "randomlySelectedCourt".equals(selectedCourt);
         };
     }

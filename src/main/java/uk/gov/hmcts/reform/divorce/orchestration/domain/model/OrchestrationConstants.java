@@ -8,6 +8,10 @@ public class OrchestrationConstants {
 
     public static final String LINE_SEPARATOR = System.lineSeparator();
 
+    // Task context properties
+    public static final String CCD_CASE_DATA = "ccdCaseData";
+    public static final String AOS_CASE_FORMATTED_DATA = "aosCaseFormattedData";
+
     // Authentication
     public static final String ACCESS_CODE = "access_code";
     public static final String AUTH_TOKEN_JSON_KEY = "authToken";
@@ -38,7 +42,6 @@ public class OrchestrationConstants {
     public static final String D_8_DIVORCED_WHO = "D8DivorceWho";
     public static final String D_8_REASON_FOR_DIVORCE = "D8ReasonForDivorce";
     public static final String D_8_CO_RESPONDENT_NAMED = "D8ReasonForDivorceAdulteryWishToName";
-    public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String NOT_RECEIVED_AOS_EVENT_ID = "aosNotReceived";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID = "co-RespAOSReceivedAwaiting";
@@ -83,7 +86,6 @@ public class OrchestrationConstants {
     public static final String DN_AWAITING = "DNAwaiting";
     public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
-
 
     // CCD Respondent Fields
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
@@ -155,6 +157,7 @@ public class OrchestrationConstants {
     public static final String MINI_PETITION_FILE_NAME_FORMAT = "d8petition%s";
     public static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
     public static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
+    public static final String RESPONDENT_ANSWERS_TEMPLATE_NAME = "respondentAnswers";
     public static final String DOCUMENT_TYPE_CO_RESPONDENT_INVITATION = "aoscr";
     public static final String CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT = "co-respondentaosinvitation%s";
     public static final String CO_RESPONDENT_INVITATION_TEMPLATE_NAME = "co-respondentinvitation";

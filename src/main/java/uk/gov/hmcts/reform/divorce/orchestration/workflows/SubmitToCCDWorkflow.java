@@ -54,7 +54,7 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)
         );
 
-        String selectedCourtId = (String) getContext().getTransientObject(SELECTED_COURT);
+        String selectedCourtId = getContext().getTransientObject(SELECTED_COURT);
         Map<String, Object> response = new HashMap<>(returnFromExecution);
         response.put(ALLOCATED_COURT_KEY, selectedCourtId);
 
