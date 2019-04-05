@@ -64,6 +64,16 @@ public class EmailService {
                 "resp does not admit adultery update notification");
     }
 
+    public Map<String, Object> sendPetitionerRespDoesNotAdmitAdulteryCoRespNoReplyNotificationEmail(
+        String destinationAddress,
+        Map<String, String> templateVars) {
+        String templateName = EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name();
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+        return sendEmailAndReturnErrorsInResponse(
+               emailToSend,
+               "resp does not admit adultery update notification - no reply from co-resp");
+    }
+
     public Map<String, Object> sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(
             String destinationAddress,
             Map<String, String> templateVars) {

@@ -111,6 +111,18 @@ public class EmailServiceTest {
                 eq(emailTemplateVars.get(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name())),
                 anyString());
     }
+    
+    @Test
+    public void sendRespDoesNotAdmitAdulteryCoRespNoReplyUpdateShouldCallTheEmailClientToSendAnEmail()
+            throws NotificationClientException {
+        emailService.sendPetitionerRespDoesNotAdmitAdulteryCoRespNoReplyNotificationEmail(EMAIL_ADDRESS, null);
+
+        verify(mockClient).sendEmail(
+                eq(emailTemplates.get(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name())),
+                eq(EMAIL_ADDRESS),
+                eq(emailTemplateVars.get(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name())),
+                anyString());
+    }
 
     @Test
     public void sendRespDoesNotConsentTo2YearSepUpdateEmailShouldCallTheEmailClientToSendAnEmail()
