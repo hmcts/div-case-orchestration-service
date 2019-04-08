@@ -5,8 +5,6 @@ import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.bouncycastle.cms.RecipientId.kek;
-
 @Data
 public class DefaultTaskContext implements TaskContext {
 

@@ -126,12 +126,6 @@ public class AosRespondentSubmittedITest {
             .caseData(caseDetailMap)
             .build();
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-            .eventId(EVENT_ID)
-            .caseDetails(fullCase)
-            .build();
-
-
         final GenerateDocumentRequest documentRequest =
             GenerateDocumentRequest.builder()
                 .template(RESPONDENT_ANSWERS_TEMPLATE_NAME)
@@ -150,6 +144,11 @@ public class AosRespondentSubmittedITest {
         DocumentUpdateRequest documentFormatRequest = DocumentUpdateRequest.builder()
             .caseData(caseDetailMap)
             .documents(new ArrayList<>(documentsForFormatter))
+            .build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .eventId(EVENT_ID)
+            .caseDetails(fullCase)
             .build();
 
         stubDocumentGeneratorServerEndpoint(documentRequest, documentInfo);
@@ -183,11 +182,6 @@ public class AosRespondentSubmittedITest {
             .caseData(caseDetailMap)
             .build();
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-            .eventId(CASE_ID)
-            .caseDetails(fullCase)
-            .build();
-
         final GenerateDocumentRequest respondentAnswersDocRequest =
             GenerateDocumentRequest.builder()
                 .template(RESPONDENT_ANSWERS_TEMPLATE_NAME)
@@ -208,6 +202,11 @@ public class AosRespondentSubmittedITest {
 
         stubDocumentGeneratorServerEndpoint(respondentAnswersDocRequest, respondentAnswersDocResponse);
         stubFormatterServerEndpoint(docsReq);
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .eventId(CASE_ID)
+            .caseDetails(fullCase)
+            .build();
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, USER_TOKEN)
@@ -240,11 +239,6 @@ public class AosRespondentSubmittedITest {
             .caseData(caseDetailMap)
             .build();
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-            .eventId(CASE_ID)
-            .caseDetails(fullCase)
-            .build();
-
         final GenerateDocumentRequest respondentAnswersDocRequest =
             GenerateDocumentRequest.builder()
                 .template(RESPONDENT_ANSWERS_TEMPLATE_NAME)
@@ -261,6 +255,11 @@ public class AosRespondentSubmittedITest {
         DocumentUpdateRequest docsReq = DocumentUpdateRequest.builder()
             .caseData(fullCase.getCaseData())
             .documents(new ArrayList<>(documentsForFormatter))
+            .build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .eventId(CASE_ID)
+            .caseDetails(fullCase)
             .build();
 
         stubDocumentGeneratorServerEndpoint(respondentAnswersDocRequest, respondentAnswersDocResponse);

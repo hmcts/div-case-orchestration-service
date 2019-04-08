@@ -53,12 +53,6 @@ public class RespondentSubmittedCallbackWorkflowUTest {
 
     @Test
     public void givenCaseNotDefended_whenRunWorkflow_thenEmailNotificationTaskCalled() throws WorkflowException {
-        Map<String, String> vars = ImmutableMap.of(
-                NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME,
-                NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TestConstants.TEST_USER_LAST_NAME,
-                NOTIFICATION_RELATIONSHIP_KEY, "husband",
-                NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID
-        );
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
         caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
@@ -77,14 +71,17 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         when(respondentAnswersGenerator.execute(any(), any())).thenReturn(caseDetails.getCaseData());
         when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(caseDetails.getCaseData());
 
+        Map<String, String> vars = ImmutableMap.of(
+            NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME,
+            NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TestConstants.TEST_USER_LAST_NAME,
+            NOTIFICATION_RELATIONSHIP_KEY, "husband",
+            NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID
+        );
         Map<String, Object> response = classToTest.run(ccdCallbackRequest, TestConstants.TEST_TOKEN);
-
         verify(emailNotificationTask, times(1))
                 .execute(argThat(argument ->
                         argument.getTransientObject(ID).equals(TestConstants.TEST_CASE_ID)
                                 && argument.getTransientObject(NOTIFICATION_TEMPLATE_VARS).equals(vars)), any());
-        verify(respondentAnswersGenerator).execute(any(), any());
-        verify(caseFormatterAddDocuments).execute(any(), any());
         assertEquals(caseDetails.getCaseData(), response);
     }
 
@@ -103,10 +100,7 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(caseDetails.getCaseData());
 
         Map<String, Object> response = classToTest.run(ccdCallbackRequest, TestConstants.TEST_TOKEN);
-
         verifyNoMoreInteractions(emailNotificationTask);
-        verify(respondentAnswersGenerator).execute(any(), any());
-        verify(caseFormatterAddDocuments).execute(any(), any());
         assertEquals(caseDetails.getCaseData(), response);
     }
 
