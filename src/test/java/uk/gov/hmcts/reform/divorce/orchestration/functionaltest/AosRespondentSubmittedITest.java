@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -39,9 +40,15 @@ import java.util.Set;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -66,6 +73,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_ANSWERS_TEMPLATE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
@@ -79,6 +88,7 @@ public class AosRespondentSubmittedITest {
     private static final String USER_TOKEN = "anytoken";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
     private static final String FORMAT_ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
+    private static final String RESPONDENT_SUBMISSION_CONSENT_ID = "594dc500-93ca-4f4b-931b-acbf9ee83d25";
 
     private static final String PETITIONER_FIRST_NAME = "any-name";
     private static final String PETITIONER_LAST_NAME = "any-last-name";
@@ -111,7 +121,7 @@ public class AosRespondentSubmittedITest {
     @Test
     public void givenWithoutPetitionerEmail_whenPerformAOSReceived_thenReturnBadRequestResponse()
         throws Exception {
-        mockEmailClient("null");
+        mockEmailClientError("null");
         Map<String, Object> caseDetailMap = ImmutableMap.of(
             D_8_CASE_REFERENCE, D8_ID,
             D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME,
@@ -164,20 +174,22 @@ public class AosRespondentSubmittedITest {
     }
 
     @Test
-    public void givenCaseData_whenPerformAOSReceived_thenReturnCaseData() throws Exception {
-        Map<String, Object> caseDetailMap = ImmutableMap.of(
-            D_8_PETITIONER_EMAIL, D_8_PETITIONER_EMAIL,
-            D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME,
-            D_8_PETITIONER_LAST_NAME, PETITIONER_LAST_NAME,
-            D_8_INFERRED_RESPONDENT_GENDER, RESPONDENT_FEMALE_GENDER,
-            D_8_CASE_REFERENCE, D8_ID
-        );
+    public void givenCaseDataNotDefending_whenPerformAOSReceived_thenSendEmailAndAddDocument() throws Exception {
+        Map<String, Object> caseDetailMap = new HashMap<>();
+
+        caseDetailMap.put(D_8_PETITIONER_EMAIL, D_8_PETITIONER_EMAIL);
+        caseDetailMap.put(D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME);
+        caseDetailMap.put(D_8_PETITIONER_LAST_NAME, PETITIONER_LAST_NAME);
+        caseDetailMap.put(D_8_INFERRED_RESPONDENT_GENDER, RESPONDENT_FEMALE_GENDER);
+        caseDetailMap.put(D_8_CASE_REFERENCE, D8_ID);
+        caseDetailMap.put(RESP_WILL_DEFEND_DIVORCE, "No");
 
         CaseDetails fullCase = CaseDetails.builder()
             .caseData(caseDetailMap)
             .build();
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(CASE_ID)
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .eventId(CASE_ID)
             .caseDetails(fullCase)
             .build();
 
@@ -202,22 +214,75 @@ public class AosRespondentSubmittedITest {
         stubDocumentGeneratorServerEndpoint(respondentAnswersDocRequest, respondentAnswersDocResponse);
         stubFormatterServerEndpoint(docsReq);
 
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("caseData", caseDetailMap);
-        responseData.put("documents", new ArrayList<>(documentsForFormatter));
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, USER_TOKEN)
+            .content(ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackRequest))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.errors", nullValue()),
+                hasJsonPath("$.data.documents", isJson())
+            )));
 
-        CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse.builder()
-            .data(responseData)
+        verify(mockEmailClient).sendEmail(any(),
+            eq(D_8_PETITIONER_EMAIL),
+            any(), any());
+    }
+
+    @Test
+    public void givenCaseDataAosDefending_whenPerformAOSReceived_thenOnlyAddDocument() throws Exception {
+        Map<String, Object> caseDetailMap = new HashMap<>();
+
+        caseDetailMap.put(D_8_PETITIONER_EMAIL, D_8_PETITIONER_EMAIL);
+        caseDetailMap.put(D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME);
+        caseDetailMap.put(D_8_PETITIONER_LAST_NAME, PETITIONER_LAST_NAME);
+        caseDetailMap.put(D_8_INFERRED_RESPONDENT_GENDER, RESPONDENT_FEMALE_GENDER);
+        caseDetailMap.put(D_8_CASE_REFERENCE, D8_ID);
+        caseDetailMap.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
+
+        CaseDetails fullCase = CaseDetails.builder()
+            .caseData(caseDetailMap)
             .build();
 
-        String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .eventId(CASE_ID)
+            .caseDetails(fullCase)
+            .build();
+
+        final GenerateDocumentRequest respondentAnswersDocRequest =
+            GenerateDocumentRequest.builder()
+                .template(RESPONDENT_ANSWERS_TEMPLATE_NAME)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, fullCase))
+                .build();
+
+        final GeneratedDocumentInfo respondentAnswersDocResponse =
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_RESPONDENT_INVITATION)
+                .fileName(RESPONDENT_ANSWERS_TEMPLATE_NAME)
+                .build();
+        final Set<GeneratedDocumentInfo> documentsForFormatter = new HashSet<>();
+        documentsForFormatter.add(respondentAnswersDocResponse);
+        DocumentUpdateRequest docsReq = DocumentUpdateRequest.builder()
+            .caseData(fullCase.getCaseData())
+            .documents(new ArrayList<>(documentsForFormatter))
+            .build();
+
+        stubDocumentGeneratorServerEndpoint(respondentAnswersDocRequest, respondentAnswersDocResponse);
+        stubFormatterServerEndpoint(docsReq);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, USER_TOKEN)
             .content(ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackRequest))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(expectedResponse));
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.errors", nullValue()),
+                hasJsonPath("$.data.documents", isJson())
+            )));
+
+        verifyZeroInteractions(mockEmailClient);
     }
 
     @Test
@@ -242,7 +307,7 @@ public class AosRespondentSubmittedITest {
             .errors(Collections.singletonList("java.lang.Exception: error"))
             .build();
 
-        mockEmailClient(D_8_PETITIONER_EMAIL);
+        mockEmailClientError(D_8_PETITIONER_EMAIL);
 
         String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
         webClient.perform(post(API_URL)
@@ -253,7 +318,7 @@ public class AosRespondentSubmittedITest {
             .andExpect(content().string(expectedResponse));
     }
 
-    private void mockEmailClient(String email)
+    private void mockEmailClientError(String email)
         throws NotificationClientException {
         Map<String, String> notificationTemplateVars = new HashMap<>();
         notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, PETITIONER_FIRST_NAME);
