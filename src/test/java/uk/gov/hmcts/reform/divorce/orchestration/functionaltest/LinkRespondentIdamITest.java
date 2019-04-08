@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,11 +58,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTE
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
@@ -125,7 +129,9 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
             RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
         );
         caseDataCoResponentUpdate = ImmutableMap.of(
-            CO_RESP_EMAIL_ADDRESS, TEST_EMAIL
+            CO_RESP_EMAIL_ADDRESS, TEST_EMAIL,
+            CO_RESP_LINKED_TO_CASE, YES_VALUE,
+            CO_RESP_LINKED_TO_CASE_DATE, CcdUtil.getCurrentDate()
         );
     }
 
@@ -219,10 +225,11 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
+        stubSignInForCaseworker();
+
         stubMaintenanceServerEndpointForUpdateAos(BAD_REQUEST, TEST_ERROR);
         stubRetrieveCaseFromCMS(CASE_DETAILS_AOS);
         stubMaintenanceServerEndpointForRemoveUser(OK);
-        stubSignInForCaseworker();
         stubRetrieveCaseByIdFromCMS(HttpStatus.OK, convertObjectToJsonString(CASE_DETAILS_AOS));
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -240,7 +247,8 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
         stubMaintenanceServerEndpointForUpdateAos(OK, convertObjectToJsonString(caseDataAos));
-        stubRetrieveCaseFromCMS(CASE_DETAILS_AOS);
+        stubRetrieveCaseByIdFromCMS(OK, convertObjectToJsonString(CASE_DETAILS_AOS));
+        stubSignInForCaseworker();
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -252,18 +260,22 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
     public void givenAllGoesWell_whenLinkCoRespondent_thenProceedAsExpected() throws Exception {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(CO_RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
+
+        stubSignInForCaseworker();
+        stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
+        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
+
         CaseDetails caseDetailsCoResp = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .state(AOS_AWAITING_STATE)
             .caseData(caseData)
             .build();
-        stubRetrieveCaseFromCMS(caseDetailsCoResp);
-        stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
-        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
-        stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
+        stubRetrieveCaseByIdFromCMS(OK, convertObjectToJsonString(caseDetailsCoResp));
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
-        stubMaintenanceServerEndpointForUpdateAos(OK, convertObjectToJsonString(caseDataCoResponentUpdate));
+        String  coRespondentCaseData = convertObjectToJsonString(caseDataCoResponentUpdate);
+        stubMaintenanceServerEndpointForUpdateNotAos(OK, coRespondentCaseData, coRespondentCaseData);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -279,7 +291,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
         stubMaintenanceServerEndpointForUpdateAos(OK, convertObjectToJsonString(caseDataCoResponentUpdate));
-        stubRetrieveCaseFromCMS(NOT_FOUND, convertObjectToJsonString(""));
+        stubRetrieveCaseByIdFromCMS(NOT_FOUND, convertObjectToJsonString(""));
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -305,13 +317,14 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
 
     @Test
     public void givenNonStandardLinking_whenLinkRespondent_thenProceedAsExpected() throws Exception {
+        stubSignInForCaseworker();
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
         stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
         stubMaintenanceServerEndpointForUpdateNotAos(OK, convertObjectToJsonString(caseDataNonAos));
-        stubRetrieveCaseFromCMS(CASE_DETAILS_NO_AOS);
+        stubRetrieveCaseByIdFromCMS(OK, convertObjectToJsonString(CASE_DETAILS_NO_AOS));
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -357,14 +370,18 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
                 .withBody(response)));
     }
 
-    private void stubMaintenanceServerEndpointForUpdateNotAos(HttpStatus status, String response) {
+    private void stubMaintenanceServerEndpointForUpdateNotAos(HttpStatus status, String request,  String response) {
         maintenanceServiceServer.stubFor(post(urlEqualTo(UPDATE_CONTEXT_PATH_NOT_AOS))
-            .withRequestBody(equalToJson(convertObjectToJsonString(caseDataNonAos)))
+            .withRequestBody(equalToJson(request))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withBody(response)));
+    }
+
+    private void stubMaintenanceServerEndpointForUpdateNotAos(HttpStatus status, String response) {
+        stubMaintenanceServerEndpointForUpdateNotAos(status, convertObjectToJsonString(caseDataNonAos), response);
     }
 
     private void stubMaintenanceServerEndpointForRemoveUser(HttpStatus status) {

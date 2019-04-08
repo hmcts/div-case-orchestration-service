@@ -131,7 +131,7 @@ def versions = [
         javaxWsRs                       : '2.1.1',
         jsonPathAssert                  : '2.2.0',
         jacksonDatabind                 : '2.9.8',
-        guava                           : '27.0.1-jre',
+        guava                           : '27.1-jre',
         bcpkixJdk15on                   : '1.60',
         springSecurityRsa               : '1.0.8.RELEASE'
 ]

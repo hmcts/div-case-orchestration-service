@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTE
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LOCATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
@@ -152,7 +152,7 @@ public class RetrievePinUserDetailsFromStrategicIdamUTest {
         final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
 
         final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(CCD_CASE_DATA, caseDetails.getCaseData());
+        taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
         taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         final UserDetails pinUserDetails = UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
