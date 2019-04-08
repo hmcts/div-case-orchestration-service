@@ -16,6 +16,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_ANSWERS_TEMPLATE_NAME;
 
@@ -40,7 +41,7 @@ public class RespondentAnswersGenerator implements Task<Map<String, Object>> {
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY)
             );
 
-        respondentAnswers.setDocumentType(DOCUMENT_TYPE_RESPONDENT_INVITATION);
+        respondentAnswers.setDocumentType(DOCUMENT_TYPE_RESPONDENT_ANSWERS);
         respondentAnswers.setFileName(RESPONDENT_ANSWERS_TEMPLATE_NAME);
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection =

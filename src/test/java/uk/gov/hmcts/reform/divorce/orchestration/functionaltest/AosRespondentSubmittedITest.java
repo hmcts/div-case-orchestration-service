@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
-import com.google.common.collect.ImmutableMap;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +18,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
-import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -27,7 +25,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -56,18 +53,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_FILE_NAME_FORMAT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
@@ -88,7 +80,6 @@ public class AosRespondentSubmittedITest {
     private static final String USER_TOKEN = "anytoken";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
     private static final String FORMAT_ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
-    private static final String RESPONDENT_SUBMISSION_CONSENT_ID = "594dc500-93ca-4f4b-931b-acbf9ee83d25";
 
     private static final String PETITIONER_FIRST_NAME = "any-name";
     private static final String PETITIONER_LAST_NAME = "any-last-name";
@@ -119,22 +110,18 @@ public class AosRespondentSubmittedITest {
     }
 
     @Test
-    public void givenWithoutPetitionerEmail_whenPerformAOSReceived_thenReturnBadRequestResponse()
+    public void givenWithoutPetitionerEmail_whenPerformAOSReceived_thenReturnDocumentsData()
         throws Exception {
         mockEmailClientError("null");
-        Map<String, Object> caseDetailMap = ImmutableMap.of(
-            D_8_CASE_REFERENCE, D8_ID,
-            D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME,
-            D_8_PETITIONER_LAST_NAME, PETITIONER_LAST_NAME,
-            D_8_INFERRED_RESPONDENT_GENDER, RESPONDENT_FEMALE_GENDER
-        );
+        Map<String, Object> caseDetailMap = new HashMap<>();
 
-        CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
-            .builder()
-            .errors(Collections.singletonList("No destination email given"))
-            .build();
+        caseDetailMap.put(D_8_PETITIONER_EMAIL, D_8_PETITIONER_EMAIL);
+        caseDetailMap.put(D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME);
+        caseDetailMap.put(D_8_PETITIONER_LAST_NAME, PETITIONER_LAST_NAME);
+        caseDetailMap.put(D_8_INFERRED_RESPONDENT_GENDER, RESPONDENT_FEMALE_GENDER);
+        caseDetailMap.put(D_8_CASE_REFERENCE, D8_ID);
+        caseDetailMap.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
 
-        String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
         CaseDetails fullCase = CaseDetails.builder()
             .caseData(caseDetailMap)
             .build();
@@ -144,33 +131,41 @@ public class AosRespondentSubmittedITest {
             .caseDetails(fullCase)
             .build();
 
-        final GenerateDocumentRequest respondentAnswersDocRequest =
+
+        final GenerateDocumentRequest documentRequest =
             GenerateDocumentRequest.builder()
                 .template(RESPONDENT_ANSWERS_TEMPLATE_NAME)
                 .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, fullCase))
                 .build();
 
-        final GeneratedDocumentInfo respondentAnswersDocResponse =
+        final GeneratedDocumentInfo documentInfo =
             GeneratedDocumentInfo.builder()
-                .documentType(DOCUMENT_TYPE_RESPONDENT_INVITATION)
+                .documentType(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .fileName(RESPONDENT_ANSWERS_TEMPLATE_NAME)
                 .build();
+
         final Set<GeneratedDocumentInfo> documentsForFormatter = new HashSet<>();
-        documentsForFormatter.add(respondentAnswersDocResponse);
-        DocumentUpdateRequest docsReq = DocumentUpdateRequest.builder()
-            .caseData(fullCase.getCaseData())
+        documentsForFormatter.add(documentInfo);
+
+        DocumentUpdateRequest documentFormatRequest = DocumentUpdateRequest.builder()
+            .caseData(caseDetailMap)
             .documents(new ArrayList<>(documentsForFormatter))
             .build();
 
-        stubDocumentGeneratorServerEndpoint(respondentAnswersDocRequest, respondentAnswersDocResponse);
-        stubFormatterServerEndpoint(docsReq);
+        stubDocumentGeneratorServerEndpoint(documentRequest, documentInfo);
+        stubFormatterServerEndpoint(documentFormatRequest);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, USER_TOKEN)
             .content(ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackRequest))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(expectedResponse));
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.errors", nullValue()),
+                hasJsonPath("$.data.documents", isJson()),
+                hasJsonPath("$.data.caseData", isJson())
+            )));
     }
 
     @Test
@@ -201,7 +196,7 @@ public class AosRespondentSubmittedITest {
 
         final GeneratedDocumentInfo respondentAnswersDocResponse =
             GeneratedDocumentInfo.builder()
-                .documentType(DOCUMENT_TYPE_RESPONDENT_INVITATION)
+                .documentType(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .fileName(RESPONDENT_ANSWERS_TEMPLATE_NAME)
                 .build();
         final Set<GeneratedDocumentInfo> documentsForFormatter = new HashSet<>();
@@ -258,7 +253,7 @@ public class AosRespondentSubmittedITest {
 
         final GeneratedDocumentInfo respondentAnswersDocResponse =
             GeneratedDocumentInfo.builder()
-                .documentType(DOCUMENT_TYPE_RESPONDENT_INVITATION)
+                .documentType(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .fileName(RESPONDENT_ANSWERS_TEMPLATE_NAME)
                 .build();
         final Set<GeneratedDocumentInfo> documentsForFormatter = new HashSet<>();
@@ -279,7 +274,8 @@ public class AosRespondentSubmittedITest {
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.errors", nullValue()),
-                hasJsonPath("$.data.documents", isJson())
+                hasJsonPath("$.data.documents", isJson()),
+                hasJsonPath("$.data.caseData", isJson())
             )));
 
         verifyZeroInteractions(mockEmailClient);
@@ -287,13 +283,14 @@ public class AosRespondentSubmittedITest {
 
     @Test
     public void givenCaseWithoutId_whenPerformAOSReceived_thenReturnBadRequestResponse() throws Exception {
-        Map<String, Object> caseDetailMap = ImmutableMap.of(
-            D_8_PETITIONER_EMAIL, D_8_PETITIONER_EMAIL,
-            D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME,
-            D_8_PETITIONER_LAST_NAME, PETITIONER_LAST_NAME,
-            D_8_INFERRED_RESPONDENT_GENDER, RESPONDENT_FEMALE_GENDER,
-            D_8_CASE_REFERENCE, D8_ID
-        );
+        Map<String, Object> caseDetailMap = new HashMap<>();
+
+        caseDetailMap.put(D_8_PETITIONER_EMAIL, D_8_PETITIONER_EMAIL);
+        caseDetailMap.put(D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME);
+        caseDetailMap.put(D_8_PETITIONER_LAST_NAME, PETITIONER_LAST_NAME);
+        caseDetailMap.put(D_8_INFERRED_RESPONDENT_GENDER, RESPONDENT_FEMALE_GENDER);
+        caseDetailMap.put(D_8_CASE_REFERENCE, D8_ID);
+        caseDetailMap.put(RESP_WILL_DEFEND_DIVORCE, "No");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(EVENT_ID)
             .caseDetails(CaseDetails.builder()
