@@ -196,8 +196,9 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         expectedContext.setTransientObjects(ImmutableMap
             .of(NOTIFICATION_EMAIL, TestConstants.TEST_USER_EMAIL,
                 AUTH_TOKEN_JSON_KEY, TestConstants.AUTH_TOKEN,
+                NOTIFICATION_TEMPLATE_VARS, expectedTemplateVars,
                 NOTIFICATION_TEMPLATE, template,
-                NOTIFICATION_TEMPLATE_VARS, expectedTemplateVars
+                ID, TestConstants.TEST_CASE_ID
             ));
         return expectedContext;
     }
