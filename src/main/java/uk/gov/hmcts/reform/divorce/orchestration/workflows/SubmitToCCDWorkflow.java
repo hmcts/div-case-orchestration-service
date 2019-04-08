@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CourtAllocationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DuplicateCaseValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCaseToCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
@@ -25,6 +26,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Cour
 public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     public static final String SELECTED_COURT = "selectedCourt";
+
+    @Autowired
+    private DuplicateCaseValidationTask duplicateCaseValidationTask;
 
     @Autowired
     private CourtAllocationTask courtAllocationTask;
@@ -44,6 +48,7 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
     public Map<String, Object> run(Map<String, Object> payload, String authToken) throws WorkflowException {
         Map<String, Object> returnFromExecution = this.execute(
             new Task[]{
+                duplicateCaseValidationTask,
                 courtAllocationTask,
                 formatDivorceSessionToCaseData,
                 validateCaseData,

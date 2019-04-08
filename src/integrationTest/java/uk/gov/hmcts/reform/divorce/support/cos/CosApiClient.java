@@ -16,7 +16,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @FeignClient(name = "case-orchestration-api", url = "${case.orchestration.service.base.uri}",
-        configuration = ServiceContextConfiguration.class)
+    configuration = ServiceContextConfiguration.class)
 public interface CosApiClient {
 
     @RequestMapping(
@@ -25,68 +25,65 @@ public interface CosApiClient {
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> coRespReceived(@RequestHeader(AUTHORIZATION) String authorisation,
+                                       @RequestBody Map<String, Object> caseDataContent
+    );
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/aos-received",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> aosReceived(@RequestHeader(AUTHORIZATION) String authorisation,
                                     @RequestBody Map<String, Object> caseDataContent
     );
 
-
     @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/aos-received",
-            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
-    )
-    Map<String, Object> aosReceived(@RequestHeader(AUTHORIZATION) String authorisation,
-                                   @RequestBody Map<String, Object> caseDataContent
-    );
-
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/aos-submitted",
-            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+        method = RequestMethod.POST,
+        value = "/aos-submitted",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> aosSubmitted(@RequestBody Map<String, Object> caseDataContent);
 
-
-
     @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/dn-submitted",
-            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+        method = RequestMethod.POST,
+        value = "/dn-submitted",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> dnSubmitted(@RequestHeader(AUTHORIZATION) String authorisation,
                                     @RequestBody Map<String, Object> caseDataContent
     );
 
-
     @RequestMapping(
-            method = RequestMethod.GET,
-            value = "/draftsapi/version/1",
-            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+        method = RequestMethod.GET,
+        value = "/draftsapi/version/1",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> getDraft(@RequestHeader(AUTHORIZATION) String authorisation);
 
     @RequestMapping(
-            method = RequestMethod.PUT,
-            value = "/draftsapi/version/1",
-            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+        method = RequestMethod.PUT,
+        value = "/draftsapi/version/1",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     void saveDraft(@RequestHeader(AUTHORIZATION) String authorisation,
-                                  @RequestBody JsonNode caseDataContent,
+                   @RequestBody JsonNode caseDataContent,
                    @RequestParam(name = "sendEmail") String sendEmail
-   );
+    );
 
     @RequestMapping(
-            method = RequestMethod.DELETE,
-            value = "/draftsapi/version/1",
-            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+        method = RequestMethod.DELETE,
+        value = "/draftsapi/version/1",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     void deleteDraft(@RequestHeader(AUTHORIZATION) String authorisation);
 
     @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/submit",
-            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+        method = RequestMethod.POST,
+        value = "/submit",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> submitCase(@RequestHeader(AUTHORIZATION) String authorisation,
-                   @RequestBody JsonNode caseDataContent
+                                   @RequestBody JsonNode caseDataContent
     );
+
 }

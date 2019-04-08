@@ -27,6 +27,7 @@
   "jurisdictionConfidentLegal":"Yes",
   "respondentLastName":"Jamed",
   "reasonForDivorceShowTwoYearsSeparation":"true",
+  "respEmailAddress":"respondent@notifications.service.gov.uk",
   "petitionerCorrespondenceAddress":{
     "postcodeManual":null,
     "addressConfirmed":"true",
@@ -245,6 +246,6 @@
     "postcodeError":null,
     "url":null
   },
-  "receivedAosFromResp": "YES",
-  "receivedAosFromRespDate": "2018-10-22"
+  "receivedAosFromResp": "Yes",
+  "receivedAosFromRespDate": "2018-10-22T00:00:00.000+0000"
 }
