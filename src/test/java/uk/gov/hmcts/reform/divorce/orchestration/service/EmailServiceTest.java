@@ -118,9 +118,9 @@ public class EmailServiceTest {
         emailService.sendPetitionerRespDoesNotAdmitAdulteryCoRespNoReplyNotificationEmail(EMAIL_ADDRESS, null);
 
         verify(mockClient).sendEmail(
-                eq(emailTemplates.get(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name())),
+                eq(emailTemplates.get(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name())),
                 eq(EMAIL_ADDRESS),
-                eq(emailTemplateVars.get(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name())),
+                eq(emailTemplateVars.get(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name())),
                 anyString());
     }
 

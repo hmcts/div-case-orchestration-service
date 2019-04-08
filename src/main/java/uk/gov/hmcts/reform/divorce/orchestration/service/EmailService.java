@@ -67,7 +67,7 @@ public class EmailService {
     public Map<String, Object> sendPetitionerRespDoesNotAdmitAdulteryCoRespNoReplyNotificationEmail(
         String destinationAddress,
         Map<String, String> templateVars) {
-        String templateName = EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name();
+        String templateName = EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name();
         EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
         return sendEmailAndReturnErrorsInResponse(
                emailToSend,
