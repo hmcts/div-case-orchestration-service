@@ -69,7 +69,7 @@ uk:
                       RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION: 'eac41143-b296-4879-ba60-a0ea6f97c757',
                       RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION: '277fd3f3-2fdb-4c79-9354-1b3db8d44cca',
                       SAVE_DRAFT: '14074c06-87f1-4678-9238-4d71e741eb57',
-                      AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: 'bc6ee2ec-f62b-4321-b19f-65e868f849eb’,
+                      AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: 'bc6ee2ec-f62b-4321-b19f-65e868f849eb',
                       RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED: '44e2dd30-4303-4f4c-a394-ce0b54af81dd'
                     }"
         template:
