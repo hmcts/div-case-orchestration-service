@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
@@ -51,7 +52,7 @@ public class RespondentSubmittedCallbackWorkflowUTest {
     private RespondentSubmittedCallbackWorkflow classToTest;
 
     @Test
-    public void givenCaseDetail_whenRunWorkflow_thenEmailNotificationTaskCalled() throws WorkflowException {
+    public void givenCaseNotDefended_whenRunWorkflow_thenEmailNotificationTaskCalled() throws WorkflowException {
         Map<String, String> vars = ImmutableMap.of(
                 NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME,
                 NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TestConstants.TEST_USER_LAST_NAME,
@@ -81,7 +82,31 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         verify(emailNotificationTask, times(1))
                 .execute(argThat(argument ->
                         argument.getTransientObject(ID).equals(TestConstants.TEST_CASE_ID)
-                                && argument.getTransientObject(NOTIFICATION_TEMPLATE_VARS).equals(vars)),any());
+                                && argument.getTransientObject(NOTIFICATION_TEMPLATE_VARS).equals(vars)), any());
+        verify(respondentAnswersGenerator).execute(any(), any());
+        verify(caseFormatterAddDocuments).execute(any(), any());
+        assertEquals(caseDetails.getCaseData(), response);
+    }
+
+    @Test
+    public void givenCaseDefended_whenRunWorkflow_thenEmailNotificationTaskNotCalled() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TestConstants.TEST_CASE_ID)
+            .caseData(caseData)
+            .build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(respondentAnswersGenerator.execute(any(), any())).thenReturn(caseDetails.getCaseData());
+        when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(caseDetails.getCaseData());
+
+        Map<String, Object> response = classToTest.run(ccdCallbackRequest, TestConstants.TEST_TOKEN);
+
+        verifyNoMoreInteractions(emailNotificationTask);
+        verify(respondentAnswersGenerator).execute(any(), any());
+        verify(caseFormatterAddDocuments).execute(any(), any());
         assertEquals(caseDetails.getCaseData(), response);
     }
 

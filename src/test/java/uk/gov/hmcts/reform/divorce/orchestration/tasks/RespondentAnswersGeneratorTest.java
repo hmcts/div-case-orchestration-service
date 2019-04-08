@@ -63,7 +63,8 @@ public class RespondentAnswersGeneratorTest {
                 .build();
 
         //given
-        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedRespondentAnswers);
+        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
+            .thenReturn(expectedRespondentAnswers);
 
         //when
         respondentAnswersGenerator.execute(context, payload);
