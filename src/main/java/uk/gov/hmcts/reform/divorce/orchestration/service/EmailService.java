@@ -84,10 +84,6 @@ public class EmailService {
                           String emailDescription,
                           String destinationAddress,
                           Map<String, String> templateParameters) throws NotificationClientException {
-
-        if (destinationAddress == null) {
-            throw new NotificationClientException("No destination email given");
-        }
         String templateName = emailTemplate.name();
         EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateParameters);
 

@@ -34,7 +34,6 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
         this.emailService = emailService;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> data) {
 
