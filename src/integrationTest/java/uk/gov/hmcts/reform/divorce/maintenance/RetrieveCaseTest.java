@@ -45,7 +45,7 @@ public class RetrieveCaseTest extends RetrieveCaseSupport {
         UserDetails userDetails = createCitizenUser();
 
         CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails,
-        Pair.of(D_8_PETITIONER_EMAIL, userDetails.getEmailAddress()));
+            Pair.of(D_8_PETITIONER_EMAIL, userDetails.getEmailAddress()));
 
         Response cosResponse = retrieveCase(userDetails.getAuthToken());
 
