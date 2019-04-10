@@ -23,4 +23,4 @@ target
 .project
 application-*.yml
 application-*.yaml
-application-*.properties
+application-local.properties

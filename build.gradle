@@ -282,20 +282,6 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     finalizedBy aggregate
 }
 
-task functionalAat(type: Test, description: 'Runs the functional tests using AAT config', group: 'Verification') {
-    setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
-    setClasspath(sourceSets.integrationTest.runtimeClasspath)
-    doFirst() {
-        systemProperty 'env', 'aat'
-        systemProperty 'http.proxyHost', 'proxyout.reform.hmcts.net'
-        systemProperty 'http.proxyPort', '8080'
-        systemProperty 'https.proxyHost', 'proxyout.reform.hmcts.net'
-        systemProperty 'https.proxyPort', '8080'
-    }
-
-    finalizedBy aggregate
-}
-
 pitest {
     targetClasses = ['uk.gov.hmcts.reform.divorce.orchestration.*']
     excludedClasses = ['uk.gov.hmcts.reform.divorce.orchestration.config.*',
