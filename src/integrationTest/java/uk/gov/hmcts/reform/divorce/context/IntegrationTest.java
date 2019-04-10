@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.context;
 
+import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationMethodRule;
 import org.assertj.core.util.Strings;
@@ -11,16 +12,16 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.URL;
 import java.util.UUID;
 
+@Slf4j
 @RunWith(SerenityRunner.class)
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
     private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER";
-    private static final String CASE_WORKER_ONLY_USERNAME = "TEST_CASE_WORKER_ONLY";
     private static final String EMAIL_DOMAIN = "@notifications.service.gov.uk";
     private static final String CASE_WORKER_PASSWORD = "genericPassword123";
     private static final String CITIZEN_ROLE = "citizen";
@@ -38,7 +39,6 @@ public abstract class IntegrationTest {
     protected static final String CASE_DETAILS = "case_details";
 
     private UserDetails caseWorkerUser;
-    private UserDetails caseWorkerStrictUser;
 
     @Value("${case.orchestration.service.base.uri}")
     protected String serverUrl;
@@ -53,19 +53,22 @@ public abstract class IntegrationTest {
     public SpringIntegrationMethodRule springMethodIntegration;
 
     protected IntegrationTest() {
+        this.springMethodIntegration = new SpringIntegrationMethodRule();
+    }
+
+    @PostConstruct
+    public void init(){
         if(!Strings.isNullOrEmpty(httpProxy)) {
             try {
-                InetAddress.getByName(httpProxy).isReachable(2000); //validate proxy connectivity
                 URL proxy = new URL(httpProxy);
                 System.setProperty("http.proxyHost", proxy.getHost());
                 System.setProperty("http.proxyPort", Integer.toString(proxy.getPort()));
                 System.setProperty("https.proxyHost", proxy.getHost());
                 System.setProperty("https.proxyPort", Integer.toString(proxy.getPort()));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                log.error("Error setting up proxy", e);
             }
         }
-        this.springMethodIntegration = new SpringIntegrationMethodRule();
     }
 
     protected UserDetails createCaseWorkerUser() {
