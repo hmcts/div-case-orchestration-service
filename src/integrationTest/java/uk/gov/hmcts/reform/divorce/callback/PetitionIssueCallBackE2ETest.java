@@ -66,6 +66,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     private static final String PIN_USER_FIRST_NAME = "pinuserfirstname";
     private static final String PIN_USER_LAST_NAME = "pinuserfirstname";
     private static final String AOS_LETTER_HOLDER_ID = "AosLetterHolderId";
+    private static final String CO_RESPONDENT_LETTER_HOLDER_ID = "CoRespLetterHolderId";
 
     @Autowired
     @Qualifier("documentGeneratorTokenGenerator")
@@ -120,20 +121,18 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE, petitionerUserDetails);
 
         // make payment
-        final PinResponse pinResp = idamTestSupportUtil.generatePin(PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME, petitionerUserDetails.getAuthToken());
-
-        updateCase(caseDetails.getId().toString(), null, PAYMENT_EVENT_ID, ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResp.getUserId()));
+        updateCase(caseDetails.getId().toString(), null, PAYMENT_EVENT_ID);
 
         fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
 
         log.info("case {}", caseDetails.getId().toString());
 
         // put case in aos awaiting
-        fireEvent(caseDetails.getId().toString(), ISSUE_AOS_EVENT_ID);
+        CaseDetails updatedCaseDetails = fireEvent(caseDetails.getId().toString(), ISSUE_AOS_EVENT_ID);
 
         // link the respondent
         final UserDetails respondentUser = createCitizenUser();
-        linkRespondent(respondentUser.getAuthToken(), caseDetails.getId(), pinResp.getPin());
+        linkRespondent(respondentUser.getAuthToken(), caseDetails.getId(), idamTestSupportUtil.getPin(updatedCaseDetails.getCaseData().get(AOS_LETTER_HOLDER_ID)));
 
         // submit respondent response
         submitRespondentAosCase(respondentUser.getAuthToken(), caseDetails.getId(),
@@ -141,7 +140,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
 
         // link the co-respondent
         final UserDetails coRespondentUser = createCitizenUser();
-        linkRespondent(coRespondentUser.getAuthToken(), caseDetails.getId(), pinResp.getPin());
+        linkRespondent(coRespondentUser.getAuthToken(), caseDetails.getId(), idamTestSupportUtil.getPin(updatedCaseDetails.getCaseData().get(CO_RESPONDENT_LETTER_HOLDER_ID)));
 
         // submit co-respondent response
         final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + "co-respondent-answers.json");
