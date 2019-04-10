@@ -43,13 +43,12 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_FIRST_NAME));
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));
 
-            // Only send email to Petitioner when the respondent has not defended the case yet
-            if (!isRespondentDefendedCase(caseData)) {
-                if (isRespondentRespondedCase(caseData)) {
+            if (isRespondentRespondedCase(caseData)) {
+                if (!isRespondentDefendedCase(caseData)) {
                     emailService.sendPetitionerEmailCoRespondentRespondWithAosNoDefend(petitionerEmail, templateVars);
-                } else {
-                    emailService.sendPetitionerEmailCoRespondentRespondWithAosNotStarted(petitionerEmail, templateVars);
                 }
+            } else {
+                emailService.sendPetitionerEmailCoRespondentRespondWithAosNotStarted(petitionerEmail, templateVars);
             }
         }
 
