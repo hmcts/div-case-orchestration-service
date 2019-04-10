@@ -38,16 +38,12 @@ public class AosReceivedCallbackTest extends IntegrationTest {
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
         Map<String, Object> response = cosApiClient.aosReceived(createCaseWorkerUser().getAuthToken(), aosCase);
         Map<String, Object> resData = (Map<String, Object>) response.get(DATA);
-        String caseRefResponse = (String) resData.get(D_8_CASE_REFERENCE);
-        Map<String, Object> caseData = (Map<String, Object>) ((Map<String, Object>)aosCase.get(CASE_DETAILS)).get(CASE_DATA);
-        String json = objectToJson(response);
-        assertEquals(caseData.get(D_8_CASE_REFERENCE), caseRefResponse);
+        String jsonResponse = objectToJson(response);
         assertNotNull(resData);
-        assertThat(json, hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName",
+        assertThat(jsonResponse, hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName",
             is(RESPONDENT_ANSWERS_TEMPLATE_NAME)));
-        assertThat(json, hasJsonPath("$.data.D8caseReference",
+        assertThat(jsonResponse, hasJsonPath("$.data.D8caseReference",
             is("LV17D80100")));
-
     }
 
     @SuppressWarnings("unchecked")
