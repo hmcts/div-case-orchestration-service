@@ -24,6 +24,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -46,13 +49,12 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
                 "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
 
-        String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
         Map<String, String> expectedTemplateVars = new HashMap<>();
-        expectedTemplateVars.put("email address", petitionerEmail);
-        expectedTemplateVars.put("ref", (String) caseData.get(D_8_CASE_REFERENCE));
-        expectedTemplateVars.put("first name", (String) caseData.get(D_8_PETITIONER_FIRST_NAME));
-        expectedTemplateVars.put("last name", (String) caseData.get(D_8_PETITIONER_LAST_NAME));
+        expectedTemplateVars.put(NOTIFICATION_REFERENCE_KEY, (String) caseData.get(D_8_CASE_REFERENCE));
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_FIRST_NAME));
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));
 
+        String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
         when(emailService.sendPetitionerEmailCoRespondentRespondWithAosNotStarted(
             petitionerEmail, expectedTemplateVars)
         ).thenReturn(null);
@@ -74,13 +76,12 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
 
-        String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
         Map<String, String> expectedTemplateVars = new HashMap<>();
-        expectedTemplateVars.put("email address", petitionerEmail);
-        expectedTemplateVars.put("ref", (String) caseData.get(D_8_CASE_REFERENCE));
-        expectedTemplateVars.put("first name", (String) caseData.get(D_8_PETITIONER_FIRST_NAME));
-        expectedTemplateVars.put("last name", (String) caseData.get(D_8_PETITIONER_LAST_NAME));
+        expectedTemplateVars.put(NOTIFICATION_REFERENCE_KEY, (String) caseData.get(D_8_CASE_REFERENCE));
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_FIRST_NAME));
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));
 
+        String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
         when(emailService.sendPetitionerEmailCoRespondentRespondWithAosNoDefend(
             petitionerEmail, expectedTemplateVars)
         ).thenReturn(null);
@@ -101,14 +102,13 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
                 "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
         caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
-        String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
-        DefaultTaskContext context = new DefaultTaskContext();
 
         Map<String, String> expectedTemplateVars = new HashMap<>();
-        expectedTemplateVars.put("email address", petitionerEmail);
-        expectedTemplateVars.put("ref", (String) caseData.get(D_8_CASE_REFERENCE));
-        expectedTemplateVars.put("first name", (String) caseData.get(D_8_PETITIONER_FIRST_NAME));
-        expectedTemplateVars.put("last name", (String) caseData.get(D_8_PETITIONER_LAST_NAME));
+        expectedTemplateVars.put(NOTIFICATION_REFERENCE_KEY, (String) caseData.get(D_8_CASE_REFERENCE));
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_FIRST_NAME));
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));
+
+        DefaultTaskContext context = new DefaultTaskContext();
 
         Map<String, Object> returnedPayload = sendPetitionerCoRespondentRespondedNotificationEmail.execute(context, caseData);
 
