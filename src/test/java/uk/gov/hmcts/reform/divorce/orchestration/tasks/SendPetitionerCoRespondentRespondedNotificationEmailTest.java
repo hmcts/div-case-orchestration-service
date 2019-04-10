@@ -101,6 +101,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
                 "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
+        caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
 
         Map<String, String> expectedTemplateVars = new HashMap<>();
