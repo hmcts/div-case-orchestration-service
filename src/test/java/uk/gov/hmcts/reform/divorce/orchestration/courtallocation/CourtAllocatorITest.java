@@ -53,7 +53,7 @@ public class CourtAllocatorITest {
     @Test
     public void givenAdultery_whenAllocateCase_thenReturnServiceCenter() {
         for (int i = 0 ; i < SAMPLES_NUMBER; i++) {
-            assertNotEquals(SERVICE_CENTER, courtAllocator
+            assertEquals(SERVICE_CENTER, courtAllocator
                 .selectCourtForGivenDivorceFact(ADULTERY));
         }
     }
@@ -61,7 +61,7 @@ public class CourtAllocatorITest {
     @Test
     public void given2YearsSep_whenAllocateCase_thenReturnServiceCenter() {
         for (int i = 0 ; i < SAMPLES_NUMBER; i++) {
-            assertNotEquals(SERVICE_CENTER, courtAllocator
+            assertEquals(SERVICE_CENTER, courtAllocator
                 .selectCourtForGivenDivorceFact(SEPARATION_TWO_YEARS));
         }
     }

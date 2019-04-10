@@ -84,11 +84,11 @@ courtAllocationConfigurationJson: "
                                         },
                                         {
                                           \"courtId\": \"southWest\",
-                                          \"percentageOfTotalCases\": 0.24
+                                          \"percentageOfTotalCases\": 0
                                         },
                                         {
                                           \"courtId\": \"northWest\",
-                                          \"percentageOfTotalCases\": 0.24
+                                          \"percentageOfTotalCases\": 0
                                         },
                                         {
                                           \"courtId\": \"westMidlands\",
@@ -96,7 +96,7 @@ courtAllocationConfigurationJson: "
                                         },
                                         {
                                           \"courtId\": \"serviceCentre\",
-                                          \"percentageOfTotalCases\": 0.52
+                                          \"percentageOfTotalCases\": 1.00
                                         }
                                       ],
                                       \"factSpecificCourtAllocation\": [
@@ -105,7 +105,7 @@ courtAllocationConfigurationJson: "
                                             \"courts\": [
                                               {
                                                 \"courtId\": \"serviceCentre\",
-                                                \"percentageOfCasesWithThisFactCourtWillHandle\": 1
+                                                \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
                                               }
                                             ]
                                           },
@@ -114,7 +114,25 @@ courtAllocationConfigurationJson: "
                                             \"courts\": [
                                               {
                                                 \"courtId\": \"serviceCentre\",
-                                                \"percentageOfCasesWithThisFactCourtWillHandle\": 1
+                                                \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            \"fact\": \"adultery\",
+                                            \"courts\": [
+                                              {
+                                                \"courtId\": \"serviceCentre\",
+                                                \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            \"fact\": \"separation-2-years\",
+                                            \"courts\": [
+                                              {
+                                                \"courtId\": \"serviceCentre\",
+                                                \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
                                               }
                                             ]
                                           },
@@ -123,7 +141,7 @@ courtAllocationConfigurationJson: "
                                             \"courts\": [
                                               {
                                                 \"courtId\": \"serviceCentre\",
-                                                \"percentageOfCasesWithThisFactCourtWillHandle\": 1
+                                                \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
                                               }
                                             ]
                                           }
