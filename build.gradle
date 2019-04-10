@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.run.BootRun
+
 buildscript {
     ext {
         springBootVersion = '2.0.5.RELEASE'
@@ -264,9 +266,32 @@ task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verificatio
     }
 }
 
+task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dependsOn: 'classes', group: 'Application') {
+    environment "http_proxy", "http://proxyout.reform.hmcts.net:8080"
+    doFirst() {
+        main = bootJar.mainClassName
+        classpath = sourceSets.main.runtimeClasspath
+        systemProperty 'spring.profiles.active', 'aat'
+    }
+}
+
 task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
+
+    finalizedBy aggregate
+}
+
+task functionalAat(type: Test, description: 'Runs the functional tests using AAT config', group: 'Verification') {
+    setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
+    setClasspath(sourceSets.integrationTest.runtimeClasspath)
+    doFirst() {
+        systemProperty 'env', 'aat'
+        systemProperty 'http.proxyHost', 'proxyout.reform.hmcts.net'
+        systemProperty 'http.proxyPort', '8080'
+        systemProperty 'https.proxyHost', 'proxyout.reform.hmcts.net'
+        systemProperty 'https.proxyPort', '8080'
+    }
 
     finalizedBy aggregate
 }
