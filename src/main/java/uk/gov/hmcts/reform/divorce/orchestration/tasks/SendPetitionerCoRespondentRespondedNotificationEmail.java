@@ -14,6 +14,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -35,15 +38,14 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
 
         if (StringUtils.isNotBlank(petitionerEmail)) {
             Map<String, String> templateVars = new HashMap<>();
-
-            templateVars.put("email address", petitionerEmail);
-            templateVars.put("ref", (String) caseData.get(D_8_CASE_REFERENCE));
-            templateVars.put("first name", (String) caseData.get(D_8_PETITIONER_FIRST_NAME));
-            templateVars.put("last name", (String) caseData.get(D_8_PETITIONER_LAST_NAME));
+            
+            templateVars.put(NOTIFICATION_REFERENCE_KEY, (String) caseData.get(D_8_CASE_REFERENCE));
+            templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_FIRST_NAME));
+            templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));
 
             // Only send email to Petitioner when the respondent has not defended the case yet
-            if (!YES_VALUE.equalsIgnoreCase((String) caseData.get(RESP_WILL_DEFEND_DIVORCE))) {
-                if (YES_VALUE.equalsIgnoreCase((String) caseData.get(RECEIVED_AOS_FROM_RESP))) {
+            if (!isRespondentDefendedCase(caseData)) {
+                if (isRespondentRespondedCase(caseData)) {
                     emailService.sendPetitionerEmailCoRespondentRespondWithAosNoDefend(petitionerEmail, templateVars);
                 } else {
                     emailService.sendPetitionerEmailCoRespondentRespondWithAosNotStarted(petitionerEmail, templateVars);
@@ -54,4 +56,11 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
         return caseData;
     }
 
+    private boolean isRespondentDefendedCase(Map<String, Object> caseData) {
+        return YES_VALUE.equalsIgnoreCase((String) caseData.get(RESP_WILL_DEFEND_DIVORCE));
+    }
+
+    private boolean isRespondentRespondedCase(Map<String, Object> caseData) {
+        return YES_VALUE.equalsIgnoreCase((String) caseData.get(RECEIVED_AOS_FROM_RESP));
+    }
 }
