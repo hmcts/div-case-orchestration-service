@@ -49,7 +49,7 @@ feature-toggle:
       baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://localhost:4028}
   toggle:
     bulk-printer-toggle-name: "divorce_bulk_print"
-    feature-toggle-520: ${FEATURE_TOGGLE_520:false}
+    feature-toggle-520: ${FEATURE_TOGGLE_520:true}
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
@@ -90,11 +90,11 @@ courtAllocationConfigurationJson: "
                                       },
                                       {
                                         \"courtId\": \"southWest\",
-                                        \"percentageOfTotalCases\": 0.24
+                                        \"percentageOfTotalCases\": 0
                                       },
                                       {
                                         \"courtId\": \"northWest\",
-                                        \"percentageOfTotalCases\": 0.24
+                                        \"percentageOfTotalCases\": 0
                                       },
                                       {
                                         \"courtId\": \"westMidlands\",
@@ -102,7 +102,7 @@ courtAllocationConfigurationJson: "
                                       },
                                       {
                                         \"courtId\": \"serviceCentre\",
-                                        \"percentageOfTotalCases\": 0.52
+                                        \"percentageOfTotalCases\": 1.00
                                       }
                                     ],
                                     \"factSpecificCourtAllocation\": [
@@ -111,7 +111,7 @@ courtAllocationConfigurationJson: "
                                           \"courts\": [
                                             {
                                               \"courtId\": \"serviceCentre\",
-                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 1
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
                                             }
                                           ]
                                         },
@@ -120,7 +120,25 @@ courtAllocationConfigurationJson: "
                                           \"courts\": [
                                             {
                                               \"courtId\": \"serviceCentre\",
-                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 1
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          \"fact\": \"adultery\",
+                                          \"courts\": [
+                                            {
+                                              \"courtId\": \"serviceCentre\",
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          \"fact\": \"separation-2-years\",
+                                          \"courts\": [
+                                            {
+                                              \"courtId\": \"serviceCentre\",
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
                                             }
                                           ]
                                         },
@@ -129,7 +147,7 @@ courtAllocationConfigurationJson: "
                                           \"courts\": [
                                             {
                                               \"courtId\": \"serviceCentre\",
-                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 1
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
                                             }
                                           ]
                                         }

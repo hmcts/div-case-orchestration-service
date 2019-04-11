@@ -43,17 +43,17 @@ public class CourtAllocationConfiguratorIntegrationTest {
             hasEntry(equalTo(ADULTERY), comparesEqualTo(new BigDecimal("0.11")))
         ));
         assertThat(courtAllocationConfiguration.getDesiredWorkloadPerCourt(), allOf(
-            hasEntry(equalTo(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("0.52"))),
-            hasEntry(equalTo(SOUTHWEST.getId()), comparesEqualTo(new BigDecimal("0.24"))),
-            hasEntry(equalTo(NORTHWEST.getId()), comparesEqualTo(new BigDecimal("0.24"))),
-            hasEntry(equalTo(WESTMIDLANDS.getId()), comparesEqualTo(new BigDecimal("0"))),
-            hasEntry(equalTo(EASTMIDLANDS.getId()), comparesEqualTo(new BigDecimal("0")))
+            hasEntry(equalTo(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("1"))),
+            hasEntry(equalTo(SOUTHWEST.getId()), comparesEqualTo(BigDecimal.ZERO)),
+            hasEntry(equalTo(NORTHWEST.getId()), comparesEqualTo(BigDecimal.ZERO)),
+            hasEntry(equalTo(WESTMIDLANDS.getId()), comparesEqualTo(BigDecimal.ZERO)),
+            hasEntry(equalTo(EASTMIDLANDS.getId()), comparesEqualTo(BigDecimal.ZERO))
         ));
 
         assertThat(courtAllocationConfiguration.getSpecificCourtsAllocationPerFact(), allOf(
-            hasEntry(is(UNREASONABLE_BEHAVIOUR), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(BigDecimal.ONE))),
-            hasEntry(is(DESERTION), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(BigDecimal.ONE))),
-            hasEntry(is(SEPARATION_FIVE_YEARS), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(BigDecimal.ONE)))
+            hasEntry(is(UNREASONABLE_BEHAVIOUR), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("0.20")))),
+            hasEntry(is(DESERTION), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("0.20")))),
+            hasEntry(is(SEPARATION_FIVE_YEARS), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("0.20"))))
 
         ));
     }
