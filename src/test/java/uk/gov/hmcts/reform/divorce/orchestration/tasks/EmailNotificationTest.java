@@ -5,12 +5,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -39,7 +41,7 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService).sendSaveDraftConfirmationEmail(TEST_USER_EMAIL);
+        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, anyString());
     }
 
     @Test
@@ -52,7 +54,7 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService).sendSaveDraftConfirmationEmail(TEST_USER_EMAIL);
+        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, anyString());
     }
 
     @Test
@@ -65,7 +67,7 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService, never()).sendSaveDraftConfirmationEmail(TEST_USER_EMAIL);
+        verify(emailService, never()).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, anyString());
     }
 
     @Test
@@ -78,7 +80,7 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService, never()).sendSaveDraftConfirmationEmail(TEST_USER_EMAIL);
+        verify(emailService, never()).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, anyString());
     }
 
     @Test
@@ -90,6 +92,6 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService, never()).sendSaveDraftConfirmationEmail(TEST_USER_EMAIL);
+        verify(emailService, never()).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, anyString());
     }
 }
