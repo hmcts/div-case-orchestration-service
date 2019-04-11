@@ -47,7 +47,7 @@ variable "common_tags" {
 }
 
 variable "feature_toggle_520" {
-  default = false
+  default = true
 }
 
 variable "uk_gov_notify_email_templates" {
