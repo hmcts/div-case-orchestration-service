@@ -7,7 +7,7 @@ public enum CourtEnum {
     WESTMIDLANDS("westMidlands", "West Midlands Regional Divorce Centre", "AA02"),
     SOUTHWEST("southWest", "South West Regional Divorce Centre", "AA03"),
     NORTHWEST("northWest", "North West Regional Divorce Centre", "AA04"),
-    SERVICE_CENTER("serviceCentre","Courts and Tribunals Service Centre", "AA01");
+    SERVICE_CENTER("serviceCentre","Courts and Tribunals Service Centre", "AA07");
 
     private String id;
     private String displayName;
