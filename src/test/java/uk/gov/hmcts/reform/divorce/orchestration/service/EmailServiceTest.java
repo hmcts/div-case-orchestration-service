@@ -48,7 +48,7 @@ public class EmailServiceTest {
             eq(emailTemplates.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
             eq(EMAIL_ADDRESS),
             eq(emailTemplateVars.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
-            "submission notification");
+            anyString());
     }
 
     @Test

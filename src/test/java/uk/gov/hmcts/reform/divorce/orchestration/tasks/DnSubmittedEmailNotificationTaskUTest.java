@@ -78,7 +78,7 @@ public class DnSubmittedEmailNotificationTaskUTest {
         Map<String, Object> payload = mock(Map.class);
 
         doThrow(new NotificationClientException(new Exception(TEST_ERROR)))
-                .when(emailService).sendEmail(any(), any(), any(), any());
+                .when(emailService).sendEmailAndReturnExceptionIfFails(any(), any(), any(), any());
 
         Map<String, Object> taskResponse = target.execute(context, payload);
 

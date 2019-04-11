@@ -134,7 +134,7 @@ public class SendPetitionerNotificationEmailTest {
                 TEST_USER_EMAIL,
                 EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
                 expectedTemplateVars,
-                "resp does not admit adultery update notification - no reply from co-resp"))
+                "resp does not admit adultery update notification"))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
@@ -143,7 +143,7 @@ public class SendPetitionerNotificationEmailTest {
             TEST_USER_EMAIL,
             EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
             expectedTemplateVars,
-            "resp does not admit adultery update notification - no reply from co-resp");
+            "resp does not admit adultery update notification");
     }
 
     @Test
@@ -212,7 +212,7 @@ public class SendPetitionerNotificationEmailTest {
                 TEST_USER_EMAIL,
                 EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
                 expectedTemplateVars,
-                "resp does not admit adultery update notification - no reply from co-resp"))
+                "resp does not admit adultery update notification"))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
