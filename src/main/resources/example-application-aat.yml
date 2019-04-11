@@ -35,7 +35,7 @@ uk:
   gov:
     notify:
       api:
-        key: ${GOVUK_NOTIFY_KEY:replace_me}
+        key: ${UK_GOV_NOTIFY_API_KEY:replace_me}
 
 idam:
   api:
