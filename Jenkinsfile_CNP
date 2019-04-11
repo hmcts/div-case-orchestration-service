@@ -55,13 +55,5 @@ withPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
-    before('buildinfra:prod') {
-        error('Halting pipeline before prod stages - code freeze')
-    }
- 
-    before('deploy:prod') {
-        error('Halting pipeline before prod stages - code freeze')
-    }
-        
     enableSlackNotifications('#div-dev')
 }

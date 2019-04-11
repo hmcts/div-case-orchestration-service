@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCED_WHO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
@@ -36,9 +37,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-
 @RunWith(SpringRunner.class)
 public class SendPetitionerNotificationEmailTest {
 
@@ -130,6 +131,30 @@ public class SendPetitionerNotificationEmailTest {
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
 
         verify(emailService).sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(
+                TEST_USER_EMAIL,
+                expectedTemplateVars);
+    }
+
+    @Test
+    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdulteryCoRespNoReplyAnd520FeatureToggleEnabled() {
+
+        ReflectionTestUtils.setField(sendPetitionerUpdateNotificationsEmail, "featureToggle520", true);
+
+        testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_ADULTERY);
+        testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+        testData.put(D_8_CO_RESPONDENT_NAMED, YES_VALUE);
+        testData.put(RECEIVED_AOS_FROM_CO_RESP, NO_VALUE);
+
+        expectedTemplateVars.put("relationship", TEST_RELATIONSHIP);
+
+        when(emailService.sendPetitionerRespDoesNotAdmitAdulteryCoRespNoReplyNotificationEmail(
+                TEST_USER_EMAIL,
+                expectedTemplateVars))
+                .thenReturn(null);
+
+        assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
+
+        verify(emailService).sendPetitionerRespDoesNotAdmitAdulteryCoRespNoReplyNotificationEmail(
                 TEST_USER_EMAIL,
                 expectedTemplateVars);
     }
