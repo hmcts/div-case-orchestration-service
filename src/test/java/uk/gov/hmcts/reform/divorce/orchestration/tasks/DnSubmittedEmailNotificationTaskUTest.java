@@ -18,7 +18,6 @@ import java.util.Map;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -67,7 +66,7 @@ public class DnSubmittedEmailNotificationTaskUTest {
         verify(emailService).sendEmailAndReturnExceptionIfFails(TEST_USER_EMAIL,
             EmailTemplateNames.DN_SUBMISSION.name(),
             notificationTemplateVars,
-            anyString());
+            "DN Submission");
 
     }
 
@@ -104,7 +103,10 @@ public class DnSubmittedEmailNotificationTaskUTest {
 
         target.execute(context, payload);
 
-        verify(emailService).sendEmailAndReturnExceptionIfFails(null, EmailTemplateNames.DN_SUBMISSION.name(), notificationTemplateVars, any());
+        verify(emailService).sendEmailAndReturnExceptionIfFails(null,
+            EmailTemplateNames.DN_SUBMISSION.name(),
+            notificationTemplateVars,
+            "DN Submission");
 
     }
 

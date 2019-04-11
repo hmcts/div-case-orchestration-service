@@ -42,13 +42,13 @@ public class EmailServiceTest {
         emailService.sendEmail(EMAIL_ADDRESS,
             EmailTemplateNames.APPLIC_SUBMISSION.name(),
             null,
-            anyString());
+            "submission notification");
 
         verify(mockClient).sendEmail(
             eq(emailTemplates.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
             eq(EMAIL_ADDRESS),
             eq(emailTemplateVars.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
-            anyString());
+            "submission notification");
     }
 
     @Test
@@ -57,7 +57,10 @@ public class EmailServiceTest {
         doThrow(new NotificationClientException(new Exception("Exception inception")))
             .when(mockClient).sendEmail(anyString(), anyString(), eq(null), anyString());
         try {
-            emailService.sendEmail(EMAIL_ADDRESS, EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(), null, anyString());
+            emailService.sendEmail(EMAIL_ADDRESS,
+                EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
+                null,
+                "resp does not consent to 2 year separation update notification");
         } catch (Exception e) {
             fail();
         }

@@ -49,7 +49,7 @@ public class TaskCommonsTest {
                     "test description");
 
         taskCommons.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
-                "test",
+                "test description",
                 "test@hmcts.net",
                 templateParameters);
     }

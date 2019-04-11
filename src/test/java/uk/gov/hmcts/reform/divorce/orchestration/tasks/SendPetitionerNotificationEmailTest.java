@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
@@ -107,12 +106,18 @@ public class SendPetitionerNotificationEmailTest {
 
     @Test
     public void shouldCallEmailServiceForGenericUpdate() {
-        when(emailService.sendEmail(TEST_USER_EMAIL, EmailTemplateNames.GENERIC_UPDATE.name(), expectedTemplateVars, anyString()))
+        when(emailService.sendEmail(TEST_USER_EMAIL,
+            EmailTemplateNames.GENERIC_UPDATE.name(),
+            expectedTemplateVars,
+            "generic update notification"))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.GENERIC_UPDATE.name(), expectedTemplateVars, anyString());
+        verify(emailService).sendEmail(TEST_USER_EMAIL,
+            EmailTemplateNames.GENERIC_UPDATE.name(),
+            expectedTemplateVars,
+            "generic update notification");
     }
 
     @Test
@@ -129,7 +134,7 @@ public class SendPetitionerNotificationEmailTest {
                 TEST_USER_EMAIL,
                 EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
                 expectedTemplateVars,
-                anyString()))
+                "resp does not admit adultery update notification - no reply from co-resp"))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
@@ -138,7 +143,7 @@ public class SendPetitionerNotificationEmailTest {
             TEST_USER_EMAIL,
             EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
             expectedTemplateVars,
-            anyString());
+            "resp does not admit adultery update notification - no reply from co-resp");
     }
 
     @Test
@@ -157,7 +162,7 @@ public class SendPetitionerNotificationEmailTest {
                 TEST_USER_EMAIL,
                 EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
                 expectedTemplateVars,
-                anyString()))
+                "resp does not admit adultery update notification - no reply from co-resp"))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
@@ -166,7 +171,7 @@ public class SendPetitionerNotificationEmailTest {
                 TEST_USER_EMAIL,
                 EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
                 expectedTemplateVars,
-                anyString());
+                "resp does not admit adultery update notification - no reply from co-resp");
     }
 
     @Test
@@ -183,7 +188,7 @@ public class SendPetitionerNotificationEmailTest {
                 TEST_USER_EMAIL,
                 EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
                 expectedTemplateVars,
-                anyString()))
+                "resp does not consent to 2 year separation update notification"))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
@@ -192,7 +197,7 @@ public class SendPetitionerNotificationEmailTest {
                 TEST_USER_EMAIL,
                 EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
                 expectedTemplateVars,
-                anyString());
+                "resp does not consent to 2 year separation update notification");
     }
 
     @Test
@@ -207,23 +212,32 @@ public class SendPetitionerNotificationEmailTest {
                 TEST_USER_EMAIL,
                 EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
                 expectedTemplateVars,
-                anyString()))
+                "resp does not admit adultery update notification - no reply from co-resp"))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
-        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.GENERIC_UPDATE.name(), expectedTemplateVars, anyString());
+        verify(emailService).sendEmail(TEST_USER_EMAIL,
+            EmailTemplateNames.GENERIC_UPDATE.name(),
+            expectedTemplateVars,
+            "generic update notification");
     }
 
     @Test
     public void shouldCallEmailServiceWithNoCaseIdFormatWhenNoUnableToFormatIdForGenericUpdate() {
         expectedTemplateVars.replace("CCD reference", D8_CASE_ID);
 
-        when(emailService.sendEmail(TEST_USER_EMAIL, EmailTemplateNames.GENERIC_UPDATE.name(), expectedTemplateVars, anyString()))
+        when(emailService.sendEmail(TEST_USER_EMAIL,
+            EmailTemplateNames.GENERIC_UPDATE.name(),
+            expectedTemplateVars,
+            "generic update notification"))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.GENERIC_UPDATE.name(), expectedTemplateVars, anyString());
+        verify(emailService).sendEmail(TEST_USER_EMAIL,
+            EmailTemplateNames.GENERIC_UPDATE.name(),
+            expectedTemplateVars,
+            "generic update notification");
     }
 
     @Test
@@ -231,12 +245,18 @@ public class SendPetitionerNotificationEmailTest {
         expectedTemplateVars.put("RDC name", TEST_COURT_DISPLAY_NAME);
         expectedTemplateVars.replace("CCD reference", UNFORMATTED_CASE_ID);
 
-        when(emailService.sendEmail(TEST_USER_EMAIL, EmailTemplateNames.APPLIC_SUBMISSION.name(), expectedTemplateVars, anyString()))
+        when(emailService.sendEmail(TEST_USER_EMAIL,
+            EmailTemplateNames.APPLIC_SUBMISSION.name(),
+            expectedTemplateVars,
+            "submission notification"))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerSubmissionNotificationEmail.execute(context, testData));
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.APPLIC_SUBMISSION.name(), expectedTemplateVars, anyString());
+        verify(emailService).sendEmail(TEST_USER_EMAIL,
+            EmailTemplateNames.APPLIC_SUBMISSION.name(),
+            expectedTemplateVars,
+            "submission notification");
     }
 
     @Test
@@ -245,12 +265,18 @@ public class SendPetitionerNotificationEmailTest {
         expectedTemplateVars.replace("CCD reference", UNFORMATTED_CASE_ID);
         expectedTemplateVars.put("RDC name", SERVICE_CENTRE_DISPLAY_NAME);
 
-        when(emailService.sendEmail(TEST_USER_EMAIL, EmailTemplateNames.APPLIC_SUBMISSION.name(), expectedTemplateVars, anyString()))
+        when(emailService.sendEmail(TEST_USER_EMAIL,
+            EmailTemplateNames.APPLIC_SUBMISSION.name(),
+            expectedTemplateVars,
+            "submission notification"))
             .thenReturn(null);
 
         assertEquals(testData, sendPetitionerSubmissionNotificationEmail.execute(context, testData));
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.APPLIC_SUBMISSION.name(), expectedTemplateVars, anyString());
+        verify(emailService).sendEmail(TEST_USER_EMAIL,
+            EmailTemplateNames.APPLIC_SUBMISSION.name(),
+            expectedTemplateVars,
+            "submission notification");
     }
 
     @Test
@@ -258,11 +284,17 @@ public class SendPetitionerNotificationEmailTest {
         expectedTemplateVars.replace("CCD reference", UNFORMATTED_CASE_ID);
         expectedTemplateVars.put("RDC name", TEST_COURT_DISPLAY_NAME);
 
-        when(emailService.sendEmail(TEST_USER_EMAIL, EmailTemplateNames.APPLIC_SUBMISSION.name(), expectedTemplateVars, anyString()))
+        when(emailService.sendEmail(TEST_USER_EMAIL,
+            EmailTemplateNames.APPLIC_SUBMISSION.name(),
+            expectedTemplateVars,
+            "submission notification"))
             .thenReturn(null);
 
         assertEquals(testData, sendPetitionerSubmissionNotificationEmail.execute(context, testData));
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.APPLIC_SUBMISSION.name(), expectedTemplateVars, anyString());
+        verify(emailService).sendEmail(TEST_USER_EMAIL,
+            EmailTemplateNames.APPLIC_SUBMISSION.name(),
+            expectedTemplateVars,
+            "submission notification");
     }
 }

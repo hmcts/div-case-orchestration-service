@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -41,7 +40,7 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, anyString());
+        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, "draft saved confirmation");
     }
 
     @Test
@@ -54,7 +53,7 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, anyString());
+        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, "draft saved confirmation");
     }
 
     @Test
@@ -67,7 +66,7 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService, never()).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, anyString());
+        verify(emailService, never()).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, "draft saved confirmation");
     }
 
     @Test
@@ -80,7 +79,7 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService, never()).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, anyString());
+        verify(emailService, never()).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, "draft saved confirmation");
     }
 
     @Test
@@ -92,6 +91,6 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService, never()).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, anyString());
+        verify(emailService, never()).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null, "draft saved confirmation");
     }
 }
