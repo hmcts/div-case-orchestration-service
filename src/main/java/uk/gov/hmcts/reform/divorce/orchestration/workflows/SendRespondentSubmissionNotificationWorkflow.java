@@ -41,8 +41,8 @@ public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflo
         } else if (NO_VALUE.equalsIgnoreCase(defended)) {
             tasks = new Task[]{sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask};
         } else {
-            String errorMessage = String.format("%s field doesn't contain a valid value: %s",
-                RESP_WILL_DEFEND_DIVORCE, defended);
+            String errorMessage = String.format("%s field doesn't contain a valid value: %s. Case id: %s",
+                RESP_WILL_DEFEND_DIVORCE, defended, ccdCallbackRequest.getCaseDetails().getCaseId());
             log.error(errorMessage);
             throw new WorkflowException(errorMessage);
         }
