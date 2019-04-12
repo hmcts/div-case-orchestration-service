@@ -18,11 +18,13 @@
             <cpe>cpe:/a:pivotal_software:spring_security_oauth:1.0.8</cpe>
             <cpe>cpe:/a:pivotal:spring_security_oauth:1.0.8</cpe>
             <cpe>cpe:/a:pivotal_software:spring_security:5.1.3</cpe>
+            <cpe>cpe:/a:pivotal_software:spring_security:5.0.8</cpe>
             <cve>CVE-2011-2731</cve>
             <cve>CVE-2011-2732</cve>
             <cve>CVE-2012-5055</cve>
             <cve>CVE-2018-1260</cve>
             <cve>CVE-2018-1258</cve>
+            <cve>CVE-2019-3795</cve>
         </suppress>
         <suppress>
             <notes><![CDATA[
