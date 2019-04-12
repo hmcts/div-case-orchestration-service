@@ -41,4 +41,9 @@ public class DefaultTaskContext implements TaskContext {
     public Object getTransientObject(String key) {
         return transientObjects.get(key);
     }
+
+    @Override
+    public <T> T computeTransientObjectIfAbsent(final String key, final T defaultVal) {
+        return (T) transientObjects.computeIfAbsent(key, k -> defaultVal);
+    }
 }

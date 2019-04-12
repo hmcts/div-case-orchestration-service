@@ -10,21 +10,19 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
-import static java.util.Collections.singletonList;
+import static java.util.Collections.emptySet;
+import static java.util.UUID.randomUUID;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DOC_URL;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_INVITATION_TEMPLATE_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_TEMPLATE_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseFormatterAddDocumentsTest {
@@ -35,105 +33,69 @@ public class CaseFormatterAddDocumentsTest {
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Test
-    public void givenAllDocumentsExist_whenExecute_thenReturnExpected() {
+    public void passesAllDocumentsInOrderToFormatter() {
         final GeneratedDocumentInfo petition = GeneratedDocumentInfo.builder()
-            .fileName(TEST_FILENAME)
-            .url(TEST_DOC_URL)
+            .fileName(randomUUID().toString())
             .build();
 
         final GeneratedDocumentInfo aosInvitation = GeneratedDocumentInfo.builder()
-            .fileName(TEST_FILENAME)
-            .url(TEST_DOC_URL)
+            .fileName(randomUUID().toString())
             .build();
 
         final GeneratedDocumentInfo coRespondentInvitation = GeneratedDocumentInfo.builder()
-            .fileName(TEST_FILENAME)
-            .url(TEST_DOC_URL)
+            .fileName(randomUUID().toString())
             .build();
 
-        final Map<String, Object> payload = new HashMap<>();
-        final TaskContext context = new DefaultTaskContext();
+        final Map<String, Object> inboundPayload = new HashMap<>();
+        final DefaultTaskContext context = new DefaultTaskContext();
+
+        final LinkedHashSet<GeneratedDocumentInfo> allDocuments = new LinkedHashSet<>();
+        allDocuments.add(petition);
+        allDocuments.add(aosInvitation);
+        allDocuments.add(coRespondentInvitation);
+
+        context.setTransientObject(DOCUMENT_COLLECTION, allDocuments);
+
         final  DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
-                .caseData(payload)
+                .caseData(inboundPayload)
                 .documents(ImmutableList.of(petition, aosInvitation, coRespondentInvitation))
-            .build();
+                .build();
 
-        context.setTransientObject(MINI_PETITION_TEMPLATE_NAME, petition);
-        context.setTransientObject(RESPONDENT_INVITATION_TEMPLATE_NAME, aosInvitation);
-        context.setTransientObject(CO_RESPONDENT_INVITATION_TEMPLATE_NAME, coRespondentInvitation);
+        final Map<String, Object> payloadWithDocumentsAttached = new HashMap<>();
+        when(caseFormatterClient.addDocuments(documentUpdateRequest)).thenReturn(payloadWithDocumentsAttached);
 
-        //given
-        when(caseFormatterClient.addDocuments(documentUpdateRequest)).thenReturn(payload);
+        Map<String, Object> response = caseFormatterAddDocuments.execute(context, inboundPayload);
 
-        //when
-        Map<String, Object> response = caseFormatterAddDocuments.execute(context, payload);
-
-        assertThat(response, is(payload));
+        assertThat(response, is(payloadWithDocumentsAttached));
 
         verify(caseFormatterClient).addDocuments(documentUpdateRequest);
     }
 
     @Test
-    public void givenOnlyMiniPetitionExists_whenExecute_thenReturnExpected() {
-        final GeneratedDocumentInfo petition = GeneratedDocumentInfo.builder()
-            .fileName(TEST_FILENAME)
-            .url(TEST_DOC_URL)
-            .build();
+    public void formatterNotCalledIfDocumentCollectionIsNull() {
+        final DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(DOCUMENT_COLLECTION, null);
 
         final Map<String, Object> payload = new HashMap<>();
-        final TaskContext context = new DefaultTaskContext();
-        final  DocumentUpdateRequest documentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .caseData(payload)
-                .documents(singletonList(petition))
-                .build();
-
-        context.setTransientObject(MINI_PETITION_TEMPLATE_NAME, petition);
-
-        //given
-        when(caseFormatterClient.addDocuments(documentUpdateRequest)).thenReturn(payload);
-
-        //when
         Map<String, Object> response = caseFormatterAddDocuments.execute(context, payload);
 
         assertThat(response, is(payload));
 
-        verify(caseFormatterClient).addDocuments(documentUpdateRequest);
+        verifyZeroInteractions(caseFormatterClient);
     }
 
     @Test
-    public void givenAOSExistsWithoutCoRespondent_whenExecute_thenReturnExpected() {
-        final GeneratedDocumentInfo petition = GeneratedDocumentInfo.builder()
-            .fileName(TEST_FILENAME)
-            .url(TEST_DOC_URL)
-            .build();
-
-        final GeneratedDocumentInfo aosInvitation = GeneratedDocumentInfo.builder()
-            .fileName(TEST_FILENAME)
-            .url(TEST_DOC_URL)
-            .build();
+    public void formatterNotCalledIfDocumentCollectionIsEmpty() {
+        final DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(DOCUMENT_COLLECTION, emptySet());
 
         final Map<String, Object> payload = new HashMap<>();
-        final TaskContext context = new DefaultTaskContext();
-        final  DocumentUpdateRequest documentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .caseData(payload)
-                .documents(ImmutableList.of(petition, aosInvitation))
-                .build();
-
-        context.setTransientObject(MINI_PETITION_TEMPLATE_NAME, petition);
-        context.setTransientObject(RESPONDENT_INVITATION_TEMPLATE_NAME, aosInvitation);
-
-
-        //given
-        when(caseFormatterClient.addDocuments(documentUpdateRequest)).thenReturn(payload);
-
-        //when
         Map<String, Object> response = caseFormatterAddDocuments.execute(context, payload);
 
         assertThat(response, is(payload));
 
-        verify(caseFormatterClient).addDocuments(documentUpdateRequest);
+        verifyZeroInteractions(caseFormatterClient);
     }
+
 }
