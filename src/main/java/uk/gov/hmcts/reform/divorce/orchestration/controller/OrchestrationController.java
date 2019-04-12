@@ -65,8 +65,7 @@ public class OrchestrationController {
             + "attached to the case",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Internal Server Error")
-    })
+        @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> petitionIssuedCallback(
         @RequestHeader(value = "Authorization") String authorizationToken,
         @RequestParam(value = GENERATE_AOS_INVITATION, required = false)
@@ -96,8 +95,7 @@ public class OrchestrationController {
             + " to the case",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Internal Server Error")
-    })
+        @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity paymentUpdate(@RequestBody PaymentUpdate paymentUpdate) throws WorkflowException {
 
         orchestrationService.update(paymentUpdate);
@@ -217,7 +215,8 @@ public class OrchestrationController {
         @RequestBody
         @NotNull Map<String, Object> payload,
         @RequestParam(value = "sendEmail", required = false)
-        @ApiParam(value = "Determines if the petitioner should receive the notification that the draft has been saved") final String sendEmail) throws WorkflowException {
+        @ApiParam(value = "Determines if the petitioner should receive the notification that the draft has been saved") final String sendEmail)
+        throws WorkflowException {
 
         // Deprecation Warning: sendEmail as String instead of Boolean to be backwards compatible with current PFE
         return ResponseEntity.ok(orchestrationService.saveDraft(payload, authorizationToken, sendEmail));
