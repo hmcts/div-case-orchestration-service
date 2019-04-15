@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,9 +16,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.util.Sets.newLinkedHashSet;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_INVITATION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_FEE_FOR_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_FEE_JSON_KEY;
@@ -45,9 +48,11 @@ public class CoRespondentLetterGeneratorTest {
     private CoRespondentLetterGenerator coRespondentLetterGenerator;
 
     @Test
-    public void executeShouldReturnUpdatedContextWithDocumentInformation() {
-        final GeneratedDocumentInfo coRespondentInvitation =
+    public void callsDocumentGeneratorAndStoresGeneratedDocument() {
+        final GeneratedDocumentInfo expectedCoRespondentInvitation =
             GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_CO_RESPONDENT_INVITATION)
+                .fileName(TEST_CO_RESPONDENT_AOS_FILE_NAME)
                 .build();
 
         final Map<String, Object> payload = new HashMap<>();
@@ -79,17 +84,15 @@ public class CoRespondentLetterGeneratorTest {
                 .build();
 
         //given
-        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(coRespondentInvitation);
+        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedCoRespondentInvitation);
 
         //when
         coRespondentLetterGenerator.execute(context, payload);
 
-        GeneratedDocumentInfo response =
-            (GeneratedDocumentInfo)context.getTransientObject(CO_RESPONDENT_INVITATION_TEMPLATE_NAME);
+        final LinkedHashSet<GeneratedDocumentInfo> documentCollection =
+            (LinkedHashSet<GeneratedDocumentInfo>)context.getTransientObject(DOCUMENT_COLLECTION);
 
-        //then
-        assertThat(response.getDocumentType(), is(DOCUMENT_TYPE_CO_RESPONDENT_INVITATION));
-        assertThat(response.getFileName(), is(TEST_CO_RESPONDENT_AOS_FILE_NAME));
+        assertThat(documentCollection, CoreMatchers.is(newLinkedHashSet(expectedCoRespondentInvitation)));
 
         verify(documentGeneratorClient).generatePDF(generateDocumentRequest, AUTH_TOKEN);
     }
