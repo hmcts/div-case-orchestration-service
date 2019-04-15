@@ -171,7 +171,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .getCode();
 
             Payment payment = Payment.builder()
-                .paymentChannel(ONLINE)
+                .paymentChannel(Optional.ofNullable(paymentUpdate.getChannel()).orElse(ONLINE))
                 .paymentReference(paymentUpdate.getReference())
                 .paymentSiteId(paymentUpdate.getSiteId())
                 .paymentStatus(paymentUpdate.getStatus())
