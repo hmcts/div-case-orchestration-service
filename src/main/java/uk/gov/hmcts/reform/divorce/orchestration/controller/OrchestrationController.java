@@ -360,7 +360,7 @@ public class OrchestrationController {
         try {
             returnedCaseData = orchestrationService.sendRespondentSubmissionNotificationEmail(ccdCallbackRequest);
         } catch (WorkflowException e) {
-            log.error("Failed to call service for caseId {}", caseId);
+            log.error("Failed to call service for caseId {}", caseId, e);
             return ResponseEntity.ok(CcdCallbackResponse.builder()
                 .errors(singletonList(e.getMessage()))
                 .build());
