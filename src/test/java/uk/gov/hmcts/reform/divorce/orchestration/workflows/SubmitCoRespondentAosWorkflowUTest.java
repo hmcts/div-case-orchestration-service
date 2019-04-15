@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DuplicateCaseValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToAosCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCoRespondentAosCase;
 
@@ -25,6 +26,9 @@ public class SubmitCoRespondentAosWorkflowUTest {
     private FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData;
 
     @Mock
+    private DuplicateCaseValidationTask duplicateCaseValidationTask;
+
+    @Mock
     private SubmitCoRespondentAosCase submitCoRespondentAosCase;
 
     @InjectMocks
@@ -39,6 +43,7 @@ public class SubmitCoRespondentAosWorkflowUTest {
         final ImmutablePair<String, Object> authTokenPair = new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
         final Task[] tasks = new Task[]{
+            duplicateCaseValidationTask,
             formatDivorceSessionToAosCaseData,
             submitCoRespondentAosCase
         };

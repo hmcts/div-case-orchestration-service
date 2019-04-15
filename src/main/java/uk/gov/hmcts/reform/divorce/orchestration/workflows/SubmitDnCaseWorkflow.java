@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DuplicateCaseValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToDnCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitDnCase;
 
@@ -23,11 +24,15 @@ public class SubmitDnCaseWorkflow extends DefaultWorkflow<Map<String, Object>> {
     @Autowired
     private SubmitDnCase submitDnCase;
 
+    @Autowired
+    private DuplicateCaseValidationTask duplicateCaseValidationTask;
+
     public Map<String, Object> run(Map<String, Object> payload,
                                    String authToken,
                                    String caseId) throws WorkflowException {
         return this.execute(
             new Task[] {
+                duplicateCaseValidationTask,
                 formatDivorceSessionToDnCaseData,
                 submitDnCase
             },

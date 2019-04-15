@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DuplicateCaseValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToAosCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitRespondentAosCase;
 
@@ -17,20 +18,21 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SubmitRespondentAosCaseWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData;
-
-    private final SubmitRespondentAosCase submitRespondentAosCase;
+    @Autowired
+    FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData;
 
     @Autowired
-    public SubmitRespondentAosCaseWorkflow(final FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData,
-                                           final SubmitRespondentAosCase submitRespondentAosCase) {
-        this.formatDivorceSessionToAosCaseData = formatDivorceSessionToAosCaseData;
-        this.submitRespondentAosCase = submitRespondentAosCase;
-    }
+    SubmitRespondentAosCase submitRespondentAosCase;
 
-    public Map<String, Object> run(Map<String, Object> payload, String authToken, String caseId) throws WorkflowException {
+    @Autowired
+    private DuplicateCaseValidationTask duplicateCaseValidationTask;
+
+    public Map<String, Object> run(Map<String, Object> payload,
+                                   String authToken,
+                                   String caseId) throws WorkflowException {
         return this.execute(
             new Task[] {
+                duplicateCaseValidationTask,
                 formatDivorceSessionToAosCaseData,
                 submitRespondentAosCase
             },

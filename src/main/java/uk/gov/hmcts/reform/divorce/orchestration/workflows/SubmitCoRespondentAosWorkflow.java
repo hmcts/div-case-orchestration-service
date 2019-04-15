@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DuplicateCaseValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToAosCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCoRespondentAosCase;
 
@@ -16,20 +17,20 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SubmitCoRespondentAosWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData;
-
-    private final SubmitCoRespondentAosCase submitCoRespondentAosCaseTask;
+    @Autowired
+    FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData;
 
     @Autowired
-    public SubmitCoRespondentAosWorkflow(final FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData,
-                                         final SubmitCoRespondentAosCase submitCoRespondentAosCaseTask) {
-        this.formatDivorceSessionToAosCaseData = formatDivorceSessionToAosCaseData;
-        this.submitCoRespondentAosCaseTask = submitCoRespondentAosCaseTask;
-    }
+    SubmitCoRespondentAosCase submitCoRespondentAosCaseTask;
 
-    public Map<String, Object> run(final Map<String, Object> divorceSession, final String authToken) throws WorkflowException {
+    @Autowired
+    private DuplicateCaseValidationTask duplicateCaseValidationTask;
+
+    public Map<String, Object> run(final Map<String, Object> divorceSession,
+                                   final String authToken) throws WorkflowException {
         return this.execute(
             new Task[] {
+                duplicateCaseValidationTask,
                 formatDivorceSessionToAosCaseData,
                 submitCoRespondentAosCaseTask
             },

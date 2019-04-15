@@ -83,6 +83,7 @@ public class OrchestrationConstants {
     public static final String DN_AWAITING = "DNAwaiting";
     public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
+    public static final String ISSUED = "Issued";
 
 
     // CCD Respondent Fields

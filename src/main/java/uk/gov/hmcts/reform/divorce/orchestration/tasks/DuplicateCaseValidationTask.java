@@ -17,6 +17,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow.SELECTED_COURT;
 
 @Component
@@ -24,6 +27,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWor
 public class DuplicateCaseValidationTask implements Task<Map<String, Object>> {
 
     private final CaseMaintenanceClient caseMaintenanceClient;
+    private Boolean receivedAosFromResp = false;
+    private Boolean receivedAosFromCoResp = false;
 
     @Autowired
     public DuplicateCaseValidationTask(CaseMaintenanceClient caseMaintenanceClient) {
@@ -36,19 +41,26 @@ public class DuplicateCaseValidationTask implements Task<Map<String, Object>> {
             String transientObject = (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY);
             CaseDetails caseDetails = caseMaintenanceClient.getCase(transientObject);
 
-            if (caseDetails != null && (
-                    AWAITING_PAYMENT.equalsIgnoreCase(caseDetails.getState())
-                            || AWAITING_HWF_DECISION.equalsIgnoreCase(caseDetails.getState()))) {
-                payload.put(ID, caseDetails.getCaseId());
-                context.setTransientObject(SELECTED_COURT, caseDetails.getCaseData().get(D_8_DIVORCE_UNIT));
+            if (caseDetails != null) {
+                Map<String, Object> caseData = caseDetails.getCaseData();
+                String d8DivorceUnit = (String) caseData.get(D_8_DIVORCE_UNIT);
+                String caseState = caseDetails.getState();
+                getReceivedAnswers(caseData);
 
-                //we fail the task to skip the next tasks in the workflow and return the existing case details
-                context.setTaskFailed(true);
-                log.warn("Case ID {} in Awaiting Payment/Awaiting HWF already exists for this user", caseDetails.getCaseId());
-            } else if (caseDetails != null) {
-                log.trace("Existing Case ID {} found but in {} state", caseDetails.getCaseId(), caseDetails.getState());
-            } else {
-                log.trace("Existing Case ID not found for user");
+                if (AWAITING_PAYMENT.equalsIgnoreCase(caseState)
+                        || AWAITING_HWF_DECISION.equalsIgnoreCase(caseState)
+                        || receivedAosFromResp
+                        || receivedAosFromCoResp) {
+                        // DO THE SAME HERE FOR DN ANSWER?
+                    payload.put(ID, caseDetails.getCaseId());
+                    context.setTransientObject(SELECTED_COURT, d8DivorceUnit);
+
+                    //we fail the task to skip the next tasks in the workflow and return the existing case details
+                    context.setTaskFailed(true);
+                    log.warn("User already has existing case - Case ID {}", caseDetails.getCaseId());
+                } else {
+                    log.trace("Existing Case ID not found for user");
+                }
             }
         } catch (FeignException e) {
             if (HttpStatus.NOT_FOUND.value() != e.status()) {
@@ -57,5 +69,17 @@ public class DuplicateCaseValidationTask implements Task<Map<String, Object>> {
             }
         }
         return payload;
+    }
+
+    private void getReceivedAnswers(Map<String, Object> caseData){
+        if (caseData.get(RECEIVED_AOS_FROM_RESP) != null
+                && ((String) caseData.get(RECEIVED_AOS_FROM_RESP)).equalsIgnoreCase(YES_VALUE)) {
+            receivedAosFromResp = true;
+        }
+
+        if (caseData.get(RECEIVED_AOS_FROM_CO_RESP) != null
+                && ((String) caseData.get(RECEIVED_AOS_FROM_CO_RESP)).equalsIgnoreCase(YES_VALUE)) {
+            receivedAosFromCoResp = true;
+        }
     }
 }
