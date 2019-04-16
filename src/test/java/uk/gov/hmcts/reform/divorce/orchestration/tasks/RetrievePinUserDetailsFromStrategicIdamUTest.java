@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import feign.Request;
 import feign.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -177,6 +178,7 @@ public class RetrievePinUserDetailsFromStrategicIdamUTest {
 
     private Response buildResponse(HttpStatus status, List<String> locationHeaders) {
         return Response.builder()
+            .request(Request.create(Request.HttpMethod.GET, "http//example.com", Collections.emptyMap(), null))
             .status(status.value())
             .headers(Collections.singletonMap(LOCATION_HEADER, locationHeaders))
             .build();
