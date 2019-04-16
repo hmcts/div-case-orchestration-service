@@ -24,32 +24,32 @@ public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflo
 
     @Autowired
     private SendRespondentSubmissionNotificationForDefendedDivorceEmail
-            sendRespondentSubmissionNotificationForDefendedDivorceEmailTask;
+        sendRespondentSubmissionNotificationForDefendedDivorceEmailTask;
 
     @Autowired
     private SendRespondentSubmissionNotificationForUndefendedDivorceEmail
-            sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
+        sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
-        String defended = (String)caseData.get(RESP_WILL_DEFEND_DIVORCE);
+        String defended = (String) caseData.get(RESP_WILL_DEFEND_DIVORCE);
 
         Task[] tasks;
 
         if (YES_VALUE.equalsIgnoreCase(defended)) {
-            tasks = new Task[]{sendRespondentSubmissionNotificationForDefendedDivorceEmailTask};
+            tasks = new Task[] {sendRespondentSubmissionNotificationForDefendedDivorceEmailTask};
         } else if (NO_VALUE.equalsIgnoreCase(defended)) {
-            tasks = new Task[]{sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask};
+            tasks = new Task[] {sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask};
         } else {
             String errorMessage = String.format("%s field doesn't contain a valid value: %s",
                 RESP_WILL_DEFEND_DIVORCE, defended);
-            log.error(errorMessage);
+            log.error(String.format("%s. %n Case id: %s.", errorMessage, ccdCallbackRequest.getCaseDetails().getCaseId()));
             throw new WorkflowException(errorMessage);
         }
 
         return execute(tasks,
-                caseData,
-                ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId())
+            caseData,
+            ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId())
         );
     }
 }

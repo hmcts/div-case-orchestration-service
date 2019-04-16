@@ -1,0 +1,14 @@
+{
+  "case_details": {
+    "id": "0123456789012345",
+    "case_data": {
+      "D8PetitionerEmail": "petitioner@justice.uk",
+      "D8caseReference": "HR290831",
+      "D8PetitionerFirstName": "James",
+      "D8PetitionerLastName": "Johnson",
+      "D8DivorceCostsClaim": "YES",
+      "CostsClaimGranted": "YES",
+      "DateOfHearing": "2019-04-21"
+    }
+  }
+}
