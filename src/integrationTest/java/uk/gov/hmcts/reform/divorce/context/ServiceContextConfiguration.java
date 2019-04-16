@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import com.google.common.collect.ImmutableList;
 import feign.Feign;
+import feign.Request;
 import feign.RequestInterceptor;
+import feign.RequestTemplate;
 import feign.codec.Decoder;
 import feign.jackson.JacksonEncoder;
 import org.apache.http.entity.ContentType;
@@ -90,7 +92,11 @@ public class ServiceContextConfiguration {
 
     @Bean
     public RequestInterceptor requestInterceptor() {
-        return template -> template.header(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+        return (RequestTemplate template) -> {
+            if(template.request().httpMethod() == Request.HttpMethod.POST) {
+                template.header(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+            }
+        };
     }
 
     @Bean

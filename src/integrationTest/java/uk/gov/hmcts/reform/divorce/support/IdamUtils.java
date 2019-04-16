@@ -25,7 +25,7 @@ public class IdamUtils {
     @Value("${auth.idam.client.redirectUri}")
     private String idamRedirectUri;
 
-    @Value("${auth.idam.client.secret}")
+    @Value("${auth2.client.secret}")
     private String idamSecret;
 
     public PinResponse generatePin(String firstName, String lastName, String authToken) {

@@ -18,6 +18,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR_CONTENT;
 
 public class GlobalExceptionHandlerUTest {
     private static  final int STATUS_CODE = HttpStatus.BAD_REQUEST.value();
@@ -31,7 +32,7 @@ public class GlobalExceptionHandlerUTest {
         ResponseEntity<Object> actual = classUnderTest.handleBadRequestException(feignException);
 
         assertEquals(STATUS_CODE, actual.getStatusCodeValue());
-        assertEquals(TEST_ERROR, actual.getBody());
+        assertEquals(TEST_ERROR + " - " + TEST_ERROR_CONTENT, actual.getBody());
     }
 
     @Test
@@ -53,7 +54,7 @@ public class GlobalExceptionHandlerUTest {
         ResponseEntity<Object> actual = classUnderTest.handleWorkFlowException(workflowException);
 
         assertEquals(STATUS_CODE, actual.getStatusCodeValue());
-        assertEquals(TEST_ERROR, actual.getBody());
+        assertEquals(TEST_ERROR + " - " + TEST_ERROR_CONTENT, actual.getBody());
     }
 
     @Test
@@ -91,7 +92,7 @@ public class GlobalExceptionHandlerUTest {
         ResponseEntity<Object> actual = classUnderTest.handleWorkFlowException(workflowException);
 
         assertEquals(STATUS_CODE, actual.getStatusCodeValue());
-        assertEquals(TEST_ERROR, actual.getBody());
+        assertEquals(TEST_ERROR + " - " + TEST_ERROR_CONTENT, actual.getBody());
     }
 
     @Test
@@ -156,6 +157,7 @@ public class GlobalExceptionHandlerUTest {
 
         when(feignException.status()).thenReturn(GlobalExceptionHandlerUTest.STATUS_CODE);
         when(feignException.getMessage()).thenReturn(TEST_ERROR);
+        when(feignException.contentUTF8()).thenReturn(TEST_ERROR_CONTENT);
         return feignException;
     }
 

@@ -40,7 +40,7 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         String respondentFirstName = getMandatoryPropertyValueAsString(caseDataPayload, RESP_FIRST_NAME_CCD_FIELD);
         String respondentLastName = getMandatoryPropertyValueAsString(caseDataPayload, RESP_LAST_NAME_CCD_FIELD);
         String petitionerInferredGender = getMandatoryPropertyValueAsString(caseDataPayload,
-                D_8_INFERRED_PETITIONER_GENDER);
+            D_8_INFERRED_PETITIONER_GENDER);
         String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
         String divorceUnitKey = getMandatoryPropertyValueAsString(caseDataPayload, DIVORCE_UNIT_JSON_KEY);
         Court court = taskCommons.getCourt(divorceUnitKey);
@@ -59,9 +59,9 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         templateFields.put("form submission date limit", formSubmissionDateLimit);
 
         taskCommons.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
-                EMAIL_DESCRIPTION,
-                respondentEmailAddress,
-                templateFields);
+            EMAIL_DESCRIPTION,
+            respondentEmailAddress,
+            templateFields);
 
         return caseDataPayload;
     }
