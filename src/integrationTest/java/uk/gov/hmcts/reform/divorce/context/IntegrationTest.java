@@ -79,10 +79,9 @@ public abstract class IntegrationTest {
             idamTestSupportUtil.createUser(username, password, userGroup, role);
 
             try {
-                //give the user some time to warm up..
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                // calling generate token too soon might fail, so we sleep..
+                Thread.sleep(500);
+            } catch (InterruptedException ignored) {
             }
 
             final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
