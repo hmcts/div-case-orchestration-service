@@ -80,7 +80,7 @@ public abstract class IntegrationTest {
 
             try {
                 // calling generate token too soon might fail, so we sleep..
-                Thread.sleep(500);
+                Thread.sleep(1000);
             } catch (InterruptedException ignored) {
             }
 
