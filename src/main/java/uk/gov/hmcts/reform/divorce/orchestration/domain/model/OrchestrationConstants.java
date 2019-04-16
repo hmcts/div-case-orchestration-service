@@ -53,6 +53,9 @@ public class OrchestrationConstants {
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
+    public static final String DIVORCE_COSTS_CLAIM_CCD_FIELD = "D8DivorceCostsClaim";
+    public static final String DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD = "CostsClaimGranted";
+    public static final String DATE_OF_HEARING_CCD_FIELD = "DateOfHearing";
     public static final String YES_VALUE = "Yes";
     public static final String NO_VALUE = "No";
     public static final String ISSUE_DATE = "IssueDate";
@@ -160,6 +163,8 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT = "co-respondentaosinvitation%s";
     public static final String CO_RESPONDENT_INVITATION_TEMPLATE_NAME = "co-respondentinvitation";
     public static final String PETITION_ISSUE_FEE_FOR_LETTER = "petitionIssueFee";
+    public static final String DOCUMENT_COLLECTION = "documentCollection";
+
 
     // Fees
     public static final String CURRENCY = "GBP";
