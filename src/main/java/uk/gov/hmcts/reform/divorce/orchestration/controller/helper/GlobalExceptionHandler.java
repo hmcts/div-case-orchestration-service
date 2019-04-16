@@ -65,6 +65,8 @@ class GlobalExceptionHandler {
         if (status == HttpStatus.MULTIPLE_CHOICES.value()) {
             return ResponseEntity.status(exception.status()).body(null);
         }
-        return ResponseEntity.status(exception.status()).body(exception.getMessage());
+        return ResponseEntity.status(exception.status()).body(
+                String.format("%s - %s", exception.getMessage(), exception.contentUTF8())
+        );
     }
 }

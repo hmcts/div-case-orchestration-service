@@ -19,7 +19,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 import static uk.gov.hmcts.reform.divorce.util.RestUtil.postToRestService;
 
@@ -69,6 +71,10 @@ public class BulkPrintCallbackTest extends IntegrationTest {
         );
         ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders,
             ResourceLoader.objectToJson(ccdCallbackRequest)).getBody();
+        assertThat("Response body is not a JSON: " + body.print(),
+                body.print(),
+                isJson()
+        );
         String result = ((Map) body.jsonPath().get("data")).get("dueDate").toString();
         assertEquals("Due date is not as expected ",
             LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
