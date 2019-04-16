@@ -51,7 +51,7 @@ public class DuplicateCaseValidationTask implements Task<Map<String, Object>> {
                         || AWAITING_HWF_DECISION.equalsIgnoreCase(caseState)
                         || receivedAosFromResp
                         || receivedAosFromCoResp) {
-                        // DO THE SAME HERE FOR DN ANSWER?
+                    // DO THE SAME HERE FOR DN ANSWER?
                     payload.put(ID, caseDetails.getCaseId());
                     context.setTransientObject(SELECTED_COURT, d8DivorceUnit);
 
@@ -71,7 +71,7 @@ public class DuplicateCaseValidationTask implements Task<Map<String, Object>> {
         return payload;
     }
 
-    private void getReceivedAnswers(Map<String, Object> caseData){
+    private void getReceivedAnswers(Map<String, Object> caseData) {
         if (caseData.get(RECEIVED_AOS_FROM_RESP) != null
                 && ((String) caseData.get(RECEIVED_AOS_FROM_RESP)).equalsIgnoreCase(YES_VALUE)) {
             receivedAosFromResp = true;
