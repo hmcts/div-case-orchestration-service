@@ -78,6 +78,13 @@ public abstract class IntegrationTest {
         synchronized (this) {
             idamTestSupportUtil.createUser(username, password, userGroup, role);
 
+            try {
+                //give the user some time to warm up..
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
 
             final String userId = idamTestSupportUtil.getUserId(authToken);
