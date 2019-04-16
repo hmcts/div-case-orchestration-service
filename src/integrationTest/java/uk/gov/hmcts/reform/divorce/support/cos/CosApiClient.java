@@ -86,4 +86,12 @@ public interface CosApiClient {
                                    @RequestBody JsonNode caseDataContent
     );
 
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/case-linked-for-hearing",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> caseLinkedForHearing(@RequestHeader(AUTHORIZATION) String authorisation,
+                                             @RequestBody Map<String, Object> caseDataContent);
+
 }

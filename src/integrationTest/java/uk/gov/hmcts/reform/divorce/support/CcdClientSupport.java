@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 
 public class CcdClientSupport {
+
     private static final String DIVORCE_CASE_SUBMISSION_EVENT_SUMMARY = "Divorce case submission event";
     private static final String DIVORCE_CASE_SUBMISSION_EVENT_DESCRIPTION = "Submitting Divorce Case";
 
@@ -22,7 +23,7 @@ public class CcdClientSupport {
     private String caseType;
 
     @Value("${ccd.eventid.create}")
-    private String CcdCallbackRequestId;
+    private String ccdCallbackRequestId;
 
     @Autowired
     private CoreCaseDataApi coreCaseDataApi;
@@ -40,7 +41,7 @@ public class CcdClientSupport {
             userDetails.getId(),
             jurisdictionId,
             caseType,
-            CcdCallbackRequestId);
+            ccdCallbackRequestId);
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
