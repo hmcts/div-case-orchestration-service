@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import feign.FeignException;
+import feign.Request;
 import feign.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +53,7 @@ public class DuplicateCaseValidationTaskTest {
     @Test
     public void givenGetCaseThrowsANotFoundException_whenExecute_thenDoNothing() {
         Response response = Response.builder()
+                .request(Request.create(Request.HttpMethod.GET, "http//example.com", Collections.emptyMap(), null))
                 .headers(Collections.emptyMap())
                 .status(HttpStatus.NOT_FOUND.value()).build();
 
@@ -69,6 +71,7 @@ public class DuplicateCaseValidationTaskTest {
     @Test(expected = FeignException.class)
     public void givenGetCaseThrowsAServerException_whenExecute_thenThrowException() {
         Response response = Response.builder()
+                .request(Request.create(Request.HttpMethod.GET, "http//example.com", Collections.emptyMap(), null))
                 .headers(Collections.emptyMap())
                 .status(HttpStatus.GATEWAY_TIMEOUT.value()).build();
 

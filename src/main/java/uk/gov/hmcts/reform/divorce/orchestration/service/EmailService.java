@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailToSend;
@@ -102,7 +100,7 @@ public class EmailService {
     }
 
     private void sendEmail(EmailToSend emailToSend, String emailDescription) throws NotificationClientException {
-        log.debug("Attempting to send {} email. Reference ID: {}", emailDescription, emailToSend.getReferenceId());
+        log.info("Attempting to send {} email. Reference ID: {}", emailDescription, emailToSend.getReferenceId());
         emailClient.sendEmail(
                 emailToSend.getTemplateId(),
                 emailToSend.getDestinationEmailAddress(),
