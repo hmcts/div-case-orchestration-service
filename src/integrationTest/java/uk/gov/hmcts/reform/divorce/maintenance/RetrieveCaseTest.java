@@ -50,7 +50,7 @@ public class RetrieveCaseTest extends RetrieveCaseSupport {
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertEquals(String.valueOf(caseDetails.getId()), cosResponse.path(CASE_ID_KEY));
-        assertEquals("eastMidlands", cosResponse.path(COURTS_KEY));
+        assertEquals("serviceCentre", cosResponse.path(COURTS_KEY));
         assertEquals("AwaitingPayment", cosResponse.path(STATE_KEY));
         String responseJson = cosResponse.getBody().asString();
         String responseJsonData = objectMapper.readTree(responseJson)
