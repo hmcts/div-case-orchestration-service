@@ -70,7 +70,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         Response cosResponse = linkRespondent(petitionerUserDetails.getAuthToken(), 1L, pinResponse.getPin());
 
-        assertEquals(HttpStatus.BAD_REQUEST.value(), cosResponse.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED.value(), cosResponse.getStatusCode());
     }
 
     @Test
