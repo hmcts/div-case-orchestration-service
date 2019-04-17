@@ -1,0 +1,64 @@
+
+case:
+  formatter:
+    service:
+      api:
+        baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://div-cfs-aat.service.core-compute-aat.internal}
+  validation:
+    service:
+      api:
+        baseurl: ${CASE_VALIDATION_SERVICE_API_BASEURL:http://div-vs-aat.service.core-compute-aat.internal}
+  maintenance:
+    service:
+      api:
+        baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://div-cms-aat.service.core-compute-aat.internal}
+
+fees-and-payments:
+  service:
+    api:
+      baseurl: ${FEES_AND_PAYMENTS_SERVICE_API_BASEURL:http://div-fps-aat.service.core-compute-aat.internal}
+
+payment:
+  service:
+    api:
+      baseurl: ${PAYMENT_API_BASEURL:http://payment-api-aat.service.core-compute-aat.internal}
+
+feature-toggle:
+  service:
+    api:
+      baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://rpe-feature-toggle-api-aat.service.core-compute-aat.internal}
+
+send-letter:
+  url: ${SEND_LETTER_SERIVCE_BASEURL:http://rpe-send-letter-service-aat.service.core-compute-aat.internal}
+
+uk:
+  gov:
+    notify:
+      api:
+        key: ${UK_GOV_NOTIFY_API_KEY:divorce_preprod_live_key-b86e6469-4927-4f50-a029-6ddb523330cf-2409ba37-b5e6-4f03-b052-7d0f0986888d}
+
+idam:
+  api:
+    url: ${IDAM_API_URL:https://idam-api.aat.platform.hmcts.net}
+    redirect-url: ${IDAM_API_REDIRECT_URL:https://div-pfe-aat.service.core-compute-aat.internal/authenticated}
+  citizen:
+    username: ${IDAM_CITIZEN_USERNAME:DivCitizenUser@AAT.com}
+    password: ${IDAM_CITIZEN_PASSWORD:DivPassword1234}
+  caseworker:
+    username: ${IDAM_CASEWORKER_USERNAME:DivCaseWorkerUser@AAT.com}
+    password: ${IDAM_CASEWORKER_PASSWORD:DivPassword1234}
+  s2s-auth:
+    url: ${SERVICE_AUTH_PROVIDER_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
+    secret: ${SERVICE_AUTH_SECRET:YTYWFBBMBAQV53AB}
+
+auth2:
+  client:
+    id: divorce
+    secret: ${AUTH2_CLIENT_SECRET:thUphEveC2Ekuqedaneh4jEcRuba4t2t}
+
+document:
+  generator:
+    service:
+      api:
+        baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://div-dgs-aat.service.core-compute-aat.internal}
+
