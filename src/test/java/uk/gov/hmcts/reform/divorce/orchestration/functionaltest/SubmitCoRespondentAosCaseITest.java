@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -70,6 +70,8 @@ public class SubmitCoRespondentAosCaseITest {
     private static final String UPDATE_CONTEXT_PATH = "/casemaintenance/version/1/updateCase/" + TEST_CASE_ID + "/";
     private static final String RETRIEVE_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
 
+    private final LocalDateTime today = LocalDateTime.now();
+
     @Autowired
     private MockMvc webClient;
 
@@ -81,6 +83,12 @@ public class SubmitCoRespondentAosCaseITest {
 
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(4010);
+
+    @Before
+    public void setup() {
+        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
+        when(clock.getZone()).thenReturn(UTC);
+    }
 
     @Test
     public void givenNoAuthToken_whenSubmitCoRespondentAos_thenReturnBadRequest() throws Exception {
@@ -186,11 +194,6 @@ public class SubmitCoRespondentAosCaseITest {
 
     @Test
     public void dueDateIsRecalculatedWhenCoRespondentIsDefending() throws Exception {
-        final LocalDateTime today = LocalDateTime.now();
-
-        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(UTC);
-
         final Map<String, Object> originalSubmissionData = new HashMap<>();
         originalSubmissionData.putAll(getCoRespondentSubmitData());
         originalSubmissionData.put(CO_RESPONDENT_DEFENDS_DIVORCE, "YES");
@@ -219,8 +222,10 @@ public class SubmitCoRespondentAosCaseITest {
     }
 
     private Map<String, Object> getCoRespondentSubmitData() {
-        return ImmutableMap.of(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE,
-            RECEIVED_AOS_FROM_CO_RESP_DATE, CcdUtil.getCurrentDate());
+        return ImmutableMap.of(
+            RECEIVED_AOS_FROM_CO_RESP, YES_VALUE,
+            RECEIVED_AOS_FROM_CO_RESP_DATE, today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        );
     }
 
     private void stubFormatterServerEndpoint(HttpStatus status, Map<String, Object> caseData, String response) {
