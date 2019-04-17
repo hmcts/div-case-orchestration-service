@@ -114,10 +114,7 @@ public class SendPetitionerNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdulteryAnd520FeatureToggleEnabled() {
-
-        ReflectionTestUtils.setField(sendPetitionerUpdateNotificationsEmail, "featureToggle520", true);
-
+    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdultery() {
         testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_ADULTERY);
         testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
 
@@ -136,10 +133,7 @@ public class SendPetitionerNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdulteryCoRespNoReplyAnd520FeatureToggleEnabled() {
-
-        ReflectionTestUtils.setField(sendPetitionerUpdateNotificationsEmail, "featureToggle520", true);
-
+    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdulteryCoRespNoReply() {
         testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_ADULTERY);
         testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
         testData.put(D_8_CO_RESPONDENT_NAMED, YES_VALUE);
@@ -160,10 +154,7 @@ public class SendPetitionerNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallAppropriateEmailServiceWhenRespDoesNotConsentTo2YrsSeparationAnd520FeatureToggleEnabled() {
-
-        ReflectionTestUtils.setField(sendPetitionerUpdateNotificationsEmail, "featureToggle520", true);
-
+    public void shouldCallAppropriateEmailServiceWhenRespDoesNotConsentTo2YrsSeparation() {
         testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_2_YEAR_SEP);
         testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
 
@@ -179,23 +170,6 @@ public class SendPetitionerNotificationEmailTest {
         verify(emailService).sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(
                 TEST_USER_EMAIL,
                 expectedTemplateVars);
-    }
-
-    @Test
-    public void shouldCallGenericEmailServiceWhen520FeatureToggleDisabled() {
-
-        ReflectionTestUtils.setField(sendPetitionerUpdateNotificationsEmail, "featureToggle520", false);
-
-        testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_ADULTERY);
-        testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
-
-        when(emailService.sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(
-                TEST_USER_EMAIL,
-                expectedTemplateVars))
-                .thenReturn(null);
-
-        assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
-        verify(emailService).sendPetitionerGenericUpdateNotificationEmail(TEST_USER_EMAIL, expectedTemplateVars);
     }
 
     @Test
