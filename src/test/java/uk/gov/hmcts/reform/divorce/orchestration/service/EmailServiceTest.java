@@ -147,4 +147,28 @@ public class EmailServiceTest {
                 anyString());
     }
 
+
+    @Test
+    public void sendPetitionerEmailCoRespondentRespondWithAosNoDefendShouldCallTheEmailClientToSendAnEmail()
+            throws NotificationClientException {
+        emailService.sendPetitionerEmailCoRespondentRespondWithAosNoDefend(EMAIL_ADDRESS, null);
+
+        verify(mockClient).sendEmail(
+                eq(emailTemplates.get(EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name())),
+                eq(EMAIL_ADDRESS),
+                eq(emailTemplateVars.get(EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name())),
+                anyString());
+    }
+
+    @Test
+    public void sendPetitionerEmailCoRespondentRespondWithAosNotStartedShouldCallTheEmailClientToSendAnEmail()
+            throws NotificationClientException {
+        emailService.sendPetitionerEmailCoRespondentRespondWithAosNotStarted(EMAIL_ADDRESS, null);
+
+        verify(mockClient).sendEmail(
+                eq(emailTemplates.get(EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name())),
+                eq(EMAIL_ADDRESS),
+                eq(emailTemplateVars.get(EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name())),
+                anyString());
+    }
 }

@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCoRespondentRespondedNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
 
 import java.util.Collections;
@@ -57,6 +58,9 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
 
     @Mock
     private GenericEmailNotification emailTask;
+
+    @Mock
+    private SendPetitionerCoRespondentRespondedNotificationEmail petitionerEmailTask;
 
     @Mock
     private TaskCommons taskCommons;
