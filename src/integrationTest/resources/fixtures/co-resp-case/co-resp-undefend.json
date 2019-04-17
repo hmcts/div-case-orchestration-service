@@ -8,7 +8,10 @@
       "D8DivorceUnit" : "eastMidlands",
       "D8ReasonForDivorceAdultery3rdPartyLName" : "user last namé with accent",
       "D8caseReference" : "LV17D80100",
-      "CoRespEmailAddress" : "simulate-delivered@notifications.service.gov.uk"
+      "CoRespEmailAddress" : "simulate-delivered@notifications.service.gov.uk",
+      "D8PetitionerEmail" : "simulate-delivered@notifications.service.gov.uk",
+      "D8PetitionerFirstName" : "Ted",
+      "D8PetitionerLastName" : "Jones"
     },
     "id" : "1517833758870511",
     "state" : "AwaitingAOS"

@@ -17,6 +17,9 @@ locals {
   petitioner_fe_baseurl             = "https://div-pfe-${local.local_env}.service.core-compute-${local.local_env}.internal"
   feature_toggle_baseurl            = "http://rpe-feature-toggle-api-${local.local_env}.service.core-compute-${local.local_env}.internal"
   send_letter_service_baseurl       = "http://rpe-send-letter-service-${local.local_env}.service.core-compute-${local.local_env}.internal"
+  
+  uk_gov_notify_email_templates     = "{APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c', APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED: 'e07cbeb8-c2e0-4ba5-84ba-b9bd1ab04b0a', APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND: '369169ef-c6cb-428c-abbd-427aaa50c2a3', AOS_RECEIVED_NO_ADMIT_ADULTERY: '015fb73a-3be2-49d8-8ed8-a4078025dae3', AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: 'bc6ee2ec-f62b-4321-b19f-65e868f849eb', AOS_RECEIVED_NO_CONSENT_2_YEARS: '845d0114-0f74-43a4-b11c-8ebeceb01c5b', CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION: '19a8844e-8112-4578-aa4c-dea6c054ab35', CO_RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION: '486c86ff-a0e2-4eb1-a84c-687641d746de', DN_SUBMISSION: 'edf3bce9-f63a-4be0-93a9-d0c80dff7983', GENERIC_UPDATE: '6ee6ec29-5e88-4516-99cb-2edc30256575', SAVE_DRAFT:'14074c06-87f1-4678-9238-4d71e741eb57', RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION: 'eac41143-b296-4879-ba60-a0ea6f97c757', RESPONDENT_SUBMISSION_CONSENT: '594dc500-93ca-4f4b-931b-acbf9ee83d25', RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED: '44e2dd30-4303-4f4c-a394-ce0b54af81dd', RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION: '277fd3f3-2fdb-4c79-9354-1b3db8d44cca', PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION: '9937c8bc-dc7a-4210-a25b-20aceb82d48d', PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION: '686ce418-6d76-48ce-b903-a87d2b832125'}"
+
   previewVaultName = "${var.raw_product}-aat"
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
@@ -62,7 +65,7 @@ module "div-cos" {
     IDAM_CASEWORKER_PASSWORD                        = "${data.azurerm_key_vault_secret.auth-idam-caseworker-password.value}"
     IDAM_STRATEGIC_ENABLED                          = "${var.idam_strategic_enabled}"
     UK_GOV_NOTIFY_API_KEY                           = "${data.azurerm_key_vault_secret.uk-gov-notify-api-key.value}"
-    UK_GOV_NOTIFY_EMAIL_TEMPLATES                   = "${var.uk_gov_notify_email_templates}"
+    UK_GOV_NOTIFY_EMAIL_TEMPLATES                   = "${local.uk_gov_notify_email_templates}"
     UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS               = "${var.uk_gov_notify_email_template_vars}"
     FEATURE_TOGGLE_520                              = "${var.feature_toggle_520}"
     AOS_RESPONDED_DAYS_TO_COMPLETE                  = "${var.aos_responded_days_to_complete}"
