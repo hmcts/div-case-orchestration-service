@@ -1,0 +1,12 @@
+{
+  "event_id": "TBC",
+  "case_details": {
+    "id": 999999999,
+    "case_data": {
+      "D8PetitionerEmail": "simulate-delivered@notifications.service.gov.uk",
+      "D8PetitionerFirstName": "John",
+      "D8PetitionerLastName": "Smith",
+      "D8caseReference": "LV17D80100"
+    }
+  }
+}
