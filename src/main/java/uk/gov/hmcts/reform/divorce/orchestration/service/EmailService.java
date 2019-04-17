@@ -88,6 +88,26 @@ public class EmailService {
         return sendEmailAndReturnErrorsInResponse(emailToSend,"clarification requested by LA from petitioner email notification");
     }
 
+    public Map<String, Object> sendPetitionerEmailCoRespondentRespondWithAosNoDefend(
+        String destinationAddress,
+        Map<String, String> templateVars) {
+        String templateName = EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name();
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+        return sendEmailAndReturnErrorsInResponse(
+            emailToSend,
+            "co-respondent responded when aos is undefended");
+    }
+
+    public Map<String, Object> sendPetitionerEmailCoRespondentRespondWithAosNotStarted(
+        String destinationAddress,
+        Map<String, String> templateVars) {
+        String templateName = EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name();
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+        return sendEmailAndReturnErrorsInResponse(
+            emailToSend,
+            "co-respondent responded but respondent has not");
+    }
+
     public void sendEmail(EmailTemplateNames emailTemplate,
                           String destinationAddress,
                           Map<String, String> templateParameters) throws NotificationClientException {

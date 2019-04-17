@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCoRespondentRespondedNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
@@ -42,6 +43,9 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
 
     @Autowired
     private final GenericEmailNotification emailTask;
+
+    @Autowired
+    private final SendPetitionerCoRespondentRespondedNotificationEmail petitionerEmailTask;
 
     @Autowired
     private final TaskCommons taskCommons;
@@ -78,7 +82,8 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
         }
 
         return execute(new Task[] {
-            emailTask
+            emailTask,
+            petitionerEmailTask
             },
             caseData,
             ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId()),
