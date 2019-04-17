@@ -61,7 +61,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     @Test
-    public void givenCaseIdIsNotPresent_whenLinkRespondent_thenReturnBadRequest() {
+    public void givenCaseIdIsNotPresent_whenLinkRespondent_thenReturnUnauthorised() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
         final PinResponse pinResponse =
