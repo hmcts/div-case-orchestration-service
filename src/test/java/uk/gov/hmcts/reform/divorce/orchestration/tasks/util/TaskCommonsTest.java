@@ -43,13 +43,13 @@ public class TaskCommonsTest {
         HashMap<String, String> templateParameters = new HashMap<>();
         doThrow(NotificationClientException.class)
                 .when(emailService)
-                .sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
-                    "test",
-                    "test@hmcts.net",
-                    templateParameters);
+                .sendEmailAndReturnExceptionIfFails("test@hmcts.net",
+                    RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION.name(),
+                    templateParameters,
+                    "test description");
 
         taskCommons.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
-                "test",
+                "test description",
                 "test@hmcts.net",
                 templateParameters);
     }

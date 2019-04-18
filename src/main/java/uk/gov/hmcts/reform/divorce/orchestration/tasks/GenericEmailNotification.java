@@ -38,7 +38,7 @@ public class GenericEmailNotification implements Task<Map<String, Object>> {
         Map<String, String> templateVars = (Map<String, String>)context.getTransientObject(NOTIFICATION_TEMPLATE_VARS);
 
         try {
-            emailService.sendEmail(template, "submission notification", emailAddress, templateVars);
+            emailService.sendEmailAndReturnExceptionIfFails(emailAddress, template.name(), templateVars,"submission notification");
         } catch (NotificationClientException e) {
             log.warn("Error sending email for case ID: " + context.getTransientObject(ID), e);
             context.setTransientObject(OrchestrationConstants.EMAIL_ERROR_KEY, e.getMessage());

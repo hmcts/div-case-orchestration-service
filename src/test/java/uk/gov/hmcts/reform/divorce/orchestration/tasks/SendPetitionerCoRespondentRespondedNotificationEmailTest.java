@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
@@ -55,8 +56,10 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));
 
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
-        when(emailService.sendPetitionerEmailCoRespondentRespondWithAosNotStarted(
-            petitionerEmail, expectedTemplateVars)
+        when(emailService.sendEmail(petitionerEmail,
+                EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
+                expectedTemplateVars,
+            "co-respondent responded but respondent has not")
         ).thenReturn(null);
 
         DefaultTaskContext context = new DefaultTaskContext();
@@ -64,7 +67,10 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         Map<String, Object> returnedPayload = sendPetitionerCoRespondentRespondedNotificationEmail.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
-        verify(emailService).sendPetitionerEmailCoRespondentRespondWithAosNotStarted(petitionerEmail, expectedTemplateVars);
+        verify(emailService).sendEmail(petitionerEmail,
+            EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
+            expectedTemplateVars,
+            "co-respondent responded but respondent has not");
     }
 
     @SuppressWarnings("unchecked")
@@ -82,8 +88,10 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));
 
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
-        when(emailService.sendPetitionerEmailCoRespondentRespondWithAosNoDefend(
-            petitionerEmail, expectedTemplateVars)
+        when(emailService.sendEmail(petitionerEmail,
+                EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
+                expectedTemplateVars,
+            "co-respondent responded when aos is undefended")
         ).thenReturn(null);
 
         DefaultTaskContext context = new DefaultTaskContext();
@@ -91,7 +99,10 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         Map<String, Object> returnedPayload = sendPetitionerCoRespondentRespondedNotificationEmail.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
-        verify(emailService).sendPetitionerEmailCoRespondentRespondWithAosNoDefend(petitionerEmail, expectedTemplateVars);
+        verify(emailService).sendEmail(petitionerEmail,
+            EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
+            expectedTemplateVars,
+            "co-respondent responded when aos is undefended");
     }
 
     @SuppressWarnings("unchecked")
