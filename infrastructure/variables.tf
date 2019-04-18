@@ -48,11 +48,11 @@ variable "common_tags" {
 
 variable "uk_gov_notify_email_templates" {
   type = "string"
+  default = ""
 }
 
 variable "uk_gov_notify_email_template_vars" {
   type = "string"
-  default = ""
 }
 
 variable "service_auth_microservice_name" {

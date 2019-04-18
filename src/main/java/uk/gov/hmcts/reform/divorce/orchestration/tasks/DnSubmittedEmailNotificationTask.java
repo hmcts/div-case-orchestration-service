@@ -48,7 +48,8 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
         notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, lastName);
         notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, caseId);
         try {
-            emailService.sendEmail(EmailTemplateNames.DN_SUBMISSION, emailAddress, notificationTemplateVars);
+            emailService.sendEmailAndReturnExceptionIfFails(emailAddress,
+                EmailTemplateNames.DN_SUBMISSION.name(), notificationTemplateVars, "DN Submission");
         } catch (NotificationClientException e) {
             log.warn("Error sending email to {}", emailAddress, e);
             context.setTransientObject(OrchestrationConstants.EMAIL_ERROR_KEY, e.getMessage());
