@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.context;
 
+import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationMethodRule;
 import org.junit.Rule;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 
 import java.util.UUID;
 
+@Slf4j
 @RunWith(SerenityRunner.class)
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
@@ -82,6 +84,7 @@ public abstract class IntegrationTest {
                 // calling generate token too soon might fail, so we sleep..
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {
+                log.debug("IDAM thread sleep was interrupted");
             }
 
             final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);

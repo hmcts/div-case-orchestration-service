@@ -59,6 +59,7 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         final List<Task> tasks = new ArrayList<>();
 
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        final String relationship = getRespondentRelationship(caseDetails);
 
         // only send an email to pet. if respondent is not defending
         if (!respondentIsDefending(caseDetails)) {
@@ -70,10 +71,8 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
 
         String firstName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_FIRST_NAME);
         String lastName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_LAST_NAME);
-        String relationship = getRespondentRelationship(caseDetails);
         String isCoRespNamed = getFieldAsStringOrNull(caseDetails, D_8_CO_RESPONDENT_NAMED);
         String receivedAosFromCoResp = getFieldAsStringOrNull(caseDetails, RECEIVED_AOS_FROM_CO_RESP);
-        String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
 
         EmailTemplateNames template = EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT;
         if (StringUtils.equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !StringUtils.equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE)) {
@@ -81,6 +80,7 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         }
 
         Map<String, String> notificationTemplateVars = new HashMap<>();
+        String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
         notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, firstName);
         notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, lastName);
         notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
