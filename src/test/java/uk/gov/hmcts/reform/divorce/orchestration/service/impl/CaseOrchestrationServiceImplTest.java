@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,9 +18,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
@@ -29,6 +33,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkfl
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerGenericEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
@@ -46,8 +51,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Collections.singletonMap;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -63,6 +74,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseOrchestrationServiceImplTest {
+
+    @Rule
+    public ExpectedException expectedException = none();
 
     @Mock
     private IssueEventWorkflow issueEventWorkflow;
@@ -93,6 +107,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private SendPetitionerGenericEmailNotificationWorkflow sendPetitionerGenericEmailNotificationWorkflow;
+
+    @Mock
+    private SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
 
     @Mock
     private SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
@@ -130,6 +147,9 @@ public class CaseOrchestrationServiceImplTest {
     @Mock
     private AmendPetitionWorkflow amendPetitionWorkflow;
 
+    @Mock
+    private CaseLinkedForHearingWorkflow caseLinkedForHearingWorkflow;
+
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
 
@@ -144,7 +164,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Before
     public void setUp() {
-        requestPayload = Collections.emptyMap();
+        requestPayload = singletonMap("requestPayloadKey", "requestPayloadValue");
         ccdCallbackRequest = CcdCallbackRequest.builder()
                 .caseDetails(
                         CaseDetails.builder()
@@ -160,7 +180,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void givenGenerateInvitationIsTrue_whenCcdCallbackHandler_thenReturnExpected()
-            throws WorkflowException {
+        throws WorkflowException {
         //given
         when(issueEventWorkflow.run(ccdCallbackRequest, AUTH_TOKEN, true)).thenReturn(expectedPayload);
 
@@ -192,7 +212,7 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> testExpectedPayload = mock(Map.class);
 
         when(retrieveDraftWorkflow.run(AUTH_TOKEN)).thenReturn(testExpectedPayload);
-        assertEquals(testExpectedPayload,classUnderTest.getDraft(AUTH_TOKEN));
+        assertEquals(testExpectedPayload, classUnderTest.getDraft(AUTH_TOKEN));
     }
 
     @Test
@@ -223,8 +243,8 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> payload = mock(Map.class);
         Map<String, Object> testExpectedPayload = mock(Map.class);
 
-        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, Boolean.TRUE.toString())).thenReturn(testExpectedPayload);
-        assertEquals(testExpectedPayload,classUnderTest.saveDraft(payload, AUTH_TOKEN, Boolean.TRUE.toString()));
+        when(saveDraftWorkflow.run(payload, AUTH_TOKEN, Boolean.TRUE.toString())).thenReturn(testExpectedPayload);
+        assertEquals(testExpectedPayload, classUnderTest.saveDraft(payload, AUTH_TOKEN, Boolean.TRUE.toString()));
     }
 
     @SuppressWarnings("unchecked")
@@ -234,10 +254,10 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> payload = mock(Map.class);
         Map<String, Object> workflowResponsePayload = mock(Map.class);
 
-        when(saveDraftWorkflow.run(payload,AUTH_TOKEN, Boolean.TRUE.toString())).thenReturn(workflowResponsePayload);
+        when(saveDraftWorkflow.run(payload, AUTH_TOKEN, Boolean.TRUE.toString())).thenReturn(workflowResponsePayload);
         when(saveDraftWorkflow.errors()).thenReturn(expectedErrors);
 
-        assertEquals(expectedErrors,classUnderTest.saveDraft(payload, AUTH_TOKEN, Boolean.TRUE.toString()));
+        assertEquals(expectedErrors, classUnderTest.saveDraft(payload, AUTH_TOKEN, Boolean.TRUE.toString()));
     }
 
     @SuppressWarnings("unchecked")
@@ -245,7 +265,7 @@ public class CaseOrchestrationServiceImplTest {
     public void givenUserWithADraft_whenDeleteDraft_thenReturnPayloadFromWorkflow() throws WorkflowException {
         Map<String, Object> testExpectedPayload = mock(Map.class);
         when(deleteDraftWorkflow.run(AUTH_TOKEN)).thenReturn(testExpectedPayload);
-        assertEquals(testExpectedPayload,classUnderTest.deleteDraft(AUTH_TOKEN));
+        assertEquals(testExpectedPayload, classUnderTest.deleteDraft(AUTH_TOKEN));
     }
 
     @SuppressWarnings("unchecked")
@@ -298,7 +318,7 @@ public class CaseOrchestrationServiceImplTest {
     public void givenCaseDataInvalid_whenSubmit_thenReturnListOfErrors() throws Exception {
         // given
         when(submitToCCDWorkflow.run(requestPayload, AUTH_TOKEN)).thenReturn(expectedPayload);
-        Map<String, Object> errors = Collections.singletonMap("new_Error", "An Error");
+        Map<String, Object> errors = singletonMap("new_Error", "An Error");
         when(submitToCCDWorkflow.errors()).thenReturn(errors);
 
         // when
@@ -315,7 +335,7 @@ public class CaseOrchestrationServiceImplTest {
     public void givenCaseDataValid_whenUpdate_thenReturnPayload() throws Exception {
         // given
         when(updateToCCDWorkflow.run(requestPayload, AUTH_TOKEN, TEST_CASE_ID))
-                .thenReturn(requestPayload);
+            .thenReturn(requestPayload);
 
         // when
         Map<String, Object> actual = classUnderTest.update(requestPayload, AUTH_TOKEN, TEST_CASE_ID);
@@ -328,7 +348,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void givenValidPaymentData_whenPaymentUpdate_thenReturnPayload() throws Exception {
-        PaymentUpdate paymentUpdate  = new PaymentUpdate();
+        PaymentUpdate paymentUpdate = new PaymentUpdate();
         paymentUpdate.setCcdCaseNumber("1232132");
         paymentUpdate.setStatus("success");
         paymentUpdate.setAmount(new BigDecimal(550.00));
@@ -351,14 +371,14 @@ public class CaseOrchestrationServiceImplTest {
 
 
         Payment payment = Payment.builder()
-                .paymentFeeId("X243")
-                .paymentChannel("online")
-                .paymentStatus("success")
-                .paymentAmount("55000")
-                .build();
+            .paymentFeeId("X243")
+            .paymentChannel("online")
+            .paymentStatus("success")
+            .paymentAmount("55000")
+            .build();
 
         final Map<String, Object> updateEvent = new HashMap<>();
-        updateEvent.put("eventData", Collections.singletonMap("payment", payment));
+        updateEvent.put("eventData", singletonMap("payment", payment));
         updateEvent.put("eventId", "paymentMade");
 
         verify(updateToCCDWorkflow).run(updateEvent, "testtoken", "1232132");
@@ -366,7 +386,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test(expected = WorkflowException.class)
     public void givenPaymentDataWithNoAmount_whenPaymentUpdate_thenThrowWorkflowException() throws Exception {
-        PaymentUpdate paymentUpdate  = new PaymentUpdate();
+        PaymentUpdate paymentUpdate = new PaymentUpdate();
         paymentUpdate.setCcdCaseNumber("1232132");
         paymentUpdate.setStatus("success");
         Fee fee = new Fee();
@@ -379,7 +399,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test(expected = WorkflowException.class)
     public void givenPaymentDataWithNoFee_whenPaymentUpdate_thenThrowWorkflowException() throws Exception {
-        PaymentUpdate paymentUpdate  = new PaymentUpdate();
+        PaymentUpdate paymentUpdate = new PaymentUpdate();
         paymentUpdate.setCcdCaseNumber("1232132");
         paymentUpdate.setStatus("success");
         paymentUpdate.setAmount(new BigDecimal(550.00));
@@ -429,6 +449,16 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
+    public void givenCaseData_whenSendPetitionerClarificationRequestNotification_thenReturnPayload() throws Exception {
+        when(sendPetitionerClarificationRequestNotificationWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
+
+        final Map<String, Object> actual = classUnderTest.sendPetitionerClarificationRequestNotification(ccdCallbackRequest);
+
+        assertThat(actual, is(requestPayload));
+        verify(sendPetitionerClarificationRequestNotificationWorkflow).run(ccdCallbackRequest);
+    }
+
+    @Test
     public void givenCaseData_whenSendRespondentSubmissionNotification_thenReturnPayload() throws Exception {
         when(sendRespondentSubmissionNotificationWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
 
@@ -443,7 +473,7 @@ public class CaseOrchestrationServiceImplTest {
     public void givenCaseData_whenSetOrderSummary_thenReturnPayload() throws Exception {
         // given
         when(setOrderSummaryWorkflow.run(requestPayload))
-                .thenReturn(requestPayload);
+            .thenReturn(requestPayload);
 
         // when
         Map<String, Object> actual = classUnderTest.setOrderSummary(ccdCallbackRequest);
@@ -492,7 +522,7 @@ public class CaseOrchestrationServiceImplTest {
     public void givenCaseData_whenSolicitorCreate_thenReturnPayload() throws Exception {
         // given
         when(solicitorCreateWorkflow.run(requestPayload))
-                .thenReturn(requestPayload);
+            .thenReturn(requestPayload);
 
         // when
         Map<String, Object> actual = classUnderTest.solicitorCreate(ccdCallbackRequest);
@@ -563,16 +593,16 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenError_whenExecuteDnSubmittedWorkflow_thenReturnErrorData() throws WorkflowException {
 
-        Map<String, Object> workflowError = Collections.singletonMap("ErrorKey", "Error value");
+        Map<String, Object> workflowError = singletonMap("ErrorKey", "Error value");
         when(dnSubmittedWorkflow
                 .run(ccdCallbackRequest, AUTH_TOKEN))
                 .thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
 
         when(dnSubmittedWorkflow.errors()).thenReturn(workflowError);
 
-        CcdCallbackResponse expectedResponse =  CcdCallbackResponse.builder()
-                .errors(Collections.singletonList("Error value"))
-                .build();
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
+            .errors(Collections.singletonList("Error value"))
+            .build();
 
         CcdCallbackResponse ccdResponse = classUnderTest.dnSubmitted(ccdCallbackRequest, AUTH_TOKEN);
 
@@ -588,6 +618,25 @@ public class CaseOrchestrationServiceImplTest {
         verify(amendPetitionWorkflow).run(TEST_CASE_ID, AUTH_TOKEN);
     }
 
+    @Test
+    public void testServiceCallsRightWorkflowWithRightData_ForProcessingCaseLinkedBackEvent()
+        throws WorkflowException, CaseOrchestrationServiceException {
+        when(caseLinkedForHearingWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()))).thenReturn(requestPayload);
+
+        assertThat(classUnderTest.processCaseLinkedForHearingEvent(ccdCallbackRequest), is(equalTo(requestPayload)));
+    }
+
+    @Test
+    public void shouldThrowException_ForProcessingCaseLinkedBackEvent_WhenWorkflowExceptionIsCaught()
+        throws WorkflowException, CaseOrchestrationServiceException {
+        when(caseLinkedForHearingWorkflow.run(eq(ccdCallbackRequest.getCaseDetails())))
+            .thenThrow(new WorkflowException("This operation threw an exception."));
+
+        expectedException.expect(CaseOrchestrationServiceException.class);
+        expectedException.expectMessage(is("This operation threw an exception."));
+
+        classUnderTest.processCaseLinkedForHearingEvent(ccdCallbackRequest);
+    }
 
     @After
     public void tearDown() {
@@ -595,4 +644,5 @@ public class CaseOrchestrationServiceImplTest {
         requestPayload = null;
         expectedPayload = null;
     }
+
 }

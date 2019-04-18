@@ -30,7 +30,6 @@ import java.util.Map;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -52,7 +51,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_COURT_ADDRESS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -169,16 +167,5 @@ public class CoRespondentSubmittedITest {
         notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, CO_RESP_LAST_NAME);
         notificationTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, D8_ID);
         verify(mockClient).sendEmail(any(), eq(email), eq(notificationTemplateVars), any());
-    }
-
-    private void mockEmailClient(String email, Map<String, String> additionalData)
-            throws NotificationClientException {
-
-        Map<String, String> notificationTemplateVars = new HashMap<>(additionalData);
-        notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, CO_RESP_FIRST_NAME);
-        notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, CO_RESP_LAST_NAME);
-        notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, D8_ID);
-        when(mockClient.sendEmail(any(), eq(email), eq(notificationTemplateVars), any()))
-                .thenThrow(new NotificationClientException(new Exception("error")));
     }
 }

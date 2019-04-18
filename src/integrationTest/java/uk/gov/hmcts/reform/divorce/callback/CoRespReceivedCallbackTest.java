@@ -18,6 +18,7 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
 
     private static final String CO_DEFENDED_CASE_RESPONSE = "fixtures/co-resp-case/co-resp-defend.json";
     private static final String CO_UNDEFENDED_CASE_RESPONSE = "fixtures/co-resp-case/co-resp-undefend.json";
+    private static final String CO_UNDEFENDED_RESP_RESPONDED_CASE_RESPONSE = "fixtures/co-resp-case/co-resp-undefend-resp-responds.json";
 
     private static final String ERROR_CASE_RESPONSE = "fixtures/co-resp-case/co-resp-received-error.json";
 
@@ -33,6 +34,16 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
         assertEquals(((Map<String, Object>)aosCase.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void givenUndefendedRespondedCase_whenSubmitAOS_thenReturnAOSData() {
+        Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(CO_UNDEFENDED_RESP_RESPONDED_CASE_RESPONSE, Map.class);
+        Map<String, Object> response = cosApiClient.coRespReceived(createCaseWorkerUser().getAuthToken(), aosCase);
+        assertNotNull(response.get(DATA));
+        assertEquals(((Map<String, Object>)aosCase.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
+    }
+
+    @SuppressWarnings("unchecked")
     @Test
     public void givenDefendedCase_whenSubmitAOS_thenReturnAOSData() {
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(CO_DEFENDED_CASE_RESPONSE, Map.class);

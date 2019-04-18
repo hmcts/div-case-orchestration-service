@@ -1,0 +1,26 @@
+java:
+    environment:
+        APPLICATION_INSIGHTS_IKEY: "63c30ef9-a27b-4d38-8afc-4c180fb6ac33"
+        APPINSIGHTS_INSTRUMENTATIONKEY: "019ed56f-e01d-4651-895d-bc6334f3d1b1"
+        IDAM_API_URL: "https://idam-api.aat.platform.hmcts.net"
+        UK_GOV_NOTIFY_EMAIL_TEMPLATES: "{SAVE_DRAFT:'14074c06-87f1-4678-9238-4d71e741eb57', APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c', RESPONDENT_SUBMISSION_CONSENT: '594dc500-93ca-4f4b-931b-acbf9ee83d25', RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION: 'eac41143-b296-4879-ba60-a0ea6f97c757', RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION: '277fd3f3-2fdb-4c79-9354-1b3db8d44cca', DN_SUBMISSION: 'edf3bce9-f63a-4be0-93a9-d0c80dff7983', GENERIC_UPDATE: '6ee6ec29-5e88-4516-99cb-2edc30256575', AOS_RECEIVED_NO_ADMIT_ADULTERY: '015fb73a-3be2-49d8-8ed8-a4078025dae3', AOS_RECEIVED_NO_CONSENT_2_YEARS: '845d0114-0f74-43a4-b11c-8ebeceb01c5b', CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION: '19a8844e-8112-4578-aa4c-dea6c054ab35', CO_RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION: '486c86ff-a0e2-4eb1-a84c-687641d746de', AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: 'bc6ee2ec-f62b-4321-b19f-65e868f849eb', RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED: '44e2dd30-4303-4f4c-a394-ce0b54af81dd', PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION: '686ce418-6d76-48ce-b903-a87d2b832125', PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION: '9937c8bc-dc7a-4210-a25b-20aceb82d48d'}"
+        UK_GOV_NOTIFY_API_KEY: "divorce_preprod_live_key-b86e6469-4927-4f50-a029-6ddb523330cf-2409ba37-b5e6-4f03-b052-7d0f0986888d"
+        CASE_MAINTENANCE_SERVICE_API_BASEURL: "http://div-cms-aat.service.core-compute-aat.internal"
+        IDAM_CITIZEN_USERNAME: "DivCitizenUser@AAT.com"
+        PAYMENT_API_BASEURL: "http://payment-api-aat.service.core-compute-aat.internal"
+        FEATURE_TOGGLE_SERVICE_API_BASEURL: "http://rpe-feature-toggle-api-aat.service.core-compute-aat.internal"
+        SEND_LETTER_SERIVCE_BASEURL: "http://rpe-send-letter-service-aat.service.core-compute-aat.internal"
+        IDAM_API_REDIRECT_URL: "https://div-pfe-aat.service.core-compute-aat.internal/authenticated"
+        IDAM_CASEWORKER_USERNAME: "DivCaseWorkerUser@AAT.com"
+        CASE_FORMATTER_SERVICE_API_BASEURL: "http://div-cfs-aat.service.core-compute-aat.internal"
+        SERVICE_AUTH_PROVIDER_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+        CASE_VALIDATION_SERVICE_API_BASEURL: "http://div-vs-aat.service.core-compute-aat.internal"
+        IDAM_STRATEGIC_ENABLED: "true"
+        UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS: "{SAVE_DRAFT: {divorceUrl: 'https://div-pfe-aat.service.core-compute-aat.internal'}}"
+        DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-aat.service.core-compute-aat.internal"
+        FEES_AND_PAYMENTS_SERVICE_API_BASEURL: "http://div-fps-aat.service.core-compute-aat.internal"
+        FEATURE_TOGGLE_520: "true"
+
+    # Don't modify below here
+    image: ${IMAGE_NAME}
+    ingressHost: ${SERVICE_FQDN}

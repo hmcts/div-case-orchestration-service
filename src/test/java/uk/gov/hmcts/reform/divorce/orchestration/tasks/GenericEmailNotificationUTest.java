@@ -50,10 +50,10 @@ public class GenericEmailNotificationUTest {
         Map<String, Object> taskResponse = genericEmailNotification.execute(context, data);
 
         verify(emailService, times(1))
-                .sendEmail(RESPONDENT_SUBMISSION_CONSENT,
-                        GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION,
-                        TEST_USER_EMAIL,
-                        vars);
+                .sendEmailAndReturnExceptionIfFails(TEST_USER_EMAIL,
+                        RESPONDENT_SUBMISSION_CONSENT.name(),
+                        vars,
+                        GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION);
         assertEquals(taskResponse, data);
     }
 
@@ -70,10 +70,10 @@ public class GenericEmailNotificationUTest {
         Map<String, Object>  data = mock(Map.class);
         Exception clientException = new Exception("Error");
         doThrow(new NotificationClientException(clientException))
-                .when(emailService).sendEmail(RESPONDENT_SUBMISSION_CONSENT,
-                    GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION,
-                    TEST_USER_EMAIL,
-                    vars);
+                .when(emailService).sendEmailAndReturnExceptionIfFails(TEST_USER_EMAIL,
+                    RESPONDENT_SUBMISSION_CONSENT.name(),
+                    vars,
+                    GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION);
 
         Map<String, Object> taskResponse = genericEmailNotification.execute(context, data);
 

@@ -21,8 +21,7 @@ public interface CosApiClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/co-respondent-received",
-        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+        value = "/co-respondent-received"
     )
     Map<String, Object> coRespReceived(@RequestHeader(AUTHORIZATION) String authorisation,
                                        @RequestBody Map<String, Object> caseDataContent
@@ -30,8 +29,7 @@ public interface CosApiClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/aos-received",
-        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+        value = "/aos-received"
     )
     Map<String, Object> aosReceived(@RequestHeader(AUTHORIZATION) String authorisation,
                                     @RequestBody Map<String, Object> caseDataContent
@@ -39,15 +37,13 @@ public interface CosApiClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/aos-submitted",
-        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+        value = "/aos-submitted"
     )
     Map<String, Object> aosSubmitted(@RequestBody Map<String, Object> caseDataContent);
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/dn-submitted",
-        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+        value = "/dn-submitted"
     )
     Map<String, Object> dnSubmitted(@RequestHeader(AUTHORIZATION) String authorisation,
                                     @RequestBody Map<String, Object> caseDataContent
@@ -79,11 +75,17 @@ public interface CosApiClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/submit",
-        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+        value = "/submit"
     )
     Map<String, Object> submitCase(@RequestHeader(AUTHORIZATION) String authorisation,
                                    @RequestBody JsonNode caseDataContent
     );
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/case-linked-for-hearing"
+    )
+    Map<String, Object> caseLinkedForHearing(@RequestHeader(AUTHORIZATION) String authorisation,
+                                             @RequestBody Map<String, Object> caseDataContent);
 
 }

@@ -21,7 +21,7 @@
   "petitionerLastName":"Smith",
   "livingArrangementsLiveTogether":"No",
   "petitionerFirstName":"John",
-  "courts":"eastMidlands",
+  "courts":"serviceCentre",
   "claimsCosts":"Yes",
   "reasonForDivorceShowDesertion":"true",
   "jurisdictionConfidentLegal":"Yes",
@@ -116,7 +116,7 @@
       "openingHours": "Telephone Enquiries from: 8.30am to 5pm",
       "email": "divorcecase@justice.gov.uk",
       "phoneNumber": "0300 303 0642",
-      "siteId": "AA01"
+      "siteId": "AA07"
     }
   },
   "reasonForDivorceShowFiveYearsSeparation":"true",

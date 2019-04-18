@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.Validati
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -276,7 +275,7 @@ public class SubmitCoRespondentAosCaseUTest {
         recalculatedSubmissionData.put(CO_RESPONDENT_DEFENDS_DIVORCE, "YES");
         recalculatedSubmissionData.put(CO_RESPONDENT_DUE_DATE, FIXED_DATE_TIME.plusDays(21).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         recalculatedSubmissionData.put(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
-        recalculatedSubmissionData.put(RECEIVED_AOS_FROM_CO_RESP_DATE, CcdUtil.getCurrentDate());
+        recalculatedSubmissionData.put(RECEIVED_AOS_FROM_CO_RESP_DATE, FIXED_DATE_TIME.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         final Map<String, Object> caseUpdateResponse = new HashMap<>();
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());

@@ -21,3 +21,5 @@ target
 .settings
 .classpath
 .project
+
+application-aat.yml

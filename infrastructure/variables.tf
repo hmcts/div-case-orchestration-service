@@ -51,11 +51,12 @@ variable "feature_toggle_520" {
 }
 
 variable "uk_gov_notify_email_templates" {
-    type = "string"
+  type = "string"
+  default = ""
 }
 
 variable "uk_gov_notify_email_template_vars" {
-    type = "string"
+  type = "string"
 }
 
 variable "service_auth_microservice_name" {

@@ -16,7 +16,6 @@ import java.util.UUID;
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
     private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER";
-    private static final String CASE_WORKER_ONLY_USERNAME = "TEST_CASE_WORKER_ONLY";
     private static final String EMAIL_DOMAIN = "@notifications.service.gov.uk";
     private static final String CASE_WORKER_PASSWORD = "genericPassword123";
     private static final String CITIZEN_ROLE = "citizen";
@@ -34,7 +33,6 @@ public abstract class IntegrationTest {
     protected static final String CASE_DETAILS = "case_details";
 
     private UserDetails caseWorkerUser;
-    private UserDetails caseWorkerStrictUser;
 
     @Value("${case.orchestration.service.base.uri}")
     protected String serverUrl;
@@ -79,6 +77,12 @@ public abstract class IntegrationTest {
     private UserDetails getUserDetails(String username, String password, String userGroup, String... role) {
         synchronized (this) {
             idamTestSupportUtil.createUser(username, password, userGroup, role);
+
+            try {
+                // calling generate token too soon might fail, so we sleep..
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
 
             final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
 

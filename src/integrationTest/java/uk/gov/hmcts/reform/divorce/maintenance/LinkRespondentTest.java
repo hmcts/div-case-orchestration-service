@@ -61,7 +61,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     @Test
-    public void givenCaseIdIsNotPresent_whenLinkRespondent_thenReturnBadRequest() {
+    public void givenCaseIdIsNotPresent_whenLinkRespondent_thenReturnUnauthorised() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
         final PinResponse pinResponse =
@@ -70,7 +70,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         Response cosResponse = linkRespondent(petitionerUserDetails.getAuthToken(), 1L, pinResponse.getPin());
 
-        assertEquals(HttpStatus.BAD_REQUEST.value(), cosResponse.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED.value(), cosResponse.getStatusCode());
     }
 
     @Test

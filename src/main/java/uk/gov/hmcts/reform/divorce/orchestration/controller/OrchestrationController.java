@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
 
@@ -60,12 +61,11 @@ public class OrchestrationController {
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles Issue event callback from CCD")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is "
-                    + "attached to the case",
-                    response = CcdCallbackResponse.class),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 500, message = "Internal Server Error")
-            })
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is "
+            + "attached to the case",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> petitionIssuedCallback(
         @RequestHeader(value = "Authorization") String authorizationToken,
         @RequestParam(value = GENERATE_AOS_INVITATION, required = false)
@@ -95,8 +95,7 @@ public class OrchestrationController {
             + " to the case",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Internal Server Error")
-        })
+        @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity paymentUpdate(@RequestBody PaymentUpdate paymentUpdate) throws WorkflowException {
 
         orchestrationService.update(paymentUpdate);
@@ -109,7 +108,7 @@ public class OrchestrationController {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Callback was processed "
         + "successfully or in case of an error message is "
         + "attached to the case",
-            response = CcdCallbackResponse.class),
+        response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> bulkPrint(
@@ -194,8 +193,8 @@ public class OrchestrationController {
         @ApiResponse(code = 200, message = "A draft exists. The draft content is in the response body"),
         @ApiResponse(code = 404, message = "Draft does not exist")})
     public ResponseEntity<Map<String, Object>> retrieveDraft(
-            @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
-            @RequestHeader("Authorization") final String authorizationToken)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
+        @RequestHeader("Authorization") final String authorizationToken)
         throws WorkflowException {
 
         Map<String, Object> response = orchestrationService.getDraft(authorizationToken);
@@ -216,8 +215,8 @@ public class OrchestrationController {
         @RequestBody
         @NotNull Map<String, Object> payload,
         @RequestParam(value = "sendEmail", required = false)
-        @ApiParam(value = "Determines if the petitioner should receive the notification that the draft has been saved")
-        final String sendEmail) throws WorkflowException {
+        @ApiParam(value = "Determines if the petitioner should receive the notification that the draft has been saved") final String sendEmail)
+        throws WorkflowException {
 
         // Deprecation Warning: sendEmail as String instead of Boolean to be backwards compatible with current PFE
         return ResponseEntity.ok(orchestrationService.saveDraft(payload, authorizationToken, sendEmail));
@@ -242,10 +241,10 @@ public class OrchestrationController {
             response = CaseDataResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CaseDataResponse> retrieveAosCase(
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken) throws WorkflowException {
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken) throws WorkflowException {
 
         return ResponseEntity.ok(orchestrationService.retrieveAosCase(
-                authorizationToken));
+            authorizationToken));
     }
 
     @GetMapping(path = "/retrieve-case", produces = MediaType.APPLICATION_JSON)
@@ -385,12 +384,14 @@ public class OrchestrationController {
     public ResponseEntity<CcdCallbackResponse> respondentAOSSubmitted(
         @RequestHeader(value = "Authorization", required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
-
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.info("/aos-submitted endpoint called for caseId {}", caseId);
         Map<String, Object> returnedCaseData;
 
         try {
             returnedCaseData = orchestrationService.sendRespondentSubmissionNotificationEmail(ccdCallbackRequest);
         } catch (WorkflowException e) {
+            log.error("Failed to call service for caseId {}", caseId, e);
             return ResponseEntity.ok(CcdCallbackResponse.builder()
                 .errors(singletonList(e.getMessage()))
                 .build());
@@ -524,11 +525,26 @@ public class OrchestrationController {
         @ApiResponse(code = 404,
             message = "No draft was created as no existing case found.")})
     public ResponseEntity<Map<String, Object>> amendPetition(@RequestHeader("Authorization")
-                                                           @ApiParam(value = "JWT authorisation token issued by IDAM",
-                                                               required = true) final String authorizationToken,
+                                                             @ApiParam(value = "JWT authorisation token issued by IDAM",
+                                                                 required = true) final String authorizationToken,
                                                              @PathVariable String caseId)
         throws WorkflowException {
 
         return ResponseEntity.ok(orchestrationService.amendPetition(caseId, authorizationToken));
     }
+
+    @PostMapping(path = "/request-clarification-petitioner")
+    @ApiOperation(value = "Request clarification from petitioner via notification ")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "clarification request sent successful"),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> requestClarificationFromPetitioner(
+        @RequestBody @ApiParam("CaseData") final CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        orchestrationService.sendPetitionerClarificationRequestNotification(ccdCallbackRequest);
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
+            .build());
+    }
+
 }
