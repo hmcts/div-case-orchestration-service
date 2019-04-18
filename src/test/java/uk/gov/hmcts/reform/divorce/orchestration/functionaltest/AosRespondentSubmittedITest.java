@@ -64,7 +64,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_ANSWERS_TEMPLATE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -128,14 +128,14 @@ public class AosRespondentSubmittedITest {
 
         final GenerateDocumentRequest documentRequest =
             GenerateDocumentRequest.builder()
-                .template(RESPONDENT_ANSWERS_TEMPLATE_NAME)
+                .template(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, fullCase))
                 .build();
 
         final GeneratedDocumentInfo documentInfo =
             GeneratedDocumentInfo.builder()
                 .documentType(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
-                .fileName(RESPONDENT_ANSWERS_TEMPLATE_NAME)
+                .fileName(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .build();
 
         final Set<GeneratedDocumentInfo> documentsForFormatter = new HashSet<>();
@@ -184,14 +184,14 @@ public class AosRespondentSubmittedITest {
 
         final GenerateDocumentRequest respondentAnswersDocRequest =
             GenerateDocumentRequest.builder()
-                .template(RESPONDENT_ANSWERS_TEMPLATE_NAME)
+                .template(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, fullCase))
                 .build();
 
         final GeneratedDocumentInfo respondentAnswersDocResponse =
             GeneratedDocumentInfo.builder()
                 .documentType(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
-                .fileName(RESPONDENT_ANSWERS_TEMPLATE_NAME)
+                .fileName(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .build();
         final Set<GeneratedDocumentInfo> documentsForFormatter = new HashSet<>();
         documentsForFormatter.add(respondentAnswersDocResponse);
@@ -241,14 +241,14 @@ public class AosRespondentSubmittedITest {
 
         final GenerateDocumentRequest respondentAnswersDocRequest =
             GenerateDocumentRequest.builder()
-                .template(RESPONDENT_ANSWERS_TEMPLATE_NAME)
+                .template(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, fullCase))
                 .build();
 
         final GeneratedDocumentInfo respondentAnswersDocResponse =
             GeneratedDocumentInfo.builder()
                 .documentType(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
-                .fileName(RESPONDENT_ANSWERS_TEMPLATE_NAME)
+                .fileName(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .build();
         final Set<GeneratedDocumentInfo> documentsForFormatter = new HashSet<>();
         documentsForFormatter.add(respondentAnswersDocResponse);

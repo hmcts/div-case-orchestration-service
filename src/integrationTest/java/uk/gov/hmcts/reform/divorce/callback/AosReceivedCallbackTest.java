@@ -21,7 +21,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_ANSWERS_TEMPLATE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class AosReceivedCallbackTest extends IntegrationTest {
@@ -41,7 +41,7 @@ public class AosReceivedCallbackTest extends IntegrationTest {
         String jsonResponse = objectToJson(response);
         assertNotNull(resData);
         assertThat(jsonResponse, hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName",
-            is(RESPONDENT_ANSWERS_TEMPLATE_NAME)));
+            is(DOCUMENT_TYPE_RESPONDENT_ANSWERS)));
         assertThat(jsonResponse, hasJsonPath("$.data.D8caseReference",
             is("LV17D80100")));
     }

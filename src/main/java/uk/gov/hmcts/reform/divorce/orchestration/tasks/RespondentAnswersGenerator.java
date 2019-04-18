@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_ANSWERS_TEMPLATE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 
 @Component
 public class RespondentAnswersGenerator implements Task<Map<String, Object>> {
@@ -34,14 +34,14 @@ public class RespondentAnswersGenerator implements Task<Map<String, Object>> {
         GeneratedDocumentInfo respondentAnswers =
             documentGeneratorClient.generatePDF(
                 GenerateDocumentRequest.builder()
-                    .template(RESPONDENT_ANSWERS_TEMPLATE_NAME)
+                    .template(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                     .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDataForDoc))
                     .build(),
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY)
             );
 
         respondentAnswers.setDocumentType(DOCUMENT_TYPE_RESPONDENT_ANSWERS);
-        respondentAnswers.setFileName(RESPONDENT_ANSWERS_TEMPLATE_NAME);
+        respondentAnswers.setFileName(DOCUMENT_TYPE_RESPONDENT_ANSWERS);
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection =
             context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
