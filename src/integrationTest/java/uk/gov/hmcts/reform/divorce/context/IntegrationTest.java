@@ -109,6 +109,7 @@ public abstract class IntegrationTest {
                 // calling generate token too soon might fail, so we sleep..
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {
+                log.debug("IDAM thread sleep was interrupted");
             }
 
             final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
