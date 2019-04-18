@@ -38,11 +38,13 @@ public class DefaultTaskContext implements TaskContext {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getTransientObject(String key) {
         return (T) transientObjects.get(key);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T computeTransientObjectIfAbsent(final String key, final T defaultVal) {
         return (T) transientObjects.computeIfAbsent(key, k -> defaultVal);
     }
