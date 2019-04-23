@@ -99,6 +99,8 @@ public class IdamUtils {
             .relaxedHTTPSValidation()
             .post(idamTokenUrl(response.getBody().path("code")));
 
+        assert response.getStatusCode() == 200 : "Error generating code from IDAM: " + response.getStatusCode();
+
         String token = response.getBody().path("access_token");
         return "Bearer " + token;
     }

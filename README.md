@@ -66,6 +66,16 @@ To run all mutation tests execute the following command:
 
 ```
 
+### Integration tests
+
+To run all integration tests locally:
+
+* Make a copy of `src/main/resources/example-application-aat.yaml` as `src/main/resources/application-aat.yaml`
+* Make a copy of `src/integrationTest/resources/example-application-local.properties` as `src/integrationTest/resources/application-local.properties`
+* Replace the `replace_me` secrets in the _newly created_ files. You can get the values from SCM and Azure secrets key vault (the new files are in .gitignore and should ***not*** be committed to git)
+* Start the app with AAT config using `./gradlew clean bootRunAat`
+* Start the test with AAT config using `./gradlew clean functional`
+
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning.
