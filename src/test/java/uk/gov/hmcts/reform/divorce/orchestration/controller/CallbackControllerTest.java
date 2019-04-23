@@ -42,7 +42,7 @@ public class CallbackControllerTest {
             .build();
         when(caseOrchestrationService.processCaseLinkedForHearingEvent(incomingRequest)).thenReturn(incomingPayload);
 
-        ResponseEntity<CcdCallbackResponse> response = controller.caseLinkedForHearing(null, incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = controller.caseLinkedForHearing(incomingRequest);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
@@ -60,11 +60,27 @@ public class CallbackControllerTest {
         when(caseOrchestrationService.processCaseLinkedForHearingEvent(incomingRequest))
             .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
-        ResponseEntity<CcdCallbackResponse> response = controller.caseLinkedForHearing(null, incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = controller.caseLinkedForHearing(incomingRequest);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
     }
 
+
+    @Test
+    public void solDnReviewPetition() throws CaseOrchestrationServiceException {
+        Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(incomingPayload)
+                        .build())
+                .build();
+
+        ResponseEntity<CcdCallbackResponse> response = controller.solDnReviewPetition(incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
 }

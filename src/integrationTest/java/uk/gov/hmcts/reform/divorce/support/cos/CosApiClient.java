@@ -88,4 +88,9 @@ public interface CosApiClient {
     Map<String, Object> caseLinkedForHearing(@RequestHeader(AUTHORIZATION) String authorisation,
                                              @RequestBody Map<String, Object> caseDataContent);
 
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/sol-dn-review-petition"
+    )
+    Map<String, Object> solDnReviewPetition(@RequestBody Map<String, Object> caseDataContent);
 }
