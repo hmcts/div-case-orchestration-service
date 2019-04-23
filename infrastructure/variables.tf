@@ -46,10 +46,6 @@ variable "common_tags" {
   type = "map"
 }
 
-variable "feature_toggle_520" {
-  default = true
-}
-
 variable "uk_gov_notify_email_templates" {
   type = "string"
   default = ""

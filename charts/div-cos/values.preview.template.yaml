@@ -19,7 +19,6 @@ java:
     UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS: "{SAVE_DRAFT: {divorceUrl: 'https://div-pfe-aat.service.core-compute-aat.internal'}}"
     DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-aat.service.core-compute-aat.internal"
     FEES_AND_PAYMENTS_SERVICE_API_BASEURL: "http://div-fps-aat.service.core-compute-aat.internal"
-    FEATURE_TOGGLE_520: "true"
 
   # Don't modify below here
   image: ${IMAGE_NAME}
