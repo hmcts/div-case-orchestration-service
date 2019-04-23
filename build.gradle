@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.run.BootRun
+
 buildscript {
     ext {
         springBootVersion = '2.1.2.RELEASE'
@@ -270,6 +272,15 @@ dependencies {
 task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
     useJUnit {
         includeCategories 'uk.gov.hmcts.reform.divorce.orchestration.category.SmokeTest'
+    }
+}
+
+task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dependsOn: 'classes', group: 'Application') {
+    environment "http_proxy", "http://proxyout.reform.hmcts.net:8080"
+    doFirst() {
+        main = bootJar.mainClassName
+        classpath = sourceSets.main.runtimeClasspath
+        systemProperty 'spring.profiles.active', 'aat'
     }
 }
 

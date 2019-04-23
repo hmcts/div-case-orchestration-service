@@ -21,3 +21,6 @@ target
 .settings
 .classpath
 .project
+application-*.yml
+application-*.yaml
+application-local.properties
