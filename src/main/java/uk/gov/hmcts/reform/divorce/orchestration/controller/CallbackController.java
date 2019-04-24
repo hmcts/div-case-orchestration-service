@@ -16,9 +16,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
-import javax.ws.rs.core.MediaType;
-
 import java.util.Map;
+import javax.ws.rs.core.MediaType;
 
 import static java.lang.String.format;
 

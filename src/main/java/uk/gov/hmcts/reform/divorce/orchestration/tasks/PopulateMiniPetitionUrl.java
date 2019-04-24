@@ -35,7 +35,7 @@ public class PopulateMiniPetitionUrl implements Task<Map<String, Object>>  {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Petition document not found"));
 
-        Map<String, Object> documentLink = (Map<String, Object>) petitionDocument.get(DOCUMENT_LINK);
+        Map<String, Object> documentLink = (Map<String, Object>) ((Map) petitionDocument.get(VALUE)).get(DOCUMENT_LINK);
         payload.put(PETITION_LINK, documentLink.get(DOCUMENT_BINARY_URL));
 
         return payload;
