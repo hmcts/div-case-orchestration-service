@@ -9,7 +9,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import java.io.IOException;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PopulateMiniPetitionUrlTest {
@@ -23,7 +24,7 @@ public class PopulateMiniPetitionUrlTest {
 
         Map<String, Object> result = populateMiniPetitionUrl.execute(null, payload);
 
-        assertThat(payload).isEqualTo(result);
-        assertThat(result.get("minipetitionlink")).isEqualTo("https://localhost:8080/documents/1234/binary");
+        assertThat(result, is(payload));
+        assertThat(result.get("minipetitionlink"), is("https://localhost:8080/documents/1234/binary"));
     }
 }

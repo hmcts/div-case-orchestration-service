@@ -8,8 +8,9 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 public class SolicitorDnReviewPetitionTest extends IntegrationTest {
 
@@ -27,6 +28,6 @@ public class SolicitorDnReviewPetitionTest extends IntegrationTest {
         Map<String, Object> data = (Map<String, Object>) response.get(DATA);
 
         assertNotNull(data);
-        assertEquals("https://localhost:8080/documents/1234/binary", data.get("minipetitionlink"));
+        assertThat(data.get("minipetitionlink"), is("https://localhost:8080/documents/1234/binary"));
     }
 }
