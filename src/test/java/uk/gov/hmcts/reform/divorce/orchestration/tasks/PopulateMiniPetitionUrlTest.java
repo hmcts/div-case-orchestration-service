@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import java.io.IOException;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PopulateMiniPetitionUrlTest {
@@ -18,12 +18,12 @@ public class PopulateMiniPetitionUrlTest {
     private PopulateMiniPetitionUrl populateMiniPetitionUrl;
 
     @Test
-    public void executeSetsMiniPetitionUrl() throws IOException {
-        Map<String, Object> payload = ObjectMapperTestUtil.getJsonFromResourceFile("/jsonExamples/payloads/caseListedForHearing.json", Map.class);
+    public void testExecuteSetsMiniPetitionUrl() throws IOException {
+        Map<String, Object> payload = ObjectMapperTestUtil.getJsonFromResourceFile("/jsonExamples/payloads/sol-dn-review-petition.json", Map.class);
 
         Map<String, Object> result = populateMiniPetitionUrl.execute(null, payload);
 
-        assertEquals(payload, result);
-        assertEquals("https://localhost:8080/documents/1234/binary", result.get("minipetitionlink"));
+        assertThat(payload).isEqualTo(result);
+        assertThat(result.get("minipetitionlink")).isEqualTo("https://localhost:8080/documents/1234/binary");
     }
 }

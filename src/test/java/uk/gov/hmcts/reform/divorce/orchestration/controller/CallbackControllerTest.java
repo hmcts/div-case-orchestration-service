@@ -21,6 +21,7 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,7 +70,7 @@ public class CallbackControllerTest {
 
 
     @Test
-    public void solDnReviewPetition() throws CaseOrchestrationServiceException {
+    public void testSolDnReviewPetition() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
@@ -77,10 +78,13 @@ public class CallbackControllerTest {
                         .build())
                 .build();
 
+        when(caseOrchestrationService.processSolDnReviewPetition(incomingRequest)).thenReturn(incomingPayload);
+
         ResponseEntity<CcdCallbackResponse> response = controller.solDnReviewPetition(incomingRequest);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
         assertThat(response.getBody().getErrors(), is(nullValue()));
+        verify(caseOrchestrationService).processSolDnReviewPetition(incomingRequest);
     }
 }
