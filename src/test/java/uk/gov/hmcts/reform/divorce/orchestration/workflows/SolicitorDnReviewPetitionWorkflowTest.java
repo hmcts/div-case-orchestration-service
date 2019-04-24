@@ -15,7 +15,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateMiniPetitionUrl;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
@@ -49,7 +50,7 @@ public class SolicitorDnReviewPetitionWorkflowTest {
 
         when(populateMiniPetitionUrl.execute(taskContext, caseData)).thenReturn(caseData);
 
-        assertEquals(caseData, solicitorDnReviewPetitionWorkflow.run(caseDetails));
+        assertThat(solicitorDnReviewPetitionWorkflow.run(caseDetails), is(caseData));
 
         verify(populateMiniPetitionUrl).execute(taskContext, caseData);
     }

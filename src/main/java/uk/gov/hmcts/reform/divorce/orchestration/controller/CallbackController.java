@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
-import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import static java.lang.String.format;
@@ -68,10 +67,20 @@ public class CallbackController {
             @ApiResponse(code = 200, message = "Success", response = CcdCallbackResponse.class),
             @ApiResponse(code = 400, message = "Bad Request"),
             @ApiResponse(code = 500, message = "Internal Server Error")})
-    public ResponseEntity<CcdCallbackResponse> solDnReviewPetition(@RequestBody
-                                                                CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+    public ResponseEntity<CcdCallbackResponse> solDnReviewPetition(@RequestBody CcdCallbackRequest ccdCallbackRequest) {
 
-        Map<String, Object> data = caseOrchestrationService.processSolDnReviewPetition(ccdCallbackRequest);
-        return ResponseEntity.ok(CcdCallbackResponse.builder().data(data).build());
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.debug("Processing solicitor DN review petition for Case ID: {}", caseId);
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(caseOrchestrationService.processSolDnReviewPetition(ccdCallbackRequest));
+        } catch (CaseOrchestrationServiceException exception) {
+            log.error(format("Failed to process solicitor DN review petition for Case ID: %s", caseId), exception);
+            callbackResponseBuilder.errors(ImmutableList.of(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 }
