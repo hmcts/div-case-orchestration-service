@@ -87,4 +87,22 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getErrors(), is(nullValue()));
         verify(caseOrchestrationService).processSolDnReviewPetition(incomingRequest);
     }
+
+    @Test
+    public void testSolDnReviewPetitionPopulatesErrorsIfExceptionIsThrown() throws CaseOrchestrationServiceException {
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .build())
+                .build();
+
+        when(caseOrchestrationService.processSolDnReviewPetition(incomingRequest))
+                .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
+
+        ResponseEntity<CcdCallbackResponse> response = controller.solDnReviewPetition(incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(nullValue()));
+        assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
+        verify(caseOrchestrationService).processSolDnReviewPetition(incomingRequest);
+    }
 }
