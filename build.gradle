@@ -291,6 +291,12 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     finalizedBy aggregate
 }
 
+subprojects {
+    tasks.withType(Test) {
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    }
+}
+
 pitest {
     targetClasses = ['uk.gov.hmcts.reform.divorce.orchestration.*']
     excludedClasses = ['uk.gov.hmcts.reform.divorce.orchestration.config.*',
