@@ -75,18 +75,16 @@ public abstract class IntegrationTest {
     }
 
     protected UserDetails createCaseWorkerUser() {
-        synchronized (this) {
-            if (caseWorkerUser == null) {
-                caseWorkerUser = getUserDetails(
-                    CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN, CASE_WORKER_PASSWORD,
-                    CASEWORKER_USERGROUP,
-                    CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
-                    CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
-                );
-            }
-
-            return caseWorkerUser;
+        if (caseWorkerUser == null) {
+            caseWorkerUser = getUserDetails(
+                CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN, CASE_WORKER_PASSWORD,
+                CASEWORKER_USERGROUP,
+                CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
+                CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
+            );
         }
+
+        return caseWorkerUser;
     }
 
     protected UserDetails createCitizenUser() {
@@ -102,26 +100,18 @@ public abstract class IntegrationTest {
     }
 
     private UserDetails getUserDetails(String username, String password, String userGroup, String... role) {
-        synchronized (this) {
-            idamTestSupportUtil.createUser(username, password, userGroup, role);
+        idamTestSupportUtil.createUser(username, password, userGroup, role);
 
-            try {
-                // calling generate token too soon might fail, so we sleep..
-                Thread.sleep(1000);
-            } catch (InterruptedException ignored) {
-            }
+        final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
 
-            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
+        final String userId = idamTestSupportUtil.getUserId(authToken);
 
-            final String userId = idamTestSupportUtil.getUserId(authToken);
-
-            return UserDetails.builder()
-                .username(username)
-                .emailAddress(username)
-                .password(password)
-                .authToken(authToken)
-                .id(userId)
-                .build();
-        }
+        return UserDetails.builder()
+            .username(username)
+            .emailAddress(username)
+            .password(password)
+            .authToken(authToken)
+            .id(userId)
+            .build();
     }
 }
