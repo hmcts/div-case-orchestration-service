@@ -291,10 +291,8 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     finalizedBy aggregate
 }
 
-subprojects {
-    tasks.withType(Test) {
-        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-    }
+tasks.withType(Test) {
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
 }
 
 pitest {
