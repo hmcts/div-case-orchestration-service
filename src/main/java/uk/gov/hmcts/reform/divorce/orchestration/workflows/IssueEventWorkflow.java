@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGenerat
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFee;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetAosLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDate;
@@ -26,7 +28,6 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_SERVICE_CENTRE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
@@ -44,6 +45,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final CoRespondentLetterGenerator coRespondentLetterGenerator;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
     private final GetPetitionIssueFee getPetitionIssueFee;
+    private final ResetAosLinkingFields resetAosLinkingFields;
 
     @Autowired
     @SuppressWarnings("squid:S00107") // Can never have enough collaborators
@@ -55,7 +57,8 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
                               RespondentLetterGenerator respondentLetterGenerator,
                               GetPetitionIssueFee getPetitionIssueFee,
                               CoRespondentLetterGenerator coRespondentLetterGenerator,
-                              CaseFormatterAddDocuments caseFormatterAddDocuments) {
+                              CaseFormatterAddDocuments caseFormatterAddDocuments,
+                              ResetAosLinkingFields resetAosLinkingFields) {
         this.validateCaseData = validateCaseData;
         this.setIssueDate = setIssueDate;
         this.petitionGenerator = petitionGenerator;
@@ -65,6 +68,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         this.getPetitionIssueFee = getPetitionIssueFee;
         this.coRespondentLetterGenerator = coRespondentLetterGenerator;
         this.caseFormatterAddDocuments = caseFormatterAddDocuments;
+        this.resetAosLinkingFields = resetAosLinkingFields;
     }
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,
@@ -76,7 +80,8 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         tasks.add(setIssueDate);
         tasks.add(petitionGenerator);
 
-        final Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        final Map<String, Object> caseData = caseDetails.getCaseData();
 
         if (generateAosInvitation && isServiceCentreDivorceUnit(caseData)) {
             tasks.add(respondentPinGenerator);
@@ -84,7 +89,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
             if (isAdulteryCaseWithCoRespondent(caseData)) {
                 log.info("Adultery case with co-respondent: {}. Calculating current petition fee and generating"
-                    + " co-respondent letter", caseData.get(CASE_ID_JSON_KEY));
+                    + " co-respondent letter", caseDetails.getCaseId());
 
                 tasks.add(getPetitionIssueFee);
                 tasks.add(coRespondentPinGenerator);
@@ -93,12 +98,13 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         }
 
         tasks.add(caseFormatterAddDocuments);
+        tasks.add(resetAosLinkingFields);
 
         return this.execute(
             tasks.toArray(new Task[tasks.size()]),
             caseData,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails())
+            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails)
         );
     }
 
