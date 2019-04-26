@@ -21,6 +21,7 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -67,4 +68,40 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
     }
 
+    @Test
+    public void testSolDnCosts() throws CaseOrchestrationServiceException {
+        Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(incomingPayload)
+                        .build())
+                .build();
+
+        when(caseOrchestrationService.processSolDnCosts(incomingRequest)).thenReturn(incomingPayload);
+
+        ResponseEntity<CcdCallbackResponse> response = controller.solDnCosts(incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+        verify(caseOrchestrationService).processSolDnCosts(incomingRequest);
+    }
+
+    @Test
+    public void testSolDnCostsPopulatesErrorsIfExceptionIsThrown() throws CaseOrchestrationServiceException {
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .build())
+                .build();
+
+        when(caseOrchestrationService.processSolDnCosts(incomingRequest))
+                .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
+
+        ResponseEntity<CcdCallbackResponse> response = controller.solDnCosts(incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(nullValue()));
+        assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
+        verify(caseOrchestrationService).processSolDnCosts(incomingRequest);
+    }
 }

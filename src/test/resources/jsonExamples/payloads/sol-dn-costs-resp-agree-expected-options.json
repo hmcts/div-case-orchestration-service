@@ -1,0 +1,8 @@
+{
+  "options": {
+    "originalAmount": "The petition still wants to claim costs and will let the court decide how much",
+    "counterOffer": "The petitioner will accept the amount proposed by the respondent (£200)",
+    "endClaim": "The petitioner does not want to claim costs anymore"
+  },
+  "selectedItem": "originalAmount"
+}

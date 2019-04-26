@@ -12,11 +12,11 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.UUID;
+import javax.annotation.PostConstruct;
 
 @Slf4j
 @RunWith(SerenityRunner.class)
@@ -58,8 +58,8 @@ public abstract class IntegrationTest {
     }
 
     @PostConstruct
-    public void init(){
-        if(!Strings.isNullOrEmpty(httpProxy)) {
+    public void init() {
+        if (!Strings.isNullOrEmpty(httpProxy)) {
             try {
                 URL proxy = new URL(httpProxy);
                 InetAddress.getByName(proxy.getHost()).isReachable(2000); // check proxy connectivity
@@ -108,7 +108,8 @@ public abstract class IntegrationTest {
             try {
                 // calling generate token too soon might fail, so we sleep..
                 Thread.sleep(1000);
-            } catch (InterruptedException ignored) {
+            } catch (InterruptedException e) {
+                log.error("Error during sleep", e);
             }
 
             final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
