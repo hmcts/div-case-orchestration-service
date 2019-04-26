@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.divorce.context;
 
+import io.restassured.config.ConnectionConfig;
+import io.restassured.config.RestAssuredConfig;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationMethodRule;
+import net.serenitybdd.rest.SerenityRest;
 import org.assertj.core.util.Strings;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
@@ -59,6 +62,11 @@ public abstract class IntegrationTest {
 
     @PostConstruct
     public void init() {
+        ConnectionConfig connectionConfig = new ConnectionConfig();
+        connectionConfig.closeIdleConnectionsAfterEachResponse();
+        RestAssuredConfig config = SerenityRest.config().connectionConfig(connectionConfig);
+        SerenityRest.setDefaultConfig(config);
+
         if (!Strings.isNullOrEmpty(httpProxy)) {
             try {
                 URL proxy = new URL(httpProxy);
