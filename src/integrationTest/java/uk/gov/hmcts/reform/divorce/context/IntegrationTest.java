@@ -1,11 +1,8 @@
 package uk.gov.hmcts.reform.divorce.context;
 
-import io.restassured.config.ConnectionConfig;
-import io.restassured.config.RestAssuredConfig;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationMethodRule;
-import net.serenitybdd.rest.SerenityRest;
 import org.assertj.core.util.Strings;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
@@ -62,11 +59,6 @@ public abstract class IntegrationTest {
 
     @PostConstruct
     public void init() {
-        ConnectionConfig connectionConfig = new ConnectionConfig();
-        connectionConfig.closeIdleConnectionsAfterEachResponse();
-        RestAssuredConfig config = SerenityRest.config().connectionConfig(connectionConfig);
-        SerenityRest.setDefaultConfig(config);
-
         if (!Strings.isNullOrEmpty(httpProxy)) {
             try {
                 URL proxy = new URL(httpProxy);
@@ -115,19 +107,29 @@ public abstract class IntegrationTest {
 
     private UserDetails getUserDetails(String username, String password, String userGroup, String... role) {
         synchronized (this) {
-            idamTestSupportUtil.createUser(username, password, userGroup, role);
+            UserDetails userDetails;
 
-            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
+            try {
+                idamTestSupportUtil.createUser(username, password, userGroup, role);
 
-            final String userId = idamTestSupportUtil.getUserId(authToken);
+                final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
 
-            return UserDetails.builder()
-                .username(username)
-                .emailAddress(username)
-                .password(password)
-                .authToken(authToken)
-                .id(userId)
-                .build();
+                Thread.sleep(500);
+
+                final String userId = idamTestSupportUtil.getUserId(authToken);
+
+                userDetails =  UserDetails.builder()
+                    .username(username)
+                    .emailAddress(username)
+                    .password(password)
+                    .authToken(authToken)
+                    .id(userId)
+                    .build();
+                return userDetails;
+            } catch (InterruptedException ex) {
+                log.debug("Problem waiting for IDAM threads");
+            }
+            return null;
         }
     }
 }

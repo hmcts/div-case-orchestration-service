@@ -87,7 +87,7 @@ public class IdamUtils {
             .asString();
     }
 
-    public String generateUserTokenWithNoRoles(String username, String password) {
+    public String generateUserTokenWithNoRoles(String username, String password) throws InterruptedException {
         String userLoginDetails = String.join(":", username, password);
         final String authHeader = "Basic " + new String(Base64.getEncoder().encode(userLoginDetails.getBytes()));
 
@@ -96,6 +96,8 @@ public class IdamUtils {
             .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .relaxedHTTPSValidation()
             .post(idamCodeUrl());
+
+        Thread.sleep(500);
 
         if (response.getStatusCode() >= 300) {
             throw new IllegalStateException("Token generation failed with code: " + response.getStatusCode()
@@ -106,6 +108,8 @@ public class IdamUtils {
             .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .relaxedHTTPSValidation()
             .post(idamTokenUrl(response.getBody().path("code")));
+
+        Thread.sleep(500);
 
         assert response.getStatusCode() == 200 : "Error generating code from IDAM: " + response.getStatusCode();
 
