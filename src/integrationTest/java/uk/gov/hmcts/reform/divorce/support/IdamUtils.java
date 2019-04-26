@@ -1,22 +1,26 @@
 package uk.gov.hmcts.reform.divorce.support;
 
+import io.restassured.config.ConnectionConfig;
 import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.GeneratePinRequest;
 import uk.gov.hmcts.reform.divorce.model.PinResponse;
 import uk.gov.hmcts.reform.divorce.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.divorce.model.UserGroup;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Component
 public class IdamUtils {
 
     @Value("${auth.idam.client.baseUrl}")
@@ -27,6 +31,13 @@ public class IdamUtils {
 
     @Value("${auth2.client.secret}")
     private String idamSecret;
+
+    @PostConstruct
+    private void setSerenityCloseConnection() {
+        ConnectionConfig connectionConfig = new ConnectionConfig();
+        connectionConfig.closeIdleConnectionsAfterEachResponse();
+        SerenityRest.config().connectionConfig(connectionConfig);
+    }
 
     public PinResponse generatePin(String firstName, String lastName, String authToken) {
         final GeneratePinRequest generatePinRequest =

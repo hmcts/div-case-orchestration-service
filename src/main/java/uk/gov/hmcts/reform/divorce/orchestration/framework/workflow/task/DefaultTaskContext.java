@@ -33,8 +33,8 @@ public class DefaultTaskContext implements TaskContext {
     }
 
     @Override
-    public void setTransientObject(String key, Object jsonNode) {
-        transientObjects.put(key, jsonNode);
+    public void setTransientObject(String key, Object value) {
+        transientObjects.put(key, value);
     }
 
     @Override
