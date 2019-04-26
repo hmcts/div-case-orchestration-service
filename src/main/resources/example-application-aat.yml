@@ -1,0 +1,64 @@
+
+case:
+  formatter:
+    service:
+      api:
+        baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://div-cfs-aat.service.core-compute-aat.internal}
+  validation:
+    service:
+      api:
+        baseurl: ${CASE_VALIDATION_SERVICE_API_BASEURL:http://div-vs-aat.service.core-compute-aat.internal}
+  maintenance:
+    service:
+      api:
+        baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://div-cms-aat.service.core-compute-aat.internal}
+
+fees-and-payments:
+  service:
+    api:
+      baseurl: ${FEES_AND_PAYMENTS_SERVICE_API_BASEURL:http://div-fps-aat.service.core-compute-aat.internal}
+
+payment:
+  service:
+    api:
+      baseurl: ${PAYMENT_API_BASEURL:http://payment-api-aat.service.core-compute-aat.internal}
+
+feature-toggle:
+  service:
+    api:
+      baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://rpe-feature-toggle-api-aat.service.core-compute-aat.internal}
+
+send-letter:
+  url: ${SEND_LETTER_SERIVCE_BASEURL:http://rpe-send-letter-service-aat.service.core-compute-aat.internal}
+
+uk:
+  gov:
+    notify:
+      api:
+        key: ${UK_GOV_NOTIFY_API_KEY:replace_me}
+
+idam:
+  api:
+    url: ${IDAM_API_URL:https://idam-api.aat.platform.hmcts.net}
+    redirect-url: ${IDAM_API_REDIRECT_URL:https://div-pfe-aat.service.core-compute-aat.internal/authenticated}
+  citizen:
+    username: ${IDAM_CITIZEN_USERNAME:replace_me}
+    password: ${IDAM_CITIZEN_PASSWORD:replace_me}
+  caseworker:
+    username: ${IDAM_CASEWORKER_USERNAME:replace_me}
+    password: ${IDAM_CASEWORKER_PASSWORD:replace_me}
+  s2s-auth:
+    url: ${SERVICE_AUTH_PROVIDER_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
+    secret: ${SERVICE_AUTH_SECRET:replace_me}
+
+auth2:
+  client:
+    id: divorce
+    secret: ${AUTH2_CLIENT_SECRET:replace_me}
+
+document:
+  generator:
+    service:
+      api:
+        baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://div-dgs-aat.service.core-compute-aat.internal}
+

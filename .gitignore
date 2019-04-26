@@ -21,5 +21,6 @@ target
 .settings
 .classpath
 .project
-
-application-aat.yml
+application-*.yml
+application-*.yaml
+application-local.properties

@@ -67,7 +67,6 @@ module "div-cos" {
     UK_GOV_NOTIFY_API_KEY                           = "${data.azurerm_key_vault_secret.uk-gov-notify-api-key.value}"
     UK_GOV_NOTIFY_EMAIL_TEMPLATES                   = "${local.uk_gov_notify_email_templates}"
     UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS               = "${var.uk_gov_notify_email_template_vars}"
-    FEATURE_TOGGLE_520                              = "${var.feature_toggle_520}"
     AOS_RESPONDED_DAYS_TO_COMPLETE                  = "${var.aos_responded_days_to_complete}"
     AOS_RESPONDED_AWAITING_ANSWER_DAYS_TO_RESPOND   = "${var.aos_responded_awaiting_answer_days_to_respond}"
 

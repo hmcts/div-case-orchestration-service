@@ -79,6 +79,14 @@ public class IdamUtils {
         return response.getBody().path("id").toString();
     }
 
+    public String getPin(final String letterHolderId) {
+        return SerenityRest.given()
+            .relaxedHTTPSValidation()
+            .get(idamUserBaseUrl + "/testing-support/accounts/pin/" + letterHolderId)
+            .getBody()
+            .asString();
+    }
+
     public String generateUserTokenWithNoRoles(String username, String password) {
         String userLoginDetails = String.join(":", username, password);
         final String authHeader = "Basic " + new String(Base64.getEncoder().encode(userLoginDetails.getBytes()));
@@ -98,6 +106,8 @@ public class IdamUtils {
             .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .relaxedHTTPSValidation()
             .post(idamTokenUrl(response.getBody().path("code")));
+
+        assert response.getStatusCode() == 200 : "Error generating code from IDAM: " + response.getStatusCode();
 
         String token = response.getBody().path("access_token");
         return "Bearer " + token;
