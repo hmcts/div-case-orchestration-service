@@ -35,6 +35,6 @@ public class PopulateMiniPetitionUrlTest {
         Map<String, Object> result = populateMiniPetitionUrl.execute(null, payload);
 
         assertThat(result, is(payload));
-        assertThat(result.get("minipetitionlink"), is("https://localhost:8080/documents/1234/binary"));
+        assertThat(result.get("minipetitionlink"), is(((ArrayList<Map>) payload.get("D8DocumentsGenerated")).get(0)));
     }
 }

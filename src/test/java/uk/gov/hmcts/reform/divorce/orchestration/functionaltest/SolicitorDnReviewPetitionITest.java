@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -93,7 +94,7 @@ public class SolicitorDnReviewPetitionITest {
                 .build();
 
         Map<String, Object> expectedData = new HashMap<>();
-        expectedData.put(MINI_PETITION_LINK, "https://localhost:8080/documents/1234/binary");
+        expectedData.put(MINI_PETITION_LINK, ((ArrayList<Map>)caseData.get("D8DocumentsGenerated")).get(0));
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
                 .data(expectedData)
