@@ -19,7 +19,25 @@ public class PopulateDivorceCostOptionsTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testExecuteSetsCostOptions() throws Exception {
+    public void testExecuteSetsCostOptions_whenRespAgreeToCostsIsNotDifferentAmount_thenOnlyDisplayTwoOptions() throws Exception {
+        Map<String, Object> payload = ObjectMapperTestUtil.getJsonFromResourceFile(
+                "/jsonExamples/payloads/sol-dn-costs.json",
+                Map.class
+        );
+        Map<String, Object> expectedPayload = ObjectMapperTestUtil.getJsonFromResourceFile(
+                "/jsonExamples/payloads/sol-dn-costs-expected-options.json",
+                Map.class
+        );
+
+        Map<String, Object> result = populateMiniPetitionUrl.execute(null, payload);
+
+        assertThat(result, is(payload));
+        assertThat(result.get("DivorceCostsOptionDNEnum"), is(expectedPayload));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testExecuteSetsCostOptions_whenRespAgreeToCostsIsDifferentAmount_thenAdditionalCounterOfferOptionIsAdded() throws Exception {
         Map<String, Object> payload = ObjectMapperTestUtil.getJsonFromResourceFile(
                 "/jsonExamples/payloads/sol-dn-costs-resp-agree.json",
                 Map.class
