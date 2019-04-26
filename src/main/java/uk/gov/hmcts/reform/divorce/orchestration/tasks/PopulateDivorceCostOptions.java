@@ -23,7 +23,7 @@ public class PopulateDivorceCostOptions implements Task<Map<String, Object>> {
     private static final String OPTIONS = "options";
     private static final String DIVORCE_COSTS_OPTION_DN_ENUM = "DivorceCostsOptionDNEnum";
 
-    private static final String ORIGINAL_AMOUNT_OPTION = "The petition still wants to claim costs and will let the court decide how much";
+    private static final String ORIGINAL_AMOUNT_OPTION = "The petitioner still wants to claim costs and will let the court decide how much";
     private static final String COUNTER_OFFER_OPTION = "The petitioner will accept the amount proposed by the respondent (£%s)";
     private static final String END_CLAIM_OPTION = "The petitioner does not want to claim costs anymore";
 
@@ -35,10 +35,7 @@ public class PopulateDivorceCostOptions implements Task<Map<String, Object>> {
         String respondentCostAmount = (String) payload.get(RESP_COSTS_AMOUNT);
 
         if (DIFFERENT_AMOUNT.equals(payload.get(RESP_AGREE_TO_COSTS))) {
-            options.put(COUNTER_OFFER,
-                    String.format(COUNTER_OFFER_OPTION,
-                            respondentCostAmount)
-            );
+            options.put(COUNTER_OFFER, String.format(COUNTER_OFFER_OPTION, respondentCostAmount));
         }
 
         options.put(END_CLAIM, END_CLAIM_OPTION);
