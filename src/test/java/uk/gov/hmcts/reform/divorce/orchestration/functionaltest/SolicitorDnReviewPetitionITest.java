@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,8 +83,7 @@ public class SolicitorDnReviewPetitionITest {
                 Map.class
         );
 
-        final CaseDetails caseDetails =
-                CaseDetails.builder()
+        final CaseDetails caseDetails = CaseDetails.builder()
                         .caseData(caseData)
                         .build();
 
@@ -93,18 +91,25 @@ public class SolicitorDnReviewPetitionITest {
                 .caseDetails(caseDetails)
                 .build();
 
-        Map<String, Object> expectedData = new HashMap<>();
-        expectedData.put(MINI_PETITION_LINK, ((ArrayList<Map>)caseData.get("D8DocumentsGenerated")).get(0));
-
-        CcdCallbackResponse expected = CcdCallbackResponse.builder()
-                .data(expectedData)
-                .build();
-
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(request))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(expected)));
+            .content(convertObjectToJsonString(request))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(
+                    convertObjectToJsonString(CcdCallbackResponse.builder()
+                        .data(buildExpectedDataMap())
+                        .build()
+                    )
+                )
+            );
+    }
+
+    private Map<String, Object> buildExpectedDataMap() {
+        HashMap<String, Object> expectedMiniPetitionLink = new HashMap<>();
+        expectedMiniPetitionLink.put("document_url", "https://localhost:8080/documents/1234");
+        expectedMiniPetitionLink.put("document_filename", "d8petition1513951627081724.pdf");
+        expectedMiniPetitionLink.put("document_binary_url", "https://localhost:8080/documents/1234/binary");
+        return Collections.singletonMap(MINI_PETITION_LINK, expectedMiniPetitionLink);
     }
 }

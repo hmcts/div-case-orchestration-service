@@ -19,7 +19,8 @@ public class PopulateMiniPetitionUrl implements Task<Map<String, Object>>  {
     private static final String DOCUMENT_TYPE = "DocumentType";
     private static final String PETITION_TYPE = "petition";
 
-    private static final String PETITION_LINK = "minipetitionlink";
+    private static final String DOCUMENT_LINK = "DocumentLink";
+    private static final String MINI_PETITION_LINK = "minipetitionlink";
 
     @SuppressWarnings("unchecked")
     @Override
@@ -33,7 +34,8 @@ public class PopulateMiniPetitionUrl implements Task<Map<String, Object>>  {
                 .findFirst()
                 .orElseThrow(() -> new TaskException("Petition document not found"));
 
-        payload.put(PETITION_LINK, petitionDocument);
+        Map<String, Object> documentLink = (Map<String, Object>) ((Map) petitionDocument.get(VALUE)).get(DOCUMENT_LINK);
+        payload.put(MINI_PETITION_LINK, documentLink);
 
         return payload;
     }
