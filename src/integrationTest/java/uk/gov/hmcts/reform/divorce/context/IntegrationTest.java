@@ -58,19 +58,15 @@ public abstract class IntegrationTest {
     }
 
     @PostConstruct
-    public void init() {
-        if (!Strings.isNullOrEmpty(httpProxy)) {
+    public void init(){
+        if(!Strings.isNullOrEmpty(httpProxy)) {
             try {
                 URL proxy = new URL(httpProxy);
-                if (InetAddress.getByName(proxy.getHost()).isReachable(2000)) { // check proxy connectivity
-                    System.setProperty("http.proxyHost", proxy.getHost());
-                    System.setProperty("http.proxyPort", Integer.toString(proxy.getPort()));
-                    System.setProperty("https.proxyHost", proxy.getHost());
-                    System.setProperty("https.proxyPort", Integer.toString(proxy.getPort()));
-                } else {
-                    throw new IOException();
-                }
-
+                InetAddress.getByName(proxy.getHost()).isReachable(2000); // check proxy connectivity
+                System.setProperty("http.proxyHost", proxy.getHost());
+                System.setProperty("http.proxyPort", Integer.toString(proxy.getPort()));
+                System.setProperty("https.proxyHost", proxy.getHost());
+                System.setProperty("https.proxyPort", Integer.toString(proxy.getPort()));
             } catch (IOException e) {
                 log.error("Error setting up proxy - are you connected to the VPN?", e);
                 throw new RuntimeException(e);
@@ -82,10 +78,10 @@ public abstract class IntegrationTest {
         synchronized (this) {
             if (caseWorkerUser == null) {
                 caseWorkerUser = getUserDetails(
-                    CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN, CASE_WORKER_PASSWORD,
-                    CASEWORKER_USERGROUP,
-                    CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
-                    CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
+                        CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN, CASE_WORKER_PASSWORD,
+                        CASEWORKER_USERGROUP,
+                        CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
+                        CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
                 );
             }
 
@@ -107,29 +103,25 @@ public abstract class IntegrationTest {
 
     private UserDetails getUserDetails(String username, String password, String userGroup, String... role) {
         synchronized (this) {
-            String authToken;
-            String userId;
+            idamTestSupportUtil.createUser(username, password, userGroup, role);
 
             try {
-                idamTestSupportUtil.createUser(username, password, userGroup, role);
-
-                authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
-
-                Thread.sleep(500);
-
-                userId = idamTestSupportUtil.getUserId(authToken);
-
-            } catch (InterruptedException ex) {
-                log.debug("Problem waiting for IDAM threads");
-                throw new RuntimeException();
+                // calling generate token too soon might fail, so we sleep..
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
             }
+
+            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
+
+            final String userId = idamTestSupportUtil.getUserId(authToken);
+
             return UserDetails.builder()
-                .username(username)
-                .emailAddress(username)
-                .password(password)
-                .authToken(authToken)
-                .id(userId)
-                .build();
+                    .username(username)
+                    .emailAddress(username)
+                    .password(password)
+                    .authToken(authToken)
+                    .id(userId)
+                    .build();
         }
     }
 }
