@@ -170,6 +170,9 @@ dependencies {
     compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
         force = true
     }
+    compile (group: 'org.springframework.security', name:'spring-security-crypto', version: versions.springSecurityCrypto) {
+        force = true
+    }
 
     compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-core', version: versions.tomcat) {
         force = true
