@@ -169,9 +169,6 @@ dependencies {
     compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
         force = true
     }
-    compile (group: 'org.springframework.security', name:'spring-security-crypto', version: versions.springSecurityCrypto) {
-        force = true
-    }
 
     compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
@@ -199,6 +196,16 @@ dependencies {
     compile group: 'org.pitest', name: 'pitest', version: versions.pitest
     compile group:'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
     compile group:'org.codehaus.sonar-plugins', name:'sonar-pitest-plugin', version: versions.sonarPitest
+
+    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-core', version: '9.0.19') {
+        force = true
+    }
+    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-websocket', version: '9.0.19') {
+        force = true
+    }
+    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-el', version: '9.0.19') {
+        force = true
+    }
 
     compile (group: 'com.google.guava', name:'guava', version: versions.guava) {
 	        force = true
