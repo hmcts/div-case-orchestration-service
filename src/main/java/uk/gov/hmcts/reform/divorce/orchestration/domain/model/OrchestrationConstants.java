@@ -163,8 +163,10 @@ public class OrchestrationConstants {
     public static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
     public static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
     public static final String DOCUMENT_TYPE_CO_RESPONDENT_INVITATION = "aoscr";
+    public static final String DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS = "coRespondentAnswers";
     public static final String CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT = "co-respondentaosinvitation%s";
     public static final String CO_RESPONDENT_INVITATION_TEMPLATE_NAME = "co-respondentinvitation";
+    public static final String CO_RESPONDENT_ANSWERS_TEMPLATE_NAME = "co-respondent-answers";
     public static final String PETITION_ISSUE_FEE_FOR_LETTER = "petitionIssueFee";
     public static final String DOCUMENT_COLLECTION = "documentCollection";
 

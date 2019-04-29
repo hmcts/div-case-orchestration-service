@@ -459,10 +459,12 @@ public class OrchestrationController {
     @ApiOperation(value = "Co-Respondent confirmation notification ")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Notification sent successful"),
+        @ApiResponse(code = 401, message = "User Not Authenticated"),
         @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> corespReceived(
+    public ResponseEntity<CcdCallbackResponse> coRespReceived(
+        @RequestHeader("Authorization") final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return ResponseEntity.ok(orchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest));
+        return ResponseEntity.ok(orchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest, authorizationToken));
     }
 
     @PostMapping(path = "/submit-co-respondent-aos",

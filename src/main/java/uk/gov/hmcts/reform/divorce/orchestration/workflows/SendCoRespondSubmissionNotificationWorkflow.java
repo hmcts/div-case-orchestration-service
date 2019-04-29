@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,14 +10,19 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentAnswersGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCoRespondentRespondedNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DEFENDS_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DUE_DATE;
@@ -38,20 +42,36 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
 
 @Component
-@AllArgsConstructor
 public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    @Autowired
     private final GenericEmailNotification emailTask;
-
-    @Autowired
     private final SendPetitionerCoRespondentRespondedNotificationEmail petitionerEmailTask;
+    private final TaskCommons taskCommons;
+    private final CoRespondentAnswersGenerator coRespondentAnswersGenerator;
+    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Autowired
-    private final TaskCommons taskCommons;
+    public SendCoRespondSubmissionNotificationWorkflow(GenericEmailNotification emailTask,
+                                                       SendPetitionerCoRespondentRespondedNotificationEmail petitionerEmailTask,
+                                                       TaskCommons taskCommons,
+                                                       CoRespondentAnswersGenerator coRespondentAnswersGenerator,
+                                                       CaseFormatterAddDocuments caseFormatterAddDocuments) {
+        this.emailTask = emailTask;
+        this.petitionerEmailTask = petitionerEmailTask;
+        this.taskCommons = taskCommons;
+        this.coRespondentAnswersGenerator = coRespondentAnswersGenerator;
+        this.caseFormatterAddDocuments = caseFormatterAddDocuments;
+    }
 
-    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, String authorizationToken) throws WorkflowException {
+        final List<Task> tasks = new ArrayList<>();
+
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        tasks.add(coRespondentAnswersGenerator);
+        tasks.add(caseFormatterAddDocuments);
+        tasks.add(emailTask);
+        tasks.add(petitionerEmailTask);
 
         String caseNumber = (String) caseData.get(D_8_CASE_REFERENCE);
         String firstName = (String) caseData.get(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME);
@@ -81,11 +101,12 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
             }
         }
 
-        return execute(new Task[] {
-            emailTask,
-            petitionerEmailTask
-            },
+        Task[] taskArr = new Task[tasks.size()];
+
+        return execute(
+            tasks.toArray(taskArr),
             caseData,
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authorizationToken),
             ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId()),
             ImmutablePair.of(NOTIFICATION_EMAIL, corespondentEmail),
             ImmutablePair.of(NOTIFICATION_TEMPLATE, template),

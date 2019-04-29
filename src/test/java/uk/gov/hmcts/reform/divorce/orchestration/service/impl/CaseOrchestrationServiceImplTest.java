@@ -582,10 +582,10 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(sendCoRespondSubmissionNotificationWorkflow
-            .run(ccdCallbackRequest))
+            .run(ccdCallbackRequest, AUTH_TOKEN))
             .thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
 
-        CcdCallbackResponse ccdResponse = classUnderTest.sendCoRespReceivedNotificationEmail(ccdCallbackRequest);
+        CcdCallbackResponse ccdResponse = classUnderTest.sendCoRespReceivedNotificationEmail(ccdCallbackRequest, AUTH_TOKEN);
 
         assertEquals(expectedResponse, ccdResponse);
     }

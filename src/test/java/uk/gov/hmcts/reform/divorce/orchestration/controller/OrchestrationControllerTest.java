@@ -552,9 +552,9 @@ public class OrchestrationControllerTest {
         ccdCallbackRequest.setCaseDetails(caseDetails);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
-        when(caseOrchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest)).thenReturn(expectedResponse);
+        when(caseOrchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(expectedResponse);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.corespReceived( ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.coRespReceived(AUTH_TOKEN, ccdCallbackRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
