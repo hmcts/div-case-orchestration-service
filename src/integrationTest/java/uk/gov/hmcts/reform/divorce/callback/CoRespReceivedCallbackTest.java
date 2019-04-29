@@ -9,10 +9,14 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import java.util.List;
 import java.util.Map;
 
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS;
 
 public class CoRespReceivedCallbackTest extends IntegrationTest {
 
@@ -32,6 +36,8 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
         Map<String, Object> response = cosApiClient.coRespReceived(createCaseWorkerUser().getAuthToken(), aosCase);
         assertNotNull(response.get(DATA));
         assertEquals(((Map<String, Object>)aosCase.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
+        assertThat(response, hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName",
+            is(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS)));
     }
 
     @SuppressWarnings("unchecked")
