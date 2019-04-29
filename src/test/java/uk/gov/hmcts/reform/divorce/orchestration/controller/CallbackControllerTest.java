@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
@@ -67,4 +68,18 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
     }
 
+    @Test
+    public void whenCoRespondentAnswerReceived_thenExecuteService() throws Exception {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(payload)
+                .build())
+            .build();
+        when(caseOrchestrationService.coRespondentAnswerReceived(incomingRequest)).thenReturn(payload);
+
+        ResponseEntity<CcdCallbackResponse> response = controller.respondentAnswerReceived(incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    }
 }
