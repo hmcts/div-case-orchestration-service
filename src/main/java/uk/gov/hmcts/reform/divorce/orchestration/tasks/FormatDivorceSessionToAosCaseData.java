@@ -8,8 +8,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_CASE_FORMATTED_DATA;
-
 @Component
 public class FormatDivorceSessionToAosCaseData implements Task<Map<String, Object>> {
 
@@ -22,8 +20,6 @@ public class FormatDivorceSessionToAosCaseData implements Task<Map<String, Objec
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> sessionData) {
-        final Map<String, Object> caseFormatAosData = caseFormatterClient.transformToAosCaseFormat(sessionData);
-        context.setTransientObject(AOS_CASE_FORMATTED_DATA, caseFormatAosData);
-        return caseFormatAosData;
+        return caseFormatterClient.transformToAosCaseFormat(sessionData);
     }
 }

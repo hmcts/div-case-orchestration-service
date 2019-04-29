@@ -10,7 +10,6 @@ public class OrchestrationConstants {
 
     // Task context properties
     public static final String CCD_CASE_DATA = "ccdCaseData";
-    public static final String AOS_CASE_FORMATTED_DATA = "aosCaseFormattedData";
 
     // Authentication
     public static final String ACCESS_CODE = "access_code";
