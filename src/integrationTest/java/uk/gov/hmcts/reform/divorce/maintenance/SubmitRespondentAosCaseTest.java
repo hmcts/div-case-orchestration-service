@@ -19,6 +19,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     private static final String ID = "id";
     private static final String STATE = "state";
     private static final String AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer";
+    private static final String AOS_AWAITING = "AosAwaiting";
     private static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
     private static final String AOS_COMPLETED = "AosCompleted";
     private static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
@@ -29,6 +30,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     private static final String AOS_DEFEND_NO_CONSENT_JSON = "aos-defend-no-consent.json";
     private static final String AOS_NO_DEFEND_CONSENT_JSON = "aos-no-defend-consent.json";
     private static final String AOS_NO_DEFEND_NO_CONSENT_JSON = "aos-no-defend-no-consent.json";
+    private static final String AOS_SOLICITOR_REPRESENTATION_JSON = "aos-solicitor-representation.json";
 
     private static final String SUBMIT_COMPLETE_CASE_JSON = "submit-complete-case.json";
     private static final String SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON = "submit-complete-case-reason-adultery.json";
@@ -176,6 +178,26 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path(ID));
         assertEquals(AOS_COMPLETED, cosResponse.path(STATE));
+        assertAosSubmittedData(userDetails, caseDetails.getId().toString());
+    }
+
+    @Test
+    public void givenRespondentSolicitorRepresented_whenSubmitAos_thenProceedAsExpected() throws Exception {
+        final UserDetails userDetails = createCitizenUser();
+
+        CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
+
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
+                null,
+                TEST_AOS_STARTED_EVENT_ID,
+                userDetails);
+
+        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
+                loadJson(PAYLOAD_CONTEXT_PATH + AOS_SOLICITOR_REPRESENTATION_JSON));
+
+        assertEquals(OK.value(), cosResponse.getStatusCode());
+        assertEquals(caseDetails.getId(), cosResponse.path(ID));
+        assertEquals(AOS_AWAITING, cosResponse.path(STATE));
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
     }
 

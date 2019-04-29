@@ -37,6 +37,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AOS_AWAITING_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
@@ -83,7 +84,7 @@ public class SubmitRespondentAosCaseITest {
     @Test
     public void givenNoAuthToken_whenSubmitAos_thenReturnBadRequest() throws Exception {
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .content(convertObjectToJsonString(getCaseData(YES_VALUE, true)))
+            .content(convertObjectToJsonString(buildRespondentResponse(YES_VALUE, true)))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
@@ -100,7 +101,7 @@ public class SubmitRespondentAosCaseITest {
 
     @Test
     public void givenCaseFormatterFails_whenSubmitAos_thenPropagateTheException() throws Exception {
-        final Map<String, Object> caseData = getCaseData(YES_VALUE, true);
+        final Map<String, Object> caseData = buildRespondentResponse(YES_VALUE, true);
 
         stubFormatterServerEndpoint(BAD_REQUEST, caseData, TEST_ERROR);
 
@@ -115,7 +116,7 @@ public class SubmitRespondentAosCaseITest {
 
     @Test
     public void givenCaseRetrievalFails_whenSubmitAos_thenPropagateTheException() throws Exception {
-        final Map<String, Object> caseData = getCaseData(YES_VALUE, false);
+        final Map<String, Object> caseData = buildRespondentResponse(YES_VALUE, false);
 
         stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
 
@@ -131,7 +132,7 @@ public class SubmitRespondentAosCaseITest {
 
     @Test
     public void givenCaseUpdateFails_whenSubmitAos_thenPropagateTheException() throws Exception {
-        final Map<String, Object> caseData = getCaseData(YES_VALUE, false);
+        final Map<String, Object> caseData = buildRespondentResponse(YES_VALUE, false);
 
         stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
 
@@ -152,7 +153,7 @@ public class SubmitRespondentAosCaseITest {
 
     @Test
     public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseData(YES_VALUE, true);
+        final Map<String, Object> caseData = buildRespondentResponse(YES_VALUE, true);
         final String caseDataString = convertObjectToJsonString(caseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
@@ -174,7 +175,7 @@ public class SubmitRespondentAosCaseITest {
 
     @Test
     public void givenNoConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseData(NO_VALUE, true);
+        final Map<String, Object> caseData = buildRespondentResponse(NO_VALUE, true);
 
         final String caseDataString = convertObjectToJsonString(caseData);
 
@@ -198,7 +199,7 @@ public class SubmitRespondentAosCaseITest {
 
     @Test
     public void givenAdulteryNoConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseData(NO_VALUE, false);
+        final Map<String, Object> caseData = buildRespondentResponse(NO_VALUE, false);
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         caseData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
 
@@ -223,7 +224,7 @@ public class SubmitRespondentAosCaseITest {
 
     @Test
     public void given2YearSeparationNoConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseData(NO_VALUE, false);
+        final Map<String, Object> caseData = buildRespondentResponse(NO_VALUE, false);
         final String caseDataString = convertObjectToJsonString(caseData);
 
         final Map<String, Object> existingCaseData = new HashMap<>();
@@ -244,7 +245,7 @@ public class SubmitRespondentAosCaseITest {
 
     @Test
     public void givenConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseData(YES_VALUE, false);
+        final Map<String, Object> caseData = buildRespondentResponse(YES_VALUE, false);
         final String caseDataString = convertObjectToJsonString(caseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
@@ -257,6 +258,23 @@ public class SubmitRespondentAosCaseITest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(caseDataString));
+    }
+
+    @Test
+    public void givenRespondentSolicitorRepresented_whenSubmitAos_thenProceedAsExpected() throws Exception {
+        final Map<String, Object> caseData = buildSolicitorRepresentationResponse();
+        final String caseDataString = convertObjectToJsonString(caseData);
+
+        stubFormatterServerEndpoint(OK, caseData, caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, AOS_AWAITING_STATE, caseData, caseDataString);
+
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .content(convertObjectToJsonString(caseData))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(caseDataString));
     }
 
     private void stubFormatterServerEndpoint(HttpStatus status, Map<String, Object> caseData, String response) {
@@ -288,7 +306,7 @@ public class SubmitRespondentAosCaseITest {
                 .withBody(convertObjectToJsonString(cmsData))));
     }
 
-    private Map<String, Object> getCaseData(String consent, boolean defended) {
+    private Map<String, Object> buildRespondentResponse(String consent, boolean defended) {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, consent);
 
@@ -300,6 +318,23 @@ public class SubmitRespondentAosCaseITest {
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         caseData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
 
+
+        return caseData;
+    }
+
+    private Map<String, Object> buildSolicitorRepresentationResponse() {
+        Map<String, Object> caseData = new HashMap<>();
+        Map<String, String> respondentSolicitor = new HashMap<>();
+
+        respondentSolicitor.put("name", "Some name");
+        respondentSolicitor.put("company", "Awesome Solicitors LLP");
+        respondentSolicitor.put("address", "123 Victoria Street");
+        respondentSolicitor.put("email", "solicitor@localhost.local");
+        respondentSolicitor.put("phone", "2222222222");
+        respondentSolicitor.put("reference", "2334234");
+
+        caseData.put("respondentCorrespondenceSendToSolicitor", YES_VALUE);
+        caseData.put("respondentSolicitor", respondentSolicitor);
 
         return caseData;
     }

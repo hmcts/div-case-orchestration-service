@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
@@ -62,9 +63,6 @@ public class SubmitRespondentAosCaseUTest {
     public void givenConsentAndDefend_whenExecute_thenProceedAsExpected() {
         final Map<String, Object> divorceSession = getCaseData(true, true);
 
-        when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(
-            CaseDetails.builder().caseId(TEST_CASE_ID).caseData(emptyMap()).build());
-
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
@@ -82,9 +80,6 @@ public class SubmitRespondentAosCaseUTest {
     @Test
     public void givenNoConsentAndDefend_whenExecute_thenProceedAsExpected() {
         final Map<String, Object> divorceSession = getCaseData(false, true);
-
-        when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(
-            CaseDetails.builder().caseId(TEST_CASE_ID).caseData(emptyMap()).build());
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
@@ -188,6 +183,17 @@ public class SubmitRespondentAosCaseUTest {
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, expectedData);
     }
 
+    @Test
+    public void givenSolicitorIsRepresented_whenExecute_thenNextStateIsAosAwaiting() {
+        final Map<String, Object> divorceSession = buildSolicitorResponse();
+        Map<String, Object> expectedData = new HashMap<>(divorceSession);
+
+        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
+
+        verify(caseMaintenanceClient)
+                .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(AOS_AWAITING), eq(expectedData));
+    }
+
     private Map<String, Object> getCaseData(boolean consented, boolean defended) {
         Map<String, Object> caseData = new HashMap<>();
 
@@ -202,6 +208,22 @@ public class SubmitRespondentAosCaseUTest {
         } else {
             caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
         }
+
+        return caseData;
+    }
+
+    private Map<String, Object> buildSolicitorResponse() {
+        Map<String, Object> caseData = new HashMap<>();
+        Map<String, Object> respondentSolicitor = new HashMap<>();
+        respondentSolicitor.put("name", "Some name");
+        respondentSolicitor.put("company", "Awesome Solicitors LLP");
+        respondentSolicitor.put("address", "123 Victoria Street");
+        respondentSolicitor.put("email", "solicitor@localhost.local");
+        respondentSolicitor.put("phone", "2222222222");
+        respondentSolicitor.put("reference", "2334234");
+
+        caseData.put("respondentCorrespondenceSendToSolicitor", YES_VALUE);
+        caseData.put("respondentSolicitor", respondentSolicitor);
 
         return caseData;
     }
