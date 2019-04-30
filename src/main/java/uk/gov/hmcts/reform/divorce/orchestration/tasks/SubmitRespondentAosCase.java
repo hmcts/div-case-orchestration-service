@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
 
-    public static final String RESP_CORRESPONDENCE_SEND_TO_SOL = "respondentCorrespondenceSendToSolicitor";
+    private static final String RESP_CORRESPONDENCE_SEND_TO_SOL = "D8RespondentCorrespondenceSendToSol";
     private final CaseMaintenanceClient caseMaintenanceClient;
 
     @Autowired
@@ -46,17 +46,17 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         String eventId;
 
         if(isSolicitorRepresentingRespondent(submissionData)) {
+            //move back to AOS awaiting, as technically the nominated solicitor will provide a response
             eventId = AOS_AWAITING;
-        } else if (isRespondentWillDefendDivorce(submissionData)) {
-            eventId = AWAITING_ANSWER_AOS_EVENT_ID;
-            submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-            submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
-        } else if (isRespondentAgreeingDivorceButNotAdmitingFact(submissionData, context)) {
-            submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-            submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
-            eventId = COMPLETED_AOS_EVENT_ID;
         } else {
-            eventId = AWAITING_DN_AOS_EVENT_ID;
+            //if respondent didn't nominate a solicitor, then they've provided an answer
+            if (isRespondentWillDefendDivorce(submissionData)) {
+                eventId = AWAITING_ANSWER_AOS_EVENT_ID;
+            } else if (isRespondentAgreeingDivorceButNotAdmittingFact(submissionData, context)) {
+                eventId = COMPLETED_AOS_EVENT_ID;
+            } else {
+                eventId = AWAITING_DN_AOS_EVENT_ID;
+            }
             submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
             submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
         }
@@ -85,7 +85,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
     }
 
-    private boolean isRespondentAgreeingDivorceButNotAdmitingFact(Map<String, Object> submissionData, TaskContext context) {
+    private boolean isRespondentAgreeingDivorceButNotAdmittingFact(Map<String, Object> submissionData, TaskContext context) {
         final String respAdmitOrConsentToFact = (String)submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT);
         final CaseDetails currentCaseDetails = caseMaintenanceClient.retrievePetitionById(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),

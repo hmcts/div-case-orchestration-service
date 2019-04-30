@@ -2,13 +2,10 @@
   "respConfirmReadPetition": "Yes",
   "respWillDefendDivorce": null,
   "respondentCorrespondenceSendToSolicitor": "Yes",
-  "respondentSolicitor": {
-    "name": "Some name",
-    "company": "Awesome Solicitors LLP",
-    "address": "123 Victoria Street",
-    "email": "solicitor@localhost.local",
-    "phone": "2222222222",
-    "reference": "2334234"
-  },
+  "respondentSolicitorName": "Some name",
+  "respondentSolicitorCompany": "Awesome Solicitors LLP",
+  "respondentSolicitorEmail": "solicitor@localhost.local",
+  "respondentSolicitorPhone": "2222222222",
+  "respondentSolicitorReference": "2334234",
   "respStatementOfTruth": "Yes"
 }
