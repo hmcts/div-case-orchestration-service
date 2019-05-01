@@ -5,8 +5,6 @@ public class TestConstants {
     public static final String TEST_CASE_FAMILY_MAN_ID = "test.family.man.id";
     public static final String TEST_STATE = "test.state";
     public static final String TEST_PIN = "abcd1234";
-    public static final String TEST_DOC_URL = "test.doc.url";
-    public static final String TEST_FILENAME = "test.filename";
     public static final String TEST_EXPECTED_DUE_DATE = "2020-10-20";
     public static final String TEST_EXPECTED_DUE_DATE_FORMATTED = "20 October 2020";
     public static String TEST_TOKEN = "test.token";
@@ -25,7 +23,6 @@ public class TestConstants {
     public static final String TEST_PIN_CODE = "test.pin.code";
     public static final String TEST_LETTER_HOLDER_ID_CODE = "test.letter.holder.id";
     public static final String TEST_AOS_INVITATION_FILE_NAME = "aosinvitation" + TEST_CASE_ID;
-    public static final String TEST_MINI_PETITION_FILE_NAME = "d8petition" + TEST_CASE_ID;
     public static final String TEST_CO_RESPONDENT_AOS_FILE_NAME = "co-respondentaosinvitation" + TEST_CASE_ID;
     public static final String TEST_USER_EMAIL = "test@email.com";
     public static final Double TEST_FEE_AMOUNT = 550d;
@@ -49,5 +46,5 @@ public class TestConstants {
     public static final String TEST_REASON_UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
     public static final String AOS_AWAITING_STATE = "AosAwaiting";
     public static final String AWAITING_CONSIDERATION_GENERAL_APPLICATION = "AwaitingConsiderationGeneralApplication";
-
+    public static final String AOS_AWAITING_SOLICITOR_EVENT_ID = "aosNominateSol";
 }

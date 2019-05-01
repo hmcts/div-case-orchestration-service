@@ -37,7 +37,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AOS_AWAITING_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AOS_AWAITING_SOLICITOR_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
@@ -266,7 +266,7 @@ public class SubmitRespondentAosCaseITest {
         final String caseDataString = convertObjectToJsonString(caseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
-        stubMaintenanceServerEndpointForUpdate(OK, AOS_AWAITING_STATE, caseData, caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, AOS_AWAITING_SOLICITOR_EVENT_ID, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
                 .header(AUTHORIZATION, AUTH_TOKEN)
@@ -324,17 +324,12 @@ public class SubmitRespondentAosCaseITest {
 
     private Map<String, Object> buildSolicitorRepresentationResponse() {
         Map<String, Object> caseData = new HashMap<>();
-        Map<String, String> respondentSolicitor = new HashMap<>();
-
-        respondentSolicitor.put("name", "Some name");
-        respondentSolicitor.put("company", "Awesome Solicitors LLP");
-        respondentSolicitor.put("address", "123 Victoria Street");
-        respondentSolicitor.put("email", "solicitor@localhost.local");
-        respondentSolicitor.put("phone", "2222222222");
-        respondentSolicitor.put("reference", "2334234");
-
-        caseData.put("respondentCorrespondenceSendToSolicitor", YES_VALUE);
-        caseData.put("respondentSolicitor", respondentSolicitor);
+        caseData.put("D8RespondentSolicitorName", "Some name");
+        caseData.put("D8RespondentSolicitorCompany", "Awesome Solicitors LLP");
+        caseData.put("D8RespondentSolicitorEmail", "solicitor@localhost.local");
+        caseData.put("D8RespondentSolicitorPhone", "2222222222");
+        caseData.put("D8RespondentCorrespondenceSendToSol", YES_VALUE);
+        caseData.put("respondentSolicitorReference", "2334234");
 
         return caseData;
     }

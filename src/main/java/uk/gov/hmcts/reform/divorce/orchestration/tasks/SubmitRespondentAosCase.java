@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_NOMINATE_SOLICITOR_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
@@ -47,7 +47,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
 
         if(isSolicitorRepresentingRespondent(submissionData)) {
             //move back to AOS awaiting, as technically the nominated solicitor will provide a response
-            eventId = AOS_AWAITING;
+            eventId = AOS_NOMINATE_SOLICITOR_EVENT_ID;
         } else {
             //if respondent didn't nominate a solicitor, then they've provided an answer
             if (isRespondentWillDefendDivorce(submissionData)) {

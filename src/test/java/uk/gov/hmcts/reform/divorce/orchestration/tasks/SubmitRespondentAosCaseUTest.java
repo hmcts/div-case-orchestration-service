@@ -23,7 +23,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
@@ -66,8 +65,7 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
-        Map<String, Object> expectedData  = new HashMap<>();
-        expectedData.putAll(divorceSession);
+        Map<String, Object> expectedData = new HashMap<>(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
 
@@ -84,8 +82,7 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
-        Map<String, Object> expectedData  = new HashMap<>();
-        expectedData.putAll(divorceSession);
+        Map<String, Object> expectedData = new HashMap<>(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
 
@@ -107,8 +104,7 @@ public class SubmitRespondentAosCaseUTest {
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
                 .thenReturn(CASE_UPDATE_RESPONSE);
-        Map<String, Object> expectedData  = new HashMap<>();
-        expectedData.putAll(divorceSession);
+        Map<String, Object> expectedData = new HashMap<>(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
 
@@ -154,8 +150,7 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
-        Map<String, Object> expectedData  = new HashMap<>();
-        expectedData.putAll(divorceSession);
+        Map<String, Object> expectedData = new HashMap<>(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
@@ -173,8 +168,7 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
-        Map<String, Object> expectedData  = new HashMap<>();
-        expectedData.putAll(divorceSession);
+        Map<String, Object> expectedData = new HashMap<>(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
 
@@ -191,7 +185,7 @@ public class SubmitRespondentAosCaseUTest {
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient)
-                .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(AOS_AWAITING), eq(expectedData));
+                .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq("aosNominateSol"), eq(expectedData));
     }
 
     private Map<String, Object> getCaseData(boolean consented, boolean defended) {
@@ -214,16 +208,12 @@ public class SubmitRespondentAosCaseUTest {
 
     private Map<String, Object> buildSolicitorResponse() {
         Map<String, Object> caseData = new HashMap<>();
-        Map<String, Object> respondentSolicitor = new HashMap<>();
-        respondentSolicitor.put("name", "Some name");
-        respondentSolicitor.put("company", "Awesome Solicitors LLP");
-        respondentSolicitor.put("address", "123 Victoria Street");
-        respondentSolicitor.put("email", "solicitor@localhost.local");
-        respondentSolicitor.put("phone", "2222222222");
-        respondentSolicitor.put("reference", "2334234");
-
-        caseData.put("respondentCorrespondenceSendToSolicitor", YES_VALUE);
-        caseData.put("respondentSolicitor", respondentSolicitor);
+        caseData.put("D8RespondentSolicitorName", "Some name");
+        caseData.put("D8RespondentSolicitorCompany", "Awesome Solicitors LLP");
+        caseData.put("D8RespondentSolicitorEmail", "solicitor@localhost.local");
+        caseData.put("D8RespondentSolicitorPhone", "2222222222");
+        caseData.put("D8RespondentCorrespondenceSendToSol", YES_VALUE);
+        caseData.put("respondentSolicitorReference", "2334234");
 
         return caseData;
     }
