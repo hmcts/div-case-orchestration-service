@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
 import org.joda.time.DateTimeUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,11 @@ public class SetCoRespondentAnswerReceivedTest {
     public void setUp() {
         classToTest = new SetCoRespondentAnswerReceived();
         DateTimeUtils.setCurrentMillisFixed(new org.joda.time.LocalDate(CURRENT_DATE).toDate().getTime());
+    }
+
+    @After
+    public void tearDown() {
+        DateTimeUtils.setCurrentMillisSystem();
     }
 
     @Test
