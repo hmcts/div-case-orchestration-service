@@ -2,8 +2,11 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
+
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
@@ -49,6 +52,7 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 
 @Slf4j
@@ -248,9 +252,20 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public CcdCallbackResponse aosReceived(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        Object petitionerEmail = caseDetails.getCaseData().get(D_8_PETITIONER_EMAIL);
+        if (petitionerEmail == null || StringUtils.isEmpty(petitionerEmail.toString())) {
+            log.info("Aos received - Petitioner email is empty with CASE ID: {}.",
+                caseDetails.getCaseId());
+            return CcdCallbackResponse.builder()
+                .data(caseDetails.getCaseData())
+                .build();
+        }
+
         Map<String, Object> response = aosRespondedWorkflow.run(ccdCallbackRequest, authToken);
         log.info("Aos received notification completed with CASE ID: {}.",
-            ccdCallbackRequest.getCaseDetails().getCaseId());
+            caseDetails.getCaseId());
 
         if (aosRespondedWorkflow.errors().isEmpty()) {
             return CcdCallbackResponse.builder()
@@ -259,7 +274,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         } else {
             Map<String, Object> workflowErrors = aosRespondedWorkflow.errors();
             log.error("Aos received notification with CASE ID: {} failed." + workflowErrors,
-                ccdCallbackRequest.getCaseDetails().getCaseId());
+                caseDetails.getCaseId());
             return CcdCallbackResponse
                 .builder()
                 .errors(getNotificationErrors(workflowErrors))

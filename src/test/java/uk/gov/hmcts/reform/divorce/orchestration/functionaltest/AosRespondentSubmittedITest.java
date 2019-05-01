@@ -85,19 +85,19 @@ public class AosRespondentSubmittedITest {
                 D_8_INFERRED_RESPONDENT_GENDER, RESPONDENT_FEMALE_GENDER
         );
 
-        CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
-                .builder()
-                .errors(Collections.singletonList("java.lang.Exception: error"))
-                .build();
-
-        String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
-
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(EVENT_ID)
                 .caseDetails(CaseDetails.builder()
                         .caseId(CASE_ID)
                         .caseData(caseDetailMap)
                         .build())
                 .build();
+
+        
+        CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
+                .builder()
+                .data(ccdCallbackRequest.getCaseDetails().getCaseData())
+                .build();
+        String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
 
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
