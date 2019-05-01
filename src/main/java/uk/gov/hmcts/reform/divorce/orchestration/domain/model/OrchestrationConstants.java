@@ -84,6 +84,7 @@ public class OrchestrationConstants {
     public static final String AOS_COMPLETED = "AosCompleted";
     public static final String DEFENDED = "DefendedDivorce";
     public static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
+    public static final String AWAITING_PRONOUNCEMENT = "AwaitingPronouncement";
     public static final String DN_AWAITING = "DNAwaiting";
     public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
