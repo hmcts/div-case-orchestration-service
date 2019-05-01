@@ -45,7 +45,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
 
         String eventId;
 
-        if(isSolicitorRepresentingRespondent(submissionData)) {
+        if (isSolicitorRepresentingRespondent(submissionData)) {
             //move back to AOS awaiting, as technically the nominated solicitor will provide a response
             eventId = AOS_NOMINATE_SOLICITOR_EVENT_ID;
         } else {
