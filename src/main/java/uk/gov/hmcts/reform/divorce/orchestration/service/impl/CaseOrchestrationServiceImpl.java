@@ -270,9 +270,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public CcdCallbackResponse sendCoRespReceivedNotificationEmail(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
-            throws WorkflowException {
-        Map<String, Object> response = sendCoRespondSubmissionNotificationWorkflow.run(ccdCallbackRequest, authorizationToken);
+    public CcdCallbackResponse sendCoRespReceivedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        Map<String, Object> response = sendCoRespondSubmissionNotificationWorkflow.run(ccdCallbackRequest);
         log.info("Co-respondent received notification completed with CASE ID: {}.",
             ccdCallbackRequest.getCaseDetails().getCaseId());
 

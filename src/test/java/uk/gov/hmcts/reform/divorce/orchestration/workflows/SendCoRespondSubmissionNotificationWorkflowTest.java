@@ -14,8 +14,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentAnswersGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCoRespondentRespondedNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
@@ -26,11 +24,9 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
@@ -39,7 +35,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPEC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE_FORMATTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DEFENDS_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DUE_DATE;
@@ -70,12 +65,6 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
     @Mock
     private TaskCommons taskCommons;
 
-    @Mock
-    private CoRespondentAnswersGenerator coRespondentAnswersGenerator;
-
-    @Mock
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
-
     @InjectMocks
     private SendCoRespondSubmissionNotificationWorkflow classToTest;
 
@@ -83,19 +72,11 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
     public void givenUndefendedCoResp_whenSendEmail_thenSendUndefendedTemplate() throws WorkflowException {
 
         CcdCallbackRequest ccdCallbackRequest = createSubmittedCoEvent(ImmutableMap.of(CO_RESPONDENT_DEFENDS_DIVORCE, "No"));
-        
-        when(coRespondentAnswersGenerator.execute(any(), any())).thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
-        when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
-        when(emailTask.execute(any(), any())).thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
-        when(petitionerEmailTask.execute(any(), any())).thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
 
-        classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
+        classToTest.run(ccdCallbackRequest);
 
         ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
-        verify(coRespondentAnswersGenerator).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
-        verify(caseFormatterAddDocuments).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
         verify(emailTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
-        verify(petitionerEmailTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
         TaskContext capturedTask = argument.getValue();
 
@@ -114,18 +95,11 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
         Court court = new Court();
         court.setDivorceCentreName(TEST_COURT);
         when(taskCommons.getCourt(TEST_COURT)).thenReturn(court);
-        when(coRespondentAnswersGenerator.execute(any(), any())).thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
-        when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
-        when(emailTask.execute(any(), any())).thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
-        when(petitionerEmailTask.execute(any(), any())).thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
 
-        classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
+        classToTest.run(ccdCallbackRequest);
 
         ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
-        verify(coRespondentAnswersGenerator).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
-        verify(caseFormatterAddDocuments).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
         verify(emailTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
-        verify(petitionerEmailTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
         TaskContext capturedTask = argument.getValue();
 
@@ -151,8 +125,7 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
             .of(NOTIFICATION_EMAIL, TEST_EMAIL,
                 CASE_ID_JSON_KEY, TEST_CASE_ID,
                 NOTIFICATION_TEMPLATE, template,
-                NOTIFICATION_TEMPLATE_VARS, expectedTemplateVars,
-                AUTH_TOKEN_JSON_KEY, AUTH_TOKEN
+                NOTIFICATION_TEMPLATE_VARS, expectedTemplateVars
             ));
         return expectedContext;
     }
