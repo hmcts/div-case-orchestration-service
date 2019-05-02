@@ -19,7 +19,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     private static final String ID = "id";
     private static final String STATE = "state";
     private static final String AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer";
-    private static final String AOS_AWAITING = "AosAwaiting";
+    private static final String AOS_AWAITING_SOL = "AosAwaitingSol";
     private static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
     private static final String AOS_COMPLETED = "AosCompleted";
     private static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
@@ -197,7 +197,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path(ID));
-        assertEquals(AOS_AWAITING, cosResponse.path(STATE));
+        assertEquals(AOS_AWAITING_SOL, cosResponse.path(STATE));
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
     }
 
