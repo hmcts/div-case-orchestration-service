@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateResponden
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
@@ -62,6 +63,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -69,6 +71,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 
@@ -149,6 +152,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private CaseLinkedForHearingWorkflow caseLinkedForHearingWorkflow;
+
+    @Mock
+    private GetCaseWithIdWorkflow getCaseWithIdWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -357,7 +363,11 @@ public class CaseOrchestrationServiceImplTest {
         paymentUpdate.setFees(Arrays.asList(fee, fee));
         paymentUpdate.setChannel("online");
 
+        CaseDetails caseDetails = CaseDetails.builder().state(AWAITING_PAYMENT).build();
+
         // given
+        when(getCaseWithIdWorkflow.run(any())).thenReturn(caseDetails);
+
         when(updateToCCDWorkflow.run(any(), any(), any()))
             .thenReturn(requestPayload);
 
@@ -368,7 +378,6 @@ public class CaseOrchestrationServiceImplTest {
 
         // then
         assertEquals(requestPayload, actual);
-
 
         Payment payment = Payment.builder()
             .paymentFeeId("X243")
@@ -384,6 +393,45 @@ public class CaseOrchestrationServiceImplTest {
         verify(updateToCCDWorkflow).run(updateEvent, "testtoken", "1232132");
     }
 
+    @Test
+    public void givenValidPaymentDataButCaseInWrongState_whenPaymentUpdate_thenReturnPayload() throws Exception {
+        PaymentUpdate paymentUpdate = new PaymentUpdate();
+        paymentUpdate.setCcdCaseNumber("1232132");
+        paymentUpdate.setStatus("success");
+        paymentUpdate.setAmount(new BigDecimal(550.00));
+        Fee fee = new Fee();
+        fee.setCode("X243");
+        paymentUpdate.setFees(Arrays.asList(fee, fee));
+        paymentUpdate.setChannel("online");
+
+        CaseDetails caseDetails = CaseDetails.builder().state("notAwaitingPayment").build();
+
+        // given
+        when(getCaseWithIdWorkflow.run(any())).thenReturn(caseDetails);
+
+        // when
+        Map<String, Object> actual = classUnderTest.update(paymentUpdate);
+
+        // then
+        assertEquals(Collections.EMPTY_MAP, actual);
+
+        verifyZeroInteractions(updateToCCDWorkflow);
+    }
+
+    @Test
+    public void givenFailedPaymentData_whenPaymentUpdate_thenReturnPayload() throws Exception {
+        PaymentUpdate paymentUpdate = new PaymentUpdate();
+        paymentUpdate.setStatus("failed");
+
+        // when
+        Map<String, Object> actual = classUnderTest.update(paymentUpdate);
+
+        // then
+        assertEquals(Collections.EMPTY_MAP, actual);
+
+        verifyZeroInteractions(updateToCCDWorkflow);
+    }
+
     @Test(expected = WorkflowException.class)
     public void givenPaymentDataWithNoAmount_whenPaymentUpdate_thenThrowWorkflowException() throws Exception {
         PaymentUpdate paymentUpdate = new PaymentUpdate();
@@ -393,6 +441,9 @@ public class CaseOrchestrationServiceImplTest {
         fee.setCode("X243");
         paymentUpdate.setFees(Arrays.asList(fee, fee));
         paymentUpdate.setChannel("online");
+
+        CaseDetails caseDetails = CaseDetails.builder().state(AWAITING_PAYMENT).build();
+        when(getCaseWithIdWorkflow.run(any())).thenReturn(caseDetails);
 
         classUnderTest.update(paymentUpdate);
     }
@@ -405,6 +456,9 @@ public class CaseOrchestrationServiceImplTest {
         paymentUpdate.setAmount(new BigDecimal(550.00));
         paymentUpdate.setChannel("online");
         paymentUpdate.setDateCreated("2001-01-01T00:00:00.000+0000");
+
+        CaseDetails caseDetails = CaseDetails.builder().state(AWAITING_PAYMENT).build();
+        when(getCaseWithIdWorkflow.run(any())).thenReturn(caseDetails);
 
         classUnderTest.update(paymentUpdate);
     }
