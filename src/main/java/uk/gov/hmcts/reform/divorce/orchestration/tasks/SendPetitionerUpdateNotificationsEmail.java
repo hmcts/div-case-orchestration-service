@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -30,15 +29,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, Object>> {
 
     private final EmailService emailService;
-    private final boolean featureToggle520;
 
     @Autowired
-    public SendPetitionerUpdateNotificationsEmail(
-            EmailService emailService,
-            @Value("${feature-toggle.toggle.feature-toggle-520}") String featureToggle520) {
-
+    public SendPetitionerUpdateNotificationsEmail(EmailService emailService) {
         this.emailService = emailService;
-        this.featureToggle520 = Boolean.valueOf(featureToggle520);
     }
 
     @Override
@@ -59,33 +53,28 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
         templateVars.put("CCD reference", (String) caseData.get(D_8_CASE_REFERENCE));
 
         if (StringUtils.isNotBlank(petitionerEmail)) {
-            if (featureToggle520) {
-                if (reasonForDivorce.equals(ADULTERY) && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
-                    templateVars.put("relationship", relationship);
+            if (reasonForDivorce.equals(ADULTERY) && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
+                templateVars.put("relationship", relationship);
 
-                    if (StringUtils.equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !StringUtils.equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE)) {
-                        emailService.sendEmail(petitionerEmail,
-                                EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
-                                templateVars, "resp does not admit adultery update notification - no reply from co-resp");
-                    } else {
-                        emailService.sendEmail(petitionerEmail,
-                                EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
-                                templateVars, "resp does not admit adultery update notification");
-                    }
-
-                } else if (reasonForDivorce.equals(SEPARATION_2YRS)
-                        && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
-                    templateVars.put("relationship", relationship);
-
+                if (StringUtils.equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !StringUtils.equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE)) {
                     emailService.sendEmail(petitionerEmail,
-                            EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
-                            templateVars,
-                            "resp does not consent to 2 year separation update notification");
-
+                            EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
+                            templateVars, "resp does not admit adultery update notification - no reply from co-resp");
                 } else {
-                    emailService.sendEmail(petitionerEmail, EmailTemplateNames.GENERIC_UPDATE.name(), templateVars, "generic update notification");
-
+                    emailService.sendEmail(petitionerEmail,
+                            EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
+                            templateVars, "resp does not admit adultery update notification");
                 }
+
+            } else if (reasonForDivorce.equals(SEPARATION_2YRS)
+                    && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
+                templateVars.put("relationship", relationship);
+
+                emailService.sendEmail(petitionerEmail,
+                        EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
+                        templateVars,
+                        "resp does not consent to 2 year separation update notification");
+
             } else {
                 emailService.sendEmail(petitionerEmail, EmailTemplateNames.GENERIC_UPDATE.name(), templateVars, "generic update notification");
             }

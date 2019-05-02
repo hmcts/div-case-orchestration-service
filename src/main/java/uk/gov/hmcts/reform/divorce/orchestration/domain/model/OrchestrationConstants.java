@@ -74,6 +74,7 @@ public class OrchestrationConstants {
     public static final String COMPLETED_AOS_EVENT_ID = "aosReceivedNoAdConStarted";
     public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
     public static final String START_AOS_EVENT_ID = "startAos";
+    public static final String PAYMENT_MADE_EVENT = "paymentMade";
 
     // CCD Case States
     public static final String AOS_AWAITING = "AosAwaiting";
@@ -105,7 +106,8 @@ public class OrchestrationConstants {
     public static final String D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME = "D8ReasonForDivorceAdultery3rdPartyFName";
     public static final String D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME = "D8ReasonForDivorceAdultery3rdPartyLName";
     public static final String CO_RESPONDENT_DUE_DATE = "DueDateCoResp";
-
+    public static final String CO_RESPONDENT_ANSWER_RECEIVED = "ReceivedAnswerFromCoResp";
+    public static final String CO_RESPONDENT_ANSWER_RECEIVED_DATE = "ReceivedAnswerFromCoRespDate";
     // Divorce Session
     public static final String DIVORCE_SESSION_EXISTING_PAYMENTS = "existingPayments";
     public static final String DIVORCE_SESSION_PETITIONER_EMAIL = "petitionerEmail";
@@ -128,7 +130,6 @@ public class OrchestrationConstants {
     // Case state
     public static final String AWAITING_PAYMENT = "AwaitingPayment";
     public static final String AWAITING_HWF_DECISION = "AwaitingHWFDecision";
-    public static final String PAYMENT_MADE_EVENT = "paymentMade";
 
     // Notification
     public static final String NOTIFICATION_EMAIL = "email_address";
