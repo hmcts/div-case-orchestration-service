@@ -35,9 +35,10 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(CO_UNDEFENDED_CASE_RESPONSE, Map.class);
         Map<String, Object> response = cosApiClient.coRespReceived(createCaseWorkerUser().getAuthToken(), aosCase);
         assertNotNull(response.get(DATA));
-        assertEquals(((Map<String, Object>)aosCase.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
         assertThat(response, hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName",
             is(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS)));
+        assertThat(response, hasJsonPath("$.data.D8caseReference",
+                is("LV17D80100")));
     }
 
     @SuppressWarnings("unchecked")
@@ -46,7 +47,10 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(CO_UNDEFENDED_RESP_RESPONDED_CASE_RESPONSE, Map.class);
         Map<String, Object> response = cosApiClient.coRespReceived(createCaseWorkerUser().getAuthToken(), aosCase);
         assertNotNull(response.get(DATA));
-        assertEquals(((Map<String, Object>)aosCase.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
+        assertThat(response, hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName",
+                is(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS)));
+        assertThat(response, hasJsonPath("$.data.D8caseReference",
+                is("LV17D80100")));
     }
 
     @SuppressWarnings("unchecked")
@@ -55,7 +59,10 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(CO_DEFENDED_CASE_RESPONSE, Map.class);
         Map<String, Object> response = cosApiClient.coRespReceived(createCaseWorkerUser().getAuthToken(), aosCase);
         assertNotNull(response.get(DATA));
-        assertEquals(((Map<String, Object>)aosCase.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
+        assertThat(response, hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName",
+                is(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS)));
+        assertThat(response, hasJsonPath("$.data.D8caseReference",
+                is("LV17D80100")));
     }
 
     @SuppressWarnings("unchecked")
