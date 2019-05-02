@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import javax.ws.rs.core.MediaType;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 
 /**
  * Controller class for callback endpoints.

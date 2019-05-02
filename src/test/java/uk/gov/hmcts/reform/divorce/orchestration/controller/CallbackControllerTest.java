@@ -84,17 +84,39 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void whenCoRespondentAnswerReceived_thenExecuteService() throws Exception {
-        Map<String, Object> payload = singletonMap("testKey", "testValue");
+    public void testSolDnReviewPetition() throws CaseOrchestrationServiceException {
+        Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
-                        .caseData(payload)
+                        .caseData(incomingPayload)
                         .build())
                 .build();
-        when(caseOrchestrationService.coRespondentAnswerReceived(incomingRequest)).thenReturn(payload);
 
-        ResponseEntity<CcdCallbackResponse> response = controller.respondentAnswerReceived(incomingRequest);
+        when(caseOrchestrationService.processSolDnReviewPetition(incomingRequest)).thenReturn(incomingPayload);
+
+        ResponseEntity<CcdCallbackResponse> response = controller.solDnReviewPetition(incomingRequest);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+        verify(caseOrchestrationService).processSolDnReviewPetition(incomingRequest);
+    }
+
+    @Test
+    public void testSolDnReviewPetitionPopulatesErrorsIfExceptionIsThrown() throws CaseOrchestrationServiceException {
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .build())
+                .build();
+
+        when(caseOrchestrationService.processSolDnReviewPetition(incomingRequest))
+                .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
+
+        ResponseEntity<CcdCallbackResponse> response = controller.solDnReviewPetition(incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(nullValue()));
+        assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
+        verify(caseOrchestrationService).processSolDnReviewPetition(incomingRequest);
     }
 }
