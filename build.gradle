@@ -136,7 +136,8 @@ def versions = [
         guava                           : '27.1-jre',
         bcpkixJdk15on                   : '1.60',
         springSecurityRsa               : '1.0.8.RELEASE',
-        springSecurityCrypto            : '5.1.5.RELEASE'
+        springSecurityCrypto            : '5.1.5.RELEASE',
+        tomcat                          : '9.0.19'
 ]
 
 dependencies {
@@ -167,6 +168,16 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: versions.reformHealth
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: versions.reformPropertiesVolume
     compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
+        force = true
+    }
+
+    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-core', version: versions.tomcat) {
+        force = true
+    }
+    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-websocket', version: versions.tomcat) {
+        force = true
+    }
+    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-el', version: versions.tomcat) {
         force = true
     }
 

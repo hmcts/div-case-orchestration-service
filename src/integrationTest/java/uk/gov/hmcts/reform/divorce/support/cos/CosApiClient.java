@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.divorce.context.ServiceContextConfiguration;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 
 import java.util.Map;
 
@@ -25,6 +26,13 @@ public interface CosApiClient {
     )
     Map<String, Object> coRespReceived(@RequestHeader(AUTHORIZATION) String authorisation,
                                        @RequestBody Map<String, Object> caseDataContent
+    );
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/co-respondent-answered"
+    )
+    Map<String, Object> coRespAnswerReceived(@RequestHeader(AUTHORIZATION) String authorisation,
+                                       @RequestBody CcdCallbackRequest caseDataContent
     );
 
     @RequestMapping(
