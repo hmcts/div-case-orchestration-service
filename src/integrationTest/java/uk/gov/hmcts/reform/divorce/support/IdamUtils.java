@@ -1,8 +1,16 @@
 package uk.gov.hmcts.reform.divorce.support;
 
+import com.google.common.collect.ImmutableMap;
+import io.restassured.config.HttpClientConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import net.serenitybdd.rest.SerenityRest;
+import org.apache.http.client.HttpClient;
 import org.apache.http.entity.ContentType;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.params.CoreConnectionPNames;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -63,7 +71,7 @@ public class IdamUtils {
                 .userGroup(UserGroup.builder().code(userGroup).build())
                 .build();
 
-        SerenityRest.given()
+        getSerenityRetryableClient()
             .header("Content-Type", "application/json")
             .relaxedHTTPSValidation()
             .body(ResourceLoader.objectToJson(registerUserRequest))
@@ -87,15 +95,38 @@ public class IdamUtils {
             .asString();
     }
 
+    private HttpClientConfig.HttpClientFactory config() {
+        return  new HttpClientConfig.HttpClientFactory() {
+
+            @Override
+            public HttpClient createHttpClient() {
+                final DefaultHttpClient client = new DefaultHttpClient();
+                client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(3, true));
+                return client;
+            }
+        };
+    }
+
+    private RequestSpecification  getSerenityRetryableClient() {
+        return SerenityRest.given()
+            .config(RestAssuredConfig.config()
+                .httpClient(HttpClientConfig
+                    .httpClientConfig()
+                    .addParams(ImmutableMap.of(CoreConnectionPNames.CONNECTION_TIMEOUT, 500,
+                        CoreConnectionPNames.SO_TIMEOUT, 500))
+                    .httpClientFactory(config())));
+    }
+
     public String generateUserTokenWithNoRoles(String username, String password) {
         String userLoginDetails = String.join(":", username, password);
         final String authHeader = "Basic " + new String(Base64.getEncoder().encode(userLoginDetails.getBytes()));
 
-        Response response = SerenityRest.given()
+        Response response = getSerenityRetryableClient()
             .header("Authorization", authHeader)
             .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .relaxedHTTPSValidation()
             .post(idamCodeUrl());
+
 
         if (response.getStatusCode() >= 300) {
             throw new IllegalStateException("Token generation failed with code: " + response.getStatusCode()
