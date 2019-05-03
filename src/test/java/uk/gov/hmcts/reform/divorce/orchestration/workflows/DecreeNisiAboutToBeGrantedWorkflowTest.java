@@ -12,11 +12,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiGrantedDateT
 import java.util.Map;
 
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -34,9 +37,12 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
     @Test
     public void shouldCallTasksAccordingly_IfDecreeNisiIsGranted() throws WorkflowException {
         Map<String, Object> inputPayload = singletonMap(DECREE_NISI_GRANTED_CCD_FIELD, YES_VALUE);
+        Map<String, Object> payloadReturnedByTask = singletonMap("returnedKey", "returnedValue");
+        when(addDecreeNisiGrantedDateToPayloadTask.execute(isNotNull(), eq(inputPayload))).thenReturn(payloadReturnedByTask);
 
-        workflow.run(CaseDetails.builder().caseData(inputPayload).build());
+        Map<String, Object> returnedPayload = workflow.run(CaseDetails.builder().caseData(inputPayload).build());
 
+        assertThat(returnedPayload, equalTo(payloadReturnedByTask));
         verify(addDecreeNisiGrantedDateToPayloadTask).execute(isNotNull(), eq(inputPayload));
     }
 
