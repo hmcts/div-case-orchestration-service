@@ -392,7 +392,7 @@ public class CaseOrchestrationServiceImplTest {
 
         verify(updateToCCDWorkflow).run(updateEvent, "testtoken", "1232132");
     }
-  
+
     @Test
     public void givenValidPaymentDataWithoutChannel_whenPaymentUpdate_thenReturnPayloadWithDefaultChannel() throws Exception {
         PaymentUpdate paymentUpdate = new PaymentUpdate();
@@ -428,7 +428,7 @@ public class CaseOrchestrationServiceImplTest {
 
         verify(updateToCCDWorkflow).run(updateEvent, "testtoken", "1232132");
     }
-  
+
     @Test
     public void givenValidPaymentDataButCaseInWrongState_whenPaymentUpdate_thenReturnPayload() throws Exception {
         PaymentUpdate paymentUpdate = new PaymentUpdate();
