@@ -206,6 +206,8 @@ public class OrchestrationConstants {
     public static final String PAYMENT_FEE_ID_KEY = "PaymentFeeId";
     public static final String PAYMENT_SITE_ID_KEY = "PaymentSiteId";
 
+    public static final String SEARCH_PAGE_KEY = "SEARCH_PAGE";
+
     // Validation
     public static final String ERROR_STATUS = "error";
     public static final String FORM_ID = "case-progression";

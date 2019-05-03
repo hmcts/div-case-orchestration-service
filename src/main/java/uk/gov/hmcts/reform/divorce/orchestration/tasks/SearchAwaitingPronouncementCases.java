@@ -17,8 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SearchAwaitingPronouncementCases implements Task<SearchResult> {
 
     private final CaseMaintenanceClient caseMaintenanceClient;
-    private int page = 0;
-    private final int PAGE_SIZE = 0;
+    private final int PAGE_SIZE = 50;
     private String HEARING_DATE= "data.hearingDate";
 
     @Autowired
@@ -28,6 +27,7 @@ public class SearchAwaitingPronouncementCases implements Task<SearchResult> {
 
     @Override
     public SearchResult execute(TaskContext context, SearchResult payload) {
+
         QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_PRONOUNCEMENT);
         QueryBuilder hearingDate  = QueryBuilders.existsQuery(HEARING_DATE);
 
@@ -38,15 +38,15 @@ public class SearchAwaitingPronouncementCases implements Task<SearchResult> {
 
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         sourceBuilder.query(queries);
-        sourceBuilder.from(page);
+        sourceBuilder.from(context.computeTransientObjectIfAbsent(SEARCH_PAGE_KEY, 0));
         sourceBuilder.size(PAGE_SIZE);
 
         String query = sourceBuilder.toString();
-        System.out.println(query);
-        return caseMaintenanceClient.searchCases(
-                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
-                query
+        SearchResult result = caseMaintenanceClient.searchCases(
+            String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
+            query
         );
+        return result;
 
     }
 

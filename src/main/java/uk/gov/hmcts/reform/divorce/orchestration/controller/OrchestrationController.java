@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseCreationRe
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.AllocatedCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
@@ -545,6 +546,17 @@ public class OrchestrationController {
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(ccdCallbackRequest.getCaseDetails().getCaseData())
             .build());
+    }
+
+    @GetMapping(path = "/search")
+    @ApiOperation(value = "Request clarification from petitioner via notification ")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "clarification request sent successful"),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<SearchResult> search() throws WorkflowException {
+
+        SearchResult response = orchestrationService.search();
+        return ResponseEntity.ok(response);
     }
 
 }
