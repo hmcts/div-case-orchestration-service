@@ -355,7 +355,7 @@ public class CaseOrchestrationServiceImplTest {
         Fee fee = new Fee();
         fee.setCode("X243");
         paymentUpdate.setFees(Arrays.asList(fee, fee));
-        paymentUpdate.setChannel("online");
+        paymentUpdate.setChannel("card");
 
         // given
         when(updateToCCDWorkflow.run(any(), any(), any()))
@@ -368,14 +368,50 @@ public class CaseOrchestrationServiceImplTest {
 
         // then
         assertEquals(requestPayload, actual);
-
-
+        
         Payment payment = Payment.builder()
             .paymentFeeId("X243")
-            .paymentChannel("online")
+            .paymentChannel("card")
             .paymentStatus("success")
             .paymentAmount("55000")
             .build();
+
+        final Map<String, Object> updateEvent = new HashMap<>();
+        updateEvent.put("eventData", singletonMap("payment", payment));
+        updateEvent.put("eventId", "paymentMade");
+
+        verify(updateToCCDWorkflow).run(updateEvent, "testtoken", "1232132");
+    }
+
+    @Test
+    public void givenValidPaymentDataWithoutChannel_whenPaymentUpdate_thenReturnPayloadWithDefaultChannel() throws Exception {
+        PaymentUpdate paymentUpdate = new PaymentUpdate();
+        paymentUpdate.setCcdCaseNumber("1232132");
+        paymentUpdate.setStatus("success");
+        paymentUpdate.setAmount(new BigDecimal(550.00));
+        Fee fee = new Fee();
+        fee.setCode("X243");
+        paymentUpdate.setFees(Arrays.asList(fee, fee));
+
+        // given
+        when(updateToCCDWorkflow.run(any(), any(), any()))
+                .thenReturn(requestPayload);
+
+        when(authUtil.getCaseworkerToken()).thenReturn("testtoken");
+
+        // when
+        Map<String, Object> actual = classUnderTest.update(paymentUpdate);
+
+        // then
+        assertEquals(requestPayload, actual);
+
+
+        Payment payment = Payment.builder()
+                .paymentFeeId("X243")
+                .paymentChannel("online")
+                .paymentStatus("success")
+                .paymentAmount("55000")
+                .build();
 
         final Map<String, Object> updateEvent = new HashMap<>();
         updateEvent.put("eventData", singletonMap("payment", payment));
