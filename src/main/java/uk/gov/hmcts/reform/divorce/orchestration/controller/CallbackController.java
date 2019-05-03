@@ -33,7 +33,7 @@ public class CallbackController {
 
     @PostMapping(path = "/case-linked-for-hearing",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles actions that need to happen once the case has been linked for hearing.")
+    @ApiOperation(value = "Handles actions that need to happen once the case has been linked for hearing (been given a hearing date).")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
             + "attached to the case",
@@ -41,10 +41,8 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> caseLinkedForHearing(
-        @RequestHeader(value = "Authorization", required = false)
-            String authorizationToken,
-        @RequestBody @ApiParam("CaseData")
-            CcdCallbackRequest ccdCallbackRequest) {
+        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.debug("Processing case linked for hearing. Case id: {}", caseId);
@@ -62,5 +60,4 @@ public class CallbackController {
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
-
 }

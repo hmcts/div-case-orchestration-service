@@ -8,28 +8,35 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionerCertificateOfEntitlementNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCertificateOfEntitlementNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCertificateOfEntitlementNotificationEmail;
 
 import java.util.Map;
+
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
 @Slf4j
 public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    public static final String CASE_ID_KEY = "caseId";
+    @Autowired
+    private SendPetitionerCertificateOfEntitlementNotificationEmail sendPetitionerCertificateOfEntitlementNotificationEmail;
 
     @Autowired
-    private PetitionerCertificateOfEntitlementNotification petitionerCertificateOfEntitlementNotification;
+    private SendRespondentCertificateOfEntitlementNotificationEmail sendRespondentCertificateOfEntitlementNotificationEmail;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
 
-        Map<String, Object> returnedPayload = this.execute(new Task[]{petitionerCertificateOfEntitlementNotification},
+        Map<String, Object> returnedPayload = this.execute(
+                new Task[]{
+                    sendPetitionerCertificateOfEntitlementNotificationEmail,
+                    sendRespondentCertificateOfEntitlementNotificationEmail
+                },
             caseDetails.getCaseData(),
-            ImmutablePair.of(CASE_ID_KEY, caseDetails.getCaseId()));
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()));
 
         log.info("Running workflow for case id {}.", caseDetails.getCaseId());
 
         return returnedPayload;
     }
-
 }
