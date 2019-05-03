@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @Slf4j
 @RunWith(SerenityRunner.class)
@@ -77,28 +78,29 @@ public abstract class IntegrationTest {
     protected UserDetails createCaseWorkerUser() {
         synchronized (this) {
             if (caseWorkerUser == null) {
-                caseWorkerUser = getUserDetails(
+                caseWorkerUser = warpInRetry(() -> getUserDetails(
                         CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN, CASE_WORKER_PASSWORD,
                         CASEWORKER_USERGROUP,
                         CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
                         CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
-                );
+                ));
             }
-
             return caseWorkerUser;
         }
     }
 
     protected UserDetails createCitizenUser() {
-        final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
-
-        return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, CITIZEN_ROLE);
+        return warpInRetry(() -> {
+            final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
+            return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, CITIZEN_ROLE);
+        });
     }
 
     protected UserDetails createCitizenUser(String role) {
-        final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
-
-        return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, role);
+        return warpInRetry(() -> {
+            final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
+            return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, role);
+        });
     }
 
     private UserDetails getUserDetails(String username, String password, String userGroup, String... role) {
@@ -127,6 +129,20 @@ public abstract class IntegrationTest {
                 }
             }
 
+        }
+    }
+
+    private UserDetails warpInRetry(Supplier<UserDetails> supplier) {
+        //tactical solution as sometimes the newly created user is somehow corrupted and won't generate a code..
+        int count = 0;
+        int maxTries = 5;
+        while (true) {
+            try {
+                return supplier.get();
+            } catch (Exception e) {
+                if (++count == maxTries) throw e;
+                log.trace("Encountered an error creating a user/token - retrying", e);
+            }
         }
     }
 }
