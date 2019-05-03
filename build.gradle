@@ -152,16 +152,6 @@ dependencies {
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
     compile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
     compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: versions.javaxWsRs
-    
-    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-core', version: '9.0.19') {
-        force = true
-    }
-    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-websocket', version: '9.0.19') {
-        force = true
-    }
-    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-el', version: '9.0.19') {
-        force = true
-    }
 
     compile group: 'org.springframework', name: 'spring-context-support'
     compile (group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
