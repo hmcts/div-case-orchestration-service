@@ -403,7 +403,11 @@ public class CaseOrchestrationServiceImplTest {
         fee.setCode("X243");
         paymentUpdate.setFees(Arrays.asList(fee, fee));
 
+        CaseDetails caseDetails = CaseDetails.builder().state(AWAITING_PAYMENT).build();
+
         // given
+        when(getCaseWithIdWorkflow.run(any())).thenReturn(caseDetails);
+
         when(updateToCCDWorkflow.run(any(), any(), any()))
                 .thenReturn(requestPayload);
 
