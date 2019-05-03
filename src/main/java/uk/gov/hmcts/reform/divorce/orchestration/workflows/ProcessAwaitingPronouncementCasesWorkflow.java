@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchAwaitingPronounceme
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEARCH_PAGE_KEY;
 
 @Component
 public class ProcessAwaitingPronouncementCasesWorkflow extends DefaultWorkflow<SearchResult> {
@@ -32,7 +33,7 @@ public class ProcessAwaitingPronouncementCasesWorkflow extends DefaultWorkflow<S
                 },
                 null,
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-                ImmutablePair.of(AUTH_TOKEN_JSON_KEY, 0)
+                ImmutablePair.of(SEARCH_PAGE_KEY, 0)
 
         );
 
