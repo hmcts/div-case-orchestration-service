@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.util.DateConstants.CCD_DATE_FORMAT;
@@ -32,7 +33,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     private static final String AOS_NO_DEFEND_NO_CONSENT_JSON = "aos-no-defend-no-consent.json";
     private static final String AOS_SOLICITOR_REPRESENTATION_JSON = "aos-solicitor-representation.json";
 
-    private static final String SUBMIT_COMPLETE_CASE_JSON = "submit-complete-case.json";
+    private static final String SUBMIT_COMPLETE_CASE_JSON = "submit-unlinked-case.json";
     private static final String SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON = "submit-complete-case-reason-adultery.json";
     private static final String SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON = "submit-complete-case-reason-2yearSep.json";
 
@@ -198,7 +199,8 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path(ID));
         assertEquals(AOS_AWAITING_SOL, cosResponse.path(STATE));
-        assertAosSubmittedData(userDetails, caseDetails.getId().toString());
+        assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
+        assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE));
     }
 
     private void assertAosSubmittedData(UserDetails userDetails, String caseId) {
