@@ -112,8 +112,8 @@ public class IdamUtils {
             .config(RestAssuredConfig.config()
                 .httpClient(HttpClientConfig
                     .httpClientConfig()
-                    .addParams(ImmutableMap.of(CoreConnectionPNames.CONNECTION_TIMEOUT, 500,
-                        CoreConnectionPNames.SO_TIMEOUT, 500))
+                    .addParams(ImmutableMap.of(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000,
+                        CoreConnectionPNames.SO_TIMEOUT, 5000))
                     .httpClientFactory(config())));
     }
 
