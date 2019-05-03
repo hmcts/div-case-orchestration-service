@@ -103,22 +103,25 @@ public abstract class IntegrationTest {
 
     private UserDetails getUserDetails(String username, String password, String userGroup, String... role) {
         synchronized (this) {
-            String authToken;
-            String userId;
-
             idamTestSupportUtil.createUser(username, password, userGroup, role);
 
-            authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
+            try {
+                // calling generate token too soon might fail, so we sleep..
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
 
-            userId = idamTestSupportUtil.getUserId(authToken);
+            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
+
+            final String userId = idamTestSupportUtil.getUserId(authToken);
 
             return UserDetails.builder()
-                .username(username)
-                .emailAddress(username)
-                .password(password)
-                .authToken(authToken)
-                .id(userId)
-                .build();
+                    .username(username)
+                    .emailAddress(username)
+                    .password(password)
+                    .authToken(authToken)
+                    .id(userId)
+                    .build();
         }
     }
 }
