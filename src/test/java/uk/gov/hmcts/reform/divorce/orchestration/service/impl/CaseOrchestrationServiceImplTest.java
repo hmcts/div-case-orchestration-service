@@ -368,7 +368,7 @@ public class CaseOrchestrationServiceImplTest {
 
         // then
         assertEquals(requestPayload, actual);
-        
+
         Payment payment = Payment.builder()
             .paymentFeeId("X243")
             .paymentChannel("card")
@@ -404,7 +404,6 @@ public class CaseOrchestrationServiceImplTest {
 
         // then
         assertEquals(requestPayload, actual);
-
 
         Payment payment = Payment.builder()
                 .paymentFeeId("X243")
