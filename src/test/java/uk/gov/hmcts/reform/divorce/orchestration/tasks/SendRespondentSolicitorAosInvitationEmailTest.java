@@ -42,7 +42,6 @@ public class SendRespondentSolicitorAosInvitationEmailTest {
         context.setTransientObject("pin", "A1B2C3D4");
 
         Map<String, String> expectedTemplateVars = new HashMap<>();
-        expectedTemplateVars.put("email address", respondentSolicitorEmail);
         expectedTemplateVars.put("CCD reference", "1111-2222-3333-4444");
         expectedTemplateVars.put("solicitors name", "sol name");
         expectedTemplateVars.put("first name", "resp first");

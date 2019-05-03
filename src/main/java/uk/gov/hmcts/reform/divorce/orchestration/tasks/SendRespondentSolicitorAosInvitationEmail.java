@@ -31,12 +31,9 @@ public class SendRespondentSolicitorAosInvitationEmail implements Task<Map<Strin
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
 
-        String respondentSolicitorEmail = (String) payload.get(D8_RESPONDENT_SOLICITOR_EMAIL);
-
         Map<String, String> templateVars = new HashMap<>();
 
         String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
-        templateVars.put("email address", respondentSolicitorEmail);
         templateVars.put("CCD reference", formatCaseIdToReferenceNumber(caseId));
         templateVars.put("solicitors name", (String) payload.get(D8_RESPONDENT_SOLICITOR_NAME));
         templateVars.put("first name", (String) payload.get(RESP_FIRST_NAME_CCD_FIELD));
@@ -44,7 +41,7 @@ public class SendRespondentSolicitorAosInvitationEmail implements Task<Map<Strin
         templateVars.put("access code", (String) context.getTransientObject(RESPONDENT_PIN));
 
         emailService.sendEmail(
-                respondentSolicitorEmail,
+                (String) payload.get(D8_RESPONDENT_SOLICITOR_EMAIL),
                 EmailTemplateNames.RESPONDENT_SOLICITOR_AOS_INVITATION.name(),
                 templateVars,
                 "Respondent solicitor's AOS invitation"
