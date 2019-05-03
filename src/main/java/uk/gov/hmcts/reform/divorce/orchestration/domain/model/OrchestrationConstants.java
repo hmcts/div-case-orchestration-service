@@ -60,6 +60,7 @@ public class OrchestrationConstants {
     public static final String DIVORCE_COSTS_CLAIM_CCD_FIELD = "D8DivorceCostsClaim";
     public static final String DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD = "CostsClaimGranted";
     public static final String DATETIME_OF_HEARING_CCD_FIELD = "DateAndTimeOfHearing";
+    public static final String DECREE_NISI_GRANTED_CCD_FIELD = "DecreeNisiGranted";
     public static final String DATE_OF_HEARING_CCD_FIELD = "DateOfHearing";
     public static final String TIME_OF_HEARING_CCD_FIELD = "TimeOfHearing";
     public static final String YES_VALUE = "Yes";
@@ -114,6 +115,8 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_DUE_DATE = "DueDateCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED = "ReceivedAnswerFromCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED_DATE = "ReceivedAnswerFromCoRespDate";
+    public static final String DECREE_NISI_GRANTED_DATE_FIELD = "DecreeNisiGrantedDate";
+
     // Divorce Session
     public static final String DIVORCE_SESSION_EXISTING_PAYMENTS = "existingPayments";
     public static final String DIVORCE_SESSION_PETITIONER_EMAIL = "petitionerEmail";

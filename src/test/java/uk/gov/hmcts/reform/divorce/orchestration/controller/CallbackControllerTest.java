@@ -31,7 +31,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertEquals;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -287,7 +291,7 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void testCaseLinkerForHearingCallsRightServiceMethod() throws CaseOrchestrationServiceException {
+    public void testCaseLinkedForHearingCallsRightServiceMethod() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -340,10 +344,10 @@ public class CallbackControllerTest {
     public void testSolDnReviewPetition() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                        .caseData(incomingPayload)
-                        .build())
-                .build();
+            .caseDetails(CaseDetails.builder()
+                .caseData(incomingPayload)
+                .build())
+            .build();
 
         when(caseOrchestrationService.processSolDnReviewPetition(incomingRequest)).thenReturn(incomingPayload);
 
@@ -358,12 +362,12 @@ public class CallbackControllerTest {
     @Test
     public void testSolDnReviewPetitionPopulatesErrorsIfExceptionIsThrown() throws CaseOrchestrationServiceException {
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                        .build())
-                .build();
+            .caseDetails(CaseDetails.builder()
+                .build())
+            .build();
 
         when(caseOrchestrationService.processSolDnReviewPetition(incomingRequest))
-                .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
+            .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnReviewPetition(incomingRequest);
 
@@ -377,10 +381,10 @@ public class CallbackControllerTest {
     public void whenGenerateCoRespondentAnswers_thenExecuteService() throws Exception {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                        .caseData(payload)
-                        .build())
-                .build();
+            .caseDetails(CaseDetails.builder()
+                .caseData(payload)
+                .build())
+            .build();
         when(caseOrchestrationService.generateCoRespondentAnswers(incomingRequest, AUTH_TOKEN)).thenReturn(payload);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCoRespondentAnswers(AUTH_TOKEN, incomingRequest);
@@ -392,14 +396,14 @@ public class CallbackControllerTest {
     public void givenWorkflowException_whenGenerateCoRespondentAnswers_thenReturnErrors() throws Exception {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                        .caseData(payload)
-                        .build())
-                .build();
+            .caseDetails(CaseDetails.builder()
+                .caseData(payload)
+                .build())
+            .build();
 
         String errorString = "Unable to generate answers";
         when(caseOrchestrationService.generateCoRespondentAnswers(incomingRequest, AUTH_TOKEN))
-                .thenThrow(new WorkflowException(errorString));
+            .thenThrow(new WorkflowException(errorString));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCoRespondentAnswers(AUTH_TOKEN, incomingRequest);
 
@@ -482,4 +486,41 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
     }
+
+    @Test
+    public void testDnAboutToBeGrantedCallsRightServiceMethod() throws CaseOrchestrationServiceException {
+        when(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(any()))
+            .thenReturn(singletonMap("newKey", "newValue"));
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(singletonMap("testKey", "testValue"))
+                .build())
+            .build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnAboutToBeGranted(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(response.getBody().getData(), hasEntry("newKey", "newValue"));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+        verify(caseOrchestrationService).processCaseBeforeDecreeNisiIsGranted(eq(ccdCallbackRequest));
+    }
+
+    @Test
+    public void testDnAboutToBeGrantedHandlesServiceException() throws CaseOrchestrationServiceException {
+        when(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(any()))
+            .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(singletonMap("testKey", "testValue"))
+                .build())
+            .build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnAboutToBeGranted(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(nullValue()));
+        assertThat(response.getBody().getErrors(), hasItem(equalTo("This is a test error message.")));
+        verify(caseOrchestrationService).processCaseBeforeDecreeNisiIsGranted(eq(ccdCallbackRequest));
+    }
+
 }

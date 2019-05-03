@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import javax.ws.rs.core.MediaType;
 
 import static java.lang.String.format;
@@ -287,7 +288,7 @@ public class CallbackController {
             log.info("Co-respondent answer received. Case id: {}", caseId);
 
         } catch (WorkflowException exception) {
-            log.error("Co-respondent answer received failed. Case id:  {}", caseId,exception);
+            log.error("Co-respondent answer received failed. Case id:  {}", caseId, exception);
             callbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
@@ -295,12 +296,12 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/sol-dn-review-petition",
-            consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Populates fields for solicitor DN journey")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = CcdCallbackResponse.class),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 500, message = "Internal Server Error")})
+        @ApiResponse(code = 200, message = "Success", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> solDnReviewPetition(@RequestBody CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
@@ -319,16 +320,16 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/co-respondent-generate-answers",
-            consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Generates the Co-Respondent Answers PDF Document for the case")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Co-Respondent answers generated and attached to case",
-                    response = CcdCallbackResponse.class),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 500, message = "Internal Server Error")})
+        @ApiResponse(code = 200, message = "Co-Respondent answers generated and attached to case",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> generateCoRespondentAnswers(
-            @RequestHeader(value = "Authorization") String authorizationToken,
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
@@ -336,7 +337,7 @@ public class CallbackController {
 
         try {
             callbackResponseBuilder.data(caseOrchestrationService
-                    .generateCoRespondentAnswers(ccdCallbackRequest, authorizationToken));
+                .generateCoRespondentAnswers(ccdCallbackRequest, authorizationToken));
             log.info("Co-respondent answer generated. Case id: {}", caseId);
         } catch (WorkflowException exception) {
             log.error("Co-respondent answer generation failed. Case id:  {}", caseId, exception);
@@ -400,6 +401,34 @@ public class CallbackController {
             log.error(format("Failed processing AOS solicitor callback. Case ID:  %s", caseId),
                     exception);
             callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/dn-about-to-be-granted",
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Handles CCD case data just before Decree Nisi is granted")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
+            + "attached to the case",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> dnAboutToBeGranted(
+        @RequestBody @ApiParam("CaseData")
+            CcdCallbackRequest ccdCallbackRequest) {
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+        try {
+            callbackResponseBuilder.data(
+                caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest));
+            log.info("Processed case successfully. Case id: {}", caseId);
+        } catch (CaseOrchestrationServiceException exception) {
+            log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
+            callbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
