@@ -121,9 +121,9 @@ public abstract class IntegrationTest {
                             .authToken(authToken)
                             .id(userId)
                             .build();
-                } catch (IllegalStateException e) {
+                } catch (Exception e) {
                     if (++count == maxTries) throw e;
-                    log.trace("Encountered an error creating a user/token", e);
+                    log.trace("Encountered an error creating a user/token - retrying", e);
                 }
             }
 
