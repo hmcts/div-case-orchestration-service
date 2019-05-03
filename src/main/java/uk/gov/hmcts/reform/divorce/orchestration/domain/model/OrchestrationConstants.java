@@ -89,6 +89,8 @@ public class OrchestrationConstants {
     public static final String DN_AWAITING = "DNAwaiting";
 
     // CCD Co-Respondent Fields
+    public static final String CO_RESPONDENT_ANSWER_RECEIVED = "ReceivedAnswerFromCoResp";
+    public static final String CO_RESPONDENT_ANSWER_RECEIVED_DATE = "ReceivedAnswerFromCoRespDate";
     public static final String CO_RESP_LINKED_TO_CASE = "CoRespLinkedToCase";
     public static final String CO_RESP_LINKED_TO_CASE_DATE = "CoRespLinkedToCaseDate";
     public static final String CO_RESPONDENT_LETTER_HOLDER_ID = "CoRespLetterHolderId";
