@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -20,9 +21,23 @@ public class AosSolicitorNominatedCallbackTest extends IntegrationTest {
     @SuppressWarnings("unchecked")
     @Test
     public void whenSubmitAOSSubmittedIsCalledBack_thenReturnAOSData() {
+        //given
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
+
+        //when
         Map<String, Object> response = cosApiClient.aosSolicitorNominated(aosCase);
-        assertNotNull(response.get(DATA));
-        assertEquals(((Map<String, Object>)aosCase.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
+
+        //then
+        Map<String, Object> caseDetails = (Map<String, Object>) aosCase.get(CASE_DETAILS);
+        Map<String, Object> expectedCaseData = new HashMap<>((Map<String, Object>) caseDetails.get(CASE_DATA));
+        expectedCaseData.put("ReceivedAOSfromResp", null);
+        expectedCaseData.put("ReceivedAOSfromRespDate", null);
+        expectedCaseData.put("RespEmailAddress", null);
+
+        Map<String, String> responseData = (Map<String, String>)response.get(DATA);
+        assertNotNull(responseData);
+        assertNotNull(responseData.get("AosLetterHolderId"));
+        responseData.remove("AosLetterHolderId"); //remove dynamic field to assert expected response
+        assertEquals(expectedCaseData, responseData);
     }
 }

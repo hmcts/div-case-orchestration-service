@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetAosLinkingFields;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSolicitorAosInvitationEmail;
 
@@ -34,7 +34,7 @@ public class RespondentSolicitorNominatedWorkflowTest {
     private RespondentPinGenerator respondentPinGenerator;
 
     @Mock
-    private ResetAosLinkingFields resetAosLinkingFields;
+    private ResetRespondentLinkingFields resetRespondentLinkingFields;
 
     @Mock
     private SendRespondentSolicitorAosInvitationEmail sendRespondentSolicitorNotificationEmail;
@@ -48,7 +48,7 @@ public class RespondentSolicitorNominatedWorkflowTest {
         respondentSolicitorNominatedWorkflow = new RespondentSolicitorNominatedWorkflow(
                 respondentPinGenerator,
                 sendRespondentSolicitorNotificationEmail,
-                resetAosLinkingFields
+                resetRespondentLinkingFields
         );
 
         payload = new HashMap<>();
@@ -67,17 +67,17 @@ public class RespondentSolicitorNominatedWorkflowTest {
     public void testRunCallsTheRequiredTasks() throws WorkflowException {
         //Given
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
-        when(resetAosLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
         when(sendRespondentSolicitorNotificationEmail.execute(context, payload)).thenReturn(payload);
 
         //When
         Map<String, Object> response = respondentSolicitorNominatedWorkflow.run(caseDetails);
 
         //Then
-        InOrder inOrder = inOrder(respondentPinGenerator, sendRespondentSolicitorNotificationEmail, resetAosLinkingFields);
+        InOrder inOrder = inOrder(respondentPinGenerator, sendRespondentSolicitorNotificationEmail, resetRespondentLinkingFields);
         assertThat(response, is(payload));
         inOrder.verify(respondentPinGenerator).execute(context, payload);
         inOrder.verify(sendRespondentSolicitorNotificationEmail).execute(context, payload);
-        inOrder.verify(resetAosLinkingFields).execute(context, payload);
+        inOrder.verify(resetRespondentLinkingFields).execute(context, payload);
     }
 }

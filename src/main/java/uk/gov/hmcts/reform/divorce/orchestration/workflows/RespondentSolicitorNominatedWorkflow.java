@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetAosLinkingFields;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSolicitorAosInvitationEmail;
 
@@ -22,17 +22,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final RespondentPinGenerator respondentPinGenerator;
-    private final ResetAosLinkingFields resetAosLinkingFields;
     private final SendRespondentSolicitorAosInvitationEmail sendRespondentSolicitorNotificationEmail;
+    private final ResetRespondentLinkingFields resetRespondentLinkingFields;
 
     @Autowired
     public RespondentSolicitorNominatedWorkflow(RespondentPinGenerator respondentPinGenerator,
                                                 SendRespondentSolicitorAosInvitationEmail sendRespondentSolicitorAosInvitationEmail,
-                                                ResetAosLinkingFields resetAosLinkingFields
-    ) {
+                                                ResetRespondentLinkingFields resetRespondentLinkingFields) {
         this.respondentPinGenerator = respondentPinGenerator;
-        this.resetAosLinkingFields = resetAosLinkingFields;
         this.sendRespondentSolicitorNotificationEmail = sendRespondentSolicitorAosInvitationEmail;
+        this.resetRespondentLinkingFields = resetRespondentLinkingFields;
     }
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
@@ -43,7 +42,7 @@ public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<St
 
         tasks.add(respondentPinGenerator);
         tasks.add(sendRespondentSolicitorNotificationEmail);
-        tasks.add(resetAosLinkingFields);
+        tasks.add(resetRespondentLinkingFields);
 
         return this.execute(
             tasks.toArray(new Task[tasks.size()]),
