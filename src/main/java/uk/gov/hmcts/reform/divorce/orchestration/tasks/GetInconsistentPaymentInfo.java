@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.LocalDate;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.PaymentClient;
@@ -13,6 +12,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -98,7 +99,7 @@ public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
             .put(PAYMENT_CHANNEL_KEY, PAYMENT_CHANNEL)
             .put(PAYMENT_TRANSACTION_ID_KEY, paymentInfo.get(EXTERNAL_REFERENCE))
             .put(PAYMENT_REFERENCE_KEY, paymentInfo.get(PAYMENT_SERVICE_REFERENCE))
-            .put(PAYMENT_DATE_KEY, LocalDate.now().toString(PAYMENT_DATE_PATTERN))
+            .put(PAYMENT_DATE_KEY, LocalDate.now().format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN)))
             .put(PAYMENT_AMOUNT_KEY, String.valueOf((Integer) paymentInfo.get(PAYMENT_SERVICE_AMOUNT_KEY) * 100))
             .put(PAYMENT_STATUS_KEY, paymentInfo.get(STATUS_FROM_PAYMENT))
             .put(PAYMENT_FEE_ID_KEY, PAYMENT_FEE_ID)

@@ -6,8 +6,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
@@ -16,6 +18,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
@@ -31,10 +34,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
 
     private final CaseMaintenanceClient caseMaintenanceClient;
+    private final Clock clock;
 
     @Autowired
-    public SubmitRespondentAosCase(final CaseMaintenanceClient caseMaintenanceClient) {
+    public SubmitRespondentAosCase(final CaseMaintenanceClient caseMaintenanceClient, final Clock clock) {
         this.caseMaintenanceClient = caseMaintenanceClient;
+        this.clock = clock;
     }
 
     @Override
@@ -45,17 +50,17 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         final CaseDetails currentCaseDetails = caseMaintenanceClient.retrievePetitionById(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
                 context.getTransientObject(CASE_ID_JSON_KEY).toString()
-            );
+        );
 
-        final String reasonForDivorce = (String)currentCaseDetails.getCaseData().get(D_8_REASON_FOR_DIVORCE);
+        final String reasonForDivorce = (String) currentCaseDetails.getCaseData().get(D_8_REASON_FOR_DIVORCE);
         String eventId = getAosCompleteEventId(submissionData, reasonForDivorce);
         submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
+        submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, LocalDate.now(clock).format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
         Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
-            authToken,
-            caseIDJsonKey,
-            eventId,
-            submissionData
+                authToken,
+                caseIDJsonKey,
+                eventId,
+                submissionData
         );
 
         if (updateCase != null) {
@@ -66,15 +71,15 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
     }
 
     private String getAosCompleteEventId(final Map<String, Object> submissionData, final String d8ReasonForDivorce) {
-        final String respWillDefendDivorce = (String)submissionData.get(RESP_WILL_DEFEND_DIVORCE);
-        final String respAdmitOrConsentToFact = (String)submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT);
+        final String respWillDefendDivorce = (String) submissionData.get(RESP_WILL_DEFEND_DIVORCE);
+        final String respAdmitOrConsentToFact = (String) submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT);
 
         if (YES_VALUE.equalsIgnoreCase(respWillDefendDivorce)) {
             return AWAITING_ANSWER_AOS_EVENT_ID;
 
         } else if ((ADULTERY.equalsIgnoreCase(d8ReasonForDivorce)
-            || SEPARATION_2YRS.equalsIgnoreCase(d8ReasonForDivorce))
-            && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
+                || SEPARATION_2YRS.equalsIgnoreCase(d8ReasonForDivorce))
+                && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
 
             return COMPLETED_AOS_EVENT_ID;
         }

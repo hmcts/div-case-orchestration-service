@@ -59,8 +59,8 @@ public abstract class IntegrationTest {
     }
 
     @PostConstruct
-    public void init(){
-        if(!Strings.isNullOrEmpty(httpProxy)) {
+    public void init() {
+        if (!Strings.isNullOrEmpty(httpProxy)) {
             try {
                 URL proxy = new URL(httpProxy);
                 InetAddress.getByName(proxy.getHost()).isReachable(2000); // check proxy connectivity
