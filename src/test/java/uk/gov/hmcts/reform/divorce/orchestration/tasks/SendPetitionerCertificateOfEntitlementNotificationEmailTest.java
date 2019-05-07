@@ -34,8 +34,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -43,6 +41,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
 
     private static final String CASE_LISTED_FOR_HEARING_JSON = "/jsonExamples/payloads/caseListedForHearing.json";
+    private static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
+    private static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
 
     @Mock
     private TaskCommons taskCommons;
@@ -73,8 +73,8 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
         Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
-            hasEntry("costs claim granted", YES_VALUE),
-            hasEntry("costs claim not granted", NO_VALUE)
+            hasEntry("costs claim granted", NOTIFICATION_OPTIONAL_TEXT_YES_VALUE),
+            hasEntry("costs claim not granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
         ));
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
     }
@@ -88,8 +88,8 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
         Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
-            hasEntry("costs claim not granted", YES_VALUE),
-            hasEntry("costs claim granted", NO_VALUE)
+            hasEntry("costs claim not granted", NOTIFICATION_OPTIONAL_TEXT_YES_VALUE),
+            hasEntry("costs claim granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
         ));
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
     }
@@ -104,8 +104,8 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
         Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
-            hasEntry("costs claim not granted", NO_VALUE),
-            hasEntry("costs claim granted", NO_VALUE)
+            hasEntry("costs claim not granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE),
+            hasEntry("costs claim granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
         ));
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
     }
@@ -114,14 +114,14 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
     public void testThatNotificationServiceIsCalled_WhenCostsAreNotClaimed_ByNegationOfValues() throws TaskException, IOException {
         Map<String, Object> incomingPayload = getJsonFromResourceFile(
                 CASE_LISTED_FOR_HEARING_JSON, CcdCallbackRequest.class).getCaseDetails().getCaseData();
-        incomingPayload.put("D8DivorceCostsClaim", "NO");
-        incomingPayload.put("CostsClaimGranted", "NO");
+        incomingPayload.put("D8DivorceCostsClaim", "No");
+        incomingPayload.put("CostsClaimGranted", "No");
 
         Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
-            hasEntry("costs claim not granted", NO_VALUE),
-            hasEntry("costs claim granted", NO_VALUE)
+            hasEntry("costs claim not granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE),
+            hasEntry("costs claim granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
         ));
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
     }

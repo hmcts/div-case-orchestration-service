@@ -43,6 +43,8 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
 
     private static final String EMAIL_DESCRIPTION = "Respondent Notification - Certificate of Entitlement";
     private static final String EMAIL_ADDRESS = "email address";
+    private static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
+    private static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
 
     @Autowired
     private TaskCommons taskCommons;
@@ -76,9 +78,9 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
             formatDateWithCustomerFacingFormat(limitDateToContactCourt));
 
         if (wasCostsClaimGranted(caseDataPayload)) {
-            templateParameters.put(COSTS_CLAIM_GRANTED, YES_VALUE);
+            templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE);
         } else {
-            templateParameters.put(COSTS_CLAIM_GRANTED, NO_VALUE);
+            templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE);
         }
 
         try {

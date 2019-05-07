@@ -30,7 +30,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
@@ -42,6 +41,8 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
 
     private static final String EMAIL_DESCRIPTION = "Petitioner Notification - Certificate of Entitlement";
     private static final String PETITIONER_EMAIL_ADDRESS = "email address";
+    private static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
+    private static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
 
     @Autowired
     private TaskCommons taskCommons;
@@ -71,22 +72,22 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
 
         if (wasDivorceCostsClaimed(payload)) {
             if (wasCostsClaimGranted(payload)) {
-                templateParameters.put(COSTS_CLAIM_GRANTED, YES_VALUE);
-                templateParameters.put(COSTS_CLAIM_NOT_GRANTED, NO_VALUE);
+                templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE);
+                templateParameters.put(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE);
             } else {
-                templateParameters.put(COSTS_CLAIM_GRANTED, NO_VALUE);
-                templateParameters.put(COSTS_CLAIM_NOT_GRANTED, YES_VALUE);
+                templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE);
+                templateParameters.put(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE);
             }
         } else {
-            templateParameters.put(COSTS_CLAIM_GRANTED, NO_VALUE);
-            templateParameters.put(COSTS_CLAIM_NOT_GRANTED, NO_VALUE);
+            templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE);
+            templateParameters.put(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE);
         }
 
         try {
             taskCommons.sendEmail(EmailTemplateNames.PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION,
                 EMAIL_DESCRIPTION,
                 petitionerEmail,
-                    templateParameters);
+                templateParameters);
             log.info("Petitioner notification sent for case {}", context.getTransientObject(CASE_ID_JSON_KEY));
         } catch (TaskException exception) {
             log.error("Failed to send petitioner notification for case {}", context.getTransientObject(CASE_ID_JSON_KEY));

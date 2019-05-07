@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow.CASE_ID_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseLinkedForHearingWorkflowTest {
@@ -66,6 +66,6 @@ public class CaseLinkedForHearingWorkflowTest {
         verify(sendRespondentCertificateOfEntitlementNotificationEmail).execute(contextCaptor.capture(), eq(caseDetails.getCaseData()));
 
         assertThat(returnedPayload, is(equalTo(testPayload)));
-        assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_JSON_KEY), is(equalTo("testCaseId")));
+        assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_KEY), is(equalTo("testCaseId")));
     }
 }

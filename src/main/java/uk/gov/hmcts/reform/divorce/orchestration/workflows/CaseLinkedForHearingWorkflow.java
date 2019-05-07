@@ -13,11 +13,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCertificate
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-
 @Component
 @Slf4j
 public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Object>> {
+
+    public static final String CASE_ID_KEY = "caseId";
 
     @Autowired
     private SendPetitionerCertificateOfEntitlementNotificationEmail sendPetitionerCertificateOfEntitlementNotificationEmail;
@@ -33,7 +33,7 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
                     sendRespondentCertificateOfEntitlementNotificationEmail
                 },
             caseDetails.getCaseData(),
-            ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()));
+            ImmutablePair.of(CASE_ID_KEY, caseDetails.getCaseId()));
 
         log.info("Running workflow for case id {}.", caseDetails.getCaseId());
 
