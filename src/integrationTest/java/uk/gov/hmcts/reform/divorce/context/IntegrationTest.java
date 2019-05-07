@@ -105,30 +105,19 @@ public abstract class IntegrationTest {
 
     private UserDetails getUserDetails(String username, String password, String userGroup, String... role) {
         synchronized (this) {
-            //tactical solution as sometimes the newly created user is somehow corrupted and won't generate a code..
-            int count = 0;
-            int maxTries = 5;
-            while (true) {
-                try {
-                    idamTestSupportUtil.createUser(username, password, userGroup, role);
+            idamTestSupportUtil.createUser(username, password, userGroup, role);
 
-                    final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
+            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
 
-                    final String userId = idamTestSupportUtil.getUserId(authToken);
+            final String userId = idamTestSupportUtil.getUserId(authToken);
 
-                    return UserDetails.builder()
-                            .username(username)
-                            .emailAddress(username)
-                            .password(password)
-                            .authToken(authToken)
-                            .id(userId)
-                            .build();
-                } catch (Exception e) {
-                    if (++count == maxTries) throw e;
-                    log.trace("Encountered an error creating a user/token - retrying", e);
-                }
-            }
-
+            return UserDetails.builder()
+                    .username(username)
+                    .emailAddress(username)
+                    .password(password)
+                    .authToken(authToken)
+                    .id(userId)
+                    .build();
         }
     }
 
