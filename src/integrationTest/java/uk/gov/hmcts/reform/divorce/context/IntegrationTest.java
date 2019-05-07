@@ -129,7 +129,10 @@ public abstract class IntegrationTest {
             try {
                 return supplier.get();
             } catch (Exception e) {
-                if (++count == maxTries) throw e;
+                if (++count == maxTries) {
+                    log.error("Exhausted the number of maximum retry attempts..", e);
+                    throw e;
+                }
                 try {
                     //some backoff time
                     Thread.sleep(200);
