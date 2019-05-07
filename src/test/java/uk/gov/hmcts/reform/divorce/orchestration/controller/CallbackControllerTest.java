@@ -68,6 +68,21 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void whenCoRespondentAnswerReceived_thenExecuteService() throws Exception {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(payload)
+                .build())
+            .build();
+        when(caseOrchestrationService.coRespondentAnswerReceived(incomingRequest)).thenReturn(payload);
+
+        ResponseEntity<CcdCallbackResponse> response = controller.respondentAnswerReceived(incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    }
+
+    @Test
     public void testAosSolicitorNominated() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()

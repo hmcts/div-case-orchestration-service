@@ -106,7 +106,8 @@ public class OrchestrationConstants {
     public static final String D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME = "D8ReasonForDivorceAdultery3rdPartyFName";
     public static final String D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME = "D8ReasonForDivorceAdultery3rdPartyLName";
     public static final String CO_RESPONDENT_DUE_DATE = "DueDateCoResp";
-
+    public static final String CO_RESPONDENT_ANSWER_RECEIVED = "ReceivedAnswerFromCoResp";
+    public static final String CO_RESPONDENT_ANSWER_RECEIVED_DATE = "ReceivedAnswerFromCoRespDate";
     // Divorce Session
     public static final String DIVORCE_SESSION_EXISTING_PAYMENTS = "existingPayments";
     public static final String DIVORCE_SESSION_PETITIONER_EMAIL = "petitionerEmail";

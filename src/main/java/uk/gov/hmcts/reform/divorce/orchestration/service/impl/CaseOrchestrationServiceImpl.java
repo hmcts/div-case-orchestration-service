@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CoRespondentAnswerReceivedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
@@ -88,6 +89,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final AuthUtil authUtil;
     private final AmendPetitionWorkflow amendPetitionWorkflow;
     private final CaseLinkedForHearingWorkflow caseLinkedForHearingWorkflow;
+    private final CoRespondentAnswerReceivedWorkflow coRespondentAnswerReceivedWorkflow;
     private final RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
 
     @Override
@@ -171,7 +173,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .getCode();
 
             Payment payment = Payment.builder()
-                .paymentChannel(ONLINE)
+                .paymentChannel(Optional.ofNullable(paymentUpdate.getChannel()).orElse(ONLINE))
                 .paymentReference(paymentUpdate.getReference())
                 .paymentSiteId(paymentUpdate.getSiteId())
                 .paymentStatus(paymentUpdate.getStatus())
@@ -424,6 +426,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
         }
+    }
+
+    @Override
+    public Map<String, Object> coRespondentAnswerReceived(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return coRespondentAnswerReceivedWorkflow.run(ccdCallbackRequest.getCaseDetails());
+
     }
 
 }
