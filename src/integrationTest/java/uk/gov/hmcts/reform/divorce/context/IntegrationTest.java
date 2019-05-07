@@ -130,6 +130,12 @@ public abstract class IntegrationTest {
                 return supplier.get();
             } catch (Exception e) {
                 if (++count == maxTries) throw e;
+                try {
+                    //some backoff time
+                    Thread.sleep(200);
+                } catch (InterruptedException ex) {
+                    log.error("Error during sleep", ex);
+                }
                 log.trace("Encountered an error creating a user/token - retrying", e);
             }
         }
