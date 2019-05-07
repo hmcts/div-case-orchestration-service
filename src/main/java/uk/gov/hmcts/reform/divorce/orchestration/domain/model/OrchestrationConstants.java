@@ -188,6 +188,7 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_INVITATION_TEMPLATE_NAME = "co-respondentinvitation";
     public static final String PETITION_ISSUE_FEE_FOR_LETTER = "petitionIssueFee";
     public static final String DOCUMENT_COLLECTION = "documentCollection";
+    public static final String DOCUMENTS_GENERATED = "DocumentsGenerated";
 
 
     // Fees
@@ -240,8 +241,7 @@ public class OrchestrationConstants {
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData_Error";
     public static final String VALIDATION_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData_Error";
-    public static final String BULK_PRINT_ERROR_KEY
-            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkPrinter_Error";
+    public static final String BULK_PRINT_ERROR_KEY = "BulkPrinting_Error";
     public static final String EMAIL_ERROR_KEY
             = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
 
