@@ -226,6 +226,18 @@ dependencies {
 	        force = true
 	}
 
+    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-core', version: versions.tomcat) {
+        force = true
+    }
+
+    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-websocket', version: versions.tomcat) {
+        force = true
+    }
+
+    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-el', version: versions.tomcat) {
+        force = true
+    }
+
     //integration test
     integrationTestCompile group: 'com.mashape.unirest', name: 'unirest-java', version: versions.unirest
     integrationTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured

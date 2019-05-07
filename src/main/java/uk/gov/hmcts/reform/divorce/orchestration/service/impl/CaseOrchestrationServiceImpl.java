@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintW
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CoRespondentAnswerReceivedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
@@ -47,9 +49,11 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
@@ -92,6 +96,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final CaseLinkedForHearingWorkflow caseLinkedForHearingWorkflow;
     private final CoRespondentAnswerReceivedWorkflow coRespondentAnswerReceivedWorkflow;
     private final ProcessAwaitingPronouncementCasesWorkflow bulkSearchCasesWorkflow;
+    private final GetCaseWithIdWorkflow getCaseWithIdWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -161,39 +166,46 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payload = new HashMap<>();
 
         if (paymentUpdate.getStatus().equalsIgnoreCase(SUCCESS)) {
-            String paymentAmount = Optional.ofNullable(paymentUpdate.getAmount())
-                .map(BigDecimal::intValueExact)
-                .map(amt -> amt * 100)
-                .map(String::valueOf)
-                .orElseThrow(() -> new WorkflowException("Missing payment amount data"));
+            CaseDetails caseDetails = getCaseWithIdWorkflow.run(paymentUpdate.getCcdCaseNumber());
 
-            String feeId = Optional.ofNullable(paymentUpdate.getFees())
-                .filter(list -> !list.isEmpty())
-                .map(list -> list.get(0))
-                .orElseThrow(() -> new WorkflowException("Missing payment fee data"))
-                .getCode();
+            if (Objects.nonNull(caseDetails) && AWAITING_PAYMENT.equalsIgnoreCase(caseDetails.getState())) {
+                String paymentAmount = Optional.ofNullable(paymentUpdate.getAmount())
+                    .map(BigDecimal::intValueExact)
+                    .map(amt -> amt * 100)
+                    .map(String::valueOf)
+                    .orElseThrow(() -> new WorkflowException("Missing payment amount data"));
 
-            Payment payment = Payment.builder()
-                .paymentChannel(ONLINE)
-                .paymentReference(paymentUpdate.getReference())
-                .paymentSiteId(paymentUpdate.getSiteId())
-                .paymentStatus(paymentUpdate.getStatus())
-                .paymentTransactionId(paymentUpdate.getExternalReference())
-                .paymentAmount(paymentAmount)
-                .paymentFeeId(feeId)
-                .build();
+                String feeId = Optional.ofNullable(paymentUpdate.getFees())
+                    .filter(list -> !list.isEmpty())
+                    .map(list -> list.get(0))
+                    .orElseThrow(() -> new WorkflowException("Missing payment fee data"))
+                    .getCode();
 
-            Map<String, Object> updateEvent = new HashMap<>();
-            Map<String, Object> sessionData = new HashMap<>();
-            sessionData.put(PAYMENT, payment);
-            updateEvent.put(CASE_EVENT_DATA_JSON_KEY, sessionData);
-            updateEvent.put(CASE_EVENT_ID_JSON_KEY, PAYMENT_MADE);
+                Payment payment = Payment.builder()
+                    .paymentChannel(Optional.ofNullable(paymentUpdate.getChannel()).orElse(ONLINE))
+                    .paymentReference(paymentUpdate.getReference())
+                    .paymentSiteId(paymentUpdate.getSiteId())
+                    .paymentStatus(paymentUpdate.getStatus())
+                    .paymentTransactionId(paymentUpdate.getExternalReference())
+                    .paymentAmount(paymentAmount)
+                    .paymentFeeId(feeId)
+                    .build();
 
-            payload = updateToCCDWorkflow.run(updateEvent,
-                authUtil.getCaseworkerToken(), paymentUpdate.getCcdCaseNumber());
-            log.info("Case ID is: {}. Payment updated with payment reference {}",
-                payload.get(ID),
-                payment.getPaymentReference());
+                Map<String, Object> updateEvent = new HashMap<>();
+                Map<String, Object> sessionData = new HashMap<>();
+                sessionData.put(PAYMENT, payment);
+                updateEvent.put(CASE_EVENT_DATA_JSON_KEY, sessionData);
+                updateEvent.put(CASE_EVENT_ID_JSON_KEY, PAYMENT_MADE);
+
+                payload = updateToCCDWorkflow.run(updateEvent,
+                    authUtil.getCaseworkerToken(), paymentUpdate.getCcdCaseNumber());
+                log.info("Case ID is: {}. Payment updated with payment reference {}",
+                    payload.get(ID),
+                    payment.getPaymentReference());
+            } else {
+                log.info("Ignoring payment update as the case is not in AwaitingPayment state case {}",
+                    paymentUpdate.getCcdCaseNumber());
+            }
         } else {
             log.info("Ignoring payment update as it was not successful payment on case {}",
                 paymentUpdate.getCcdCaseNumber());
