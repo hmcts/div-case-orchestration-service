@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintW
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CoRespondentAnswerReceivedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
@@ -96,6 +97,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final CoRespondentAnswerReceivedWorkflow coRespondentAnswerReceivedWorkflow;
     private final GetCaseWithIdWorkflow getCaseWithIdWorkflow;
     private final SolicitorDnReviewPetitionWorkflow solicitorDnReviewPetitionWorkflow;
+    private final GenerateCoRespondentAnswersWorkflow generateCoRespondentAnswersWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -447,4 +449,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     }
 
+    @Override
+    public Map<String, Object> generateCoRespondentAnswers(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        return generateCoRespondentAnswersWorkflow.run(ccdCallbackRequest.getCaseDetails(), authToken);
+    }
 }

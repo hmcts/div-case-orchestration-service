@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -319,6 +318,23 @@ public class CallbackController {
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/co-respondent-generate-answers",
+            consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Generates the Co-Respondent Answers PDF Document for the case")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Co-Respondent answers generated and attached to case",
+                    response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> generateCoRespondentAnswers(
+            @RequestHeader(value = "Authorization") String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        Map<String, Object> response = caseOrchestrationService
+                .generateCoRespondentAnswers(ccdCallbackRequest, authorizationToken);
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder().data(response).build());
     }
 
     private List<String> getErrors(Map<String, Object> response) {

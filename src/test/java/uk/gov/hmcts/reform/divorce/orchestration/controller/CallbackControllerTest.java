@@ -371,4 +371,19 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
         verify(caseOrchestrationService).processSolDnReviewPetition(incomingRequest);
     }
+
+    @Test
+    public void whenGenerateCoRespondentAnswers_thenExecuteService() throws Exception {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(payload)
+                        .build())
+                .build();
+        when(caseOrchestrationService.generateCoRespondentAnswers(incomingRequest, AUTH_TOKEN)).thenReturn(payload);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCoRespondentAnswers(AUTH_TOKEN, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    }
 }
