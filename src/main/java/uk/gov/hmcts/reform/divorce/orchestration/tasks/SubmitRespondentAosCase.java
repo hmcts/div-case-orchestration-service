@@ -50,7 +50,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
             eventId = AOS_NOMINATE_SOLICITOR;
         } else {
             //if respondent didn't nominate a solicitor, then they've provided an answer
-            if (isRespondentWillDefendDivorce(submissionData)) {
+            if (isRespondentDefendingDivorce(submissionData)) {
                 eventId = AWAITING_ANSWER_AOS_EVENT_ID;
             } else if (isRespondentAgreeingDivorceButNotAdmittingFact(submissionData, context)) {
                 eventId = COMPLETED_AOS_EVENT_ID;
@@ -80,7 +80,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         return YES_VALUE.equalsIgnoreCase(respondentCorrespondenceSendToSolicitor);
     }
 
-    private boolean isRespondentWillDefendDivorce(Map<String, Object> submissionData) {
+    private boolean isRespondentDefendingDivorce(Map<String, Object> submissionData) {
         final String respWillDefendDivorce = (String)submissionData.get(RESP_WILL_DEFEND_DIVORCE);
         return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
     }
