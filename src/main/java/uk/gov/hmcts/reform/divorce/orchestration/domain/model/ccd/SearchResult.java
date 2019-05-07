@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 @Builder
 public class SearchResult {
-    int total;
-    List<CaseDetails> cases;
-
+    private int total;
+    private List<CaseDetails> cases;
 }

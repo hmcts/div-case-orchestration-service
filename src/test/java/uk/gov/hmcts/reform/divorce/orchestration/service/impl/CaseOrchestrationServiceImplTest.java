@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
@@ -29,6 +30,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
@@ -149,6 +151,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private CaseLinkedForHearingWorkflow caseLinkedForHearingWorkflow;
+
+    @Mock
+    private ProcessAwaitingPronouncementCasesWorkflow processAwaitingPronouncementCasesWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -636,6 +641,19 @@ public class CaseOrchestrationServiceImplTest {
         expectedException.expectMessage(is("This operation threw an exception."));
 
         classUnderTest.processCaseLinkedForHearingEvent(ccdCallbackRequest);
+    }
+
+    @Test
+    public void whenProcessAwaitingPronouncementCases_thenProceedAsExpected() throws WorkflowException {
+        final SearchResult searchResult = SearchResult.builder().build();
+
+        when(processAwaitingPronouncementCasesWorkflow.run(AUTH_TOKEN)).thenReturn(searchResult);
+
+        SearchResult b = classUnderTest.search();
+
+        assertEquals(searchResult, b);
+
+        verify(processAwaitingPronouncementCasesWorkflow).run(AUTH_TOKEN);
     }
 
     @After
