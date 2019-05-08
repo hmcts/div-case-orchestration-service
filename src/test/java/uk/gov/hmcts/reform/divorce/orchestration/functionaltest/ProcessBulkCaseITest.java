@@ -56,9 +56,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @AutoConfigureMockMvc
 public class ProcessBulkCaseITest extends IdamTestSupport {
 
-    private static final String CMS_SEARCH = "/casemaintenance/version/1/processCasesReadyForListing";
+    private static final String CMS_SEARCH = "/casemaintenance/version/1/search";
     private static final String CMS_BULK_CASE_SUBMIT = "/casemaintenance/version/1/bulk/submit";
-    private static final String CMS_UPDATE_CASE = "/casemaintenance/version/1/updateCase/%s/LinkCaseData";
+    private static final String CMS_UPDATE_CASE = "/casemaintenance/version/1/updateCase/%s/LinkBulkCaseReference";
     private static final String API_URL = "/processCasesReadyForListing";
 
     private static  final String SEARCH_RESULT_KEY = "SEARCH_RESULT";

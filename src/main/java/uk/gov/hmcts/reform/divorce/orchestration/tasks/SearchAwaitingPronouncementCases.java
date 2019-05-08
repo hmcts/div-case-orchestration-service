@@ -56,7 +56,7 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
 
             String query = sourceBuilder.toString();
             SearchResult result = caseMaintenanceClient.searchCases(
-                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY),
                 query
             );
 

@@ -41,7 +41,7 @@ public class SearchAwaitingPronouncementCasesTest {
 
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any())).thenReturn(cmsSearchResponse);
 
-        classUnderTest.execute(context, null);
+         classUnderTest.execute(context, null);
         Object actual = context.getTransientObject(SEARCH_RESULT_KEY);
         assertEquals(cmsSearchResponse.getCases(), actual);
 

@@ -24,7 +24,7 @@ public class GetCaseIdFromCaseLink implements Task<Map<String,Object>> {
         Map<String, Object> caseReferenceObject  = (Map<String, Object>) caseLinkValue.get(CASE_REFERENCE_FIELD);
         String caseReference = (String) caseReferenceObject.get(CASE_REFERENCE_FIELD);
         context.setTransientObject(CASE_ID_JSON_KEY, caseReference);
-        String bulkListCaseId = String.valueOf(context.getTransientObject(BULK_LISTING_CASE_ID_FIELD));
+        String bulkListCaseId = context.getTransientObject(BULK_LISTING_CASE_ID_FIELD);
 
         HashMap<String, Object> caseData = new HashMap<>();
         caseData.put(BULK_LISTING_CASE_ID_FIELD, bulkListCaseId);
