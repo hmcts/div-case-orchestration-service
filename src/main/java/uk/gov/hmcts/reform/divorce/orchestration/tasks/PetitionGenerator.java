@@ -32,7 +32,7 @@ public class PetitionGenerator implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        CaseDetails caseDetails = (CaseDetails) context.getTransientObject(CASE_DETAILS_JSON_KEY);
+        CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         GeneratedDocumentInfo miniPetition =
                 documentGeneratorClient.generatePDF(
                         GenerateDocumentRequest.builder()
@@ -40,7 +40,7 @@ public class PetitionGenerator implements Task<Map<String, Object>> {
                                 .values(Collections.singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
                                         caseDetails))
                                 .build(),
-                        String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY))
+                    context.getTransientObject(AUTH_TOKEN_JSON_KEY)
                 );
 
         miniPetition.setDocumentType(DOCUMENT_TYPE_PETITION);
