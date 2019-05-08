@@ -68,5 +68,5 @@ variable "aos_responded_awaiting_answer_days_to_respond" {
 }
 
 variable "idam_strategic_enabled" {
-  default = "false"
+  default = "true"
 }
