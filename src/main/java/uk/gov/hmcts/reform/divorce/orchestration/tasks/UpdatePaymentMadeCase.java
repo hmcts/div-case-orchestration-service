@@ -19,8 +19,8 @@ public class UpdatePaymentMadeCase extends UpdateCaseInCCD {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        String caseId = String.valueOf(context.getTransientObject(CASE_ID_JSON_KEY));
-        String caseState = String.valueOf(context.getTransientObject(CASE_STATE_JSON_KEY));
+        String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
+        String caseState = context.getTransientObject(CASE_STATE_JSON_KEY);
         Map<String, Object> caseResponse = null;
         if (AWAITING_PAYMENT.equalsIgnoreCase(caseState) && caseData.containsKey(D_8_PAYMENTS)) {
             context.setTransientObject(CASE_EVENT_ID_JSON_KEY, PAYMENT_MADE_EVENT);

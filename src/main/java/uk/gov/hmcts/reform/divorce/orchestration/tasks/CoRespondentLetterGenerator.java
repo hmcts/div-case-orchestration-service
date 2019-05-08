@@ -40,7 +40,7 @@ public class CoRespondentLetterGenerator implements Task<Map<String, Object>> {
     @Override
     @SuppressWarnings("Duplicates")
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
-        final CaseDetails caseDetails = (CaseDetails) context.getTransientObject(CASE_DETAILS_JSON_KEY);
+        final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
 
         final NumberFormat poundsOnlyFormat = new DecimalFormat("#");
         final String petitionIssueFee = poundsOnlyFormat.format(((FeeResponse) context.getTransientObject(PETITION_ISSUE_FEE_JSON_KEY)).getAmount());
@@ -55,7 +55,7 @@ public class CoRespondentLetterGenerator implements Task<Map<String, Object>> {
                         PETITION_ISSUE_FEE_FOR_LETTER, petitionIssueFee)
                     )
                     .build(),
-                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY))
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY)
             );
 
         coRespondentInvitation.setDocumentType(DOCUMENT_TYPE_CO_RESPONDENT_INVITATION);

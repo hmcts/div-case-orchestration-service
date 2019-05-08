@@ -69,7 +69,7 @@ public class RespondentPinGeneratorTest {
         //then
         assertThat(response, is(notNullValue()));
         assertThat(response.get(RESPONDENT_LETTER_HOLDER_ID), is(pin.getUserId()));
-        assertThat(String.valueOf(context.getTransientObject(RESPONDENT_PIN)), is(pin.getPin()));
+        assertThat(context.getTransientObject(RESPONDENT_PIN), is(pin.getPin()));
     }
 
     @After
