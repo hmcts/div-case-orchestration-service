@@ -27,6 +27,7 @@ public class CoRespondentGenerateAnswersTest extends IntegrationTest {
     @Test
     public void givenCallbackRequest_whenGenerateCoRespondentAnswers_thenReturnUpdatedData() throws Exception {
         final Map<String, Object> headers = new HashMap<>();
+        headers.put(HttpHeaders.AUTHORIZATION, createCaseWorkerUser().getAuthToken());
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 
         Response response = RestUtil.postToRestService(
