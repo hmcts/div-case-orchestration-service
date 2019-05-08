@@ -30,6 +30,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
@@ -41,8 +43,6 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
 
     private static final String EMAIL_DESCRIPTION = "Petitioner Notification - Certificate of Entitlement";
     private static final String PETITIONER_EMAIL_ADDRESS = "email address";
-    private static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
-    private static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
 
     @Autowired
     private TaskCommons taskCommons;
@@ -53,7 +53,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
             context.getTransientObject(CASE_ID_JSON_KEY));
 
         String petitionerEmail = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_EMAIL);
-        String caseId = getMandatoryPropertyValueAsString(payload, D_8_CASE_REFERENCE);
+        String familyManCaseId = getMandatoryPropertyValueAsString(payload, D_8_CASE_REFERENCE);
         LocalDate dateOfHearing = LocalDate.parse(getMandatoryPropertyValueAsString(payload, DATE_OF_HEARING_CCD_FIELD),
             ofPattern(CCD_DATE_FORMAT));
         LocalDate limitDateToContactCourt = dateOfHearing.minus(PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT);
@@ -61,7 +61,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
         Map<String, String> templateParameters = new HashMap<>();
 
         templateParameters.put(PETITIONER_EMAIL_ADDRESS, petitionerEmail);
-        templateParameters.put(NOTIFICATION_CASE_NUMBER_KEY, caseId);
+        templateParameters.put(NOTIFICATION_CASE_NUMBER_KEY, familyManCaseId);
         templateParameters.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY,
                 getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME));
         templateParameters.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY,

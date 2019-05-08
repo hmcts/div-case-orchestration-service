@@ -177,6 +177,8 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY = "form submission date limit";
     public static final String IS_DRAFT_KEY =   "fetchedDraft";
     public static final String STATEMENT_OF_TRUTH = "D8StatementOfTruth";
+    public static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
+    public static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
 
     // Payment
     public static final String PAYMENT = "payment";

@@ -27,6 +27,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -42,8 +44,6 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
 
     private static final String EMAIL_DESCRIPTION = "Respondent Notification - Certificate of Entitlement";
     private static final String EMAIL_ADDRESS = "email address";
-    private static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
-    private static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
 
     @Autowired
     private TaskCommons taskCommons;
@@ -54,7 +54,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
             context.getTransientObject(CASE_ID_JSON_KEY));
 
         String respondentEmail = getMandatoryPropertyValueAsString(caseDataPayload, RESPONDENT_EMAIL_ADDRESS);
-        String caseId = getMandatoryPropertyValueAsString(caseDataPayload, D_8_CASE_REFERENCE);
+        String familyManCaseId = getMandatoryPropertyValueAsString(caseDataPayload, D_8_CASE_REFERENCE);
         String respondentFirstName = getMandatoryPropertyValueAsString(caseDataPayload, RESP_FIRST_NAME_CCD_FIELD);
         String respondentLastName = getMandatoryPropertyValueAsString(caseDataPayload, RESP_LAST_NAME_CCD_FIELD);
         String petitionerInferredGender = getMandatoryPropertyValueAsString(caseDataPayload,
@@ -68,7 +68,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
         Map<String, String> templateParameters = new HashMap<>();
 
         templateParameters.put(EMAIL_ADDRESS, respondentEmail);
-        templateParameters.put(NOTIFICATION_CASE_NUMBER_KEY, caseId);
+        templateParameters.put(NOTIFICATION_CASE_NUMBER_KEY, familyManCaseId);
         templateParameters.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, respondentFirstName);
         templateParameters.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, respondentLastName);
         templateParameters.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
