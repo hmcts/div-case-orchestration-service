@@ -56,7 +56,6 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
 
         Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = extractGeneratedDocumentList(caseData);
@@ -66,7 +65,7 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
     }
 
     private void populateDocumentBytes(TaskContext context, Map<String, GeneratedDocumentInfo> generatedDocumentInfos) {
-        CaseDetails caseDetails = (CaseDetails) context.getTransientObject(CASE_DETAILS_JSON_KEY);
+        CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         for (GeneratedDocumentInfo generatedDocumentInfo : generatedDocumentInfos.values()) {
 
             byte[] bytes = null;

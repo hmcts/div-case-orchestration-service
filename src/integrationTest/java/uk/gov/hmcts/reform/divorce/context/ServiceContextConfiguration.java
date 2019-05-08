@@ -93,7 +93,7 @@ public class ServiceContextConfiguration {
     @Bean
     public RequestInterceptor requestInterceptor() {
         return (RequestTemplate template) -> {
-            if(template.request().httpMethod() == Request.HttpMethod.POST) {
+            if (template.request().httpMethod() == Request.HttpMethod.POST) {
                 template.header(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
             }
         };

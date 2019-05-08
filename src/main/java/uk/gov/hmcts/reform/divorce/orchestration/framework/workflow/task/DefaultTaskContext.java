@@ -33,16 +33,18 @@ public class DefaultTaskContext implements TaskContext {
     }
 
     @Override
-    public void setTransientObject(String key, Object jsonNode) {
-        transientObjects.put(key, jsonNode);
+    public void setTransientObject(String key, Object value) {
+        transientObjects.put(key, value);
     }
 
     @Override
-    public Object getTransientObject(String key) {
-        return transientObjects.get(key);
+    @SuppressWarnings("unchecked")
+    public <T> T getTransientObject(String key) {
+        return (T) transientObjects.get(key);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T computeTransientObjectIfAbsent(final String key, final T defaultVal) {
         return (T) transientObjects.computeIfAbsent(key, k -> defaultVal);
     }

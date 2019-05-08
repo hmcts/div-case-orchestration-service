@@ -25,8 +25,7 @@ public class GetCase implements Task<CaseDataResponse> {
 
     @Override
     public CaseDataResponse execute(TaskContext context, CaseDataResponse payload) throws TaskException {
-        CaseDetails caseDetails = caseMaintenanceClient.getCase(
-            String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
+        CaseDetails caseDetails = caseMaintenanceClient.getCase(context.getTransientObject(AUTH_TOKEN_JSON_KEY));
 
         if (caseDetails == null) {
             throw new TaskException(new CaseNotFoundException("No case found"));
