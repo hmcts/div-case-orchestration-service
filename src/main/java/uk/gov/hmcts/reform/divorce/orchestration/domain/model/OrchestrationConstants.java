@@ -62,6 +62,10 @@ public class OrchestrationConstants {
     public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CCD_DUE_DATE = "dueDate";
     public static final String D_8_PAYMENTS = "Payments";
+    public static final String BULK_LISTING_CASE_ID_FIELD = "BulkListingCaseId";
+
+    //CCD DN fields
+    public static final String DN_SUBMITTED_DATE_FIELD = "DNApplicationSubmittedDate";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";

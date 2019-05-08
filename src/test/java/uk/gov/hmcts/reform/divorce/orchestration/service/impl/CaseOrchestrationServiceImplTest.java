@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
@@ -30,8 +29,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
@@ -741,15 +740,13 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void whenProcessAwaitingPronouncementCases_thenProceedAsExpected() throws WorkflowException {
-        final SearchResult searchResult = SearchResult.builder().build();
+        Map<String, Object> expectedResult = new HashMap<>();
+        when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
+        when(processAwaitingPronouncementCasesWorkflow.run(AUTH_TOKEN)).thenReturn(expectedResult);
 
-        when(processAwaitingPronouncementCasesWorkflow.run(AUTH_TOKEN)).thenReturn(searchResult);
+        Map<String, Object>  actual = classUnderTest.generateBulkCaseForListing();
 
-        SearchResult b = classUnderTest.search();
-
-        assertEquals(searchResult, b);
-
-        verify(processAwaitingPronouncementCasesWorkflow).run(AUTH_TOKEN);
+        assertEquals(expectedResult, actual);
     }
 
     @After

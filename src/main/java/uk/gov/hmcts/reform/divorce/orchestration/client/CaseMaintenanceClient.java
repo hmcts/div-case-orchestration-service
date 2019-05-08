@@ -133,4 +133,15 @@ public interface CaseMaintenanceClient {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
             @RequestBody String query
     );
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/casemaintenance/version/1/bulk/submit",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> submitBulkCase(
+        @RequestBody Map<String, Object> submitCase,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken
+    );
+
 }

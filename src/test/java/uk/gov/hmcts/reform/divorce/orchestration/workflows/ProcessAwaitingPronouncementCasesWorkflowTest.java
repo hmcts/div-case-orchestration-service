@@ -6,10 +6,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkCaseCreate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchAwaitingPronouncementCases;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDivorceCaseWithinBulk;
+
+import java.util.Collections;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -21,7 +25,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class ProcessAwaitingPronouncementCasesWorkflowTest {
 
     @Mock
-    private SearchAwaitingPronouncementCases searchAwaitingPronouncementCases;
+    private SearchAwaitingPronouncementCases searchAwaitingPronouncementCasesMock;
+
+    @Mock
+    private BulkCaseCreate createBulkCaseMock;
+
+    @Mock
+    private UpdateDivorceCaseWithinBulk updateDivorceCaseWithinBulkMock;
 
     @InjectMocks
     private ProcessAwaitingPronouncementCasesWorkflow classUnderTest;
@@ -32,15 +42,17 @@ public class ProcessAwaitingPronouncementCasesWorkflowTest {
         final ImmutablePair<String, Integer> searchPageKayPair = new ImmutablePair<>(SEARCH_PAGE_KEY, 0);
 
         final Task[] tasks = new Task[]{
-                searchAwaitingPronouncementCases
+            searchAwaitingPronouncementCasesMock,
+            createBulkCaseMock,
+            updateDivorceCaseWithinBulkMock
         };
 
-        final SearchResult searchResult = SearchResult.builder().build();
+        Map<String, Object> expected = Collections.emptyMap();
 
-        when(classUnderTest.execute(tasks, null, authTokenPair, searchPageKayPair)).thenReturn(searchResult);
+        when(classUnderTest.execute(tasks, null, authTokenPair, searchPageKayPair)).thenReturn(expected);
 
-        SearchResult actual = classUnderTest.run(AUTH_TOKEN);
+        Map<String, Object> actual = classUnderTest.run(AUTH_TOKEN);
 
-        assertEquals(searchResult, actual);
+        assertEquals(expected, actual);
     }
 }

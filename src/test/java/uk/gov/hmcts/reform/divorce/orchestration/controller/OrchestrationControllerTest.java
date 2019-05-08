@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.AllocatedCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
@@ -297,16 +296,15 @@ public class OrchestrationControllerTest {
 
     @Test
     public void whenSearchCases_thenReturnExpectedResponse() throws WorkflowException {
-        final SearchResult searchResult = SearchResult.builder().build();
+        Map<String, Object>  expected = Collections.emptyMap();
 
-        when(caseOrchestrationService.search()).thenReturn(searchResult);
+        when(caseOrchestrationService.generateBulkCaseForListing()).thenReturn(expected);
 
-        ResponseEntity<SearchResult> response = classUnderTest.search();
+        ResponseEntity<Map<String, Object>> response = classUnderTest.processCasesReadyForListing();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(searchResult, response.getBody());
+        assertEquals(expected, response.getBody());
 
-        verify(caseOrchestrationService).search();
     }
 
     @Test(expected = WorkflowException.class)

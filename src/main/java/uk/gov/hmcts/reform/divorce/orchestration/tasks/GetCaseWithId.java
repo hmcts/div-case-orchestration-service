@@ -30,7 +30,7 @@ public class GetCaseWithId implements Task<UserDetails> {
     public UserDetails execute(TaskContext context, UserDetails payload) throws TaskException {
         final String caseWorkerToken = authUtil.getCaseworkerToken();
         final String caseId = String.valueOf(context.getTransientObject(CASE_ID_JSON_KEY));
-        
+
         CaseDetails caseDetails = caseMaintenanceClient.retrievePetitionById(
             caseWorkerToken,
             caseId

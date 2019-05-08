@@ -6,19 +6,27 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.SEARCH_RESULT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PRONOUNCEMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 
 @Component
-public class SearchAwaitingPronouncementCases implements Task<SearchResult> {
+public class SearchAwaitingPronouncementCases implements Task<Map<String, Object>> {
+
+    private static final int PAGE_SIZE = 50;
+    private static final String HEARING_DATE = "data.hearingDate";
 
     private final CaseMaintenanceClient caseMaintenanceClient;
-    private final int PAGE_SIZE = 50;
-    private String HEARING_DATE= "data.hearingDate";
 
     @Autowired
     public SearchAwaitingPronouncementCases(CaseMaintenanceClient caseMaintenanceClient) {
@@ -26,27 +34,42 @@ public class SearchAwaitingPronouncementCases implements Task<SearchResult> {
     }
 
     @Override
-    public SearchResult execute(TaskContext context, SearchResult payload) {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
 
-        QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_PRONOUNCEMENT);
-        QueryBuilder hearingDate  = QueryBuilders.existsQuery(HEARING_DATE);
+        List<SearchResult> searchResultList = new ArrayList<>();
+        int from = 0;
+        int totalSearch;
+        do {
+            QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_PRONOUNCEMENT);
+            QueryBuilder hearingDate = QueryBuilders.existsQuery(HEARING_DATE);
 
-        final QueryBuilder queries = QueryBuilders
+            final QueryBuilder queries = QueryBuilders
                 .boolQuery()
                 .must(stateQuery)
                 .mustNot(hearingDate);
 
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        sourceBuilder.query(queries);
-        sourceBuilder.from(context.computeTransientObjectIfAbsent(SEARCH_PAGE_KEY, 0));
-        sourceBuilder.size(PAGE_SIZE);
+            SearchSourceBuilder sourceBuilder =  SearchSourceBuilder
+                .searchSource()
+                .query(queries)
+                .from(from)
+                .size(PAGE_SIZE);
 
-        String query = sourceBuilder.toString();
-        SearchResult result = caseMaintenanceClient.searchCases(
-            String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
-            query
-        );
-        return result;
+            String query = sourceBuilder.toString();
+            SearchResult result = caseMaintenanceClient.searchCases(
+                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
+                query
+            );
+
+            from  += result.getCases().size();
+            totalSearch = result.getTotal();
+            if (!result.getCases().isEmpty()) {
+                searchResultList.add(result);
+            }
+        }
+        while (from < totalSearch);
+        context.setTransientObject(SEARCH_RESULT_KEY, searchResultList);
+
+        return payload;
 
     }
 
