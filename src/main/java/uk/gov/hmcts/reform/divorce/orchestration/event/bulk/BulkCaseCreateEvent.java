@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.event.bulk;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 import org.springframework.context.ApplicationEvent;
 
 import java.util.Map;
 
-@Data
+@Value
+@EqualsAndHashCode(callSuper = true)
 public class BulkCaseCreateEvent extends ApplicationEvent {
     private final transient Map<String, Object> caseDetails;
 
