@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
@@ -29,20 +28,19 @@ public class GenericEmailNotification implements Task<Map<String, Object>> {
         this.emailService = emailService;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> data) {
-        String emailAddress = String.valueOf(context.getTransientObject(NOTIFICATION_EMAIL));
-        EmailTemplateNames template = (EmailTemplateNames) context.getTransientObject(NOTIFICATION_TEMPLATE);
-        Map<String, String> templateVars = (Map<String, String>)context.getTransientObject(NOTIFICATION_TEMPLATE_VARS);
+        String emailAddress = context.getTransientObject(NOTIFICATION_EMAIL);
+        EmailTemplateNames template = context.getTransientObject(NOTIFICATION_TEMPLATE);
+        Map<String, String> templateVars = context.getTransientObject(NOTIFICATION_TEMPLATE_VARS);
 
         try {
             emailService.sendEmailAndReturnExceptionIfFails(emailAddress, template.name(), templateVars,"submission notification");
         } catch (NotificationClientException e) {
             log.warn("Error sending email for case ID: " + context.getTransientObject(ID), e);
             context.setTransientObject(OrchestrationConstants.EMAIL_ERROR_KEY, e.getMessage());
-            return Collections.emptyMap();
+            return data;
         }
 
         return data;
