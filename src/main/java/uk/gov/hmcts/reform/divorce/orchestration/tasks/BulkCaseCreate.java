@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULKCASE_CREATION_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_ACCEPTED_LIST_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_LIST_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_TITLE_KEY;
@@ -43,34 +44,41 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 @Slf4j
 public class BulkCaseCreate implements Task<Map<String, Object>> {
-    public static final String BULK_CASE_TITLE = "Divorce bulk Case %s";
+    static final String BULK_CASE_TITLE = "Divorce bulk Case %s";
 
     @Autowired
     private CaseMaintenanceClient caseMaintenanceClient;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
-        List<SearchResult> searchResultList = (List<SearchResult>) context.getTransientObject(SEARCH_RESULT_KEY);
+        List<SearchResult> searchResultList =  context.getTransientObject(SEARCH_RESULT_KEY);
         if (CollectionUtils.isEmpty(searchResultList)) {
             log.info("There is no cases to process");
             context.setTaskFailed(true);
             return Collections.emptyMap();
         }
+        List<Object> errors = new ArrayList<>();
         List<Map<String, Object>> bulkCases = new ArrayList<>();
         searchResultList.forEach(searchResult -> {
             try {
                 Map<String, Object> bulkCase = createBulkCase(searchResult);
-                Map<String, Object> bulkCaseResult = caseMaintenanceClient.submitBulkCase(bulkCase,
-                    context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString());
+                Map<String, Object> bulkCaseResult = caseMaintenanceClient.submitBulkCase(bulkCase,context.getTransientObject(AUTH_TOKEN_JSON_KEY));
                 bulkCases.add(bulkCaseResult);
             } catch (FeignException e) {
                 //Ignore bulk case creation failed. Next schedule should pickup the remaining cases
-                // Still need to handle timeout, as the Bulkcase could be created.
+                // Still need to handle timeout, as the BulkCase could be created.
+                errors.addAll(searchResult.getCases()
+                    .stream()
+                    .map(cases -> cases.getCaseId())
+                    .collect(Collectors.toList()));
                 log.error("Bulk case creation failed.", e);
             }
         });
         Map<String, Object> cases = new HashMap<>();
         cases.put(BULK_CASE_LIST_KEY, bulkCases);
+        if (!errors.isEmpty()) {
+            context.setTransientObject(BULKCASE_CREATION_ERROR, errors);
+        }
         return cases;
     }
 

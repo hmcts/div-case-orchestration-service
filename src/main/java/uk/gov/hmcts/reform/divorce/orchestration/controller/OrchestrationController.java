@@ -342,15 +342,5 @@ public class OrchestrationController {
         return ResponseEntity.ok(orchestrationService.amendPetition(caseId, authorizationToken));
     }
 
-    @GetMapping(path = "/processCasesReadyForListing")
-    @ApiOperation(value = "Process cases ready for listing")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Bulk case for listing created"),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<Map<String, Object>> processCasesReadyForListing() throws WorkflowException {
-
-        Map<String, Object> response = orchestrationService.generateBulkCaseForListing();
-        return ResponseEntity.ok(response);
-    }
 
 }

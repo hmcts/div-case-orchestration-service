@@ -202,19 +202,6 @@ public class OrchestrationControllerTest {
         verify(caseOrchestrationService).getCase(AUTH_TOKEN);
     }
 
-    @Test
-    public void whenSearchCases_thenReturnExpectedResponse() throws WorkflowException {
-        Map<String, Object>  expected = Collections.emptyMap();
-
-        when(caseOrchestrationService.generateBulkCaseForListing()).thenReturn(expected);
-
-        ResponseEntity<Map<String, Object>> response = classUnderTest.processCasesReadyForListing();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expected, response.getBody());
-
-    }
-
     @Test(expected = WorkflowException.class)
     public void givenThrowsException_whenGetCase_thenReturnExpectedResponse() throws WorkflowException {
         when(caseOrchestrationService.getCase(AUTH_TOKEN))

@@ -94,7 +94,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final AmendPetitionWorkflow amendPetitionWorkflow;
     private final CaseLinkedForHearingWorkflow caseLinkedForHearingWorkflow;
     private final CoRespondentAnswerReceivedWorkflow coRespondentAnswerReceivedWorkflow;
-    private final ProcessAwaitingPronouncementCasesWorkflow bulkSearchCasesWorkflow;
+    private final ProcessAwaitingPronouncementCasesWorkflow processAwaitingPronouncementCasesWorkflow;
     private final GetCaseWithIdWorkflow getCaseWithIdWorkflow;
 
     @Override
@@ -441,7 +441,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> generateBulkCaseForListing() throws WorkflowException {
         log.info("Starting Bulk listing generation");
-        Map<String, Object> result = bulkSearchCasesWorkflow.run(authUtil.getCaseworkerToken());
+        Map<String, Object> result = processAwaitingPronouncementCasesWorkflow.run(authUtil.getCaseworkerToken());
         log.info("Bulk listing generation completed");
         return  result;
     }

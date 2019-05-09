@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkBulkCaseWorkflow;
 
@@ -46,6 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_LIST_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_LIST_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
@@ -58,16 +60,15 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
     private static final String CMS_SEARCH = "/casemaintenance/version/1/search";
     private static final String CMS_BULK_CASE_SUBMIT = "/casemaintenance/version/1/bulk/submit";
-    private static final String CMS_UPDATE_CASE = "/casemaintenance/version/1/updateCase/%s/LinkBulkCaseReference";
-    private static final String API_URL = "/processCasesReadyForListing";
+    private static final String CMS_UPDATE_CASE = "/casemaintenance/version/1/updateCase/%s/linkBulkCaseReference";
+    private static final String API_URL = "/process-cases-ready-for-listing";
 
-    private static  final String SEARCH_RESULT_KEY = "SEARCH_RESULT";
-
+    private static final int WAIT_TIME_IN_MILLIS = 1000;
     private static final String caseId1 = "1546883073634741";
     private static final String caseId2 = "1546883073634742";
     private static final String BULK_CASE_ID = "1557223513377278";
     private static final String UPDATE_BODY = convertObjectToJsonString(
-        ImmutableMap.of("BulkListingCaseId", BULK_CASE_ID));
+        ImmutableMap.of(BULK_LISTING_CASE_ID_FIELD, new CaseLink(BULK_CASE_ID)));
     @ClassRule
     public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
 
@@ -94,7 +95,6 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
             .cases(Arrays.asList(prepareBulkCase()))
             .build();
 
-
         stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
         stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.OK, getCmsBulkCaseResponse(), POST);
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, caseId1), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
@@ -105,7 +105,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        Mockito.verify(linkBulkCaseWorkflowSpy, timeout(1000).times(2)).run(any(), any(), any());
+        Mockito.verify(linkBulkCaseWorkflowSpy, timeout(WAIT_TIME_IN_MILLIS).times(2)).run(any(), any(), any());
 
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, caseId1), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, caseId2), RequestMethod.POST, UPDATE_BODY);
@@ -124,7 +124,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
         stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
         stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.NOT_FOUND, getCmsBulkCaseResponse(), POST);
 
-        int times = 0;
+
         stubSignInForCaseworker();
         webClient.perform(get(API_URL)
             .contentType(APPLICATION_JSON)
@@ -132,7 +132,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
             .andExpect(status().isOk())
             .andExpect(jsonPath(BULK_CASE_LIST_KEY).isEmpty());
 
-        verifyCmsServerEndpoint(times, CMS_UPDATE_CASE, RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(0, CMS_UPDATE_CASE, RequestMethod.POST, UPDATE_BODY);
     }
 
     @Test
@@ -156,7 +156,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        Mockito.verify(linkBulkCaseWorkflowSpy, timeout(1000).times(2)).run(any(), any(), any());
+        Mockito.verify(linkBulkCaseWorkflowSpy, timeout(WAIT_TIME_IN_MILLIS).times(2)).run(any(), any(), any());
 
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, caseId1), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, caseId2), RequestMethod.POST, UPDATE_BODY);

@@ -13,6 +13,7 @@ public class BulkCaseCreateEvent extends ApplicationEvent {
 
     public BulkCaseCreateEvent(Object source,  Map<String, Object> caseDetails) {
         super(source);
+
         this.caseDetails = caseDetails;
     }
 }

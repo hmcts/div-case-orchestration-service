@@ -16,7 +16,9 @@ public class BulkCaseConstants {
     public static final String DN_APPROVAL_DATE = "DNApprovalDate";
     public static final String COST_ORDER = "CostOrder";
     public static final String FAMILY_MAN_REFERENCE_FIELD = "FamilyManReference";
-    public static final String BULK_CASE_LIST_KEY = "BULK_CASES";
-    public static final String SEARCH_RESULT_KEY = "SEARCH_RESULT";
+    public static final String BULK_CASE_LIST_KEY = "BulkCases";
+    public static final String SEARCH_RESULT_KEY = "SearchResult";
+
+    public static final String BULKCASE_CREATION_ERROR = "BulKCaseCreation_Error";
 
 }

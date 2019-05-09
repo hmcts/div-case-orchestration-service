@@ -11,13 +11,14 @@ public abstract class AsyncTask<T> implements Task<T> {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
-    public abstract List<ApplicationEvent> getApplicationEvent(TaskContext context, T payload);
+    public abstract List<ApplicationEvent> getApplicationEvent(TaskContext context, T payload) throws TaskException;
 
     @Override
-    public T execute(TaskContext context, T payload) {
-        getApplicationEvent(context, payload).forEach( applicationEvent -> {
-            applicationEventPublisher.publishEvent(applicationEvent);
-        });
+    public T execute(TaskContext context, T payload) throws TaskException {
+            getApplicationEvent(context, payload).forEach( applicationEvent -> {
+                applicationEventPublisher.publishEvent(applicationEvent);
+            });
+
         return payload;
     }
 }

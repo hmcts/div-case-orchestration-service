@@ -19,23 +19,21 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @AllArgsConstructor
 public class LinkBulkCaseWorkflow  extends DefaultWorkflow<Map<String, Object>> {
 
-    private static final String LINK_BULK_CASE_EVENT = "LinkBulkCaseReference";
+    static final String LINK_BULK_CASE_EVENT = "linkBulkCaseReference";
 
     private final UpdateCaseInCCD updateCaseInCCD;
     private final GetCaseIdFromCaseLink getCaseIDFromCaseLink;
 
-    public Map<String, Object> run(Map<String, Object> caseData,
+    public Map<String, Object> run(Map<String, Object> caseInfo,
                                    String bulkCaseId,
                                    String authToken) throws WorkflowException {
 
-
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, bulkCaseId);
         return this.execute(
             new Task[] {
                 getCaseIDFromCaseLink,
                 updateCaseInCCD
             },
-            caseData,
+            caseInfo,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(BULK_LISTING_CASE_ID_FIELD, bulkCaseId),
             ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, LINK_BULK_CASE_EVENT)
