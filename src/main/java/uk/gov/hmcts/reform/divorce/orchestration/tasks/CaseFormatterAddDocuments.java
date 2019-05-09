@@ -27,7 +27,7 @@ public class CaseFormatterAddDocuments implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
 
-        final Set<GeneratedDocumentInfo> documentCollection = (Set<GeneratedDocumentInfo>) context.getTransientObject(DOCUMENT_COLLECTION);
+        final Set<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
         if (isNotEmpty(documentCollection)) {
             return caseFormatterClient.addDocuments(
