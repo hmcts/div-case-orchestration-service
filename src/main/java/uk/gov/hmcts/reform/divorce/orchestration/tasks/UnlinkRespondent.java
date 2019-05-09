@@ -22,8 +22,8 @@ public class UnlinkRespondent implements Task<UserDetails> {
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) {
         caseMaintenanceClient.unlinkRespondent(
-            String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
-            String.valueOf(context.getTransientObject(CASE_ID_JSON_KEY))
+            context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+            context.getTransientObject(CASE_ID_JSON_KEY)
         );
 
         return payLoad;

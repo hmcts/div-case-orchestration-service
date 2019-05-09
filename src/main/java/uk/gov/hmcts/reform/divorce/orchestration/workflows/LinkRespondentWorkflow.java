@@ -22,23 +22,23 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 @Slf4j
 public class LinkRespondentWorkflow extends DefaultWorkflow<UserDetails> {
+    private final GetCaseWithId getCaseWithId;
     private final RetrievePinUserDetails retrievePinUserDetails;
     private final LinkRespondent linkRespondent;
     private final UpdateRespondentDetails updateRespondentDetails;
     private final UnlinkRespondent unlinkRespondent;
-    private final GetCaseWithId getCaseById;
 
     @Autowired
     public LinkRespondentWorkflow(RetrievePinUserDetails retrievePinUserDetails,
                                   LinkRespondent linkRespondent,
                                   UpdateRespondentDetails updateRespondentDetails,
                                   UnlinkRespondent unlinkRespondent,
-                                  GetCaseWithId getCaseById) {
+                                  GetCaseWithId getCaseWithId) {
         this.retrievePinUserDetails = retrievePinUserDetails;
         this.linkRespondent = linkRespondent;
         this.updateRespondentDetails = updateRespondentDetails;
         this.unlinkRespondent = unlinkRespondent;
-        this.getCaseById = getCaseById;
+        this.getCaseWithId = getCaseWithId;
     }
 
     public UserDetails run(String authToken, String caseId, String pin) throws WorkflowException {
@@ -47,7 +47,7 @@ public class LinkRespondentWorkflow extends DefaultWorkflow<UserDetails> {
         try {
             return this.execute(
                 new Task[] {
-                    getCaseById,
+                    getCaseWithId,
                     retrievePinUserDetails,
                     linkRespondent,
                     updateRespondentDetails

@@ -32,7 +32,6 @@ public class AmendPetitionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         this.updateCaseInCCD = updateCaseInCCD;
     }
 
-    @SuppressWarnings("unchecked")
     public Map<String, Object> run(String caseId, String authToken) throws WorkflowException {
         this.execute(
                 new Task[]{
@@ -45,7 +44,6 @@ public class AmendPetitionWorkflow extends DefaultWorkflow<Map<String, Object>> 
             ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, AMEND_PETITION_EVENT)
         );
 
-        return (Map<String, Object>) getContext()
-            .getTransientObject(NEW_AMENDED_PETITION_DRAFT_KEY);
+        return getContext().getTransientObject(NEW_AMENDED_PETITION_DRAFT_KEY);
     }
 }

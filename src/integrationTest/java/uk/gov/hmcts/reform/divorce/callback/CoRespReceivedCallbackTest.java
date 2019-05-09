@@ -64,6 +64,6 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
         assertNull(response.get(DATA));
         List<String> error = (List<String>) response.get(ERRORS);
         assertEquals(1,error.size());
-        assertTrue(error.get(0).contains("email_address Not a valid email address"));
+        assertTrue(error.get(0).contains("email_address is a required property"));
     }
 }
