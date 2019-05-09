@@ -320,6 +320,7 @@ public class CallbackController {
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
+
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();

@@ -12,12 +12,12 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.UUID;
 import java.util.function.Supplier;
+import javax.annotation.PostConstruct;
 
 @Slf4j
 @RunWith(SerenityRunner.class)

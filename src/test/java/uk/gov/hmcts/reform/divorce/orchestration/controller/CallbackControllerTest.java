@@ -346,7 +346,7 @@ public class CallbackControllerTest {
 
         when(caseOrchestrationService.processSolDnReviewPetition(incomingRequest)).thenReturn(incomingPayload);
 
-        ResponseEntity<CcdCallbackResponse> response = controller.solDnReviewPetition(incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnReviewPetition(incomingRequest);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
@@ -364,7 +364,7 @@ public class CallbackControllerTest {
         when(caseOrchestrationService.processSolDnReviewPetition(incomingRequest))
                 .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
-        ResponseEntity<CcdCallbackResponse> response = controller.solDnReviewPetition(incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnReviewPetition(incomingRequest);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody().getData(), is(nullValue()));
