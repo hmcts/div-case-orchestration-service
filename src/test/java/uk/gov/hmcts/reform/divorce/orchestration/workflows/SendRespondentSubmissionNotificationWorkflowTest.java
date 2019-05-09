@@ -98,6 +98,23 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
     }
 
     @Test
+    public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorceButNotAdmitWhatIsSaid() throws IOException,
+            WorkflowException, TaskException {
+        CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingNotAdmittingDivorce.json", CcdCallbackRequest.class);
+        Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
+
+        Map<String, Object> returnedPayloadFromWorkflow = workflow.run(callbackRequest);
+
+        verify(undefendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
+        verifyZeroInteractions(defendedDivorceNotificationEmailTask);
+        assertThat(returnedPayloadFromWorkflow, is(sameInstance(returnedPayloadFromTask)));
+        TaskContext taskContextPassedToTask = taskContextArgumentCaptor.getValue();
+        String caseIdPassedToTask = taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
+        assertThat(caseIdPassedToTask, is(equalTo(UNFORMATTED_CASE_ID)));
+    }
+
+    @Test
     public void testExceptionIsThrown_IfNotPossibleToAssert_WhetherDivorceWillBeDefended() throws IOException,
             WorkflowException {
         expectedException.expect(WorkflowException.class);

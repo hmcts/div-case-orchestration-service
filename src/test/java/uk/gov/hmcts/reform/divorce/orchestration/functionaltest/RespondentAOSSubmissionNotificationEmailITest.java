@@ -107,6 +107,31 @@ public class RespondentAOSSubmissionNotificationEmailITest {
     }
 
     @Test
+    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedButNoAdmitDivorce() throws Exception {
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingNotAdmittingDivorce.json", CcdCallbackRequest.class);
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+                .data(caseData)
+                .build();
+
+        webClient.perform(post(API_URL)
+                .content(convertObjectToJsonString(ccdCallbackRequest))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(convertObjectToJsonString(expected)))
+                .andExpect(content().string(allOf(
+                        isJson(),
+                        hasJsonPath("$.errors", nullValue())
+                )));
+
+        verify(mockClient).sendEmail(eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
+                eq("respondent@divorce.co.uk"),
+                any(), any());
+    }
+
+    @Test
     public void testResponseHasValidationErrors_WhenItIsNotClearIfDivorceWillBeDefended() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
                 "/jsonExamples/payloads/unclearAcknowledgementOfService.json", CcdCallbackRequest.class);

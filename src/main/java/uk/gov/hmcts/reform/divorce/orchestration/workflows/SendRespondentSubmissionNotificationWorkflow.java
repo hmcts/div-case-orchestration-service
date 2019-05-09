@@ -22,6 +22,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
+    private static final String NOT_DEFENDING_NOT_ADMITTING = "NoNoAdmission";
+
     @Autowired
     private SendRespondentSubmissionNotificationForDefendedDivorceEmail
         sendRespondentSubmissionNotificationForDefendedDivorceEmailTask;
@@ -38,7 +40,7 @@ public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflo
 
         if (YES_VALUE.equalsIgnoreCase(defended)) {
             tasks = new Task[] {sendRespondentSubmissionNotificationForDefendedDivorceEmailTask};
-        } else if (NO_VALUE.equalsIgnoreCase(defended)) {
+        } else if (NO_VALUE.equalsIgnoreCase(defended) || NOT_DEFENDING_NOT_ADMITTING.equalsIgnoreCase(defended)) {
             tasks = new Task[] {sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask};
         } else {
             String errorMessage = String.format("%s field doesn't contain a valid value: %s",
