@@ -8,7 +8,7 @@ public interface TaskContext {
 
     void setTransientObject(String key, Object data);
 
-    Object getTransientObject(String key);
+    <T> T getTransientObject(String key);
 
     <T> T computeTransientObjectIfAbsent(String key, T defaultVal);
 }

@@ -21,9 +21,9 @@ public class UpdateCaseInCCD implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         return caseMaintenanceClient.updateCase(
-            (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY),
-            (String) context.getTransientObject(CASE_ID_JSON_KEY),
-            (String) context.getTransientObject(CASE_EVENT_ID_JSON_KEY),
+            context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+            context.getTransientObject(CASE_ID_JSON_KEY),
+            context.getTransientObject(CASE_EVENT_ID_JSON_KEY),
             caseData
         );
     }

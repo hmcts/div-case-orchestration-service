@@ -40,8 +40,8 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> submissionData) {
-        String authToken = (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY);
-        String caseIDJsonKey = (String) context.getTransientObject(CASE_ID_JSON_KEY);
+        String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
+        String caseIDJsonKey = context.getTransientObject(CASE_ID_JSON_KEY);
 
         String eventId;
 
