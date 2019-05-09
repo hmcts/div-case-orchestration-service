@@ -39,7 +39,7 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) throws TaskException {
         String pinCode = authenticatePinUser(
-            String.valueOf(context.getTransientObject(RESPONDENT_PIN)),
+            context.getTransientObject(RESPONDENT_PIN),
             authClientId,
             authRedirectUrl);
 
@@ -68,7 +68,7 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
         final String respondentLetterHolderId = (String) caseData.get(RESPONDENT_LETTER_HOLDER_ID);
         final boolean isRespondent = letterHolderId.equals(respondentLetterHolderId);
         final boolean isCoRespondent = letterHolderId.equals(coRespondentLetterHolderId);
-        final String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
+        final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
 
         if (isRespondent) {
             context.setTransientObject(RESPONDENT_LETTER_HOLDER_ID, letterHolderId);

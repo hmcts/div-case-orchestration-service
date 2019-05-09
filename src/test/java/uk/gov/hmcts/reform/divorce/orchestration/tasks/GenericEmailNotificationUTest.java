@@ -12,7 +12,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doThrow;
@@ -78,7 +77,7 @@ public class GenericEmailNotificationUTest {
 
         Map<String, Object> taskResponse = genericEmailNotification.execute(context, data);
 
-        assertTrue(taskResponse.isEmpty());
+        assertEquals(taskResponse, data);
         assertNotNull(context.getTransientObject(EMAIL_ERROR_KEY));
     }
 }

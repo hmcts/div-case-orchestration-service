@@ -63,7 +63,7 @@ public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         Object payment = null;
-        if (AWAITING_PAYMENT.equalsIgnoreCase((String) context.getTransientObject(CASE_STATE_JSON_KEY))) {
+        if (AWAITING_PAYMENT.equalsIgnoreCase(context.getTransientObject(CASE_STATE_JSON_KEY))) {
             Map<String, Object> successPaymentFromSession = searchSuccessStatePayment(caseData);
 
             if (successPaymentFromSession != null) {
@@ -83,7 +83,7 @@ public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
         if (payment == null) {
             context.setTaskFailed(true);
         } else {
-            String caseId = String.valueOf(context.getTransientObject(CASE_ID_JSON_KEY));
+            String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
             String reference = (String) ((Map) payment).get(PAYMENT_REFERENCE);
             log.info("Case Id {} has successful payment with ref {}", caseId, reference);
             paymentMap = ImmutableMap.of(

@@ -59,9 +59,8 @@ public class BulkPrinter implements Task<Map<String, Object>> {
 
         if (isBulkPrintToggleEnabled()) {
 
-            CaseDetails caseDetails = (CaseDetails) context.getTransientObject(CASE_DETAILS_JSON_KEY);
-            Map<String, GeneratedDocumentInfo> generatedDocumentInfoList =
-                (Map<String, GeneratedDocumentInfo>) context.getTransientObject(DOCUMENTS_GENERATED);
+            CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
+            Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = context.getTransientObject(DOCUMENTS_GENERATED);
             String miniPetition = getEncoder().encodeToString(generatedDocumentInfoList.get(DOCUMENT_TYPE_PETITION)
                 .getBytes());
             String aosLetter = getEncoder().encodeToString(generatedDocumentInfoList.get(DOCUMENT_TYPE_RESPONDENT_INVITATION)

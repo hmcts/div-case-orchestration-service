@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetCaseByIdUTest {
+public class GetCaseWithIdUTest {
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
     @Mock

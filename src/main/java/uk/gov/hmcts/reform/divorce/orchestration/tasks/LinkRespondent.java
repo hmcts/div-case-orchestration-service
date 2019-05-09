@@ -24,14 +24,14 @@ public class LinkRespondent implements Task<UserDetails> {
 
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) {
-        boolean isRespondent = (boolean) context.getTransientObject(IS_RESPONDENT);
+        boolean isRespondent = context.getTransientObject(IS_RESPONDENT);
 
-        String letterId = isRespondent ? String.valueOf(context.getTransientObject(RESPONDENT_LETTER_HOLDER_ID)) :
-            String.valueOf(context.getTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID));
+        String letterId = isRespondent ? context.getTransientObject(RESPONDENT_LETTER_HOLDER_ID) :
+            context.getTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID);
 
         caseMaintenanceClient.linkRespondent(
-            String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
-            String.valueOf(context.getTransientObject(CASE_ID_JSON_KEY)),
+            context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+            context.getTransientObject(CASE_ID_JSON_KEY),
             letterId
         );
 

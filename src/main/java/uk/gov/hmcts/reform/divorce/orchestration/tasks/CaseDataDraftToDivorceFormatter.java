@@ -26,7 +26,7 @@ public class CaseDataDraftToDivorceFormatter implements Task<Map<String, Object>
         Object isDraftObject = caseDataResponse.get(IS_DRAFT_KEY);
         if (isDraftObject == null || !(Boolean) isDraftObject) {
             formattedData = caseFormatterClient.transformToDivorceFormat(
-                    String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
+                    context.getTransientObject(AUTH_TOKEN_JSON_KEY),
                     caseDataResponse
             );
             formattedData.remove("expires");

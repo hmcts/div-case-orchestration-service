@@ -76,7 +76,7 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
         verifyZeroInteractions(undefendedDivorceNotificationEmailTask);
         assertThat(returnedPayloadFromWorkflow, is(sameInstance(returnedPayloadFromTask)));
         TaskContext taskContextPassedToTask = taskContextArgumentCaptor.getValue();
-        String caseIdPassedToTask = (String) taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
+        String caseIdPassedToTask = taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
         assertThat(caseIdPassedToTask, is(equalTo(UNFORMATTED_CASE_ID)));
     }
 
@@ -93,7 +93,7 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
         verifyZeroInteractions(defendedDivorceNotificationEmailTask);
         assertThat(returnedPayloadFromWorkflow, is(sameInstance(returnedPayloadFromTask)));
         TaskContext taskContextPassedToTask = taskContextArgumentCaptor.getValue();
-        String caseIdPassedToTask = (String) taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
+        String caseIdPassedToTask = taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
         assertThat(caseIdPassedToTask, is(equalTo(UNFORMATTED_CASE_ID)));
     }
 

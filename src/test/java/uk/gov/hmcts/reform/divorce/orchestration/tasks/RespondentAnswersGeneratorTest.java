@@ -23,66 +23,55 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_AOS_INVITATION_FILE_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ACCESS_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class RespondentLetterGeneratorTest {
+public class RespondentAnswersGeneratorTest {
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
 
     @InjectMocks
-    private RespondentLetterGenerator respondentLetterGenerator;
+    private RespondentAnswersGenerator respondentAnswersGenerator;
 
     @Test
     public void callsDocumentGeneratorAndStoresGeneratedDocument() {
-        final GeneratedDocumentInfo expectedAosInvitation =
-            GeneratedDocumentInfo.builder()
-                .documentType(DOCUMENT_TYPE_RESPONDENT_INVITATION)
-                .fileName(TEST_AOS_INVITATION_FILE_NAME)
-                .build();
 
         final Map<String, Object> payload = new HashMap<>();
 
         final CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TEST_CASE_ID)
             .caseData(payload)
             .build();
 
         final TaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-        context.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         final GenerateDocumentRequest generateDocumentRequest =
             GenerateDocumentRequest.builder()
-                .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
-                .values(
-                    ImmutableMap.of(
-                        DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails,
-                        ACCESS_CODE, TEST_PIN)
-                    )
+                .template(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
+                .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                .build();
+
+        final GeneratedDocumentInfo expectedRespondentAnswers =
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
+                .fileName(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .build();
 
         //given
-        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedAosInvitation);
+        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
+            .thenReturn(expectedRespondentAnswers);
 
         //when
-        respondentLetterGenerator.execute(context, payload);
+        respondentAnswersGenerator.execute(context, payload);
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
-        assertThat(documentCollection, is(newLinkedHashSet(expectedAosInvitation)));
+        assertThat(documentCollection, is(newLinkedHashSet(expectedRespondentAnswers)));
 
         verify(documentGeneratorClient).generatePDF(generateDocumentRequest, AUTH_TOKEN);
     }
