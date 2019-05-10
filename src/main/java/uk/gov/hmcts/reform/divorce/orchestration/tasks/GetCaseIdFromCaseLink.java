@@ -27,7 +27,7 @@ public class GetCaseIdFromCaseLink implements Task<Map<String,Object>> {
         Map<String, Object> caseReferenceObject  = (Map<String, Object>) caseLinkValue.getOrDefault(CASE_REFERENCE_FIELD, Collections.emptyMap());
         String caseReference = Optional.ofNullable(caseReferenceObject.get(CASE_REFERENCE_FIELD))
             .map(String.class::cast)
-            .orElseThrow(()-> new TaskException("Case reference not present."));
+            .orElseThrow(() -> new TaskException("Case reference not present."));
 
         context.setTransientObject(CASE_ID_JSON_KEY, caseReference);
         String bulkListCaseId = context.getTransientObject(BULK_LISTING_CASE_ID_FIELD);

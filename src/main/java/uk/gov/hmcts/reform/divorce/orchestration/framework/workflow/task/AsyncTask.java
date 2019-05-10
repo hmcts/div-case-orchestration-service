@@ -15,9 +15,7 @@ public abstract class AsyncTask<T> implements Task<T> {
 
     @Override
     public T execute(TaskContext context, T payload) throws TaskException {
-            getApplicationEvent(context, payload).forEach( applicationEvent -> {
-                applicationEventPublisher.publishEvent(applicationEvent);
-            });
+        getApplicationEvent(context, payload).forEach( applicationEventPublisher::publishEvent );
 
         return payload;
     }

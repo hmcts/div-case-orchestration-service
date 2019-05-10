@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
-import javax.ws.rs.Path;
 import java.util.Map;
+import javax.ws.rs.Path;
+
 
 @RestController
 @Slf4j

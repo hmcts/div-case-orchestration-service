@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
-import feign.FeignException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -41,8 +40,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         divorceCaseList.forEach(caseElem -> {
             try {
                 linkBulkCaseWorkflow.run(caseElem,bulkCaseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 //TODO this will be handle on DIV-4811
                 log.error("Case update failed : for bulk case id {}", bulkCaseId, e );
             }
@@ -50,7 +48,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         });
 
         long endTime = Instant.now().toEpochMilli();
-        log.info("Completed bulk case process with bulk cased Id:{} in:{} millis", bulkCaseId, endTime-startTime);
+        log.info("Completed bulk case process with bulk cased Id:{} in:{} millis", bulkCaseId, endTime - startTime);
 
     }
 }
