@@ -25,6 +25,7 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
 
     private static final int PAGE_SIZE = 50;
     private static final String HEARING_DATE = "data.hearingDate";
+    private static final String BULK_LISTING_CASE_ID = "data.BulkListingCaseId";
 
     private final CaseMaintenanceClient caseMaintenanceClient;
 
@@ -42,11 +43,13 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
         do {
             QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_PRONOUNCEMENT);
             QueryBuilder hearingDate = QueryBuilders.existsQuery(HEARING_DATE);
+            QueryBuilder bulkListingCaseId = QueryBuilders.existsQuery(BULK_LISTING_CASE_ID);
 
             final QueryBuilder queries = QueryBuilders
                 .boolQuery()
                 .must(stateQuery)
-                .mustNot(hearingDate);
+                .mustNot(hearingDate)
+                .mustNot(bulkListingCaseId);
 
             SearchSourceBuilder sourceBuilder =  SearchSourceBuilder
                 .searchSource()
