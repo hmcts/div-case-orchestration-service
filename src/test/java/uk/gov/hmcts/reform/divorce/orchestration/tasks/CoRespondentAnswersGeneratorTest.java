@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
+import feign.FeignException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -39,7 +41,7 @@ public class CoRespondentAnswersGeneratorTest {
     private CoRespondentAnswersGenerator coRespondentAnswersGenerator;
 
     @Test
-    public void callsDocumentGeneratorAndStoresGeneratedDocument() {
+    public void callsDocumentGeneratorAndStoresGeneratedDocument() throws TaskException {
 
         final Map<String, Object> payload = new HashMap<>();
 
@@ -69,10 +71,36 @@ public class CoRespondentAnswersGeneratorTest {
         //when
         coRespondentAnswersGenerator.execute(context, payload);
 
-        final LinkedHashSet<GeneratedDocumentInfo> documentCollection = (LinkedHashSet) context.getTransientObject(DOCUMENT_COLLECTION);
+        final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
         assertThat(documentCollection, is(newLinkedHashSet(expectedRespondentAnswers)));
 
         verify(documentGeneratorClient).generatePDF(generateDocumentRequest, AUTH_TOKEN);
+    }
+
+    @Test(expected = TaskException.class)
+    public void throwsTaskExceptionWhenDocumentGenerationFails() throws TaskException {
+
+        final Map<String, Object> payload = new HashMap<>();
+
+        final CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(payload)
+                .build();
+
+        final TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+
+        final GenerateDocumentRequest generateDocumentRequest =
+                GenerateDocumentRequest.builder()
+                        .template(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME)
+                        .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                        .build();
+
+        //given
+        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
+                .thenThrow(FeignException.class);
+
+        //when
+        coRespondentAnswersGenerator.execute(context, payload);
     }
 }

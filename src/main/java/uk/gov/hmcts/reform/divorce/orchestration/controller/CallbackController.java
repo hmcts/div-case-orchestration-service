@@ -330,10 +330,21 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> generateCoRespondentAnswers(
             @RequestHeader(value = "Authorization") String authorizationToken,
             @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        Map<String, Object> response = caseOrchestrationService
-                .generateCoRespondentAnswers(ccdCallbackRequest, authorizationToken);
 
-        return ResponseEntity.ok(CcdCallbackResponse.builder().data(response).build());
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(caseOrchestrationService
+                    .generateCoRespondentAnswers(ccdCallbackRequest, authorizationToken));
+            log.info("Co-respondent answer generated. Case id: {}", caseId);
+        } catch (WorkflowException exception) {
+            log.error("Co-respondent answer generation failed. Case id:  {}", caseId, exception);
+            callbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
     private List<String> getErrors(Map<String, Object> response) {

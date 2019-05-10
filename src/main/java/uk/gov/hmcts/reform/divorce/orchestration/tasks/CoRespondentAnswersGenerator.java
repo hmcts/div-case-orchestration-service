@@ -9,7 +9,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
@@ -29,23 +31,28 @@ public class CoRespondentAnswersGenerator implements Task<Map<String, Object>> {
     }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         CaseDetails caseDataForDoc = CaseDetails.builder().caseData(payload).build();
-        GeneratedDocumentInfo coRespondentAnswers =
-                documentGeneratorClient.generatePDF(
-                        GenerateDocumentRequest.builder()
-                                .template(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME)
-                                .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDataForDoc))
-                                .build(),
-                        (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY)
-                );
 
-        coRespondentAnswers.setDocumentType(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS);
-        coRespondentAnswers.setFileName(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS);
+        try {
+            GeneratedDocumentInfo coRespondentAnswers =
+                    documentGeneratorClient.generatePDF(
+                            GenerateDocumentRequest.builder()
+                                    .template(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME)
+                                    .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDataForDoc))
+                                    .build(),
+                            context.getTransientObject(AUTH_TOKEN_JSON_KEY)
+                    );
 
-        final LinkedHashSet<GeneratedDocumentInfo> documentCollection =
-                context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
-        documentCollection.add(coRespondentAnswers);
+            coRespondentAnswers.setDocumentType(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS);
+            coRespondentAnswers.setFileName(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS);
+
+            final HashSet<GeneratedDocumentInfo> documentCollection =
+                    context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
+            documentCollection.add(coRespondentAnswers);
+        } catch (Exception e) {
+            throw new TaskException("Unable to generate or store Co-Respondent answers.", e);
+        }
 
         return payload;
     }

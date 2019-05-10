@@ -50,4 +50,19 @@ public class GenerateCoRespondentAnswersWorkflowTest {
 
         assertEquals(payload, actual);
     }
+
+    @Test(expected = WorkflowException.class)
+    public void givenTaskException_whenGetCase_thenThrowWorkflowException() throws WorkflowException, TaskException {
+        final DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+
+        Map<String, Object> payload = new HashMap<>();
+
+        when(coRespondentAnswersGenerator.execute(context, payload)).thenThrow(TaskException.class);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(payload).build();
+
+        classUnderTest.run(caseDetails, AUTH_TOKEN);
+    }
 }
