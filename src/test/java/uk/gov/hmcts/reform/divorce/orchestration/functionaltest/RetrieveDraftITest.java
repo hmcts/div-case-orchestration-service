@@ -5,13 +5,14 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.Maps;
-import org.joda.time.DateTime;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,8 +36,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -54,22 +61,27 @@ public class RetrieveDraftITest {
     private static final String CMS_UPDATE_CASE_PATH =
         "/casemaintenance/version/1/updateCase/1547073120300616/paymentMade";
     private static final String CFS_CONTEXT_PATH = "/caseformatter/version/1/to-divorce-format";
-    private static final String CFS_TO_CCD_CONTEXT_PATH =  "/caseformatter/version/1/to-ccd-format";
+    private static final String CFS_TO_CCD_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
     private static final String AUTH_SERVICE_PATH = "/lease";
 
     private static final String CARD_PAYMENT_PATH = "/card-payments/RC-1547-0733-1813-9545";
     private static final String USER_TOKEN = "Some JWT Token";
     private static final String CASE_ID = "12345";
 
+    private final LocalDateTime today = LocalDateTime.now();
+
     private static final Map<String, Object> CASE_DATA = new HashMap<>();
     private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
-            .caseData(CASE_DATA)
-            .caseId(CASE_ID)
-            .build();
+        .caseData(CASE_DATA)
+        .caseId(CASE_ID)
+        .build();
 
 
     @Autowired
     private MockMvc webClient;
+
+    @MockBean
+    private Clock clock;
 
     @ClassRule
     public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
@@ -83,45 +95,50 @@ public class RetrieveDraftITest {
     @ClassRule
     public static WireMockClassRule authServiceServer = new WireMockClassRule(4504);
 
+    @Before
+    public void setup() {
+        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
+        when(clock.getZone()).thenReturn(UTC);
+    }
 
     @Test
     public void givenJWTTokenIsNull_whenRetrieveDraft_thenReturnBadRequest()
-            throws Exception {
+        throws Exception {
         webClient.perform(get(API_URL)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
     public void givenThereIsAConnectionError_whenRetrieveDraft_thenReturnBadGateway()
-            throws Exception {
+        throws Exception {
         final String errorMessage = "some error message";
 
         stubCmsServerEndpoint(CMS_CONTEXT_PATH, HttpStatus.BAD_GATEWAY, errorMessage, HttpMethod.GET);
 
         webClient.perform(get(API_URL)
-                .header(AUTHORIZATION, USER_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadGateway())
-                .andExpect(content().string(containsString(errorMessage)));
+            .header(AUTHORIZATION, USER_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadGateway())
+            .andExpect(content().string(containsString(errorMessage)));
     }
 
     @Test
     public void givenNoDraftInDraftStore_whenRetrieveDraft_thenReturnNotFound()
-            throws Exception {
+        throws Exception {
 
         stubCmsServerEndpoint(CMS_CONTEXT_PATH, HttpStatus.OK, convertObjectToJsonString(CASE_DETAILS), HttpMethod.GET);
 
         webClient.perform(get(API_URL)
-                .header(AUTHORIZATION, USER_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string(""));
+            .header(AUTHORIZATION, USER_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andExpect(content().string(""));
     }
 
     @Test
     public void givenEverythingWorksAsExpected_whenCmsCalled_thenReturnDraft()
-            throws Exception {
+        throws Exception {
 
         CASE_DATA.put("deaftProperty1", "value1");
         CASE_DATA.put("deaftProperty2", "value2");
@@ -136,10 +153,10 @@ public class RetrieveDraftITest {
         expectedResponse.put("fetchedDraft", true);
 
         webClient.perform(get(API_URL)
-                .header(AUTHORIZATION, USER_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+            .header(AUTHORIZATION, USER_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
     }
 
     @Test
@@ -154,27 +171,27 @@ public class RetrieveDraftITest {
         Map<String, Object> expectedResponse = Maps.newHashMap(CASE_DATA);
 
         webClient.perform(get(API_URL)
-                .header(AUTHORIZATION, USER_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+            .header(AUTHORIZATION, USER_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
     }
 
     @Test
     public void givenPaidCaseAwaitingPaymentInState_whenCmsCalled_thenReturnUpdateCase() throws Exception {
         String caseDetailsPath = "jsonExamples/payloads/paymentPendingDraft.json";
-        String caseDetails =  ResourceLoader.loadResourceAsString(caseDetailsPath);
+        String caseDetails = ResourceLoader.loadResourceAsString(caseDetailsPath);
 
         stubCmsServerEndpoint(CMS_CONTEXT_PATH, HttpStatus.OK, caseDetails, HttpMethod.GET);
         stubCfsServerEndpoint(caseDetails);
         stubAuthServerEndpoint();
 
         String paymentPath = "jsonExamples/payloads/paymentSystemPaid.json";
-        String paymentResponse =  ResourceLoader.loadResourceAsString(paymentPath);
+        String paymentResponse = ResourceLoader.loadResourceAsString(paymentPath);
         stubPaymentServerEndpoint(paymentResponse);
 
         String formattedPaymentPath = "jsonExamples/payloads/formattedPayment.json";
-        String formattedPayment =  ResourceLoader.loadResourceAsString(formattedPaymentPath);
+        String formattedPayment = ResourceLoader.loadResourceAsString(formattedPaymentPath);
         stubCfsToCCDServerEndpoint(formattedPayment);
         stubCmsServerEndpoint(CMS_UPDATE_CASE_PATH, HttpStatus.OK, caseDetails, HttpMethod.POST);
 
@@ -191,19 +208,19 @@ public class RetrieveDraftITest {
     }
 
     private void stubCmsServerEndpoint(String path, HttpStatus status, String body, HttpMethod method) {
-        cmsServiceServer.stubFor(WireMock.request(method.name(),urlEqualTo(path))
-                .willReturn(aResponse()
-                        .withStatus(status.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(body)));
+        cmsServiceServer.stubFor(WireMock.request(method.name(), urlEqualTo(path))
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(body)));
     }
 
     private void stubCfsServerEndpoint(String body) {
         cfsServiceServer.stubFor(WireMock.post(CFS_CONTEXT_PATH)
-                .willReturn(aResponse()
-                        .withStatus(HttpStatus.OK.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(body)));
+            .willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(body)));
     }
 
     private void stubCfsToCCDServerEndpoint(String body) {
@@ -218,7 +235,7 @@ public class RetrieveDraftITest {
     private void stubAuthServerEndpoint() {
         Algorithm algorithm = mock(Algorithm.class);
         String body = JWT.create()
-            .withExpiresAt(DateTime.now().plusHours(1).toDate()).sign(algorithm);
+            .withExpiresAt(Date.from(clock.instant())).sign(algorithm);
         authServiceServer.stubFor(WireMock.post(AUTH_SERVICE_PATH)
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())

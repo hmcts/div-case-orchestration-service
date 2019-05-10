@@ -51,15 +51,15 @@ public class SolicitorCreateITest {
 
     private static final Map<String, Object> CASE_DATA = Collections.emptyMap();
     private static final CaseDetails CASE_DETAILS =
-            CaseDetails.builder()
-                    .caseData(CASE_DATA)
-                    .caseId(TEST_CASE_ID)
-                    .state(TEST_STATE)
-                    .build();
+        CaseDetails.builder()
+            .caseData(CASE_DATA)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
 
     private static final CcdCallbackRequest CREATE_EVENT = CcdCallbackRequest.builder()
-            .caseDetails(CASE_DETAILS)
-            .build();
+        .caseDetails(CASE_DETAILS)
+        .build();
 
     private final LocalDateTime today = LocalDateTime.now();
 
@@ -83,14 +83,14 @@ public class SolicitorCreateITest {
         expectedData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.EASTMIDLANDS.getSiteId());
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
-                .data(expectedData)
-                .build();
+            .data(expectedData)
+            .build();
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(CREATE_EVENT))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(expected)));
+            .content(convertObjectToJsonString(CREATE_EVENT))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
     }
 }

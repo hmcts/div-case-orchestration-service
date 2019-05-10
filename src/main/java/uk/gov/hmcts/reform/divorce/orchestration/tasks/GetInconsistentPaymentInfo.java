@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -59,6 +60,7 @@ public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
     private final PaymentClient paymentClient;
     private final AuthTokenGenerator serviceAuthGenerator;
     private final TaskCommons taskCommons;
+    private final Clock clock;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
@@ -99,7 +101,7 @@ public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
             .put(PAYMENT_CHANNEL_KEY, PAYMENT_CHANNEL)
             .put(PAYMENT_TRANSACTION_ID_KEY, paymentInfo.get(EXTERNAL_REFERENCE))
             .put(PAYMENT_REFERENCE_KEY, paymentInfo.get(PAYMENT_SERVICE_REFERENCE))
-            .put(PAYMENT_DATE_KEY, LocalDate.now().format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN)))
+            .put(PAYMENT_DATE_KEY, LocalDate.now(clock).format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN)))
             .put(PAYMENT_AMOUNT_KEY, String.valueOf((Integer) paymentInfo.get(PAYMENT_SERVICE_AMOUNT_KEY) * 100))
             .put(PAYMENT_STATUS_KEY, paymentInfo.get(STATUS_FROM_PAYMENT))
             .put(PAYMENT_FEE_ID_KEY, PAYMENT_FEE_ID)

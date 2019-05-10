@@ -10,6 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SetCoRespondentAnswerReceivedTest {
 
     private static final String CURRENT_DATE = "2018-01-01";
-    private static final LocalDateTime FIXED_DATE_TIME = LocalDateTime.of(2018, 01, 01, 00, 00);
+    private static final LocalDateTime FIXED_DATE_TIME = LocalDate.parse(CURRENT_DATE).atStartOfDay();
 
     @Mock
     private Clock clock;
@@ -46,7 +47,7 @@ public class SetCoRespondentAnswerReceivedTest {
         Map<String, Object> caseDataResponse = classToTest.execute(null, new HashMap<>());
 
         Map<String, Object> expectedCaseData = ImmutableMap.of(CO_RESPONDENT_ANSWER_RECEIVED, YES_VALUE,
-                CO_RESPONDENT_ANSWER_RECEIVED_DATE, CURRENT_DATE);
+            CO_RESPONDENT_ANSWER_RECEIVED_DATE, CURRENT_DATE);
         assertEquals(expectedCaseData, caseDataResponse);
     }
 }

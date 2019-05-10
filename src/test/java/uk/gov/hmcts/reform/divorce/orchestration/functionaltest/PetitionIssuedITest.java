@@ -108,13 +108,13 @@ public class PetitionIssuedITest extends IdamTestSupport {
     private final LocalDateTime today = LocalDateTime.now();
 
     private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
-            .caseData(CASE_DATA)
-            .caseId(TEST_CASE_ID)
-            .build();
+        .caseData(CASE_DATA)
+        .caseId(TEST_CASE_ID)
+        .build();
 
     private static final CcdCallbackRequest CREATE_EVENT = CcdCallbackRequest.builder()
-            .caseDetails(CASE_DETAILS)
-            .build();
+        .caseDetails(CASE_DETAILS)
+        .build();
 
     @Autowired
     private MockMvc webClient;
@@ -151,206 +151,206 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
     @Test
     public void givenCallbackRequestIsNull_whenPetitionIssued_thenReturnBadRequest()
-            throws Exception {
+        throws Exception {
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
     public void givenJWTTokenIsNull_whenPetitionIssued_thenReturnBadRequest()
-            throws Exception {
+        throws Exception {
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(CREATE_EVENT))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .content(convertObjectToJsonString(CREATE_EVENT))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
     public void givenThereIsAConnectionError_whenPetitionIssued_thenReturnBadGateway()
-            throws Exception {
+        throws Exception {
         final String errorMessage = "some error message";
 
         stubValidationServerEndpoint(HttpStatus.BAD_GATEWAY,
-                ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(), errorMessage);
+            ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(), errorMessage);
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(CREATE_EVENT))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is5xxServerError());
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(CREATE_EVENT))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().is5xxServerError());
     }
 
     @Test
     public void givenValidationFailed_whenPetitionIssued_thenReturnCaseWithValidationErrors()
-            throws Exception {
+        throws Exception {
         final List<String> errors = Collections.singletonList(TEST_ERROR);
 
         final ValidationResponse validationResponse =
-                ValidationResponse.builder()
-                        .errors(errors)
-                        .build();
+            ValidationResponse.builder()
+                .errors(errors)
+                .build();
 
         final CcdCallbackResponse ccdCallbackResponse =
-                CcdCallbackResponse.builder()
-                        .errors(errors)
-                        .build();
+            CcdCallbackResponse.builder()
+                .errors(errors)
+                .build();
 
         stubValidationServerEndpoint(HttpStatus.OK,
-                ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
-                convertObjectToJsonString(validationResponse));
+            ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
+            convertObjectToJsonString(validationResponse));
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(CREATE_EVENT))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(ccdCallbackResponse)));
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(CREATE_EVENT))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(ccdCallbackResponse)));
     }
 
     @Test
     public void givenGenerateAOSInvitationIsNull_whenPetitionIssued_thenReturnCaseExpectedChanges()
-            throws Exception {
+        throws Exception {
         final ValidationResponse validationResponse = ValidationResponse.builder().build();
 
         final GenerateDocumentRequest generateMiniPetitionRequest =
-                GenerateDocumentRequest.builder()
-                        .template(MINI_PETITION_TEMPLATE_NAME)
-                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
-                        .build();
+            GenerateDocumentRequest.builder()
+                .template(MINI_PETITION_TEMPLATE_NAME)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
+                .build();
 
         final GeneratedDocumentInfo generatedMiniPetitionResponse =
-                GeneratedDocumentInfo.builder()
-                        .documentType(DOCUMENT_TYPE_PETITION)
-                        .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
-                        .build();
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_PETITION)
+                .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
+                .build();
 
         final DocumentUpdateRequest documentUpdateRequest =
-                DocumentUpdateRequest.builder()
-                        .documents(Collections.singletonList(generatedMiniPetitionResponse))
-                        .caseData(CASE_DATA)
-                        .build();
+            DocumentUpdateRequest.builder()
+                .documents(Collections.singletonList(generatedMiniPetitionResponse))
+                .caseData(CASE_DATA)
+                .build();
 
         final Map<String, Object> formattedCaseData = emptyMap();
 
         stubValidationServerEndpoint(HttpStatus.OK,
-                ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
-                convertObjectToJsonString(validationResponse));
+            ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
+            convertObjectToJsonString(validationResponse));
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
 
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(CREATE_EVENT))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(CREATE_EVENT))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
     }
 
     @Test
     public void givenGenerateAOSInvitationIsFalse_whenPetitionIssued_thenReturnCaseExpectedChanges()
-            throws Exception {
+        throws Exception {
         final ValidationResponse validationResponse = ValidationResponse.builder().build();
 
         final GenerateDocumentRequest generateMiniPetitionRequest =
-                GenerateDocumentRequest.builder()
-                        .template(MINI_PETITION_TEMPLATE_NAME)
-                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
-                        .build();
+            GenerateDocumentRequest.builder()
+                .template(MINI_PETITION_TEMPLATE_NAME)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
+                .build();
 
         final GeneratedDocumentInfo generatedMiniPetitionResponse =
-                GeneratedDocumentInfo.builder()
-                        .documentType(DOCUMENT_TYPE_PETITION)
-                        .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
-                        .build();
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_PETITION)
+                .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
+                .build();
 
         final DocumentUpdateRequest documentUpdateRequest =
-                DocumentUpdateRequest.builder()
-                        .documents(Collections.singletonList(generatedMiniPetitionResponse))
-                        .caseData(CASE_DATA)
-                        .build();
+            DocumentUpdateRequest.builder()
+                .documents(Collections.singletonList(generatedMiniPetitionResponse))
+                .caseData(CASE_DATA)
+                .build();
 
         final Map<String, Object> formattedCaseData = emptyMap();
 
         stubValidationServerEndpoint(HttpStatus.OK,
-                ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
-                convertObjectToJsonString(validationResponse));
+            ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
+            convertObjectToJsonString(validationResponse));
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
 
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(CREATE_EVENT))
-                .param(GENERATE_AOS_INVITATION, "false")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(CREATE_EVENT))
+            .param(GENERATE_AOS_INVITATION, "false")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
     }
 
     @Test
     public void givenGenerateInvitationIsTrue_whenPetitionIssued_thenReturnCaseExpectedChanges()
-            throws Exception {
+        throws Exception {
         final ValidationResponse validationResponse = ValidationResponse.builder().build();
 
         final PinRequest pinRequest =
-                PinRequest.builder()
-                        .firstName(PETITIONER_FIRST_NAME)
-                        .lastName(PETITIONER_LAST_NAME)
-                        .build();
+            PinRequest.builder()
+                .firstName(PETITIONER_FIRST_NAME)
+                .lastName(PETITIONER_LAST_NAME)
+                .build();
 
         final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
 
         final GenerateDocumentRequest generateMiniPetitionRequest =
-                GenerateDocumentRequest.builder()
-                        .template(MINI_PETITION_TEMPLATE_NAME)
-                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
-                        .build();
+            GenerateDocumentRequest.builder()
+                .template(MINI_PETITION_TEMPLATE_NAME)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
+                .build();
 
         final GeneratedDocumentInfo generatedMiniPetitionResponse =
-                GeneratedDocumentInfo.builder()
-                        .documentType(DOCUMENT_TYPE_PETITION)
-                        .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
-                        .build();
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_PETITION)
+                .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
+                .build();
 
         final DocumentUpdateRequest documentUpdateRequest =
-                DocumentUpdateRequest.builder()
-                        .documents(asList(generatedMiniPetitionResponse))
-                        .caseData(CASE_DATA)
-                        .build();
+            DocumentUpdateRequest.builder()
+                .documents(asList(generatedMiniPetitionResponse))
+                .caseData(CASE_DATA)
+                .build();
 
         final Map<String, Object> formattedCaseData = emptyMap();
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
         stubValidationServerEndpoint(HttpStatus.OK,
-                ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
-                convertObjectToJsonString(validationResponse));
+            ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
+            convertObjectToJsonString(validationResponse));
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
 
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(CREATE_EVENT))
-                .param(GENERATE_AOS_INVITATION, "true")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(CREATE_EVENT))
+            .param(GENERATE_AOS_INVITATION, "true")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
     }
 
     @Test
     public void givenGenerateInvitationIsTrueAndIsServiceCentre_whenPetitionIssued_thenReturnCaseExpectedChanges()
-            throws Exception {
+        throws Exception {
 
         CcdCallbackRequest ccdCallbackRequestWithServiceCentre = CREATE_EVENT;
         ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_DIVORCE_UNIT, DIVORCE_UNIT_SERVICE_CENTRE);
@@ -358,54 +358,54 @@ public class PetitionIssuedITest extends IdamTestSupport {
         final ValidationResponse validationResponse = ValidationResponse.builder().build();
 
         final PinRequest pinRequest =
-                PinRequest.builder()
-                        .firstName(PETITIONER_FIRST_NAME)
-                        .lastName(PETITIONER_LAST_NAME)
-                        .build();
+            PinRequest.builder()
+                .firstName(PETITIONER_FIRST_NAME)
+                .lastName(PETITIONER_LAST_NAME)
+                .build();
 
         final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
 
         final GenerateDocumentRequest generateMiniPetitionRequest =
-                GenerateDocumentRequest.builder()
-                        .template(MINI_PETITION_TEMPLATE_NAME)
-                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
-                                ccdCallbackRequestWithServiceCentre.getCaseDetails()))
-                        .build();
+            GenerateDocumentRequest.builder()
+                .template(MINI_PETITION_TEMPLATE_NAME)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
+                    ccdCallbackRequestWithServiceCentre.getCaseDetails()))
+                .build();
 
         final GeneratedDocumentInfo generatedMiniPetitionResponse =
-                GeneratedDocumentInfo.builder()
-                        .documentType(DOCUMENT_TYPE_PETITION)
-                        .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
-                        .build();
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_PETITION)
+                .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
+                .build();
 
         final GenerateDocumentRequest generateAosInvitationRequest =
-                GenerateDocumentRequest.builder()
-                        .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
-                        .values(ImmutableMap.of(
-                                DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
-                                ACCESS_CODE, TEST_PIN_CODE))
-                        .build();
+            GenerateDocumentRequest.builder()
+                .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
+                .values(ImmutableMap.of(
+                    DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
+                    ACCESS_CODE, TEST_PIN_CODE))
+                .build();
 
         final GeneratedDocumentInfo generatedAosInvitationResponse =
-                GeneratedDocumentInfo.builder()
-                        .documentType(DOCUMENT_TYPE_RESPONDENT_INVITATION)
-                        .fileName(String.format(RESPONDENT_INVITATION_FILE_NAME_FORMAT, TEST_CASE_ID))
-                        .build();
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_RESPONDENT_INVITATION)
+                .fileName(String.format(RESPONDENT_INVITATION_FILE_NAME_FORMAT, TEST_CASE_ID))
+                .build();
 
         final DocumentUpdateRequest documentUpdateRequest =
-                DocumentUpdateRequest.builder()
-                        .documents(asList(generatedMiniPetitionResponse, generatedAosInvitationResponse))
-                        .caseData(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
-                        .build();
+            DocumentUpdateRequest.builder()
+                .documents(asList(generatedMiniPetitionResponse, generatedAosInvitationResponse))
+                .caseData(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
+                .build();
 
         final Map<String, Object> formattedCaseData = emptyMap();
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
         stubValidationServerEndpoint(HttpStatus.OK,
-                ValidationRequest.builder().data(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
-                        .formId(FORM_ID).build(),
-                convertObjectToJsonString(validationResponse));
+            ValidationRequest.builder().data(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
+                .formId(FORM_ID).build(),
+            convertObjectToJsonString(validationResponse));
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
         stubDocumentGeneratorServerEndpoint(generateAosInvitationRequest, generatedAosInvitationResponse);
 
@@ -413,18 +413,18 @@ public class PetitionIssuedITest extends IdamTestSupport {
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(ccdCallbackRequestWithServiceCentre))
-                .param(GENERATE_AOS_INVITATION, "true")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequestWithServiceCentre))
+            .param(GENERATE_AOS_INVITATION, "true")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
     }
 
     @Test
     public void givenGenerateInvitationIsTrueAndIsServiceCentreAndCoRespondentExists_whenPetitionIssued_thenReturnCaseExpectedChanges()
-            throws Exception {
+        throws Exception {
 
         CcdCallbackRequest ccdCallbackRequestWithServiceCentre = CREATE_EVENT;
         ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_DIVORCE_UNIT, DIVORCE_UNIT_SERVICE_CENTRE);
@@ -434,63 +434,63 @@ public class PetitionIssuedITest extends IdamTestSupport {
         final ValidationResponse validationResponse = ValidationResponse.builder().build();
 
         final PinRequest pinRequest =
-                PinRequest.builder()
-                        .firstName(PETITIONER_FIRST_NAME)
-                        .lastName(PETITIONER_LAST_NAME)
-                        .build();
+            PinRequest.builder()
+                .firstName(PETITIONER_FIRST_NAME)
+                .lastName(PETITIONER_LAST_NAME)
+                .build();
 
         final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
 
         final GenerateDocumentRequest generateMiniPetitionRequest =
-                GenerateDocumentRequest.builder()
-                        .template(MINI_PETITION_TEMPLATE_NAME)
-                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
-                                ccdCallbackRequestWithServiceCentre.getCaseDetails()))
-                        .build();
+            GenerateDocumentRequest.builder()
+                .template(MINI_PETITION_TEMPLATE_NAME)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
+                    ccdCallbackRequestWithServiceCentre.getCaseDetails()))
+                .build();
 
         final GeneratedDocumentInfo generatedMiniPetitionResponse =
-                GeneratedDocumentInfo.builder()
-                        .documentType(DOCUMENT_TYPE_PETITION)
-                        .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
-                        .build();
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_PETITION)
+                .fileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, TEST_CASE_ID))
+                .build();
 
         final GenerateDocumentRequest generateAosInvitationRequest =
-                GenerateDocumentRequest.builder()
-                        .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
-                        .values(ImmutableMap.of(
-                                DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
-                                ACCESS_CODE, TEST_PIN_CODE))
-                        .build();
+            GenerateDocumentRequest.builder()
+                .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
+                .values(ImmutableMap.of(
+                    DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
+                    ACCESS_CODE, TEST_PIN_CODE))
+                .build();
 
         final GeneratedDocumentInfo generatedAosInvitationResponse =
-                GeneratedDocumentInfo.builder()
-                        .documentType(DOCUMENT_TYPE_RESPONDENT_INVITATION)
-                        .fileName(String.format(RESPONDENT_INVITATION_FILE_NAME_FORMAT, TEST_CASE_ID))
-                        .build();
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_RESPONDENT_INVITATION)
+                .fileName(String.format(RESPONDENT_INVITATION_FILE_NAME_FORMAT, TEST_CASE_ID))
+                .build();
 
         final GenerateDocumentRequest generateCoRespondentInvitationRequest =
-                GenerateDocumentRequest.builder()
-                        .template(CO_RESPONDENT_INVITATION_TEMPLATE_NAME)
-                        .values(ImmutableMap.of(
-                                DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
-                                ACCESS_CODE, TEST_PIN_CODE,
-                                PETITION_ISSUE_FEE_FOR_LETTER, "550"))
-                        .build();
+            GenerateDocumentRequest.builder()
+                .template(CO_RESPONDENT_INVITATION_TEMPLATE_NAME)
+                .values(ImmutableMap.of(
+                    DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
+                    ACCESS_CODE, TEST_PIN_CODE,
+                    PETITION_ISSUE_FEE_FOR_LETTER, "550"))
+                .build();
 
         final GeneratedDocumentInfo generatedCoRespondentInvitationResponse =
-                GeneratedDocumentInfo.builder()
-                        .documentType(DOCUMENT_TYPE_CO_RESPONDENT_INVITATION)
-                        .fileName(String.format(CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT, TEST_CASE_ID))
-                        .build();
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_CO_RESPONDENT_INVITATION)
+                .fileName(String.format(CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT, TEST_CASE_ID))
+                .build();
 
         final Map<String, Object> formattedCaseData = emptyMap();
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
         stubValidationServerEndpoint(HttpStatus.OK,
-                ValidationRequest.builder().data(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
-                        .formId(FORM_ID).build(),
-                convertObjectToJsonString(validationResponse));
+            ValidationRequest.builder().data(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
+                .formId(FORM_ID).build(),
+            convertObjectToJsonString(validationResponse));
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
         stubDocumentGeneratorServerEndpoint(generateAosInvitationRequest, generatedAosInvitationResponse);
 
@@ -501,59 +501,59 @@ public class PetitionIssuedITest extends IdamTestSupport {
         stubDocumentGeneratorServerEndpoint(generateCoRespondentInvitationRequest, generatedCoRespondentInvitationResponse);
 
         final DocumentUpdateRequest documentUpdateRequest =
-                DocumentUpdateRequest.builder()
-                        .documents(asList(generatedMiniPetitionResponse, generatedAosInvitationResponse, generatedCoRespondentInvitationResponse))
-                        .caseData(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
-                        .build();
+            DocumentUpdateRequest.builder()
+                .documents(asList(generatedMiniPetitionResponse, generatedAosInvitationResponse, generatedCoRespondentInvitationResponse))
+                .caseData(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
+                .build();
 
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(ccdCallbackRequestWithServiceCentre))
-                .param(GENERATE_AOS_INVITATION, "true")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequestWithServiceCentre))
+            .param(GENERATE_AOS_INVITATION, "true")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
     }
 
     private void stubValidationServerEndpoint(HttpStatus status,
                                               ValidationRequest validationRequest, String body) {
         validationServiceServer.stubFor(WireMock.post(VALIDATION_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(validationRequest)))
-                .willReturn(aResponse()
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withStatus(status.value())
-                        .withBody(body)));
+            .withRequestBody(equalToJson(convertObjectToJsonString(validationRequest)))
+            .willReturn(aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withStatus(status.value())
+                .withBody(body)));
     }
 
     private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest generateDocumentRequest,
                                                      GeneratedDocumentInfo response) {
         documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
-                .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-                .willReturn(aResponse()
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withStatus(HttpStatus.OK.value())
-                        .withBody(convertObjectToJsonString(response))));
+            .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
+            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .willReturn(aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withBody(convertObjectToJsonString(response))));
     }
 
     private void stubFormatterServerEndpoint(DocumentUpdateRequest documentUpdateRequest,
                                              Map<String, Object> response) {
         formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
-                .willReturn(aResponse()
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withStatus(HttpStatus.OK.value())
-                        .withBody(convertObjectToJsonString(response))));
+            .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
+            .willReturn(aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withBody(convertObjectToJsonString(response))));
     }
 
     private void stubGetFeeFromFeesAndPayments(HttpStatus status, FeeResponse feeResponse) {
         feesAndPaymentsServer.stubFor(WireMock.get(PETITION_ISSUE_FEE_CONTEXT_PATH)
-                .willReturn(aResponse()
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withStatus(status.value())
-                        .withBody(convertObjectToJsonString(feeResponse))));
+            .willReturn(aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withStatus(status.value())
+                .withBody(convertObjectToJsonString(feeResponse))));
     }
 }

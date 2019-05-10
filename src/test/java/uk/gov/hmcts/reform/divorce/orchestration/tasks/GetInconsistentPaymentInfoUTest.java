@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
 import org.assertj.core.util.Maps;
-import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,10 +17,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 
 import java.io.IOException;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -70,7 +74,7 @@ public class GetInconsistentPaymentInfoUTest {
     private static final String PAYMENT_ID = "1";
     private static final String PAYLOADS_PAYMENT_FROM_CMS_JSON = "/jsonExamples/payloads/paymentFromCMS.json";
     private static final String PAYLOADS_PAYMENT_FROM_PAYMENT_JSON = "/jsonExamples/payloads/paymentSystemPaid.json";
-
+    private final LocalDateTime today = LocalDateTime.now();
 
     @InjectMocks
     private GetInconsistentPaymentInfo target;
@@ -83,11 +87,15 @@ public class GetInconsistentPaymentInfoUTest {
     private TaskCommons taskCommons;
     @Mock
     private Court courtInfo;
+    @Mock
+    private Clock clock;
 
     private TaskContext context;
 
     @Before
     public void setup() {
+        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
+        when(clock.getZone()).thenReturn(UTC);
         context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         context.setTransientObject(CASE_STATE_JSON_KEY, TEST_STATE);
@@ -117,7 +125,7 @@ public class GetInconsistentPaymentInfoUTest {
             .thenReturn(getPaymentSystemResponse());
         TaskContext taskContext = createTaskContext(TEST_CASE_ID, AWAITING_PAYMENT);
 
-        validateResponse(getExpectedPayment(LocalDate.now().toString(PAYMENT_DATE_PATTERN)),
+        validateResponse(getExpectedPayment(today.format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN))),
             target.execute(taskContext, testObjectData));
     }
 
@@ -140,10 +148,10 @@ public class GetInconsistentPaymentInfoUTest {
     private Map<String, Object> getExpectedPayment(String expectedDate) {
         return new ImmutableMap.Builder<String, Object>()
             .put(PAYMENT_CHANNEL_KEY, PAYMENT_CHANNEL)
-            .put(PAYMENT_TRANSACTION_ID_KEY,PAYMENT_EXTERNAL_REFERENCE)
+            .put(PAYMENT_TRANSACTION_ID_KEY, PAYMENT_EXTERNAL_REFERENCE)
             .put(PAYMENT_REFERENCE_KEY, PAYMENT_REFERENCE)
-            .put(PAYMENT_DATE_KEY,expectedDate)
-            .put(PAYMENT_AMOUNT_KEY,PAYMENT_AMOUNT)
+            .put(PAYMENT_DATE_KEY, expectedDate)
+            .put(PAYMENT_AMOUNT_KEY, PAYMENT_AMOUNT)
             .put(PAYMENT_STATUS_KEY, SUCCESS_PAYMENT_STATUS)
             .put(PAYMENT_FEE_ID_KEY, PAYMENT_FEE_ID)
             .put(PAYMENT_SITE_ID_KEY, PAYMENT_SITE_ID)

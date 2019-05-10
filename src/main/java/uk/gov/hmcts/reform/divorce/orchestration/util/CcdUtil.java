@@ -18,7 +18,7 @@ public class CcdUtil {
 
     public static String mapCCDDateToDivorceDate(String date) {
         return LocalDate.parse(date, DateTimeFormatter.ofPattern(CCD_DATE_FORMAT))
-                .format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN));
+            .format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN));
     }
 
     public static String getFormattedDueDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {

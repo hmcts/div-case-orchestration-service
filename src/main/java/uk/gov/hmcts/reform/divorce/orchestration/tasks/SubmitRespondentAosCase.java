@@ -48,8 +48,8 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         String caseIDJsonKey = context.getTransientObject(CASE_ID_JSON_KEY);
 
         final CaseDetails currentCaseDetails = caseMaintenanceClient.retrievePetitionById(
-                context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
-                context.getTransientObject(CASE_ID_JSON_KEY).toString()
+            context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
+            context.getTransientObject(CASE_ID_JSON_KEY).toString()
         );
 
         final String reasonForDivorce = (String) currentCaseDetails.getCaseData().get(D_8_REASON_FOR_DIVORCE);
@@ -57,10 +57,10 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, LocalDate.now(clock).format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
         Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
-                authToken,
-                caseIDJsonKey,
-                eventId,
-                submissionData
+            authToken,
+            caseIDJsonKey,
+            eventId,
+            submissionData
         );
 
         if (updateCase != null) {
@@ -77,8 +77,8 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         if (YES_VALUE.equalsIgnoreCase(respWillDefendDivorce)) {
             return AWAITING_ANSWER_AOS_EVENT_ID;
         } else if ((ADULTERY.equalsIgnoreCase(d8ReasonForDivorce)
-                || SEPARATION_2YRS.equalsIgnoreCase(d8ReasonForDivorce))
-                && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
+            || SEPARATION_2YRS.equalsIgnoreCase(d8ReasonForDivorce))
+            && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
 
             return COMPLETED_AOS_EVENT_ID;
         }

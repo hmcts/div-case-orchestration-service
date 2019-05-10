@@ -67,23 +67,23 @@ public class CoRespondentAnswerReceivedITest {
     @Test
     public void givenEmptyBody_whenPerformAOSReceived_thenReturnBadRequestResponse() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(CASE_ID)
-                .caseDetails(CaseDetails.builder()
-                        .caseData(Collections.emptyMap())
-                        .build())
-                .build();
+            .caseDetails(CaseDetails.builder()
+                .caseData(Collections.emptyMap())
+                .build())
+            .build();
 
         CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
-                .builder()
-                .data(ImmutableMap.of(CO_RESPONDENT_ANSWER_RECEIVED, YES_VALUE,
-                        CO_RESPONDENT_ANSWER_RECEIVED_DATE, today.format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT))))
-                .build();
+            .builder()
+            .data(ImmutableMap.of(CO_RESPONDENT_ANSWER_RECEIVED, YES_VALUE,
+                CO_RESPONDENT_ANSWER_RECEIVED_DATE, today.format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT))))
+            .build();
         String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, USER_TOKEN)
-                .content(ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackRequest))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(expectedResponse));
+            .header(AUTHORIZATION, USER_TOKEN)
+            .content(ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackRequest))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(expectedResponse));
     }
 }
