@@ -69,7 +69,7 @@ public class GenerateCoRespondentAnswersITest {
     public static WireMockClassRule formatterServiceServer = new WireMockClassRule(4011);
 
     @Test
-    public void givenEmptyBody_whenPerformAOSReceived_thenReturnBadRequestResponse() throws Exception {
+    public void givenValidRequest_whenGenerateCoRespondentAnswers_thenReturnDocumentData() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(CASE_ID)
                 .caseDetails(CaseDetails.builder()
                         .caseData(Collections.emptyMap())
@@ -89,7 +89,8 @@ public class GenerateCoRespondentAnswersITest {
                         .fileName(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS)
                         .build();
 
-        stubDocumentGeneratorServerEndpoint(generateCoRespondentAnswersRequest, generatedCoRespondentAnswersResponse);
+        stubDocumentGeneratorServerEndpoint(HttpStatus.OK.value(),
+                generateCoRespondentAnswersRequest, generatedCoRespondentAnswersResponse);
 
         final DocumentUpdateRequest documentUpdateRequest =
                 DocumentUpdateRequest.builder()
@@ -116,14 +117,52 @@ public class GenerateCoRespondentAnswersITest {
                 .andExpect(content().string(expectedResponse));
     }
 
-    private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest generateDocumentRequest,
+    @Test
+    public void givenInvalidRequest_whenGenerateCoRespondentAnswers_thenReturnErrors() throws Exception {
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(CASE_ID)
+                .caseDetails(CaseDetails.builder()
+                        .caseData(Collections.emptyMap())
+                        .build())
+                .build();
+
+        final GenerateDocumentRequest generateCoRespondentAnswersRequest =
+                GenerateDocumentRequest.builder()
+                        .template(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME)
+                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
+                                ccdCallbackRequest.getCaseDetails()))
+                        .build();
+
+        final GeneratedDocumentInfo generatedCoRespondentAnswersResponse =
+                GeneratedDocumentInfo.builder()
+                        .documentType(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS)
+                        .fileName(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS)
+                        .build();
+
+        stubDocumentGeneratorServerEndpoint(HttpStatus.BAD_REQUEST.value(),
+                generateCoRespondentAnswersRequest, generatedCoRespondentAnswersResponse);
+
+        CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
+                .builder()
+                .errors(Collections.singletonList("Unable to generate or store Co-Respondent answers."))
+                .build();
+        String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
+
+        webClient.perform(post(API_URL)
+                .header(AUTHORIZATION, USER_TOKEN)
+                .content(ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackRequest))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(expectedResponse));
+    }
+
+    private void stubDocumentGeneratorServerEndpoint(int httpStatus, GenerateDocumentRequest generateDocumentRequest,
                                                      GeneratedDocumentInfo response) {
         documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
                 .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
                 .withHeader(AUTHORIZATION, new EqualToPattern(USER_TOKEN))
                 .willReturn(aResponse()
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withStatus(HttpStatus.OK.value())
+                        .withStatus(httpStatus)
                         .withBody(convertObjectToJsonString(response))));
     }
 
