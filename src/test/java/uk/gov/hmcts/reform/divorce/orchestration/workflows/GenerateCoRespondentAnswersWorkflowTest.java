@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -49,6 +50,8 @@ public class GenerateCoRespondentAnswersWorkflowTest {
         Map<String, Object> actual = classUnderTest.run(caseDetails, AUTH_TOKEN);
 
         assertEquals(payload, actual);
+        verify(coRespondentAnswersGenerator).execute(context, payload);
+        verify(caseFormatterAddDocuments).execute(context, payload);
     }
 
     @Test(expected = WorkflowException.class)
@@ -64,5 +67,6 @@ public class GenerateCoRespondentAnswersWorkflowTest {
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(payload).build();
 
         classUnderTest.run(caseDetails, AUTH_TOKEN);
+        verify(coRespondentAnswersGenerator).execute(context, payload);
     }
 }
