@@ -69,7 +69,7 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
                 // Still need to handle timeout, as the BulkCase could be created.
                 errors.addAll(searchResult.getCases()
                     .stream()
-                    .map(cases -> cases.getCaseId())
+                    .map(CaseDetails::getCaseId)
                     .collect(Collectors.toList()));
                 log.error("Bulk case creation failed.", e);
             }

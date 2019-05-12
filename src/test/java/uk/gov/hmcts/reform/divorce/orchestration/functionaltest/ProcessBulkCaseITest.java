@@ -42,7 +42,7 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_LIST_KEY;
@@ -61,7 +61,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     private static final String CMS_SEARCH = "/casemaintenance/version/1/search";
     private static final String CMS_BULK_CASE_SUBMIT = "/casemaintenance/version/1/bulk/submit";
     private static final String CMS_UPDATE_CASE = "/casemaintenance/version/1/updateCase/%s/linkBulkCaseReference";
-    private static final String API_URL = "/process-cases-ready-for-listing";
+    private static final String API_URL = "/bulk/case";
 
     private static final int WAIT_TIME_IN_MILLIS = 1000;
     private static final String caseId1 = "1546883073634741";
@@ -100,7 +100,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, caseId1), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, caseId2), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
         stubSignInForCaseworker();
-        webClient.perform(get(API_URL)
+        webClient.perform(post(API_URL)
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk());
@@ -116,17 +116,13 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
         SearchResult result = SearchResult.builder()
             .cases(Arrays.asList(prepareBulkCase()))
             .build();
-        CaseDetails cases = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
-            .caseData(ImmutableMap.of(CASE_LIST_KEY, result.getCases()))
-            .build();
 
         stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
         stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.NOT_FOUND, getCmsBulkCaseResponse(), POST);
 
 
         stubSignInForCaseworker();
-        webClient.perform(get(API_URL)
+        webClient.perform(post(API_URL)
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -151,7 +147,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, caseId2), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
 
         stubSignInForCaseworker();
-        webClient.perform(get(API_URL)
+        webClient.perform(post(API_URL)
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk());

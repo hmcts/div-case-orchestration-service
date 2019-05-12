@@ -13,7 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,10 +33,10 @@ public class BulkCaseControllerTest {
 
         when(caseOrchestrationService.generateBulkCaseForListing()).thenReturn(expected);
 
-        ResponseEntity<Map<String, Object>> response = classUnderTest.processCasesReadyForListing();
+        ResponseEntity<Map<String, Object>> response = classUnderTest.createBulkCase();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expected, response.getBody());
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(expected));
 
     }
 }

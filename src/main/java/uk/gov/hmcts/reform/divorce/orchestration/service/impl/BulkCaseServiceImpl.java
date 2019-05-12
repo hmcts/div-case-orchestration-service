@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 public class BulkCaseServiceImpl implements BulkCaseService {
 
-    private LinkBulkCaseWorkflow linkBulkCaseWorkflow;
+    private final LinkBulkCaseWorkflow linkBulkCaseWorkflow;
 
     @Override
     @EventListener
@@ -39,7 +39,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
 
         divorceCaseList.forEach(caseElem -> {
             try {
-                linkBulkCaseWorkflow.run(caseElem,bulkCaseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
+                linkBulkCaseWorkflow.run(caseElem, bulkCaseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
             } catch (Exception e) {
                 //TODO this will be handle on DIV-4811
                 log.error("Case update failed : for bulk case id {}", bulkCaseId, e );

@@ -140,7 +140,7 @@ public interface CaseMaintenanceClient {
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> submitBulkCase(
-        @RequestBody Map<String, Object> submitCase,
+        @RequestBody Map<String, Object> bulkCase,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken
     );
 

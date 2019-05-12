@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_LIST_KEY;
 
 @Component
@@ -21,6 +21,6 @@ public class UpdateDivorceCaseWithinBulk extends AsyncTask<Map<String, Object>> 
         List<Map<String,Object>> bulkCases = (List<Map<String, Object>>) payload.getOrDefault(BULK_CASE_LIST_KEY, Collections.emptyList());
         return  bulkCases.stream()
             .map(bulkCase -> new BulkCaseCreateEvent(context, bulkCase))
-            .collect(Collectors.toList());
+            .collect(toList());
     }
 }

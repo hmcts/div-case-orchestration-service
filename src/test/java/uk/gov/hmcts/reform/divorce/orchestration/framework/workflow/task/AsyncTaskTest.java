@@ -63,7 +63,7 @@ public class AsyncTaskTest {
     }
 
     @Test(expected = TaskException.class)
-    public void givenException_WhenExecuteTask_ExceptionIsPropagate() throws TaskException {
+    public void givenException_WhenExecuteTask_ExceptionIsPropagated() throws TaskException {
         Map<String, Object> payload = Collections.emptyMap();
 
         ApplicationEvent applicationEvent = mock(ApplicationEvent.class);
