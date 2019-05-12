@@ -74,7 +74,6 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
         } catch (InterruptedException e) {
             log.info("Error  waiting", e);
         }
-
     }
 
     private CaseDetails createAwaitingPronouncementCase(UserDetails userDetails) throws Exception {

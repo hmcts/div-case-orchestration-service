@@ -49,6 +49,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_LIST_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = OrchestrationServiceApplication.class)
@@ -63,9 +64,11 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     private static final String CMS_UPDATE_CASE = "/casemaintenance/version/1/updateCase/%s/linkBulkCaseReference";
     private static final String API_URL = "/bulk/case";
 
+    private static final String CMS_RESPONSE_BODY_FILE = "jsonExamples/payloads/cmsBulkCaseCreatedResponse.json";
+
     private static final int WAIT_TIME_IN_MILLIS = 1000;
-    private static final String caseId1 = "1546883073634741";
-    private static final String caseId2 = "1546883073634742";
+    private static final String CASE_ID1 = "1546883073634741";
+    private static final String CASE_ID2 = "1546883073634742";
     private static final String BULK_CASE_ID = "1557223513377278";
     private static final String UPDATE_BODY = convertObjectToJsonString(
         ImmutableMap.of(BULK_LISTING_CASE_ID_FIELD, new CaseLink(BULK_CASE_ID)));
@@ -97,8 +100,8 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
         stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
         stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.OK, getCmsBulkCaseResponse(), POST);
-        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, caseId1), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
-        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, caseId2), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID1), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID2), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
         stubSignInForCaseworker();
         webClient.perform(post(API_URL)
             .contentType(APPLICATION_JSON)
@@ -107,8 +110,8 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
         Mockito.verify(linkBulkCaseWorkflowSpy, timeout(WAIT_TIME_IN_MILLIS).times(2)).run(any(), any(), any());
 
-        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, caseId1), RequestMethod.POST, UPDATE_BODY);
-        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, caseId2), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
     }
 
     @Test
@@ -143,8 +146,8 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
         stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
         stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.OK, getCmsBulkCaseResponse(), POST);
-        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, caseId1), HttpStatus.NOT_FOUND, getCmsBulkCaseResponse(), POST);
-        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, caseId2), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID1), HttpStatus.NOT_FOUND, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID2), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
 
         stubSignInForCaseworker();
         webClient.perform(post(API_URL)
@@ -154,8 +157,8 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
         Mockito.verify(linkBulkCaseWorkflowSpy, timeout(WAIT_TIME_IN_MILLIS).times(2)).run(any(), any(), any());
 
-        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, caseId1), RequestMethod.POST, UPDATE_BODY);
-        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, caseId2), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
     }
 
     private CaseDetails prepareBulkCase() {
@@ -180,37 +183,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
             .withRequestBody(equalTo(body)));
     }
 
-    private String getCmsBulkCaseResponse() {
-        return
-            "{\n"
-                + "  \"id\" : 1557223513377278,\n"
-                + "  \"case_data\" : {\n"
-                + "    \"CaseList\" : [ {\n"
-                + "      \"value\" : {\n"
-                + "        \"CaseReference\" : {\n"
-                + "          \"CaseReference\" : \"1546883073634741\"\n"
-                + "        }\n"
-                + "      }\n"
-                + "    },\n"
-                + "    {\n"
-                + "      \"value\" : {\n"
-                + "        \"CaseReference\" : {\n"
-                + "          \"CaseReference\" : \"1546883073634742\"\n"
-                + "        }\n"
-                + "      }\n"
-                + "    }],\n"
-                + "    \"CaseTitle\" : \"Divorce bulk case for Listing 2019-05-07\",\n"
-                + "    \"CaseAcceptedList\" : [ {\n"
-                + "      \"value\" : {\n"
-                + "        \"CaseReference\" : \"1546883073634741\"\n"
-                + "      }\n"
-                + "    },\n"
-                + "    {\n"
-                + "      \"value\" : {\n"
-                + "        \"CaseReference\" : \"1546883073634742\"\n"
-                + "      }\n"
-                + "    } ]\n"
-                + "  }\n"
-                + "}";
+    private String getCmsBulkCaseResponse() throws Exception {
+        return loadResourceAsString(CMS_RESPONSE_BODY_FILE);
     }
 }

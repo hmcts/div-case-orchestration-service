@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
 import feign.FeignException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
@@ -18,8 +18,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULKCASE_CREATION_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_ACCEPTED_LIST_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_LIST_KEY;
@@ -43,11 +43,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @Slf4j
+@AllArgsConstructor
 public class BulkCaseCreate implements Task<Map<String, Object>> {
     static final String BULK_CASE_TITLE = "Divorce bulk Case %s";
 
-    @Autowired
-    private CaseMaintenanceClient caseMaintenanceClient;
+    private final CaseMaintenanceClient caseMaintenanceClient;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
@@ -70,7 +70,7 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
                 errors.addAll(searchResult.getCases()
                     .stream()
                     .map(CaseDetails::getCaseId)
-                    .collect(Collectors.toList()));
+                    .collect(toList()));
                 log.error("Bulk case creation failed.", e);
             }
         });
@@ -86,13 +86,13 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
         List<Map<String, Object>> caseList = searchResult.getCases()
             .stream()
             .map(this::createCaseInBulkCase)
-            .collect(Collectors.toList());
+            .collect(toList());
 
         List<Map<String, Object>> acceptedCasesList = caseList.stream()
             .map(entry -> (Map<String, Object>)entry.get(VALUE_KEY))
             .map(entry -> entry.get(CASE_REFERENCE_FIELD))
             .map(entry -> ImmutableMap.of(VALUE_KEY, entry))
-            .collect(Collectors.toList());
+            .collect(toList());
 
         Map<String, Object> bulkCase = new HashMap<>();
         bulkCase.put(BULK_CASE_TITLE_KEY, String.format(BULK_CASE_TITLE, CcdUtil.getCurrentDate()));

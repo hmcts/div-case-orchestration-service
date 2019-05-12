@@ -71,7 +71,7 @@ public abstract class IntegrationTest {
                 System.setProperty("https.proxyPort", Integer.toString(proxy.getPort()));
             } catch (IOException e) {
                 log.error("Error setting up proxy - are you connected to the VPN?", e);
-                throw new RuntimeException(e);
+                throw new RuntimeException("Error setting up proxy", e);
             }
         }
     }
