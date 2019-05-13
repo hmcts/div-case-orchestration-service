@@ -28,6 +28,10 @@ public class CcdUtil {
         return LocalDate.parse(date, DateTimeFormat.forPattern(CCD_DATE_FORMAT)).toString(PAYMENT_DATE_PATTERN);
     }
 
+    public static String getCurrentDateWithCustomerFacingFormat() {
+        return DateUtils.formatDateWithCustomerFacingFormat(java.time.LocalDate.now());
+    }
+
     public static String getFormattedDueDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {
         String dateAsString = getMandatoryPropertyValueAsString(caseData, dateToFormat);
         java.time.LocalDate dueDate = java.time.LocalDate.parse(dateAsString);

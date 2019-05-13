@@ -45,7 +45,7 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
             QueryBuilder hearingDate = QueryBuilders.existsQuery(HEARING_DATE);
             QueryBuilder bulkListingCaseId = QueryBuilders.existsQuery(BULK_LISTING_CASE_ID);
 
-            final QueryBuilder queries = QueryBuilders
+            final QueryBuilder query = QueryBuilders
                 .boolQuery()
                 .must(stateQuery)
                 .mustNot(hearingDate)
@@ -53,14 +53,13 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
 
             SearchSourceBuilder sourceBuilder =  SearchSourceBuilder
                 .searchSource()
-                .query(queries)
+                .query(query)
                 .from(from)
                 .size(PAGE_SIZE);
 
-            String query = sourceBuilder.toString();
             SearchResult result = caseMaintenanceClient.searchCases(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY),
-                query
+                sourceBuilder.toString()
             );
 
             from  += result.getCases().size();

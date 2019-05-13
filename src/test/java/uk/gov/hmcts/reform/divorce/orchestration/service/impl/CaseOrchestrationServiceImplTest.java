@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -740,7 +741,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void whenProcessAwaitingPronouncementCases_thenProceedAsExpected() throws WorkflowException {
-        Map<String, Object> expectedResult = new HashMap<>();
+        Map<String, Object> expectedResult = ImmutableMap.of("someKey", "someValue");
         when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
         when(processAwaitingPronouncementCasesWorkflow.run(AUTH_TOKEN)).thenReturn(expectedResult);
 

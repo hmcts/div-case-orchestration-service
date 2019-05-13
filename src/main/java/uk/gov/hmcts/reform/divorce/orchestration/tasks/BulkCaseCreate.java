@@ -95,7 +95,7 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
             .collect(toList());
 
         Map<String, Object> bulkCase = new HashMap<>();
-        bulkCase.put(BULK_CASE_TITLE_KEY, String.format(BULK_CASE_TITLE, CcdUtil.getCurrentDate()));
+        bulkCase.put(BULK_CASE_TITLE_KEY, String.format(BULK_CASE_TITLE, CcdUtil.getCurrentDateWithCustomerFacingFormat()));
         bulkCase.put(BULK_CASE_ACCEPTED_LIST_KEY, acceptedCasesList);
         bulkCase.put(CASE_LIST_KEY, caseList);
 

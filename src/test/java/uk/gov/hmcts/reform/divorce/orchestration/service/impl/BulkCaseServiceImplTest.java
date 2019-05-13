@@ -69,7 +69,6 @@ public class BulkCaseServiceImplTest {
         Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
             CCD_CASE_DATA_FIELD, ImmutableMap.of(CASE_LIST_KEY, Arrays.asList(failedCaseData, correctCaseData)));
 
-
         when(linkBulkCaseWorkflow.run(failedCaseData, TEST_CASE_ID, AUTH_TOKEN)).thenThrow(new WorkflowException("Workflow failed"));
 
         BulkCaseCreateEvent event = new BulkCaseCreateEvent(taskContext, caseDetail);

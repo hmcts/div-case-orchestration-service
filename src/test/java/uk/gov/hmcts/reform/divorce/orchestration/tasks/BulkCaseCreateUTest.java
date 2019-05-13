@@ -139,7 +139,7 @@ public class BulkCaseCreateUTest {
         Map<String, Object> bulkCaseData = new HashMap<>();
 
         Map<String, String> caseReference = ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID);
-        bulkCaseData.put(BULK_CASE_TITLE_KEY, String.format(BULK_CASE_TITLE, CcdUtil.getCurrentDate()));
+        bulkCaseData.put(BULK_CASE_TITLE_KEY, String.format(BULK_CASE_TITLE, CcdUtil.getCurrentDateWithCustomerFacingFormat()));
         bulkCaseData.put(BULK_CASE_ACCEPTED_LIST_KEY, Collections.singletonList(ImmutableMap.of(VALUE_KEY, caseReference)));
         bulkCaseData.put(CASE_LIST_KEY, Collections.singletonList(ImmutableMap.of(VALUE_KEY, caseInBulk)));
         return bulkCaseData;
