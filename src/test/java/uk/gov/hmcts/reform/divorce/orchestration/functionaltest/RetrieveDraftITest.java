@@ -5,14 +5,12 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.Maps;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -25,9 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,10 +32,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -68,20 +62,14 @@ public class RetrieveDraftITest {
     private static final String USER_TOKEN = "Some JWT Token";
     private static final String CASE_ID = "12345";
 
-    private final LocalDateTime today = LocalDateTime.now();
-
     private static final Map<String, Object> CASE_DATA = new HashMap<>();
     private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
         .caseData(CASE_DATA)
         .caseId(CASE_ID)
         .build();
 
-
     @Autowired
     private MockMvc webClient;
-
-    @MockBean
-    private Clock clock;
 
     @ClassRule
     public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
@@ -94,12 +82,6 @@ public class RetrieveDraftITest {
 
     @ClassRule
     public static WireMockClassRule authServiceServer = new WireMockClassRule(4504);
-
-    @Before
-    public void setup() {
-        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(UTC);
-    }
 
     @Test
     public void givenJWTTokenIsNull_whenRetrieveDraft_thenReturnBadRequest()
@@ -235,7 +217,7 @@ public class RetrieveDraftITest {
     private void stubAuthServerEndpoint() {
         Algorithm algorithm = mock(Algorithm.class);
         String body = JWT.create()
-            .withExpiresAt(Date.from(clock.instant())).sign(algorithm);
+            .withExpiresAt(Date.from(ZonedDateTime.now().plusHours(1).toInstant())).sign(algorithm);
         authServiceServer.stubFor(WireMock.post(AUTH_SERVICE_PATH)
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())

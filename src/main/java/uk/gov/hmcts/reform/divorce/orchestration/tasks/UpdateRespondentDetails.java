@@ -12,10 +12,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.time.Clock;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +25,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE_DATE;
@@ -52,7 +49,7 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
     private AuthUtil authUtil;
 
     @Autowired
-    private Clock clock;
+    private CcdUtil ccdUtil;
 
     @Override
     public UserDetails execute(TaskContext context, UserDetails payload) throws TaskException {
@@ -74,7 +71,7 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
             } else {
                 updateFields.put(CO_RESP_EMAIL_ADDRESS, linkedUser.getEmail());
                 updateFields.put(CO_RESP_LINKED_TO_CASE, YES_VALUE);
-                updateFields.put(CO_RESP_LINKED_TO_CASE_DATE, LocalDate.now(clock).format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
+                updateFields.put(CO_RESP_LINKED_TO_CASE_DATE, ccdUtil.getCurrentDateCcdFormat());
                 eventId = LINK_RESPONDENT_GENERIC_EVENT_ID;
             }
 

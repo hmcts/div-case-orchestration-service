@@ -16,15 +16,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Map;
 
-import static java.time.ZoneOffset.UTC;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,7 +39,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE_DATE;
@@ -57,7 +52,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateRespondentDetailsUTest {
 
-    private final LocalDateTime today = LocalDateTime.now();
+    private static final String FIXED_DATE = "2018-01-01";
 
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
@@ -66,7 +61,7 @@ public class UpdateRespondentDetailsUTest {
     private AuthUtil authUtil;
 
     @Mock
-    private Clock clock;
+    private CcdUtil ccdUtil;
 
     @Mock
     private IdamClient idamClient;
@@ -76,8 +71,7 @@ public class UpdateRespondentDetailsUTest {
 
     @Before
     public void setup() {
-        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(UTC);
+        when(ccdUtil.getCurrentDateCcdFormat()).thenReturn(FIXED_DATE);
         when(authUtil.getBearToken(AUTH_TOKEN)).thenCallRealMethod();
     }
 
@@ -240,7 +234,7 @@ public class UpdateRespondentDetailsUTest {
             ImmutableMap.of(
                 CO_RESP_EMAIL_ADDRESS, TEST_EMAIL,
                 CO_RESP_LINKED_TO_CASE, YES_VALUE,
-                CO_RESP_LINKED_TO_CASE_DATE, today.format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT))
+                CO_RESP_LINKED_TO_CASE_DATE, FIXED_DATE
             );
 
         verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);

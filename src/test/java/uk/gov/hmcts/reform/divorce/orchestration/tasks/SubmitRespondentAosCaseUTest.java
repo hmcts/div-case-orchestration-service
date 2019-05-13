@@ -10,15 +10,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.time.ZoneOffset.UTC;
 import static java.util.Collections.emptyMap;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -32,7 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
@@ -49,21 +44,21 @@ public class SubmitRespondentAosCaseUTest {
     private static final Map<String, Object> EXPECTED_OUTPUT = emptyMap();
     private static final Map<String, Object> CASE_UPDATE_RESPONSE = new HashMap<>();
     private static final TaskContext TASK_CONTEXT = new DefaultTaskContext();
-    private final LocalDateTime today = LocalDateTime.now();
 
-    @Mock()
+    private static final String FIXED_DATE = "2019-05-10";
+
+    @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
 
     @Mock
-    private Clock clock;
+    private CcdUtil ccdUtil;
 
     @InjectMocks
     private SubmitRespondentAosCase classUnderTest;
 
     @Before
     public void before() {
-        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(UTC);
+        when(ccdUtil.getCurrentDateCcdFormat()).thenReturn(FIXED_DATE);
         TASK_CONTEXT.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         TASK_CONTEXT.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         CASE_UPDATE_RESPONSE.put(CCD_CASE_DATA_FIELD, EXPECTED_OUTPUT);
@@ -82,7 +77,7 @@ public class SubmitRespondentAosCaseUTest {
         Map<String, Object> expectedData = new HashMap<>();
         expectedData.putAll(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, today.format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
@@ -103,7 +98,7 @@ public class SubmitRespondentAosCaseUTest {
         Map<String, Object> expectedData = new HashMap<>();
         expectedData.putAll(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, today.format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
@@ -126,7 +121,7 @@ public class SubmitRespondentAosCaseUTest {
         Map<String, Object> expectedData = new HashMap<>();
         expectedData.putAll(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, today.format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
@@ -150,7 +145,7 @@ public class SubmitRespondentAosCaseUTest {
         Map<String, Object> expectedData = new HashMap<>();
         expectedData.putAll(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, today.format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
@@ -173,7 +168,7 @@ public class SubmitRespondentAosCaseUTest {
         Map<String, Object> expectedData = new HashMap<>();
         expectedData.putAll(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, today.format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, expectedData);
@@ -192,7 +187,7 @@ public class SubmitRespondentAosCaseUTest {
         Map<String, Object> expectedData = new HashMap<>();
         expectedData.putAll(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, today.format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 

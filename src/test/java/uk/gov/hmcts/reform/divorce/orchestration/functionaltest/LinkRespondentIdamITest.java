@@ -10,7 +10,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
@@ -20,11 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,9 +32,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -62,7 +56,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
@@ -117,10 +110,8 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
             .caseData(CASE_DATA_RESPONDENT)
             .build();
 
-    private final LocalDateTime today = LocalDateTime.now();
-
-    @MockBean
-    private Clock clock;
+    @Autowired
+    private CcdUtil ccdUtil;
 
     @Autowired
     private MockMvc webClient;
@@ -134,8 +125,6 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
 
     @Before
     public void setup() {
-        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(UTC);
 
         caseDataAos = ImmutableMap.of(
             RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
@@ -146,7 +135,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         caseDataCoRespondentUpdate = ImmutableMap.of(
             CO_RESP_EMAIL_ADDRESS, TEST_EMAIL,
             CO_RESP_LINKED_TO_CASE, YES_VALUE,
-            CO_RESP_LINKED_TO_CASE_DATE, today.format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT))
+            CO_RESP_LINKED_TO_CASE_DATE, ccdUtil.getCurrentDateCcdFormat()
         );
     }
 

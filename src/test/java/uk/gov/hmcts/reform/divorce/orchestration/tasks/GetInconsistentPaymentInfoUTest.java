@@ -15,23 +15,20 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.io.IOException;
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
@@ -51,7 +48,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_CHANNEL_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_DATE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_DATE_PATTERN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_FEE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_FEE_ID_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_REFERENCE_KEY;
@@ -74,7 +70,6 @@ public class GetInconsistentPaymentInfoUTest {
     private static final String PAYMENT_ID = "1";
     private static final String PAYLOADS_PAYMENT_FROM_CMS_JSON = "/jsonExamples/payloads/paymentFromCMS.json";
     private static final String PAYLOADS_PAYMENT_FROM_PAYMENT_JSON = "/jsonExamples/payloads/paymentSystemPaid.json";
-    private final LocalDateTime today = LocalDateTime.now();
 
     @InjectMocks
     private GetInconsistentPaymentInfo target;
@@ -88,14 +83,15 @@ public class GetInconsistentPaymentInfoUTest {
     @Mock
     private Court courtInfo;
     @Mock
-    private Clock clock;
+    private CcdUtil ccdUtil;
 
     private TaskContext context;
 
     @Before
     public void setup() {
-        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(UTC);
+        when(ccdUtil.getCurrentDatePaymentFormat()).thenReturn(PAYMENT_DATE);
+        when(ccdUtil.mapCCDDateToDivorceDate(notNull())).thenReturn(PAYMENT_DATE);
+
         context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         context.setTransientObject(CASE_STATE_JSON_KEY, TEST_STATE);
@@ -125,7 +121,7 @@ public class GetInconsistentPaymentInfoUTest {
             .thenReturn(getPaymentSystemResponse());
         TaskContext taskContext = createTaskContext(TEST_CASE_ID, AWAITING_PAYMENT);
 
-        validateResponse(getExpectedPayment(today.format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN))),
+        validateResponse(getExpectedPayment(PAYMENT_DATE),
             target.execute(taskContext, testObjectData));
     }
 

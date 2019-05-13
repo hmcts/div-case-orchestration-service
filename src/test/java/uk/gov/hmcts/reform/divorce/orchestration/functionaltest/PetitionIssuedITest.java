@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -12,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,9 +31,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,11 +40,9 @@ import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -105,8 +99,6 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
     private static final Map<String, Object> CASE_DATA = new HashMap<>();
 
-    private final LocalDateTime today = LocalDateTime.now();
-
     private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
         .caseData(CASE_DATA)
         .caseId(TEST_CASE_ID)
@@ -118,9 +110,6 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
     @Autowired
     private MockMvc webClient;
-
-    @MockBean
-    private Clock clock;
 
     @ClassRule
     public static WireMockClassRule validationServiceServer = new WireMockClassRule(4008);
@@ -134,19 +123,13 @@ public class PetitionIssuedITest extends IdamTestSupport {
     @ClassRule
     public static WireMockClassRule formatterServiceServer = new WireMockClassRule(4011);
 
-    @Before
-    public void setup() {
-        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(UTC);
-    }
-
     @BeforeClass
     public static void beforeClass() {
         CASE_DATA.put(D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME);
         CASE_DATA.put(D_8_PETITIONER_LAST_NAME, PETITIONER_LAST_NAME);
         CASE_DATA.put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
         CASE_DATA.put(CO_RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
-        CASE_DATA.put(ISSUE_DATE, LocalDateTime.now().format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
+        CASE_DATA.put(ISSUE_DATE, LocalDate.now().format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
     }
 
     @Test

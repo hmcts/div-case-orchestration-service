@@ -20,18 +20,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static java.time.ZoneOffset.UTC;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -51,7 +47,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
@@ -72,8 +67,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class SubmitRespondentAosCaseITest {
     private static final String API_URL = String.format("/submit-aos/%s", TEST_CASE_ID);
 
-    private final LocalDateTime today = LocalDateTime.now();
-
     private static final String FORMAT_TO_AOS_CASE_CONTEXT_PATH = "/caseformatter/version/1/to-aos-submit-format";
     private static final String UPDATE_CONTEXT_PATH = "/casemaintenance/version/1/updateCase/" + TEST_CASE_ID + "/";
     private static final String RETRIEVE_CASE_CONTEXT_PATH = String.format(
@@ -81,11 +74,13 @@ public class SubmitRespondentAosCaseITest {
         TEST_CASE_ID
     );
 
+    private static final String FIXED_DATE = "2019-05-11";
+
     @Autowired
     private MockMvc webClient;
 
     @MockBean
-    private Clock clock;
+    private CcdUtil ccdUtil;
 
     @ClassRule
     public static WireMockClassRule formatterServiceServer = new WireMockClassRule(4011);
@@ -95,8 +90,7 @@ public class SubmitRespondentAosCaseITest {
 
     @Before
     public void setup() {
-        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(UTC);
+        when(ccdUtil.getCurrentDateCcdFormat()).thenReturn(FIXED_DATE);
     }
 
     @Test
@@ -219,7 +213,7 @@ public class SubmitRespondentAosCaseITest {
     public void givenAdulteryNoConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData(NO_VALUE, false);
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        caseData.put(RECEIVED_AOS_FROM_RESP_DATE, today.format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
+        caseData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
 
         final String caseDataString = convertObjectToJsonString(caseData);
 
@@ -317,7 +311,7 @@ public class SubmitRespondentAosCaseITest {
             caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
         }
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        caseData.put(RECEIVED_AOS_FROM_RESP_DATE, today.format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
+        caseData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
 
         return caseData;
     }

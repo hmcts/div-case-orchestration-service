@@ -1,9 +1,10 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -13,15 +14,26 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @SuppressWarnings("squid:S1118")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@Component
 public class CcdUtil {
 
-    public static String mapCCDDateToDivorceDate(String date) {
+    private final Clock clock;
+
+    public String getCurrentDateCcdFormat() {
+        return LocalDate.now(clock).format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT));
+    }
+
+    public String getCurrentDatePaymentFormat() {
+        return LocalDate.now(clock).format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN));
+    }
+
+    public String mapCCDDateToDivorceDate(String date) {
         return LocalDate.parse(date, DateTimeFormatter.ofPattern(CCD_DATE_FORMAT))
             .format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN));
     }
 
-    public static String getFormattedDueDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {
+    public String getFormattedDueDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {
         String dateAsString = getMandatoryPropertyValueAsString(caseData, dateToFormat);
         LocalDate dueDate = LocalDate.parse(dateAsString);
         return DateUtils.formatDateWithCustomerFacingFormat(dueDate);
