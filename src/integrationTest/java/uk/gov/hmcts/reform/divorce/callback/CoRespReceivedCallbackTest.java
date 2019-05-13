@@ -56,12 +56,15 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
     @Test
     public void givenCaseWithoutEmail_whenSubmitAOS_thenReturnAOSData() {
 
-        Map<String, Object> aosCaseWithoutEmailAddress = ResourceLoader
+        Map<String, Object> aosCaseWithoutCoRespEmailAddress = ResourceLoader
                 .loadJsonToObject(ERROR_CASE_RESPONSE, Map.class);
         Map<String, Object> response = cosApiClient
-                .aosReceived(createCaseWorkerUser().getAuthToken(), aosCaseWithoutEmailAddress);
+                .coRespReceived(createCaseWorkerUser().getAuthToken(), aosCaseWithoutCoRespEmailAddress);
 
-        assertNotNull(response.get(DATA));
-        assertEquals(((Map<String, Object>)aosCaseWithoutEmailAddress.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
+        assertNull(response.get(DATA));
+        List<String> error = (List<String>) response.get(ERRORS);
+
+        assertEquals(1,error.size());
+        assertTrue(error.get(0).contains("email_address is a required property"));
     }
 }
