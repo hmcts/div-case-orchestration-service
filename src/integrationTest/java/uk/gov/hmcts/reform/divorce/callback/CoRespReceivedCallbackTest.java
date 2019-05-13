@@ -54,7 +54,7 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void givenCaseWithoutEmail_whenSubmitAOS_thenReturnAOSData() {
+    public void givenCaseWithoutCoRespEmail_whenSubmitAOS_thenReturnNotificationError() {
 
         Map<String, Object> aosCaseWithoutCoRespEmailAddress = ResourceLoader
                 .loadJsonToObject(ERROR_CASE_RESPONSE, Map.class);

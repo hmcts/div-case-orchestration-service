@@ -64,7 +64,7 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         String petitionerEmail = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_EMAIL);
 
         // only send an email to pet. if respondent is not defending
-        if (!respondentIsDefending(caseDetails) && !StringUtils.isEmpty(petitionerEmail)) {
+        if (!respondentIsDefending(caseDetails) && StringUtils.isNotEmpty(petitionerEmail)) {
             tasks.add(emailNotificationTask);
         }
 
