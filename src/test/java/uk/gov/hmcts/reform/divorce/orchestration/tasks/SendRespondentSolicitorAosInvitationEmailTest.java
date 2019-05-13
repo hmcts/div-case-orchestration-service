@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,19 +15,21 @@ import java.util.Map;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendRespondentSolicitorAosInvitationEmailTest {
 
     @Mock
-    private EmailService emailService;
+    private TaskCommons taskCommons;
 
     @InjectMocks
     SendRespondentSolicitorAosInvitationEmail sendRespondentSolicitorAosInvitationEmail;
 
     @Test
-    public void testExecuteSendsEmailToRespondentSolicitorWithAccessCode() {
+    public void testExecuteSendsEmailToRespondentSolicitorWithAccessCode() throws TaskException {
         // given
         String respondentSolicitorEmail = "solicitor@localhost.local";
 
@@ -53,10 +55,27 @@ public class SendRespondentSolicitorAosInvitationEmailTest {
 
         //then
         assertThat(caseData, is(sameInstance(returnedPayload)));
-        verify(emailService).sendEmail(respondentSolicitorEmail,
-                EmailTemplateNames.RESPONDENT_SOLICITOR_AOS_INVITATION.name(),
-                expectedTemplateVars,
-                "Respondent solicitor's AOS invitation"
+        verify(taskCommons).sendEmail(
+                EmailTemplateNames.RESPONDENT_SOLICITOR_AOS_INVITATION,
+                "Respondent solicitor's AOS invitation",
+                respondentSolicitorEmail,
+                expectedTemplateVars
         );
+        assertThat(context.hasTaskFailed(), is(false));
+    }
+
+    @Test(expected = TaskException.class)
+    public void testExecuteSendsEmailToRespondentSolicitorWithAccessCodeFailsTaskIfExceptionIsThrown() throws TaskException {
+        // given
+        HashMap<String, Object> caseData = new HashMap<>();
+        DefaultTaskContext context = new DefaultTaskContext();
+        doThrow(new TaskException("Something went wrong")).when(taskCommons).sendEmail(any(), any(), any(), any());
+
+        // when
+        Map<String, Object> returnedPayload = sendRespondentSolicitorAosInvitationEmail.execute(context, caseData);
+
+        //then
+        assertThat(caseData, is(sameInstance(returnedPayload)));
+        assertThat(context.hasTaskFailed(), is(true));
     }
 }

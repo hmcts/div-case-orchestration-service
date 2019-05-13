@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSolicitorAosInvitationEmail;
@@ -64,11 +65,11 @@ public class RespondentSolicitorNominatedWorkflowTest {
     }
 
     @Test
-    public void testRunCallsTheRequiredTasks() throws WorkflowException {
+    public void testRunCallsTheRequiredTasks() throws WorkflowException, TaskException {
         //Given
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
-        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
         when(sendRespondentSolicitorNotificationEmail.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
         Map<String, Object> response = respondentSolicitorNominatedWorkflow.run(caseDetails);
