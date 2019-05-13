@@ -54,16 +54,14 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void givenCaseWithoutEmail_whenSubmitAOS_thenReturnNotificationError() {
+    public void givenCaseWithoutEmail_whenSubmitAOS_thenReturnAOSData() {
 
         Map<String, Object> aosCaseWithoutEmailAddress = ResourceLoader
                 .loadJsonToObject(ERROR_CASE_RESPONSE, Map.class);
         Map<String, Object> response = cosApiClient
                 .aosReceived(createCaseWorkerUser().getAuthToken(), aosCaseWithoutEmailAddress);
 
-        assertNull(response.get(DATA));
-        List<String> error = (List<String>) response.get(ERRORS);
-        assertEquals(1,error.size());
-        assertTrue(error.get(0).contains("email_address is a required property"));
+        assertNotNull(response.get(DATA));
+        assertEquals(((Map<String, Object>)aosCaseWithoutEmailAddress.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
     }
 }
