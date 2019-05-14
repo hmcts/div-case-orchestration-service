@@ -27,7 +27,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -75,13 +74,8 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
     @InjectMocks
     private SendCoRespondSubmissionNotificationWorkflow classToTest;
 
-    @Before
-    public void before() throws TaskException {
-        when(ccdUtil.getFormattedDueDate(any(), any())).thenReturn(TEST_EXPECTED_DUE_DATE_FORMATTED);
-    }
-
     @Test
-    public void givenUndefendedCoResp_whenSendEmail_thenSendUndefendedTemplate() throws WorkflowException {
+    public void givenUndefendedCoResp_whenSendEmail_thenSendUndefendedTemplate() throws WorkflowException, TaskException {
 
         CcdCallbackRequest ccdCallbackRequest = createSubmittedCoEvent(ImmutableMap.of(CO_RESPONDENT_DEFENDS_DIVORCE, "No"));
 
@@ -107,6 +101,9 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
         Court court = new Court();
         court.setDivorceCentreName(TEST_COURT);
         when(taskCommons.getCourt(TEST_COURT)).thenReturn(court);
+
+        when(ccdUtil.getFormattedDueDate(ccdCallbackRequest.getCaseDetails().getCaseData(),
+            CO_RESPONDENT_DUE_DATE)).thenReturn(TEST_EXPECTED_DUE_DATE_FORMATTED);
 
         classToTest.run(ccdCallbackRequest);
 

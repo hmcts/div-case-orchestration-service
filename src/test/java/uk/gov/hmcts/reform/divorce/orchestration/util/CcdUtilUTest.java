@@ -8,8 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,7 +17,6 @@ import java.util.Map;
 
 import static java.time.ZoneOffset.UTC;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE_FORMATTED;
@@ -42,14 +39,6 @@ public class CcdUtilUTest {
     public void before() {
         when(clock.instant()).thenReturn(FIXED_DATE_TIME.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(UTC);
-    }
-
-    @Test
-    public void testConstructorPrivate() throws Exception {
-        Constructor<CcdUtil> constructor = CcdUtil.class.getDeclaredConstructor(Clock.class);
-        assertTrue(Modifier.isPublic(constructor.getModifiers()));
-        constructor.setAccessible(true);
-        constructor.newInstance(clock);
     }
 
     @Test
