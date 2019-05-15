@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
-import org.joda.time.LocalDate;
 import org.junit.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -206,6 +208,6 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     private void assertAosSubmittedData(UserDetails userDetails, String caseId) {
         CaseDetails caseDetails = this.retrieveCase(userDetails, caseId);
         assertEquals(YES_VALUE, caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
-        assertEquals(LocalDate.now().toString(CCD_DATE_FORMAT), caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE));
+        assertEquals(LocalDate.now().format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)), caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE));
     }
 }

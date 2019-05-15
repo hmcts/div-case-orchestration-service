@@ -39,7 +39,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
 
         if (StringUtils.isNotBlank(petitionerEmail)) {
             Map<String, String> templateVars = new HashMap<>();
-            
+
             templateVars.put(NOTIFICATION_REFERENCE_KEY, (String) caseData.get(D_8_CASE_REFERENCE));
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_FIRST_NAME));
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));

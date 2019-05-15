@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -15,9 +16,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SetCourtDetails implements Task<Map<String, Object>> {
 
+    @Autowired
+    private CcdUtil ccdUtil;
+
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        caseData.put(CREATED_DATE_JSON_KEY, CcdUtil.getCurrentDate());
+        caseData.put(CREATED_DATE_JSON_KEY, ccdUtil.getCurrentDateCcdFormat());
 
         // Assign Divorce court for Solicitor, currently hardcoded to one specific court
         caseData.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getId());
