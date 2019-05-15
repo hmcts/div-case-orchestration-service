@@ -25,16 +25,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_LIST_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_TITLE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_LIST_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_PARTIES;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_PARTIES_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COST_ORDER;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.DN_APPROVAL_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COST_ORDER_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.DN_APPROVAL_DATE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.FAMILY_MAN_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.SEARCH_RESULT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_SUBMITTED_DATE_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_APPROVAL_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
@@ -48,6 +48,8 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
     static final String BULK_CASE_TITLE = "Divorce bulk Case %s";
 
     private final CaseMaintenanceClient caseMaintenanceClient;
+
+    private final CcdUtil ccdUtil;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
@@ -95,7 +97,7 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
             .collect(toList());
 
         Map<String, Object> bulkCase = new HashMap<>();
-        bulkCase.put(BULK_CASE_TITLE_KEY, String.format(BULK_CASE_TITLE, CcdUtil.getCurrentDateWithCustomerFacingFormat()));
+        bulkCase.put(BULK_CASE_TITLE_KEY, String.format(BULK_CASE_TITLE, ccdUtil.getCurrentDateWithCustomerFacingFormat()));
         bulkCase.put(BULK_CASE_ACCEPTED_LIST_KEY, acceptedCasesList);
         bulkCase.put(CASE_LIST_KEY, caseList);
 
@@ -106,10 +108,10 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
         Map<String, Object> caseInBulk = new HashMap<>();
 
         caseInBulk.put(CASE_REFERENCE_FIELD, getCaseLink(caseDetails));
-        caseInBulk.put(CASE_PARTIES, getCaseParties(caseDetails));
+        caseInBulk.put(CASE_PARTIES_FIELD, getCaseParties(caseDetails));
         caseInBulk.put(FAMILY_MAN_REFERENCE_FIELD, caseDetails.getCaseData().get(D_8_CASE_REFERENCE));
-        caseInBulk.put(COST_ORDER, caseDetails.getCaseData().get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
-        caseInBulk.put(DN_APPROVAL_DATE, caseDetails.getCaseData().get(DN_SUBMITTED_DATE_FIELD));
+        caseInBulk.put(COST_ORDER_FIELD, caseDetails.getCaseData().get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
+        caseInBulk.put(DN_APPROVAL_DATE_FIELD, caseDetails.getCaseData().get(DN_APPROVAL_DATE_CCD_FIELD));
         return ImmutableMap.of(VALUE_KEY, caseInBulk);
 
     }
