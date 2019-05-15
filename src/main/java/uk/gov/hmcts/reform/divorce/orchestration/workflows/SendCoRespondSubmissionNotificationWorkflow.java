@@ -50,6 +50,9 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
     @Autowired
     private final TaskCommons taskCommons;
 
+    @Autowired
+    private final CcdUtil ccdUtil;
+
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
@@ -71,7 +74,7 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
             try {
                 Court assignedCourt = taskCommons.getCourt(rdcName);
                 templateVars.put(NOTIFICATION_RDC_NAME_KEY, assignedCourt.getIdentifiableCentreName());
-                String formSubmissionDateLimit = CcdUtil.getFormattedDueDate(caseData, CO_RESPONDENT_DUE_DATE);
+                String formSubmissionDateLimit = ccdUtil.getFormattedDueDate(caseData, CO_RESPONDENT_DUE_DATE);
 
                 templateVars.put(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, formSubmissionDateLimit);
                 templateVars.put(NOTIFICATION_COURT_ADDRESS_KEY, assignedCourt.getFormattedAddress());

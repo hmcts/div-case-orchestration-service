@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -43,15 +44,18 @@ public class SolicitorCreateITest {
 
     private static final Map<String, Object> CASE_DATA = Collections.emptyMap();
     private static final CaseDetails CASE_DETAILS =
-            CaseDetails.builder()
-                    .caseData(CASE_DATA)
-                    .caseId(TEST_CASE_ID)
-                    .state(TEST_STATE)
-                    .build();
+        CaseDetails.builder()
+            .caseData(CASE_DATA)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
 
     private static final CcdCallbackRequest CREATE_EVENT = CcdCallbackRequest.builder()
-            .caseDetails(CASE_DETAILS)
-            .build();
+        .caseDetails(CASE_DETAILS)
+        .build();
+
+    @Autowired
+    private CcdUtil ccdUtil;
 
     @Autowired
     private MockMvc webClient;
@@ -59,19 +63,19 @@ public class SolicitorCreateITest {
     @Test
     public void givenCaseData_whenSolicitorCreate_thenReturnEastMidlandsCourtAllocation() throws Exception {
         Map<String, Object> expectedData = new HashMap<>();
-        expectedData.put(CREATED_DATE_JSON_KEY, CcdUtil.getCurrentDate());
+        expectedData.put(CREATED_DATE_JSON_KEY, ccdUtil.getCurrentDateCcdFormat());
         expectedData.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getId());
         expectedData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.EASTMIDLANDS.getSiteId());
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
-                .data(expectedData)
-                .build();
+            .data(expectedData)
+            .build();
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(CREATE_EVENT))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(expected)));
+            .content(convertObjectToJsonString(CREATE_EVENT))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
     }
 }

@@ -81,7 +81,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
     private static final String LINK_RESPONDENT_CONTEXT_PATH = "/casemaintenance/version/1/link-respondent/"
         + TEST_CASE_ID + "/" + TEST_LETTER_HOLDER_ID_CODE;
     private static final String UNLINK_USER_CONTEXT_PATH = "/casemaintenance/version/1/link-respondent/"
-            + TEST_CASE_ID;
+        + TEST_CASE_ID;
     private static final String UPDATE_CONTEXT_PATH_AOS = String.format(
         "/casemaintenance/version/1/updateCase/%s/%s",
         TEST_CASE_ID,
@@ -111,6 +111,9 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
             .build();
 
     @Autowired
+    private CcdUtil ccdUtil;
+
+    @Autowired
     private MockMvc webClient;
 
     @ClassRule
@@ -118,20 +121,21 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
 
     private Map<String, Object> caseDataAos;
     private Map<String, Object> caseDataNonAos;
-    private Map<String, Object> caseDataCoResponentUpdate;
+    private Map<String, Object> caseDataCoRespondentUpdate;
 
     @Before
     public void setup() {
+
         caseDataAos = ImmutableMap.of(
             RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
         );
         caseDataNonAos = ImmutableMap.of(
             RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
         );
-        caseDataCoResponentUpdate = ImmutableMap.of(
+        caseDataCoRespondentUpdate = ImmutableMap.of(
             CO_RESP_EMAIL_ADDRESS, TEST_EMAIL,
             CO_RESP_LINKED_TO_CASE, YES_VALUE,
-            CO_RESP_LINKED_TO_CASE_DATE, CcdUtil.getCurrentDate()
+            CO_RESP_LINKED_TO_CASE_DATE, ccdUtil.getCurrentDateCcdFormat()
         );
     }
 
@@ -274,7 +278,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubRetrieveCaseByIdFromCMS(OK, convertObjectToJsonString(caseDetailsCoResp));
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
-        String  coRespondentCaseData = convertObjectToJsonString(caseDataCoResponentUpdate);
+        String coRespondentCaseData = convertObjectToJsonString(caseDataCoRespondentUpdate);
         stubMaintenanceServerEndpointForUpdateNotAos(OK, coRespondentCaseData, coRespondentCaseData);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -290,7 +294,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
-        stubMaintenanceServerEndpointForUpdateAos(OK, convertObjectToJsonString(caseDataCoResponentUpdate));
+        stubMaintenanceServerEndpointForUpdateAos(OK, convertObjectToJsonString(caseDataCoRespondentUpdate));
         stubRetrieveCaseByIdFromCMS(NOT_FOUND, convertObjectToJsonString(""));
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -306,7 +310,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(NOT_FOUND);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
-        stubMaintenanceServerEndpointForUpdateAos(OK, convertObjectToJsonString(caseDataCoResponentUpdate));
+        stubMaintenanceServerEndpointForUpdateAos(OK, convertObjectToJsonString(caseDataCoRespondentUpdate));
         stubRetrieveCaseFromCMS(CASE_DETAILS_AOS);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -344,9 +348,9 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
         stubMaintenanceServerEndpointForRemoveUser(OK);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
-                .andExpect(status().is5xxServerError());
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
+            .andExpect(status().is5xxServerError());
 
         verify(deleteRequestedFor(urlEqualTo(UNLINK_USER_CONTEXT_PATH)));
     }
@@ -370,7 +374,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
                 .withBody(response)));
     }
 
-    private void stubMaintenanceServerEndpointForUpdateNotAos(HttpStatus status, String request,  String response) {
+    private void stubMaintenanceServerEndpointForUpdateNotAos(HttpStatus status, String request, String response) {
         maintenanceServiceServer.stubFor(post(urlEqualTo(UPDATE_CONTEXT_PATH_NOT_AOS))
             .withRequestBody(equalToJson(request))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
@@ -386,10 +390,10 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
 
     private void stubMaintenanceServerEndpointForRemoveUser(HttpStatus status) {
         maintenanceServiceServer.stubFor(delete(urlEqualTo(UNLINK_USER_CONTEXT_PATH))
-                .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-                .willReturn(aResponse()
-                        .withStatus(status.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)));
+            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)));
     }
 
     private void stubRetrieveCaseFromCMS(CaseDetails caseDetails) {
