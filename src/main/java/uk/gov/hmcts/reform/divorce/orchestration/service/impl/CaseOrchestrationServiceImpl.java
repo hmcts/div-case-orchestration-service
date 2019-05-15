@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmiss
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnReviewPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
@@ -96,6 +97,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final CoRespondentAnswerReceivedWorkflow coRespondentAnswerReceivedWorkflow;
     private final ProcessAwaitingPronouncementCasesWorkflow processAwaitingPronouncementCasesWorkflow;
     private final GetCaseWithIdWorkflow getCaseWithIdWorkflow;
+    private final SolicitorDnReviewPetitionWorkflow solicitorDnReviewPetitionWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -426,6 +428,15 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> processCaseLinkedForHearingEvent(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
         try {
             return caseLinkedForHearingWorkflow.run(ccdCallbackRequest.getCaseDetails());
+        } catch (WorkflowException e) {
+            throw new CaseOrchestrationServiceException(e);
+        }
+    }
+
+    @Override
+    public Map<String, Object> processSolDnReviewPetition(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+        try {
+            return solicitorDnReviewPetitionWorkflow.run(ccdCallbackRequest.getCaseDetails());
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
         }
