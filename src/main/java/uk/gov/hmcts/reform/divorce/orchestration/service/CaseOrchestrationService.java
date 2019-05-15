@@ -80,4 +80,6 @@ public interface CaseOrchestrationService {
     Map<String, Object> processCaseLinkedForHearingEvent(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
     Map<String, Object> coRespondentAnswerReceived(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    Map<String, Object> processSolDnReviewPetition(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 }
