@@ -48,6 +48,9 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
     @Autowired
     private AuthUtil authUtil;
 
+    @Autowired
+    private CcdUtil ccdUtil;
+
     @Override
     public UserDetails execute(TaskContext context, UserDetails payload) throws TaskException {
 
@@ -68,7 +71,7 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
             } else {
                 updateFields.put(CO_RESP_EMAIL_ADDRESS, linkedUser.getEmail());
                 updateFields.put(CO_RESP_LINKED_TO_CASE, YES_VALUE);
-                updateFields.put(CO_RESP_LINKED_TO_CASE_DATE, CcdUtil.getCurrentDate());
+                updateFields.put(CO_RESP_LINKED_TO_CASE_DATE, ccdUtil.getCurrentDateCcdFormat());
                 eventId = LINK_RESPONDENT_GENERIC_EVENT_ID;
             }
 

@@ -1,16 +1,34 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ISSUE_DATE;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SetIssueDateTest {
 
-    private final SetIssueDate setIssueDate = new SetIssueDate();
+    private static final String EXPECTED_DATE = "2019-05-11";
+
+    @InjectMocks
+    private SetIssueDate setIssueDate;
+
+    @Mock
+    private CcdUtil ccdUtil;
+
+    @Before
+    public void setup() {
+        when(ccdUtil.getCurrentDateCcdFormat()).thenReturn(EXPECTED_DATE);
+    }
 
     @Test
     public void testGenerateIssueDateSetsDateToNow() {
@@ -18,7 +36,6 @@ public class SetIssueDateTest {
 
         setIssueDate.execute(null, payload);
 
-        String expectedDate = CcdUtil.getCurrentDate();
-        assertEquals(expectedDate, payload.get(ISSUE_DATE));
+        assertEquals(EXPECTED_DATE, payload.get(ISSUE_DATE));
     }
 }

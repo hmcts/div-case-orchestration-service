@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -26,16 +26,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
-
 @Component
+@RequiredArgsConstructor
 public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
 
     private final CaseMaintenanceClient caseMaintenanceClient;
-
-    @Autowired
-    public SubmitRespondentAosCase(final CaseMaintenanceClient caseMaintenanceClient) {
-        this.caseMaintenanceClient = caseMaintenanceClient;
-    }
+    private final CcdUtil ccdUtil;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> submissionData) {
@@ -43,14 +39,14 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         String caseIDJsonKey = context.getTransientObject(CASE_ID_JSON_KEY);
 
         final CaseDetails currentCaseDetails = caseMaintenanceClient.retrievePetitionById(
-                context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
-                context.getTransientObject(CASE_ID_JSON_KEY).toString()
-            );
+            context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
+            context.getTransientObject(CASE_ID_JSON_KEY).toString()
+        );
 
-        final String reasonForDivorce = (String)currentCaseDetails.getCaseData().get(D_8_REASON_FOR_DIVORCE);
+        final String reasonForDivorce = (String) currentCaseDetails.getCaseData().get(D_8_REASON_FOR_DIVORCE);
         String eventId = getAosCompleteEventId(submissionData, reasonForDivorce);
         submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
+        submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
         Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
             authToken,
             caseIDJsonKey,
@@ -66,8 +62,8 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
     }
 
     private String getAosCompleteEventId(final Map<String, Object> submissionData, final String d8ReasonForDivorce) {
-        final String respWillDefendDivorce = (String)submissionData.get(RESP_WILL_DEFEND_DIVORCE);
-        final String respAdmitOrConsentToFact = (String)submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT);
+        final String respWillDefendDivorce = (String) submissionData.get(RESP_WILL_DEFEND_DIVORCE);
+        final String respAdmitOrConsentToFact = (String) submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT);
 
         if (YES_VALUE.equalsIgnoreCase(respWillDefendDivorce)) {
             return AWAITING_ANSWER_AOS_EVENT_ID;

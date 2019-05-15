@@ -45,6 +45,9 @@ public class CoRespondentAnswerReceivedITest {
     @Autowired
     private MockMvc webClient;
 
+    @Autowired
+    private CcdUtil ccdUtil;
+
     @Test
     public void givenEmptyBody_whenPerformAOSReceived_thenReturnBadRequestResponse() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(CASE_ID)
@@ -56,7 +59,7 @@ public class CoRespondentAnswerReceivedITest {
         CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
             .builder()
             .data(ImmutableMap.of(CO_RESPONDENT_ANSWER_RECEIVED, YES_VALUE,
-                CO_RESPONDENT_ANSWER_RECEIVED_DATE, CcdUtil.getCurrentDate()))
+                CO_RESPONDENT_ANSWER_RECEIVED_DATE, ccdUtil.getCurrentDateCcdFormat()))
             .build();
         String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
 
