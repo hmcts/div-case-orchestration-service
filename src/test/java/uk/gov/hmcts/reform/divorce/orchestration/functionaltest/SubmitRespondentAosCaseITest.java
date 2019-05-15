@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,6 +31,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -67,18 +70,28 @@ public class SubmitRespondentAosCaseITest {
     private static final String FORMAT_TO_AOS_CASE_CONTEXT_PATH = "/caseformatter/version/1/to-aos-submit-format";
     private static final String UPDATE_CONTEXT_PATH = "/casemaintenance/version/1/updateCase/" + TEST_CASE_ID + "/";
     private static final String RETRIEVE_CASE_CONTEXT_PATH = String.format(
-            "/casemaintenance/version/1/case/%s",
-            TEST_CASE_ID
+        "/casemaintenance/version/1/case/%s",
+        TEST_CASE_ID
     );
+
+    private static final String FIXED_DATE = "2019-05-11";
 
     @Autowired
     private MockMvc webClient;
+
+    @MockBean
+    private CcdUtil ccdUtil;
 
     @ClassRule
     public static WireMockClassRule formatterServiceServer = new WireMockClassRule(4011);
 
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(4010);
+
+    @Before
+    public void setup() {
+        when(ccdUtil.getCurrentDateCcdFormat()).thenReturn(FIXED_DATE);
+    }
 
     @Test
     public void givenNoAuthToken_whenSubmitAos_thenReturnBadRequest() throws Exception {
@@ -200,7 +213,7 @@ public class SubmitRespondentAosCaseITest {
     public void givenAdulteryNoConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData(NO_VALUE, false);
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        caseData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
+        caseData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
 
         final String caseDataString = convertObjectToJsonString(caseData);
 
@@ -298,8 +311,7 @@ public class SubmitRespondentAosCaseITest {
             caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
         }
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        caseData.put(RECEIVED_AOS_FROM_RESP_DATE, CcdUtil.getCurrentDate());
-
+        caseData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
 
         return caseData;
     }
