@@ -29,7 +29,7 @@ public class CcdUtilUTest {
 
     private static final String CURRENT_DATE = "2018-01-01";
     private static final String PAYMENT_DATE = "01012018";
-    private static final String EXPECTED_DATE_WITH_CUSTOMER_FORMAT = "13 May 2019";
+    private static final String EXPECTED_DATE_WITH_CUSTOMER_FORMAT = "01 January 2018";
     private static final LocalDateTime FIXED_DATE_TIME = LocalDate.parse(CURRENT_DATE).atStartOfDay();
 
     @InjectMocks

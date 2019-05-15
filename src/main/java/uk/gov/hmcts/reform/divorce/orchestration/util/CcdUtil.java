@@ -34,7 +34,7 @@ public class CcdUtil {
     }
 
     public String getCurrentDateWithCustomerFacingFormat() {
-        return DateUtils.formatDateWithCustomerFacingFormat(java.time.LocalDate.now());
+        return DateUtils.formatDateWithCustomerFacingFormat(java.time.LocalDate.now(clock));
     }
 
     public String getFormattedDueDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {
