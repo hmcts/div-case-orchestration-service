@@ -371,4 +371,38 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
         verify(caseOrchestrationService).processSolDnReviewPetition(incomingRequest);
     }
+
+    @Test
+    public void whenGenerateCertificateOfEntitlement_thenExecuteService() throws Exception {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(payload)
+                        .build())
+                .build();
+        when(caseOrchestrationService.generateCertificateOfEntitlement(incomingRequest, AUTH_TOKEN)).thenReturn(payload);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCertificateOfEntitlement(AUTH_TOKEN, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    }
+
+    @Test
+    public void givenWorkflowException_whenGenerateCertificateOfEntitlement_thenReturnErrors() throws Exception {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(payload)
+                        .build())
+                .build();
+
+        String errorString = "Unable to generate answers";
+        when(caseOrchestrationService.generateCertificateOfEntitlement(incomingRequest, AUTH_TOKEN))
+                .thenThrow(new WorkflowException(errorString));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCertificateOfEntitlement(AUTH_TOKEN, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getErrors().contains(errorString), is(true));
+    }
 }

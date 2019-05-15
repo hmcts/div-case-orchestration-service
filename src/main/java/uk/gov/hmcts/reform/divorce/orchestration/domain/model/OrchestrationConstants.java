@@ -155,19 +155,22 @@ public class OrchestrationConstants {
     public static final String DIVORCE_UNIT_SERVICE_CENTRE = "serviceCentre";
 
     // Document Generator
+    public static final String CERTIFICATE_OF_ENTITLEMENT_TEMPLATE_NAME = "DIV_CoE.docx";
+    public static final String CERTIFICATE_OF_ENTITLEMENT_FILENAME_FORMAT = "certificateOfEntitlement%s";
+    public static final String CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT = "co-respondentaosinvitation%s";
+    public static final String CO_RESPONDENT_INVITATION_TEMPLATE_NAME = "co-respondentinvitation";
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";
+    public static final String DOCUMENT_COLLECTION = "documentCollection";
+    public static final String DOCUMENT_TYPE_CERTIFICATE_OF_ENTITLEMENT = "coe";
+    public static final String DOCUMENT_TYPE_CO_RESPONDENT_INVITATION = "aoscr";
     public static final String DOCUMENT_TYPE_RESPONDENT_INVITATION = "aos";
     public static final String DOCUMENT_TYPE_RESPONDENT_ANSWERS = "respondentAnswers";
     public static final String DOCUMENT_TYPE_PETITION = "petition";
-    public static final String RESPONDENT_INVITATION_FILE_NAME_FORMAT = "aosinvitation%s";
     public static final String MINI_PETITION_FILE_NAME_FORMAT = "d8petition%s";
     public static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
-    public static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
-    public static final String DOCUMENT_TYPE_CO_RESPONDENT_INVITATION = "aoscr";
-    public static final String CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT = "co-respondentaosinvitation%s";
-    public static final String CO_RESPONDENT_INVITATION_TEMPLATE_NAME = "co-respondentinvitation";
     public static final String PETITION_ISSUE_FEE_FOR_LETTER = "petitionIssueFee";
-    public static final String DOCUMENT_COLLECTION = "documentCollection";
+    public static final String RESPONDENT_INVITATION_FILE_NAME_FORMAT = "aosinvitation%s";
+    public static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
 
 
     // Fees

@@ -20,31 +20,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpd
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerGenericEmailNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -155,6 +131,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private GetCaseWithIdWorkflow getCaseWithIdWorkflow;
+
+    @Mock
+    private CertificateOfEntitlementGeneratorWorkflow certificateOfEntitlementGeneratorWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -731,6 +710,15 @@ public class CaseOrchestrationServiceImplTest {
         expectedException.expectMessage(is("This operation threw an exception."));
 
         classUnderTest.processCaseLinkedForHearingEvent(ccdCallbackRequest);
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_ForCoRespondentAnswersGeneratorEvent() throws WorkflowException {
+        when(certificateOfEntitlementGeneratorWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(AUTH_TOKEN)))
+                .thenReturn(requestPayload);
+
+        assertThat(classUnderTest.generateCertificateOfEntitlement(ccdCallbackRequest, AUTH_TOKEN),
+                is(equalTo(requestPayload)));
     }
 
     @After

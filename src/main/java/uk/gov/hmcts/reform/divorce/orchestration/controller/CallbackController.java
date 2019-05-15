@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -316,6 +315,34 @@ public class CallbackController {
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format("Failed to process solicitor DN review petition for Case ID: %s", caseId), exception);
             callbackResponseBuilder.errors(ImmutableList.of(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/generate-certificate-of-entitlement",
+            consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Generates the Certificate of Entitlement")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Certificate of Entitlement generated and attached to case",
+                    response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> generateCertificateOfEntitlement(
+            @RequestHeader(value = "Authorization") String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(caseOrchestrationService
+                    .generateCertificateOfEntitlement(ccdCallbackRequest, authorizationToken));
+            log.info("Certificate of entitlement generated. Case id: {}", caseId);
+        } catch (WorkflowException exception) {
+            log.error("Certificate of entitlement generation failed. Case id:  {}", caseId, exception);
+            callbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
