@@ -70,8 +70,9 @@ public class GenerateCoRespondentAnswersITest {
 
     @Test
     public void givenValidRequest_whenGenerateCoRespondentAnswers_thenReturnDocumentData() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(CASE_ID)
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
+                        .caseId(CASE_ID)
                         .caseData(Collections.emptyMap())
                         .build())
                 .build();
@@ -119,8 +120,9 @@ public class GenerateCoRespondentAnswersITest {
 
     @Test
     public void givenInvalidRequest_whenGenerateCoRespondentAnswers_thenReturnErrors() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(CASE_ID)
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
+                        .caseId(CASE_ID)
                         .caseData(Collections.emptyMap())
                         .build())
                 .build();
