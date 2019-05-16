@@ -31,8 +31,8 @@ public class CertificateOfEntitlementGeneratorWorkflow extends DefaultWorkflow<M
     public Map<String, Object> run(CaseDetails caseDetails, String authorizationToken) throws WorkflowException {
         return execute(
                 new Task[] {
-                        certificateOfEntitlementGenerator,
-                        caseFormatterAddDocuments
+                    certificateOfEntitlementGenerator,
+                    caseFormatterAddDocuments
                 },
                 caseDetails.getCaseData(),
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authorizationToken),

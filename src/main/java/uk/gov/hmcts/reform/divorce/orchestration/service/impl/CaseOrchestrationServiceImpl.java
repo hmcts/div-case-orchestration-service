@@ -18,8 +18,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.CoRespondentAnswerReceivedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CertificateOfEntitlementGeneratorWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CoRespondentAnswerReceivedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
@@ -448,7 +448,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> generateCertificateOfEntitlement(CcdCallbackRequest ccdCallbackRequest, String authorisation) throws WorkflowException {
+    public Map<String, Object> generateCertificateOfEntitlement(CcdCallbackRequest ccdCallbackRequest, String authorisation)
+            throws WorkflowException {
         return certificateOfEntitlementGeneratorWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorisation);
     }
 }
