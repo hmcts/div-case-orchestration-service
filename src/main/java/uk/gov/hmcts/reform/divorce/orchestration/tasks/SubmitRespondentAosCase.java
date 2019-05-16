@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_NOMINATE_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
@@ -30,6 +31,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
 
+    private static final String RESP_CORRESPONDENCE_SEND_TO_SOL = "D8RespondentCorrespondenceSendToSol";
     private final CaseMaintenanceClient caseMaintenanceClient;
     private final CcdUtil ccdUtil;
 
@@ -38,15 +40,23 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
         String caseIDJsonKey = context.getTransientObject(CASE_ID_JSON_KEY);
 
-        final CaseDetails currentCaseDetails = caseMaintenanceClient.retrievePetitionById(
-            context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
-            context.getTransientObject(CASE_ID_JSON_KEY).toString()
-        );
+        String eventId;
 
-        final String reasonForDivorce = (String) currentCaseDetails.getCaseData().get(D_8_REASON_FOR_DIVORCE);
-        String eventId = getAosCompleteEventId(submissionData, reasonForDivorce);
-        submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
+        if (isSolicitorRepresentingRespondent(submissionData)) {
+            //move back to AOS awaiting, as technically the nominated solicitor will provide a response
+            eventId = AOS_NOMINATE_SOLICITOR;
+        } else {
+            //if respondent didn't nominate a solicitor, then they've provided an answer
+            if (isRespondentDefendingDivorce(submissionData)) {
+                eventId = AWAITING_ANSWER_AOS_EVENT_ID;
+            } else if (isRespondentAgreeingDivorceButNotAdmittingFact(submissionData, context)) {
+                eventId = COMPLETED_AOS_EVENT_ID;
+            } else {
+                eventId = AWAITING_DN_AOS_EVENT_ID;
+            }
+            submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+            submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
+        }
         Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
             authToken,
             caseIDJsonKey,
@@ -61,19 +71,26 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         return updateCase;
     }
 
-    private String getAosCompleteEventId(final Map<String, Object> submissionData, final String d8ReasonForDivorce) {
+    private boolean isSolicitorRepresentingRespondent(Map<String, Object> submissionData) {
+        final String respondentCorrespondenceSendToSolicitor = (String) submissionData.get(RESP_CORRESPONDENCE_SEND_TO_SOL);
+        return YES_VALUE.equalsIgnoreCase(respondentCorrespondenceSendToSolicitor);
+    }
+
+    private boolean isRespondentDefendingDivorce(Map<String, Object> submissionData) {
         final String respWillDefendDivorce = (String) submissionData.get(RESP_WILL_DEFEND_DIVORCE);
+        return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
+    }
+
+    private boolean isRespondentAgreeingDivorceButNotAdmittingFact(Map<String, Object> submissionData, TaskContext context) {
         final String respAdmitOrConsentToFact = (String) submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT);
+        final CaseDetails currentCaseDetails = caseMaintenanceClient.retrievePetitionById(
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
+                context.getTransientObject(CASE_ID_JSON_KEY).toString()
+        );
 
-        if (YES_VALUE.equalsIgnoreCase(respWillDefendDivorce)) {
-            return AWAITING_ANSWER_AOS_EVENT_ID;
-        } else if ((ADULTERY.equalsIgnoreCase(d8ReasonForDivorce)
-            || SEPARATION_2YRS.equalsIgnoreCase(d8ReasonForDivorce))
-            && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
-
-            return COMPLETED_AOS_EVENT_ID;
-        }
-
-        return AWAITING_DN_AOS_EVENT_ID;
+        final String reasonForDivorce = (String)currentCaseDetails.getCaseData().get(D_8_REASON_FOR_DIVORCE);
+        return (ADULTERY.equalsIgnoreCase(reasonForDivorce)
+                || SEPARATION_2YRS.equalsIgnoreCase(reasonForDivorce))
+                && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact);
     }
 }
