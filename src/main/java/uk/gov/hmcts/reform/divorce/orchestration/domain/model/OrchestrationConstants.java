@@ -67,7 +67,6 @@ public class OrchestrationConstants {
     public static final String BULK_LISTING_CASE_ID_FIELD = "BulkListingCaseId";
 
     //CCD DN fields
-    public static final String DN_SUBMITTED_DATE_FIELD = "DNApplicationSubmittedDate";
     public static final String DN_APPROVAL_DATE_CCD_FIELD = "DNApprovalDate";
 
     // CCD Events
