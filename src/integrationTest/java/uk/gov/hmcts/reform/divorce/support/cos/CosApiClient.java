@@ -27,6 +27,7 @@ public interface CosApiClient {
     Map<String, Object> coRespReceived(@RequestHeader(AUTHORIZATION) String authorisation,
                                        @RequestBody Map<String, Object> caseDataContent
     );
+
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/co-respondent-answered"

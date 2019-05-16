@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -247,10 +248,8 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> caseLinkedForHearing(
-        @RequestHeader(value = "Authorization", required = false)
-            String authorizationToken,
-        @RequestBody @ApiParam("CaseData")
-            CcdCallbackRequest ccdCallbackRequest) {
+            @RequestBody @ApiParam("CaseData")
+                    CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.debug("Processing case linked for hearing. Case id: {}", caseId);
@@ -263,7 +262,7 @@ public class CallbackController {
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format("Failed to execute service to process case linked for hearing. Case id:  %s", caseId),
                 exception);
-            callbackResponseBuilder.errors(asList(exception.getMessage()));
+            callbackResponseBuilder.errors(ImmutableList.of(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
@@ -293,6 +292,30 @@ public class CallbackController {
         } catch (WorkflowException exception) {
             log.error("Co-respondent answer received failed. Case id:  {}", caseId,exception);
             callbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/sol-dn-review-petition",
+            consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Populates fields for solicitor DN journey")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> solDnReviewPetition(@RequestBody CcdCallbackRequest ccdCallbackRequest) {
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.debug("Processing solicitor DN review petition for Case ID: {}", caseId);
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(caseOrchestrationService.processSolDnReviewPetition(ccdCallbackRequest));
+        } catch (CaseOrchestrationServiceException exception) {
+            log.error(format("Failed to process solicitor DN review petition for Case ID: %s", caseId), exception);
+            callbackResponseBuilder.errors(ImmutableList.of(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
