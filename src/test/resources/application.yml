@@ -8,8 +8,45 @@ spring:
   resources:
     static-locations:
 
+jackson:
+  deserialization:
+    ACCEPT_SINGLE_VALUE_AS_ARRAY: true
+  serialization:
+    FAIL_ON_EMPTY_BEANS: false
+
+  datasource:
+    cmc:
+      name: scheduler
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://${DIV_SCHEDULER_DB_HOST:localhost}:${DIV_SCHEDULER_DB_PORT:5432}/${DIV_SCHEDULER_DB_NAME:div_scheduler}${DIV_SCHEDULER_DB_CONN_OPTIONS:}
+      username: ${DIV_SCHEDULER_DB_USER_NAME:div_scheduler}
+      password: ${DIV_SCHEDULER_DB_PASSWORD:}
+      properties:
+        charSet: UTF-8
+    hikari:
+      minimumIdle: 2
+      maximumPoolSize: 10
+      idleTimeout: 10000
+      poolName: BulkScanHikariCP
+      maxLifetime: 7200000
+      connectionTimeout: 30000
+
+
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        jdbc:
+          lob:
+            # silence the 'wall-of-text' - unnecessary exception throw about blob types
+            non_contextual_creation: true
+
+
 server:
-  port: ${CASE_ORCHESTRATION_SERVICE_URL:4013}
+  port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
 
 case:
   formatter:
@@ -35,15 +72,169 @@ payment:
     api:
       baseurl: ${PAYMENT_API_BASEURL:http://localhost:9190}
 
+feature-toggle:
+  service:
+    api:
+      baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://localhost:4028}
+  toggle:
+    bulk-printer-toggle-name: "divorce_bulk_print"
+
+send-letter:
+  url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
+
+bulk-print:
+  dueDate: 9
+
 uk:
   gov:
     notify:
       api:
         key: 2409ba37-b5e6-4f03-b052-7d0f0986888d
       email:
-        templates: "{SAVE_DRAFT:'9fbb6bdb-1043-440a-b082-5ea71b5c2609', APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c'}"
+        templates: "{
+                      AOS_RECEIVED_NO_ADMIT_ADULTERY: '015fb73a-3be2-49d8-8ed8-a4078025dae3',
+                      AOS_RECEIVED_NO_CONSENT_2_YEARS: '845d0114-0f74-43a4-b11c-8ebeceb01c5b',
+                      APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c',
+                      GENERIC_UPDATE: '6ee6ec29-5e88-4516-99cb-2edc30256575',
+                      RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION: 'eac41143-b296-4879-ba60-a0ea6f97c757',
+                      RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION: '277fd3f3-2fdb-4c79-9354-1b3db8d44cca',
+                      PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION: '9937c8bc-dc7a-4210-a25b-20aceb82d48d',
+                      SAVE_DRAFT: '14074c06-87f1-4678-9238-4d71e741eb57',
+                      AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: 'bc6ee2ec-f62b-4321-b19f-65e868f849eb',
+                      RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED: '44e2dd30-4303-4f4c-a394-ce0b54af81dd',
+                      PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION: '686ce418-6d76-48ce-b903-a87d2b832125'
+                    }"
         template:
           vars: "{SAVE_DRAFT: {divorceUrl: 'https://apply-divorce.service.gov.uk'}}"
+
+courtAllocationConfigurationJson: "
+                                    {
+                                      \"courtsDesiredWorkloadDistribution\": [
+                                        {
+                                          \"courtId\": \"eastMidlands\",
+                                          \"percentageOfTotalCases\": 0
+                                        },
+                                        {
+                                          \"courtId\": \"southWest\",
+                                          \"percentageOfTotalCases\": 0
+                                        },
+                                        {
+                                          \"courtId\": \"northWest\",
+                                          \"percentageOfTotalCases\": 0
+                                        },
+                                        {
+                                          \"courtId\": \"westMidlands\",
+                                          \"percentageOfTotalCases\": 0
+                                        },
+                                        {
+                                          \"courtId\": \"serviceCentre\",
+                                          \"percentageOfTotalCases\": 1.00
+                                        }
+                                      ],
+                                      \"factSpecificCourtAllocation\": [
+                                          {
+                                            \"fact\": \"unreasonable-behaviour\",
+                                            \"courts\": [
+                                              {
+                                                \"courtId\": \"serviceCentre\",
+                                                \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            \"fact\": \"separation-5-years\",
+                                            \"courts\": [
+                                              {
+                                                \"courtId\": \"serviceCentre\",
+                                                \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            \"fact\": \"adultery\",
+                                            \"courts\": [
+                                              {
+                                                \"courtId\": \"serviceCentre\",
+                                                \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            \"fact\": \"separation-2-years\",
+                                            \"courts\": [
+                                              {
+                                                \"courtId\": \"serviceCentre\",
+                                                \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            \"fact\": \"desertion\",
+                                            \"courts\": [
+                                              {
+                                                \"courtId\": \"serviceCentre\",
+                                                \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
+                                              }
+                                            ]
+                                          }
+                                      ]
+                                    }"
+
+court:
+  details: "{
+              \"eastMidlands\":{
+                \"divorceCentre\":\"East Midlands Regional Divorce Centre\",
+                \"courtCity\":\"Nottingham\",
+                \"poBox\":\"PO Box 10447\",
+                \"postCode\":\"NG2 9QN\",
+                \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\":\"eastmidlandsdivorce@hmcts.gsi.gov.uk\",
+                \"phoneNumber\":\"0300 303 0642\",
+                \"siteId\":\"AA01\"
+              },
+              \"westMidlands\":{
+                \"divorceCentre\":\"West Midlands Regional Divorce Centre\",
+                \"courtCity\":\"Stoke-on-Trent\",
+                \"poBox\":\"PO Box 3650\",
+                \"postCode\":\"ST4 9NH\",
+                \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\":\"westmidlandsdivorce@hmcts.gsi.gov.uk\",
+                \"phoneNumber\":\"0300 303 0642\",
+                \"siteId\":\"AA02\"
+              },
+              \"southWest\":{
+                \"divorceCentre\":\"South West Regional Divorce Centre\",
+                \"courtCity\":\"Southampton\",
+                \"poBox\":\"PO Box 1792\",
+                \"postCode\":\"SO15 9GG\",
+                \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\":\"sw-region-divorce@hmcts.gsi.gov.uk\",
+                \"phoneNumber\":\"0300 303 0642\",
+                \"siteId\":\"AA03\"
+              },
+              \"northWest\":{
+                \"divorceCentre\":\"North West Regional Divorce Centre\",
+                \"divorceCentreAddressName\":\"Liverpool Civil & Family Court\",
+                \"courtCity\":\"Liverpool\",
+                \"street\":\"35 Vernon Street\",
+                \"postCode\":\"L2 2BX\",
+                \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\":\"family@liverpool.countycourt.gsi.gov.uk\",
+                \"phoneNumber\":\"0300 303 0642\",
+                \"siteId\":\"AA04\"
+              },
+              \"serviceCentre\": {
+                \"serviceCentreName\": \"Courts and Tribunals Service Centre\",
+                \"divorceCentre\": \"East Midlands Regional Divorce Centre\",
+                \"courtCity\": \"Nottingham\",
+                \"poBox\": \"PO Box 10447\",
+                \"postCode\": \"NG2 9QN\",
+                \"openingHours\": \"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\": \"divorcecase@justice.gov.uk\",
+                \"phoneNumber\": \"0300 303 0642\",
+                \"siteId\": \"AA07\"
+              }
+           }"
 
 idam:
   api:
@@ -53,6 +244,9 @@ idam:
     health:
       context-path: /health
   citizen:
+    username: dummy
+    password: dummy
+  caseworker:
     username: dummy
     password: dummy
   strategic:
@@ -78,6 +272,14 @@ http:
     timeout: 60000
     request:
       timeout: 60000
+
+health:
+  check:
+    http:
+      connect:
+        timeout: 5000
+        request:
+          timeout: 5000
 
 documentation:
   swagger:

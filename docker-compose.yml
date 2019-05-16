@@ -1,0 +1,22 @@
+---
+version: '2.1' 
+
+services: 
+  claim-store-database:
+    build:
+      context: docker/database
+    image: hmcts/cmc-claim-store-database
+    healthcheck:
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    environment:
+      - CLAIM_STORE_DB_USERNAME
+      - CLAIM_STORE_DB_PASSWORD
+    ports:
+      - 5430:5432
+    volumes:
+      - claim-store-database-data:/var/lib/postgresql/data
+
+volumes:
+  claim-store-database-data:

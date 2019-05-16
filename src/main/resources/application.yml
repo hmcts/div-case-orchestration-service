@@ -3,6 +3,22 @@ info:
     name: ${spring.application.name}
 
 spring:
+  datasource:
+    scheduler:
+      name: scheduler
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://${DIV_SCHEDULER_DB_HOST:localhost}:${DIV_SCHEDULER_DB_PORT:5432}/${DIV_SCHEDULER_DB_NAME:div_scheduler}${DIV_SCHEDULER_DB_CONN_OPTIONS:}
+      username: ${DIV_SCHEDULER_DB_USER_NAME:div_scheduler}
+      password: ${DIV_SCHEDULER_DB_PASSWORD:}
+      properties:
+      charSet: UTF-8
+  hikari:
+    minimumIdle: 2
+    maximumPoolSize: 10
+    idleTimeout: 10000
+    poolName: BulkScanHikariCP
+    maxLifetime: 7200000
+    connectionTimeout: 30000
   application:
     name: div-cos
   resources:
