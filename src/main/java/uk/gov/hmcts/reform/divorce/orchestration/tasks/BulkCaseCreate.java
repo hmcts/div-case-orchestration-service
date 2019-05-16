@@ -113,7 +113,6 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
         caseInBulk.put(COST_ORDER_FIELD, caseDetails.getCaseData().get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
         caseInBulk.put(DN_APPROVAL_DATE_FIELD, caseDetails.getCaseData().get(DN_APPROVAL_DATE_CCD_FIELD));
         return ImmutableMap.of(VALUE_KEY, caseInBulk);
-
     }
 
     private Map<String, Object> getCaseLink(CaseDetails caseDetails) {
@@ -129,7 +128,6 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
 
         return  String.format("%s %s vs %s %s", petitionerFirstName, petitionerLastName, respondentFirstName,
             respondentLastName);
-
     }
 
 

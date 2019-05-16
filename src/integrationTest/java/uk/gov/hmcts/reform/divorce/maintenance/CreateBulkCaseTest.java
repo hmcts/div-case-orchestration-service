@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_LIST_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
@@ -81,7 +82,7 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, userDetails);
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, "aosSubmittedUndefended", userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, AWAITING_ANSWER_AOS_EVENT_ID, userDetails);
 
 
         Response cosResponse = submitDnCase(userDetails.getAuthToken(), caseDetails.getId(),

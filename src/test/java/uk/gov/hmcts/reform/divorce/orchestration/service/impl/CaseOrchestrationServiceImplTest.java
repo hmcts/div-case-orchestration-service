@@ -161,7 +161,6 @@ public class CaseOrchestrationServiceImplTest {
     @Mock
     private GetCaseWithIdWorkflow getCaseWithIdWorkflow;
 
-
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
 
