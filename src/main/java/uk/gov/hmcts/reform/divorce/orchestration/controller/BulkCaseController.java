@@ -18,7 +18,7 @@ import java.util.Map;
 @Slf4j
 @AllArgsConstructor
 public class BulkCaseController {
-    @Autowired
+    
     private final CaseOrchestrationService orchestrationService;
 
     @PostMapping(path = "/bulk/case")
