@@ -90,10 +90,7 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
 
         assertEquals(caseDetails.getId(), cosResponse.path("id"));
         updateCase(String.valueOf(caseDetails.getId()), null, "refertoLegalAdvisor");
-        CaseDetails ccdCase = updateCase(String.valueOf(caseDetails.getId()), null, "entitlementGranted");
-
-        System.out.println(caseDetails.getId()) ;
-        return ccdCase;
+        return updateCase(String.valueOf(caseDetails.getId()), null, "entitlementGranted");
     }
 
 
