@@ -49,7 +49,7 @@ public class SendPetitionerSubmissionNotificationEmail implements Task<Map<Strin
             Court court = taskCommons.getCourt(divorceUnitKey);
             templateVars.put("RDC name", court.getIdentifiableCentreName());
 
-            String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
+            String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
             templateVars.put("CCD reference", formatCaseIdToReferenceNumber(caseId));
 
             emailService.sendEmail(petitionerEmail, EmailTemplateNames.APPLIC_SUBMISSION.name(), templateVars, "submission notification");

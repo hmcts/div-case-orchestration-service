@@ -50,10 +50,16 @@ mainClassName = 'uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceA
 
 compileJava {
     options.compilerArgs << '-parameters' << '-Xlint:deprecation'
+    dependencies {
+        compileOnly "org.springframework.boot:spring-boot-configuration-processor"
+    }
 }
 
 compileTestJava {
     options.compilerArgs << '-Xlint:deprecation'
+    dependencies {
+        compileOnly "org.springframework.boot:spring-boot-configuration-processor"
+    }
 }
 
 repositories {

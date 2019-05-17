@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.CourtAllocator;
+import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.NewConfigCourtAllocator;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWor
 public class CourtAllocationTask implements Task<Map<String, Object>> {
 
     @Autowired
-    private CourtAllocator courtAllocator;
+    private NewConfigCourtAllocator courtAllocator;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
