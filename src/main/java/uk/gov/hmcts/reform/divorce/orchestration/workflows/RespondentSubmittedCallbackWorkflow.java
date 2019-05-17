@@ -61,8 +61,10 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         final String relationship = getRespondentRelationship(caseDetails);
 
+        String petitionerEmail = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_EMAIL);
+
         // only send an email to pet. if respondent is not defending
-        if (!respondentIsDefending(caseDetails)) {
+        if (!respondentIsDefending(caseDetails) && StringUtils.isNotEmpty(petitionerEmail)) {
             tasks.add(emailNotificationTask);
         }
 
@@ -86,7 +88,6 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
         notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, ref);
 
-        String petitionerEmail = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_EMAIL);
         Task[] taskArr = new Task[tasks.size()];
 
         return this.execute(
