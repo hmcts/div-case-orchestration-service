@@ -43,7 +43,7 @@ public class CourtAllocationConfiguratorIntegrationTest {
             hasEntry(equalTo(ADULTERY), comparesEqualTo(new BigDecimal("0.11")))
         ));
         assertThat(courtAllocationConfiguration.getDesiredWorkloadPerCourt(), allOf(
-            hasEntry(equalTo(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("1"))),
+            hasEntry(equalTo(SERVICE_CENTER.getId()), comparesEqualTo(BigDecimal.ONE)),
             hasEntry(equalTo(SOUTHWEST.getId()), comparesEqualTo(BigDecimal.ZERO)),
             hasEntry(equalTo(NORTHWEST.getId()), comparesEqualTo(BigDecimal.ZERO)),
             hasEntry(equalTo(WESTMIDLANDS.getId()), comparesEqualTo(BigDecimal.ZERO)),
