@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateResponden
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
@@ -160,6 +161,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private GetCaseWithIdWorkflow getCaseWithIdWorkflow;
+
+    @Mock
+    private GenerateCoRespondentAnswersWorkflow generateCoRespondentAnswersWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -747,6 +751,24 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object>  actual = classUnderTest.generateBulkCaseForListing();
 
         assertEquals(expectedResult, actual);
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_ForCoRespondentAnswersGeneratorEvent() throws WorkflowException {
+        when(generateCoRespondentAnswersWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(AUTH_TOKEN)))
+            .thenReturn(requestPayload);
+
+        assertThat(classUnderTest.generateCoRespondentAnswers(ccdCallbackRequest, AUTH_TOKEN),
+            is(equalTo(requestPayload)));
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldThrowException_ForCoRespondentAnswersGeneratorEvent_WhenWorkflowExceptionIsCaught()
+            throws WorkflowException {
+        when(generateCoRespondentAnswersWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(AUTH_TOKEN)))
+            .thenThrow(new WorkflowException("This operation threw an exception"));
+
+        classUnderTest.generateCoRespondentAnswers(ccdCallbackRequest, AUTH_TOKEN);
     }
 
     @After
