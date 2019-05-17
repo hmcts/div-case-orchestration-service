@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import javax.ws.rs.core.MediaType;
 
 import static java.lang.String.format;
@@ -316,6 +314,34 @@ public class CallbackController {
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format("Failed to process solicitor DN review petition for Case ID: %s", caseId), exception);
             callbackResponseBuilder.errors(ImmutableList.of(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/co-respondent-generate-answers",
+            consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Generates the Co-Respondent Answers PDF Document for the case")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Co-Respondent answers generated and attached to case",
+                    response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> generateCoRespondentAnswers(
+            @RequestHeader(value = "Authorization") String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(caseOrchestrationService
+                    .generateCoRespondentAnswers(ccdCallbackRequest, authorizationToken));
+            log.info("Co-respondent answer generated. Case id: {}", caseId);
+        } catch (WorkflowException exception) {
+            log.error("Co-respondent answer generation failed. Case id:  {}", caseId, exception);
+            callbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
