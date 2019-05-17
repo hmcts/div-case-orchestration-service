@@ -3,12 +3,9 @@ package uk.gov.hmcts.reform.divorce.orchestration.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
-import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
-import uk.gov.hmcts.reform.divorce.orchestration.config.courtallocation.CourtDistributionConfig;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailToSend;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -20,15 +17,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Service
 @Slf4j
-@Configuration
-@EnableConfigurationProperties({EmailTemplatesConfig.class})
 public class EmailService {
 
     @Autowired
     private EmailClient emailClient;
 
-    @Autowired
-    private EmailTemplatesConfig emailTemplatesConfig;
+    @Value("#{${uk.gov.notify.email.template.vars}}")
+    private Map<String, Map<String, String>> emailTemplateVars;
 
     public Map<String, Object> sendEmail(String destinationAddress,
                                          String templateName,
@@ -52,8 +47,12 @@ public class EmailService {
                                       String templateName,
                                       Map<String, String> templateVars) {
         String referenceId = UUID.randomUUID().toString();
-        String templateId = emailTemplatesConfig.getTemplates().get(templateName);
-        Map<String, String> templateFields = (templateVars != null ? templateVars : emailTemplatesConfig.getTemplateVars());
+        String templateId = EmailTemplateNames.valueOf(templateName).getTemplateId();//TODO - change this to use the enum instead of string, if I have the time
+        Map<String, String> templateFields = (templateVars != null
+            ?
+            templateVars
+            :
+            emailTemplateVars.get(templateName));
 
         return new EmailToSend(destinationAddress, templateId, templateFields, referenceId);
     }
