@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.config.courtallocation;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.CourtAllocationConfiguration;
 
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.
 
 public class CourtAllocationConfiguratorUnitTest {
 
+    @Autowired
     private CourtAllocationConfigurator courtAllocationConfigurator;
 
     @Before
@@ -28,7 +30,7 @@ public class CourtAllocationConfiguratorUnitTest {
         String jsonContent = loadResourceAsString("courtAllocation/config-with-court-weight-only.json");
 
         CourtAllocationConfiguration courtAllocationConfiguration = courtAllocationConfigurator
-            .setUpCourtAllocationConfiguration(jsonContent);
+            .setUpCourtAllocationConfiguration();
 
         assertThat(courtAllocationConfiguration.getDesiredWorkloadPerCourt().size(), is(2));
         assertThat(courtAllocationConfiguration.getDesiredWorkloadPerCourt(), allOf(
@@ -43,7 +45,7 @@ public class CourtAllocationConfiguratorUnitTest {
         String jsonContent = loadResourceAsString("courtAllocation/config-with-court-weight-and-reasons.json");
 
         CourtAllocationConfiguration courtAllocationConfiguration = courtAllocationConfigurator
-            .setUpCourtAllocationConfiguration(jsonContent);
+            .setUpCourtAllocationConfiguration();
 
         assertThat(courtAllocationConfiguration.getDesiredWorkloadPerCourt(), allOf(
             hasEntry(equalTo("courtNumber1"), comparesEqualTo(new BigDecimal("0.33"))),
