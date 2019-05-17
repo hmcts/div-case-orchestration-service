@@ -64,6 +64,10 @@ public class OrchestrationConstants {
     public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CCD_DUE_DATE = "dueDate";
     public static final String D_8_PAYMENTS = "Payments";
+    public static final String BULK_LISTING_CASE_ID_FIELD = "BulkListingCaseId";
+
+    //CCD DN fields
+    public static final String DN_APPROVAL_DATE_CCD_FIELD = "DNApprovalDate";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
@@ -87,6 +91,7 @@ public class OrchestrationConstants {
     public static final String AOS_COMPLETED = "AosCompleted";
     public static final String DEFENDED = "DefendedDivorce";
     public static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
+    public static final String AWAITING_PRONOUNCEMENT = "AwaitingPronouncement";
     public static final String DN_AWAITING = "DNAwaiting";
     public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
@@ -209,6 +214,8 @@ public class OrchestrationConstants {
     public static final String PAYMENT_STATUS_KEY = "PaymentStatus";
     public static final String PAYMENT_FEE_ID_KEY = "PaymentFeeId";
     public static final String PAYMENT_SITE_ID_KEY = "PaymentSiteId";
+
+    public static final String SEARCH_PAGE_KEY = "SEARCH_PAGE";
 
     // Validation
     public static final String ERROR_STATUS = "error";

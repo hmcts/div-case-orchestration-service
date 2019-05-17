@@ -267,6 +267,9 @@ documentation:
 # Enable default health indicators
 # Enable disk space health check
 management:
+  health:
+    elasticsearch:
+      enabled: false
   endpoint:
     health:
       show-details: "ALWAYS"
