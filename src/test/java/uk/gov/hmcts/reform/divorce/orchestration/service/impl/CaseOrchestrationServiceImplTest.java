@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
@@ -153,6 +155,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private CaseLinkedForHearingWorkflow caseLinkedForHearingWorkflow;
+
+    @Mock
+    private ProcessAwaitingPronouncementCasesWorkflow processAwaitingPronouncementCasesWorkflow;
 
     @Mock
     private GetCaseWithIdWorkflow getCaseWithIdWorkflow;
@@ -735,6 +740,17 @@ public class CaseOrchestrationServiceImplTest {
         expectedException.expectMessage(is("This operation threw an exception."));
 
         classUnderTest.processCaseLinkedForHearingEvent(ccdCallbackRequest);
+    }
+
+    @Test
+    public void whenProcessAwaitingPronouncementCases_thenProceedAsExpected() throws WorkflowException {
+        Map<String, Object> expectedResult = ImmutableMap.of("someKey", "someValue");
+        when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
+        when(processAwaitingPronouncementCasesWorkflow.run(AUTH_TOKEN)).thenReturn(expectedResult);
+
+        Map<String, Object>  actual = classUnderTest.generateBulkCaseForListing();
+
+        assertEquals(expectedResult, actual);
     }
 
     @Test

@@ -84,4 +84,6 @@ public interface CaseOrchestrationService {
     Map<String, Object> processSolDnReviewPetition(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
     Map<String, Object> generateCoRespondentAnswers(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
+
+    Map<String, Object> generateBulkCaseForListing() throws WorkflowException;
 }

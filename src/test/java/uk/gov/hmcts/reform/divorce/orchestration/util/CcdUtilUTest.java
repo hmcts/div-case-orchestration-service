@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.time.ZoneOffset.UTC;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE;
@@ -27,6 +29,7 @@ public class CcdUtilUTest {
 
     private static final String CURRENT_DATE = "2018-01-01";
     private static final String PAYMENT_DATE = "01012018";
+    private static final String EXPECTED_DATE_WITH_CUSTOMER_FORMAT = "01 January 2018";
     private static final LocalDateTime FIXED_DATE_TIME = LocalDate.parse(CURRENT_DATE).atStartOfDay();
 
     @InjectMocks
@@ -58,6 +61,11 @@ public class CcdUtilUTest {
         testCaseData.put(CO_RESPONDENT_DUE_DATE, TEST_EXPECTED_DUE_DATE);
 
         assertEquals(TEST_EXPECTED_DUE_DATE_FORMATTED, ccdUtil.getFormattedDueDate(testCaseData, CO_RESPONDENT_DUE_DATE));
+    }
+
+    @Test
+    public void whenGetDisplayCurrentDate_thenReturnExpectedDate() {
+        assertThat(ccdUtil.getCurrentDateWithCustomerFacingFormat(), is(EXPECTED_DATE_WITH_CUSTOMER_FORMAT));
     }
 
 }
