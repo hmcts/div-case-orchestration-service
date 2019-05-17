@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.NotificationServiceEmailTemplate;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
@@ -31,13 +31,13 @@ public class TaskCommons {
         }
     }
 
-    public void sendEmail(EmailTemplateNames emailTemplate,
+    public void sendEmail(NotificationServiceEmailTemplate emailTemplate,
                           String emailDescription,
                           String destinationEmailAddress,
                           Map<String, String> templateParameters) throws TaskException {
         try {
             emailService.sendEmailAndReturnExceptionIfFails(destinationEmailAddress,
-                    emailTemplate.name(),
+                    emailTemplate,
                     templateParameters,
                     emailDescription);
         } catch (NotificationClientException e) {

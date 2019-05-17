@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.NotificationServiceEmailTemplate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
@@ -47,13 +47,13 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
             if (isRespondentRespondedCase(caseData)) {
                 if (!isRespondentDefendedCase(caseData)) {
                     emailService.sendEmail(petitionerEmail,
-                        EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
+                        NotificationServiceEmailTemplate.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND,
                         templateVars,
                         "co-respondent responded when aos is undefended");
                 }
             } else {
                 emailService.sendEmail(petitionerEmail,
-                    EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
+                    NotificationServiceEmailTemplate.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED,
                     templateVars,
                     "co-respondent responded but respondent has not");
             }

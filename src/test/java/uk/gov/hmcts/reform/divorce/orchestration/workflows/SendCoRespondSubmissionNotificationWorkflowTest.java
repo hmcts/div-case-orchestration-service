@@ -10,7 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.NotificationServiceEmailTemplate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -86,7 +86,7 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
         TaskContext capturedTask = argument.getValue();
 
         DefaultTaskContext expectedContext = createdExpectedContext(Collections.EMPTY_MAP,
-            EmailTemplateNames.CO_RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION);
+            NotificationServiceEmailTemplate.CO_RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION);
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
@@ -116,12 +116,12 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
             NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, TEST_EXPECTED_DUE_DATE_FORMATTED,
             NOTIFICATION_COURT_ADDRESS_KEY, court.getFormattedAddress()
             ),
-            EmailTemplateNames.CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION);
+            NotificationServiceEmailTemplate.CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION);
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
 
-    private DefaultTaskContext createdExpectedContext(Map<String, Object> additionalData, EmailTemplateNames template) {
+    private DefaultTaskContext createdExpectedContext(Map<String, Object> additionalData, NotificationServiceEmailTemplate template) {
 
         Map<String, Object> expectedTemplateVars = new HashMap<>(additionalData);
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_USER_FIRST_NAME);

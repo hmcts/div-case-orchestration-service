@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.NotificationServiceEmailTemplate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
@@ -32,11 +32,11 @@ public class GenericEmailNotification implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> data) {
         String emailAddress = context.getTransientObject(NOTIFICATION_EMAIL);
-        EmailTemplateNames template = context.getTransientObject(NOTIFICATION_TEMPLATE);
+        NotificationServiceEmailTemplate template = context.getTransientObject(NOTIFICATION_TEMPLATE);
         Map<String, String> templateVars = context.getTransientObject(NOTIFICATION_TEMPLATE_VARS);
 
         try {
-            emailService.sendEmailAndReturnExceptionIfFails(emailAddress, template.name(), templateVars,"submission notification");
+            emailService.sendEmailAndReturnExceptionIfFails(emailAddress, template, templateVars,"submission notification");
         } catch (NotificationClientException e) {
             log.warn("Error sending email for case ID: " + context.getTransientObject(ID), e);
             context.setTransientObject(OrchestrationConstants.EMAIL_ERROR_KEY, e.getMessage());

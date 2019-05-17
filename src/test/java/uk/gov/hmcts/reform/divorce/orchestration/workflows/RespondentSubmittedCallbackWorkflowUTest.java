@@ -10,7 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.NotificationServiceEmailTemplate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -170,7 +170,7 @@ public class RespondentSubmittedCallbackWorkflowUTest {
 
         TaskContext capturedTask = argument.getValue();
 
-        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED);
+        DefaultTaskContext expectedContext = createdExpectedContext(NotificationServiceEmailTemplate.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED);
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
@@ -201,12 +201,12 @@ public class RespondentSubmittedCallbackWorkflowUTest {
 
         TaskContext capturedTask = argument.getValue();
 
-        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT);
+        DefaultTaskContext expectedContext = createdExpectedContext(NotificationServiceEmailTemplate.RESPONDENT_SUBMISSION_CONSENT);
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
 
-    private DefaultTaskContext createdExpectedContext(EmailTemplateNames template) {
+    private DefaultTaskContext createdExpectedContext(NotificationServiceEmailTemplate template) {
 
         Map<String, Object> expectedTemplateVars = new HashMap<>();
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME);

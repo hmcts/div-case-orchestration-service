@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.NotificationServiceEmailTemplate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
@@ -57,7 +57,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
 
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
         when(emailService.sendEmail(petitionerEmail,
-                EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
+                NotificationServiceEmailTemplate.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED,
                 expectedTemplateVars,
             "co-respondent responded but respondent has not")
         ).thenReturn(null);
@@ -68,7 +68,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
         verify(emailService).sendEmail(petitionerEmail,
-            EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
+            NotificationServiceEmailTemplate.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED,
             expectedTemplateVars,
             "co-respondent responded but respondent has not");
     }
@@ -89,7 +89,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
 
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
         when(emailService.sendEmail(petitionerEmail,
-                EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
+                NotificationServiceEmailTemplate.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND,
                 expectedTemplateVars,
             "co-respondent responded when aos is undefended")
         ).thenReturn(null);
@@ -100,7 +100,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
         verify(emailService).sendEmail(petitionerEmail,
-            EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
+            NotificationServiceEmailTemplate.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND,
             expectedTemplateVars,
             "co-respondent responded when aos is undefended");
     }

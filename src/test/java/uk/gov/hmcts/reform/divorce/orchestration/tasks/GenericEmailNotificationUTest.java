@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.NotificationServiceEmailTemplate.RESPONDENT_SUBMISSION_CONSENT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GenericEmailNotificationUTest {
@@ -51,7 +51,7 @@ public class GenericEmailNotificationUTest {
 
         verify(emailService, times(1))
                 .sendEmailAndReturnExceptionIfFails(TEST_USER_EMAIL,
-                        RESPONDENT_SUBMISSION_CONSENT.name(),
+                        RESPONDENT_SUBMISSION_CONSENT,
                         vars,
                         GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION);
         assertEquals(taskResponse, data);
@@ -71,7 +71,7 @@ public class GenericEmailNotificationUTest {
         Exception clientException = new Exception("Error");
         doThrow(new NotificationClientException(clientException))
                 .when(emailService).sendEmailAndReturnExceptionIfFails(TEST_USER_EMAIL,
-                    RESPONDENT_SUBMISSION_CONSENT.name(),
+                    RESPONDENT_SUBMISSION_CONSENT,
                     vars,
                     GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION);
 

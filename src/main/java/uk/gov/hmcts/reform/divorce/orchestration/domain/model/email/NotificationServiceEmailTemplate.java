@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.email;
 
-public enum EmailTemplateNames {
+public enum NotificationServiceEmailTemplate {
 
     AOS_RECEIVED_NO_ADMIT_ADULTERY("015fb73a-3be2-49d8-8ed8-a4078025dae3"),
     AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED("bc6ee2ec-f62b-4321-b19f-65e868f849eb"),
@@ -20,9 +20,9 @@ public enum EmailTemplateNames {
     PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION("686ce418-6d76-48ce-b903-a87d2b832125"),
     PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION("9937c8bc-dc7a-4210-a25b-20aceb82d48d");
 
-    private final String templateId;//TODO - should this be a UUID?
+    private final String templateId;
 
-    EmailTemplateNames(String templateId) {//TODO - should this be a UUID?
+    NotificationServiceEmailTemplate(String templateId) {
         this.templateId = templateId;
     }
 

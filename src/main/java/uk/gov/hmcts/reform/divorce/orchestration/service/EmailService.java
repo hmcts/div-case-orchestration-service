@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailToSend;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.NotificationServiceEmailTemplate;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
@@ -26,7 +26,7 @@ public class EmailService {
     private Map<String, Map<String, String>> emailTemplateVars;
 
     public Map<String, Object> sendEmail(String destinationAddress,
-                                         String templateName,
+                                         NotificationServiceEmailTemplate templateName,
                                          Map<String, String> templateVars,
                                          String emailDescription) {
 
@@ -35,26 +35,25 @@ public class EmailService {
     }
 
     public void sendEmailAndReturnExceptionIfFails(String destinationAddress,
-                          String templateName,
-                          Map<String, String> templateVars,
-                          String emailDescription) throws NotificationClientException {
+                                                   NotificationServiceEmailTemplate templateName,
+                                                   Map<String, String> templateVars,
+                                                   String emailDescription) throws NotificationClientException {
 
         EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
         sendEmailUsingClient(emailToSend, emailDescription);
     }
 
     private EmailToSend generateEmail(String destinationAddress,
-                                      String templateName,
+                                      NotificationServiceEmailTemplate templateName,
                                       Map<String, String> templateVars) {
         String referenceId = UUID.randomUUID().toString();
-        String templateId = EmailTemplateNames.valueOf(templateName).getTemplateId();//TODO - change this to use the enum instead of string, if I have the time
         Map<String, String> templateFields = (templateVars != null
             ?
             templateVars
             :
             emailTemplateVars.get(templateName));
 
-        return new EmailToSend(destinationAddress, templateId, templateFields, referenceId);
+        return new EmailToSend(destinationAddress, templateName.getTemplateId(), templateFields, referenceId);
     }
 
     private Map<String, Object> sendEmailAndReturnErrorsInResponse(EmailToSend emailToSend, String emailDescription) {
@@ -73,10 +72,10 @@ public class EmailService {
     private void sendEmailUsingClient(EmailToSend emailToSend, String emailDescription) throws NotificationClientException {
         log.debug("Attempting to send {} email. Reference ID: {}", emailDescription, emailToSend.getReferenceId());
         emailClient.sendEmail(
-                emailToSend.getTemplateId(),
-                emailToSend.getDestinationEmailAddress(),
-                emailToSend.getTemplateFields(),
-                emailToSend.getReferenceId()
+            emailToSend.getTemplateId(),
+            emailToSend.getDestinationEmailAddress(),
+            emailToSend.getTemplateFields(),
+            emailToSend.getReferenceId()
         );
         log.info("Sending email success. Reference ID: {}", emailToSend.getReferenceId());
     }

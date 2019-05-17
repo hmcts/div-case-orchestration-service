@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.NotificationServiceEmailTemplate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -84,7 +84,7 @@ public class PetitionerCertificateOfEntitlementNotification implements Task<Map<
         }
 
         try {
-            taskCommons.sendEmail(EmailTemplateNames.PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION,
+            taskCommons.sendEmail(NotificationServiceEmailTemplate.PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION,
                 EMAIL_DESCRIPTION,
                 petitionerEmail,
                 templateParameters);

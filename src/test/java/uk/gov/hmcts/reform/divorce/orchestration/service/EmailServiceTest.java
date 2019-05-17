@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.NotificationServiceEmailTemplate;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
@@ -37,14 +37,14 @@ public class EmailServiceTest {
     public void sendEmailForSubmissionConfirmationShouldCallTheEmailClientToSendAnEmail()
         throws NotificationClientException {
         emailService.sendEmail(EMAIL_ADDRESS,
-            EmailTemplateNames.APPLIC_SUBMISSION.name(),
+            NotificationServiceEmailTemplate.APPLIC_SUBMISSION,
             null,
             "submission notification");
 
         verify(mockClient).sendEmail(
-            eq(EmailTemplateNames.APPLIC_SUBMISSION.getTemplateId()),
+            eq(NotificationServiceEmailTemplate.APPLIC_SUBMISSION.getTemplateId()),
             eq(EMAIL_ADDRESS),
-            eq(emailTemplateVars.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),//TODO - look into this
+            eq(emailTemplateVars.get(NotificationServiceEmailTemplate.APPLIC_SUBMISSION)),
             anyString());
     }
 
@@ -55,7 +55,7 @@ public class EmailServiceTest {
             .when(mockClient).sendEmail(anyString(), anyString(), eq(null), anyString());
         try {
             emailService.sendEmail(EMAIL_ADDRESS,
-                EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
+                NotificationServiceEmailTemplate.AOS_RECEIVED_NO_CONSENT_2_YEARS,
                 null,
                 "resp does not consent to 2 year separation update notification");
         } catch (Exception e) {
