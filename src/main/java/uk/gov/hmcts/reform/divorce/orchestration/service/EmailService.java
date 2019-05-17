@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailToSend;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -20,9 +21,6 @@ public class EmailService {
 
     @Autowired
     private EmailClient emailClient;
-
-    @Value("#{${uk.gov.notify.email.templates}}")
-    private Map<String, String> emailTemplates;
 
     @Value("#{${uk.gov.notify.email.template.vars}}")
     private Map<String, Map<String, String>> emailTemplateVars;
@@ -49,7 +47,7 @@ public class EmailService {
                                       String templateName,
                                       Map<String, String> templateVars) {
         String referenceId = UUID.randomUUID().toString();
-        String templateId = emailTemplates.get(templateName);
+        String templateId = EmailTemplateNames.valueOf(templateName).getTemplateId();//TODO - change this to use the enum instead of string, if I have the time
         Map<String, String> templateFields = (templateVars != null
             ?
             templateVars
