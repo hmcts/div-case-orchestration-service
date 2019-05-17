@@ -30,9 +30,6 @@ public class EmailServiceTest {
     @Autowired
     private EmailService emailService;
 
-    @Value("#{${uk.gov.notify.email.templates}}")
-    private Map<String, String> emailTemplates;
-
     @Value("#{${uk.gov.notify.email.template.vars}}")
     private Map<String, Map<String, String>> emailTemplateVars;
 
@@ -45,9 +42,9 @@ public class EmailServiceTest {
             "submission notification");
 
         verify(mockClient).sendEmail(
-            eq(emailTemplates.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+            eq(EmailTemplateNames.APPLIC_SUBMISSION.getTemplateId()),
             eq(EMAIL_ADDRESS),
-            eq(emailTemplateVars.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+            eq(emailTemplateVars.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),//TODO - look into this
             anyString());
     }
 
