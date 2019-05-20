@@ -10,7 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.NotificationServiceEmailTemplate;
+import uk.gov.hmcts.reform.divorce.orchestration.config.NotificationServiceEmailTemplate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -50,7 +50,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.NotificationServiceEmailTemplate.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED;
+import static uk.gov.hmcts.reform.divorce.orchestration.config.NotificationServiceEmailTemplate.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RespondentSubmittedCallbackWorkflowUTest {

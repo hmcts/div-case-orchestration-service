@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailToSend;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.NotificationServiceEmailTemplate;
+import uk.gov.hmcts.reform.divorce.orchestration.config.NotificationServiceEmailTemplate;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;

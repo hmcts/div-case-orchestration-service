@@ -19,7 +19,7 @@ import java.util.HashMap;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Mockito.doThrow;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.NotificationServiceEmailTemplate.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.config.NotificationServiceEmailTemplate.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskCommonsTest {

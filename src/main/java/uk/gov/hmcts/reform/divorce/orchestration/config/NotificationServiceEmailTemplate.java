@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.domain.model.email;
+package uk.gov.hmcts.reform.divorce.orchestration.config;
 
 public enum NotificationServiceEmailTemplate {
 
