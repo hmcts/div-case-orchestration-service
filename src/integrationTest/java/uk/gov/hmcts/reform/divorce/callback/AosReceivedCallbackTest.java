@@ -6,16 +6,12 @@ import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
-import java.util.List;
 import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
