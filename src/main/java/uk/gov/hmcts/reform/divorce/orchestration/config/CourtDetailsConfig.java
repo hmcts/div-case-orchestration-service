@@ -4,15 +4,15 @@ import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@ConfigurationProperties(prefix = "uk.gov.notify.email")
+@ConfigurationProperties(prefix = "court")
 @Validated
 @Getter
-public class EmailTemplatesConfig {
-    private Map<String, String> templates = new HashMap<>();
-    private Map<String, Map<String, String>> templateVars = new HashMap<>();
+public class CourtDetailsConfig {
+    private Map<String, Court> locations = new HashMap<>();
 }

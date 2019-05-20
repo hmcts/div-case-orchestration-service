@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.config.courtallocation;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.CourtAllocationConfiguration;
 import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.CourtAllocator;
@@ -10,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.DefaultCourtAll
 import java.math.BigDecimal;
 import java.util.Map;
 
-@EnableConfigurationProperties({CourtDistributionConfig.class})
 public class CourtAllocationConfigurator {
 
     @Autowired

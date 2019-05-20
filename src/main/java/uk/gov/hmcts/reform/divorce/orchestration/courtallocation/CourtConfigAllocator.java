@@ -1,20 +1,17 @@
 package uk.gov.hmcts.reform.divorce.orchestration.courtallocation;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.config.courtallocation.CourtDistributionConfig;
 
-import java.math.BigDecimal;
-import java.util.Map;
-
 @Component
-public class NewConfigCourtAllocator implements CourtAllocator {
+public class CourtConfigAllocator implements CourtAllocator {
 
     private final FactSpecificCourtWeightedDistributor factSpecificCourtWeightedDistributor;
     private final GenericCourtWeightedDistributor genericCourtWeightedDistributor;
 
-    public NewConfigCourtAllocator(@Autowired CourtDistributionConfig courtDistributionConfig) {
+    @Autowired
+    public CourtConfigAllocator(CourtDistributionConfig courtDistributionConfig) {
         this.factSpecificCourtWeightedDistributor =
             new FactSpecificCourtWeightedDistributor(courtDistributionConfig.getFactAllocation());
         this.genericCourtWeightedDistributor = new GenericCourtWeightedDistributor(
