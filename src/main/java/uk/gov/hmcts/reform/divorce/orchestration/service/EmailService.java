@@ -22,7 +22,7 @@ public class EmailService {
     @Autowired
     private EmailClient emailClient;
 
-    @Value("#{${uk.gov.notify.email.template.vars}}")
+    @Value("${email.template.vars}")
     private Map<String, Map<String, String>> emailTemplateVars;
 
     public Map<String, Object> sendEmail(String destinationAddress,
@@ -48,11 +48,7 @@ public class EmailService {
                                       Map<String, String> templateVars) {
         String referenceId = UUID.randomUUID().toString();
         String templateId = EmailTemplateNames.valueOf(templateName).getTemplateId();//TODO - change this to use the enum instead of string, if I have the time
-        Map<String, String> templateFields = (templateVars != null
-            ?
-            templateVars
-            :
-            emailTemplateVars.get(templateName));
+        Map<String, String> templateFields = (templateVars != null ? templateVars : emailTemplateVars.get(templateName));
 
         return new EmailToSend(destinationAddress, templateId, templateFields, referenceId);
     }

@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.CourtAllocator;
+import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.NewConfigCourtAllocator;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWor
 public class CourtAllocationTaskTest {
 
     @Mock
-    private CourtAllocator courtAllocator;
+    private NewConfigCourtAllocator courtAllocator;
 
     @InjectMocks
     private CourtAllocationTask courtAllocationTask;

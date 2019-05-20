@@ -2,9 +2,11 @@ package uk.gov.hmcts.reform.divorce.orchestration.courtallocation;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.config.courtallocation.CourtDistributionConfig;
 
 import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
@@ -24,7 +26,7 @@ public class CourtAllocatorITest {
     private static final int SAMPLES_NUMBER = 10000;
 
     @Autowired
-    private CourtAllocator courtAllocator;
+    private NewConfigCourtAllocator courtAllocator;
 
     @Test
     public void givenDesertionCase_whenAllocateCase_thenReturnServiceCenter() {
