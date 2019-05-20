@@ -7,8 +7,12 @@
       "D8PetitionerFirstName": "James",
       "D8PetitionerLastName": "Johnson",
       "D8DivorceCostsClaim": "YES",
+      "D8InferredPetitionerGender": "male",
       "CostsClaimGranted": "YES",
-      "DateOfHearing": "2019-04-21"
+      "DateOfHearing": "2019-04-21",
+      "D8RespondentFirstName":"Jane",
+      "D8RespondentLastName":"Jamed",
+      "RespEmailAddress": "respondent@justice.uk"
     }
   }
 }
