@@ -36,10 +36,10 @@ import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.config.NotificationServiceEmailTemplate.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.config.NotificationServiceEmailTemplate.RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
 @RunWith(MockitoJUnitRunner.class)
