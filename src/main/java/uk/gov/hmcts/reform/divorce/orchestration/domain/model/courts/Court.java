@@ -25,9 +25,11 @@ public class Court {
     private String divorceCentreName;
 
     @JsonProperty("divorceCentreAddressName")
+    @Setter
     private String divorceCentreAddressName;
 
     @JsonProperty("street")
+    @Setter
     private String street;
 
     @JsonProperty("poBox")

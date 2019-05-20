@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
+import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailToSend;
 import uk.gov.hmcts.reform.divorce.orchestration.config.NotificationServiceEmailTemplate;
 import uk.gov.service.notify.NotificationClientException;
@@ -22,8 +23,8 @@ public class EmailService {
     @Autowired
     private EmailClient emailClient;
 
-    @Value("#{${uk.gov.notify.email.template.vars}}")
-    private Map<String, Map<String, String>> emailTemplateVars;
+    @Autowired
+    private EmailTemplatesConfig emailTemplatesConfig;
 
     public Map<String, Object> sendEmail(String destinationAddress,
                                          NotificationServiceEmailTemplate templateName,
@@ -47,7 +48,8 @@ public class EmailService {
                                       NotificationServiceEmailTemplate templateName,
                                       Map<String, String> templateVars) {
         String referenceId = UUID.randomUUID().toString();
-        Map<String, String> templateFields = (templateVars != null ? templateVars : emailTemplateVars.get(templateName));
+        Map<String, String> templateFields = (templateVars != null ? templateVars :
+            emailTemplatesConfig.getTemplateVars().get(templateName.getTemplateId()));
 
         return new EmailToSend(destinationAddress, templateName.getTemplateId(), templateFields, referenceId);
     }
