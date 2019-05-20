@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.time.Period;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrchestrationConstants {
 
@@ -14,11 +16,11 @@ public class OrchestrationConstants {
     // Authentication
     public static final String ACCESS_CODE = "access_code";
     public static final String AUTH_TOKEN_JSON_KEY = "authToken";
+    public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String BASIC = "Basic ";
     public static final String PIN_PREFIX = "Pin ";
     public static final String CODE = "code";
     public static final String LOCATION_HEADER = "Location";
-    public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
 
     //Issue Petition
@@ -85,22 +87,16 @@ public class OrchestrationConstants {
 
     // CCD Case States
     public static final String AOS_AWAITING = "AosAwaiting";
+    public static final String AOS_COMPLETED = "AosCompleted";
+    public static final String AOS_OVERDUE = "AosOverdue";
     public static final String AOS_STARTED = "AosStarted";
     public static final String AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer";
-    public static final String AOS_OVERDUE = "AosOverdue";
-    public static final String AOS_COMPLETED = "AosCompleted";
-    public static final String DEFENDED = "DefendedDivorce";
     public static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
-    public static final String AWAITING_PRONOUNCEMENT = "AwaitingPronouncement";
-    public static final String DN_AWAITING = "DNAwaiting";
-    public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
-
-    // CCD Respondent Fields
-    public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
-    public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
-    public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
-    public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
+    public static final String AWAITING_PRONOUNCEMENT = "AwaitingPronouncement";
+    public static final String AWAITING_REISSUE = "AwaitingReissue";
+    public static final String DEFENDED = "DefendedDivorce";
+    public static final String DN_AWAITING = "DNAwaiting";
 
     // CCD Co-Respondent Fields
     public static final String CO_RESP_LINKED_TO_CASE = "CoRespLinkedToCase";
@@ -129,6 +125,14 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_PIN = "coRespondentPin";
     public static final String SUCCESS_STATUS = "success";
 
+    // Hearing
+    public static final String COSTS_CLAIM_GRANTED = "costs claim granted";
+    public static final String COSTS_CLAIM_NOT_GRANTED = "costs claim not granted";
+    public static final String DATE_OF_HEARING = "date of hearing";
+    public static final String LIMIT_DATE_TO_CONTACT_COURT = "limit date to contact court";
+    public static final Period PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT = Period.ofWeeks(2);
+
+
     // Reasons For Divorce
     public static final String ADULTERY = "adultery";
     public static final String SEPARATION_2YRS = "separation-2-years";
@@ -145,6 +149,7 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_TEMPLATE_VARS = "notification_template_vars";
     public static final String NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY = "first name";
     public static final String NOTIFICATION_ADDRESSEE_LAST_NAME_KEY = "last name";
+    public static final String NOTIFICATION_HUSBAND_OR_WIFE = "husband or wife";
     public static final String NOTIFICATION_RELATIONSHIP_KEY = "relationship";
     public static final String NOTIFICATION_REFERENCE_KEY = "ref";
     public static final String NOTIFICATION_CASE_NUMBER_KEY = "case number";
@@ -153,6 +158,14 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY = "form submission date limit";
     public static final String IS_DRAFT_KEY =   "fetchedDraft";
     public static final String STATEMENT_OF_TRUTH = "D8StatementOfTruth";
+    public static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
+    public static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
+
+    // CCD Respondent Fields
+    public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
+    public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
+    public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
+    public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
 
     // Courts
     public static final String DIVORCE_CENTRE_SITEID_JSON_KEY = "D8SelectedDivorceCentreSiteId";
