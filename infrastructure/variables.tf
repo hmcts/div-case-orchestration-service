@@ -46,10 +46,6 @@ variable "common_tags" {
   type = "map"
 }
 
-variable "uk_gov_notify_email_template_vars" {
-  type = "string"
-}
-
 variable "service_auth_microservice_name" {
   default = "divorce_frontend"
 }

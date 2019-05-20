@@ -17,7 +17,7 @@ locals {
   petitioner_fe_baseurl             = "https://div-pfe-${local.local_env}.service.core-compute-${local.local_env}.internal"
   feature_toggle_baseurl            = "http://rpe-feature-toggle-api-${local.local_env}.service.core-compute-${local.local_env}.internal"
   send_letter_service_baseurl       = "http://rpe-send-letter-service-${local.local_env}.service.core-compute-${local.local_env}.internal"
-  
+
   previewVaultName = "${var.raw_product}-aat"
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
@@ -63,7 +63,6 @@ module "div-cos" {
     IDAM_CASEWORKER_PASSWORD                        = "${data.azurerm_key_vault_secret.auth-idam-caseworker-password.value}"
     IDAM_STRATEGIC_ENABLED                          = "${var.idam_strategic_enabled}"
     UK_GOV_NOTIFY_API_KEY                           = "${data.azurerm_key_vault_secret.uk-gov-notify-api-key.value}"
-    UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS               = "${var.uk_gov_notify_email_template_vars}"
     AOS_RESPONDED_DAYS_TO_COMPLETE                  = "${var.aos_responded_days_to_complete}"
     AOS_RESPONDED_AWAITING_ANSWER_DAYS_TO_RESPOND   = "${var.aos_responded_awaiting_answer_days_to_respond}"
 
