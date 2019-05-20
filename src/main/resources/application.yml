@@ -24,6 +24,27 @@ spring:
   resources:
     static-locations:
 
+quartzProperties:
+  org.quartz:
+    scheduler:
+      instanceId: AUTO
+    jobStore:
+      isClustered: false
+      class: org.quartz.impl.jdbcjobstore.JobStoreTX
+      driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+      dataSource: cmcDataSource
+    threadPool:
+      class: org.quartz.simpl.SimpleThreadPool
+      threadCount: 8
+
+scheduler:
+  re-create: true
+  schedule:
+    name: 'test schedulder'
+    description: ' test scheduler'
+    jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.jobs.DueDateJob.class'
+    cron: '0 0/1 * 1/1 * ? *'
+
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4013}
 

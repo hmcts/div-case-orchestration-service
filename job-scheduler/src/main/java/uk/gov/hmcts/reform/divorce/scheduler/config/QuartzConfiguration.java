@@ -44,6 +44,8 @@ public class QuartzConfiguration {
             TransactionAwareDataSourceProxy transactionAwareDataSourceProxy,
         @Qualifier("schedulerTransactionManager") PlatformTransactionManager transactionManager
     ) {
+
+//        quartzProperties.put("org.quartz.jobStore.driverDelegateClass","org.quartz.impl.jdbcjobstore.PostgreSQLDelegate");
         Properties properties = new Properties();
         properties.putAll(quartzProperties);
 

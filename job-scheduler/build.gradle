@@ -30,10 +30,9 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
+  compile group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
 
-  compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
+  compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logbackx
   compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
 
