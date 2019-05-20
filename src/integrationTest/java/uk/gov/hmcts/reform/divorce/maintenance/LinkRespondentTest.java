@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,6 +60,40 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             caseDetails.getId(), "abcd1234");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), cosResponse.getStatusCode());
+    }
+
+    @Test
+    public void givenCaseWithNationalChars_whenLinkRespondent_thenReturnUnAuthorised() {
+        final UserDetails petitionerUserDetails = createCitizenUser();
+
+        final PinResponse pinResponse = idamTestSupportUtil.generatePin(
+                PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME, petitionerUserDetails.getAuthToken()
+        );
+
+        final CaseDetails caseDetails = submitCase("div-4703.json", petitionerUserDetails);
+
+        final String caseId = String.valueOf(caseDetails.getId());
+
+        updateCase(
+            caseId, null, PAYMENT_REFERENCE_EVENT, ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId())
+        );
+
+        updateCaseForCitizen(caseId, null, TEST_AOS_AWAITING_EVENT, petitionerUserDetails);
+
+        updateCase(caseId, null, "aosNotReceived");
+
+        final UserDetails respondentUserDetails = createCitizenUser();
+
+        Response linkResponse = linkRespondent(
+                        respondentUserDetails.getAuthToken(),
+                        caseDetails.getId(),
+                        pinResponse.getPin()
+                );
+
+        assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
+        Response caseResponse = retrieveAosCase(respondentUserDetails.getAuthToken());
+        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
+        assertCaseDetailsRespondent(respondentUserDetails, String.valueOf(caseDetails.getId()));
     }
 
     @Test
