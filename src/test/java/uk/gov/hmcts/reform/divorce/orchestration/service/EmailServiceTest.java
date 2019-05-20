@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.service;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -11,8 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.config.NotificationServiceEmailTemplate;
 import uk.gov.service.notify.NotificationClientException;
-
-import java.util.Map;
 
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyString;
