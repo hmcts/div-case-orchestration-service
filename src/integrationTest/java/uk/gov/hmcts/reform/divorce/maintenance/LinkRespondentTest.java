@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.entity.ContentType;
-import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +13,8 @@ import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -278,7 +279,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
         assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE));
         assertEquals(YES_VALUE, caseDetails.getData().get(CO_RESP_LINKED_TO_CASE));
-        assertEquals(LocalDate.now().toString(CCD_DATE_FORMAT), caseDetails.getData().get(CO_RESP_LINKED_TO_CASE_DATE));
+        assertEquals(LocalDate.now().format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)), caseDetails.getData().get(CO_RESP_LINKED_TO_CASE_DATE));
     }
 
     private Response linkRespondent(String userToken, Long caseId, String pin) {

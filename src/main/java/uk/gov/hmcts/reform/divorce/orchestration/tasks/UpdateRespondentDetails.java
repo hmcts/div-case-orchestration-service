@@ -48,19 +48,22 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
     @Autowired
     private AuthUtil authUtil;
 
+    @Autowired
+    private CcdUtil ccdUtil;
+
     @Override
     public UserDetails execute(TaskContext context, UserDetails payload) throws TaskException {
 
         Map<String, Object> updateFields = new HashMap<>();
         try {
-            boolean isRespondent = (boolean) context.getTransientObject(IS_RESPONDENT);
+            boolean isRespondent = context.getTransientObject(IS_RESPONDENT);
             String eventId;
 
             UserDetails linkedUser =
                 idamClient.retrieveUserDetails(
-                    authUtil.getBearToken((String)context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
+                    authUtil.getBearToken(context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
 
-            CaseDetails caseDetails = (CaseDetails) context.getTransientObject(CASE_DETAILS_JSON_KEY);
+            CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
 
             if (isRespondent) {
                 updateFields.put(RESPONDENT_EMAIL_ADDRESS, linkedUser.getEmail());
@@ -68,13 +71,13 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
             } else {
                 updateFields.put(CO_RESP_EMAIL_ADDRESS, linkedUser.getEmail());
                 updateFields.put(CO_RESP_LINKED_TO_CASE, YES_VALUE);
-                updateFields.put(CO_RESP_LINKED_TO_CASE_DATE, CcdUtil.getCurrentDate());
+                updateFields.put(CO_RESP_LINKED_TO_CASE_DATE, ccdUtil.getCurrentDateCcdFormat());
                 eventId = LINK_RESPONDENT_GENERIC_EVENT_ID;
             }
 
             caseMaintenanceClient.updateCase(
-                (String)context.getTransientObject(AUTH_TOKEN_JSON_KEY),
-                (String)context.getTransientObject(CASE_ID_JSON_KEY),
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+                context.getTransientObject(CASE_ID_JSON_KEY),
                 eventId,
                 updateFields
             );

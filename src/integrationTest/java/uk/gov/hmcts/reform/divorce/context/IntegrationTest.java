@@ -12,12 +12,14 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.UUID;
 import java.util.function.Supplier;
+import javax.annotation.PostConstruct;
+
+import javax.annotation.PostConstruct;
 
 @Slf4j
 @RunWith(SerenityRunner.class)
@@ -59,8 +61,8 @@ public abstract class IntegrationTest {
     }
 
     @PostConstruct
-    public void init(){
-        if(!Strings.isNullOrEmpty(httpProxy)) {
+    public void init() {
+        if (!Strings.isNullOrEmpty(httpProxy)) {
             try {
                 URL proxy = new URL(httpProxy);
                 InetAddress.getByName(proxy.getHost()).isReachable(2000); // check proxy connectivity
@@ -70,7 +72,7 @@ public abstract class IntegrationTest {
                 System.setProperty("https.proxyPort", Integer.toString(proxy.getPort()));
             } catch (IOException e) {
                 log.error("Error setting up proxy - are you connected to the VPN?", e);
-                throw new RuntimeException(e);
+                throw new RuntimeException("Error setting up proxy", e);
             }
         }
     }
@@ -79,10 +81,10 @@ public abstract class IntegrationTest {
         synchronized (this) {
             if (caseWorkerUser == null) {
                 caseWorkerUser = warpInRetry(() -> getUserDetails(
-                        CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN, CASE_WORKER_PASSWORD,
-                        CASEWORKER_USERGROUP,
-                        CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
-                        CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
+                    CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN, CASE_WORKER_PASSWORD,
+                    CASEWORKER_USERGROUP,
+                    CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
+                    CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
                 ));
             }
             return caseWorkerUser;
@@ -112,12 +114,12 @@ public abstract class IntegrationTest {
             final String userId = idamTestSupportUtil.getUserId(authToken);
 
             return UserDetails.builder()
-                    .username(username)
-                    .emailAddress(username)
-                    .password(password)
-                    .authToken(authToken)
-                    .id(userId)
-                    .build();
+                .username(username)
+                .emailAddress(username)
+                .password(password)
+                .authToken(authToken)
+                .id(userId)
+                .build();
         }
     }
 

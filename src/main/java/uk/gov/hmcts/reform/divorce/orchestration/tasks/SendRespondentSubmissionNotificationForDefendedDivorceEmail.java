@@ -30,6 +30,9 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
     private static final String EMAIL_DESCRIPTION = "respondent submission notification email - defended divorce";
 
     @Autowired
+    private CcdUtil ccdUtil;
+
+    @Autowired
     private TaskCommons taskCommons;
 
     @Override
@@ -55,7 +58,7 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         templateFields.put("RDC name", court.getIdentifiableCentreName());
         templateFields.put("court address", court.getFormattedAddress());
 
-        String formSubmissionDateLimit = CcdUtil.getFormattedDueDate(caseDataPayload, CCD_DUE_DATE);
+        String formSubmissionDateLimit = ccdUtil.getFormattedDueDate(caseDataPayload, CCD_DUE_DATE);
         templateFields.put("form submission date limit", formSubmissionDateLimit);
 
         taskCommons.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,

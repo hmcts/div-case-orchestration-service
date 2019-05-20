@@ -10,9 +10,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAnswersGenerator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -31,6 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
 
@@ -38,22 +43,38 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRe
 public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final GenericEmailNotification emailNotificationTask;
+    private final RespondentAnswersGenerator respondentAnswersGenerator;
+    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Autowired
-    public RespondentSubmittedCallbackWorkflow(GenericEmailNotification emailNotificationTask) {
+    public RespondentSubmittedCallbackWorkflow(GenericEmailNotification emailNotificationTask,
+                                               RespondentAnswersGenerator respondentAnswersGenerator,
+                                               CaseFormatterAddDocuments caseFormatterAddDocuments) {
         this.emailNotificationTask = emailNotificationTask;
+        this.respondentAnswersGenerator = respondentAnswersGenerator;
+        this.caseFormatterAddDocuments = caseFormatterAddDocuments;
     }
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        final List<Task> tasks = new ArrayList<>();
+
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        final String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
-        
+        final String relationship = getRespondentRelationship(caseDetails);
+
+        String petitionerEmail = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_EMAIL);
+
+        // only send an email to pet. if respondent is not defending
+        if (!respondentIsDefending(caseDetails) && StringUtils.isNotEmpty(petitionerEmail)) {
+            tasks.add(emailNotificationTask);
+        }
+
+        tasks.add(respondentAnswersGenerator);
+        tasks.add(caseFormatterAddDocuments);
+
         String firstName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_FIRST_NAME);
         String lastName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_LAST_NAME);
-        final String relationship = getRespondentRelationship(caseDetails);
         String isCoRespNamed = getFieldAsStringOrNull(caseDetails, D_8_CO_RESPONDENT_NAMED);
         String receivedAosFromCoResp = getFieldAsStringOrNull(caseDetails, RECEIVED_AOS_FROM_CO_RESP);
-        
 
         EmailTemplateNames template = EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT;
         if (StringUtils.equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !StringUtils.equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE)) {
@@ -61,17 +82,16 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         }
 
         Map<String, String> notificationTemplateVars = new HashMap<>();
+        String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
         notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, firstName);
         notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, lastName);
         notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
         notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, ref);
 
-        String petitionerEmail = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_EMAIL);
+        Task[] taskArr = new Task[tasks.size()];
 
         return this.execute(
-            new Task[]{
-                emailNotificationTask
-            },
+            tasks.toArray(taskArr),
             ccdCallbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(NOTIFICATION_EMAIL, petitionerEmail),
@@ -79,6 +99,11 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
             ImmutablePair.of(NOTIFICATION_TEMPLATE, template),
             ImmutablePair.of(ID, caseDetails.getCaseId())
         );
+    }
+
+    private boolean respondentIsDefending(CaseDetails caseDetails) {
+        final String respWillDefendDivorce = (String)caseDetails.getCaseData().get(RESP_WILL_DEFEND_DIVORCE);
+        return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
     }
 
     private String getRespondentRelationship(CaseDetails caseDetails) {

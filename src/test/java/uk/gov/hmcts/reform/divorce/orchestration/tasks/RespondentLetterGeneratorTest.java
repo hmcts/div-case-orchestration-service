@@ -80,8 +80,7 @@ public class RespondentLetterGeneratorTest {
         //when
         respondentLetterGenerator.execute(context, payload);
 
-        final LinkedHashSet<GeneratedDocumentInfo> documentCollection =
-            (LinkedHashSet<GeneratedDocumentInfo>)context.getTransientObject(DOCUMENT_COLLECTION);
+        final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
         assertThat(documentCollection, is(newLinkedHashSet(expectedAosInvitation)));
 

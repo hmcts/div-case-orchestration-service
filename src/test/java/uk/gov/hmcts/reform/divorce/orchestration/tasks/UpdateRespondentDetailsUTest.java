@@ -52,11 +52,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateRespondentDetailsUTest {
 
+    private static final String FIXED_DATE = "2018-01-01";
+
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
 
     @Mock
     private AuthUtil authUtil;
+
+    @Mock
+    private CcdUtil ccdUtil;
 
     @Mock
     private IdamClient idamClient;
@@ -66,6 +71,7 @@ public class UpdateRespondentDetailsUTest {
 
     @Before
     public void setup() {
+        when(ccdUtil.getCurrentDateCcdFormat()).thenReturn(FIXED_DATE);
         when(authUtil.getBearToken(AUTH_TOKEN)).thenCallRealMethod();
     }
 
@@ -81,11 +87,11 @@ public class UpdateRespondentDetailsUTest {
 
         final Map<String, Object> caseData = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
         final CaseDetails caseDetails =
-                CaseDetails.builder()
-                        .caseId(TEST_CASE_ID)
-                        .state(AOS_AWAITING_STATE)
-                        .caseData(caseData)
-                        .build();
+            CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
+                .state(AOS_AWAITING_STATE)
+                .caseData(caseData)
+                .build();
 
         final Map<String, Object> dataToUpdate =
             ImmutableMap.of(
@@ -164,7 +170,7 @@ public class UpdateRespondentDetailsUTest {
         taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
         when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN))
-                .thenReturn(respondentDetails);
+            .thenReturn(respondentDetails);
 
         UserDetails result = classUnderTest.execute(taskContext, payload);
         Assert.assertEquals(payload, result);
@@ -228,7 +234,7 @@ public class UpdateRespondentDetailsUTest {
             ImmutableMap.of(
                 CO_RESP_EMAIL_ADDRESS, TEST_EMAIL,
                 CO_RESP_LINKED_TO_CASE, YES_VALUE,
-                CO_RESP_LINKED_TO_CASE_DATE, CcdUtil.getCurrentDate()
+                CO_RESP_LINKED_TO_CASE_DATE, FIXED_DATE
             );
 
         verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);
@@ -238,23 +244,23 @@ public class UpdateRespondentDetailsUTest {
 
     private UserDetails createTestUserDetails() {
         return UserDetails.builder()
-                .id(TEST_USER_ID)
-                .email(TEST_EMAIL)
-                .build();
+            .id(TEST_USER_ID)
+            .email(TEST_EMAIL)
+            .build();
     }
 
     private CaseDetails createTestCaseDetails(String state) {
         Map<String, Object> caseData = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
         return CaseDetails.builder()
-                        .caseId(TEST_CASE_ID)
-                        .state(state)
-                        .caseData(caseData)
-                        .build();
+            .caseId(TEST_CASE_ID)
+            .state(state)
+            .caseData(caseData)
+            .build();
     }
 
     private Map<String, Object> createDataToUpdate() {
         return ImmutableMap.of(
-                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
+            RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
         );
     }
 }

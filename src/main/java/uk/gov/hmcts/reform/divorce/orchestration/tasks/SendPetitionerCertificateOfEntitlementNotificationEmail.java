@@ -50,7 +50,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         log.info("Executing task to notify petitioner about certificate of entitlement. Case id: {}",
-            context.getTransientObject(CASE_ID_JSON_KEY));
+            (String) context.getTransientObject(CASE_ID_JSON_KEY));
 
         String petitionerEmail = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_EMAIL);
         String familyManCaseId = getMandatoryPropertyValueAsString(payload, D_8_CASE_REFERENCE);
@@ -88,12 +88,12 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
                 EMAIL_DESCRIPTION,
                 petitionerEmail,
                 templateParameters);
-            log.info("Petitioner notification sent for case {}", context.getTransientObject(CASE_ID_JSON_KEY));
+            log.info("Petitioner notification sent for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));
         } catch (TaskException exception) {
-            log.error("Failed to send petitioner notification for case {}", context.getTransientObject(CASE_ID_JSON_KEY));
+            log.error("Failed to send petitioner notification for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));
             throw exception;
         } catch (Exception exception) {
-            log.error("Failed to send petitioner notification for case {}", context.getTransientObject(CASE_ID_JSON_KEY));
+            log.error("Failed to send petitioner notification for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));
             throw new TaskException(exception.getMessage(), exception);
         }
 
