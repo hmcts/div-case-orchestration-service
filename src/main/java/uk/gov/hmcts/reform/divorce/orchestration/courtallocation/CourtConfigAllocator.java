@@ -5,13 +5,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.config.courtallocation.CourtDistributionConfig;
 
 @Component
-public class NewConfigCourtAllocator implements CourtAllocator {
+public class CourtConfigAllocator implements CourtAllocator {
 
     private final FactSpecificCourtWeightedDistributor factSpecificCourtWeightedDistributor;
     private final GenericCourtWeightedDistributor genericCourtWeightedDistributor;
 
     @Autowired
-    public NewConfigCourtAllocator(CourtDistributionConfig courtDistributionConfig) {
+    public CourtConfigAllocator(CourtDistributionConfig courtDistributionConfig) {
         this.factSpecificCourtWeightedDistributor =
             new FactSpecificCourtWeightedDistributor(courtDistributionConfig.getFactAllocation());
         this.genericCourtWeightedDistributor = new GenericCourtWeightedDistributor(
