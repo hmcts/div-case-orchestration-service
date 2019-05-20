@@ -19,11 +19,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.config.NotificationServiceEmailTemplate.RESPONDENT_SUBMISSION_CONSENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMAIL_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
-import static uk.gov.hmcts.reform.divorce.orchestration.config.NotificationServiceEmailTemplate.RESPONDENT_SUBMISSION_CONSENT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GenericEmailNotificationUTest {
