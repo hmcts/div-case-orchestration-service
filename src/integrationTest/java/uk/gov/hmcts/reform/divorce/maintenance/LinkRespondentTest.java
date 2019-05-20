@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
