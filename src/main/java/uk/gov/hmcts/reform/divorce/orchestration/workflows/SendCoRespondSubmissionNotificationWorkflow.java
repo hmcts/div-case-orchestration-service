@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.config.NotificationServiceEmailTemplate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -67,7 +67,7 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
         templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, caseNumber);
         String corespondentEmail = (String) caseData.get(CO_RESP_EMAIL_ADDRESS);
 
-        EmailTemplateNames template = EmailTemplateNames.CO_RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION;
+        NotificationServiceEmailTemplate template = NotificationServiceEmailTemplate.CO_RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION;
 
         if (isDefended(caseData)) {
             String rdcName = (String) caseData.get(D_8_DIVORCE_UNIT);
@@ -78,7 +78,7 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
 
                 templateVars.put(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, formSubmissionDateLimit);
                 templateVars.put(NOTIFICATION_COURT_ADDRESS_KEY, assignedCourt.getFormattedAddress());
-                template = EmailTemplateNames.CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
+                template = NotificationServiceEmailTemplate.CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
             } catch (TaskException e) {
                 throw new WorkflowException("Unable to send co-respondent notification",e);
             }

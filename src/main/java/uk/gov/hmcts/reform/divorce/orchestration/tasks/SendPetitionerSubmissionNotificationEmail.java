@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.config.NotificationServiceEmailTemplate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -52,7 +52,7 @@ public class SendPetitionerSubmissionNotificationEmail implements Task<Map<Strin
             String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
             templateVars.put("CCD reference", formatCaseIdToReferenceNumber(caseId));
 
-            emailService.sendEmail(petitionerEmail, EmailTemplateNames.APPLIC_SUBMISSION.name(), templateVars, "submission notification");
+            emailService.sendEmail(petitionerEmail, NotificationServiceEmailTemplate.APPLIC_SUBMISSION, templateVars, "submission notification");
         }
 
         return caseData;

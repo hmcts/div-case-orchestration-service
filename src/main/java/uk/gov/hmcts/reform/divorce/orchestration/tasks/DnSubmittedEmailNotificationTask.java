@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.config.NotificationServiceEmailTemplate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
@@ -48,7 +48,7 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
         notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, caseId);
         try {
             emailService.sendEmailAndReturnExceptionIfFails(emailAddress,
-                EmailTemplateNames.DN_SUBMISSION.name(), notificationTemplateVars, "DN Submission");
+                NotificationServiceEmailTemplate.DN_SUBMISSION, notificationTemplateVars, "DN Submission");
         } catch (NotificationClientException e) {
             log.warn("Error sending email on DN submitted for case {}", caseId, e);
             context.setTransientObject(OrchestrationConstants.EMAIL_ERROR_KEY, e.getMessage());

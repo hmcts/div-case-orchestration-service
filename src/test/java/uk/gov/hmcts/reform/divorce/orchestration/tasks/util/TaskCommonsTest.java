@@ -19,7 +19,7 @@ import java.util.HashMap;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Mockito.doThrow;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.config.NotificationServiceEmailTemplate.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskCommonsTest {
@@ -44,7 +44,7 @@ public class TaskCommonsTest {
         doThrow(NotificationClientException.class)
                 .when(emailService)
                 .sendEmailAndReturnExceptionIfFails("test@hmcts.net",
-                    RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION.name(),
+                    RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
                     templateParameters,
                     "test description");
 
