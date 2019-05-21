@@ -12,7 +12,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionerCertificateOfEntitlementNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCertificateOfEntitlementNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCertificateOfEntitlementNotificationEmail;
 
 import java.util.Map;
 
@@ -30,7 +31,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForH
 public class CaseLinkedForHearingWorkflowTest {
 
     @Mock
-    private PetitionerCertificateOfEntitlementNotification petitionerCertificateOfEntitlementNotification;
+    private SendPetitionerCertificateOfEntitlementNotificationEmail sendPetitionerCertificateOfEntitlementNotificationEmail;
+
+    @Mock
+    private SendRespondentCertificateOfEntitlementNotificationEmail sendRespondentCertificateOfEntitlementNotificationEmail;
 
     @InjectMocks
     private CaseLinkedForHearingWorkflow caseLinkedForHearingWorkflow;
@@ -42,8 +46,11 @@ public class CaseLinkedForHearingWorkflowTest {
 
     @Before
     public void setUp() throws TaskException {
-        when(petitionerCertificateOfEntitlementNotification.execute(notNull(), eq(testPayload)))
+        when(sendPetitionerCertificateOfEntitlementNotificationEmail.execute(notNull(), eq(testPayload)))
             .thenReturn(testPayload);
+
+        when(sendRespondentCertificateOfEntitlementNotificationEmail.execute(notNull(), eq(testPayload)))
+                .thenReturn(testPayload);
     }
 
     @Test
@@ -55,9 +62,10 @@ public class CaseLinkedForHearingWorkflowTest {
 
         Map<String, Object> returnedPayload = caseLinkedForHearingWorkflow.run(caseDetails);
 
-        verify(petitionerCertificateOfEntitlementNotification).execute(contextCaptor.capture(), eq(caseDetails.getCaseData()));
-        assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_KEY), is(equalTo("testCaseId")));
-        assertThat(returnedPayload, is(equalTo(testPayload)));
-    }
+        verify(sendPetitionerCertificateOfEntitlementNotificationEmail).execute(contextCaptor.capture(), eq(caseDetails.getCaseData()));
+        verify(sendRespondentCertificateOfEntitlementNotificationEmail).execute(contextCaptor.capture(), eq(caseDetails.getCaseData()));
 
+        assertThat(returnedPayload, is(equalTo(testPayload)));
+        assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_KEY), is(equalTo("testCaseId")));
+    }
 }
