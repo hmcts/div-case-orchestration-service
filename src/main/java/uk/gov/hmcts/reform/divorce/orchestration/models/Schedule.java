@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.models;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
-import org.quartz.Job;
 
 @Data
 @Builder

@@ -1,15 +1,10 @@
 package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow;
 
 import lombok.extern.slf4j.Slf4j;
-
-
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.quartz.JobKey;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.jobs.DueDateJob;
 import uk.gov.hmcts.reform.divorce.orchestration.models.Schedule;
 import uk.gov.hmcts.reform.divorce.scheduler.model.JobData;
 import uk.gov.hmcts.reform.divorce.scheduler.services.JobService;
