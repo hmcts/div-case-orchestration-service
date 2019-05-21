@@ -16,10 +16,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.FlywayNoOpStrategy;
 @AutoConfigureAfter({
     DataSourceAutoConfiguration.class,
     HibernateJpaAutoConfiguration.class
-})
+    })
 @AutoConfigureBefore({
     FlywayAutoConfiguration.class
-})
+    })
 @Configuration
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)

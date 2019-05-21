@@ -25,9 +25,9 @@ public class DueDateJobScheduleTest {
     @Test
     public void testRun() {
         Assert.assertNotNull("expect 0==0 ", jobService);
-        JobData jobData = JobData.builder().
-                jobClass(TestJob.class).
-                id("test")
+        JobData jobData = JobData.builder()
+                .jobClass(TestJob.class)
+                .id("test")
                 .data(Collections.emptyMap())
                 .description("desc")
                 .build();

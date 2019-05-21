@@ -15,18 +15,14 @@ import uk.gov.hmcts.reform.divorce.scheduler.services.JobService;
 import java.util.Collections;
 import java.util.UUID;
 
-/**
- * AbstractJobSchedulerTask
- * @author Ganesh Raja
- */
 @Slf4j
 public class AbstractJobSchedulerTask implements Task<String> {
+
+    public static final String CRON_GROUP = "NIGHTLY_CRON";
 
     private JobService jobService;
 
     private Schedule schedule;
-
-    public static String CRON_GROUP ="NIGHTLY_CRON";
 
     public AbstractJobSchedulerTask(JobService jobService, Schedule schedule) {
         this.jobService = jobService;

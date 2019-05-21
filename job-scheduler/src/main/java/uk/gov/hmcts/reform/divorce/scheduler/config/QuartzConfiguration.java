@@ -4,6 +4,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ import java.util.Properties;
 
 @Configuration
 @ConfigurationProperties
+@ConditionalOnProperty( value="scheduler.enabled", havingValue = "true", matchIfMissing = true)
 public class QuartzConfiguration {
 
     @Autowired
@@ -44,8 +46,6 @@ public class QuartzConfiguration {
             TransactionAwareDataSourceProxy transactionAwareDataSourceProxy,
         @Qualifier("schedulerTransactionManager") PlatformTransactionManager transactionManager
     ) {
-
-//        quartzProperties.put("org.quartz.jobStore.driverDelegateClass","org.quartz.impl.jdbcjobstore.PostgreSQLDelegate");
         Properties properties = new Properties();
         properties.putAll(quartzProperties);
 

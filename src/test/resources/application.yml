@@ -7,9 +7,9 @@ spring:
     scheduler:
       name: scheduler
       driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://${DIV_SCHEDULER_DB_HOST:localhost}:${DIV_SCHEDULER_DB_PORT:5432}/${DIV_SCHEDULER_DB_NAME:div_scheduler}${DIV_SCHEDULER_DB_CONN_OPTIONS:}
-      username: ${DIV_SCHEDULER_DB_USER_NAME:div_scheduler}
-      password: ${DIV_SCHEDULER_DB_PASSWORD:}
+      url: jdbc:postgresql://${DIV_SCHEDULER_DB_HOST:localhost}:${DIV_SCHEDULER_DB_PORT:5000}/${DIV_SCHEDULER_DB_NAME:div_scheduler}${DIV_SCHEDULER_DB_CONN_OPTIONS:}
+      username: ${DIV_SCHEDULER_DB_USER_NAME:ccd}
+      password: ${DIV_SCHEDULER_DB_PASSWORD:ccd}
       properties:
       charSet: UTF-8
   hikari:
@@ -23,6 +23,8 @@ spring:
     name: div-cos
   resources:
     static-locations:
+  flyway:
+    enabled: false
 
 quartzProperties:
   org.quartz:
@@ -39,6 +41,7 @@ quartzProperties:
 
 scheduler:
   re-create: true
+  enabled: false
   schedule:
     name: 'test schedulder'
     description: ' test scheduler'

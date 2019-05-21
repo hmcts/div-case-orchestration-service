@@ -55,7 +55,7 @@ public class SchedulerServiceImpl implements SchedulerService {
                 .stream()
                 .map(schedule ->  new AbstractJobSchedulerTask(jobService, schedule))
                 .toArray(Task[]::new);
-        String aBoolean = new DefaultWorkflow<String>().execute(tasks, "false");
-        log.info("completed scheduling job services $0", aBoolean);
+        String taskResult = new DefaultWorkflow<String>().execute(tasks, "false");
+        log.info("completed scheduling job services $0", taskResult);
     }
 }
