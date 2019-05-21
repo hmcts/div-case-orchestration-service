@@ -89,6 +89,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
     @Before
     public void cleanUp() {
+
         cmsServiceServer.resetAll();
     }
 
