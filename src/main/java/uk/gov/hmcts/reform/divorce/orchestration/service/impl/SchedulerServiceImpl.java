@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.SchedulerService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AbstractJobSchedulerTask;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.AbstractJobSchedulerTask;
 import uk.gov.hmcts.reform.divorce.scheduler.services.JobService;
 
 import javax.annotation.PostConstruct;

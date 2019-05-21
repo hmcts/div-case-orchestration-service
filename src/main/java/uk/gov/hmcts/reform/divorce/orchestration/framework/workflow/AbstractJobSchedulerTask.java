@@ -1,8 +1,10 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks;
+package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow;
 
 import lombok.extern.slf4j.Slf4j;
 
 
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.quartz.JobKey;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -36,7 +38,7 @@ public class AbstractJobSchedulerTask implements Task<String> {
                 .id(schedule.getName())
                 .description(schedule.getDescription())
                 .group(CRON_GROUP)
-                .jobClass(DueDateJob.class)
+                .jobClass(schedule.getJobClass())
                 .data(Collections.emptyMap()).build();
         JobKey jobKey = jobService.scheduleJob(jobData, schedule.getCron());
         return jobKey.getName();
