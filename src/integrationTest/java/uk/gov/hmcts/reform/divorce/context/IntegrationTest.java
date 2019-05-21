@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.divorce.context;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationMethodRule;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.assertj.core.util.Strings;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
@@ -79,10 +81,13 @@ public abstract class IntegrationTest {
         synchronized (this) {
             if (caseWorkerUser == null) {
                 caseWorkerUser = warpInRetry(() -> getUserDetails(
-                    CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN, CASE_WORKER_PASSWORD,
-                    CASEWORKER_USERGROUP,
-                    CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
-                    CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
+                        CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN,
+                        CASE_WORKER_PASSWORD,
+                        CASEWORKER_USERGROUP,
+                        ImmutablePair.of("Test", "User"),
+                        CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
+                        CASEWORKER_DIVORCE_COURTADMIN_ROLE,
+                        CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
                 ));
             }
             return caseWorkerUser;
@@ -96,6 +101,15 @@ public abstract class IntegrationTest {
         });
     }
 
+    protected UserDetails createCitizenUser(String firstName, String lastName) {
+        return warpInRetry(() -> {
+            final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
+            return getUserDetails(
+                    username, PASSWORD, CITIZEN_USERGROUP, ImmutablePair.of(firstName, lastName), CITIZEN_ROLE
+            );
+        });
+    }
+
     protected UserDetails createCitizenUser(String role) {
         return warpInRetry(() -> {
             final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
@@ -103,22 +117,26 @@ public abstract class IntegrationTest {
         });
     }
 
-    private UserDetails getUserDetails(String username, String password, String userGroup, String... role) {
+    private UserDetails getUserDetails(String username, String password, String userGroup, Pair<String, String> userDetails, String... role) {
         synchronized (this) {
-            idamTestSupportUtil.createUser(username, password, userGroup, role);
+            idamTestSupportUtil.createUser(username, password, userGroup, userDetails, role);
 
             final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
 
             final String userId = idamTestSupportUtil.getUserId(authToken);
 
             return UserDetails.builder()
-                .username(username)
-                .emailAddress(username)
-                .password(password)
-                .authToken(authToken)
-                .id(userId)
-                .build();
+                    .username(username)
+                    .emailAddress(username)
+                    .password(password)
+                    .authToken(authToken)
+                    .id(userId)
+                    .build();
         }
+    }
+
+    private UserDetails getUserDetails(String username, String password, String userGroup, String... role) {
+        return getUserDetails(username, password, userGroup, ImmutablePair.of("Test", "User"), role);
     }
 
     private UserDetails warpInRetry(Supplier<UserDetails> supplier) {

@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.divorce.support;
 
 import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -49,25 +51,29 @@ public class IdamUtils {
     }
 
     public void createUser(String username, String password, String userGroup, String... roles) {
+        createUser(username, password, userGroup, ImmutablePair.of("Test", "User"), roles);
+    }
+
+    public void createUser(String username, String password, String userGroup, Pair<String, String> personalDetails, String... roles) {
         List<UserGroup> rolesList = new ArrayList<>();
         Stream.of(roles).forEach(role -> rolesList.add(UserGroup.builder().code(role).build()));
         UserGroup[] rolesArray = new UserGroup[roles.length];
 
         RegisterUserRequest registerUserRequest =
-            RegisterUserRequest.builder()
-                .email(username)
-                .forename("Test")
-                .surname("User")
-                .password(password)
-                .roles(rolesList.toArray(rolesArray))
-                .userGroup(UserGroup.builder().code(userGroup).build())
-                .build();
+                RegisterUserRequest.builder()
+                        .email(username)
+                        .forename(personalDetails.getLeft())
+                        .surname(personalDetails.getRight())
+                        .password(password)
+                        .roles(rolesList.toArray(rolesArray))
+                        .userGroup(UserGroup.builder().code(userGroup).build())
+                        .build();
 
         SerenityRest.given()
-            .header("Content-Type", "application/json")
-            .relaxedHTTPSValidation()
-            .body(ResourceLoader.objectToJson(registerUserRequest))
-            .post(idamCreateUrl());
+                .header("Content-Type", "application/json")
+                .relaxedHTTPSValidation()
+                .body(ResourceLoader.objectToJson(registerUserRequest))
+                .post(idamCreateUrl());
     }
 
     public String getUserId(String jwt) {

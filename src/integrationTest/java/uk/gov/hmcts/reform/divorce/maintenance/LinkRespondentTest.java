@@ -81,7 +81,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         updateCase(caseId, null, "aosNotReceived");
 
-        final UserDetails respondentUserDetails = createCitizenUser();
+        final UserDetails respondentUserDetails = createCitizenUser("Zdzisław O`Lary ' aaa", "čman Kręciną");
 
         Response linkResponse = linkRespondent(
                         respondentUserDetails.getAuthToken(),
