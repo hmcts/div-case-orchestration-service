@@ -41,7 +41,7 @@ allprojects {
     def springCloudVersion = 'Finchley.RELEASE'
 
     apply plugin: 'java'
-//    apply plugin: 'checkstyle'
+    apply plugin: 'checkstyle'
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'org.owasp.dependencycheck'
     apply plugin: 'com.github.ben-manes.versions'
@@ -184,7 +184,7 @@ tasks.withType(Checkstyle).each { checkstyleTask ->
         reports.all { report ->
             def outputFile = report.destination
             if (outputFile.exists() && outputFile.text.contains("<error ")) {
-//                throw new GradleException("There were checkstyle warnings! For more info check $outputFile")
+                throw new GradleException("There were checkstyle warnings! For more info check $outputFile")
             }
         }
     }
