@@ -34,7 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUT
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @PropertySource(value = "classpath:application.yml")
 @AutoConfigureMockMvc
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AuthenticateRespondentITest extends IdamTestSupport {
     private static final String API_URL = "/authenticate-respondent";
 
@@ -76,7 +76,7 @@ public class AuthenticateRespondentITest extends IdamTestSupport {
     @Test
     public void givenUserDoesNotHaveLetterHolderRole_whenAuthenticateRespondent_thenReturnUnauthorized()
         throws Exception {
-        final String userDetailsResponse = getUserDetailsResponse(Arrays.asList("letter-holder", "letter-loa1"));
+        final String userDetailsResponse = getUserDetailsResponse(Arrays.asList("letter-loa1"));
 
         stubUserDetailsEndpoint(HttpStatus.OK, BEARER_AUTH_TOKEN, userDetailsResponse);
 
@@ -89,7 +89,7 @@ public class AuthenticateRespondentITest extends IdamTestSupport {
     @Test
     public void givenUserHasLetterHolderRole_whenAuthenticateRespondent_thenReturnOk() throws Exception {
         final String userDetailsResponse = getUserDetailsResponse(
-            Arrays.asList("letter-holder", "letter-loa1", "letter-12345"));
+            Arrays.asList("letter-holder", "letter-loa1"));
 
         stubUserDetailsEndpoint(HttpStatus.OK, BEARER_AUTH_TOKEN, userDetailsResponse);
 

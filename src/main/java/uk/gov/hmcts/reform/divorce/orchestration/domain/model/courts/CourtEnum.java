@@ -6,13 +6,14 @@ public enum CourtEnum {
     EASTMIDLANDS("eastMidlands", "East Midlands Regional Divorce Centre", "AA01"),
     WESTMIDLANDS("westMidlands", "West Midlands Regional Divorce Centre", "AA02"),
     SOUTHWEST("southWest", "South West Regional Divorce Centre", "AA03"),
-    NORTHWEST("northWest", "North West Regional Divorce Centre", "AA04");
+    NORTHWEST("northWest", "North West Regional Divorce Centre", "AA04"),
+    SERVICE_CENTER("serviceCentre","Courts and Tribunals Service Centre", "AA07");
 
     private String id;
     private String displayName;
     private String siteId;
 
-    private CourtEnum(String id, String displayName, String siteId) {
+    CourtEnum(String id, String displayName, String siteId) {
         this.id = id;
         this.displayName = displayName;
         this.siteId = siteId;
@@ -29,4 +30,5 @@ public enum CourtEnum {
     public String getSiteId() {
         return siteId;
     }
+
 }

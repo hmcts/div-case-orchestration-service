@@ -22,12 +22,15 @@ public class CaseDataDraftToDivorceFormatter implements Task<Map<String, Object>
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseDataResponse) {
-        Map<String, Object> formattedData = caseFormatterClient.transformToDivorceFormat(
-                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
-                caseDataResponse
-        );
-        formattedData.put(IS_DRAFT_KEY, caseDataResponse.get(IS_DRAFT_KEY));
-        formattedData.remove("expires");
+        Map<String, Object> formattedData = caseDataResponse;
+        Object isDraftObject = caseDataResponse.get(IS_DRAFT_KEY);
+        if (isDraftObject == null || !(Boolean) isDraftObject) {
+            formattedData = caseFormatterClient.transformToDivorceFormat(
+                    context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+                    caseDataResponse
+            );
+            formattedData.remove("expires");
+        }
         return formattedData;
     }
 }

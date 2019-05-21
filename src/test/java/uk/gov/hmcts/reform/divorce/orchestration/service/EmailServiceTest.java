@@ -37,35 +37,12 @@ public class EmailServiceTest {
     private Map<String, Map<String, String>> emailTemplateVars;
 
     @Test
-    public void sendSaveDraftConfirmationEmailShouldCallTheEmailClientToSendAnEmail()
+    public void sendEmailForSubmissionConfirmationShouldCallTheEmailClientToSendAnEmail()
         throws NotificationClientException {
-        emailService.sendSaveDraftConfirmationEmail(EMAIL_ADDRESS);
-
-        verify(mockClient).sendEmail(
-            eq(emailTemplates.get(EmailTemplateNames.SAVE_DRAFT.name())),
-            eq(EMAIL_ADDRESS),
-            eq(emailTemplateVars.get(EmailTemplateNames.SAVE_DRAFT.name())),
-            anyString());
-    }
-
-    @Test
-    public void sendSaveDraftConfirmationEmailShouldNotPropagateNotificationClientException()
-        throws NotificationClientException {
-        doThrow(new NotificationClientException(new Exception("Exception inception")))
-            .when(mockClient).sendEmail(anyString(), anyString(), eq(null), anyString());
-
-        try {
-            emailService.sendSaveDraftConfirmationEmail(EMAIL_ADDRESS);
-        } catch (Exception e) {
-            fail();
-        }
-
-    }
-
-    @Test
-    public void sendSubmissionConfirmationEmailShouldCallTheEmailClientToSendAnEmail()
-        throws NotificationClientException {
-        emailService.sendSubmissionNotificationEmail(EMAIL_ADDRESS, null);
+        emailService.sendEmail(EMAIL_ADDRESS,
+            EmailTemplateNames.APPLIC_SUBMISSION.name(),
+            null,
+            "submission notification");
 
         verify(mockClient).sendEmail(
             eq(emailTemplates.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
@@ -75,16 +52,17 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void sendSubmissionConfirmationEmailShouldNotPropagateNotificationClientException()
+    public void sendEmailShouldNotPropagateNotificationClientException()
         throws NotificationClientException {
         doThrow(new NotificationClientException(new Exception("Exception inception")))
             .when(mockClient).sendEmail(anyString(), anyString(), eq(null), anyString());
-
         try {
-            emailService.sendSubmissionNotificationEmail(EMAIL_ADDRESS, null);
+            emailService.sendEmail(EMAIL_ADDRESS,
+                EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
+                null,
+                "resp does not consent to 2 year separation update notification");
         } catch (Exception e) {
             fail();
         }
-
     }
 }

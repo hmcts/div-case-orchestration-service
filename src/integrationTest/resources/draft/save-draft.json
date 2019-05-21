@@ -1,5 +1,5 @@
 {
-  "petitionerEmail": "test.user@testaccount.com",
+  "petitionerEmail": "simulate-delivered@notifications.service.gov.uk",
   "screenHasMarriageBroken": "Yes",
   "screenHasRespondentAddress": "Yes",
   "screenHasMarriageCert": "Yes",
@@ -38,5 +38,6 @@
   "marriagePetitionerName": "user test",
   "marriageRespondentName": "wife test",
   "petitionerNameDifferentToMarriageCertificate": "No",
-  "petitionerPhoneNumber": ""
+  "petitionerPhoneNumber": "",
+  "petitionerConsent": "Yes"
 }

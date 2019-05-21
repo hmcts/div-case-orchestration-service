@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +13,7 @@ public abstract class RetrieveAosCaseSupport extends CcdSubmissionSupport {
     protected static final String CASE_ID_KEY = "caseId";
 
     @Value("${case.orchestration.maintenance.retrieve-aos-case.context-path}")
-    private String contextPath;
+    private String contextPathAos;
 
     protected Response retrieveAosCase(String userToken) {
         final Map<String, Object> headers = new HashMap<>();
@@ -25,9 +24,8 @@ public abstract class RetrieveAosCaseSupport extends CcdSubmissionSupport {
         }
 
         return RestUtil.getFromRestService(
-            serverUrl + contextPath,
-            headers,
-            Collections.singletonMap("checkCcd", true)
+            serverUrl + contextPathAos,
+            headers
         );
     }
 

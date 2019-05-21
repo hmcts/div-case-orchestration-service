@@ -8,31 +8,44 @@ import java.util.Map;
 @Data
 public class DefaultTaskContext implements TaskContext {
 
-    private boolean status;
+    private boolean taskFailed;
 
-    private Map<String, Object> transientObjects = new HashMap<>();
+    private Map<String, Object> transientObjects;
 
     public DefaultTaskContext() {
-        this.status = false;
+        this.taskFailed = false;
+        transientObjects = new HashMap<>();
+    }
+
+    public DefaultTaskContext(DefaultTaskContext context) {
+        this.taskFailed = context.hasTaskFailed();
+        this.transientObjects = new HashMap<>(context.getTransientObjects());
     }
 
     @Override
     public void setTaskFailed(boolean status) {
-        this.status = status;
+        this.taskFailed = status;
     }
 
     @Override
-    public boolean getStatus() {
-        return status;
+    public boolean hasTaskFailed() {
+        return taskFailed;
     }
 
     @Override
-    public void setTransientObject(String key, Object jsonNode) {
-        transientObjects.put(key, jsonNode);
+    public void setTransientObject(String key, Object value) {
+        transientObjects.put(key, value);
     }
 
     @Override
-    public Object getTransientObject(String key) {
-        return transientObjects.get(key);
+    @SuppressWarnings("unchecked")
+    public <T> T getTransientObject(String key) {
+        return (T) transientObjects.get(key);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T computeTransientObjectIfAbsent(final String key, final T defaultVal) {
+        return (T) transientObjects.computeIfAbsent(key, k -> defaultVal);
     }
 }

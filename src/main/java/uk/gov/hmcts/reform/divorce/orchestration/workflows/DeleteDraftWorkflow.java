@@ -29,8 +29,7 @@ public class DeleteDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
                 deleteDraft
             },
             new HashMap<>(),
-            new ImmutablePair(AUTH_TOKEN_JSON_KEY, authToken)
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)
         );
     }
-
 }

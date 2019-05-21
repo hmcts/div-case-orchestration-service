@@ -19,9 +19,12 @@ public class AuthenticateRespondent implements Task<Boolean> {
     @Qualifier("idamClient")
     private IdamClient idamClient;
 
+    @Autowired
+    private AuthUtil authUtil;
+
     @Override
     public Boolean execute(TaskContext context, Boolean payload) {
-        UserDetails userDetails = idamClient.retrieveUserDetails(AuthUtil.getBearToken(
+        UserDetails userDetails = idamClient.retrieveUserDetails(authUtil.getBearToken(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString()
                 ));
         return isRespondentUser(userDetails);
@@ -38,7 +41,6 @@ public class AuthenticateRespondent implements Task<Boolean> {
     private boolean isLetterHolderRole(String role) {
         return StringUtils.isNotBlank(role)
             && role.startsWith("letter")
-            && !"letter-holder".equals(role)
             && !role.endsWith("loa1");
     }
 }

@@ -16,10 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 
 public class DraftServiceEndToEndTest extends IntegrationTest {
 
@@ -28,15 +26,14 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     private static final String DRAFT_PART_1_RESPONSE_FILE = "draft/draft-part1-response.json";
     private static final String DRAFT_PART_2_FILE = "draft/draft-part2.json";
     private static final String DRAFT_PART_2_RESPONSE_FILE = "draft/draft-part2-response.json";
-    private static final String DRAFT__WITH_DIVORCE_FORMAT_FILE = "draft/draft-with-divorce-format.json";
+    private static final String DRAFT_WITH_DIVORCE_FORMAT_FILE = "draft/draft-with-divorce-format.json";
 
     private static final String BASE_CASE_TO_SUBMIT = "draft/basic-case.json";
-    private static final String BASE_CASE_RESPONSE = "draft/complete-case-response.json";
 
     private static final String NO_VALID_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib"
-            + "mFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+        + "mFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
-    private static final String PETITIONER_EMAIL_KEY = "petitionerEmail";
+    private static final String CREATED_DATE = "createdDate";
 
     private static final String CMS_DATA_KEY = "data";
 
@@ -63,8 +60,8 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     public void givenNotAuthenticated_whenGetDraft_thenNotAuthenticatedError() {
         try {
             draftsSubmissionSupport.getUserDraft(UserDetails.builder()
-                    .authToken(NO_VALID_TOKEN)
-                    .build());
+                .authToken(NO_VALID_TOKEN)
+                .build());
             fail("Not authenticated error expected");
         } catch (FeignException error) {
             assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
@@ -75,8 +72,8 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     public void givenNotAuthenticated_whenSafeDraft_thenNotAuthenticatedError() {
         try {
             draftsSubmissionSupport.saveDraft(UserDetails.builder()
-                    .authToken(NO_VALID_TOKEN)
-                    .build(), SAVE_DRAFT_FILE);
+                .authToken(NO_VALID_TOKEN)
+                .build(), SAVE_DRAFT_FILE);
             fail("Not authenticated error expected");
         } catch (FeignException error) {
             assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
@@ -87,11 +84,11 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     public void givenNotAuthenticated_whenDeleteDraft_thenNotAuthenticatedError() {
         try {
             draftsSubmissionSupport.deleteDraft(UserDetails.builder()
-                    .authToken(NO_VALID_TOKEN)
-                    .build());
+                .authToken(NO_VALID_TOKEN)
+                .build());
             fail("Not authenticated error expected");
         } catch (FeignException error) {
-            assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
+            assertEquals(HttpStatus.UNAUTHORIZED.value(), error.status());
         }
     }
 
@@ -109,14 +106,14 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     public void givenUser_whenSaveDraft_thenCaseIsSavedInDraftStore() {
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
-        assertUserPetition(DRAFT__WITH_DIVORCE_FORMAT_FILE, user);
+        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
     }
 
     @Test
     public void givenUserWithDraft_whenDeleteDraft_thenDraftIsDeleted() {
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
-        assertUserPetition(DRAFT__WITH_DIVORCE_FORMAT_FILE, user);
+        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
 
         draftsSubmissionSupport.deleteDraft(user);
 
@@ -129,67 +126,36 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     }
 
     @Test
-    public void givenUserWithDraft_whenSubmitCase_thenDraftIsDeletedAndCaseExist() {
+    public void givenUserWithDraft_whenSubmitCase_thenDraftIsDeleted() {
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
-        assertUserPetition(DRAFT__WITH_DIVORCE_FORMAT_FILE, user);
+        assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
 
-        draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT);
+        draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
 
         Map<String, Object> draftFromCMS = cmsClientSupport.getDrafts(user);
         List response = (List) draftFromCMS.get(CMS_DATA_KEY);
-        assertTrue(response.isEmpty());
-
-        assertUserPetition(BASE_CASE_RESPONSE, user);
-    }
-
-    @Test
-    public void givenUserWithDraftAfterSubmittedCase_whenGetDraft_thenCaseIsReturned() {
-        draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
-
-        assertUserPetition(DRAFT__WITH_DIVORCE_FORMAT_FILE, user);
-
-        draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT);
-        Map<String, Object> draftFromCMS = cmsClientSupport.getDrafts(user);
-        List response = (List) draftFromCMS.get(CMS_DATA_KEY);
-        assertTrue(response.isEmpty());
-
-        cmsClientSupport.saveDrafts(SAVE_DRAFT_FILE, user);
-
-        draftFromCMS = cmsClientSupport.getDrafts(user);
-        response = (List) draftFromCMS.get(CMS_DATA_KEY);
-        assertEquals(1, response.size());
-
-        assertUserPetition(BASE_CASE_RESPONSE, user);
+        assertEquals(0, response.size());
     }
 
     @Test
     public void givenUserWithDraft_whenUpdateDraft_thenDraftIsUpdated() {
         draftsSubmissionSupport.saveDraft(user, DRAFT_PART_1_FILE);
-        assertUserPetition(DRAFT_PART_1_RESPONSE_FILE, user);
+        assertUserDraft(DRAFT_PART_1_RESPONSE_FILE, user);
 
         draftsSubmissionSupport.saveDraft(user, DRAFT_PART_2_FILE);
-        assertUserPetition(DRAFT_PART_2_RESPONSE_FILE, user);
+        assertUserDraft(DRAFT_PART_2_RESPONSE_FILE, user);
     }
 
-    private void assertUserPetition(String draftFile, UserDetails user) {
-        final Map<String, Object> expectedDraft = getDraftResponseResource(draftFile, user);
+    private void assertUserDraft(String draftFile, UserDetails user) {
+        final Map<String, Object> expectedDraft = getDraftResponseResource(draftFile);
         Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user);
 
-        // Add dynamic fields if not missing.
-        if (userDraft.get(CASE_ID_JSON_KEY) != null) {
-            expectedDraft.put(CASE_ID_JSON_KEY, userDraft.get(CASE_ID_JSON_KEY));
-            expectedDraft.put(CASE_STATE_JSON_KEY, userDraft.get(CASE_STATE_JSON_KEY));
-        }
         assertEquals(expectedDraft, userDraft);
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> getDraftResponseResource(String file, UserDetails user) {
-        Map<String, Object> expectedDraft = ResourceLoader.loadJsonToObject(file,
-                Map.class);
-        expectedDraft.put(PETITIONER_EMAIL_KEY, user.getEmailAddress());
-        return expectedDraft;
+    private Map<String, Object> getDraftResponseResource(String file) {
+        return ResourceLoader.loadJsonToObject(file, Map.class);
     }
-
 }

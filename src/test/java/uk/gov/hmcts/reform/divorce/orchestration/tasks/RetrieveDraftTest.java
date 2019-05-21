@@ -32,18 +32,20 @@ public class RetrieveDraftTest {
     @InjectMocks
     private RetrieveDraft target;
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenUserTokenWithoutDraft_whenExecuteRetrieveTask_thenReturnEmptyResponse() {
         TaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         Map<String, Object> payload  = mock(Map.class);
 
-        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, false))
+        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN))
                 .thenReturn(CaseDetails.builder().build());
 
         assertNull(target.execute(context, payload));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenUserToken_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMS() {
         TaskContext context = new DefaultTaskContext();
@@ -54,11 +56,12 @@ public class RetrieveDraftTest {
                 .caseData(expectedResponse)
                 .build();
 
-        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, false)).thenReturn(clientResponse);
+        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(clientResponse);
 
-        assertEquals(expectedResponse,target.execute(context, payload));
+        assertEquals(expectedResponse, target.execute(context, payload));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void givenUserTokenWithCase_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMSWithCaseDetails() {
         TaskContext context = new DefaultTaskContext();
@@ -71,9 +74,29 @@ public class RetrieveDraftTest {
                 .state(TEST_STATE)
                 .build();
 
-        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN, false)).thenReturn(clientResponse);
+        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(clientResponse);
 
-        assertEquals(expectedResponse,target.execute(context, payload));
+        assertEquals(expectedResponse, target.execute(context, payload));
+        assertEquals(TEST_CASE_ID, context.getTransientObject(CASE_ID_JSON_KEY));
+        assertEquals(TEST_STATE, context.getTransientObject(CASE_STATE_JSON_KEY));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void givenCaseExists_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMSWithCaseDetails() {
+        TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        Map<String, Object> payload  = mock(Map.class);
+        Map<String, Object> expectedResponse  = mock(Map.class);
+        CaseDetails clientResponse  = CaseDetails.builder()
+            .caseData(expectedResponse)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+
+        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(clientResponse);
+
+        assertEquals(expectedResponse, target.execute(context, payload));
         assertEquals(TEST_CASE_ID, context.getTransientObject(CASE_ID_JSON_KEY));
         assertEquals(TEST_STATE, context.getTransientObject(CASE_STATE_JSON_KEY));
     }

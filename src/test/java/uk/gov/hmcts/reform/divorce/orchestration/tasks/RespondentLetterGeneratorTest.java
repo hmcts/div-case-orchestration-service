@@ -14,9 +14,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.util.Sets.newLinkedHashSet;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -27,9 +30,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_INVITATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -41,9 +45,11 @@ public class RespondentLetterGeneratorTest {
     private RespondentLetterGenerator respondentLetterGenerator;
 
     @Test
-    public void executeShouldReturnUpdatedPayloadForValidCase() {
-        final GeneratedDocumentInfo aosInvitation =
+    public void callsDocumentGeneratorAndStoresGeneratedDocument() {
+        final GeneratedDocumentInfo expectedAosInvitation =
             GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_RESPONDENT_INVITATION)
+                .fileName(TEST_AOS_INVITATION_FILE_NAME)
                 .build();
 
         final Map<String, Object> payload = new HashMap<>();
@@ -56,7 +62,7 @@ public class RespondentLetterGeneratorTest {
         final TaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-        context.setTransientObject(PIN, TEST_PIN);
+        context.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         final GenerateDocumentRequest generateDocumentRequest =
             GenerateDocumentRequest.builder()
@@ -69,17 +75,14 @@ public class RespondentLetterGeneratorTest {
                 .build();
 
         //given
-        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(aosInvitation);
+        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedAosInvitation);
 
         //when
         respondentLetterGenerator.execute(context, payload);
 
-        GeneratedDocumentInfo response =
-            (GeneratedDocumentInfo)context.getTransientObject(RESPONDENT_INVITATION_TEMPLATE_NAME);
+        final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
-        //then
-        assertEquals(DOCUMENT_TYPE_INVITATION, response.getDocumentType());
-        assertEquals(TEST_AOS_INVITATION_FILE_NAME, response.getFileName());
+        assertThat(documentCollection, is(newLinkedHashSet(expectedAosInvitation)));
 
         verify(documentGeneratorClient).generatePDF(generateDocumentRequest, AUTH_TOKEN);
     }

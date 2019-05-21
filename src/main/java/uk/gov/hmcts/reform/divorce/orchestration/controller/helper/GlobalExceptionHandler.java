@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.CaseNotFoundException;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.ValidationException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
@@ -47,10 +49,24 @@ class GlobalExceptionHandler {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(taskException.getMessage());
         }
 
+        if (taskException.getCause() instanceof CaseNotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(taskException.getMessage());
+        }
+
+        if (taskException.getCause() instanceof ValidationException) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(taskException.getMessage());
+        }
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(taskException.getMessage());
     }
 
     private ResponseEntity<Object> handleFeignException(FeignException exception) {
-        return ResponseEntity.status(exception.status()).body(exception.getMessage());
+        int status = exception.status();
+        if (status == HttpStatus.MULTIPLE_CHOICES.value()) {
+            return ResponseEntity.status(exception.status()).body(null);
+        }
+        return ResponseEntity.status(exception.status()).body(
+                String.format("%s - %s", exception.getMessage(), exception.contentUTF8())
+        );
     }
 }

@@ -36,7 +36,7 @@ public class RetrievePinUserDetailsFromStrategicIdam extends RetrievePinUserDeta
             return getCodeFromRedirect(authenticateResponse);
         }
 
-        throw new TaskException(new AuthenticationError(String.format("Error authenticating PIN [%s]", pin)));
+        throw new TaskException(new AuthenticationError(String.format("Error authenticating RESPONDENT_PIN [%s]", pin)));
     }
 
     @Override

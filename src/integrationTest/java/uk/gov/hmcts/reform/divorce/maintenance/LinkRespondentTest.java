@@ -13,14 +13,29 @@ import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
+import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE_DATE;
+import static uk.gov.hmcts.reform.divorce.util.DateConstants.CCD_DATE_FORMAT;
 
 public class LinkRespondentTest extends RetrieveAosCaseSupport {
     private static final String PIN_USER_FIRST_NAME = "pinuserfirstname";
     private static final String PIN_USER_LAST_NAME = "pinuserfirstname";
+    private static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
+    private static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
+    private static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
+    private static final String YES_VALUE = "Yes";
+    private static final String PAYMENT_REFERENCE_EVENT = "paymentReferenceGenerated";
+    private static final String TEST_AOS_AWAITING_EVENT = "testAosAwaiting";
+    private static final String AOS_LETTER_HOLDER_ID = "AosLetterHolderId";
 
     @Value("${case.orchestration.maintenance.link-respondent.context-path}")
     private String contextPath;
@@ -35,14 +50,19 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     @Test
     public void givenInvalidPin_whenLinkRespondent_thenReturnUnAuthorised() {
         final UserDetails petitionerUserDetails = createCitizenUser();
+        final CaseDetails caseDetails = submitCase(
+            "submit-complete-case.json",
+            petitionerUserDetails
+        );
 
-        Response cosResponse = linkRespondent(petitionerUserDetails.getAuthToken(), 1L, "somepin");
+        Response cosResponse = linkRespondent(petitionerUserDetails.getAuthToken(),
+            caseDetails.getId(), "abcd1234");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), cosResponse.getStatusCode());
     }
 
     @Test
-    public void givenCaseIdDoesNotPresent_whenLinkRespondent_thenReturnBadRequest() {
+    public void givenCaseIdIsNotPresent_whenLinkRespondent_thenReturnUnauthorised() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
         final PinResponse pinResponse =
@@ -51,11 +71,11 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         Response cosResponse = linkRespondent(petitionerUserDetails.getAuthToken(), 1L, pinResponse.getPin());
 
-        assertEquals(HttpStatus.BAD_REQUEST.value(), cosResponse.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED.value(), cosResponse.getStatusCode());
     }
 
     @Test
-    public void givenLinkFails_whenLinkRespondent_thenReturnNotFound() {
+    public void givenPinIdNotMatching_whenLinkRespondent_thenReturnUnauthorized() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
         final PinResponse pinResponse =
@@ -64,17 +84,17 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         final CaseDetails caseDetails = submitCase(
             "submit-complete-case.json",
-            createCaseWorkerUser()
+            petitionerUserDetails
         );
 
         Response cosResponse =
             linkRespondent(petitionerUserDetails.getAuthToken(), caseDetails.getId(), pinResponse.getPin());
 
-        assertEquals(HttpStatus.NOT_FOUND.value(), cosResponse.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED.value(), cosResponse.getStatusCode());
     }
 
     @Test
-    public void givenValidCaseDetails_whenLinkRespondent_thenCaseShouldBeLinked() {
+    public void givenAosAwaitingState_whenLinkRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
         final PinResponse pinResponse =
@@ -82,12 +102,18 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
                 petitionerUserDetails.getAuthToken());
 
         final CaseDetails caseDetails = submitCase(
-            "submit-complete-case.json",
-            createCaseWorkerUser(),
-            ImmutablePair.of("AosLetterHolderId", pinResponse.getUserId())
-        );
+            "submit-unlinked-case.json",
+            petitionerUserDetails);
 
-        updateCase(String.valueOf(caseDetails.getId()), null, "testAosAwaiting");
+        updateCase(String.valueOf(caseDetails.getId()),
+            null,
+            PAYMENT_REFERENCE_EVENT,
+            ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
+
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
+            null,
+            TEST_AOS_AWAITING_EVENT,
+            petitionerUserDetails);
 
         final UserDetails respondentUserDetails = createCitizenUser();
 
@@ -103,6 +129,157 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         Response caseResponse = retrieveAosCase(respondentUserDetails.getAuthToken());
 
         assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
+
+        assertCaseDetailsRespondent(respondentUserDetails, String.valueOf(caseDetails.getId()));
+    }
+
+    @Test
+    public void givenAosOverdueState_whenLinkRespondent_thenCaseShouldBeLinked() {
+        final UserDetails petitionerUserDetails = createCitizenUser();
+
+        final PinResponse pinResponse =
+            idamTestSupportUtil.generatePin(PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME,
+                petitionerUserDetails.getAuthToken());
+
+        final CaseDetails caseDetails = submitCase(
+            "submit-unlinked-case.json",
+            petitionerUserDetails);
+
+        updateCase(String.valueOf(caseDetails.getId()),
+            null,
+            PAYMENT_REFERENCE_EVENT,
+            ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
+
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
+            null,
+            TEST_AOS_AWAITING_EVENT,
+            petitionerUserDetails);
+
+        updateCase(String.valueOf(caseDetails.getId()), null, "aosNotReceived");
+
+        final UserDetails respondentUserDetails = createCitizenUser();
+        Response linkResponse =
+            linkRespondent(
+                respondentUserDetails.getAuthToken(),
+                caseDetails.getId(),
+                pinResponse.getPin()
+            );
+
+        assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
+
+        Response caseResponse = retrieveAosCase(respondentUserDetails.getAuthToken());
+
+        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
+
+        assertCaseDetailsRespondent(respondentUserDetails, String.valueOf(caseDetails.getId()));
+    }
+
+    @Test
+    public void givenValidCaseDetails_whenLinkCoRespondent_thenCaseShouldBeLinked() {
+        final UserDetails petitionerUserDetails = createCitizenUser();
+
+        final PinResponse pinResponse =
+            idamTestSupportUtil.generatePin(PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME,
+                petitionerUserDetails.getAuthToken());
+
+        final CaseDetails caseDetails = submitCase(
+            "submit-unlinked-case.json",
+            petitionerUserDetails);
+
+        updateCase(String.valueOf(caseDetails.getId()),
+            null,
+            PAYMENT_REFERENCE_EVENT,
+            ImmutablePair.of(CO_RESPONDENT_LETTER_HOLDER_ID, pinResponse.getUserId()));
+
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
+            null,
+            TEST_AOS_AWAITING_EVENT,
+            petitionerUserDetails);
+
+        final UserDetails coRespondentUserDetails = createCitizenUser();
+
+        Response linkResponse =
+            linkRespondent(
+                coRespondentUserDetails.getAuthToken(),
+                caseDetails.getId(),
+                pinResponse.getPin()
+            );
+
+        assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
+
+        Response caseResponse = retrieveAosCase(coRespondentUserDetails.getAuthToken());
+
+        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
+
+        assertCaseDetailsCoRespondent(coRespondentUserDetails, String.valueOf(caseDetails.getId()));
+    }
+
+    @Test
+    public void givenLinkedCase_whenLinkCoRespondent_thenCaseShouldBeLinked() {
+        final UserDetails petitionerUserDetails = createCitizenUser();
+
+        final PinResponse pinResponse =
+            idamTestSupportUtil.generatePin(PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME,
+                petitionerUserDetails.getAuthToken());
+
+        final CaseDetails caseDetails = submitCase(
+            "submit-unlinked-case.json",
+            petitionerUserDetails);
+
+        updateCase(String.valueOf(caseDetails.getId()),
+            null,
+            PAYMENT_REFERENCE_EVENT,
+            ImmutablePair.of(CO_RESPONDENT_LETTER_HOLDER_ID, pinResponse.getUserId()));
+
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
+            null,
+            TEST_AOS_AWAITING_EVENT,
+            petitionerUserDetails);
+
+        final UserDetails coRespondentUserDetails = createCitizenUser();
+
+        Response linkResponse =
+            linkRespondent(
+                coRespondentUserDetails.getAuthToken(),
+                caseDetails.getId(),
+                pinResponse.getPin()
+            );
+
+        assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
+
+        Response caseResponse = retrieveAosCase(coRespondentUserDetails.getAuthToken());
+
+        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
+
+        assertCaseDetailsCoRespondent(coRespondentUserDetails, String.valueOf(caseDetails.getId()));
+
+        linkResponse =
+            linkRespondent(
+                coRespondentUserDetails.getAuthToken(),
+                caseDetails.getId(),
+                pinResponse.getPin()
+            );
+
+        assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
+
+    }
+
+    private void assertCaseDetailsRespondent(UserDetails userDetails, String caseId) {
+        CaseDetails caseDetails = ccdClientSupport.retrieveCase(userDetails, caseId);
+
+        assertEquals(userDetails.getEmailAddress(), caseDetails.getData().get(RESPONDENT_EMAIL_ADDRESS));
+        assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
+        assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE));
+    }
+
+    private void assertCaseDetailsCoRespondent(UserDetails userDetails, String caseId) {
+        CaseDetails caseDetails = ccdClientSupport.retrieveCase(userDetails, caseId);
+
+        assertEquals(userDetails.getEmailAddress(), caseDetails.getData().get(CO_RESP_EMAIL_ADDRESS));
+        assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
+        assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE));
+        assertEquals(YES_VALUE, caseDetails.getData().get(CO_RESP_LINKED_TO_CASE));
+        assertEquals(LocalDate.now().format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)), caseDetails.getData().get(CO_RESP_LINKED_TO_CASE_DATE));
     }
 
     private Response linkRespondent(String userToken, Long caseId, String pin) {

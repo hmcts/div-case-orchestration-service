@@ -1,17 +1,21 @@
 package uk.gov.hmcts.reform.divorce.support;
 
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import net.serenitybdd.rest.SerenityRest;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.divorce.model.GeneratePinRequest;
 import uk.gov.hmcts.reform.divorce.model.PinResponse;
 import uk.gov.hmcts.reform.divorce.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.divorce.model.UserGroup;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class IdamUtils {
 
@@ -21,7 +25,7 @@ public class IdamUtils {
     @Value("${auth.idam.client.redirectUri}")
     private String idamRedirectUri;
 
-    @Value("${auth.idam.client.secret}")
+    @Value("${auth2.client.secret}")
     private String idamSecret;
 
     public PinResponse generatePin(String firstName, String lastName, String authToken) {
@@ -31,7 +35,7 @@ public class IdamUtils {
                 .lastName(lastName)
                 .build();
 
-        Response pinResponse =  RestAssured.given()
+        Response pinResponse =  SerenityRest.given()
             .header(HttpHeaders.AUTHORIZATION, authToken)
             .header(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString())
             .body(ResourceLoader.objectToJson(generatePinRequest))
@@ -44,18 +48,22 @@ public class IdamUtils {
             .build();
     }
 
-    public void createUser(String username, String password, String... roles) {
+    public void createUser(String username, String password, String userGroup, String... roles) {
+        List<UserGroup> rolesList = new ArrayList<>();
+        Stream.of(roles).forEach(role -> rolesList.add(UserGroup.builder().code(role).build()));
+        UserGroup[] rolesArray = new UserGroup[roles.length];
+
         RegisterUserRequest registerUserRequest =
             RegisterUserRequest.builder()
                 .email(username)
-                .forename("test")
-                .surname("test")
+                .forename("Test")
+                .surname("User")
                 .password(password)
-                .roles(roles)
-                .userGroup(UserGroup.builder().code("caseworker").build())
+                .roles(rolesList.toArray(rolesArray))
+                .userGroup(UserGroup.builder().code(userGroup).build())
                 .build();
 
-        RestAssured.given()
+        SerenityRest.given()
             .header("Content-Type", "application/json")
             .relaxedHTTPSValidation()
             .body(ResourceLoader.objectToJson(registerUserRequest))
@@ -63,7 +71,7 @@ public class IdamUtils {
     }
 
     public String getUserId(String jwt) {
-        Response response = RestAssured.given()
+        Response response = SerenityRest.given()
             .header("Authorization", jwt)
             .relaxedHTTPSValidation()
             .get(idamUserBaseUrl + "/details");
@@ -71,12 +79,21 @@ public class IdamUtils {
         return response.getBody().path("id").toString();
     }
 
+    public String getPin(final String letterHolderId) {
+        return SerenityRest.given()
+            .relaxedHTTPSValidation()
+            .get(idamUserBaseUrl + "/testing-support/accounts/pin/" + letterHolderId)
+            .getBody()
+            .asString();
+    }
+
     public String generateUserTokenWithNoRoles(String username, String password) {
         String userLoginDetails = String.join(":", username, password);
         final String authHeader = "Basic " + new String(Base64.getEncoder().encode(userLoginDetails.getBytes()));
 
-        Response response = RestAssured.given()
+        Response response = SerenityRest.given()
             .header("Authorization", authHeader)
+            .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .relaxedHTTPSValidation()
             .post(idamCodeUrl());
 
@@ -85,9 +102,12 @@ public class IdamUtils {
                 + " body: " + response.getBody().prettyPrint());
         }
 
-        response = RestAssured.given()
+        response = SerenityRest.given()
+            .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .relaxedHTTPSValidation()
             .post(idamTokenUrl(response.getBody().path("code")));
+
+        assert response.getStatusCode() == 200 : "Error generating code from IDAM: " + response.getStatusCode();
 
         String token = response.getBody().path("access_token");
         return "Bearer " + token;

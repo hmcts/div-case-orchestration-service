@@ -1,0 +1,11 @@
+{
+    "case_details": {
+      "id": "0123456789012345",
+      "case_data": {
+        "D8caseReference": "LV80D85000",
+        "D8PetitionerEmail": "petitioner@divorce.co.uk",
+        "D8PetitionerFirstName": "Ted",
+        "D8PetitionerLastName": "Jones"
+      }
+    }
+  }

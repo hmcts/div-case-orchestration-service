@@ -12,14 +12,19 @@ abstract class AbstractWorkflow<T> implements Workflow<T> {
     private final ThreadLocal<DefaultTaskContext> threadLocalContext = new ThreadLocal<>();
 
     @Override
-    public T execute(Task[] tasks, T payload, Pair... pairs) throws WorkflowException {
-        threadLocalContext.set(new DefaultTaskContext());
+    public T execute(Task[] tasks, DefaultTaskContext context, T payload, Pair... pairs) throws WorkflowException {
+        threadLocalContext.set(context);
 
         for (Pair pair : pairs) {
             getContext().setTransientObject(pair.getKey().toString(), pair.getValue());
         }
 
         return executeInternal(tasks, payload);
+    }
+
+    @Override
+    public T execute(Task[] tasks, T payload, Pair... pairs) throws WorkflowException {
+        return execute(tasks, new DefaultTaskContext(), payload, pairs);
     }
 
     public DefaultTaskContext getContext() {

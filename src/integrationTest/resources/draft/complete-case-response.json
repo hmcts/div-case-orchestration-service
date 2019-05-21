@@ -6,10 +6,10 @@
     "street2" : null,
     "town" : null,
     "postcodeManual" : null,
-    "addressConfirmed" : true,
+    "addressConfirmed" : "true",
     "addressAbroad" : null,
     "validPostcode" : true,
-    "postcodeError" : false,
+    "postcodeError" : "false",
     "url" : null,
     "address" : [ "80 Landor Road", "London", "SW9 9PE" ]
   },
@@ -28,10 +28,10 @@
     "street2" : null,
     "town" : null,
     "postcodeManual" : null,
-    "addressConfirmed" : true,
+    "addressConfirmed" : "true",
     "addressAbroad" : null,
     "validPostcode" : true,
-    "postcodeError" : false,
+    "postcodeError" : "false",
     "url" : null,
     "address" : [ "80 Landor Road", "London", "SW9 9PE" ]
   },
@@ -93,13 +93,24 @@
       "email" : "family@liverpool.countycourt.gsi.gov.uk",
       "phoneNumber" : "0300 303 0642",
       "siteId" : "AA04"
+    },
+    "serviceCentre": {
+      "serviceCentreName": "Courts and Tribunals Service Centre",
+      "divorceCentre": "East Midlands Regional Divorce Centre",
+      "courtCity": "Nottingham",
+      "poBox": "PO Box 10447",
+      "postCode": "NG2 9QN",
+      "openingHours": "Telephone Enquiries from: 8.30am to 5pm",
+      "email": "contactdivorce@justice.gov.uk",
+      "phoneNumber": "0300 303 0642",
+      "siteId": "AA07"
     }
   },
   "reasonForDivorceShowFiveYearsSeparation" : "true",
   "claimsCostsFrom" : [ "respondent" ],
   "screenHasMarriageBroken" : "Yes",
   "reasonForDivorce" : "unreasonable-behaviour",
-  "petitionerEmail" : "simulate-delivered661b931a-931d-4958-b61e-0ba3d3e11329@notifications.service.gov.uk",
+  "petitionerEmail" : "simulate-delivered@notifications.service.gov.uk",
   "jurisdictionPetitionerResidence" : "Yes",
   "legalProceedings" : "Yes",
   "marriageIsSameSexCouple" : "No",
@@ -122,7 +133,6 @@
   "legalProceedingsRelated" : [ "children" ],
   "reasonForDivorceAdulteryIsNamed" : "No",
   "reasonForDivorceClaiming5YearSeparation" : "false",
-  "fetchedDraft" : false,
   "petitionerNameDifferentToMarriageCertificate" : "Yes",
   "respondentHomeAddress" : {
     "addressType" : "postcode",
@@ -131,10 +141,10 @@
     "street2" : null,
     "town" : null,
     "postcodeManual" : null,
-    "addressConfirmed" : true,
+    "addressConfirmed" : "true",
     "addressAbroad" : null,
     "validPostcode" : true,
-    "postcodeError" : false,
+    "postcodeError" : "false",
     "url" : null,
     "address" : [ "80 Landor Road", "London", "SW9 9PE" ]
   },
@@ -146,10 +156,10 @@
     "street2" : null,
     "town" : null,
     "postcodeManual" : null,
-    "addressConfirmed" : true,
+    "addressConfirmed" : "true",
     "addressAbroad" : null,
     "validPostcode" : true,
-    "postcodeError" : false,
+    "postcodeError" : "false",
     "url" : null,
     "address" : [ "80 Landor Road", "London", "SW9 9PE" ]
   },
@@ -160,7 +170,14 @@
   "respondentFirstName" : "Jane",
   "reasonForDivorceHasMarriageDate" : "true",
   "marriedInUk" : "Yes",
+  "jurisdictionPath": [
+    "JurisdictionHabitualResidence",
+    "JurisdictionInterstitial"
+  ],
   "marriageDateMonth" : 2,
   "marriageCanDivorce" : "true",
-  "financialOrderFor" : [ "petitioner", "children" ]
+  "respondentContactDetailsConfidential" : "share",
+  "financialOrderFor" : [ "petitioner", "children" ],
+  "petitionerConsent": "Yes",
+  "respondentContactDetailsConfidential": "share"
 }

@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailToSend;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -28,63 +27,59 @@ public class EmailService {
     @Value("#{${uk.gov.notify.email.template.vars}}")
     private Map<String, Map<String, String>> emailTemplateVars;
 
-    public Map<String, Object> sendSaveDraftConfirmationEmail(String destinationAddress) {
-        String      templateName = EmailTemplateNames.SAVE_DRAFT.name();
-        EmailToSend emailToSend  = generateEmail(destinationAddress, templateName, null);
+    public Map<String, Object> sendEmail(String destinationAddress,
+                                         String templateName,
+                                         Map<String, String> templateVars,
+                                         String emailDescription) {
 
-        return sendEmailWithErrorResponse(emailToSend, "draft saved confirmation");
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+        return sendEmailAndReturnErrorsInResponse(emailToSend, emailDescription);
     }
 
-    public Map<String, Object> sendSubmissionNotificationEmail(String              destinationAddress,
-                                                Map<String, String> templateVars) {
-        String      templateName = EmailTemplateNames.APPLIC_SUBMISSION.name();
-        EmailToSend emailToSend  = generateEmail(destinationAddress, templateName, templateVars);
+    public void sendEmailAndReturnExceptionIfFails(String destinationAddress,
+                          String templateName,
+                          Map<String, String> templateVars,
+                          String emailDescription) throws NotificationClientException {
 
-        return sendEmailWithErrorResponse(emailToSend, "submission notification");
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+        sendEmailUsingClient(emailToSend, emailDescription);
     }
 
     private EmailToSend generateEmail(String destinationAddress,
                                       String templateName,
                                       Map<String, String> templateVars) {
-        String              referenceId  = UUID.randomUUID().toString();
-        String              templateId   = emailTemplates.get(templateName);
-        Map<String, String> templateFlds = (templateVars != null ? templateVars : emailTemplateVars.get(templateName));
+        String referenceId = UUID.randomUUID().toString();
+        String templateId = emailTemplates.get(templateName);
+        Map<String, String> templateFields = (templateVars != null
+            ?
+            templateVars
+            :
+            emailTemplateVars.get(templateName));
 
-        return new EmailToSend(destinationAddress, templateId, templateFlds, referenceId);
+        return new EmailToSend(destinationAddress, templateId, templateFields, referenceId);
     }
 
-    public void sendEmail(EmailTemplateNames emailTemplate, String destinationAddress,
-                          Map<String, String> templateVars) throws NotificationClientException {
-
-        String templateName = emailTemplate.name();
-        EmailToSend emailToSend  = generateEmail(destinationAddress, templateName, templateVars);
-
-        sendEmail(emailToSend, "submission notification");
-    }
-
-    private void sendEmail(EmailToSend emailToSend, String emailDescription) throws NotificationClientException {
-        log.debug("Attempting to send {} email. Reference ID: {}", emailDescription, emailToSend.getReferenceId());
-        emailClient.sendEmail(
-                emailToSend.getTemplateId(),
-                emailToSend.getEmailAddress(),
-                emailToSend.getTemplateFields(),
-                emailToSend.getReferenceId()
-        );
-        log.info("Sending email success. Reference ID: {}", emailToSend.getReferenceId());
-    }
-
-    private Map<String, Object> sendEmailWithErrorResponse(EmailToSend emailToSend, String emailDescription) {
+    private Map<String, Object> sendEmailAndReturnErrorsInResponse(EmailToSend emailToSend, String emailDescription) {
         Map<String, Object> response = new HashMap<>();
         try {
-            sendEmail(emailToSend, emailDescription);
+            sendEmailUsingClient(emailToSend, emailDescription);
         } catch (NotificationClientException e) {
             log.warn("Failed to send email. Reference ID: {}. Reason: {}", emailToSend.getReferenceId(),
-                    e.getMessage(), e);
+                e.getMessage(), e);
             response.put(EMAIL_ERROR_KEY, e);
         }
 
         return response;
     }
 
+    private void sendEmailUsingClient(EmailToSend emailToSend, String emailDescription) throws NotificationClientException {
+        log.debug("Attempting to send {} email. Reference ID: {}", emailDescription, emailToSend.getReferenceId());
+        emailClient.sendEmail(
+                emailToSend.getTemplateId(),
+                emailToSend.getDestinationEmailAddress(),
+                emailToSend.getTemplateFields(),
+                emailToSend.getReferenceId()
+        );
+        log.info("Sending email success. Reference ID: {}", emailToSend.getReferenceId());
+    }
 }
-

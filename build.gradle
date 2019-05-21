@@ -5,6 +5,7 @@ buildscript {
         springBootVersion = '2.1.2.RELEASE'
     }
     repositories {
+        mavenLocal()
         mavenCentral()
         jcenter()
 
@@ -232,8 +233,7 @@ def versions = [
         bcpkixJdk15on                   : '1.60',
         springSecurityRsa               : '1.0.8.RELEASE',
         springSecurityCrypto            : '5.1.5.RELEASE',
-        tomcat                          : '9.0.19',
-        ccdStoreClient                  : '4.1.0'
+        tomcat                          : '9.0.19'
 
 ]
 
@@ -248,11 +248,14 @@ dependencies {
     compile group: 'org.jdbi', name: 'jdbi', version: '2.78'
     compile('org.springframework.boot:spring-boot-starter-web')
 
+    compile('org.elasticsearch.client:transport:7.0.0')
+
     compile group: 'com.puppycrawl.tools', name: 'checkstyle', version: versions.puppyCrawl
     compile group: 'commons-io', name: 'commons-io', version: versions.commonsIo
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
     compile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
+    compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: versions.javaxWsRs
     compile group: 'com.vladmihalcea', name: 'hibernate-types-52', version: '2.4.0'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
@@ -287,8 +290,9 @@ dependencies {
     compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-el', version: versions.tomcat) {
         force = true
     }
-    compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
 
+
+    compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
     compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformsJavaLogging

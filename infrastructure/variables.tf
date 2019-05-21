@@ -25,6 +25,11 @@ variable "jenkins_AAD_objectId" {
   description   = "(Required) The Azure AD object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies."
 }
 
+variable "appinsights_instrumentation_key" {
+  description = "Instrumentation key of the App Insights instance this webapp should use. Module will create own App Insights resource if this is not provided"
+  default = ""
+}
+
 variable "tenant_id" {}
 
 variable "idam_api_baseurl" {
@@ -41,18 +46,27 @@ variable "common_tags" {
   type = "map"
 }
 
-variable "draft_check_ccd_enabled" {
-    default = false
-}
-
 variable "uk_gov_notify_email_templates" {
-    type = "string"
+  type = "string"
+  default = ""
 }
 
 variable "uk_gov_notify_email_template_vars" {
-    type = "string"
+  type = "string"
 }
 
 variable "service_auth_microservice_name" {
   default = "divorce_frontend"
+}
+
+variable "aos_responded_days_to_complete" {
+  default = 7
+}
+
+variable "aos_responded_awaiting_answer_days_to_respond" {
+  default = 21
+}
+
+variable "idam_strategic_enabled" {
+  default = "true"
 }

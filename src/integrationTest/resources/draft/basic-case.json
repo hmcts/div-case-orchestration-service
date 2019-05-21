@@ -42,6 +42,7 @@
   "petitionerNameChangedHow":[
     "marriageCertificate"
   ],
+  "petitionerEmail":"simulate-delivered@notifications.service.gov.uk",
   "petitionerPhoneNumber":"01234567890",
   "petitionerConsent":"Yes",
   "petitionerHomeAddress":{

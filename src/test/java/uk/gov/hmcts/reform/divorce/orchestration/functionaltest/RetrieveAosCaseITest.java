@@ -34,11 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CHECK_CCD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -78,20 +76,11 @@ public class RetrieveAosCaseITest {
     }
 
     @Test
-    public void givenNoCheckCCdParam_whenRetrieveAosCase_thenReturnBadRequest() throws Exception {
-        webClient.perform(get(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .accept(APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
     public void givenCMSThrowsException_whenRetrieveAosCase_thenPropagateException() throws Exception {
         stubRetrieveAosCaseFromCMS(HttpStatus.INTERNAL_SERVER_ERROR, TEST_ERROR);
 
         webClient.perform(get(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .param(CHECK_CCD, String.valueOf(TEST_CHECK_CCD))
             .accept(APPLICATION_JSON))
             .andExpect(status().isInternalServerError())
             .andExpect(content().string(containsString(TEST_ERROR)));
@@ -103,10 +92,8 @@ public class RetrieveAosCaseITest {
 
         webClient.perform(get(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .param(CHECK_CCD, String.valueOf(TEST_CHECK_CCD))
             .accept(APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string(containsString("")));
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -117,14 +104,13 @@ public class RetrieveAosCaseITest {
 
         webClient.perform(get(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .param(CHECK_CCD, String.valueOf(TEST_CHECK_CCD))
             .accept(APPLICATION_JSON))
             .andExpect(status().isInternalServerError())
             .andExpect(content().string(containsString(TEST_ERROR)));
     }
 
     @Test
-    public void givenAllGoesWellProceedAsExpected_whenRetrieveAosCase_thenPropagateException() throws Exception {
+    public void givenAllGoesWellProceedAsExpected() throws Exception {
         stubRetrieveAosCaseFromCMS(CASE_DETAILS);
 
         stubFormatterServerEndpoint();
@@ -138,18 +124,17 @@ public class RetrieveAosCaseITest {
 
         webClient.perform(get(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .param(CHECK_CCD, String.valueOf(TEST_CHECK_CCD))
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expected)));
     }
 
-    private void stubRetrieveAosCaseFromCMS(CaseDetails caseDetails) throws Exception {
+    private void stubRetrieveAosCaseFromCMS(CaseDetails caseDetails) {
         stubRetrieveAosCaseFromCMS(HttpStatus.OK, convertObjectToJsonString(caseDetails));
     }
 
     private void stubRetrieveAosCaseFromCMS(HttpStatus status, String message) {
-        maintenanceServiceServer.stubFor(WireMock.get(RETRIEVE_AOS_CASE_CONTEXT_PATH + "?checkCcd=" + TEST_CHECK_CCD)
+        maintenanceServiceServer.stubFor(WireMock.get(RETRIEVE_AOS_CASE_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .willReturn(aResponse()
                 .withStatus(status.value())
@@ -157,14 +142,11 @@ public class RetrieveAosCaseITest {
                 .withBody(message)));
     }
 
-    private void stubFormatterServerEndpoint() throws Exception {
-
+    private void stubFormatterServerEndpoint() {
         stubFormatterServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DATA));
     }
 
-
-    private void stubFormatterServerEndpoint(HttpStatus status, String message)
-        throws Exception {
+    private void stubFormatterServerEndpoint(HttpStatus status, String message) {
         formatterServiceServer.stubFor(WireMock.post(FORMAT_TO_DIVORCE_CONTEXT_PATH)
             .withRequestBody(equalToJson(convertObjectToJsonString(CASE_DATA)))
             .willReturn(aResponse()

@@ -11,7 +11,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -21,9 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = OrchestrationServiceApplication.class)
 public class RootControllerTest {
-
-    @Autowired
-    private WebApplicationContext applicationContext;
 
     @Autowired
     private MockMvc mvc;

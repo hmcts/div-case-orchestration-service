@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import com.google.common.collect.ImmutableList;
 import feign.Feign;
+import feign.Request;
 import feign.RequestInterceptor;
+import feign.RequestTemplate;
 import feign.codec.Decoder;
 import feign.jackson.JacksonEncoder;
 import org.apache.http.entity.ContentType;
@@ -36,8 +38,10 @@ import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
 
 @Lazy
 @Configuration
-@PropertySource({"classpath:application.properties"})
+@PropertySource("classpath:application.properties")
+@PropertySource("classpath:application-${env}.properties")
 public class ServiceContextConfiguration {
+
     @Bean
     public IdamUtils getIdamUtil() {
         return new IdamUtils();
@@ -88,7 +92,11 @@ public class ServiceContextConfiguration {
 
     @Bean
     public RequestInterceptor requestInterceptor() {
-        return template -> template.header(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+        return (RequestTemplate template) -> {
+            if (template.request().httpMethod() == Request.HttpMethod.POST) {
+                template.header(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+            }
+        };
     }
 
     @Bean
@@ -134,7 +142,8 @@ public class ServiceContextConfiguration {
         return new ResponseEntityDecoder(new SpringDecoder(objectFactory));
     }
 
-    private ObjectMapper customObjectMapper() {
+    @Bean
+    public ObjectMapper customObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JSR310Module());
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);

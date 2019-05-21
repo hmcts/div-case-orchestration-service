@@ -1,0 +1,15 @@
+{
+  "case_details": {
+    "id": "0123456789012345",
+    "case_data": {
+      "RespEmailAddress": "respondent@divorce.co.uk",
+      "RespWillDefendDivorce": "Yes",
+      "D8RespondentFirstName": "Ted",
+      "D8RespondentLastName": "Jones",
+      "D8InferredPetitionerGender": "female",
+      "D8DivorceUnit": "westMidlands",
+      "dueDate": "2018-09-20",
+      "D8caseReference": "LV17D80101"
+    }
+  }
+}

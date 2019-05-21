@@ -47,7 +47,7 @@
             <property name="allowNonPrintableEscapes" value="true"/>
         </module>
         <module name="LineLength">
-            <property name="max" value="120"/>
+            <property name="max" value="150"/>
             <property name="ignorePattern"
                       value="public.*given.+_when.+_then.+|^package.*|^import.*|a href|href|http://|https://|ftp://"/>
         </module>
@@ -172,6 +172,8 @@
             <property name="sortImportsInGroupAlphabetically" value="true"/>
             <property name="customImportOrderRules" value="THIRD_PARTY_PACKAGE###STANDARD_JAVA_PACKAGE###STATIC"/>
         </module>
+
+        <module name="UnusedImports"/>
 
         <module name="MethodParamPad"/>
         <module name="OperatorWrap">

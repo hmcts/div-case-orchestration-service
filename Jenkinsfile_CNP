@@ -23,11 +23,20 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 List<LinkedHashMap<String, Object>> secrets = [
         secret("ccd-submission-s2s-auth-secret", "AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY"),
         secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
-        secret("idam-secret", "AUTH_IDAM_CLIENT_SECRET")
+        secret("frontend-secret", "SERVICE_AUTH_SECRET"),
+        secret("idam-secret", "AUTH2_CLIENT_SECRET"),
+        secret("idam-citizen-password", "IDAM_CITIZEN_PASSWORD"),
+        secret("idam-caseworker-password", "IDAM_CASEWORKER_PASSWORD")
 ]
 
 withPipeline(type, product, component) {
+    if (env.CHANGE_TITLE && !env.CHANGE_TITLE.startsWith('[PREVIEW]')) {
+        enableDockerBuild()
+        installCharts()
+    }
+
     loadVaultSecrets(secrets)
+    setVaultName('div')
 
     after('checkout') {
        echo 'divorce-case-orchestration-service checked out'
@@ -37,9 +46,16 @@ withPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
+    // Kubernetes does not retrieve variables from the output terraform
+    before('functionalTest:preview') {
+        env.test_environment = 'aat'
+    }
+
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
-     enableSlackNotifications('#div-dev')
+    onMaster {
+        enableSlackNotifications('#div-dev')
+    }
 }

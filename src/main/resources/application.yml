@@ -2,6 +2,8 @@ info:
   app:
     name: ${spring.application.name}
 
+
+
 spring:
   datasource:
     scheduler:
@@ -46,7 +48,13 @@ scheduler:
     cron: '0 0/1 * 1/1 * ? *'
 
 server:
-  port: ${CASE_ORCHESTRATION_SERVICE_URL:4013}
+  port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
+
+jackson:
+  deserialization:
+    ACCEPT_SINGLE_VALUE_AS_ARRAY: true
+  serialization:
+    FAIL_ON_EMPTY_BEANS: false
 
 case:
   formatter:
@@ -72,17 +80,175 @@ payment:
     api:
       baseurl: ${PAYMENT_API_BASEURL:http://localhost:9190}
 
+feature-toggle:
+  service:
+    api:
+      baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://localhost:4028}
+  toggle:
+    bulk-printer-toggle-name: "divorce_bulk_print"
+
+send-letter:
+  url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
+
+bulk-print:
+  dueDate: 30
+
 uk:
   gov:
     notify:
       api:
         key: dummy
       email:
-        templates: "{SAVE_DRAFT:'9fbb6bdb-1043-440a-b082-5ea71b5c2609',
-                     APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c',
-                     RESPONDENT_SUBMISSION_CONSENT: '594dc500-93ca-4f4b-931b-acbf9ee83d25'}"
+        templates: "{
+                      AOS_RECEIVED_NO_ADMIT_ADULTERY: '015fb73a-3be2-49d8-8ed8-a4078025dae3',
+                      AOS_RECEIVED_NO_CONSENT_2_YEARS: '845d0114-0f74-43a4-b11c-8ebeceb01c5b',
+                      APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c',
+                      APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND: '369169ef-c6cb-428c-abbd-427aaa50c2a3',
+                      APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED: 'e07cbeb8-c2e0-4ba5-84ba-b9bd1ab04b0a',
+                      DN_SUBMISSION: 'edf3bce9-f63a-4be0-93a9-d0c80dff7983',
+                      GENERIC_UPDATE: '6ee6ec29-5e88-4516-99cb-2edc30256575',
+                      RESPONDENT_SUBMISSION_CONSENT: '594dc500-93ca-4f4b-931b-acbf9ee83d25',
+                      RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION: 'eac41143-b296-4879-ba60-a0ea6f97c757',
+                      RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION: '277fd3f3-2fdb-4c79-9354-1b3db8d44cca',
+                      CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION: '19a8844e-8112-4578-aa4c-dea6c054ab35',
+                      CO_RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION: '486c86ff-a0e2-4eb1-a84c-687641d746de',
+                      PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION: '9937c8bc-dc7a-4210-a25b-20aceb82d48d',
+                      SAVE_DRAFT:'14074c06-87f1-4678-9238-4d71e741eb57',
+                      AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: 'bc6ee2ec-f62b-4321-b19f-65e868f849eb',
+                      RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED: '44e2dd30-4303-4f4c-a394-ce0b54af81dd',
+                      PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION: '686ce418-6d76-48ce-b903-a87d2b832125'
+                    }"
         template:
           vars: "{SAVE_DRAFT: {divorceUrl: 'https://apply-divorce.service.gov.uk'}}"
+
+courtAllocationConfigurationJson: "
+                                  {
+                                    \"courtsDesiredWorkloadDistribution\": [
+                                      {
+                                        \"courtId\": \"eastMidlands\",
+                                        \"percentageOfTotalCases\": 0
+                                      },
+                                      {
+                                        \"courtId\": \"southWest\",
+                                        \"percentageOfTotalCases\": 0
+                                      },
+                                      {
+                                        \"courtId\": \"northWest\",
+                                        \"percentageOfTotalCases\": 0
+                                      },
+                                      {
+                                        \"courtId\": \"westMidlands\",
+                                        \"percentageOfTotalCases\": 0
+                                      },
+                                      {
+                                        \"courtId\": \"serviceCentre\",
+                                        \"percentageOfTotalCases\": 1.00
+                                      }
+                                    ],
+                                    \"factSpecificCourtAllocation\": [
+                                        {
+                                          \"fact\": \"unreasonable-behaviour\",
+                                          \"courts\": [
+                                            {
+                                              \"courtId\": \"serviceCentre\",
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          \"fact\": \"separation-5-years\",
+                                          \"courts\": [
+                                            {
+                                              \"courtId\": \"serviceCentre\",
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          \"fact\": \"adultery\",
+                                          \"courts\": [
+                                            {
+                                              \"courtId\": \"serviceCentre\",
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          \"fact\": \"separation-2-years\",
+                                          \"courts\": [
+                                            {
+                                              \"courtId\": \"serviceCentre\",
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          \"fact\": \"desertion\",
+                                          \"courts\": [
+                                            {
+                                              \"courtId\": \"serviceCentre\",
+                                              \"percentageOfCasesWithThisFactCourtWillHandle\": 0.2
+                                            }
+                                          ]
+                                        }
+                                    ]
+                                  }"
+
+court:
+  details: "{
+              \"eastMidlands\":{
+                \"divorceCentre\":\"East Midlands Regional Divorce Centre\",
+                \"courtCity\":\"Nottingham\",
+                \"poBox\":\"PO Box 10447\",
+                \"postCode\":\"NG2 9QN\",
+                \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\":\"eastmidlandsdivorce@hmcts.gsi.gov.uk\",
+                \"phoneNumber\":\"0300 303 0642\",
+                \"siteId\":\"AA01\"
+              },
+              \"westMidlands\":{
+                \"divorceCentre\":\"West Midlands Regional Divorce Centre\",
+                \"courtCity\":\"Stoke-on-Trent\",
+                \"poBox\":\"PO Box 3650\",
+                \"postCode\":\"ST4 9NH\",
+                \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\":\"westmidlandsdivorce@hmcts.gsi.gov.uk\",
+                \"phoneNumber\":\"0300 303 0642\",
+                \"siteId\":\"AA02\"
+              },
+              \"southWest\":{
+                \"divorceCentre\":\"South West Regional Divorce Centre\",
+                \"courtCity\":\"Southampton\",
+                \"poBox\":\"PO Box 1792\",
+                \"postCode\":\"SO15 9GG\",
+                \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\":\"sw-region-divorce@hmcts.gsi.gov.uk\",
+                \"phoneNumber\":\"0300 303 0642\",
+                \"siteId\":\"AA03\"
+              },
+              \"northWest\":{
+                \"divorceCentre\":\"North West Regional Divorce Centre\",
+                \"divorceCentreAddressName\":\"Liverpool Civil & Family Court\",
+                \"courtCity\":\"Liverpool\",
+                \"street\":\"35 Vernon Street\",
+                \"postCode\":\"L2 2BX\",
+                \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\":\"family@liverpool.countycourt.gsi.gov.uk\",
+                \"phoneNumber\":\"0300 303 0642\",
+                \"siteId\":\"AA04\"
+              },
+              \"serviceCentre\": {
+                \"serviceCentreName\": \"Courts and Tribunals Service Centre\",
+                \"divorceCentre\": \"East Midlands Regional Divorce Centre\",
+                \"courtCity\": \"Nottingham\",
+                \"poBox\": \"PO Box 10447\",
+                \"postCode\": \"NG2 9QN\",
+                \"openingHours\": \"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\": \"contactdivorce@justice.gov.uk\",
+                \"phoneNumber\": \"0300 303 0642\",
+                \"siteId\": \"AA07\"
+              }
+           }"
 
 idam:
   api:
@@ -92,10 +258,13 @@ idam:
     health:
       context-path: /health
   citizen:
-    username: dummyuser
-    password: dummypassword
+    username: ${IDAM_CITIZEN_USERNAME:dummyuser}
+    password: ${IDAM_CITIZEN_PASSWORD:dummypassword}
+  caseworker:
+    username: ${IDAM_CASEWORKER_USERNAME:dummyuser}
+    password: ${IDAM_CASEWORKER_PASSWORD:dummypassword}
   strategic:
-    enabled: false
+    enabled: ${IDAM_STRATEGIC_ENABLED:true}
   s2s-auth:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
@@ -104,7 +273,7 @@ idam:
 auth2:
   client:
     id: divorce
-    secret: dummy
+    secret: ${AUTH2_CLIENT_SECRET:dummysecret}
 
 document:
   generator:
@@ -112,17 +281,18 @@ document:
       api:
         baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://localhost:4007}
 
-draft:
-  api:
-    ccd:
-      check:
-        enabled: ${DRAFT_CCD_CHECK_ENABLED:true}
-
 http:
   connect:
     timeout: 60000
     request:
       timeout: 60000
+health:
+  check:
+    http:
+      connect:
+        timeout: 5000
+        request:
+          timeout: 5000
 
 documentation:
   swagger:
@@ -134,6 +304,9 @@ documentation:
 # Enable default health indicators
 # Enable disk space health check
 management:
+  health:
+    elasticsearch:
+      enabled: false
   endpoint:
     health:
       show-details: "ALWAYS"

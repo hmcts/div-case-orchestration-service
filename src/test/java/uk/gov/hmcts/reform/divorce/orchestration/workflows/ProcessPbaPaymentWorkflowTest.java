@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPayment;
@@ -39,7 +39,7 @@ public class ProcessPbaPaymentWorkflowTest {
     @InjectMocks
     private ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
 
-    private CreateEvent createEventRequest;
+    private CcdCallbackRequest ccdCallbackRequestRequest;
     private Map<String, Object> testData;
     private TaskContext context;
 
@@ -52,8 +52,8 @@ public class ProcessPbaPaymentWorkflowTest {
             .state(TEST_STATE)
             .caseData(testData)
             .build();
-        createEventRequest =
-                CreateEvent.builder()
+        ccdCallbackRequestRequest =
+                CcdCallbackRequest.builder()
                         .eventId(TEST_EVENT_ID)
                         .token(TEST_TOKEN)
                         .caseDetails(
@@ -71,7 +71,7 @@ public class ProcessPbaPaymentWorkflowTest {
         when(validateSolicitorCaseData.execute(context, testData)).thenReturn(testData);
         when(processPbaPayment.execute(context, testData)).thenReturn(testData);
 
-        assertEquals(testData, processPbaPaymentWorkflow.run(createEventRequest, AUTH_TOKEN));
+        assertEquals(testData, processPbaPaymentWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN));
 
         verify(validateSolicitorCaseData).execute(context, testData);
         verify(processPbaPayment).execute(context, testData);

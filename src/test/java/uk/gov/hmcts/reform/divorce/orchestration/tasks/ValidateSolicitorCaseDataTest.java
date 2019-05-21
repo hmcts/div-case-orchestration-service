@@ -40,7 +40,7 @@ public class ValidateSolicitorCaseDataTest {
         Map<String, Object> result = validateSolicitorCaseData.execute(context, caseData);
 
         assertEquals(result, caseData);
-        assertEquals(false, context.getStatus());
+        assertEquals(false, context.hasTaskFailed());
     }
 
     @Test
@@ -51,7 +51,7 @@ public class ValidateSolicitorCaseDataTest {
         Map<String, Object> result = validateSolicitorCaseData.execute(context, caseData);
 
         assertEquals(result, caseData);
-        assertEquals(true, context.getStatus());
+        assertEquals(true, context.hasTaskFailed());
         assertNotNull(context.getTransientObject(SOLICITOR_VALIDATION_ERROR_KEY));
     }
 
@@ -63,7 +63,7 @@ public class ValidateSolicitorCaseDataTest {
         Map<String, Object> result = validateSolicitorCaseData.execute(context, caseData);
 
         assertEquals(result, caseData);
-        assertEquals(true, context.getStatus());
+        assertEquals(true, context.hasTaskFailed());
         assertNotNull(context.getTransientObject(SOLICITOR_VALIDATION_ERROR_KEY));
     }
 
@@ -75,7 +75,7 @@ public class ValidateSolicitorCaseDataTest {
         Map<String, Object> result = validateSolicitorCaseData.execute(context, caseData);
 
         assertEquals(result, caseData);
-        assertEquals(true, context.getStatus());
+        assertEquals(true, context.hasTaskFailed());
         assertNotNull(context.getTransientObject(SOLICITOR_VALIDATION_ERROR_KEY));
     }
 }

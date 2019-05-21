@@ -1,0 +1,16 @@
+{
+  "case_details": {
+    "id": "0123456789012345",
+    "case_data": {
+      "RespEmailAddress": "simulate-delivered@notifications.service.gov.uk",
+      "RespWillDefendDivorce": "Yes",
+      "D8RespondentFirstName": "Téd",
+      "D8RespondentLastName": "Jonés",
+      "D8caseReference": "LV18D81234",
+      "D8InferredPetitionerGender": "female",
+      "D8DivorceUnit": "eastMidlands",
+      "ReceivedAOSfromRespDate": "2018-09-20",
+      "dueDate": "2019-02-10"
+    }
+  }
+}

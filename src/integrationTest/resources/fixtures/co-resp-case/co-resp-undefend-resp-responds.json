@@ -1,0 +1,20 @@
+{
+    "event_id" : "submitted",
+    "case_details" : {
+      "case_data" : {
+        "CoRespDefendsDivorce" : "No",
+        "DueDateCoResp" : "2020-10-20",
+        "D8ReasonForDivorceAdultery3rdPartyFName" : "user first namé with accent",
+        "D8DivorceUnit" : "eastMidlands",
+        "D8ReasonForDivorceAdultery3rdPartyLName" : "user last namé with accent",
+        "D8caseReference" : "LV17D80100",
+        "CoRespEmailAddress" : "simulate-delivered@notifications.service.gov.uk",
+        "D8PetitionerEmail" : "simulate-delivered@notifications.service.gov.uk",
+        "D8PetitionerFirstName" : "Ted",
+        "D8PetitionerLastName" : "Jones",
+        "ReceivedAOSfromResp" : "Yes"
+      },
+      "id" : "1517833758870511",
+      "state" : "AwaitingAOS"
+    }
+  }

@@ -1,49 +1,108 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
+import io.restassured.response.ResponseBody;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
+import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.support.cos.RetrieveCaseSupport;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.hamcrest.core.AllOf.allOf;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
-public class SubmitCaseToCCDIntegrationTest extends IntegrationTest {
+public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
 
     private static final String CASE_ID_KEY = "caseId";
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit/";
+    private static final String ALLOCATED_COURT_ID_KEY = "allocatedCourt.courtId";
 
     @Value("${case.orchestration.maintenance.submit.context-path}")
-    private String contextPath;
+    private String caseCreationContextPath;
 
     @Test
-    public void givenDivorceSession_whenSubmitIsCalled_caseIdIsReturned() throws Exception {
-        Response submissionResponse = submitCase(createCitizenUser().getAuthToken(), "basic-divorce-session.json");
+    public void givenDivorceSession_WithNoCourt_whenSubmitIsCalled_CaseIsCreated() throws Exception {
+        UserDetails userDetails = createCitizenUser();
+        Response submissionResponse = submitCase(userDetails, "divorce-session-with-court-selected.json");
 
-        assertEquals(HttpStatus.OK.value(), submissionResponse.getStatusCode());
-        assertNotEquals("0", submissionResponse.getBody().path(CASE_ID_KEY));
+        ResponseBody caseCreationResponseBody = submissionResponse.getBody();
+        assertThat(submissionResponse.getStatusCode(), is(HttpStatus.OK.value()));
+        assertThat(caseCreationResponseBody.path(CASE_ID_KEY), is(not("0")));
+        String allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
+        assertThat(allocatedCourt, is(notNullValue()));
+
+        ResponseBody retrieveCaseResponseBody = retrieveCase(userDetails.getAuthToken()).body();
+        assertThat(retrieveCaseResponseBody.path(RETRIEVED_DATA_COURT_ID_KEY), is(allocatedCourt));
     }
 
-    private Response submitCase(String userToken, String fileName) throws Exception {
+    @Test
+    public void givenDivorceSession_WithCourt_whenSubmitIsCalled_CaseIsCreated_AndCourtIsIgnored() throws Exception {
+        UserDetails userDetails = createCitizenUser();
+        Response submissionResponse = submitCase(userDetails, "basic-divorce-session.json");
+
+        ResponseBody caseCreationResponseBody = submissionResponse.getBody();
+        assertThat(submissionResponse.getStatusCode(), is(HttpStatus.OK.value()));
+        assertThat(caseCreationResponseBody.path(CASE_ID_KEY), is(not("0")));
+        String allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
+        assertThat(allocatedCourt, allOf(
+                is(notNullValue()),
+                is(not("unknown-court"))
+        ));
+
+        ResponseBody retrieveCaseResponseBody = retrieveCase(userDetails.getAuthToken()).body();
+        assertThat(retrieveCaseResponseBody.path(RETRIEVED_DATA_COURT_ID_KEY), is(allocatedCourt));
+    }
+
+    @Test
+    public void givenAnExistingCase_whenSubmitIsCalled_aNewCaseIsNotCreated() throws Exception {
+        UserDetails userDetails = createCitizenUser();
+        Response submissionResponse = submitCase(userDetails, "divorce-session-with-court-selected.json");
+
+        ResponseBody caseCreationResponseBody = submissionResponse.getBody();
+        assertThat(submissionResponse.getStatusCode(), is(HttpStatus.OK.value()));
+        String existingCaseId = caseCreationResponseBody.path(CASE_ID_KEY);
+        assertThat(existingCaseId, is(not("0")));
+        String allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
+        assertThat(allocatedCourt, is(notNullValue()));
+
+        ResponseBody retrieveCaseResponseBody = retrieveCase(userDetails.getAuthToken()).body();
+        assertThat(retrieveCaseResponseBody.path(RETRIEVED_DATA_COURT_ID_KEY), is(allocatedCourt));
+
+        submissionResponse = submitCase(userDetails, "divorce-session-with-court-selected.json");
+        caseCreationResponseBody = submissionResponse.getBody();
+        assertThat(caseCreationResponseBody.path(CASE_ID_KEY), is(existingCaseId));
+        allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
+        assertThat(allocatedCourt, is(notNullValue()));
+    }
+
+    private Response submitCase(UserDetails userDetails, String fileName) throws Exception {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+        headers.put(HttpHeaders.AUTHORIZATION, userDetails.getAuthToken());
 
-        if (userToken != null) {
-            headers.put(HttpHeaders.AUTHORIZATION, userToken);
+
+        String body = null;
+        if (fileName != null) {
+            body = ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + fileName)
+            .replaceAll(USER_DEFAULT_EMAIL, userDetails.getEmailAddress());
+
         }
 
         return RestUtil.postToRestService(
-                serverUrl + contextPath,
+                serverUrl + caseCreationContextPath,
                 headers,
-                fileName == null ? null : ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + fileName)
+                body
         );
     }
+
 }
