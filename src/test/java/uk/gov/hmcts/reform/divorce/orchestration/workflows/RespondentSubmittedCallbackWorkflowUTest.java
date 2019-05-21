@@ -118,29 +118,26 @@ public class RespondentSubmittedCallbackWorkflowUTest {
     }
 
     @Test
-    public void givenCaseDetailsWithNullData_whenRunWorkflow_thenEmailNotificationTaskCalledWithNullData()
-            throws WorkflowException {
-        Map<String, String> vars =  new HashMap<>();
-        vars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, null);
-        vars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, null);
-        vars.put(NOTIFICATION_RELATIONSHIP_KEY,  null);
-        vars.put(NOTIFICATION_REFERENCE_KEY, null);
+    public void givenCaseNoPetEmail_whenRunWorkflow_thenEmailNotificationTaskNotCalled() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
+        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
+        caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
+        caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
+        caseData.put(RESP_WILL_DEFEND_DIVORCE, "No");
+
 
         CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(ImmutableMap.of(
-                    RESP_WILL_DEFEND_DIVORCE, "No"
-                ))
-                .build();
+            .caseId(TestConstants.TEST_CASE_ID)
+            .caseData(caseData)
+            .build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        when(emailNotificationTask.execute(any(), any())).thenReturn(caseDetails.getCaseData());
         when(respondentAnswersGenerator.execute(any(), any())).thenReturn(caseDetails.getCaseData());
         when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(caseDetails.getCaseData());
 
         Map<String, Object> response = classToTest.run(ccdCallbackRequest, TestConstants.TEST_TOKEN);
-
-        verify(emailNotificationTask, times(1)).execute(argThat(
-            argument -> argument.getTransientObject(NOTIFICATION_TEMPLATE_VARS).equals(vars)),any());
+        verifyNoMoreInteractions(emailNotificationTask);
         assertEquals(caseDetails.getCaseData(), response);
     }
 

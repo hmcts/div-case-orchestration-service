@@ -27,6 +27,13 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
 
     private static final String EMAIL_DESCRIPTION = "respondent submission notification email - undefended divorce";
 
+    private static final String EMAIL_ADDRESS = "email address";
+    private static final String CASE_NUMBER = "case number";
+    private static final String FIRST_NAME = "first name";
+    private static final String LAST_NAME = "last name";
+    private static final String HUSBAND_OR_WIFE = "husband or wife";
+    private static final String RDC_NAME = "RDC name";
+
     @Autowired
     private TaskCommons taskCommons;
 
@@ -44,12 +51,12 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
         Court court = taskCommons.getCourt(divorceUnitKey);
 
         String caseId = getMandatoryPropertyValueAsString(caseDataPayload, D_8_CASE_REFERENCE);
-        templateFields.put("case number", caseId);
-        templateFields.put("email address", respondentEmailAddress);
-        templateFields.put("first name", respondentFirstName);
-        templateFields.put("last name", respondentLastName);
-        templateFields.put("husband or wife", petitionerRelationshipToRespondent);
-        templateFields.put("RDC name", court.getIdentifiableCentreName());
+        templateFields.put(CASE_NUMBER, caseId);
+        templateFields.put(EMAIL_ADDRESS, respondentEmailAddress);
+        templateFields.put(FIRST_NAME, respondentFirstName);
+        templateFields.put(LAST_NAME, respondentLastName);
+        templateFields.put(HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
+        templateFields.put(RDC_NAME, court.getIdentifiableCentreName());
 
         taskCommons.sendEmail(RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION,
                 EMAIL_DESCRIPTION,

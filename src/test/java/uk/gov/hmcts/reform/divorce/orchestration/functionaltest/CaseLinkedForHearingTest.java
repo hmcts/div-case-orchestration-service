@@ -35,6 +35,7 @@ public class CaseLinkedForHearingTest {
 
     private static final String API_URL = "/case-linked-for-hearing";
     private static final String PETITIONER_COE_NOTIFICATION_EMAIL_TEMPLATE_ID = "9937c8bc-dc7a-4210-a25b-20aceb82d48d";
+    private static final String RESPONDENT_COE_NOTIFICATION_EMAIL_TEMPLATE_ID = "80b986e1-056b-4577-a343-bb2e72e2a3f0";
 
     @Autowired
     private MockMvc webClient;
@@ -65,6 +66,10 @@ public class CaseLinkedForHearingTest {
         verify(mockClient).sendEmail(eq(PETITIONER_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
             eq("petitioner@justice.uk"),
             any(), any());
+
+        verify(mockClient).sendEmail(eq(RESPONDENT_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
+                eq("respondent@justice.uk"),
+                any(), any());
     }
 
 }

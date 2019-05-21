@@ -373,6 +373,40 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void whenGenerateCoRespondentAnswers_thenExecuteService() throws Exception {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(payload)
+                        .build())
+                .build();
+        when(caseOrchestrationService.generateCoRespondentAnswers(incomingRequest, AUTH_TOKEN)).thenReturn(payload);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCoRespondentAnswers(AUTH_TOKEN, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    }
+
+    @Test
+    public void givenWorkflowException_whenGenerateCoRespondentAnswers_thenReturnErrors() throws Exception {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(payload)
+                        .build())
+                .build();
+
+        String errorString = "Unable to generate answers";
+        when(caseOrchestrationService.generateCoRespondentAnswers(incomingRequest, AUTH_TOKEN))
+                .thenThrow(new WorkflowException(errorString));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCoRespondentAnswers(AUTH_TOKEN, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getErrors().contains(errorString), is(true));
+    }
+
+    @Test
     public void testAosSolicitorNominated() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()

@@ -21,10 +21,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintW
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CoRespondentAnswerReceivedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCallbackWorkflow;
@@ -95,8 +97,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final AmendPetitionWorkflow amendPetitionWorkflow;
     private final CaseLinkedForHearingWorkflow caseLinkedForHearingWorkflow;
     private final CoRespondentAnswerReceivedWorkflow coRespondentAnswerReceivedWorkflow;
+    private final ProcessAwaitingPronouncementCasesWorkflow processAwaitingPronouncementCasesWorkflow;
     private final GetCaseWithIdWorkflow getCaseWithIdWorkflow;
     private final SolicitorDnReviewPetitionWorkflow solicitorDnReviewPetitionWorkflow;
+    private final GenerateCoRespondentAnswersWorkflow generateCoRespondentAnswersWorkflow;
     private final RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
 
     @Override
@@ -456,6 +460,19 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
         return coRespondentAnswerReceivedWorkflow.run(ccdCallbackRequest.getCaseDetails());
 
+    }
+
+    @Override
+    public Map<String, Object> generateCoRespondentAnswers(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        return generateCoRespondentAnswersWorkflow.run(ccdCallbackRequest.getCaseDetails(), authToken);
+    }
+
+    @Override
+    public Map<String, Object> generateBulkCaseForListing() throws WorkflowException {
+        log.info("Starting Bulk listing generation");
+        Map<String, Object> result = processAwaitingPronouncementCasesWorkflow.run(authUtil.getCaseworkerToken());
+        log.info("Bulk listing generation completed");
+        return  result;
     }
 
 }

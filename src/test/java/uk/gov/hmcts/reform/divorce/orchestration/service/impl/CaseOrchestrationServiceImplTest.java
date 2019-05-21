@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,10 +26,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateResponden
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
@@ -155,7 +158,13 @@ public class CaseOrchestrationServiceImplTest {
     private CaseLinkedForHearingWorkflow caseLinkedForHearingWorkflow;
 
     @Mock
+    private ProcessAwaitingPronouncementCasesWorkflow processAwaitingPronouncementCasesWorkflow;
+
+    @Mock
     private GetCaseWithIdWorkflow getCaseWithIdWorkflow;
+
+    @Mock
+    private GenerateCoRespondentAnswersWorkflow generateCoRespondentAnswersWorkflow;
 
     @Mock
     private RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
@@ -738,6 +747,35 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
+    public void whenProcessAwaitingPronouncementCases_thenProceedAsExpected() throws WorkflowException {
+        Map<String, Object> expectedResult = ImmutableMap.of("someKey", "someValue");
+        when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
+        when(processAwaitingPronouncementCasesWorkflow.run(AUTH_TOKEN)).thenReturn(expectedResult);
+
+        Map<String, Object>  actual = classUnderTest.generateBulkCaseForListing();
+
+        assertEquals(expectedResult, actual);
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_ForCoRespondentAnswersGeneratorEvent() throws WorkflowException {
+        when(generateCoRespondentAnswersWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(AUTH_TOKEN)))
+            .thenReturn(requestPayload);
+
+        assertThat(classUnderTest.generateCoRespondentAnswers(ccdCallbackRequest, AUTH_TOKEN),
+            is(equalTo(requestPayload)));
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldThrowException_ForCoRespondentAnswersGeneratorEvent_WhenWorkflowExceptionIsCaught()
+            throws WorkflowException {
+        when(generateCoRespondentAnswersWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(AUTH_TOKEN)))
+            .thenThrow(new WorkflowException("This operation threw an exception"));
+
+        classUnderTest.generateCoRespondentAnswers(ccdCallbackRequest, AUTH_TOKEN);
+    }
+
+    @Test
     public void testServiceCallsRightWorkflowWithRightData_ForProcessingAosSolicitorNominated()
             throws WorkflowException, CaseOrchestrationServiceException {
         when(respondentSolicitorNominatedWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()))).thenReturn(requestPayload);
@@ -756,6 +794,7 @@ public class CaseOrchestrationServiceImplTest {
 
         classUnderTest.processAosSolicitorNominated(ccdCallbackRequest);
     }
+
 
     @After
     public void tearDown() {

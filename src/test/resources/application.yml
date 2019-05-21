@@ -62,16 +62,17 @@ uk:
       email:
         templates: "{
                       AOS_RECEIVED_NO_ADMIT_ADULTERY: '015fb73a-3be2-49d8-8ed8-a4078025dae3',
+                      AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: 'bc6ee2ec-f62b-4321-b19f-65e868f849eb',
                       AOS_RECEIVED_NO_CONSENT_2_YEARS: '845d0114-0f74-43a4-b11c-8ebeceb01c5b',
                       APPLIC_SUBMISSION: 'c323844c-5fb9-4ba4-8290-b84139eb033c',
                       GENERIC_UPDATE: '6ee6ec29-5e88-4516-99cb-2edc30256575',
-                      RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION: 'eac41143-b296-4879-ba60-a0ea6f97c757',
-                      RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION: '277fd3f3-2fdb-4c79-9354-1b3db8d44cca',
                       PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION: '9937c8bc-dc7a-4210-a25b-20aceb82d48d',
-                      SAVE_DRAFT: '14074c06-87f1-4678-9238-4d71e741eb57',
-                      AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: 'bc6ee2ec-f62b-4321-b19f-65e868f849eb',
-                      RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED: '44e2dd30-4303-4f4c-a394-ce0b54af81dd',
                       PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION: '686ce418-6d76-48ce-b903-a87d2b832125',
+                      RESPONDENT_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION: '80b986e1-056b-4577-a343-bb2e72e2a3f0',
+                      RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION: 'eac41143-b296-4879-ba60-a0ea6f97c757',
+                      RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED: '44e2dd30-4303-4f4c-a394-ce0b54af81dd',
+                      RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION: '277fd3f3-2fdb-4c79-9354-1b3db8d44cca',
+                      SAVE_DRAFT: '14074c06-87f1-4678-9238-4d71e741eb57',
                       RESPONDENT_SOLICITOR_AOS_INVITATION: 'a193f039-2252-425d-861c-6dba255b7e6e'
                     }"
         template:
@@ -200,7 +201,7 @@ court:
                 \"poBox\": \"PO Box 10447\",
                 \"postCode\": \"NG2 9QN\",
                 \"openingHours\": \"Telephone Enquiries from: 8.30am to 5pm\",
-                \"email\": \"divorcecase@justice.gov.uk\",
+                \"email\": \"contactdivorce@justice.gov.uk\",
                 \"phoneNumber\": \"0300 303 0642\",
                 \"siteId\": \"AA07\"
               }
@@ -261,6 +262,9 @@ documentation:
 # Enable default health indicators
 # Enable disk space health check
 management:
+  health:
+    elasticsearch:
+      enabled: false
   endpoint:
     health:
       show-details: "ALWAYS"
