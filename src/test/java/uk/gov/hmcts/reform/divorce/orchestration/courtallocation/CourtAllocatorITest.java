@@ -24,7 +24,7 @@ public class CourtAllocatorITest {
     private static final int SAMPLES_NUMBER = 10000;
 
     @Autowired
-    private CourtAllocator courtAllocator;
+    private CourtConfigAllocator courtAllocator;
 
     @Test
     public void givenDesertionCase_whenAllocateCase_thenReturnServiceCenter() {

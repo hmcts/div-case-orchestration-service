@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.CourtAllocationConfiguration;
-import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.CourtAllocator;
-import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.DefaultCourtAllocator;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -15,15 +13,6 @@ public class CourtAllocationConfigurator {
 
     @Autowired
     private CourtDistributionConfig courtDistributionConfig;
-
-    @Bean
-    public CourtAllocator configureCourtAllocationFromEnvironmentVariable() {
-        return new DefaultCourtAllocator(
-            courtDistributionConfig.getDistribution(),
-            courtDistributionConfig.getDivorceCasesRatio(),
-            courtDistributionConfig.getFactAllocation()
-        );
-    }
 
     @Bean
     public CourtAllocationConfiguration setUpCourtAllocationConfiguration() {
