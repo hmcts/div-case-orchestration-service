@@ -108,6 +108,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk());
 
+        waitTime();
         Mockito.verify(linkBulkCaseWorkflowSpy, timeout(WAIT_TIME_IN_MILLIS).times(2)).run(any(), any(), any());
 
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
@@ -155,10 +156,16 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk());
 
+        waitTime();
         Mockito.verify(linkBulkCaseWorkflowSpy, timeout(WAIT_TIME_IN_MILLIS).times(2)).run(any(), any(), any());
 
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
+    }
+
+    private void waitTime() throws InterruptedException {
+        //TODO do not merge this change
+        Thread.sleep(1000);
     }
 
     private CaseDetails prepareBulkCase() {

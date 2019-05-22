@@ -226,16 +226,19 @@ def versions = [
         bcpkixJdk15on                   : '1.60',
         springSecurityRsa               : '1.0.8.RELEASE',
         springSecurityCrypto            : '5.1.5.RELEASE',
-        tomcat                          : '9.0.19'
+        tomcat                          : '9.0.19',
+        sendLetterClient                : '2.1.1',
+        commonsMath3                    : '3.6.1'
+
 
 ]
 
 dependencies {
     compile project(':job-scheduler')
-    compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.1.1'
+    compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: versions.sendLetterClient
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
     compile group: 'org.springframework.retry', name: 'spring-retry'
-    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    compile group: 'org.apache.commons', name: 'commons-math3', version: versions.commonsMath3
 
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile group: 'org.jdbi', name: 'jdbi', version: '2.78'
@@ -443,8 +446,6 @@ pmd {
 
 def sonarExclusions = [
         '**uk/gov/hmcts/reform/divorce/orchestration/domain/**/*',
-        '**uk/gov/hmcts/reform/divorce/orchestration/domain/model/**/*',
-        '**uk/gov/hmcts/reform/divorce/orchestration/exception/*',
         '**uk/gov/hmcts/reform/divorce/orchestration/**/config/**/*',
         '**uk/gov/hmcts/reform/divorce/orchestration/OrchestrationServiceApplication.java',
         '**uk/gov/hmcts/reform/divorce/orchestration/client/**',
@@ -453,12 +454,8 @@ def sonarExclusions = [
         '**uk/gov/hmcts/reform/divorce/orchestration/util/FlywayNoOpStrategy.java',
         '**uk/gov/hmcts/reform/divorce/orchestration/models/Schedule.java',
         '**uk/gov/hmcts/reform/divorce/orchestration/workflows/OverDueSchedulerTaskWorkflow.java',
-        '**uk/gov/hmcts/reform/divorce/orchestration/service/impl/SchedulerServiceImpl.java',
-        '**uk/gov/hmcts/reform/divorce/scheduler/exceptions/**/*',
         '**uk/gov/hmcts/reform/divorce/scheduler/model/*',
-        '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*',
-        '**uk/gov/hmcts/reform/divorce/scheduler/services/JobService.java',
-        '**uk/gov/hmcts/reform/divorce/scheduler/services/JobServiceImpl.java'
+        '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*'
 ]
 
 sonarqube {

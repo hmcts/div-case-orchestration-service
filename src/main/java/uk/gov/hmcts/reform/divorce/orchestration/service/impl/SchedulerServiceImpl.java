@@ -25,12 +25,12 @@ import javax.annotation.PostConstruct;
 @Slf4j
 public class SchedulerServiceImpl implements SchedulerService {
 
-    private SchedulerConfig schedulerConfig;
-
     @Value("${scheduler.re-create}")
     private boolean deleteOldSchedules;
 
-    private JobService jobService;
+    private final SchedulerConfig schedulerConfig;
+
+    private final JobService jobService;
 
     public SchedulerServiceImpl(@Autowired JobService jobService, SchedulerConfig schedulerConfig) {
         this.jobService = jobService;

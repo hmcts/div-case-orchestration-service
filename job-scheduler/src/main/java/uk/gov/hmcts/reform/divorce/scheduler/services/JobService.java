@@ -1,14 +1,15 @@
 package uk.gov.hmcts.reform.divorce.scheduler.services;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.scheduler.exceptions.JobException;
 import uk.gov.hmcts.reform.divorce.scheduler.model.JobData;
@@ -24,25 +25,16 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class JobService {
 
     private final Scheduler scheduler;
 
-    @Autowired
-    public JobService(Scheduler scheduler) {
-        this.scheduler = scheduler;
-    }
-
     public JobKey scheduleJob(JobData jobData, ZonedDateTime startDateTime) {
         try {
             scheduler.scheduleJob(
-                newJob(jobData.getJobClass())
-                    .withIdentity(jobData.getId(), jobData.getGroup())
-                    .withDescription(jobData.getDescription())
-                    .usingJobData(new JobDataMap(jobData.getData()))
-                    .requestRecovery()
-                    .build(),
+                getJobDetail(jobData),
                 newTrigger()
                     .startAt(Date.from(startDateTime.toInstant()))
                     .withIdentity(jobData.getId(), jobData.getGroup())
@@ -53,9 +45,8 @@ public class JobService {
                     )
                     .build()
             );
-            return JobKey.jobKey(jobData.getId(), jobData.getGroup());
 
-
+            return getJobKey(jobData);
         } catch (SchedulerException exc) {
             throw new JobException("Error while scheduling a job", exc);
         }
@@ -64,12 +55,7 @@ public class JobService {
     public JobKey scheduleJob(JobData jobData, String cronExpression) {
         try {
             scheduler.scheduleJob(
-                newJob(jobData.getJobClass())
-                    .withIdentity(jobData.getId(), jobData.getGroup())
-                    .withDescription(jobData.getDescription())
-                    .usingJobData(new JobDataMap(jobData.getData()))
-                    .requestRecovery()
-                    .build(),
+                getJobDetail(jobData),
                 newTrigger()
                     .withIdentity(jobData.getId(), jobData.getGroup())
                     .withDescription(jobData.getDescription())
@@ -78,7 +64,7 @@ public class JobService {
                     )
                     .build()
             );
-            return JobKey.jobKey(jobData.getId(), jobData.getGroup());
+            return getJobKey(jobData);
         } catch (SchedulerException exc) {
             throw new JobException("Error while scheduling a job", exc);
         }
@@ -91,7 +77,7 @@ public class JobService {
                 try {
                     scheduler.deleteJob(jobKey);
                 } catch (SchedulerException e) {
-                    log.error("Failed to delete jobs $0 ", e.getMessage());
+                    log.error("Failed to delete jobs {} ", jobKey.getName(), e);
                 }
             }
         }
@@ -117,10 +103,25 @@ public class JobService {
             if (rescheduleJob == null) {
                 scheduleJob(jobData, startDateTime);
             }
-            return JobKey.jobKey(jobData.getId(), jobData.getGroup());
+
+            return getJobKey(jobData);
 
         } catch (SchedulerException exc) {
             throw new JobException("Error while rescheduling a job", exc);
         }
+    }
+
+    private JobKey getJobKey(JobData jobData) {
+        return JobKey.jobKey(jobData.getId(), jobData.getGroup());
+    }
+
+    private JobDetail getJobDetail(JobData jobData) {
+        return newJob(jobData.getJobClass())
+            .withIdentity(jobData.getId(), jobData.getGroup())
+            .withDescription(jobData.getDescription())
+            .usingJobData(new JobDataMap(jobData.getData()))
+            .requestRecovery()
+            .build();
+
     }
 }

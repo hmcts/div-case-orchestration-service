@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.models.Schedule;
+import uk.gov.hmcts.reform.divorce.scheduler.exceptions.JobException;
 import uk.gov.hmcts.reform.divorce.scheduler.model.JobData;
 import uk.gov.hmcts.reform.divorce.scheduler.services.JobService;
 
@@ -35,7 +36,13 @@ public class AbstractJobSchedulerTask implements Task<String> {
                 .group(CRON_GROUP)
                 .jobClass(schedule.getJobClass())
                 .data(Collections.emptyMap()).build();
-        JobKey jobKey = jobService.scheduleJob(jobData, schedule.getCron());
-        return jobKey.getName();
+        try {
+            JobKey jobKey = jobService.scheduleJob(jobData, schedule.getCron());
+            log.info("Job schedule with key {}", jobKey.getName());
+            return jobKey.getName();
+        } catch (JobException e) {
+            throw new TaskException(e);
+        }
+
     }
 }
