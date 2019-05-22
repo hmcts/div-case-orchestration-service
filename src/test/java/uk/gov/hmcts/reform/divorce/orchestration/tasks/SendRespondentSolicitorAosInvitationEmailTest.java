@@ -38,17 +38,19 @@ public class SendRespondentSolicitorAosInvitationEmailTest {
         caseData.put("D8RespondentSolicitorName", "sol name");
         caseData.put("D8RespondentFirstName", "resp first");
         caseData.put("D8RespondentLastName", "resp last");
+        caseData.put("D8caseReference", "LV17D80100");
 
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject("caseId", "1111222233334444");
         context.setTransientObject("pin", "A1B2C3D4");
 
         Map<String, String> expectedTemplateVars = new HashMap<>();
-        expectedTemplateVars.put("CCD reference", "1111-2222-3333-4444");
+        expectedTemplateVars.put("CCD reference", "LV17D80100");
         expectedTemplateVars.put("solicitors name", "sol name");
         expectedTemplateVars.put("first name", "resp first");
         expectedTemplateVars.put("last name", "resp last");
         expectedTemplateVars.put("access code", "A1B2C3D4");
+        expectedTemplateVars.put("case number", "1111-2222-3333-4444");
 
         // when
         Map<String, Object> returnedPayload = sendRespondentSolicitorAosInvitationEmail.execute(context, caseData);
