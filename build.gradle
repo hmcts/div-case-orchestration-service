@@ -171,12 +171,6 @@ distributions {
     }
 }
 
-//checkstyle {
-//    toolVersion = '7.2'
-//    configFile = project(':').file('checkstyle.xml')
-//    configProperties = ["suppressionFile": project(':').file('suppressions.xml')]
-//}
-
 // make build fail on Checkstyle issues (https://github.com/gradle/gradle/issues/881)
 tasks.withType(Checkstyle).each { checkstyleTask ->
     checkstyleTask.doLast {
@@ -227,7 +221,7 @@ def versions = [
         ccdStoreClient                  : '4.6.2',
         javaxWsRs                       : '2.1.1',
         jsonPathAssert                  : '2.2.0',
-        jacksonDatabind                 : '2.9.8',
+        jacksonDatabind                 : '2.9.9',
         guava                           : '27.1-jre',
         bcpkixJdk15on                   : '1.60',
         springSecurityRsa               : '1.0.8.RELEASE',
@@ -455,16 +449,16 @@ def sonarExclusions = [
         '**uk/gov/hmcts/reform/divorce/orchestration/OrchestrationServiceApplication.java',
         '**uk/gov/hmcts/reform/divorce/orchestration/client/**',
         '**uk/gov/hmcts/reform/divorce/orchestration/framework/workflow/task/DefaultTaskContext.java',
-        '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*',
         '**uk/gov/hmcts/reform/divorce/orchestration/jobs/**/*',
         '**uk/gov/hmcts/reform/divorce/orchestration/util/FlywayNoOpStrategy.java',
-        '**uk/gov/hmcts/reform/divorce/scheduler/exceptions/**/*',
         '**uk/gov/hmcts/reform/divorce/orchestration/models/Schedule.java',
-        '**uk/gov/hmcts/reform/divorce/scheduler/models/JobData.java',
-        '**uk/gov/hmcts/reform/divorce/scheduler/services/JobService.java',
-        '**uk/gov/hmcts/reform/divorce/scheduler/services/JobServiceImpl.java',
         '**uk/gov/hmcts/reform/divorce/orchestration/workflows/OverDueSchedulerTaskWorkflow.java',
-        '**uk/gov/hmcts/reform/divorce/orchestration/service/impl/SchedulerServiceImpl.java'
+        '**uk/gov/hmcts/reform/divorce/orchestration/service/impl/SchedulerServiceImpl.java',
+        '**uk/gov/hmcts/reform/divorce/scheduler/exceptions/**/*',
+        '**uk/gov/hmcts/reform/divorce/scheduler/models/*',
+        '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*',
+        '**uk/gov/hmcts/reform/divorce/scheduler/services/JobService.java',
+        '**uk/gov/hmcts/reform/divorce/scheduler/services/JobServiceImpl.java'
 ]
 
 sonarqube {
