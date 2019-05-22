@@ -27,6 +27,9 @@ java:
     UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS: "{SAVE_DRAFT: {divorceUrl: 'https://div-pfe-aat.service.core-compute-aat.internal'}}"
     DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-aat.service.core-compute-aat.internal"
     FEES_AND_PAYMENTS_SERVICE_API_BASEURL: "http://div-fps-aat.service.core-compute-aat.internal"
+  # Don't modify these properties
+  image: ${IMAGE_NAME}
+  ingressHost: ${SERVICE_FQDN}
 
 postgresql:
   postgresqlUsername: div_scheduler_user
@@ -36,6 +39,4 @@ postgresql:
     port: 5432
   persistence:
     enabled: false
-  # Don't modify below here
-  image: ${IMAGE_NAME}
-  ingressHost: ${SERVICE_FQDN}
+
