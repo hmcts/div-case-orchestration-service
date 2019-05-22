@@ -44,12 +44,13 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
     private String contextPath;
 
     @Test
+    @SuppressWarnings("VariableDeclarationUsageDistance")
     public void whenCreateBulkCase_CaseIsCreated() throws Exception {
         final UserDetails user1 = createCitizenUser();
         final UserDetails user2 = createCitizenUser();
 
-        CaseDetails case1 = createAwaitingPronouncementCase(user1);
-        CaseDetails case2 = createAwaitingPronouncementCase(user2);
+        final CaseDetails case1 = createAwaitingPronouncementCase(user1);
+        final CaseDetails case2 = createAwaitingPronouncementCase(user2);
         waitToProcess();
 
         createBulkCase()

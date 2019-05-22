@@ -20,7 +20,7 @@ import java.util.Properties;
 
 @Configuration
 @ConfigurationProperties
-@ConditionalOnProperty( value="scheduler.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "scheduler.enabled", havingValue = "true", matchIfMissing = true)
 public class QuartzConfiguration {
 
     @Autowired

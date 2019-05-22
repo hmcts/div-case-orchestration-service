@@ -16,12 +16,12 @@ import javax.sql.DataSource;
 
 @Configuration
 @ConfigurationProperties
-@ConditionalOnProperty(value="scheduler.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "scheduler.enabled", havingValue = "true", matchIfMissing = true)
 public class SchedulerDBConfiguration {
 
     @Bean
     @Primary
-     @ConfigurationProperties("spring.datasource.scheduler")
+    @ConfigurationProperties("spring.datasource.scheduler")
     public DataSourceProperties schedulerDataSourceProperties() {
         return new DataSourceProperties();
     }
