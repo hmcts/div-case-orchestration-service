@@ -179,7 +179,6 @@ distributions {
 
 // make build fail on Checkstyle issues (https://github.com/gradle/gradle/issues/881)
 tasks.withType(Checkstyle).each { checkstyleTask ->
-
     checkstyleTask.doLast {
         reports.all { report ->
             def outputFile = report.destination
@@ -509,9 +508,6 @@ run {
         jvmArgs = ['-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5010']
     }
 }
-
-
-
 
 flyway {
     url = System.getenv('FLYWAY_URL')
