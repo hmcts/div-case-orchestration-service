@@ -1,4 +1,4 @@
-import org.springframework.boot.gradle.tasks.run.BootRun
+jacksonDatabind                 : '2.9.9',import org.springframework.boot.gradle.tasks.run.BootRun
 
 buildscript {
     ext {
@@ -132,7 +132,7 @@ def versions = [
         ccdStoreClient                  : '4.6.2',
         javaxWsRs                       : '2.1.1',
         jsonPathAssert                  : '2.2.0',
-        jacksonDatabind                 : '2.9.8',
+        jacksonDatabind                 : '2.9.9',
         guava                           : '27.1-jre',
         bcpkixJdk15on                   : '1.60',
         springSecurityRsa               : '1.0.8.RELEASE',
