@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,5 +15,6 @@ import java.util.Map;
 @Validated
 @Getter
 public class CourtDetailsConfig {
+    @NotNull
     private Map<String, Court> locations = new HashMap<>();
 }
