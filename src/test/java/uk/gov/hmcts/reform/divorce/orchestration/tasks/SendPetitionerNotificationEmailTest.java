@@ -108,7 +108,7 @@ public class SendPetitionerNotificationEmailTest {
         when(emailService.sendEmail(TEST_USER_EMAIL,
             EmailTemplateNames.GENERIC_UPDATE.name(),
             expectedTemplateVars,
-            "generic update notification"))
+            "Generic Update Notification - Petitioner"))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
@@ -116,7 +116,7 @@ public class SendPetitionerNotificationEmailTest {
         verify(emailService).sendEmail(TEST_USER_EMAIL,
             EmailTemplateNames.GENERIC_UPDATE.name(),
             expectedTemplateVars,
-            "generic update notification");
+            "Generic Update Notification - Petitioner");
     }
 
     @Test
@@ -130,7 +130,7 @@ public class SendPetitionerNotificationEmailTest {
                 TEST_USER_EMAIL,
                 EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
                 expectedTemplateVars,
-                "resp does not admit adultery update notification"))
+                "Resp does not admit adultery update notification"))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
@@ -139,7 +139,7 @@ public class SendPetitionerNotificationEmailTest {
             TEST_USER_EMAIL,
             EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
             expectedTemplateVars,
-            "resp does not admit adultery update notification");
+            "Resp does not admit adultery update notification");
     }
 
     @Test
@@ -155,7 +155,7 @@ public class SendPetitionerNotificationEmailTest {
                 TEST_USER_EMAIL,
                 EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
                 expectedTemplateVars,
-                "resp does not admit adultery update notification - no reply from co-resp"))
+                "Resp does not admit adultery update notification - no reply from co-resp"))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
@@ -164,7 +164,7 @@ public class SendPetitionerNotificationEmailTest {
                 TEST_USER_EMAIL,
                 EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
                 expectedTemplateVars,
-                "resp does not admit adultery update notification - no reply from co-resp");
+                "Resp does not admit adultery update notification - no reply from co-resp");
     }
 
     @Test
@@ -178,7 +178,7 @@ public class SendPetitionerNotificationEmailTest {
                 TEST_USER_EMAIL,
                 EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
                 expectedTemplateVars,
-                "resp does not consent to 2 year separation update notification"))
+                "Resp does not consent to 2 year separation update notification"))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
@@ -187,7 +187,7 @@ public class SendPetitionerNotificationEmailTest {
                 TEST_USER_EMAIL,
                 EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
                 expectedTemplateVars,
-                "resp does not consent to 2 year separation update notification");
+                "Resp does not consent to 2 year separation update notification");
     }
 
     @Test
@@ -197,7 +197,7 @@ public class SendPetitionerNotificationEmailTest {
         when(emailService.sendEmail(TEST_USER_EMAIL,
             EmailTemplateNames.GENERIC_UPDATE.name(),
             expectedTemplateVars,
-            "generic update notification"))
+            "Generic Update Notification - Petitioner"))
                 .thenReturn(null);
 
         assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
@@ -205,7 +205,7 @@ public class SendPetitionerNotificationEmailTest {
         verify(emailService).sendEmail(TEST_USER_EMAIL,
             EmailTemplateNames.GENERIC_UPDATE.name(),
             expectedTemplateVars,
-            "generic update notification");
+            "Generic Update Notification - Petitioner");
     }
 
     @Test
