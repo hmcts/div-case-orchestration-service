@@ -32,15 +32,4 @@
         <gav regex="true">^net\.sourceforge\.pmd:pmd-java:.*$</gav>
         <cve>CVE-2019-7722</cve>
     </suppress>
-    <suppress>
-        <notes><![CDATA[
-       file name: pmd-core-5.8.1.jar
-       ]]></notes>
-        <gav regex="true">^net\.sourceforge\.pmd:pmd-core:.*$</gav>
-        <cve>CVE-2019-7722</cve>
-    </suppress>
-    <suppress>
-        <gav regex="true">.*</gav>
-        <cve>CVE-2019-12086</cve>
-    </suppress>
 </suppressions>

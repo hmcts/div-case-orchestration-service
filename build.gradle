@@ -455,7 +455,7 @@ def sonarExclusions = [
         '**uk/gov/hmcts/reform/divorce/orchestration/workflows/OverDueSchedulerTaskWorkflow.java',
         '**uk/gov/hmcts/reform/divorce/orchestration/service/impl/SchedulerServiceImpl.java',
         '**uk/gov/hmcts/reform/divorce/scheduler/exceptions/**/*',
-        '**uk/gov/hmcts/reform/divorce/scheduler/models/*',
+        '**uk/gov/hmcts/reform/divorce/scheduler/model/*',
         '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*',
         '**uk/gov/hmcts/reform/divorce/scheduler/services/JobService.java',
         '**uk/gov/hmcts/reform/divorce/scheduler/services/JobServiceImpl.java'
