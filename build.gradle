@@ -527,9 +527,3 @@ task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
         url = "jdbc:postgresql://${dburl}"
     }
 }
-
-test {
-    testLogging {
-        exceptionFormat = 'full'
-    }
-}
