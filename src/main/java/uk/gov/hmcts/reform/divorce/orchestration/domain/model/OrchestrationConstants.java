@@ -132,7 +132,6 @@ public class OrchestrationConstants {
     public static final String AWAITING_CLARIFICATION = "AwaitingClarification";
     public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String DEFENDED = "DefendedDivorce";
-    public static final String DN_AWAITING = "DNAwaiting";
     public static final String DN_PRONOUNCED = "DNPronounced";
     public static final String AWAITING_DA = "AwaitingDecreeAbsolute";
     public static final String DA_REQUESTED = "DARequested";

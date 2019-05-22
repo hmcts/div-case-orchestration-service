@@ -36,7 +36,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AWAITING_DN_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AWAITING_LA_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DEFENDED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -122,7 +121,7 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
         if (AOS_COMPLETED.equals(currentCaseState)) {
             return CO_RESPONDENT_SUBMISSION_AOS_COMPLETED_EVENT_ID;
         }
-        if (AWAITING_DECREE_NISI.equals(currentCaseState) || DN_AWAITING.equals(currentCaseState)) {
+        if (AWAITING_DECREE_NISI.equals(currentCaseState)) {
             return CO_RESPONDENT_SUBMISSION_AWAITING_DN_EVENT_ID;
         }
         if (AWAITING_LEGAL_ADVISOR_REFERRAL.equals(currentCaseState)) {
