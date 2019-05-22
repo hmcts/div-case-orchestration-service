@@ -127,14 +127,14 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         String receivedAosFromCoResp = getFieldAsStringOrNull(caseDetails, RECEIVED_AOS_FROM_CO_RESP);
 
         EmailTemplateNames template = EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT;
-        if (reasonForDivorce.equals(ADULTERY) && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
+        if (StringUtils.equalsIgnoreCase(ADULTERY, reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact)) {
             if (StringUtils.equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !StringUtils.equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE)) {
                 template = EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED;
             } else {
                 template = EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY;
             }
-        } else if (reasonForDivorce.equals(SEPARATION_2YRS)
-            && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
+        } else if (StringUtils.equalsIgnoreCase(SEPARATION_2YRS, reasonForDivorce)
+            && StringUtils.equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact)) {
             template = EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS;
         } else if (StringUtils.equalsIgnoreCase(isCoRespNamed, YES_VALUE)
             && !StringUtils.equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE)) {
