@@ -70,3 +70,8 @@ variable "aos_responded_awaiting_answer_days_to_respond" {
 variable "idam_strategic_enabled" {
   default = "true"
 }
+
+variable "location_db" {
+  type    = "string"
+  default = "UK South"
+}
