@@ -5,10 +5,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 
 @Component
 @ConfigurationProperties(prefix = "court-distribution-config")
