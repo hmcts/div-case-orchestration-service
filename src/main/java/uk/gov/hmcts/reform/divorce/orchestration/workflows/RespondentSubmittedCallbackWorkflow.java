@@ -121,25 +121,36 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
     }
 
     private EmailTemplateNames findTemplateNameToBeSentToPet(CaseDetails caseDetails) {
-        String reasonForDivorce = getFieldAsStringOrNull(caseDetails, D_8_REASON_FOR_DIVORCE);
-        String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseDetails, RESP_ADMIT_OR_CONSENT_TO_FACT);
-        String isCoRespNamed = getFieldAsStringOrNull(caseDetails, D_8_CO_RESPONDENT_NAMED);
-        String receivedAosFromCoResp = getFieldAsStringOrNull(caseDetails, RECEIVED_AOS_FROM_CO_RESP);
-
         EmailTemplateNames template = EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT;
-        if (StringUtils.equalsIgnoreCase(ADULTERY, reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact)) {
-            if (StringUtils.equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !StringUtils.equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE)) {
+        if (isAdulteryAndNoConsent(caseDetails)) {
+            if (isCoRespNamedAndNotReplied(caseDetails)) {
                 template = EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED;
             } else {
                 template = EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY;
             }
-        } else if (StringUtils.equalsIgnoreCase(SEPARATION_2YRS, reasonForDivorce)
-            && StringUtils.equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact)) {
+        } else if (isSep2YrAndNoConsent(caseDetails)) {
             template = EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS;
-        } else if (StringUtils.equalsIgnoreCase(isCoRespNamed, YES_VALUE)
-            && !StringUtils.equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE)) {
+        } else if (isCoRespNamedAndNotReplied(caseDetails)) {
             template = EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED;
         }
         return template;
+    }
+
+    private boolean isAdulteryAndNoConsent(CaseDetails caseDetails) {
+        String reasonForDivorce = getFieldAsStringOrNull(caseDetails, D_8_REASON_FOR_DIVORCE);
+        String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseDetails, RESP_ADMIT_OR_CONSENT_TO_FACT);
+        return StringUtils.equalsIgnoreCase(ADULTERY, reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
+    }
+
+    private boolean isSep2YrAndNoConsent(CaseDetails caseDetails) {
+        String reasonForDivorce = getFieldAsStringOrNull(caseDetails, D_8_REASON_FOR_DIVORCE);
+        String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseDetails, RESP_ADMIT_OR_CONSENT_TO_FACT);
+        return StringUtils.equalsIgnoreCase(SEPARATION_2YRS, reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
+    }
+
+    private boolean isCoRespNamedAndNotReplied(CaseDetails caseDetails) {
+        String isCoRespNamed = getFieldAsStringOrNull(caseDetails, D_8_CO_RESPONDENT_NAMED);
+        String receivedAosFromCoResp = getFieldAsStringOrNull(caseDetails, RECEIVED_AOS_FROM_CO_RESP);
+        return StringUtils.equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !StringUtils.equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE);
     }
 }
