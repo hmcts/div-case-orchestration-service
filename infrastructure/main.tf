@@ -102,31 +102,31 @@ module "div-scheduler-db" {
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   name      = "${var.component}-POSTGRES-USER"
   value     = "${module.div-scheduler-db.user_name}"
-  vault_uri = "${data.azurerm_key_vault.key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
   name      = "${var.component}-POSTGRES-PASS"
   value     = "${module.div-scheduler-db.postgresql_password}"
-  vault_uri = "${data.azurerm_key_vault.key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
   name      = "${var.component}-POSTGRES-HOST"
   value     = "${module.div-scheduler-db.host_name}"
-  vault_uri = "${data.azurerm_key_vault.key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
   name      = "${var.component}-POSTGRES-PORT"
   value     = "${module.div-scheduler-db.postgresql_listen_port}"
-  vault_uri = "${data.azurerm_key_vault.key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   name      = "${var.component}-POSTGRES-DATABASE"
   value     = "${module.div-scheduler-db.postgresql_database}"
-  vault_uri = "${data.azurerm_key_vault.key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault" "div_key_vault" {
