@@ -23,7 +23,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
@@ -77,9 +76,6 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
     @Autowired
     private MockMvc webClient;
-
-    @Autowired
-    private CaseMaintenanceClient caseMaintenanceClient;
 
     @Value("${auth2.client.id}")
     private String authClientId;
@@ -160,7 +156,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     }
 
     private void waitAsyncCompleted() {
-            await().until(() -> asyncTaskExecutor.getThreadPoolExecutor().getActiveCount() == 0);
+        await().until(() -> asyncTaskExecutor.getThreadPoolExecutor().getActiveCount() == 0);
     }
 
     private CaseDetails prepareBulkCase() {
