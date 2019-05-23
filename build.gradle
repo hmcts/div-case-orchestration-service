@@ -45,6 +45,7 @@ allprojects {
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'org.owasp.dependencycheck'
     apply plugin: 'com.github.ben-manes.versions'
+    apply plugin: 'jacoco'
 
     group = 'uk.gov.hmcts.reform.divorce'
     version = '0.0.1'

@@ -11,6 +11,7 @@ import org.quartz.JobKey;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.AbstractJobSchedulerTask;
 import uk.gov.hmcts.reform.divorce.orchestration.jobs.DueDateJob;
 import uk.gov.hmcts.reform.divorce.orchestration.models.Schedule;
+import uk.gov.hmcts.reform.divorce.scheduler.exceptions.JobException;
 import uk.gov.hmcts.reform.divorce.scheduler.model.JobData;
 import uk.gov.hmcts.reform.divorce.scheduler.services.JobService;
 
@@ -31,13 +32,20 @@ public class AbstractJobSchedulerTaskUTest {
     public void setup() {
         this.schedule = Schedule.builder().name("testSchedule").cron("909090")
                 .jobClass(DueDateJob.class).description("desc").build();
-        classToTest = new AbstractJobSchedulerTask(jobService, schedule);
-        when(jobService.scheduleJob(any(JobData.class), Mockito.eq(schedule.getCron()))).thenReturn(new JobKey("jobkey"));
-
     }
 
     @Test
     public void testExecute() throws TaskException {
+        classToTest = new AbstractJobSchedulerTask(jobService, schedule);
+        when(jobService.scheduleJob(any(JobData.class), Mockito.eq(schedule.getCron()))).thenReturn(new JobKey("jobkey"));
+        String actual = classToTest.execute(new DefaultTaskContext(), "payload");
+        Assert.assertSame("jobkey", actual);
+    }
+
+    @Test(expected =  TaskException.class)
+    public void testExecuteWithError() throws TaskException {
+        classToTest = new AbstractJobSchedulerTask(jobService, schedule);
+        when(jobService.scheduleJob(any(JobData.class), Mockito.eq(schedule.getCron()))).thenThrow(new JobException("Error", new RuntimeException()));
         String actual = classToTest.execute(new DefaultTaskContext(), "payload");
         Assert.assertSame("jobkey", actual);
     }

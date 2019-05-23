@@ -31,21 +31,23 @@ quartzProperties:
     scheduler:
       instanceId: AUTO
     jobStore:
-      isClustered: false
+      isClustered: true
       class: org.quartz.impl.jdbcjobstore.JobStoreTX
       driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
-      dataSource: cmcDataSource
+      dataSource:  divDataSource
     threadPool:
       class: org.quartz.simpl.SimpleThreadPool
       threadCount: 8
 
 scheduler:
   re-create: true
-  schedule:
-    name: 'test schedulder'
-    description: ' test scheduler'
-    jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.jobs.DueDateJob.class'
-    cron: '0 0/1 * 1/1 * ? *'
+  enabled: true
+  schedules:
+    - name: 'Test Schedulder'
+      description: 'Scheduler to test'
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.jobs.DueDateJob'
+      cron: '0 0/1 * 1/1 * ? *'
+#      0 0/5 0 ? * * *
 
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
