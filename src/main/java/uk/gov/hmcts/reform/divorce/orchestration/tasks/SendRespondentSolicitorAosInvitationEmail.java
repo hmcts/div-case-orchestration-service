@@ -14,6 +14,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
@@ -28,6 +29,7 @@ public class SendRespondentSolicitorAosInvitationEmail implements Task<Map<Strin
     private static final String ACCESS_CODE = "access code";
     private static final String SOLICITORS_NAME = "solicitors name";
     private static final String CCD_REFERENCE = "CCD reference";
+    private static final String CASE_NUMBER = "case number";
     private static final String RESPONDENT_SOLICITOR_S_AOS_INVITATION = "Respondent solicitor's AOS invitation";
 
     private final TaskCommons taskCommons;
@@ -43,11 +45,12 @@ public class SendRespondentSolicitorAosInvitationEmail implements Task<Map<Strin
         Map<String, String> templateVars = new HashMap<>();
 
         String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
-        templateVars.put(CCD_REFERENCE, formatCaseIdToReferenceNumber(caseId));
+        templateVars.put(CCD_REFERENCE, (String) payload.get(D_8_CASE_REFERENCE));
         templateVars.put(SOLICITORS_NAME, (String) payload.get(D8_RESPONDENT_SOLICITOR_NAME));
         templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, (String) payload.get(RESP_FIRST_NAME_CCD_FIELD));
         templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) payload.get(RESP_LAST_NAME_CCD_FIELD));
         templateVars.put(ACCESS_CODE, context.getTransientObject(RESPONDENT_PIN));
+        templateVars.put(CASE_NUMBER, formatCaseIdToReferenceNumber(caseId));
 
         try {
             taskCommons.sendEmail(
