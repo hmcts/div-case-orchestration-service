@@ -132,7 +132,7 @@ def versions = [
         ccdStoreClient                  : '4.6.2',
         javaxWsRs                       : '2.1.1',
         jsonPathAssert                  : '2.2.0',
-        jacksonDatabind                 : '2.9.8',
+        jacksonDatabind                 : '2.9.9',
         guava                           : '27.1-jre',
         bcpkixJdk15on                   : '1.60',
         springSecurityRsa               : '1.0.8.RELEASE',
@@ -237,6 +237,8 @@ dependencies {
     compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-el', version: versions.tomcat) {
         force = true
     }
+
+    testCompile 'org.awaitility:awaitility:3.1.6'
 
     //integration test
     integrationTestCompile group: 'com.mashape.unirest', name: 'unirest-java', version: versions.unirest
