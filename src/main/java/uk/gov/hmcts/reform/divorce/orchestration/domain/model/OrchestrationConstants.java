@@ -144,6 +144,7 @@ public class OrchestrationConstants {
 
     // Notification
     public static final String NOTIFICATION_EMAIL = "email_address";
+    public static final String NOTIFICATION_EMAIL_WITH_SPACE = "email address";
     public static final String NOTIFICATION_SEND_EMAIL = "send_email";
     public static final String NOTIFICATION_TEMPLATE = "notification_template";
     public static final String NOTIFICATION_TEMPLATE_VARS = "notification_template_vars";
@@ -153,6 +154,7 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_RELATIONSHIP_KEY = "relationship";
     public static final String NOTIFICATION_REFERENCE_KEY = "ref";
     public static final String NOTIFICATION_CASE_NUMBER_KEY = "case number";
+    public static final String NOTIFICATION_CCD_REFERENCE = "CCD reference";
     public static final String NOTIFICATION_RDC_NAME_KEY = "RDC name";
     public static final String NOTIFICATION_COURT_ADDRESS_KEY = "court address";
     public static final String NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY = "form submission date limit";

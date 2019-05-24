@@ -11,45 +11,45 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL_WITH_SPACE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 
 @Component
-public class SendCoRespondentGenericUpdateNotificationEmail implements Task<Map<String, Object>> {
+public class SendRespondentGenericUpdateNotificationEmail implements Task<Map<String, Object>> {
 
-    private static final String EMAIL_DESC = "Generic Update Notification - CoRespondent";
+    private static final String EMAIL_DESC = "Generic Update Notification - Respondent";
 
     private final EmailService emailService;
 
     @Autowired
-    public SendCoRespondentGenericUpdateNotificationEmail(EmailService emailService) {
+    public SendRespondentGenericUpdateNotificationEmail(EmailService emailService) {
         this.emailService = emailService;
     }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
 
-        String coRespEmail = (String) caseData.get(CO_RESP_EMAIL_ADDRESS);
-        String coRespFirstName = (String) caseData.get(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME);
-        String coRespLastName = (String)  caseData.get(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME);
+        String respEmail = (String) caseData.get(RESPONDENT_EMAIL_ADDRESS);
+        String respFirstName = (String) caseData.get(RESP_FIRST_NAME_CCD_FIELD);
+        String respLastName = (String)  caseData.get(RESP_LAST_NAME_CCD_FIELD);
         String caseNumber = (String) caseData.get(D_8_CASE_REFERENCE);
 
-        if (StringUtils.isNotBlank(coRespEmail)) {
+        if (StringUtils.isNotBlank(respEmail)) {
 
             Map<String, String> templateVars = new HashMap<>();
 
-            templateVars.put(NOTIFICATION_EMAIL_WITH_SPACE, coRespEmail);
-            templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, coRespFirstName);
-            templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, coRespLastName);
+            templateVars.put(NOTIFICATION_EMAIL_WITH_SPACE, respEmail);
+            templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, respFirstName);
+            templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, respLastName);
             templateVars.put(NOTIFICATION_CCD_REFERENCE, caseNumber);
 
-            emailService.sendEmail(coRespEmail, EmailTemplateNames.GENERIC_UPDATE.name(), templateVars, EMAIL_DESC);
+            emailService.sendEmail(respEmail, EmailTemplateNames.GENERIC_UPDATE.name(), templateVars, EMAIL_DESC);
         }
 
         return caseData;

@@ -11,45 +11,45 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL_WITH_SPACE;
 
 @Component
-public class SendCoRespondentGenericUpdateNotificationEmail implements Task<Map<String, Object>> {
+public class SendPetitionerGenericUpdateNotificationEmail implements Task<Map<String, Object>> {
 
-    private static final String EMAIL_DESC = "Generic Update Notification - CoRespondent";
+    private static final String EMAIL_DESC = "Generic Update Notification - Petitioner";
 
     private final EmailService emailService;
 
     @Autowired
-    public SendCoRespondentGenericUpdateNotificationEmail(EmailService emailService) {
+    public SendPetitionerGenericUpdateNotificationEmail(EmailService emailService) {
         this.emailService = emailService;
     }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
 
-        String coRespEmail = (String) caseData.get(CO_RESP_EMAIL_ADDRESS);
-        String coRespFirstName = (String) caseData.get(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME);
-        String coRespLastName = (String)  caseData.get(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME);
-        String caseNumber = (String) caseData.get(D_8_CASE_REFERENCE);
+        String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
+        String petitionerFirstName = (String) caseData.get(D_8_PETITIONER_FIRST_NAME);
+        String petitionerLastName = (String) caseData.get(D_8_PETITIONER_LAST_NAME);
+        String ccdReference = (String) caseData.get(D_8_CASE_REFERENCE);
 
-        if (StringUtils.isNotBlank(coRespEmail)) {
+        if (StringUtils.isNotBlank(petitionerEmail)) {
 
             Map<String, String> templateVars = new HashMap<>();
 
-            templateVars.put(NOTIFICATION_EMAIL_WITH_SPACE, coRespEmail);
-            templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, coRespFirstName);
-            templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, coRespLastName);
-            templateVars.put(NOTIFICATION_CCD_REFERENCE, caseNumber);
+            templateVars.put(NOTIFICATION_EMAIL_WITH_SPACE, petitionerEmail);
+            templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
+            templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
+            templateVars.put(NOTIFICATION_CCD_REFERENCE, ccdReference);
 
-            emailService.sendEmail(coRespEmail, EmailTemplateNames.GENERIC_UPDATE.name(), templateVars, EMAIL_DESC);
+            emailService.sendEmail(petitionerEmail, EmailTemplateNames.GENERIC_UPDATE.name(), templateVars, EMAIL_DESC);
         }
 
         return caseData;

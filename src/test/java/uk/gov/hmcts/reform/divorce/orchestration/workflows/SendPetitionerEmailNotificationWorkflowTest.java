@@ -38,7 +38,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
     private SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
 
     @InjectMocks
-    private SendPetitionerGenericEmailNotificationWorkflow sendPetitionerGenericEmailNotificationWorkflow;
+    private SendPetitionerEmailNotificationWorkflow sendPetitionerEmailNotificationWorkflow;
 
     private CcdCallbackRequest ccdCallbackRequestRequest;
     private Map<String, Object> testData;
@@ -70,7 +70,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
     public void genericEmailTaskShouldExecuteAndReturnPayload() throws Exception {
         when(sendPetitionerUpdateNotificationsEmail.execute(context, testData)).thenReturn(testData);
 
-        assertEquals(testData, sendPetitionerGenericEmailNotificationWorkflow.run(ccdCallbackRequestRequest));
+        assertEquals(testData, sendPetitionerEmailNotificationWorkflow.run(ccdCallbackRequestRequest));
 
         verify(sendPetitionerUpdateNotificationsEmail).execute(context, testData);
     }
