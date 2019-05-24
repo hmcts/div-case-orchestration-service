@@ -47,6 +47,8 @@ public class BulkCaseController {
             @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         orchestrationService.processBulkCaseScheduleForHearing(ccdCallbackRequest, authorizationToken);
+
+        // If no exceptions are thrown, event has been initiated, so return status OK with no data change
         return ResponseEntity.ok(CcdCallbackResponse.builder().build());
     }
 }

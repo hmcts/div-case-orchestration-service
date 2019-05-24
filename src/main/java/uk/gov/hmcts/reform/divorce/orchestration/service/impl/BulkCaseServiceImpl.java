@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseCreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseUpdateCourtHearingEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.BulkUpdateException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkCaseService;
@@ -73,6 +74,11 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         Map<String, Object> bulkCaseData = (Map<String, Object>) caseResponse.getOrDefault(CCD_CASE_DATA_FIELD, Collections.emptyMap());
         List<Map<String, Object>> acceptedDivorceCaseList = (List<Map<String, Object>>) bulkCaseData.getOrDefault(BULK_CASE_ACCEPTED_LIST_KEY, Collections.emptyList());
 
+        // Throw update error is case list is empty
+        if (acceptedDivorceCaseList.size() == 0) {
+            throw new BulkUpdateException("Accepted case list is empty. Not updating bulk case");
+        }
+
         acceptedDivorceCaseList.forEach(caseLinkElem -> {
             try {
                 Map<String, Object> caseLink = (Map<String, Object>) caseLinkElem.get(VALUE_KEY);
@@ -81,10 +87,9 @@ public class BulkCaseServiceImpl implements BulkCaseService {
                 log.info("Updating court hearing details for case id {}", caseId);
                 updateCourtHearingDetailsWorkflow.run(bulkCaseData, caseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
             } catch (Exception e) {
-                //TODO this will be handled on DIV-4811
-                log.error("Case update court hearing details failed : for bulk case id {}", bulkCaseId, e);
+                log.error("Case update with court hearing details failed : for bulk case id {}", bulkCaseId, e);
+                throw new BulkUpdateException("Failed to update court hearing details", e);
             }
-
         });
 
         long endTime = Instant.now().toEpochMilli();
