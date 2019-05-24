@@ -19,7 +19,7 @@ java:
         UK_GOV_NOTIFY_EMAIL_TEMPLATE_VARS: "{SAVE_DRAFT: {divorceUrl: 'https://div-pfe-aat.service.core-compute-aat.internal'}}"
         DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-aat.service.core-compute-aat.internal"
         FEES_AND_PAYMENTS_SERVICE_API_BASEURL: "http://div-fps-aat.service.core-compute-aat.internal"
-        MANAGEMENT_ENDPOINT_CACHE_TIME-TO-LIVE: "30000"
+        MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE: "30000"
 
     # Don't modify below here
     image: ${IMAGE_NAME}
