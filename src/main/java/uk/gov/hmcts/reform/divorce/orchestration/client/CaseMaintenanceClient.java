@@ -144,4 +144,15 @@ public interface CaseMaintenanceClient {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken
     );
 
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/casemaintenance/version/1/bulk/updateCase/{caseId}/{eventId}",
+            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> updateBulkCase(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
+            @PathVariable("caseId") String caseId,
+            @PathVariable("eventId") String eventId,
+            @RequestBody Map<String, Object> updateCase
+    );
 }

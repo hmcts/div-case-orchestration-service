@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CoRespondentAnswerReceivedWorkflow;
@@ -104,6 +105,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final GenerateCoRespondentAnswersWorkflow generateCoRespondentAnswersWorkflow;
     private final DocumentGenerationWorkflow documentGenerationWorkflow;
     private final RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
+    private final BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -477,12 +479,19 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         return  result;
     }
 
-
     @Override
     public Map<String, Object> handleDocumentGenerationCallback(final CcdCallbackRequest ccdCallbackRequest, final String authToken,
                                                                 final String templateId, final String documentType, final String filename)
         throws WorkflowException {
 
         return documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, documentType, filename);
+    }
+
+    @Override
+    public Map<String, Object> processBulkCaseScheduleForHearing(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        log.info("Starting Bulk Schedule For Listing Callback");
+        Map<String, Object> result = bulkCaseUpdateHearingDetailsEventWorkflow.run(ccdCallbackRequest, authToken);
+        log.info("Bulk Scheduling Successfully Initiated");
+        return result;
     }
 }
