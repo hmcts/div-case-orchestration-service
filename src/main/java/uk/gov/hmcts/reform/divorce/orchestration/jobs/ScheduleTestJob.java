@@ -7,7 +7,7 @@ import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 
 @Slf4j
-public class DueDateJob implements Job {
+public class ScheduleTestJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {

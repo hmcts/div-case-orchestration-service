@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 @Slf4j
-public class AbstractJobSchedulerTask implements Task<String> {
+public class CronJobSchedulerTask implements Task<String> {
 
     public static final String CRON_GROUP = "NIGHTLY_CRON";
 
@@ -22,7 +22,7 @@ public class AbstractJobSchedulerTask implements Task<String> {
 
     private Schedule schedule;
 
-    public AbstractJobSchedulerTask(JobService jobService, Schedule schedule) {
+    public CronJobSchedulerTask(JobService jobService, Schedule schedule) {
         this.jobService = jobService;
         this.schedule = schedule;
     }

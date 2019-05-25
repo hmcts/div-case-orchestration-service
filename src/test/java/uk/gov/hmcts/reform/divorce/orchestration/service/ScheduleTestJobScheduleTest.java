@@ -17,7 +17,7 @@ import java.util.Collections;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DueDateJobScheduleTest {
+public class ScheduleTestJobScheduleTest {
 
     @Autowired
     JobService jobService;

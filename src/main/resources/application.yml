@@ -9,9 +9,9 @@ spring:
     scheduler:
       name: scheduler
       driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://${DIV_SCHEDULER_DB_HOST:localhost}:${DIV_SCHEDULER_DB_PORT:5432}/${DIV_SCHEDULER_DB_NAME:div_scheduler}${DIV_SCHEDULER_DB_CONN_OPTIONS:}
-      username: ${DIV_SCHEDULER_DB_USER_NAME:div_scheduler}
-      password: ${DIV_SCHEDULER_DB_PASSWORD:}
+      url: jdbc:postgresql://${DIV_SCHEDULER_DB_HOST:localhost}:${DIV_SCHEDULER_DB_PORT:5000}/${DIV_SCHEDULER_DB_NAME:div_scheduler}${DIV_SCHEDULER_DB_CONN_OPTIONS:}
+      username: ${DIV_SCHEDULER_DB_USER_NAME:ccd}
+      password: ${DIV_SCHEDULER_DB_PASSWORD:ccd}
       properties:
       charSet: UTF-8
   hikari:
@@ -44,10 +44,11 @@ scheduler:
   enabled: true
   schedules:
     - name: 'Test Schedulder'
+      enabled: true
+      cronGroup: "NIGHTLY_CRON"
       description: 'Scheduler to test'
-      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.jobs.DueDateJob'
-      cron: '0 0/1 * 1/1 * ? *'
-#      0 0/5 0 ? * * *
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.jobs.ScheduleTestJob'
+      cron: '0 0/5 * 1/1 * ? *'
 
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}

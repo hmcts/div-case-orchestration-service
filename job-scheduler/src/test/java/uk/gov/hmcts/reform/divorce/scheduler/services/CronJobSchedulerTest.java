@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
+package uk.gov.hmcts.reform.divorce.scheduler.services;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,10 +8,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.reform.divorce.orchestration.config.SchedulerConfig;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.models.Schedule;
-import uk.gov.hmcts.reform.divorce.scheduler.services.JobService;
+import uk.gov.hmcts.reform.divorce.scheduler.config.SchedulerConfig;
+import uk.gov.hmcts.reform.divorce.scheduler.model.Schedule;
 
 import java.util.Arrays;
 
@@ -22,9 +20,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class
-)
-public class SchedulerServiceImplTest {
+@RunWith(MockitoJUnitRunner.class)
+public class CronJobSchedulerTest {
 
     @Mock
     private SchedulerConfig schedulerConfig;
@@ -33,10 +30,10 @@ public class SchedulerServiceImplTest {
     private JobService jobService;
 
     @InjectMocks
-    private SchedulerServiceImpl classToTest;
+    private CronJobScheduler classToTest;
 
     @Test
-    public void whenDeleteOldScheduleIsFalse_thenDoNotCleanSchedules() throws SchedulerException, WorkflowException {
+    public void whenDeleteOldScheduleIsFalse_thenDoNotCleanSchedules() throws SchedulerException {
         setEnableDelete(false);
         when(jobService.scheduleJob(any(), anyString())).thenReturn(new JobKey("name"));
         when(schedulerConfig.getSchedules()).thenReturn(Arrays.asList(Schedule.builder().cron("cron").build()));
@@ -48,7 +45,7 @@ public class SchedulerServiceImplTest {
     }
 
     @Test
-    public void whenDeleteOldScheduleIsTrue_thenCleanSchedules() throws SchedulerException, WorkflowException {
+    public void whenDeleteOldScheduleIsTrue_thenCleanSchedules() throws SchedulerException {
         setEnableDelete(true);
         when(jobService.scheduleJob(any(), anyString())).thenReturn(new JobKey("name"));
         when(schedulerConfig.getSchedules()).thenReturn(Arrays.asList(Schedule.builder().cron("cron").build()));

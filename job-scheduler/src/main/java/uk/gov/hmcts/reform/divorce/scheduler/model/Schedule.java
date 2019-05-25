@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.models;
+package uk.gov.hmcts.reform.divorce.scheduler.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +18,8 @@ public class Schedule {
     private String description;
 
     private Class jobClass;
+
+    private String cronGroup;
 
     private String cron;
 

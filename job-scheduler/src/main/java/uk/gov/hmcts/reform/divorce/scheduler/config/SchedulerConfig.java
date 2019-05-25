@@ -1,9 +1,9 @@
-package uk.gov.hmcts.reform.divorce.orchestration.config;
+package uk.gov.hmcts.reform.divorce.scheduler.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.hmcts.reform.divorce.orchestration.models.Schedule;
+import uk.gov.hmcts.reform.divorce.scheduler.model.Schedule;
 
 import java.util.ArrayList;
 import java.util.List;
