@@ -9,15 +9,14 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -27,7 +26,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkBulkCaseWorkflow;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,8 +33,7 @@ import java.util.Collections;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.timeout;
+import static org.awaitility.Awaitility.await;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -66,7 +63,6 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
     private static final String CMS_RESPONSE_BODY_FILE = "jsonExamples/payloads/cmsBulkCaseCreatedResponse.json";
 
-    private static final int WAIT_TIME_IN_MILLIS = 1000;
     private static final String CASE_ID1 = "1546883073634741";
     private static final String CASE_ID2 = "1546883073634742";
     private static final String BULK_CASE_ID = "1557223513377278";
@@ -75,8 +71,8 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     @ClassRule
     public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
 
-    @SpyBean
-    private LinkBulkCaseWorkflow linkBulkCaseWorkflowSpy;
+    @Autowired
+    ThreadPoolTaskExecutor asyncTaskExecutor;
 
     @Autowired
     private MockMvc webClient;
@@ -108,9 +104,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        waitTime();
-        Mockito.verify(linkBulkCaseWorkflowSpy, timeout(WAIT_TIME_IN_MILLIS).times(2)).run(any(), any(), any());
-
+        waitAsyncCompleted();
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
     }
@@ -123,7 +117,6 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
         stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
         stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.NOT_FOUND, getCmsBulkCaseResponse(), POST);
-
 
         stubSignInForCaseworker();
         webClient.perform(post(API_URL)
@@ -156,16 +149,14 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        waitTime();
-        Mockito.verify(linkBulkCaseWorkflowSpy, timeout(WAIT_TIME_IN_MILLIS).times(2)).run(any(), any(), any());
+        waitAsyncCompleted();
 
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
     }
 
-    private void waitTime() throws InterruptedException {
-        //TODO do not merge this change
-        Thread.sleep(1000);
+    private void waitAsyncCompleted() {
+        await().until(() -> asyncTaskExecutor.getThreadPoolExecutor().getActiveCount() == 0);
     }
 
     private CaseDetails prepareBulkCase() {

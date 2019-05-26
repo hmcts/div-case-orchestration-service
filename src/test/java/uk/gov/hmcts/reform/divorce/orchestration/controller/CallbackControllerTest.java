@@ -29,6 +29,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -404,5 +405,45 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody().getErrors().contains(errorString), is(true));
+    }
+
+    @Test
+    public void whenGenerateDocument_thenExecuteService() throws Exception {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(payload)
+                .build())
+            .build();
+
+        when(caseOrchestrationService
+            .handleDocumentGenerationCallback(incomingRequest, AUTH_TOKEN, "a", "b", "c")).thenReturn(payload);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c",
+            incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    }
+
+    @Test
+    public void givenWorkflowException_whenGenerateDocuments_thenReturnErrors() throws WorkflowException {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(payload)
+                .build())
+            .build();
+
+        String errorString = "foo";
+
+        when(caseOrchestrationService
+            .handleDocumentGenerationCallback(incomingRequest, AUTH_TOKEN, "a", "b", "c"))
+            .thenThrow(new WorkflowException(errorString));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c",
+            incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getErrors(), contains(errorString));
     }
 }

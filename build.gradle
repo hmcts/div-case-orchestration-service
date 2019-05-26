@@ -345,6 +345,8 @@ dependencies {
         force = true
     }
 
+    testCompile 'org.awaitility:awaitility:3.1.6'
+
     //integration test
     integrationTestCompile group: 'com.mashape.unirest', name: 'unirest-java', version: versions.unirest
     integrationTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
