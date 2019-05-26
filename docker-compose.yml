@@ -5,18 +5,18 @@ services:
   claim-store-database:
     build:
       context: docker/database
-    image: hmcts/cmc-claim-store-database
+    image: hmcts/div-store-database
     healthcheck:
       interval: 10s
       timeout: 10s
       retries: 10
     environment:
-      - CLAIM_STORE_DB_USERNAME
-      - CLAIM_STORE_DB_PASSWORD
+      - DIV_STORE_DB_USERNAME
+      - DIV_STORE_DB_PASSWORD
     ports:
       - 5430:5432
     volumes:
-      - claim-store-database-data:/var/lib/postgresql/data
+      - div-store-database-data:/var/lib/postgresql/data
 
 volumes:
-  claim-store-database-data:
+  div-store-database-data:

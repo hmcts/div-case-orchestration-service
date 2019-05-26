@@ -1,9 +1,0 @@
-2019-02-04 20:08:37.671 GMT [49534] LOG:  could not bind IPv6 address "::1": Address already in use
-2019-02-04 20:08:37.671 GMT [49534] HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
-2019-02-04 20:08:37.671 GMT [49534] LOG:  could not bind IPv4 address "127.0.0.1": Address already in use
-2019-02-04 20:08:37.671 GMT [49534] HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
-2019-02-04 20:08:37.671 GMT [49534] WARNING:  could not create listen socket for "localhost"
-2019-02-04 20:08:37.671 GMT [49534] FATAL:  could not create any TCP/IP sockets
-2019-02-04 20:08:37.671 GMT [49534] LOG:  database system is shut down
-2019-02-04 20:09:00.160 GMT [49605] FATAL:  lock file "postmaster.pid" already exists
-2019-02-04 20:09:00.160 GMT [49605] HINT:  Is another postmaster (PID 49590) running in data directory "/usr/local/var/postgres"?

@@ -14,4 +14,5 @@ import java.util.List;
 public class SchedulerConfig {
 
     private final List<Schedule> schedules = new ArrayList<>();
+
 }

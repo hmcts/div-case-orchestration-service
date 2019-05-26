@@ -98,7 +98,6 @@ module "div-scheduler-db" {
   common_tags        = "${var.common_tags}"
 }
 
-
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   name      = "${var.component}-POSTGRES-USER"
   value     = "${module.div-scheduler-db.user_name}"
@@ -178,4 +177,3 @@ data "azurerm_key_vault_secret" "uk-gov-notify-api-key" {
   name      = "uk-gov-notify-api-key"
   vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
-
