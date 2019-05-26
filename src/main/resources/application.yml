@@ -40,15 +40,15 @@ quartzProperties:
       threadCount: 8
 
 scheduler:
-  re-create: true
-  enabled: true
+  re-create: ${SCHEDULER_RE_CREATE:true}
+  enabled: ${SCHEDULER_ENABLED:true}
   schedules:
     - name: 'Test Schedulder'
       enabled: true
       cronGroup: "NIGHTLY_CRON"
       description: 'Scheduler to test'
       jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.jobs.ScheduleTestJob'
-      cron: '0 0/5 * 1/1 * ? *'
+      cron: ${SCHEDULER_SCHEDULES_TEST_CRON:'0 0/5 * 1/1 * ? *'}
 
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}

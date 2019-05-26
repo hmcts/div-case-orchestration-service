@@ -75,3 +75,11 @@ variable "location_db" {
   type    = "string"
   default = "UK South"
 }
+
+variable "scheduler_re_create" {
+  default = "true"
+}
+
+variable "scheduler_enabled" {
+  default = "true"
+}
