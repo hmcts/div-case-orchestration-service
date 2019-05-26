@@ -94,7 +94,6 @@ allprojects {
     dependencyManagement {
         imports {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
-//            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
         }
         dependencies {
             // checkstyle needs a certain version and so does spring fox swagger, so can't use latest
@@ -125,7 +124,6 @@ allprojects {
         }
     }
 }
-
 
 apply plugin: 'net.serenity-bdd.aggregator'
 
@@ -230,8 +228,6 @@ def versions = [
         tomcat                          : '9.0.19',
         sendLetterClient                : '2.1.1',
         commonsMath3                    : '3.6.1'
-
-
 ]
 
 dependencies {
@@ -287,8 +283,6 @@ dependencies {
     compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-el', version: versions.tomcat) {
         force = true
     }
-
-
     compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
     compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging

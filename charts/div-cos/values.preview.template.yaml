@@ -1,7 +1,7 @@
 java:
   environment:
     APPLICATION_INSIGHTS_IKEY: "63c30ef9-a27b-4d38-8afc-4c180fb6ac33"
-    APPINSIGHTS_INSTRUMENTATIONKEY: "019ed56f-e01d-4651-895d-bc6334f3d1b1"
+    APPINSIGHTS_INSTRUMENTATIONKEY: "63c30ef9-a27b-4d38-8afc-4c180fb6ac33"
     IDAM_API_URL: "https://idam-api.aat.platform.hmcts.net"
     DIV_SCHEDULER_DB_HOST : ${SERVICE_NAME}-postgresql
     DIV_SCHEDULER_DB_PORT : "5432"
