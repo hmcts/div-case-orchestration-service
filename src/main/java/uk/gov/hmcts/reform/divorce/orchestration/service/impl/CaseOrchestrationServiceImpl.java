@@ -19,8 +19,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateResponden
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CoRespondentAnswerReceivedWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.DocumentGenerationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
@@ -102,6 +103,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final GetCaseWithIdWorkflow getCaseWithIdWorkflow;
     private final SolicitorDnReviewPetitionWorkflow solicitorDnReviewPetitionWorkflow;
     private final GenerateCoRespondentAnswersWorkflow generateCoRespondentAnswersWorkflow;
+    private final DocumentGenerationWorkflow documentGenerationWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -472,4 +474,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         return  result;
     }
 
+
+    @Override
+    public Map<String, Object> handleDocumentGenerationCallback(final CcdCallbackRequest ccdCallbackRequest, final String authToken,
+                                                                final String templateId, final String documentType, final String filename)
+        throws WorkflowException {
+
+        return documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, documentType, filename);
+    }
 }
