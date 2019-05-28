@@ -42,6 +42,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 public class CallbackController {
 
+    private static final String GENERIC_ERROR_MESSAGE = "An error happened when processing this request.";
+
     @Autowired
     private CaseOrchestrationService caseOrchestrationService;
 
@@ -426,8 +428,11 @@ public class CallbackController {
             callbackResponseBuilder.data(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest));
             log.info("Processed case successfully. Case id: {}", caseId);
         } catch (CaseOrchestrationServiceException exception) {
-            log.error(format("Failed to execute service. Case id:  %s", caseId), exception);//TODO - test what happens if nothing is sent on request payload
+            log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
             callbackResponseBuilder.errors(asList(exception.getMessage()));
+        } catch (Exception exception) {
+            log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
+            callbackResponseBuilder.errors(asList(GENERIC_ERROR_MESSAGE));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());

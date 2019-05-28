@@ -522,4 +522,22 @@ public class CallbackControllerTest {
         verify(caseOrchestrationService).processCaseBeforeDecreeNisiIsGranted(eq(ccdCallbackRequest));
     }
 
+    @Test
+    public void testDnAboutToBeGrantedHandlesGenericException() throws CaseOrchestrationServiceException {
+        when(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(any()))
+            .thenThrow(RuntimeException.class);
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(singletonMap("testKey", "testValue"))
+                .build())
+            .build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnAboutToBeGranted(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(nullValue()));
+        assertThat(response.getBody().getErrors(), hasItem(equalTo("An error happened when processing this request.")));
+        verify(caseOrchestrationService).processCaseBeforeDecreeNisiIsGranted(eq(ccdCallbackRequest));
+    }
+
 }
