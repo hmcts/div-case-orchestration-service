@@ -81,14 +81,14 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         }
 
         acceptedDivorceCaseList.forEach(caseLinkElem -> {
+            Map<String, Object> caseLink = (Map<String, Object>) caseLinkElem.get(VALUE_KEY);
+            String caseId = String.valueOf(caseLink.get(CASE_REFERENCE_FIELD));
+            
             try {
-                Map<String, Object> caseLink = (Map<String, Object>) caseLinkElem.get(VALUE_KEY);
-                String caseId = String.valueOf(caseLink.get(CASE_REFERENCE_FIELD));
-
                 log.info("Updating court hearing details for case id {}", caseId);
                 updateCourtHearingDetailsWorkflow.run(bulkCaseData, caseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
             } catch (Exception e) {
-                log.error("Case update with court hearing details failed : for bulk case id {}", bulkCaseId, e);
+                log.error("Case update with court hearing details failed : for case id {} in bulk case id {}", caseId, bulkCaseId, e);
                 throw new BulkUpdateException("Failed to update court hearing details", e);
             }
         });
