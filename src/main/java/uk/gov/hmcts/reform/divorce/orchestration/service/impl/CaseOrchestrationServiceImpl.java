@@ -471,7 +471,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> handleDocumentGenerationCallback(final CcdCallbackRequest ccdCallbackRequest, final String authToken,
                                                                 final String templateId, final String documentType, final String filename)
         throws WorkflowException {
-
+        log.info("Going to start DocumentGen Workflow with {} {} {}", templateId, documentType, filename);
         return documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, documentType, filename);
     }
 }
