@@ -72,5 +72,6 @@ variable "idam_strategic_enabled" {
 }
 
 variable "health_check_ttl" {
-  default = 4000
+  type = "string"
+  default = "4000"
 }
