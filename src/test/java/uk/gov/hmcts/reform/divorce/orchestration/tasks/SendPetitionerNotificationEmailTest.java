@@ -104,7 +104,7 @@ public class SendPetitionerNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallEmailServiceForGenericUpdate() {
+    public void shouldCallEmailServiceForGenericUpdate() throws TaskException {
         when(emailService.sendEmail(TEST_USER_EMAIL,
             EmailTemplateNames.GENERIC_UPDATE.name(),
             expectedTemplateVars,
@@ -120,7 +120,7 @@ public class SendPetitionerNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdultery() {
+    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdultery() throws TaskException {
         testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_ADULTERY);
         testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
 
@@ -143,7 +143,7 @@ public class SendPetitionerNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdulteryCoRespNoReply() {
+    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdulteryCoRespNoReply() throws TaskException {
         testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_ADULTERY);
         testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
         testData.put(D_8_CO_RESPONDENT_NAMED, YES_VALUE);
@@ -168,7 +168,7 @@ public class SendPetitionerNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallAppropriateEmailServiceWhenRespDoesNotConsentTo2YrsSeparation() {
+    public void shouldCallAppropriateEmailServiceWhenRespDoesNotConsentTo2YrsSeparation() throws TaskException {
         testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_2_YEAR_SEP);
         testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
 
@@ -191,7 +191,7 @@ public class SendPetitionerNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallEmailServiceWithNoCaseIdFormatWhenNoUnableToFormatIdForGenericUpdate() {
+    public void shouldCallEmailServiceWithNoCaseIdFormatWhenNoUnableToFormatIdForGenericUpdate() throws TaskException {
         expectedTemplateVars.replace("CCD reference", D8_CASE_ID);
 
         when(emailService.sendEmail(TEST_USER_EMAIL,

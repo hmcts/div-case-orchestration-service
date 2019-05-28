@@ -9,6 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.HashMap;
@@ -64,7 +65,7 @@ public class SendCoRespondentNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallEmailServiceForGenericUpdateIfCoRespEmailExists() {
+    public void shouldCallEmailServiceForGenericUpdateIfCoRespEmailExists() throws TaskException {
 
         testData.put(CO_RESP_EMAIL_ADDRESS, TEST_USER_EMAIL);
 
@@ -84,7 +85,7 @@ public class SendCoRespondentNotificationEmailTest {
 
 
     @Test
-    public void shouldNotCallEmailServiceForCoRespGenericUpdateIfCoRespEmailDoesNotExist() {
+    public void shouldNotCallEmailServiceForCoRespGenericUpdateIfCoRespEmailDoesNotExist() throws TaskException {
         // make sure it isn't triggered
         when(emailService.sendEmail(TEST_USER_EMAIL,
                 EmailTemplateNames.GENERIC_UPDATE.name(),

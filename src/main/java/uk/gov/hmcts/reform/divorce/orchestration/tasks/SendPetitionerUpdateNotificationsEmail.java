@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @Component
 public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, Object>> {
@@ -45,15 +47,15 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
     }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
-        String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
-        String petitionerFirstName = (String) caseData.get(D_8_PETITIONER_FIRST_NAME);
-        String petitionerLastName = (String) caseData.get(D_8_PETITIONER_LAST_NAME);
-        String ccdReference = (String) caseData.get(D_8_CASE_REFERENCE);
-        String reasonForDivorce = (String) caseData.get(D_8_REASON_FOR_DIVORCE);
-        String respAdmitOrConsentToFact = (String) caseData.get(RESP_ADMIT_OR_CONSENT_TO_FACT);
-        String relationship = (String) caseData.get(D_8_DIVORCED_WHO);
+        String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
+        String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
+        String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
+        String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
+        String respAdmitOrConsentToFact = getMandatoryPropertyValueAsString(caseData, RESP_ADMIT_OR_CONSENT_TO_FACT);
+        String relationship = getMandatoryPropertyValueAsString(caseData, D_8_DIVORCED_WHO);
         String isCoRespNamed = (String) caseData.get(D_8_CO_RESPONDENT_NAMED);
         String receivedAosFromCoResp = (String) caseData.get(RECEIVED_AOS_FROM_CO_RESP);
 
