@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 
+@Slf4j
 @Component
 public class DocumentGenerationTask implements Task<Map<String, Object>> {
 
@@ -37,6 +39,8 @@ public class DocumentGenerationTask implements Task<Map<String, Object>> {
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
 
+        log.info("Going to documentGeneratorClient");
+        
         final GeneratedDocumentInfo generatedDocumentInfo =
             documentGeneratorClient.generatePDF(
                 GenerateDocumentRequest.builder()
@@ -46,6 +50,8 @@ public class DocumentGenerationTask implements Task<Map<String, Object>> {
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY)
             );
 
+        log.info("Finished documentGenClient");
+        
         generatedDocumentInfo.setDocumentType(context.getTransientObject(DOCUMENT_TYPE));
         generatedDocumentInfo.setFileName(format(DOCUMENT_FILENAME_FMT, context.getTransientObject(DOCUMENT_FILENAME), caseDetails.getCaseId()));
 
@@ -53,6 +59,8 @@ public class DocumentGenerationTask implements Task<Map<String, Object>> {
             new LinkedHashSet<>());
 
         documentCollection.add(generatedDocumentInfo);
+        
+        log.info("Past Doc Collection");
 
         return caseData;
     }
