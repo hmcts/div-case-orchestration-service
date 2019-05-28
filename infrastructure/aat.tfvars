@@ -5,3 +5,5 @@ idam_strategic_enabled = "true"
 capacity = "2"
 
 uk_gov_notify_email_template_vars = "{SAVE_DRAFT: {divorceUrl: 'https://div-pfe-aat.service.core-compute-aat.internal'}}"
+
+health_check_ttl = 30000
