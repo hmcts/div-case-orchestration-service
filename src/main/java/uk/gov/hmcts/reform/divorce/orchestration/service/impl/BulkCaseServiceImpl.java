@@ -72,7 +72,8 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         final String bulkCaseId = String.valueOf(caseResponse.get(OrchestrationConstants.ID));
 
         Map<String, Object> bulkCaseData = (Map<String, Object>) caseResponse.getOrDefault(CCD_CASE_DATA_FIELD, Collections.emptyMap());
-        List<Map<String, Object>> acceptedDivorceCaseList = (List<Map<String, Object>>) bulkCaseData.getOrDefault(BULK_CASE_ACCEPTED_LIST_KEY, Collections.emptyList());
+        List<Map<String, Object>> acceptedDivorceCaseList =
+                (List<Map<String, Object>>) bulkCaseData.getOrDefault(BULK_CASE_ACCEPTED_LIST_KEY, Collections.emptyList());
 
         // Throw update error is case list is empty
         if (acceptedDivorceCaseList.size() == 0) {

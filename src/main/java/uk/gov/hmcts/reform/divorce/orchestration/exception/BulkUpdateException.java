@@ -7,7 +7,7 @@ public class BulkUpdateException extends RuntimeException {
         super(format("Unable to perform update on case within bulk case: \"%s\"", message));
     }
 
-    public BulkUpdateException(String message, Exception e) {
-        super(format("Unable to perform update on case within bulk case: \"%s\"", message), e);
+    public BulkUpdateException(String message, Exception exception) {
+        super(format("Unable to perform update on case within bulk case: \"%s\"", message), exception);
     }
 }

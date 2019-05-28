@@ -36,11 +36,12 @@ public class SetCourtHearingDetailsFromBulkCase implements Task<Map<String,Objec
                     hearingDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             dateAndTimeOfHearing.put(TIME_OF_HEARING_CCD_FIELD,
                     hearingDateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-        } catch(Exception exception) {
+        } catch (Exception exception) {
             throw new TaskException("Unable to parse or format bulk case court hearing date");
         }
 
         CollectionMember<Map<String, Object>> dateAndTimeOfHearingItem = new CollectionMember<>();
+        dateAndTimeOfHearingItem.setValue(dateAndTimeOfHearing);
 
         courtHearingDetails.put(DATETIME_OF_HEARING_CCD_FIELD, Collections.singletonList(dateAndTimeOfHearingItem));
 

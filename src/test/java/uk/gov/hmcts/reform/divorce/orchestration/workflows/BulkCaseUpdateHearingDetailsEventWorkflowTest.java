@@ -38,7 +38,7 @@ public class BulkCaseUpdateHearingDetailsEventWorkflowTest {
         final ImmutablePair<String, Object> authTokenPair = new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
         final Task[] tasks = new Task[]{
-                updateDivorceCaseHearingDetailsWithinBulk,
+            updateDivorceCaseHearingDetailsWithinBulk,
         };
 
         Map<String, Object> expected = Collections.emptyMap();
