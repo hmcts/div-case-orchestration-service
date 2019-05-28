@@ -359,16 +359,19 @@ public class CallbackController {
         @RequestParam(value = "filename") @ApiParam("filename") String filename,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
+        log.info("Start here");
+        log.info("CallbackRequest is {}", ccdCallbackRequest);
+        log.info("CallbackRequest is {}", ccdCallbackRequest.getCaseDetails());
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
+            log.info("Generating document {} for case {}. Case id: {}", documentType, caseId);
             callbackResponseBuilder.data(caseOrchestrationService
                 .handleDocumentGenerationCallback(ccdCallbackRequest, authorizationToken, templateId, documentType, filename));
-            log.info("Generating document {} for case {}. Case id: {}", documentType, caseId);
         } catch (WorkflowException exception) {
-            log.error("Document generation failed. Case id:  {}", caseId, exception);
+            log.info("Document generation failed. Case id:  {}", caseId, exception);
             callbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
