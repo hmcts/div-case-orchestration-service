@@ -188,6 +188,10 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_INVITATION_TEMPLATE_NAME = "co-respondentinvitation";
     public static final String PETITION_ISSUE_FEE_FOR_LETTER = "petitionIssueFee";
     public static final String DOCUMENT_COLLECTION = "documentCollection";
+    public static final String DOCUMENT_TYPE = "documentType";
+    public static final String DOCUMENT_TEMPLATE_ID = "documentTemplateId";
+    public static final String DOCUMENT_FILENAME = "documentFilename";
+    public static final String DOCUMENT_FILENAME_FMT = "%s%s";
     public static final String DOCUMENTS_GENERATED = "DocumentsGenerated";
 
 
