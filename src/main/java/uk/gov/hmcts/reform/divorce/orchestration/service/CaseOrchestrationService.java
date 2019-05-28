@@ -87,5 +87,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> generateBulkCaseForListing() throws WorkflowException;
 
+    Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, final String authToken, String templateId,
+                                                         String documentType, String templateName) throws WorkflowException;
+
     Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 }
