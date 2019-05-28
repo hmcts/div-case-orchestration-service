@@ -423,11 +423,10 @@ public class CallbackController {
 
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
         try {
-            callbackResponseBuilder.data(
-                caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest));
+            callbackResponseBuilder.data(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest));
             log.info("Processed case successfully. Case id: {}", caseId);
         } catch (CaseOrchestrationServiceException exception) {
-            log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
+            log.error(format("Failed to execute service. Case id:  %s", caseId), exception);//TODO - test what happens if nothing is sent on request payload
             callbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 

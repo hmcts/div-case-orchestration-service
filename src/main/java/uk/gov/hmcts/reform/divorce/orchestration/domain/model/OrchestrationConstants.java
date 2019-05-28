@@ -30,6 +30,7 @@ public class OrchestrationConstants {
     public static final String IS_RESPONDENT = "isRespondent";
 
     // Core Case Data
+    public static final String STATE_CCD_FIELD = "state";
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";
@@ -98,6 +99,7 @@ public class OrchestrationConstants {
     public static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
     public static final String AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
     public static final String AWAITING_PRONOUNCEMENT = "AwaitingPronouncement";
+    public static final String AWAITING_CLARIFICATION = "AwaitingClarification";
     public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String DEFENDED = "DefendedDivorce";
     public static final String DN_AWAITING = "DNAwaiting";
