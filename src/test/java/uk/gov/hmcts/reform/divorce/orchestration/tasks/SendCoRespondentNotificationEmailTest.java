@@ -16,9 +16,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
@@ -69,31 +70,25 @@ public class SendCoRespondentNotificationEmailTest {
 
         testData.put(CO_RESP_EMAIL_ADDRESS, TEST_USER_EMAIL);
 
-        when(emailService.sendEmail(TEST_USER_EMAIL,
-            EmailTemplateNames.GENERIC_UPDATE.name(),
-            expectedTemplateVars,
-            "Generic Update Notification - CoRespondent"))
-                .thenReturn(null);
+        Map returnPayload = sendCoRespondentGenericUpdateNotificationEmail.execute(context, testData);
 
-        assertEquals(testData, sendCoRespondentGenericUpdateNotificationEmail.execute(context, testData));
+        assertEquals(testData, returnPayload);
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL,
-            EmailTemplateNames.GENERIC_UPDATE.name(),
-            expectedTemplateVars,
-            "Generic Update Notification - CoRespondent");
+        verify(emailService).sendEmail(
+            eq(TEST_USER_EMAIL),
+            eq(EmailTemplateNames.GENERIC_UPDATE.name()),
+            eq(expectedTemplateVars),
+            any());
     }
 
 
     @Test
     public void shouldNotCallEmailServiceForCoRespGenericUpdateIfCoRespEmailDoesNotExist() throws TaskException {
         // make sure it isn't triggered
-        when(emailService.sendEmail(TEST_USER_EMAIL,
-                EmailTemplateNames.GENERIC_UPDATE.name(),
-                expectedTemplateVars,
-                "Generic Update Notification - CoRespondent"))
-                .thenReturn(null);
 
-        assertEquals(testData, sendCoRespondentGenericUpdateNotificationEmail.execute(context, testData));
+        Map returnPayload = sendCoRespondentGenericUpdateNotificationEmail.execute(context, testData);
+
+        assertEquals(testData, returnPayload);
 
         verifyZeroInteractions(emailService);
     }
