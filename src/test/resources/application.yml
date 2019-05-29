@@ -72,7 +72,8 @@ uk:
                       RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION: 'eac41143-b296-4879-ba60-a0ea6f97c757',
                       RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED: '44e2dd30-4303-4f4c-a394-ce0b54af81dd',
                       RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION: '277fd3f3-2fdb-4c79-9354-1b3db8d44cca',
-                      SAVE_DRAFT: '14074c06-87f1-4678-9238-4d71e741eb57'
+                      SAVE_DRAFT: '14074c06-87f1-4678-9238-4d71e741eb57',
+                      RESPONDENT_SOLICITOR_AOS_INVITATION: 'a193f039-2252-425d-861c-6dba255b7e6e'
                     }"
         template:
           vars: "{SAVE_DRAFT: {divorceUrl: 'https://apply-divorce.service.gov.uk'}}"

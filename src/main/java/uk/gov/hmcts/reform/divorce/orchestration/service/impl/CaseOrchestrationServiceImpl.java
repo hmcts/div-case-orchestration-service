@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
@@ -102,6 +103,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SolicitorDnReviewPetitionWorkflow solicitorDnReviewPetitionWorkflow;
     private final GenerateCoRespondentAnswersWorkflow generateCoRespondentAnswersWorkflow;
     private final DocumentGenerationWorkflow documentGenerationWorkflow;
+    private final RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -441,6 +443,15 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> processSolDnReviewPetition(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
         try {
             return solicitorDnReviewPetitionWorkflow.run(ccdCallbackRequest.getCaseDetails());
+        } catch (WorkflowException e) {
+            throw new CaseOrchestrationServiceException(e);
+        }
+    }
+
+    @Override
+    public Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+        try {
+            return respondentSolicitorNominatedWorkflow.run(ccdCallbackRequest.getCaseDetails());
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
         }

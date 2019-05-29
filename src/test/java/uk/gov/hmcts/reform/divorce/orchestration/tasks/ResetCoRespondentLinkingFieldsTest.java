@@ -14,13 +14,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 
-public class ResetAosLinkingFieldsTest {
+public class ResetCoRespondentLinkingFieldsTest {
 
-    private final ResetAosLinkingFields classUnderTest = new ResetAosLinkingFields();
+    private final ResetCoRespondentLinkingFields classUnderTest = new ResetCoRespondentLinkingFields();
 
     @Test
     public void willClearLinkingData() {
@@ -31,10 +28,6 @@ public class ResetAosLinkingFieldsTest {
         caseData.put(CO_RESP_EMAIL_ADDRESS, "foo");
         caseData.put(RECEIVED_AOS_FROM_CO_RESP, "foo");
         caseData.put(RECEIVED_AOS_FROM_CO_RESP_DATE, "foo");
-        caseData.put(RECEIVED_AOS_FROM_RESP, "foo");
-        caseData.put(RECEIVED_AOS_FROM_RESP_DATE, "foo");
-        caseData.put(RESPONDENT_EMAIL_ADDRESS, "foo");
-
 
         final Map<String, Object> result = classUnderTest.execute(new DefaultTaskContext(), caseData);
 
@@ -43,10 +36,7 @@ public class ResetAosLinkingFieldsTest {
             hasEntry(CO_RESP_LINKED_TO_CASE_DATE, null),
             hasEntry(CO_RESP_EMAIL_ADDRESS, null),
             hasEntry(RECEIVED_AOS_FROM_CO_RESP, null),
-            hasEntry(RECEIVED_AOS_FROM_CO_RESP_DATE, null),
-            hasEntry(RECEIVED_AOS_FROM_RESP, null),
-            hasEntry(RECEIVED_AOS_FROM_RESP_DATE, null),
-            hasEntry(RESPONDENT_EMAIL_ADDRESS, null)
+            hasEntry(RECEIVED_AOS_FROM_CO_RESP_DATE, null)
         ));
     }
 }
