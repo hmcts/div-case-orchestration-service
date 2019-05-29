@@ -33,9 +33,9 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-dn/";
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
-    private static final String  BULK_CASE_PATH = "/bulk/case";
+    private static final String BULK_CASE_PATH = "/bulk/case";
 
-    private static final int  WAITING_TIME_IN_MILLIS = 2000;
+    private static final int WAITING_TIME_IN_MILLIS = 2000;
 
     @Value("${case.orchestration.maintenance.submit.context-path}")
     private String caseCreationContextPath;
@@ -44,6 +44,7 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
     private String contextPath;
 
     @Test
+    @SuppressWarnings("checkstyle:VariableDeclarationUsageDistance")
     public void whenCreateBulkCase_CaseIsCreated() throws Exception {
         final UserDetails user1 = createCitizenUser();
         final UserDetails user2 = createCitizenUser();
@@ -52,13 +53,11 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
         CaseDetails case2 = createAwaitingPronouncementCase(user2);
         waitToProcess();
 
-        createBulkCase()
+        createBulkCaseAndWait()
             .then()
             .assertThat()
             .statusCode(is(HttpStatus.OK.value()))
             .body(BULK_CASE_LIST_KEY, is(not(empty())));
-
-        waitToProcess();
 
         CaseDetails case1updated = retrieveCase(user1, case1.getId().toString());
         CaseDetails case2updated = retrieveCase(user2, case2.getId().toString());
@@ -66,14 +65,6 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
         assertThat(case1updated.getData().get(BULK_LISTING_CASE_ID_FIELD), is(notNullValue()));
         assertThat(case2updated.getData().get(BULK_LISTING_CASE_ID_FIELD), is(notNullValue()));
 
-    }
-
-    private void waitToProcess() {
-        try {
-            Thread.sleep(WAITING_TIME_IN_MILLIS);
-        } catch (InterruptedException e) {
-            log.info("Error  waiting", e);
-        }
     }
 
     private CaseDetails createAwaitingPronouncementCase(UserDetails userDetails) throws Exception {
@@ -109,15 +100,25 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
         );
     }
 
-    private Response createBulkCase() throws Exception {
+    private Response createBulkCaseAndWait() {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 
 
-        return RestUtil.postToRestService(
-            serverUrl + BULK_CASE_PATH,
-            headers,
-            null
+        Response response = RestUtil.postToRestService(
+                serverUrl + BULK_CASE_PATH,
+                headers,
+                null
         );
+        waitToProcess();
+        return response;
+    }
+
+    private void waitToProcess() {
+        try {
+            Thread.sleep(WAITING_TIME_IN_MILLIS);
+        } catch (InterruptedException e) {
+            log.info("Error  waiting", e);
+        }
     }
 }
