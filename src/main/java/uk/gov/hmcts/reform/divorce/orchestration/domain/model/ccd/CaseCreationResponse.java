@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.AllocatedCourt;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 
 @ApiModel(description = "The response to a citizen submitting a case")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -21,6 +21,6 @@ public class CaseCreationResponse {
     private String status;
 
     @ApiModelProperty(value = "The court that was allocated to handle the case")
-    private AllocatedCourt allocatedCourt;
+    private Court allocatedCourt;
 
 }
