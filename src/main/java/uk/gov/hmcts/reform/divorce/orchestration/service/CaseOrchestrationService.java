@@ -91,4 +91,6 @@ public interface CaseOrchestrationService {
                                                          String documentType, String templateName) throws WorkflowException;
 
     Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
+
+    Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 }

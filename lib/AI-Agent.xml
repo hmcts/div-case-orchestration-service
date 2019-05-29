@@ -83,6 +83,9 @@
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPayment">
             <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSeparationFields">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCourtDetails">
             <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
