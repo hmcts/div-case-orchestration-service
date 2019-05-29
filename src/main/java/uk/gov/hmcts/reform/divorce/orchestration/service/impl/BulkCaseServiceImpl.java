@@ -67,7 +67,8 @@ public class BulkCaseServiceImpl implements BulkCaseService {
     @Override
     @EventListener
     public void handleBulkCaseUpdateCourtHearingEvent(BulkCaseUpdateCourtHearingEvent event) throws WorkflowException {
-        long startTime = Instant.now().toEpochMilli();
+        final long startTime = Instant.now().toEpochMilli();
+
         TaskContext context = (TaskContext) event.getSource();
         Map<String, Object> caseResponse = event.getCaseDetails();
         final String bulkCaseId = String.valueOf(caseResponse.get(OrchestrationConstants.ID));
@@ -100,7 +101,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
             throw new BulkUpdateException(String.format("Failed to update court hearing details for some cases on bulk case id %s", bulkCaseId));
         }
 
-        long endTime = Instant.now().toEpochMilli();
+        final long endTime = Instant.now().toEpochMilli();
         log.info("Completed bulk case update court hearing with bulk case Id:{} in:{} millis", bulkCaseId, endTime - startTime);
 
         log.info("Updating bulk case id {} to Listed state", bulkCaseId);
