@@ -1,0 +1,12 @@
+{
+  "case_details": {
+    "id": "0123456789012345",
+    "case_data": {
+      "D8caseReference": "LV17D80100",
+      "D8RespondentSolicitorEmail": "simulate-delivered@notifications.service.gov.uk",
+      "D8RespondentFirstName": "Téd",
+      "D8RespondentLastName": "Jonés",
+      "D8RespondentSolicitorName": "Solicitor name"
+    }
+  }
+}

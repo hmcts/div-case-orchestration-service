@@ -16,7 +16,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGenerat
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFee;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetAosLinkingFields;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetCoRespondentLinkingFields;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDate;
@@ -75,7 +76,10 @@ public class IssueEventWorkflowTest {
     private GetPetitionIssueFee getPetitionIssueFee;
 
     @Mock
-    private ResetAosLinkingFields resetAosLinkingFields;
+    private ResetRespondentLinkingFields resetRespondentLinkingFields;
+
+    @Mock
+    private ResetCoRespondentLinkingFields resetCoRespondentLinkingFields;
 
     private CcdCallbackRequest ccdCallbackRequestRequest;
     private Map<String, Object> payload;
@@ -94,7 +98,8 @@ public class IssueEventWorkflowTest {
                         getPetitionIssueFee,
                         coRespondentLetterGenerator,
                         caseFormatterAddDocuments,
-                        resetAosLinkingFields);
+                        resetRespondentLinkingFields,
+                        resetCoRespondentLinkingFields);
 
         payload = new HashMap<>();
 
@@ -130,7 +135,8 @@ public class IssueEventWorkflowTest {
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
-        when(resetAosLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
         Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
@@ -159,7 +165,8 @@ public class IssueEventWorkflowTest {
         when(coRespondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(coRespondentLetterGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
-        when(resetAosLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
         Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
@@ -180,7 +187,8 @@ public class IssueEventWorkflowTest {
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
-        when(resetAosLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
         Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
@@ -206,7 +214,9 @@ public class IssueEventWorkflowTest {
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
-        when(resetAosLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+
         //When
         Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
 
@@ -226,7 +236,7 @@ public class IssueEventWorkflowTest {
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
-        when(resetAosLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
         Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
@@ -248,7 +258,7 @@ public class IssueEventWorkflowTest {
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
-        when(resetAosLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
         Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, false);
