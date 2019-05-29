@@ -4,7 +4,6 @@ import io.restassured.response.ResponseBody;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -85,7 +84,6 @@ public class BulkPrintCallbackTest extends IntegrationTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    @Ignore(value = "Temporarily disabled due to CCD config pointing to staging. Will enable after PR merged")
     public void givenRespondentSolicitorAos_whenReceivedBulkPrint_thenDueDatePopulated() throws Exception {
 
         Map response = postToRestService(serverUrl + issueContextPath + "?generateAosInvitation=true", citizenHeaders,
