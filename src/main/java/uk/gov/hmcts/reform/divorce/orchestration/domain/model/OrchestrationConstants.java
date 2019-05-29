@@ -207,6 +207,8 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_FIRM_JSON_KEY = "PetitionerSolicitorFirm";
     public static final String SOLICITOR_REFERENCE_JSON_KEY = "D8SolicitorReference";
     public static final String SOLICITOR_STATEMENT_OF_TRUTH = "solSignStatementofTruth";
+    public static final String D8_RESPONDENT_SOLICITOR_EMAIL = "D8RespondentSolicitorEmail";
+    public static final String D8_RESPONDENT_SOLICITOR_NAME = "D8RespondentSolicitorName";
 
     // Payment
     public static final String PAYMENT = "payment";

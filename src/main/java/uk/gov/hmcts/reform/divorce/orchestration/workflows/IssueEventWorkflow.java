@@ -14,7 +14,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGenerat
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFee;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetAosLinkingFields;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetCoRespondentLinkingFields;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDate;
@@ -45,7 +46,8 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final CoRespondentLetterGenerator coRespondentLetterGenerator;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
     private final GetPetitionIssueFee getPetitionIssueFee;
-    private final ResetAosLinkingFields resetAosLinkingFields;
+    private final ResetRespondentLinkingFields resetRespondentLinkingFields;
+    private final ResetCoRespondentLinkingFields resetCoRespondentLinkingFields;
 
     @Autowired
     @SuppressWarnings("squid:S00107") // Can never have enough collaborators
@@ -58,7 +60,8 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
                               GetPetitionIssueFee getPetitionIssueFee,
                               CoRespondentLetterGenerator coRespondentLetterGenerator,
                               CaseFormatterAddDocuments caseFormatterAddDocuments,
-                              ResetAosLinkingFields resetAosLinkingFields) {
+                              ResetRespondentLinkingFields resetRespondentLinkingFields,
+                              ResetCoRespondentLinkingFields resetCoRespondentLinkingFields) {
         this.validateCaseData = validateCaseData;
         this.setIssueDate = setIssueDate;
         this.petitionGenerator = petitionGenerator;
@@ -68,7 +71,8 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         this.getPetitionIssueFee = getPetitionIssueFee;
         this.coRespondentLetterGenerator = coRespondentLetterGenerator;
         this.caseFormatterAddDocuments = caseFormatterAddDocuments;
-        this.resetAosLinkingFields = resetAosLinkingFields;
+        this.resetRespondentLinkingFields = resetRespondentLinkingFields;
+        this.resetCoRespondentLinkingFields = resetCoRespondentLinkingFields;
     }
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,
@@ -98,7 +102,8 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         }
 
         tasks.add(caseFormatterAddDocuments);
-        tasks.add(resetAosLinkingFields);
+        tasks.add(resetRespondentLinkingFields);
+        tasks.add(resetCoRespondentLinkingFields);
 
         return this.execute(
             tasks.toArray(new Task[tasks.size()]),
