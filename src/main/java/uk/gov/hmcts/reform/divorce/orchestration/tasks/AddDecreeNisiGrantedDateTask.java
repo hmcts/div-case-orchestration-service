@@ -12,11 +12,11 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_FIELD;
 
 @Component
-public class AddDecreeNisiGrantedDateToPayloadTask implements Task<Map<String, Object>> {
+public class AddDecreeNisiGrantedDateTask implements Task<Map<String, Object>> {
 
     private CcdUtil ccdUtil;
 
-    public AddDecreeNisiGrantedDateToPayloadTask(@Autowired CcdUtil ccdUtil) {
+    public AddDecreeNisiGrantedDateTask(@Autowired CcdUtil ccdUtil) {
         this.ccdUtil = ccdUtil;
     }
 

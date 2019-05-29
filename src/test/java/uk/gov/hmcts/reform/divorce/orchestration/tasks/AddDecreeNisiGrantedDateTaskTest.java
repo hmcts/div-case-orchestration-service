@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertThat;
 
-public class AddDecreeNisiGrantedDateToPayloadTaskTest {
+public class AddDecreeNisiGrantedDateTaskTest {
 
     private static final String DECREE_NISI_GRANTED_DATE_CCD_FIELD = "DecreeNisiGrantedDate";
 
@@ -20,7 +20,7 @@ public class AddDecreeNisiGrantedDateToPayloadTaskTest {
 
     @Test
     public void shouldAddDecreeNisiGrantedDateToPayload() throws TaskException {
-        AddDecreeNisiGrantedDateToPayloadTask task = new AddDecreeNisiGrantedDateToPayloadTask(ccdUtil);
+        AddDecreeNisiGrantedDateTask task = new AddDecreeNisiGrantedDateTask(ccdUtil);
 
         Map<String, Object> returnedPayload = task.execute(null, singletonMap("inputTestKey", "inputTestValue"));
 
