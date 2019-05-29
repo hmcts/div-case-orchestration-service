@@ -120,6 +120,7 @@ court:
       email: 'eastmidlandsdivorce@hmcts.gsi.gov.uk'
       phoneNumber: '0300 303 0642'
       siteId: 'AA01'
+      courtId: 'eastMidlands'
     westMidlands:
       divorceCentreName: 'West Midlands Regional Divorce Centre'
       courtCity: 'Stoke-on-Trent'
@@ -129,6 +130,7 @@ court:
       email: 'westmidlandsdivorce@hmcts.gsi.gov.uk'
       phoneNumber: '0300 303 0642'
       siteId: 'AA02'
+      courtId: 'westMidlands'
     southWest:
       divorceCentreName: 'South West Regional Divorce Centre'
       courtCity: 'Southampton'
@@ -138,6 +140,7 @@ court:
       email: 'sw-region-divorce@hmcts.gsi.gov.uk'
       phoneNumber: '0300 303 0642'
       siteId: 'AA03'
+      courtId: 'southWest'
     northWest:
       divorceCentreName: 'North West Regional Divorce Centre'
       divorceCentreAddressName: 'Liverpool Civil & Family Court'
@@ -148,6 +151,7 @@ court:
       email: 'family@liverpool.countycourt.gsi.gov.uk'
       phoneNumber: '0300 303 0642'
       siteId: 'AA04'
+      courtId: 'northWest'
     serviceCentre:
       serviceCentreName: 'Courts and Tribunals Service Centre'
       divorceCentreName: 'East Midlands Regional Divorce Centre'
@@ -158,6 +162,7 @@ court:
       email: 'contactdivorce@justice.gov.uk'
       phoneNumber: '0300 303 0642'
       siteId: 'AA07'
+      courtId: 'serviceCentre'
 
 idam:
   api:
