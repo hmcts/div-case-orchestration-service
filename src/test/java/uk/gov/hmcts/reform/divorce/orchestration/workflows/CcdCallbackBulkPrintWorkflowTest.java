@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -25,6 +26,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -101,6 +103,18 @@ public class CcdCallbackBulkPrintWorkflowTest {
         Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
         assertThat(response, is(payload));
 
+        final InOrder inOrder = inOrder(
+                fetchPrintDocsFromDmStore,
+                respondentAosPackPrinter,
+                coRespondentAosPackPrinter,
+                modifyDueDate
+        );
+
+        inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);
+        inOrder.verify(respondentAosPackPrinter).execute(context, payload);
+        inOrder.verify(coRespondentAosPackPrinter).execute(context, payload);
+        inOrder.verify(modifyDueDate).execute(context, payload);
+
         verifyZeroInteractions(respondentPinGenerator);
         verifyZeroInteractions(respondentSolicitorAosEmailSender);
     }
@@ -118,6 +132,20 @@ public class CcdCallbackBulkPrintWorkflowTest {
 
         Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
         assertThat(response, is(payload));
+
+        final InOrder inOrder = inOrder(
+                fetchPrintDocsFromDmStore,
+                respondentPinGenerator,
+                respondentSolicitorAosEmailSender,
+                coRespondentAosPackPrinter,
+                modifyDueDate
+        );
+
+        inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);
+        inOrder.verify(respondentPinGenerator).execute(context, payload);
+        inOrder.verify(respondentSolicitorAosEmailSender).execute(context, payload);
+        inOrder.verify(coRespondentAosPackPrinter).execute(context, payload);
+        inOrder.verify(modifyDueDate).execute(context, payload);
 
         verifyZeroInteractions(respondentAosPackPrinter);
     }
