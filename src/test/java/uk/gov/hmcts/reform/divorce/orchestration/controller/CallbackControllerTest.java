@@ -454,10 +454,10 @@ public class CallbackControllerTest {
     public void testAosSolicitorNominated() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                        .caseData(incomingPayload)
-                        .build())
-                .build();
+            .caseDetails(CaseDetails.builder()
+                .caseData(incomingPayload)
+                .build())
+            .build();
 
         when(caseOrchestrationService.processAosSolicitorNominated(incomingRequest)).thenReturn(incomingPayload);
 
@@ -472,12 +472,12 @@ public class CallbackControllerTest {
     public void shouldReturnOk_WithErrors_AndNoCaseData_WhenExceptionIsCaughtInAosSolicitorNominated() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                        .caseData(incomingPayload)
-                        .build())
-                .build();
+            .caseDetails(CaseDetails.builder()
+                .caseData(incomingPayload)
+                .build())
+            .build();
         when(caseOrchestrationService.processAosSolicitorNominated(incomingRequest))
-                .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
+            .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosSolicitorNominated(incomingRequest);
 

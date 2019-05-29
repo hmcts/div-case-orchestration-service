@@ -379,17 +379,17 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/aos-solicitor-nominated",
-            consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles actions that need to happen once a respondent nominates a solicitor.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
-                    + "attached to the case",
-                    response = CcdCallbackResponse.class),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 500, message = "Internal Server Error")})
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
+            + "attached to the case",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> aosSolicitorNominated(
-            @RequestBody @ApiParam("CaseData")
-                    CcdCallbackRequest ccdCallbackRequest) {
+        @RequestBody @ApiParam("CaseData")
+            CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.debug("Processing AOS solicitor nominated callback. Case ID: {}", caseId);
@@ -398,10 +398,10 @@ public class CallbackController {
 
         try {
             callbackResponseBuilder.data(
-                    caseOrchestrationService.processAosSolicitorNominated(ccdCallbackRequest));
+                caseOrchestrationService.processAosSolicitorNominated(ccdCallbackRequest));
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format("Failed processing AOS solicitor callback. Case ID:  %s", caseId),
-                    exception);
+                exception);
             callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 
