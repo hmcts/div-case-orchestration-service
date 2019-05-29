@@ -72,6 +72,7 @@ module "div-cos" {
     AOS_RESPONDED_AWAITING_ANSWER_DAYS_TO_RESPOND   = "${var.aos_responded_awaiting_answer_days_to_respond}"
     SCHEDULER_RE_CREATE                             = "${var.scheduler_re_create}"
     SCHEDULER_ENABLED                               = "${var.scheduler_enabled}"
+    MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE          = "${var.health_check_ttl}"
 
     FEATURE_TOGGLE_SERVICE_API_BASEURL             = "${local.feature_toggle_baseurl}"
     SEND_LETTER_SERIVCE_BASEURL                    = "${local.send_letter_service_baseurl}"

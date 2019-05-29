@@ -71,6 +71,11 @@ variable "idam_strategic_enabled" {
   default = "true"
 }
 
+variable "health_check_ttl" {
+  type = "string"
+  default = "4000"
+}
+
 variable "location_db" {
   type    = "string"
   default = "UK South"
