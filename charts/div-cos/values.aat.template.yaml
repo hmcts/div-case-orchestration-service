@@ -17,6 +17,7 @@ java:
         IDAM_STRATEGIC_ENABLED: "true"
         DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-aat.service.core-compute-aat.internal"
         FEES_AND_PAYMENTS_SERVICE_API_BASEURL: "http://div-fps-aat.service.core-compute-aat.internal"
+        MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE: "30000"
 
     # Don't modify below here
     image: ${IMAGE_NAME}
