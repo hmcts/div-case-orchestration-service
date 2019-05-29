@@ -24,14 +24,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseCreationRe
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.AllocatedCourt;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
 import java.util.Map;
-import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
@@ -86,10 +85,8 @@ public class OrchestrationController {
             caseCreationResponse.setCaseId(String.valueOf(serviceResponse.get(ID)));
             caseCreationResponse.setStatus(SUCCESS_STATUS);
 
-            Optional.ofNullable(serviceResponse.get(ALLOCATED_COURT_KEY))
-                .map(String.class::cast)
-                .map(AllocatedCourt::new)
-                .ifPresent(caseCreationResponse::setAllocatedCourt);
+            Court allocatedCourt = (Court) serviceResponse.get(ALLOCATED_COURT_KEY);
+            caseCreationResponse.setAllocatedCourt(allocatedCourt);
 
             endpointResponse = ResponseEntity.ok(caseCreationResponse);
         }

@@ -19,9 +19,15 @@ public class CourtLookupService {
     public CourtLookupService(@Value("${court.details}") String courtsDetails,
                               @Autowired ObjectMapper objectMapper) throws IOException {
         courts = objectMapper.readValue(courtsDetails,
-                new TypeReference<Map<String, Court>>() {
-                }
+            new TypeReference<Map<String, Court>>() {
+            }
         );
+
+        //Add courtId to Court object - this can be refactored when story DIV-4239 is played
+        for (Map.Entry<String, Court> courtEntry : courts.entrySet()) {
+            String courtId = courtEntry.getKey();
+            courtEntry.getValue().setCourtId(courtId);
+        }
     }
 
     public Court getCourtByKey(String divorceUnitKey) throws CourtDetailsNotFound {
