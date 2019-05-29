@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
-import org.awaitility.core.ConditionTimeoutException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -19,12 +18,12 @@ import java.util.Map;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_LIST_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
@@ -70,13 +69,9 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
     }
 
     private void validateWithAwaitingTime(UserDetails user, String caseId) {
-        try {
-            await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS)
-                .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
-                .until(() -> retrieveCaseForCaseworker(user, caseId).getData().get(BULK_LISTING_CASE_ID_FIELD) != null);
-        } catch (ConditionTimeoutException exception) {
-            fail(String.format("Waiting time exhausted but case with id %s not updated yet", caseId));
-        }
+        await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS)
+            .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
+            .untilAsserted(() -> assertThat(retrieveCaseForCaseworker(user, caseId).getData().get(BULK_LISTING_CASE_ID_FIELD)).isNotNull());
     }
 
     private CaseDetails createAwaitingPronouncementCase(UserDetails userDetails) throws Exception {
