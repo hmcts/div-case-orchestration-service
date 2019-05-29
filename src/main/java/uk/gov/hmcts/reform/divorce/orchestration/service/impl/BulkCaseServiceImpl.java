@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateBulkCaseWorkflo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateCourtHearingDetailsWorkflow;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -75,30 +76,36 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         List<Map<String, Object>> acceptedDivorceCaseList =
                 (List<Map<String, Object>>) bulkCaseData.getOrDefault(BULK_CASE_ACCEPTED_LIST_KEY, Collections.emptyList());
 
-        // Throw update error is case list is empty
         if (acceptedDivorceCaseList.size() == 0) {
             throw new BulkUpdateException("Accepted case list is empty. Not updating bulk case");
         }
+
+        List<String> failedCasesList = new ArrayList<>();
 
         acceptedDivorceCaseList.forEach(caseLinkElem -> {
             Map<String, Object> caseLink = (Map<String, Object>) caseLinkElem.get(VALUE_KEY);
             String caseId = String.valueOf(caseLink.get(CASE_REFERENCE_FIELD));
             
             try {
-                log.info("Updating court hearing details for case id {}", caseId);
+                log.info("Updating court hearing details for case id {} in bulk case id {}", caseId, bulkCaseId);
                 updateCourtHearingDetailsWorkflow.run(bulkCaseData, caseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
             } catch (Exception e) {
                 log.error("Case update with court hearing details failed : for case id {} in bulk case id {}", caseId, bulkCaseId, e);
-                throw new BulkUpdateException("Failed to update court hearing details", e);
+                failedCasesList.add(caseId);
             }
         });
 
-        long endTime = Instant.now().toEpochMilli();
-        log.info("Completed bulk case update court hearing with bulk cased Id:{} in:{} millis", bulkCaseId, endTime - startTime);
+        if (failedCasesList.size() > 0) {
+            log.error("List of failed cases for bulk case id {} is: {}", bulkCaseId, failedCasesList.toString());
+            throw new BulkUpdateException(String.format("Failed to update court hearing details for some cases on bulk case id %s", bulkCaseId));
+        }
 
-        log.info("Updating bulk case to Listed state");
+        long endTime = Instant.now().toEpochMilli();
+        log.info("Completed bulk case update court hearing with bulk case Id:{} in:{} millis", bulkCaseId, endTime - startTime);
+
+        log.info("Updating bulk case id {} to Listed state", bulkCaseId);
         updateBulkCaseWorkflow.run(Collections.emptyMap(), context.getTransientObject(AUTH_TOKEN_JSON_KEY), bulkCaseId, LISTED_EVENT);
-        log.info("Completed bulk case state update");
+        log.info("Completed bulk case id {} state update", bulkCaseId);
     }
 
 

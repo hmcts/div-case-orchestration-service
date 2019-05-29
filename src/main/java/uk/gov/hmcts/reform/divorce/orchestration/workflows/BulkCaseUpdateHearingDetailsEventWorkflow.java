@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDivorceCaseHearingDetailsWithinBulk;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateBulkCourtHearingDate;
 
 import java.util.Map;
 
@@ -20,6 +21,7 @@ public class BulkCaseUpdateHearingDetailsEventWorkflow extends DefaultWorkflow<M
 
     private final ObjectMapper objectMapper;
     private final UpdateDivorceCaseHearingDetailsWithinBulk updateDivorceCaseHearingDetailsWithinBulk;
+    private final ValidateBulkCourtHearingDate validateBulkCourtHearingDate;
 
     public Map<String, Object> run(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException {
 
@@ -27,6 +29,7 @@ public class BulkCaseUpdateHearingDetailsEventWorkflow extends DefaultWorkflow<M
 
         return this.execute(
                 new Task[] {
+                    validateBulkCourtHearingDate,
                     updateDivorceCaseHearingDetailsWithinBulk
                 },
                 bulkCaseDetails,

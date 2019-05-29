@@ -18,6 +18,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 
 import java.util.Map;
 
+import static java.util.Arrays.asList;
+
 @RestController
 @Slf4j
 @AllArgsConstructor
@@ -44,11 +46,16 @@ public class BulkCaseController {
     public ResponseEntity<CcdCallbackResponse> scheduleBulkCaseForHearing(
             @RequestHeader("Authorization")
             @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
-        orchestrationService.processBulkCaseScheduleForHearing(ccdCallbackRequest, authorizationToken);
+        CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
 
-        // If no exceptions are thrown, event has been initiated, so return status OK with no data change
-        return ResponseEntity.ok(CcdCallbackResponse.builder().build());
+        try {
+            orchestrationService.processBulkCaseScheduleForHearing(ccdCallbackRequest, authorizationToken);
+        } catch (WorkflowException exception) {
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
     }
 }

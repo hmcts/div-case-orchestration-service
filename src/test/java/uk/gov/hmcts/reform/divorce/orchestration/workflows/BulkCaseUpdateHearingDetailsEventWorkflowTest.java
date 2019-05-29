@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDivorceCaseHearingDetailsWithinBulk;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateBulkCourtHearingDate;
 
 import java.util.Collections;
 import java.util.Map;
@@ -28,6 +29,9 @@ public class BulkCaseUpdateHearingDetailsEventWorkflowTest {
     private ObjectMapper objectMapper;
 
     @Mock
+    private ValidateBulkCourtHearingDate validateBulkCourtHearingDate;
+
+    @Mock
     private UpdateDivorceCaseHearingDetailsWithinBulk updateDivorceCaseHearingDetailsWithinBulk;
 
     @InjectMocks
@@ -38,6 +42,7 @@ public class BulkCaseUpdateHearingDetailsEventWorkflowTest {
         final ImmutablePair<String, Object> authTokenPair = new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
         final Task[] tasks = new Task[]{
+            validateBulkCourtHearingDate,
             updateDivorceCaseHearingDetailsWithinBulk,
         };
 

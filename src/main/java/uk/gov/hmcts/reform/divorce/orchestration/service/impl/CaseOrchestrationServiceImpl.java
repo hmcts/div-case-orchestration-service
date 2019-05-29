@@ -489,9 +489,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> processBulkCaseScheduleForHearing(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
-        log.info("Starting Bulk Schedule For Listing Callback");
+        String bulkCaseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.info("Starting Bulk Schedule For Listing Callback on Bulk Case {}", bulkCaseId);
         Map<String, Object> result = bulkCaseUpdateHearingDetailsEventWorkflow.run(ccdCallbackRequest, authToken);
-        log.info("Bulk Scheduling Successfully Initiated");
+        log.info("Bulk Scheduling Successfully Initiated on Bulk Case {}", bulkCaseId);
         return result;
     }
 }
