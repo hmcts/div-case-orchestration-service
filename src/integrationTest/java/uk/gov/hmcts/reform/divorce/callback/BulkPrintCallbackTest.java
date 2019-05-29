@@ -72,8 +72,8 @@ public class BulkPrintCallbackTest extends IntegrationTest {
         );
         ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders,
             ResourceLoader.objectToJson(ccdCallbackRequest)).getBody();
-        assertThat("Response body is not a JSON: " + body.print(),
-                body.print(),
+        assertThat("Response body is not a JSON: " + body.asString(),
+                body.asString(),
                 isJson()
         );
         String result = ((Map) body.jsonPath().get("data")).get("dueDate").toString();
@@ -99,8 +99,8 @@ public class BulkPrintCallbackTest extends IntegrationTest {
         );
         ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders,
             ResourceLoader.objectToJson(ccdCallbackRequest)).getBody();
-        assertThat("Response body is not a JSON: " + body.print(),
-            body.print(),
+        assertThat("Response body is not a JSON: " + body.asString(),
+            body.asString(),
             isJson()
         );
         String result = ((Map) body.jsonPath().get("data")).get("dueDate").toString();
