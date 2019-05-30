@@ -51,6 +51,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseDataWorkflow;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -177,6 +178,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
+
+    @Mock
+    private ValidateBulkCaseDataWorkflow validateBulkCaseDataWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -845,6 +849,24 @@ public class CaseOrchestrationServiceImplTest {
                 .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.processBulkCaseScheduleForHearing(ccdCallbackRequest, AUTH_TOKEN);
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_ForValidateBulkCaseData() throws WorkflowException {
+        when(validateBulkCaseDataWorkflow.run(eq(requestPayload)))
+                .thenReturn(requestPayload);
+
+        assertThat(classUnderTest.validateBulkCaseData(requestPayload),
+                is(equalTo(requestPayload)));
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldThrowException_ForValidateBulkCaseData_WhenWorkflowExceptionIsCaught()
+            throws WorkflowException {
+        when(validateBulkCaseDataWorkflow.run(eq(requestPayload)))
+                .thenThrow(new WorkflowException("This operation threw an exception"));
+
+        classUnderTest.validateBulkCaseData(requestPayload);
     }
 
     @After

@@ -58,4 +58,23 @@ public class BulkCaseController {
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
     }
+
+    @PostMapping(path = "/bulk/validate")
+    @ApiOperation(value = "Callback to validate case data")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Bulk case processing has been initiated"),
+            @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> validateBulkCaseData(
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            orchestrationService.validateBulkCaseData(ccdCallbackRequest.getCaseDetails().getCaseData());
+        } catch (WorkflowException exception) {
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
+    }
 }

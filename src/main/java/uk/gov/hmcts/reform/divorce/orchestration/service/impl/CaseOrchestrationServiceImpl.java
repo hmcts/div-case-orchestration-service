@@ -48,6 +48,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseDataWorkflow;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -106,6 +107,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final DocumentGenerationWorkflow documentGenerationWorkflow;
     private final RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
     private final BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
+    private final ValidateBulkCaseDataWorkflow validateBulkCaseDataWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -494,5 +496,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> result = bulkCaseUpdateHearingDetailsEventWorkflow.run(ccdCallbackRequest, authToken);
         log.info("Bulk Scheduling Successfully Initiated on Bulk Case {}", bulkCaseId);
         return result;
+    }
+
+    @Override
+    public Map<String, Object> validateBulkCaseData(Map<String, Object> caseData) throws WorkflowException {
+        return validateBulkCaseDataWorkflow.run(caseData);
     }
 }

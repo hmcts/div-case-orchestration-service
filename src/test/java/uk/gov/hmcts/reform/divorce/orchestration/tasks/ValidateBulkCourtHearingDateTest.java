@@ -39,32 +39,29 @@ public class ValidateBulkCourtHearingDateTest {
     public void givenFutureCourtHearingDate_whenValidateCourtHearingDate_thenReturnCaseDetails() throws TaskException {
         String futureDate = LocalDateTime.now().plusMonths(3).toString();
         Map<String, Object> bulkCaseData = Collections.singletonMap(COURT_HEARING_DATE, futureDate);
-        Map<String, Object> bulkCaseDetails = Collections.singletonMap(CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(ccdUtil.isCcdDateTimeInThePast(futureDate)).thenReturn(false);
 
-        assertEquals(bulkCaseDetails, classToTest.execute(taskContext, bulkCaseDetails));
+        assertEquals(bulkCaseData, classToTest.execute(taskContext, bulkCaseData));
     }
 
     @Test(expected = TaskException.class)
     public void givenPastCourtHearingDate_whenValidateCourtHearingDate_thenThrowTaskException() throws TaskException {
         String pastDate = LocalDateTime.now().minusMonths(3).toString();
         Map<String, Object> bulkCaseData = Collections.singletonMap(COURT_HEARING_DATE, pastDate);
-        Map<String, Object> bulkCaseDetails = Collections.singletonMap(CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(ccdUtil.isCcdDateTimeInThePast(pastDate)).thenReturn(true);
 
-        classToTest.execute(taskContext, bulkCaseDetails);
+        classToTest.execute(taskContext, bulkCaseData);
     }
 
     @Test(expected = TaskException.class)
     public void givenSameDayCourtHearingDate_whenValidateCourtHearingDate_thenThrowTaskException() throws TaskException {
         String todaysDate = LocalDateTime.now().toString();
         Map<String, Object> bulkCaseData = Collections.singletonMap(COURT_HEARING_DATE, todaysDate);
-        Map<String, Object> bulkCaseDetails = Collections.singletonMap(CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(ccdUtil.isCcdDateTimeInThePast(todaysDate)).thenReturn(true);
 
-        classToTest.execute(taskContext, bulkCaseDetails);
+        classToTest.execute(taskContext, bulkCaseData);
     }
 }

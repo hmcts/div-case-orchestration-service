@@ -19,14 +19,11 @@ public class ValidateBulkCourtHearingDate implements Task<Map<String, Object>> {
     CcdUtil ccdUtil;
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> bulkCaseDetails) throws TaskException {
-        Map<String, Object> bulkCaseData = (Map<String, Object>) bulkCaseDetails.get(CCD_CASE_DATA_FIELD);
-        String courtHearingDateTime = (String) bulkCaseData.get(COURT_HEARING_DATE);
-
-        if (ccdUtil.isCcdDateTimeInThePast(courtHearingDateTime)) {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> bulkCaseData) throws TaskException {
+        if (ccdUtil.isCcdDateTimeInThePast(String.valueOf(bulkCaseData.get(COURT_HEARING_DATE)))) {
             throw new TaskException("Court hearing date is in the past");
         }
 
-        return bulkCaseDetails;
+        return bulkCaseData;
     }
 }

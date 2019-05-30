@@ -11,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -24,17 +23,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static java.time.ZoneOffset.UTC;
 import static org.awaitility.Awaitility.await;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.POST;
@@ -66,9 +59,6 @@ public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
 
     private static final String TEST_AUTH_TOKEN = "testAuthToken";
 
-    // Mock date to be in the past compared to the request json
-    private final LocalDateTime today = LocalDateTime.parse("1999-01-01T10:20:55.000");
-
     @ClassRule
     public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
 
@@ -78,15 +68,9 @@ public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
     @Autowired
     private MockMvc webClient;
 
-    @MockBean
-    private Clock clock;
-
     @Before
     public void setup() {
         cmsServiceServer.resetAll();
-
-        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
-        when(clock.getZone()).thenReturn(UTC);
     }
 
     @Test
