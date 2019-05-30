@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCertificateOfEntitlementNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCertificateOfEntitlementNotificationEmail;
 
@@ -25,12 +26,16 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
     @Autowired
     private SendRespondentCertificateOfEntitlementNotificationEmail sendRespondentCertificateOfEntitlementNotificationEmail;
 
+    @Autowired
+    SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
+
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
 
         Map<String, Object> returnedPayload = this.execute(
                 new Task[]{
                     sendPetitionerCertificateOfEntitlementNotificationEmail,
-                    sendRespondentCertificateOfEntitlementNotificationEmail
+                    sendRespondentCertificateOfEntitlementNotificationEmail,
+                    sendCoRespondentGenericUpdateNotificationEmail
                 },
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_KEY, caseDetails.getCaseId()));
