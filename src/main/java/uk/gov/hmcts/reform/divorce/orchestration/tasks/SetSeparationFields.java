@@ -13,6 +13,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DESERTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DESERTION_TIME_TOGETHER_PERMITTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_MENTAL_SEP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PHYSICAL_SEP_DAIE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
@@ -33,13 +34,18 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+        String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
         String separationTimeTogetherPermitted = getSeparationTimeTogetherPermitted(caseData);
         String sepReferenceDate = DateUtils.formatDateWithCustomerFacingFormat(getReferenceDate(caseData));
         String mostRecentSeperationDate = getReasonForDivorceSeparationDate(caseData);
 
+        if (StringUtils.equalsIgnoreCase(DESERTION, reasonForDivorce)) {
+            caseData.put(D_8_DESERTION_TIME_TOGETHER_PERMITTED, separationTimeTogetherPermitted);
+        } else {
+            caseData.put(D_8_SEP_TIME_TOGETHER_PERMITTED, separationTimeTogetherPermitted);
+        }
         caseData.put(D_8_REASON_FOR_DIVORCE_SEP_DATE, mostRecentSeperationDate);
         caseData.put(D_8_SEP_REF_DATE, sepReferenceDate);
-        caseData.put(D_8_SEP_TIME_TOGETHER_PERMITTED, separationTimeTogetherPermitted);
 
         return caseData;
     }
@@ -52,6 +58,9 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
         return TWO;
     }
 
+    /*
+     *  Most Recent Separation date is considered in six-month rule
+     */
     private String getReasonForDivorceSeparationDate(Map<String, Object> caseData) throws TaskException {
         String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
         if (StringUtils.equalsIgnoreCase(DESERTION, reasonForDivorce)) {
@@ -67,6 +76,9 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
         return reasonForDivorceLivingApartDate;
     }
 
+    /*
+     *  Find a date before 5 yrs for sep5Yr, before 2 yr for Sep2Yr & Desertion
+     */
     private LocalDate getDateBeforeSepYears(Map<String, Object> caseData) throws TaskException {
         return LocalDate.now().minusYears(getSepYears(caseData));
     }
@@ -74,25 +86,30 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
     private Long getLivingTogetherMonths(Map<String, Object> caseData) throws TaskException {
         LocalDate dateBeforeSepYears = getDateBeforeSepYears(caseData);
         LocalDate sepDate = LocalDate.parse(getReasonForDivorceSeparationDate(caseData));
-        return ChronoUnit.MONTHS.between(dateBeforeSepYears, sepDate);
+        return ChronoUnit.MONTHS.between(sepDate, dateBeforeSepYears);
     }
 
     private Long getLivingTogetherWeeks(Map<String, Object> caseData) throws TaskException {
         LocalDate dateBeforeSepYears = getDateBeforeSepYears(caseData);
         LocalDate sepDate = LocalDate.parse(getReasonForDivorceSeparationDate(caseData));
-        return ChronoUnit.WEEKS.between(dateBeforeSepYears, sepDate);
+        return ChronoUnit.WEEKS.between(sepDate, dateBeforeSepYears);
     }
 
     private Long getLivingTogetherDays(Map<String, Object> caseData) throws TaskException {
         LocalDate dateBeforeSepYears = getDateBeforeSepYears(caseData);
         LocalDate sepDate = LocalDate.parse(getReasonForDivorceSeparationDate(caseData));
-        return ChronoUnit.DAYS.between(dateBeforeSepYears, sepDate);
+        return ChronoUnit.DAYS.between(sepDate, dateBeforeSepYears);
     }
 
+    //This is calculated based on six-month rule
     private LocalDate getReferenceDate(Map<String, Object> caseData) throws TaskException {
         return getDateBeforeSepYears(caseData).minusMonths(SIX);
     }
 
+    /*
+     *  Separation / Desertion Time together - allowed to have spent some time living together, max up to 6 months
+     *  This method will return max allowed time for user between given most recent sep date & date before sep(5/2) years in the past
+     */
     private String getSeparationTimeTogetherPermitted(Map<String, Object> caseData) throws TaskException {
         Long timeTogetherMonths = getLivingTogetherMonths(caseData);
         Long timeTogetherWeeks = getLivingTogetherWeeks(caseData);
@@ -111,7 +128,7 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
             permittedSepTime.append(" weeks");
         }
         if (timeTogetherWeeks > 0 && timeTogetherDays > 0) {
-            permittedSepTime.append(" and");
+            permittedSepTime.append(" and ");
         }
         if (timeTogetherDays == 1) {
             permittedSepTime.append(timeTogetherDays);

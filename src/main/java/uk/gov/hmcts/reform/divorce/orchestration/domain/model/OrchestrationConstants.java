@@ -73,6 +73,7 @@ public class OrchestrationConstants {
     public static final String D_8_PHYSICAL_SEP_DAIE = "D8PhysicalSeparationDate";
     public static final String D_8_SEP_REF_DATE = "D8SeparationReferenceDate";
     public static final String D_8_SEP_TIME_TOGETHER_PERMITTED = "D8SeparationTimeTogetherPermitted";
+    public static final String D_8_DESERTION_TIME_TOGETHER_PERMITTED =  "D8DesertionTimeTogetherPermitted";
 
     //CCD DN fields
     public static final String DN_APPROVAL_DATE_CCD_FIELD = "DNApprovalDate";
