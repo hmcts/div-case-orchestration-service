@@ -21,8 +21,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import static java.time.ZoneOffset.UTC;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
