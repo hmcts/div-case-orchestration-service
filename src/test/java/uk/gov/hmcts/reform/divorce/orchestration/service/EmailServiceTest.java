@@ -3,15 +3,13 @@ package uk.gov.hmcts.reform.divorce.orchestration.service;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
+import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.service.notify.NotificationClientException;
-
-import java.util.Map;
 
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -30,11 +28,8 @@ public class EmailServiceTest {
     @Autowired
     private EmailService emailService;
 
-    @Value("#{${uk.gov.notify.email.templates}}")
-    private Map<String, String> emailTemplates;
-
-    @Value("#{${uk.gov.notify.email.template.vars}}")
-    private Map<String, Map<String, String>> emailTemplateVars;
+    @Autowired
+    private EmailTemplatesConfig emailTemplatesConfig;
 
     @Test
     public void sendEmailForSubmissionConfirmationShouldCallTheEmailClientToSendAnEmail()
@@ -45,9 +40,9 @@ public class EmailServiceTest {
             "submission notification");
 
         verify(mockClient).sendEmail(
-            eq(emailTemplates.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+            eq(emailTemplatesConfig.getTemplates().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
             eq(EMAIL_ADDRESS),
-            eq(emailTemplateVars.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+            eq(emailTemplatesConfig.getTemplateVars().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
             anyString());
     }
 
