@@ -142,4 +142,15 @@ public class CcdClientSupport {
             caseType,
             caseId);
     }
+
+    public CaseDetails retrieveCaseForCaseworker(UserDetails userDetails, String caseId) {
+        return coreCaseDataApi.readForCaseWorker(
+            userDetails.getAuthToken(),
+            authTokenGenerator.generate(),
+            userDetails.getId(),
+            jurisdictionId,
+            caseType,
+            caseId);
+    }
+
 }
