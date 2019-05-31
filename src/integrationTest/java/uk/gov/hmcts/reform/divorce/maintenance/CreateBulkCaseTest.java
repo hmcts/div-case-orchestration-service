@@ -52,8 +52,8 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
         final UserDetails user1 = createCitizenUser();
         final UserDetails user2 = createCitizenUser();
 
-        final CaseDetails case1 = createAwaitingPronouncementCase(user1);
-        final CaseDetails case2 = createAwaitingPronouncementCase(user2);
+        createAwaitingPronouncementCase(user1);
+        createAwaitingPronouncementCase(user2);
 
         Response response  = createBulkCase();
         response.then()
@@ -63,7 +63,7 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
 
         List<String> casesList = response.jsonPath().get("BulkCases.case_data.CaseAcceptedList[0].value.CaseReference");
         final UserDetails caseworker = createCaseWorkerUser();
-        casesList.forEach( caseId ->{
+        casesList.forEach( caseId -> {
             validateWithAwaitingTime(caseworker, caseId);
         });
     }
