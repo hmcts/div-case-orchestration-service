@@ -70,15 +70,16 @@ public class JobService {
         }
     }
 
-    public void cleanSchedules(String... scheduleGroups) throws SchedulerException {
+    public void cleanSchedules(String... scheduleGroups) throws JobException {
+
         for (String group : scheduleGroups) {
-            Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher.groupEquals(group));
-            for (JobKey jobKey : jobKeys) {
-                try {
+            try {
+                Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher.groupEquals(group));
+                for (JobKey jobKey : jobKeys) {
                     scheduler.deleteJob(jobKey);
-                } catch (SchedulerException e) {
-                    log.error("Failed to delete jobs {} ", jobKey.getName(), e);
                 }
+            } catch(SchedulerException e) {
+                throw new JobException(String.format("Error cleaning group %s", group), e);
             }
         }
     }

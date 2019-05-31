@@ -12,7 +12,9 @@ import uk.gov.hmcts.reform.divorce.scheduler.model.JobData;
 import uk.gov.hmcts.reform.divorce.scheduler.model.Schedule;
 
 import java.util.Collections;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 @EnableConfigurationProperties(SchedulerConfig.class)
@@ -37,13 +39,15 @@ public class CronJobScheduler {
     @PostConstruct
     public void scheduleCronJobs() {
         if (reCreateSchedules) {
-            schedulerConfig.getSchedules().stream().findAny().ifPresent(schedule -> {
-                try {
-                    jobService.cleanSchedules(schedule.getCronGroup());
-                } catch (SchedulerException e) {
-                    log.error("failed to remove schedules {}", e.getMessage());
-                }
-            });
+            Set<String> cronGroups = schedulerConfig.getSchedules()
+                .stream()
+                .map(Schedule::getCronGroup)
+                .collect(Collectors.toSet());
+
+            for (String cronGroup : cronGroups) {
+                jobService.cleanSchedules(cronGroup);
+                log.info("Cron group {} deleted", cronGroup);
+            }
         }
         log.info("scheduling cron jobs");
 

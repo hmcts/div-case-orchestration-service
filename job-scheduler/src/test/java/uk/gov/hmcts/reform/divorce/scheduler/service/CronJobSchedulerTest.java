@@ -6,15 +6,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.quartz.JobKey;
-import org.quartz.SchedulerException;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.scheduler.config.SchedulerConfig;
+import uk.gov.hmcts.reform.divorce.scheduler.exception.JobException;
 import uk.gov.hmcts.reform.divorce.scheduler.model.Schedule;
 
-import java.util.Arrays;
-
+import static java.util.Arrays.asList;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,10 +34,10 @@ public class CronJobSchedulerTest {
     private CronJobScheduler classToTest;
 
     @Test
-    public void whenDeleteOldScheduleIsFalse_thenDoNotCleanSchedules() throws SchedulerException {
+    public void whenReCreateScheduleIsFalse_thenDoNotCleanSchedules() {
         setEnableDelete(false);
         when(jobService.scheduleJob(any(), anyString())).thenReturn(new JobKey("name"));
-        when(schedulerConfig.getSchedules()).thenReturn(Arrays.asList(Schedule.builder().cron("cron").build()));
+        when(schedulerConfig.getSchedules()).thenReturn(asList(Schedule.builder().cron("cron").build()));
 
         classToTest.scheduleCronJobs();
 
@@ -45,15 +46,32 @@ public class CronJobSchedulerTest {
     }
 
     @Test
-    public void whenDeleteOldScheduleIsTrue_thenCleanSchedules() throws SchedulerException {
+    public void whenReCreateScheduleIsTrue_thenCleanSchedules() {
         setEnableDelete(true);
         when(jobService.scheduleJob(any(), anyString())).thenReturn(new JobKey("name"));
-        when(schedulerConfig.getSchedules()).thenReturn(Arrays.asList(Schedule.builder().cron("cron").build()));
+        when(schedulerConfig.getSchedules()).thenReturn(asList(Schedule.builder().cron("cron").build()));
 
         classToTest.scheduleCronJobs();
 
         verify(jobService, times(1)).scheduleJob(any(), anyString());
         verify(jobService, times(1)).cleanSchedules(any());
+    }
+
+    @Test
+    public void givenException_whenCreateScheduleIsTrue_thenCleanSchedules() {
+        setEnableDelete(true);
+
+        doThrow(new JobException("Error message", new Exception())).when(jobService).cleanSchedules(any());
+        when(schedulerConfig.getSchedules()).thenReturn(asList(Schedule.builder().cron("cron").build()));
+
+        try {
+
+            classToTest.scheduleCronJobs();
+            fail("JobException expected");
+        } catch (JobException e) {
+            verify(jobService, never()).scheduleJob(any(), anyString());
+            verify(jobService, times(1)).cleanSchedules(any());
+        }
     }
 
     private void setEnableDelete(boolean value) {
