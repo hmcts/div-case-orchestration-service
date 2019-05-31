@@ -1,10 +1,10 @@
-#Job Scheduler
+# Job Scheduler
 
 The job scheduler module allows the service schedule jobs and cron jobs within the application. 
 For example, scheduler can execute a specific task every Sunday at 2am.
 
 
-##Setup configuration
+## Setup configuration
 
 Scheduler database support is integrated with spring-boot. Here is a config example
 ```
@@ -20,7 +20,7 @@ Scheduler database support is integrated with spring-boot. Here is a config exam
           charSet: UTF-8
 ```
 
-###Schedule properties
+### Schedule properties
 
 | Key  | Description| value |
 | ------------- | ------------- | ------------- |
@@ -28,7 +28,7 @@ Scheduler database support is integrated with spring-boot. Here is a config exam
 | scheduler.re-create  | Deletes old cron jobs| true / false, default true|
 
 
-###How to create Cron schedule
+### How to create Cron schedule
 
 Cron jobs can be schedule via properties with the following structure
 
