@@ -23,7 +23,7 @@ java:
     DIV_SCHEDULER_DB_PORT : "5432"
     DIV_SCHEDULER_DB_NAME : div_scheduler
     DIV_SCHEDULER_DB_USER_NAME : div_scheduler_user
-    DIV_SCHEDULER_DB_PASSWORD  : div_scheduler_passd
+    DIV_SCHEDULER_DB_PASSWORD  : div_scheduler_passwd
     FLYWAY_URL : "jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/div_scheduler"
     FLYWAY_USER : div_scheduler_user
     FLYWAY_PASSWORD : div_scheduler_passwd

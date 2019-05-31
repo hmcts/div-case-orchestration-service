@@ -43,5 +43,4 @@ dependencies {
   compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
      force = true
   }
-
 }
