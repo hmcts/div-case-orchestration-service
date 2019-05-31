@@ -38,7 +38,7 @@ public class BulkCaseController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping(path = "/bulk/schedule")
+    @PostMapping(path = "/bulk/schedule/listing")
     @ApiOperation(value = "Callback to begin processing cases in bulk case for the court hearing")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Bulk case processing has been initiated"),
@@ -59,8 +59,8 @@ public class BulkCaseController {
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/bulk/validate")
-    @ApiOperation(value = "Callback to validate case data")
+    @PostMapping(path = "/bulk/validate/listing")
+    @ApiOperation(value = "Callback to validate bulk case data for listing")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Bulk case processing has been initiated"),
             @ApiResponse(code = 400, message = "Bad Request")})

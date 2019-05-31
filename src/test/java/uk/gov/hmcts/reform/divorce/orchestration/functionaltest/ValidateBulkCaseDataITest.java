@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.
 @AutoConfigureMockMvc
 public class ValidateBulkCaseDataITest extends IdamTestSupport {
 
-    private static final String API_URL = "/bulk/validate";
+    private static final String API_URL = "/bulk/validate/listing";
 
     private static final String REQUEST_JSON_PATH = "jsonExamples/payloads/bulkCaseCcdCallbackRequest.json";
 

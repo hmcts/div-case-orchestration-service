@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.support;
 
 import io.restassured.response.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.entity.ContentType;
@@ -16,13 +17,22 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+import static org.springframework.http.HttpStatus.OK;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 
+@Slf4j
 public abstract class CcdSubmissionSupport extends IntegrationTest {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/issue-petition/";
+    private static final String BULK_PAYLOAD_CONTEXT_PATH = "fixtures/bulk-list/";
     protected static final String USER_DEFAULT_EMAIL = "simulate-delivered@notifications.service.gov.uk";
     protected static final String CO_RESPONDENT_DEFAULT_EMAIL = "co-respondent@notifications.service.gov.uk";
     protected static final String RESPONDENT_DEFAULT_EMAIL = "respondent@notifications.service.gov.uk";
+    private static final int  WAITING_TIME_IN_MILLIS = 2000;
+    private static final String SUBMIT_DN_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-dn/";
+    private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
 
     @Autowired
     protected CcdClientSupport ccdClientSupport;
@@ -32,6 +42,12 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
 
     @Value("${case.orchestration.maintenance.submit-co-respondent-aos.context-path}")
     private String submitCoRespondentAosContextPath;
+
+    @Value("${case.orchestration.maintenance.submit.context-path}")
+    private String caseCreationContextPath;
+
+    @Value("${case.orchestration.maintenance.submit-dn.context-path}")
+    private String submitDnContextPath;
 
     @SuppressWarnings("unchecked")
     @SafeVarargs
@@ -51,7 +67,22 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         return submitCase(fileName, createCitizenUser());
     }
 
+    protected CaseDetails submitBulkCase(String fileName, Pair<String, Object>... additionalCaseData) {
+        final Map caseData = loadJsonToObject(BULK_PAYLOAD_CONTEXT_PATH + fileName, Map.class);
+
+        Arrays.stream(additionalCaseData).forEach(
+                caseField -> caseData.put(caseField.getKey(), caseField.getValue())
+        );
+
+        return ccdClientSupport.submitBulkCase(caseData, createCaseWorkerUser());
+    }
+
     protected CaseDetails updateCase(String caseId, String fileName, String eventId,
+                                     Pair<String, String>... additionalCaseData) {
+        return updateCase(caseId, fileName, eventId, false, additionalCaseData);
+    }
+
+    protected CaseDetails updateCase(String caseId, String fileName, String eventId, boolean isBulkType,
                                      Pair<String, String>... additionalCaseData) {
         final Map caseData =
                 fileName == null ? new HashMap() : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class);
@@ -60,7 +91,7 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             caseField -> caseData.put(caseField.getKey(), caseField.getValue())
         );
 
-        return ccdClientSupport.update(caseId, caseData, eventId, createCaseWorkerUser());
+        return ccdClientSupport.update(caseId, caseData, eventId, createCaseWorkerUser(), isBulkType);
     }
 
     protected CaseDetails updateCaseForCitizen(String caseId, String fileName, String eventId,
@@ -111,4 +142,44 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         return headers;
     }
 
+    protected void waitToProcess() {
+        try {
+            Thread.sleep(WAITING_TIME_IN_MILLIS);
+        } catch (InterruptedException e) {
+            log.info("Error waiting", e);
+        }
+    }
+
+    protected CaseDetails createAwaitingPronouncementCase(UserDetails userDetails) throws Exception {
+
+        final CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);
+
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, AWAITING_DN_AOS_EVENT_ID, userDetails);
+
+
+        Response cosResponse = submitDnCase(userDetails.getAuthToken(), caseDetails.getId(),
+                "dn-submit.json");
+        assertEquals(OK.value(), cosResponse.getStatusCode());
+
+        assertEquals(caseDetails.getId(), cosResponse.path("id"));
+        updateCase(String.valueOf(caseDetails.getId()), null, "refertoLegalAdvisor");
+        return updateCase(String.valueOf(caseDetails.getId()), null, "entitlementGranted");
+    }
+
+
+    protected Response submitDnCase(String userToken, Long caseId, String filePath) throws Exception {
+        final Map<String, Object> headers = new HashMap<>();
+        headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+
+        if (userToken != null) {
+            headers.put(HttpHeaders.AUTHORIZATION, userToken);
+        }
+
+        return RestUtil.postToRestService(
+                serverUrl + submitDnContextPath + "/" + caseId,
+                headers,
+                filePath == null ? null : loadJson(SUBMIT_DN_PAYLOAD_CONTEXT_PATH + filePath)
+        );
+    }
 }

@@ -46,7 +46,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.
 @AutoConfigureMockMvc
 public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
 
-    private static final String API_URL = "/bulk/schedule";
+    private static final String API_URL = "/bulk/schedule/listing";
 
     private static final String CMS_UPDATE_CASE_PATH = "/casemaintenance/version/1/updateCase/%s/%s";
     private static final String CMS_UPDATE_BULK_CASE_PATH = "/casemaintenance/version/1/bulk/updateCase/%s/%s";
