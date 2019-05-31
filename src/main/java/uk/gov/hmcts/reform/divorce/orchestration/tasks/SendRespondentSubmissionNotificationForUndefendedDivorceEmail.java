@@ -14,6 +14,11 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
@@ -28,11 +33,6 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
     private static final String EMAIL_DESCRIPTION = "respondent submission notification email - undefended divorce";
 
     private static final String EMAIL_ADDRESS = "email address";
-    private static final String CASE_NUMBER = "case number";
-    private static final String FIRST_NAME = "first name";
-    private static final String LAST_NAME = "last name";
-    private static final String HUSBAND_OR_WIFE = "husband or wife";
-    private static final String RDC_NAME = "RDC name";
 
     @Autowired
     private TaskCommons taskCommons;
@@ -51,12 +51,12 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
         Court court = taskCommons.getCourt(divorceUnitKey);
 
         String caseId = getMandatoryPropertyValueAsString(caseDataPayload, D_8_CASE_REFERENCE);
-        templateFields.put(CASE_NUMBER, caseId);
+        templateFields.put(NOTIFICATION_CASE_NUMBER_KEY, caseId);
         templateFields.put(EMAIL_ADDRESS, respondentEmailAddress);
-        templateFields.put(FIRST_NAME, respondentFirstName);
-        templateFields.put(LAST_NAME, respondentLastName);
-        templateFields.put(HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
-        templateFields.put(RDC_NAME, court.getIdentifiableCentreName());
+        templateFields.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, respondentFirstName);
+        templateFields.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, respondentLastName);
+        templateFields.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
+        templateFields.put(NOTIFICATION_RDC_NAME_KEY, court.getIdentifiableCentreName());
 
         taskCommons.sendEmail(RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION,
                 EMAIL_DESCRIPTION,
