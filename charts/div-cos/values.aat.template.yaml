@@ -21,6 +21,14 @@ java:
         FEES_AND_PAYMENTS_SERVICE_API_BASEURL: "http://div-fps-aat.service.core-compute-aat.internal"
         MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE: "30000"
 
+        DIV_SCHEDULER_DB_HOST : ${SERVICE_NAME}-postgresql
+        DIV_SCHEDULER_DB_PORT : "5432"
+        DIV_SCHEDULER_DB_NAME : div_scheduler
+        DIV_SCHEDULER_DB_USER_NAME : div_scheduler_user
+        DIV_SCHEDULER_DB_PASSWORD  : div_scheduler_passwd
+        FLYWAY_URL : "jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/div_scheduler"
+        FLYWAY_USER : div_scheduler_user
+        FLYWAY_PASSWORD : div_scheduler_passwd
         SCHEDULER_SCHEDULES_TEST_CRON: "0 0/5 * 1/1 * ? *"
         SCHEDULER_RE_CREATE: true
         SCHEDULER_ENABLED: true

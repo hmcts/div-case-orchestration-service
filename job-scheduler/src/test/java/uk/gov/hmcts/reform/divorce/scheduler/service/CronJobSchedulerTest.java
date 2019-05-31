@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.scheduler.services;
+package uk.gov.hmcts.reform.divorce.scheduler.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

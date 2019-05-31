@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.sendletter.SendLetterAutoConfiguration;
 
 @EnableFeignClients(basePackages = {"uk.gov.hmcts.reform.divorce", "uk.gov.hmcts.reform.sendletter"})
 @SpringBootApplication(
-    scanBasePackages = {"uk.gov.hmcts.reform.divorce.scheduler.services","uk.gov.hmcts.reform.divorce", "uk.gov.hmcts.reform.logging.appinsights"},
+    scanBasePackages = {"uk.gov.hmcts.reform.divorce.scheduler.service","uk.gov.hmcts.reform.divorce", "uk.gov.hmcts.reform.logging.appinsights"},
     exclude = {ServiceAuthAutoConfiguration.class, SendLetterAutoConfiguration.class,DataSourceAutoConfiguration.class
     })
 public class OrchestrationServiceApplication {

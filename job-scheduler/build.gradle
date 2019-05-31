@@ -19,30 +19,29 @@ compileTestJava {
 }
 
 def versions = [
-  logback          : '1.2.3',
-  reformJavaLogging: '3.0.2',
-  jacksonDatabind: '2.9.9'
-
-
+  logback           : '1.2.3',
+  reformJavaLogging : '4.0.1',
+  jacksonDatabind   : '2.9.9',
+  flyway            : '5.2.4',
+  postgresql        : '42.2.5',
+  lombok            : '1.18.2'
 ]
 
 dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
   compile group: 'org.springframework.retry', name: 'spring-retry'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
-  compile group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
+  compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
+  compile group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
-  compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logbackx
-  compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
-    compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
-        force = true
-    }
+  compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
+     force = true
+  }
 
 }

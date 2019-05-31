@@ -2,21 +2,21 @@
 version: '2.1' 
 
 services: 
-  claim-store-database:
+  div-database:
     build:
       context: docker/database
-    image: hmcts/div-store-database
+    image: hmcts/div-database
     healthcheck:
       interval: 10s
       timeout: 10s
       retries: 10
     environment:
-      - DIV_STORE_DB_USERNAME
-      - DIV_STORE_DB_PASSWORD
+       DIV_SCHEDULER_DB_USER_NAME: div_scheduler_user
+       DIV_SCHEDULER_DB_PASSWORD: div_scheduler_passwd
     ports:
-      - 5430:5432
+      - 5432:5432
     volumes:
-      - div-store-database-data:/var/lib/postgresql/data
+      - div-database-data:/var/lib/postgresql/data
 
 volumes:
-  div-store-database-data:
+  div-database-data:

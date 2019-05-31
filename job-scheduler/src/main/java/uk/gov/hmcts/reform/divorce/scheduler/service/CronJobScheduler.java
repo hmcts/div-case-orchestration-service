@@ -1,9 +1,10 @@
-package uk.gov.hmcts.reform.divorce.scheduler.services;
+package uk.gov.hmcts.reform.divorce.scheduler.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.scheduler.config.SchedulerConfig;
@@ -15,12 +16,13 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 
 @EnableConfigurationProperties(SchedulerConfig.class)
+@ConditionalOnProperty(value = "scheduler.enabled", havingValue = "true", matchIfMissing = true)
 @Component
 @Slf4j
 public class CronJobScheduler {
 
-    @Value("${scheduler.re-create}")
-    private boolean deleteOldSchedules;
+    @Value("${scheduler.recreate}")
+    private boolean reCreateSchedules;
 
     private final SchedulerConfig schedulerConfig;
 
@@ -34,7 +36,7 @@ public class CronJobScheduler {
 
     @PostConstruct
     public void scheduleCronJobs() {
-        if (deleteOldSchedules) {
+        if (reCreateSchedules) {
             schedulerConfig.getSchedules().stream().findAny().ifPresent(schedule -> {
                 try {
                     jobService.cleanSchedules(schedule.getCronGroup());
@@ -47,7 +49,7 @@ public class CronJobScheduler {
 
         for (Schedule schedule: schedulerConfig.getSchedules()) {
             jobService.scheduleJob(buildJobData(schedule), schedule.getCron());
-            log.info("completed scheduling job services {}", schedule.getName());
+            log.info("completed scheduling job service {}", schedule.getName());
         }
     }
 

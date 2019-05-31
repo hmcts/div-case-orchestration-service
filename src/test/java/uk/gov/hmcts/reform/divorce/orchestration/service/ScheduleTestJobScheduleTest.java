@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.scheduler.model.JobData;
-import uk.gov.hmcts.reform.divorce.scheduler.services.JobService;
+import uk.gov.hmcts.reform.divorce.scheduler.service.JobService;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;

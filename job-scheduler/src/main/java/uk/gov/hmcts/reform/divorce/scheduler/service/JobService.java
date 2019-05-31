@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.scheduler.services;
+package uk.gov.hmcts.reform.divorce.scheduler.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,7 @@ import org.quartz.SimpleTrigger;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.scheduler.exceptions.JobException;
+import uk.gov.hmcts.reform.divorce.scheduler.exception.JobException;
 import uk.gov.hmcts.reform.divorce.scheduler.model.JobData;
 
 import java.time.ZonedDateTime;
@@ -70,8 +70,8 @@ public class JobService {
         }
     }
 
-    public void cleanSchedules(String... names) throws SchedulerException {
-        for (String group : names) {
+    public void cleanSchedules(String... scheduleGroups) throws SchedulerException {
+        for (String group : scheduleGroups) {
             Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher.groupEquals(group));
             for (JobKey jobKey : jobKeys) {
                 try {

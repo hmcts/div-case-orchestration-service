@@ -7,9 +7,9 @@ spring:
     scheduler:
       name: scheduler
       driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://${DIV_SCHEDULER_DB_HOST:localhost}:${DIV_SCHEDULER_DB_PORT:5000}/${DIV_SCHEDULER_DB_NAME:div_scheduler}${DIV_SCHEDULER_DB_CONN_OPTIONS:}
-      username: ${DIV_SCHEDULER_DB_USER_NAME:ccd}
-      password: ${DIV_SCHEDULER_DB_PASSWORD:ccd}
+      url: jdbc:postgresql://${DIV_SCHEDULER_DB_HOST:localhost}:${DIV_SCHEDULER_DB_PORT:5432}/${DIV_SCHEDULER_DB_NAME:div_scheduler}${DIV_SCHEDULER_DB_CONN_OPTIONS:}
+      username: ${DIV_SCHEDULER_DB_USER_NAME:div_scheduler_user}
+      password: ${DIV_SCHEDULER_DB_PASSWORD:div_scheduler_passwd}
       properties:
       charSet: UTF-8
   hikari:

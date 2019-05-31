@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.scheduler.exceptions;
+package uk.gov.hmcts.reform.divorce.scheduler.exception;
 
 public class JobException extends RuntimeException {
 

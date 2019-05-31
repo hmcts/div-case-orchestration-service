@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.scheduler.services;
+package uk.gov.hmcts.reform.divorce.scheduler.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +16,7 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
-import uk.gov.hmcts.reform.divorce.scheduler.exceptions.JobException;
+import uk.gov.hmcts.reform.divorce.scheduler.exception.JobException;
 import uk.gov.hmcts.reform.divorce.scheduler.model.JobData;
 
 import java.time.LocalDate;
