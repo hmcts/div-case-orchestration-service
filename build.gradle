@@ -197,6 +197,7 @@ dependencies {
         }
 
     compileClasspath group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    compile group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
     compile group: 'com.jayway.jsonpath', name:'json-path-assert', version: versions.jsonPathAssert
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
