@@ -77,5 +77,5 @@ variable "scheduler_re_create" {
 }
 
 variable "scheduler_enabled" {
-  default = "true"
+  default = "false"
 }
