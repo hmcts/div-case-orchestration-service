@@ -7,8 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
 
@@ -23,24 +25,26 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWor
 @Slf4j
 public class DuplicateCaseValidationTask implements Task<Map<String, Object>> {
 
-    private final CaseMaintenanceClient caseMaintenanceClient;
+    @Autowired
+    private CaseMaintenanceClient caseMaintenanceClient;
 
     @Autowired
-    public DuplicateCaseValidationTask(CaseMaintenanceClient caseMaintenanceClient) {
-        this.caseMaintenanceClient = caseMaintenanceClient;
-    }
+    private TaskCommons taskCommons;
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         try {
-            String transientObject = (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY);
+            String transientObject = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
             CaseDetails caseDetails = caseMaintenanceClient.getCase(transientObject);
 
             if (caseDetails != null && (
                     AWAITING_PAYMENT.equalsIgnoreCase(caseDetails.getState())
                             || AWAITING_HWF_DECISION.equalsIgnoreCase(caseDetails.getState()))) {
                 payload.put(ID, caseDetails.getCaseId());
-                context.setTransientObject(SELECTED_COURT, caseDetails.getCaseData().get(D_8_DIVORCE_UNIT));
+
+                String selectCourtId = (String) caseDetails.getCaseData().get(D_8_DIVORCE_UNIT);
+                Court selectCourt = taskCommons.getCourt(selectCourtId);
+                context.setTransientObject(SELECTED_COURT, selectCourt);
 
                 //we fail the task to skip the next tasks in the workflow and return the existing case details
                 context.setTaskFailed(true);

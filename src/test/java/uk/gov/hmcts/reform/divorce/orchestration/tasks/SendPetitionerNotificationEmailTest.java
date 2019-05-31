@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
@@ -35,6 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
@@ -104,165 +107,135 @@ public class SendPetitionerNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallEmailServiceForGenericUpdate() {
-        when(emailService.sendEmail(TEST_USER_EMAIL,
-            EmailTemplateNames.GENERIC_UPDATE.name(),
-            expectedTemplateVars,
-            "generic update notification"))
-                .thenReturn(null);
+    public void shouldCallEmailServiceForGenericUpdate() throws TaskException {
+        Map returnPayload = sendPetitionerUpdateNotificationsEmail.execute(context, testData);
 
-        assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
+        assertEquals(testData, returnPayload);
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL,
-            EmailTemplateNames.GENERIC_UPDATE.name(),
-            expectedTemplateVars,
-            "generic update notification");
+        verify(emailService).sendEmail(
+                eq(TEST_USER_EMAIL),
+                eq(EmailTemplateNames.GENERIC_UPDATE.name()),
+                eq(expectedTemplateVars),
+                any());
     }
 
     @Test
-    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdultery() {
+    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdultery() throws TaskException {
         testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_ADULTERY);
         testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
 
-        expectedTemplateVars.put("relationship", TEST_RELATIONSHIP);
+        expectedTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, TEST_RELATIONSHIP);
 
-        when(emailService.sendEmail(
-                TEST_USER_EMAIL,
-                EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
-                expectedTemplateVars,
-                "resp does not admit adultery update notification"))
-                .thenReturn(null);
+        Map returnPayload = sendPetitionerUpdateNotificationsEmail.execute(context, testData);
 
-        assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
+        assertEquals(testData, returnPayload);
 
         verify(emailService).sendEmail(
-            TEST_USER_EMAIL,
-            EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
-            expectedTemplateVars,
-            "resp does not admit adultery update notification");
+                eq(TEST_USER_EMAIL),
+                eq(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name()),
+                eq(expectedTemplateVars),
+                any());
     }
 
     @Test
-    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdulteryCoRespNoReply() {
+    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdulteryCoRespNoReply() throws TaskException {
         testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_ADULTERY);
         testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
         testData.put(D_8_CO_RESPONDENT_NAMED, YES_VALUE);
         testData.put(RECEIVED_AOS_FROM_CO_RESP, NO_VALUE);
 
-        expectedTemplateVars.put("relationship", TEST_RELATIONSHIP);
+        expectedTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, TEST_RELATIONSHIP);
 
-        when(emailService.sendEmail(
-                TEST_USER_EMAIL,
-                EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
-                expectedTemplateVars,
-                "resp does not admit adultery update notification - no reply from co-resp"))
-                .thenReturn(null);
+        Map returnPayload = sendPetitionerUpdateNotificationsEmail.execute(context, testData);
 
-        assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
+        assertEquals(testData, returnPayload);
 
         verify(emailService).sendEmail(
-                TEST_USER_EMAIL,
-                EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
-                expectedTemplateVars,
-                "resp does not admit adultery update notification - no reply from co-resp");
+                eq(TEST_USER_EMAIL),
+                eq(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name()),
+                eq(expectedTemplateVars),
+                any());
     }
 
     @Test
-    public void shouldCallAppropriateEmailServiceWhenRespDoesNotConsentTo2YrsSeparation() {
+    public void shouldCallAppropriateEmailServiceWhenRespDoesNotConsentTo2YrsSeparation() throws TaskException {
         testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_2_YEAR_SEP);
         testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
 
-        expectedTemplateVars.put("relationship", TEST_RELATIONSHIP);
+        expectedTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, TEST_RELATIONSHIP);
 
-        when(emailService.sendEmail(
-                TEST_USER_EMAIL,
-                EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
-                expectedTemplateVars,
-                "resp does not consent to 2 year separation update notification"))
-                .thenReturn(null);
+        Map returnPayload = sendPetitionerUpdateNotificationsEmail.execute(context, testData);
 
-        assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
+        assertEquals(testData, returnPayload);
 
         verify(emailService).sendEmail(
-                TEST_USER_EMAIL,
-                EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
-                expectedTemplateVars,
-                "resp does not consent to 2 year separation update notification");
+                eq(TEST_USER_EMAIL),
+                eq(EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name()),
+                eq(expectedTemplateVars),
+                any());
     }
 
     @Test
-    public void shouldCallEmailServiceWithNoCaseIdFormatWhenNoUnableToFormatIdForGenericUpdate() {
+    public void shouldCallEmailServiceWithNoCaseIdFormatWhenNoUnableToFormatIdForGenericUpdate() throws TaskException {
         expectedTemplateVars.replace("CCD reference", D8_CASE_ID);
 
-        when(emailService.sendEmail(TEST_USER_EMAIL,
-            EmailTemplateNames.GENERIC_UPDATE.name(),
-            expectedTemplateVars,
-            "generic update notification"))
-                .thenReturn(null);
+        Map returnPayload = sendPetitionerUpdateNotificationsEmail.execute(context, testData);
 
-        assertEquals(testData, sendPetitionerUpdateNotificationsEmail.execute(context, testData));
+        assertEquals(testData, returnPayload);
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL,
-            EmailTemplateNames.GENERIC_UPDATE.name(),
-            expectedTemplateVars,
-            "generic update notification");
+        verify(emailService).sendEmail(
+                eq(TEST_USER_EMAIL),
+                eq(EmailTemplateNames.GENERIC_UPDATE.name()),
+                eq(expectedTemplateVars),
+                any());
     }
 
     @Test
     public void shouldCallEmailService_WithCourtName_WhenCaseIsAssignedToCourt() throws TaskException {
-        expectedTemplateVars.put("RDC name", TEST_COURT_DISPLAY_NAME);
+        expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, TEST_COURT_DISPLAY_NAME);
         expectedTemplateVars.replace("CCD reference", UNFORMATTED_CASE_ID);
 
-        when(emailService.sendEmail(TEST_USER_EMAIL,
-            EmailTemplateNames.APPLIC_SUBMISSION.name(),
-            expectedTemplateVars,
-            "submission notification"))
-                .thenReturn(null);
+        Map returnPayload = sendPetitionerSubmissionNotificationEmail.execute(context, testData);
 
-        assertEquals(testData, sendPetitionerSubmissionNotificationEmail.execute(context, testData));
+        assertEquals(testData, returnPayload);
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL,
-            EmailTemplateNames.APPLIC_SUBMISSION.name(),
-            expectedTemplateVars,
-            "submission notification");
+        verify(emailService).sendEmail(
+                eq(TEST_USER_EMAIL),
+                eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
+                eq(expectedTemplateVars),
+                any());
     }
 
     @Test
     public void shouldCallEmailService_WithServiceCentreName_WhenCaseIsAssignedToServiceCentre() throws TaskException {
         testData.put(DIVORCE_UNIT_JSON_KEY, SERVICE_CENTRE_KEY);
         expectedTemplateVars.replace("CCD reference", UNFORMATTED_CASE_ID);
-        expectedTemplateVars.put("RDC name", SERVICE_CENTRE_DISPLAY_NAME);
+        expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, SERVICE_CENTRE_DISPLAY_NAME);
 
-        when(emailService.sendEmail(TEST_USER_EMAIL,
-            EmailTemplateNames.APPLIC_SUBMISSION.name(),
-            expectedTemplateVars,
-            "submission notification"))
-            .thenReturn(null);
+        Map returnPayload = sendPetitionerSubmissionNotificationEmail.execute(context, testData);
 
-        assertEquals(testData, sendPetitionerSubmissionNotificationEmail.execute(context, testData));
+        assertEquals(testData, returnPayload);
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL,
-            EmailTemplateNames.APPLIC_SUBMISSION.name(),
-            expectedTemplateVars,
-            "submission notification");
+        verify(emailService).sendEmail(
+                eq(TEST_USER_EMAIL),
+                eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
+                eq(expectedTemplateVars),
+                any());
     }
 
     @Test
     public void shouldCallEmailServiceWithNoCaseIdFormatWhenNoUnableToFormatIdForSubmission() throws TaskException {
         expectedTemplateVars.replace("CCD reference", UNFORMATTED_CASE_ID);
-        expectedTemplateVars.put("RDC name", TEST_COURT_DISPLAY_NAME);
+        expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, TEST_COURT_DISPLAY_NAME);
 
-        when(emailService.sendEmail(TEST_USER_EMAIL,
-            EmailTemplateNames.APPLIC_SUBMISSION.name(),
-            expectedTemplateVars,
-            "submission notification"))
-            .thenReturn(null);
+        Map returnPayload = sendPetitionerSubmissionNotificationEmail.execute(context, testData);
 
-        assertEquals(testData, sendPetitionerSubmissionNotificationEmail.execute(context, testData));
+        assertEquals(testData, returnPayload);
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL,
-            EmailTemplateNames.APPLIC_SUBMISSION.name(),
-            expectedTemplateVars,
-            "submission notification");
+        verify(emailService).sendEmail(
+            eq(TEST_USER_EMAIL),
+            eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
+            eq(expectedTemplateVars),
+            any());
     }
 }

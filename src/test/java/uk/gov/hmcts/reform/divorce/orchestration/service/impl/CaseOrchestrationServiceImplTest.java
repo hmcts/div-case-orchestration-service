@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
@@ -77,6 +78,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -168,6 +170,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private DocumentGenerationWorkflow documentGenerationWorkflow;
+
+    @Mock
+    private RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -320,6 +325,9 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenCaseDataValid_whenSubmit_thenReturnPayload() throws Exception {
         // given
+        Map<String, Object> expectedPayload = new HashMap<>();
+        expectedPayload.put("returnedKey", "returnedValue");
+        expectedPayload.put(ALLOCATED_COURT_KEY, "randomlyAllocatedKey");
         when(submitToCCDWorkflow.run(requestPayload, AUTH_TOKEN)).thenReturn(expectedPayload);
         when(submitToCCDWorkflow.errors()).thenReturn(Collections.emptyMap());
 
@@ -327,7 +335,8 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> actual = classUnderTest.submit(requestPayload, AUTH_TOKEN);
 
         // then
-        assertEquals(expectedPayload, actual);
+        assertThat(actual.get("returnedKey"), is("returnedValue"));
+        assertThat(actual.get("returnedKey"), is("returnedValue"));
 
         verify(submitToCCDWorkflow).run(requestPayload, AUTH_TOKEN);
         verify(submitToCCDWorkflow).errors();
@@ -794,6 +803,26 @@ public class CaseOrchestrationServiceImplTest {
             .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+    }
+
+    @Test
+    public void testServiceCallsRightWorkflowWithRightData_ForProcessingAosSolicitorNominated()
+            throws WorkflowException, CaseOrchestrationServiceException {
+        when(respondentSolicitorNominatedWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()))).thenReturn(requestPayload);
+
+        assertThat(classUnderTest.processAosSolicitorNominated(ccdCallbackRequest), is(equalTo(requestPayload)));
+    }
+
+    @Test
+    public void shouldThrowException_ForProcessingAosSolicitorNominated_WhenWorkflowExceptionIsCaught()
+            throws WorkflowException, CaseOrchestrationServiceException {
+        when(respondentSolicitorNominatedWorkflow.run(eq(ccdCallbackRequest.getCaseDetails())))
+                .thenThrow(new WorkflowException("This operation threw an exception."));
+
+        expectedException.expect(CaseOrchestrationServiceException.class);
+        expectedException.expectMessage(is("This operation threw an exception."));
+
+        classUnderTest.processAosSolicitorNominated(ccdCallbackRequest);
     }
 
     @After
