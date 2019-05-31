@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.ResponseBody;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +24,6 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 import static uk.gov.hmcts.reform.divorce.util.RestUtil.postToRestService;
 
-@Slf4j
 public class BulkPrintCallbackTest extends IntegrationTest {
 
     private static final String RESPONDENT_AOS_INVITATION = "fixtures/issue-petition/ccd-callback-aos-invitation.json";
@@ -76,10 +74,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
                 isJson()
         );
         String result = ((Map) body.jsonPath().get("data")).get("dueDate").toString();
-        assertEquals("Due date is not as expected ",
-            LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
-        log.info(result);
-
+        assertEquals(LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
     }
 
     @Test
@@ -102,9 +97,6 @@ public class BulkPrintCallbackTest extends IntegrationTest {
             isJson()
         );
         String result = ((Map) body.jsonPath().get("data")).get("dueDate").toString();
-        assertEquals("Due date is not as expected ",
-            LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
-        log.info(result);
-
+        assertEquals(LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
     }
 }
