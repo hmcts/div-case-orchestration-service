@@ -4,4 +4,4 @@ idam_strategic_enabled = "true"
 
 health_check_ttl = 30000
 
-scheduler_enabled = true
+scheduler_enabled = "true"

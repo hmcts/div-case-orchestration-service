@@ -187,7 +187,6 @@ configurations {
     integrationTestRuntime.extendsFrom testRuntime
 }
 
-// https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
 dependencyCheck {
     // Specifies if the build should be failed if a CVSS score above a specified level is identified.
     // range of 0-10 fails the build, anything greater and it doesn't fail the build
@@ -227,7 +226,10 @@ def versions = [
         springSecurityCrypto            : '5.1.5.RELEASE',
         tomcat                          : '9.0.19',
         sendLetterClient                : '2.1.1',
-        commonsMath3                    : '3.6.1'
+        commonsMath3                    : '3.6.1',
+        postgresql                      : '42.2.5',
+        hibernateTypes                  : '2.4.0',
+        flyway                          : '5.2.4'
 ]
 
 dependencies {
@@ -249,8 +251,8 @@ dependencies {
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
     compile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
     compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: versions.javaxWsRs
-    compile group: 'com.vladmihalcea', name: 'hibernate-types-52', version: '2.4.0'
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
+    compile group: 'com.vladmihalcea', name: 'hibernate-types-52', version:versions.hibernateTypes
+    compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: versions.springBoot
@@ -267,7 +269,6 @@ dependencies {
 
     compile group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
     compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: versions.reformSpringBootAutoConfigure
-    compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.1.1'
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: versions.reformHealth
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: versions.reformPropertiesVolume
     compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
@@ -283,7 +284,7 @@ dependencies {
     compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-el', version: versions.tomcat) {
         force = true
     }
-    compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
+    compile group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
     compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformsJavaLogging

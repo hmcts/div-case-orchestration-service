@@ -71,13 +71,11 @@ To run all mutation tests execute the following command:
 Schedule service is disabled by default in local environment. 
 If you want to enable it, set the environment variable `SCHEDULER_ENABLED` to `true` or override application property `scheduler.enabled`
 
-####Handling database
+#### Handling database
 
 Database will get initiated when you run ```docker-compose up``` for the first time by execute all scripts from database directory.
 
 You don't need to migrate database manually since migrations are executed every time the application bootstraps.
-
-
 
 ### Integration tests
 

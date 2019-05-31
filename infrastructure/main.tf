@@ -97,14 +97,14 @@ module "div-scheduler-db" {
   common_tags        = "${var.common_tags}"
 }
 
-resource "azurerm_key_vault_secret" "POSTGRES-USER" {
-  name      = "${var.component}-POSTGRES-USER"
+resource "azurerm_key_vault_secret" "postgresql-user" {
+  name      = "${var.component}-postgresql-user"
   value     = "${module.div-scheduler-db.user_name}"
   vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
-resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
-  name      = "${var.component}-POSTGRES-PASS"
+resource "azurerm_key_vault_secret" "postgresql-password" {
+  name      = "${var.component}-postgresql-password"
   value     = "${module.div-scheduler-db.postgresql_password}"
   vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }

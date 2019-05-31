@@ -24,7 +24,8 @@ def versions = [
   jacksonDatabind   : '2.9.9',
   flyway            : '5.2.4',
   postgresql        : '42.2.5',
-  lombok            : '1.18.2'
+  lombok            : '1.18.2',
+  assertj           : '3.11.1'
 ]
 
 dependencies {
