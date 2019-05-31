@@ -29,7 +29,7 @@ public class FlywayNoOpStrategyUTest {
     private FlywayNoOpStrategy classToTest;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         MigrationInfo[] migrationInfo = new MigrationInfo[1];
         migrationInfo[0] = migrationInfoMock;
         when(flywayMock.info()).thenReturn(migrationInfoServiceMock);
