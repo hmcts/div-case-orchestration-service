@@ -196,9 +196,6 @@ dependencies {
             exclude group: 'io.reactivex', module: 'rxnetty-servo'
         }
 
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-    testCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
