@@ -30,7 +30,6 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
     protected static final String USER_DEFAULT_EMAIL = "simulate-delivered@notifications.service.gov.uk";
     protected static final String CO_RESPONDENT_DEFAULT_EMAIL = "co-respondent@notifications.service.gov.uk";
     protected static final String RESPONDENT_DEFAULT_EMAIL = "respondent@notifications.service.gov.uk";
-    private static final int  WAITING_TIME_IN_MILLIS = 2000;
     private static final String SUBMIT_DN_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-dn/";
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
 
@@ -84,8 +83,9 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
 
     protected CaseDetails updateCase(String caseId, String fileName, String eventId, boolean isBulkType,
                                      Pair<String, String>... additionalCaseData) {
+        String payloadPath = isBulkType ? BULK_PAYLOAD_CONTEXT_PATH : PAYLOAD_CONTEXT_PATH;
         final Map caseData =
-                fileName == null ? new HashMap() : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class);
+                fileName == null ? new HashMap() : loadJsonToObject(payloadPath + fileName, Map.class);
 
         Arrays.stream(additionalCaseData).forEach(
             caseField -> caseData.put(caseField.getKey(), caseField.getValue())
@@ -140,14 +140,6 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             headers.put(HttpHeaders.AUTHORIZATION, userToken);
         }
         return headers;
-    }
-
-    protected void waitToProcess() {
-        try {
-            Thread.sleep(WAITING_TIME_IN_MILLIS);
-        } catch (InterruptedException e) {
-            log.info("Error waiting", e);
-        }
     }
 
     protected CaseDetails createAwaitingPronouncementCase(UserDetails userDetails) throws Exception {
