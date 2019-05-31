@@ -78,7 +78,7 @@ public class JobService {
                 for (JobKey jobKey : jobKeys) {
                     scheduler.deleteJob(jobKey);
                 }
-            } catch(SchedulerException e) {
+            } catch (SchedulerException e) {
                 throw new JobException(String.format("Error cleaning group %s", group), e);
             }
         }
