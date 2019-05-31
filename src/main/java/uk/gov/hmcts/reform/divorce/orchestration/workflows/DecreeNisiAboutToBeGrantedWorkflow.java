@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiGrantedDateTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiApprovalDateTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
-    private AddDecreeNisiGrantedDateTask addDecreeNisiGrantedDateTask;
+    private AddDecreeNisiApprovalDateTask addDecreeNisiApprovalDateTask;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
         List<Task> tasksToRun = new ArrayList<>();
@@ -30,7 +30,7 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
         String newCaseEndState = AWAITING_CLARIFICATION;
         Object decreeNisiGranted = caseDetails.getCaseData().get(DECREE_NISI_GRANTED_CCD_FIELD);
         if (YES_VALUE.equals(decreeNisiGranted)) {
-            tasksToRun.add(addDecreeNisiGrantedDateTask);
+            tasksToRun.add(addDecreeNisiApprovalDateTask);
             newCaseEndState = AWAITING_PRONOUNCEMENT;
         }
 

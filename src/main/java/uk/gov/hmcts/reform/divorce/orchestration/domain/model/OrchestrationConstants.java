@@ -117,7 +117,7 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_DUE_DATE = "DueDateCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED = "ReceivedAnswerFromCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED_DATE = "ReceivedAnswerFromCoRespDate";
-    public static final String DECREE_NISI_GRANTED_DATE_FIELD = "DecreeNisiGrantedDate";
+    public static final String DN_APPROVAL_DATE_FIELD = "DNApprovalDate";
 
     // Divorce Session
     public static final String DIVORCE_SESSION_EXISTING_PAYMENTS = "existingPayments";

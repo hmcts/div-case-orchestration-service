@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_APPROVAL_DATE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -59,7 +59,7 @@ public class DecreeNisiAboutToBeGrantedTest {
                 hasJsonPath(CCD_RESPONSE_DATA_FIELD, allOf(
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(YES_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(AWAITING_PRONOUNCEMENT)),
-                    hasJsonPath(DECREE_NISI_GRANTED_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat()))
+                    hasJsonPath(DN_APPROVAL_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat()))
                 ))
             )));
     }
@@ -79,7 +79,7 @@ public class DecreeNisiAboutToBeGrantedTest {
                 hasJsonPath(CCD_RESPONSE_DATA_FIELD, allOf(
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(NO_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(AWAITING_CLARIFICATION)),
-                    hasNoJsonPath(DECREE_NISI_GRANTED_DATE_FIELD)
+                    hasNoJsonPath(DN_APPROVAL_DATE_FIELD)
                 ))
             )));
     }

@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiGrantedDateTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiApprovalDateTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +35,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
     private static final String STATE_CCD_FIELD = "state";
 
     @Mock
-    private AddDecreeNisiGrantedDateTask addDecreeNisiGrantedDateTask;
+    private AddDecreeNisiApprovalDateTask addDecreeNisiApprovalDateTask;
 
     @InjectMocks
     private DecreeNisiAboutToBeGrantedWorkflow workflow;
@@ -53,7 +53,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
 
         Map<String, Object> payloadReturnedByTask = new HashMap<>(inputPayload);
         payloadReturnedByTask.put("addedKey", "addedValue");
-        when(addDecreeNisiGrantedDateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(payloadReturnedByTask);
+        when(addDecreeNisiApprovalDateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(payloadReturnedByTask);
 
         Map<String, Object> returnedPayload = workflow.run(CaseDetails.builder().caseData(inputPayload).build());
 
@@ -62,7 +62,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
             hasEntry(equalTo(DECREE_NISI_GRANTED_CCD_FIELD), equalTo(YES_VALUE)),
             hasEntry(equalTo(STATE_CCD_FIELD), equalTo(AWAITING_PRONOUNCEMENT))
         ));
-        verify(addDecreeNisiGrantedDateTask).execute(isNotNull(), eq(inputPayload));
+        verify(addDecreeNisiApprovalDateTask).execute(isNotNull(), eq(inputPayload));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
             hasEntry(equalTo(DECREE_NISI_GRANTED_CCD_FIELD), equalTo(NO_VALUE)),
             hasEntry(equalTo(STATE_CCD_FIELD), equalTo(AWAITING_CLARIFICATION))
         ));
-        verify(addDecreeNisiGrantedDateTask, never()).execute(any(), any());
+        verify(addDecreeNisiApprovalDateTask, never()).execute(any(), any());
     }
 
 }
