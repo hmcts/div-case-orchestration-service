@@ -57,6 +57,6 @@ public class CronJobSchedulerTest {
     }
 
     private void setEnableDelete(boolean value) {
-        ReflectionTestUtils.setField(classToTest, "deleteOldSchedules", value);
+        ReflectionTestUtils.setField(classToTest, "reCreateSchedules", value);
     }
 }

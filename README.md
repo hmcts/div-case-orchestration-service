@@ -66,6 +66,16 @@ To run all mutation tests execute the following command:
 
 ```
 
+### Enable schedule
+
+Set the environment variable `SCHEDULER_ENABLED` to `true` or override application property `scheduler.enabled`
+
+To install postgresSql container
+
+```
+docker-compose up
+```
+
 ### Integration tests
 
 To run all integration tests locally:

@@ -45,7 +45,7 @@ scheduler:
   schedule:
     name: 'test schedulder'
     description: ' test scheduler'
-    jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.jobs.DueDateJob.class'
+    jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.DueDateJob.class'
     cron: '0 0/1 * 1/1 * ? *'
   jpa:
     hibernate:

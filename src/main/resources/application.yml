@@ -45,7 +45,7 @@ scheduler:
       enabled: false
       cronGroup: "NIGHTLY_CRON"
       description: 'Scheduler to test'
-      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.jobs.ScheduleTestJob'
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.ScheduleTestJob'
       cron: ${SCHEDULER_SCHEDULES_TEST_CRON:0 0/1 * 1/1 * ? *}
 
 server:
