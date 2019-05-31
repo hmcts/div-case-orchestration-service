@@ -157,7 +157,6 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, userDetails);
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, AWAITING_DN_AOS_EVENT_ID, userDetails);
 
-
         Response cosResponse = submitDnCase(userDetails.getAuthToken(), caseDetails.getId(),
                 "dn-submit.json");
         assertEquals(OK.value(), cosResponse.getStatusCode());

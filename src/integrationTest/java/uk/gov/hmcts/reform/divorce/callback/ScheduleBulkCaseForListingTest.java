@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
+
 public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
 
     private static final String BULK_CREATE_JSON_FILE = "bulk-create.json";
@@ -21,6 +28,11 @@ public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
     private static final String SCHEDULE_FOR_LISTING_EVENT_ID = "scheduleForListing";
     private static final String BULK_CASE_ACCEPTED_LIST_KEY = "CaseAcceptedList";
     private static final String BULK_HEARING_DATE_TIME_KEY = "hearingDate";
+    private static final String COURT_NAME_FIELD_KEY = "CourtName";
+    private static final String BULK_LISTED_STATE = "Listed";
+
+    private static final int  MAX_WAITING_TIME_IN_SECONDS = 30;
+    private static final int  POOL_INTERVAL_IN_MILLIS = 500;
 
     @Autowired
     private CosApiClient cosApiClient;
@@ -30,24 +42,36 @@ public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
         final UserDetails user1 = createCitizenUser();
         final UserDetails user2 = createCitizenUser();
 
-        CaseDetails case1 = createAwaitingPronouncementCase(user1);
-        CaseDetails case2 = createAwaitingPronouncementCase(user2);
-        waitToProcess();
+        String caseId1 = createAwaitingPronouncementCase(user1).getId().toString();
+        String caseId2 = createAwaitingPronouncementCase(user2).getId().toString();
 
         CollectionMember<CaseLink> caseLink1 = new CollectionMember<>();
-        caseLink1.setValue(new CaseLink(case1.getId().toString()));
+        caseLink1.setValue(new CaseLink(caseId1));
         CollectionMember<CaseLink> caseLink2 = new CollectionMember<>();
-        caseLink2.setValue(new CaseLink(case2.getId().toString()));
+        caseLink2.setValue(new CaseLink(caseId2));
 
-        List<CollectionMember<CaseLink>> acceptedCases = new ArrayList<>();
-        acceptedCases.add(caseLink1);
-        acceptedCases.add(caseLink2);
+        List<CollectionMember<CaseLink>> acceptedCases = ImmutableList.of(caseLink1, caseLink2);
 
-        Long bulkCaseId = submitBulkCase(BULK_CREATE_JSON_FILE, Pair.of(BULK_CASE_ACCEPTED_LIST_KEY, acceptedCases)).getId();
+        String bulkCaseId = submitBulkCase(BULK_CREATE_JSON_FILE, Pair.of(BULK_CASE_ACCEPTED_LIST_KEY, acceptedCases))
+                .getId().toString();
 
-        updateCase(bulkCaseId.toString(), BULK_UPDATE_JSON_FILE, SCHEDULE_FOR_LISTING_EVENT_ID, true,
+        updateCase(bulkCaseId, BULK_UPDATE_JSON_FILE, SCHEDULE_FOR_LISTING_EVENT_ID, true,
                 Pair.of(BULK_HEARING_DATE_TIME_KEY, LocalDateTime.now().plusMonths(3).toString()));
 
-        waitToProcess();
+        validateCaseWithAwaitingTime(createCaseWorkerUser(), caseId1);
+        validateCaseWithAwaitingTime(createCaseWorkerUser(), caseId2);
+        validateBulkCaseWithAwaitingTime(createCaseWorkerUser(), bulkCaseId);
+    }
+
+    private void validateCaseWithAwaitingTime(UserDetails user, String caseId) {
+        await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS)
+                .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
+                .untilAsserted(() -> assertThat(retrieveCaseForCaseworker(user, caseId).getData().get(COURT_NAME_FIELD_KEY)).isNotNull());
+    }
+
+    private void validateBulkCaseWithAwaitingTime(UserDetails user, String caseId) {
+        await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS)
+                .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
+                .untilAsserted(() -> assertThat(retrieveCaseForCaseworker(user, caseId).getState()).isEqualTo(BULK_LISTED_STATE));
     }
 }
