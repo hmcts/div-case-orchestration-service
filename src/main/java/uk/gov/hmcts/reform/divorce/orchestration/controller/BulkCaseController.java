@@ -64,13 +64,13 @@ public class BulkCaseController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Bulk case processing has been initiated"),
             @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> validateBulkCaseData(
+    public ResponseEntity<CcdCallbackResponse> validateBulkCaseListingData(
             @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
-            orchestrationService.validateBulkCaseData(ccdCallbackRequest.getCaseDetails().getCaseData());
+            orchestrationService.validateBulkCaseListingData(ccdCallbackRequest.getCaseDetails().getCaseData());
         } catch (WorkflowException exception) {
             ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
         }

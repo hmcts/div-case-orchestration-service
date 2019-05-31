@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateBulkCourtHearingD
 import java.util.Map;
 
 @Component
-public class ValidateBulkCaseDataWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class ValidateBulkCaseListingWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
     private ValidateBulkCourtHearingDate validateBulkCourtHearingDate;

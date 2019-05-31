@@ -58,29 +58,29 @@ public class BulkCaseControllerTest {
     }
 
     @Test
-    public void whenValidateBulkCaseData_thenReturnExpectedResponse() throws WorkflowException {
+    public void whenvalidateBulkCaseListingData_thenReturnExpectedResponse() throws WorkflowException {
         CaseDetails caseDetails = CaseDetails.builder().caseData(Collections.emptyMap()).build();
         CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        when(caseOrchestrationService.validateBulkCaseData(Collections.emptyMap()))
+        when(caseOrchestrationService.validateBulkCaseListingData(Collections.emptyMap()))
                 .thenReturn(Collections.emptyMap());
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.validateBulkCaseData(request);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.validateBulkCaseListingData(request);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody(), is(CcdCallbackResponse.builder().build()));
     }
 
     @Test
-    public void whenValidateBulkCaseDataThrowsError_thenReturnExpectedResponse() throws WorkflowException {
+    public void whenvalidateBulkCaseListingDataThrowsError_thenReturnExpectedResponse() throws WorkflowException {
         CaseDetails caseDetails = CaseDetails.builder().caseData(Collections.emptyMap()).build();
         CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
         String error = "error has occurred";
 
-        when(caseOrchestrationService.validateBulkCaseData(Collections.emptyMap()))
+        when(caseOrchestrationService.validateBulkCaseListingData(Collections.emptyMap()))
                 .thenThrow(new WorkflowException(error));
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.validateBulkCaseData(request);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.validateBulkCaseListingData(request);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody(), is(CcdCallbackResponse.builder().errors(Collections.singletonList(error)).build()));

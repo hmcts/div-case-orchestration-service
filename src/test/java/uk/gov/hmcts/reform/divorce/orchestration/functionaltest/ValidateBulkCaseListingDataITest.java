@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.
 @PropertySource(value = "classpath:application.yml")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-public class ValidateBulkCaseDataITest extends IdamTestSupport {
+public class ValidateBulkCaseListingDataITest extends IdamTestSupport {
 
     private static final String API_URL = "/bulk/validate/listing";
 

@@ -51,7 +51,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseDataWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -180,7 +180,7 @@ public class CaseOrchestrationServiceImplTest {
     private BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
 
     @Mock
-    private ValidateBulkCaseDataWorkflow validateBulkCaseDataWorkflow;
+    private ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -852,21 +852,21 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldCallTheRightWorkflow_ForValidateBulkCaseData() throws WorkflowException {
-        when(validateBulkCaseDataWorkflow.run(eq(requestPayload)))
+    public void shouldCallTheRightWorkflow_ForvalidateBulkCaseListingData() throws WorkflowException {
+        when(validateBulkCaseListingWorkflow.run(eq(requestPayload)))
                 .thenReturn(requestPayload);
 
-        assertThat(classUnderTest.validateBulkCaseData(requestPayload),
+        assertThat(classUnderTest.validateBulkCaseListingData(requestPayload),
                 is(equalTo(requestPayload)));
     }
 
     @Test(expected = WorkflowException.class)
-    public void shouldThrowException_ForValidateBulkCaseData_WhenWorkflowExceptionIsCaught()
+    public void shouldThrowException_ForvalidateBulkCaseListingData_WhenWorkflowExceptionIsCaught()
             throws WorkflowException {
-        when(validateBulkCaseDataWorkflow.run(eq(requestPayload)))
+        when(validateBulkCaseListingWorkflow.run(eq(requestPayload)))
                 .thenThrow(new WorkflowException("This operation threw an exception"));
 
-        classUnderTest.validateBulkCaseData(requestPayload);
+        classUnderTest.validateBulkCaseListingData(requestPayload);
     }
 
     @After

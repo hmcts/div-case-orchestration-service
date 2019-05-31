@@ -3,23 +3,18 @@ package uk.gov.hmcts.reform.divorce.callback;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
-import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 
 public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
 
@@ -33,9 +28,6 @@ public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
 
     private static final int  MAX_WAITING_TIME_IN_SECONDS = 30;
     private static final int  POOL_INTERVAL_IN_MILLIS = 500;
-
-    @Autowired
-    private CosApiClient cosApiClient;
 
     @Test
     public void whenScheduleBulkCaseForListing_thenIndividualCasesShouldBeUpdated() throws Exception {

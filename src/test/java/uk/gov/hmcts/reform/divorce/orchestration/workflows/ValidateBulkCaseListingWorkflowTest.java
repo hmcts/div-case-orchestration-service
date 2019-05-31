@@ -16,16 +16,16 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ValidateBulkCaseDataWorkflowTest {
+public class ValidateBulkCaseListingWorkflowTest {
 
     @Mock
     private ValidateBulkCourtHearingDate validateBulkCourtHearingDate;
 
     @InjectMocks
-    private ValidateBulkCaseDataWorkflow classUnderTest;
+    private ValidateBulkCaseListingWorkflow classUnderTest;
 
     @Test
-    public void whenValidateBulkCaseData_thenProcessAsExpected() throws WorkflowException {
+    public void whenvalidateBulkCaseListingData_thenProcessAsExpected() throws WorkflowException {
         final Task[] tasks = new Task[]{
             validateBulkCourtHearingDate
         };
