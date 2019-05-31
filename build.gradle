@@ -198,6 +198,9 @@ dependencies {
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+
     compile group: 'com.jayway.jsonpath', name:'json-path-assert', version: versions.jsonPathAssert
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
