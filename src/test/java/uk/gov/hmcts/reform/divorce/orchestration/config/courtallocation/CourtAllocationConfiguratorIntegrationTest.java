@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.CourtAllocationConfiguration;
 
 import java.math.BigDecimal;
 
@@ -31,18 +30,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.Divor
 public class CourtAllocationConfiguratorIntegrationTest {
 
     @Autowired
-    private CourtAllocationConfiguration courtAllocationConfiguration;
+    private CourtDistributionConfig courtDistributionConfig;
 
     @Test
     public void shouldSetUpConfigurationObjectWithEnvironmentVariableContents() {
-        assertThat(courtAllocationConfiguration.getDivorceRatioPerFact(), allOf(
+        assertThat(courtDistributionConfig.getDivorceCasesRatio(), allOf(
             hasEntry(equalTo(UNREASONABLE_BEHAVIOUR), comparesEqualTo(new BigDecimal("0.30"))),
             hasEntry(equalTo(SEPARATION_TWO_YEARS), comparesEqualTo(new BigDecimal("0.37"))),
             hasEntry(equalTo(SEPARATION_FIVE_YEARS), comparesEqualTo(new BigDecimal("0.21"))),
             hasEntry(equalTo(DESERTION), comparesEqualTo(new BigDecimal("0.01"))),
             hasEntry(equalTo(ADULTERY), comparesEqualTo(new BigDecimal("0.11")))
         ));
-        assertThat(courtAllocationConfiguration.getDesiredWorkloadPerCourt(), allOf(
+        assertThat(courtDistributionConfig.getDistribution(), allOf(
             hasEntry(equalTo(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("1"))),
             hasEntry(equalTo(SOUTHWEST.getId()), comparesEqualTo(BigDecimal.ZERO)),
             hasEntry(equalTo(NORTHWEST.getId()), comparesEqualTo(BigDecimal.ZERO)),
@@ -50,11 +49,10 @@ public class CourtAllocationConfiguratorIntegrationTest {
             hasEntry(equalTo(EASTMIDLANDS.getId()), comparesEqualTo(BigDecimal.ZERO))
         ));
 
-        assertThat(courtAllocationConfiguration.getSpecificCourtsAllocationPerFact(), allOf(
+        assertThat(courtDistributionConfig.getFactAllocation(), allOf(
             hasEntry(is(UNREASONABLE_BEHAVIOUR), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("0.20")))),
             hasEntry(is(DESERTION), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("0.20")))),
             hasEntry(is(SEPARATION_FIVE_YEARS), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("0.20"))))
-
         ));
     }
 

@@ -188,6 +188,10 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_INVITATION_TEMPLATE_NAME = "co-respondentinvitation";
     public static final String PETITION_ISSUE_FEE_FOR_LETTER = "petitionIssueFee";
     public static final String DOCUMENT_COLLECTION = "documentCollection";
+    public static final String DOCUMENT_TYPE = "documentType";
+    public static final String DOCUMENT_TEMPLATE_ID = "documentTemplateId";
+    public static final String DOCUMENT_FILENAME = "documentFilename";
+    public static final String DOCUMENT_FILENAME_FMT = "%s%s";
 
 
     // Fees
@@ -203,6 +207,8 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_FIRM_JSON_KEY = "PetitionerSolicitorFirm";
     public static final String SOLICITOR_REFERENCE_JSON_KEY = "D8SolicitorReference";
     public static final String SOLICITOR_STATEMENT_OF_TRUTH = "solSignStatementofTruth";
+    public static final String D8_RESPONDENT_SOLICITOR_EMAIL = "D8RespondentSolicitorEmail";
+    public static final String D8_RESPONDENT_SOLICITOR_NAME = "D8RespondentSolicitorName";
 
     // Payment
     public static final String PAYMENT = "payment";
