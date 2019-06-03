@@ -77,7 +77,7 @@ Database will get initiated when you run ```docker-compose up``` for the first t
 
 You don't need to migrate database manually since migrations are executed every time the application bootstraps.
 
-[scheduler cofig](./job-scheduler)
+[scheduler config](./job-scheduler)
 
 ### Integration tests
 
