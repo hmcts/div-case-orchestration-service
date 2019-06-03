@@ -54,7 +54,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
         String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
         String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
-        String respAdmitOrConsentToFact = getMandatoryPropertyValueAsString(caseData, RESP_ADMIT_OR_CONSENT_TO_FACT);
+        String respAdmitOrConsentToFact = (String) caseData.get(RESP_ADMIT_OR_CONSENT_TO_FACT);
         String relationship = getMandatoryPropertyValueAsString(caseData, D_8_DIVORCED_WHO);
         String isCoRespNamed = (String) caseData.get(D_8_CO_RESPONDENT_NAMED);
         String receivedAosFromCoResp = (String) caseData.get(RECEIVED_AOS_FROM_CO_RESP);
