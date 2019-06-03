@@ -7,6 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
@@ -38,5 +41,48 @@ public class BulkCaseControllerTest {
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody(), is(expected));
 
+    }
+
+    @Test
+    public void whenScheduleCases_thenReturnExpectedResponse() throws WorkflowException {
+        CcdCallbackRequest request = CcdCallbackRequest.builder().build();
+        String authToken = "authToken";
+
+        when(caseOrchestrationService.processBulkCaseScheduleForHearing(request, authToken))
+                .thenReturn(Collections.emptyMap());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.scheduleBulkCaseForHearing(authToken, request);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(CcdCallbackResponse.builder().build()));
+    }
+
+    @Test
+    public void whenvalidateBulkCaseListingData_thenReturnExpectedResponse() throws WorkflowException {
+        CaseDetails caseDetails = CaseDetails.builder().caseData(Collections.emptyMap()).build();
+        CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.validateBulkCaseListingData(Collections.emptyMap()))
+                .thenReturn(Collections.emptyMap());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.validateBulkCaseListingData(request);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(CcdCallbackResponse.builder().build()));
+    }
+
+    @Test
+    public void whenvalidateBulkCaseListingDataThrowsError_thenReturnExpectedResponse() throws WorkflowException {
+        CaseDetails caseDetails = CaseDetails.builder().caseData(Collections.emptyMap()).build();
+        CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        String error = "error has occurred";
+
+        when(caseOrchestrationService.validateBulkCaseListingData(Collections.emptyMap()))
+                .thenThrow(new WorkflowException(error));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.validateBulkCaseListingData(request);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(CcdCallbackResponse.builder().errors(Collections.singletonList(error)).build()));
     }
 }
