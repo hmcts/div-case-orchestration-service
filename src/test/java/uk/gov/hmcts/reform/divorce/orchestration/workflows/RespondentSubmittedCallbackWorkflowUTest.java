@@ -31,6 +31,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
@@ -38,6 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
@@ -48,7 +50,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -168,6 +172,102 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         TaskContext capturedTask = argument.getValue();
 
         DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED);
+
+        assertThat(expectedContext, equalTo(capturedTask));
+    }
+
+
+    @Test
+    public void givenAdulteryCoRespNotRepliedRespNoAdmitUndefended_whenSendEmail_thenSendRespNoAdmitUndefendedCoRespNoReplyTemplate() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+
+        caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
+        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME) ;
+        caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
+        caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
+        caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
+        caseData.put(D_8_CO_RESPONDENT_NAMED, YES_VALUE);
+        caseData.put(RECEIVED_AOS_FROM_CO_RESP, NO_VALUE);
+        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TestConstants.TEST_CASE_ID)
+            .caseData(caseData)
+            .build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classToTest.run(ccdCallbackRequest, TestConstants.AUTH_TOKEN);
+
+        ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
+        verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
+
+        TaskContext capturedTask = argument.getValue();
+
+        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED);
+
+        assertThat(expectedContext, equalTo(capturedTask));
+    }
+
+    @Test
+    public void givenAdulteryRespNoAdmitUndefendedCoRespReplied_whenSendEmail_thenSendRespNoAdmitUndefendedTemplate() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+
+        caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
+        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME) ;
+        caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
+        caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
+        caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
+        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TestConstants.TEST_CASE_ID)
+            .caseData(caseData)
+            .build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classToTest.run(ccdCallbackRequest, TestConstants.AUTH_TOKEN);
+
+        ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
+        verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
+
+        TaskContext capturedTask = argument.getValue();
+
+        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY);
+
+        assertThat(expectedContext, equalTo(capturedTask));
+    }
+
+    @Test
+    public void givenSep2YrRespNoConsentUndefended_whenSendEmail_thenSendRespNoConsentUndefendedTemplate() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+
+        caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
+        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME) ;
+        caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
+        caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
+        caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
+        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_2YRS);
+        caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TestConstants.TEST_CASE_ID)
+            .caseData(caseData)
+            .build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classToTest.run(ccdCallbackRequest, TestConstants.AUTH_TOKEN);
+
+        ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
+        verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
+
+        TaskContext capturedTask = argument.getValue();
+
+        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS);
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
