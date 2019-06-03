@@ -21,7 +21,8 @@ target
 .settings
 .classpath
 .project
-.init-db.sh.swp
 application-*.yml
 application-*.yaml
 application-local.properties
+
+ *.swp

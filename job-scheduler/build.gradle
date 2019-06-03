@@ -19,7 +19,6 @@ compileTestJava {
 }
 
 def versions = [
-  logback           : '1.2.3',
   reformJavaLogging : '4.0.1',
   jacksonDatabind   : '2.9.9',
   flyway            : '5.2.4',
@@ -40,7 +39,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
+  testCompile group: 'org.assertj', name: 'assertj-core', version: versions.assertj
   compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
      force = true
   }
