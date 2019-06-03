@@ -19,6 +19,10 @@ public class BulkCaseConstants {
     public static final String BULK_CASE_LIST_KEY = "BulkCases";
     public static final String SEARCH_RESULT_KEY = "SearchResult";
 
+    public static final String COURT_NAME = "CourtName";
+    public static final String COURT_HEARING_DATE = "hearingDate";
+
     public static final String BULKCASE_CREATION_ERROR = "BulKCaseCreation_Error";
 
+    public static final String LISTED_EVENT = "listed";
 }
