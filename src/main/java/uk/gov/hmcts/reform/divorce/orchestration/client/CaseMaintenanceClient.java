@@ -153,6 +153,6 @@ public interface CaseMaintenanceClient {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
             @PathVariable("caseId") String caseId,
             @PathVariable("eventId") String eventId,
-            @RequestBody Map<String, Object> updateCase
+            @RequestBody Map<String, Object> requestBody
     );
 }

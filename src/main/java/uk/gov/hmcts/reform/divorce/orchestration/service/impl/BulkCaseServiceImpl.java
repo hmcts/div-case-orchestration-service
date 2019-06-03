@@ -77,7 +77,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         List<Map<String, Object>> acceptedDivorceCaseList =
                 (List<Map<String, Object>>) bulkCaseData.getOrDefault(BULK_CASE_ACCEPTED_LIST_KEY, Collections.emptyList());
 
-        if (acceptedDivorceCaseList.size() == 0) {
+        if (acceptedDivorceCaseList.isEmpty()) {
             throw new BulkUpdateException("Accepted case list is empty. Not updating bulk case");
         }
 
@@ -96,7 +96,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
             }
         });
 
-        if (failedCasesList.size() > 0) {
+        if (!failedCasesList.isEmpty()) {
             log.error("List of failed cases for bulk case id {} is: {}", bulkCaseId, failedCasesList.toString());
             throw new BulkUpdateException(String.format("Failed to update court hearing details for some cases on bulk case id %s", bulkCaseId));
         }
