@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
@@ -104,6 +105,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final GenerateCoRespondentAnswersWorkflow generateCoRespondentAnswersWorkflow;
     private final DocumentGenerationWorkflow documentGenerationWorkflow;
     private final RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
+    private final RespondentSolicitorLinkCaseWorkflow respondentSolicitorLinkCaseWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -453,6 +455,16 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         try {
             return respondentSolicitorNominatedWorkflow.run(ccdCallbackRequest.getCaseDetails());
         } catch (WorkflowException e) {
+            throw new CaseOrchestrationServiceException(e);
+        }
+    }
+
+    @Override
+    public Map<String, Object> processAosSolicitorLink(String authorizationToken, CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+        try {
+            respondentSolicitorLinkCaseWorkflow.run(authorizationToken, ccdCallbackRequest.getCaseDetails());
+            return ccdCallbackRequest.getCaseDetails().getCaseData();
+        } catch (Exception e) {
             throw new CaseOrchestrationServiceException(e);
         }
     }
