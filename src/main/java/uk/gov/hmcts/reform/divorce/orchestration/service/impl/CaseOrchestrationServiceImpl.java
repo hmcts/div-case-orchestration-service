@@ -107,12 +107,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final GenerateCoRespondentAnswersWorkflow generateCoRespondentAnswersWorkflow;
     private final DocumentGenerationWorkflow documentGenerationWorkflow;
     private final RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
-<<<<<<< HEAD
     private final SeparationFieldsWorkflow separationFieldsWorkflow;
-=======
     private final BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
     private final ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
->>>>>>> origin/master
+    private final BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
+    private final ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
