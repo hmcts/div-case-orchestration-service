@@ -68,4 +68,21 @@ public class CcdUtilUTest {
         assertThat(ccdUtil.getCurrentDateWithCustomerFacingFormat(), is(EXPECTED_DATE_WITH_CUSTOMER_FORMAT));
     }
 
+    @Test
+    public void givenDateStringInPast_whenIsCcdDateTimeInThePast_thenReturnTrue() {
+        String pastDate = LocalDateTime.now(clock).minusMonths(1).toString();
+        assertEquals(true, ccdUtil.isCcdDateTimeInThePast(pastDate));
+    }
+
+    @Test
+    public void givenDateStringIsToday_whenIsCcdDateTimeInThePast_thenReturnTrue() {
+        String now = LocalDateTime.now(clock).toString();
+        assertEquals(true, ccdUtil.isCcdDateTimeInThePast(now));
+    }
+
+    @Test
+    public void givenDateStringInFuture_whenIsCcdDateTimeInThePast_thenReturnFalse() {
+        String futureDate = LocalDateTime.now(clock).plusMonths(1).toString();
+        assertEquals(false, ccdUtil.isCcdDateTimeInThePast(futureDate));
+    }
 }

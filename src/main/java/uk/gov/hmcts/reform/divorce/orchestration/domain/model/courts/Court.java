@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,39 +18,52 @@ public class Court {
 
     private static final String CARE_OF_PREFIX = "c/o ";
 
+    @JsonProperty("courtId")
+    @Setter
     private String courtId;
 
     @JsonProperty("serviceCentreName")
+    @Setter
     private String serviceCentreName;
 
     @JsonProperty("divorceCentre")
+    @Setter
     private String divorceCentreName;
 
     @JsonProperty("divorceCentreAddressName")
+    @Setter
     private String divorceCentreAddressName;
 
     @JsonProperty("street")
+    @Setter
     private String street;
 
     @JsonProperty("poBox")
+    @Setter
     private String poBox;
 
     @JsonProperty("courtCity")
+    @Setter
     private String courtCity;
 
     @JsonProperty("postCode")
+    @Setter
     private String postCode;
 
     @JsonProperty("openingHours")
+    @Setter
     private String openingHours;
 
     @JsonProperty("email")
+    @Setter
     private String email;
 
     @JsonProperty("phoneNumber")
+    @Setter
     private String phoneNumber;
 
     @JsonProperty("siteId")
+    @Setter
     private String siteId;
 
     private String formattedAddress;

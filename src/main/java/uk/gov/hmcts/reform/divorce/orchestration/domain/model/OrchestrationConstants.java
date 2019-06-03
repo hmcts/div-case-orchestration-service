@@ -59,7 +59,9 @@ public class OrchestrationConstants {
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
     public static final String DIVORCE_COSTS_CLAIM_CCD_FIELD = "D8DivorceCostsClaim";
     public static final String DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD = "CostsClaimGranted";
+    public static final String DATETIME_OF_HEARING_CCD_FIELD = "DateAndTimeOfHearing";
     public static final String DATE_OF_HEARING_CCD_FIELD = "DateOfHearing";
+    public static final String TIME_OF_HEARING_CCD_FIELD = "TimeOfHearing";
     public static final String YES_VALUE = "Yes";
     public static final String NO_VALUE = "No";
     public static final String ISSUE_DATE = "IssueDate";
@@ -67,6 +69,7 @@ public class OrchestrationConstants {
     public static final String CCD_DUE_DATE = "dueDate";
     public static final String D_8_PAYMENTS = "Payments";
     public static final String BULK_LISTING_CASE_ID_FIELD = "BulkListingCaseId";
+    public static final String UPDATE_COURT_HEARING_DETAILS_EVENT = "updateBulkCaseHearingDetails";
 
     //CCD DN fields
     public static final String DN_APPROVAL_DATE_CCD_FIELD = "DNApprovalDate";
