@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
@@ -50,6 +51,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -78,6 +80,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -172,6 +175,12 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
+
+    @Mock
+    private BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
+
+    @Mock
+    private ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -324,6 +333,9 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenCaseDataValid_whenSubmit_thenReturnPayload() throws Exception {
         // given
+        Map<String, Object> expectedPayload = new HashMap<>();
+        expectedPayload.put("returnedKey", "returnedValue");
+        expectedPayload.put(ALLOCATED_COURT_KEY, "randomlyAllocatedKey");
         when(submitToCCDWorkflow.run(requestPayload, AUTH_TOKEN)).thenReturn(expectedPayload);
         when(submitToCCDWorkflow.errors()).thenReturn(Collections.emptyMap());
 
@@ -331,7 +343,8 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> actual = classUnderTest.submit(requestPayload, AUTH_TOKEN);
 
         // then
-        assertEquals(expectedPayload, actual);
+        assertThat(actual.get("returnedKey"), is("returnedValue"));
+        assertThat(actual.get("returnedKey"), is("returnedValue"));
 
         verify(submitToCCDWorkflow).run(requestPayload, AUTH_TOKEN);
         verify(submitToCCDWorkflow).errors();
@@ -818,6 +831,42 @@ public class CaseOrchestrationServiceImplTest {
         expectedException.expectMessage(is("This operation threw an exception."));
 
         classUnderTest.processAosSolicitorNominated(ccdCallbackRequest);
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_ForProcessBulkCaseScheduleForHearing() throws WorkflowException {
+        when(bulkCaseUpdateHearingDetailsEventWorkflow.run(eq(ccdCallbackRequest), eq(AUTH_TOKEN)))
+                .thenReturn(requestPayload);
+
+        assertThat(classUnderTest.processBulkCaseScheduleForHearing(ccdCallbackRequest, AUTH_TOKEN),
+                is(equalTo(requestPayload)));
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldThrowException_ForProcessBulkCaseScheduleForHearing_WhenWorkflowExceptionIsCaught()
+            throws WorkflowException {
+        when(bulkCaseUpdateHearingDetailsEventWorkflow.run(eq(ccdCallbackRequest), eq(AUTH_TOKEN)))
+                .thenThrow(new WorkflowException("This operation threw an exception"));
+
+        classUnderTest.processBulkCaseScheduleForHearing(ccdCallbackRequest, AUTH_TOKEN);
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_ForvalidateBulkCaseListingData() throws WorkflowException {
+        when(validateBulkCaseListingWorkflow.run(eq(requestPayload)))
+                .thenReturn(requestPayload);
+
+        assertThat(classUnderTest.validateBulkCaseListingData(requestPayload),
+                is(equalTo(requestPayload)));
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldThrowException_ForvalidateBulkCaseListingData_WhenWorkflowExceptionIsCaught()
+            throws WorkflowException {
+        when(validateBulkCaseListingWorkflow.run(eq(requestPayload)))
+                .thenThrow(new WorkflowException("This operation threw an exception"));
+
+        classUnderTest.validateBulkCaseListingData(requestPayload);
     }
 
     @After

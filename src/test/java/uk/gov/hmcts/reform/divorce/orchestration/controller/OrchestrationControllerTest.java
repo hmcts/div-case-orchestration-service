@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.AllocatedCourt;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -38,6 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OrchestrationControllerTest {
@@ -94,20 +96,23 @@ public class OrchestrationControllerTest {
 
     @Test
     public void whenSubmit_thenReturnCaseResponse() throws Exception {
+        Court mockAllocatedCourt = new Court();
+        String testCourtId = "randomlySelectedCourt";
+        mockAllocatedCourt.setCourtId(testCourtId);
+
         final Map<String, Object> caseData = Collections.emptyMap();
         final Map<String, Object> serviceReturnData = new HashMap<>();
         serviceReturnData.put(ID, TEST_CASE_ID);
-        serviceReturnData.put("allocatedCourt", "randomlySelectedCourt");
+        serviceReturnData.put(ALLOCATED_COURT_KEY, mockAllocatedCourt);
         when(caseOrchestrationService.submit(caseData, AUTH_TOKEN)).thenReturn(serviceReturnData);
 
         ResponseEntity<CaseCreationResponse> response = classUnderTest.submit(AUTH_TOKEN, caseData);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        final CaseCreationResponse expectedResponse = new CaseCreationResponse();
-        expectedResponse.setCaseId(TEST_CASE_ID);
-        expectedResponse.setStatus(SUCCESS_STATUS);
-        expectedResponse.setAllocatedCourt(new AllocatedCourt("randomlySelectedCourt"));
-        assertEquals(expectedResponse, response.getBody());
+        CaseCreationResponse responseBody = response.getBody();
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(responseBody.getCaseId(), equalTo(TEST_CASE_ID));
+        assertThat(responseBody.getStatus(), equalTo(SUCCESS_STATUS));
+        assertThat(responseBody.getAllocatedCourt(), equalTo(mockAllocatedCourt));
     }
 
     @Test
@@ -122,7 +127,7 @@ public class OrchestrationControllerTest {
 
         ResponseEntity response = classUnderTest.submit(AUTH_TOKEN, caseData);
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
     }
 
     @Test
@@ -162,7 +167,6 @@ public class OrchestrationControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
-
 
     @Test(expected = WorkflowException.class)
     public void givenThrowsException_whenRetrieveAosCase_thenThrowWorkflowException() throws WorkflowException {
@@ -323,7 +327,7 @@ public class OrchestrationControllerTest {
 
         when(caseOrchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest)).thenReturn(expectedResponse);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.corespReceived( ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.corespReceived(ccdCallbackRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());

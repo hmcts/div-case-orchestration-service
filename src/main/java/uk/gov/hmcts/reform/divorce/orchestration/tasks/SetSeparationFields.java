@@ -12,16 +12,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DESERTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DESERTION_TIME_TOGETHER_PERMITTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_MENTAL_SEP_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PHYSICAL_SEP_DAIE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_DESERTION_DAIE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEP_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_SEP_REF_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_SEP_TIME_TOGETHER_PERMITTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_5YRS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @Component
@@ -38,6 +29,7 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
         String separationTimeTogetherPermitted = getSeparationTimeTogetherPermitted(caseData);
         String sepReferenceDate = DateUtils.formatDateWithCustomerFacingFormat(getReferenceDate(caseData));
         String mostRecentSeperationDate = getReasonForDivorceSeparationDate(caseData);
+        String sepYears = String.valueOf(getSepYears(caseData));
 
         if (StringUtils.equalsIgnoreCase(DESERTION, reasonForDivorce)) {
             caseData.put(D_8_DESERTION_TIME_TOGETHER_PERMITTED, separationTimeTogetherPermitted);
@@ -46,6 +38,7 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
         }
         caseData.put(D_8_REASON_FOR_DIVORCE_SEP_DATE, mostRecentSeperationDate);
         caseData.put(D_8_SEP_REF_DATE, sepReferenceDate);
+        caseData.put(SEP_YEARS, sepYears);
 
         return caseData;
     }
