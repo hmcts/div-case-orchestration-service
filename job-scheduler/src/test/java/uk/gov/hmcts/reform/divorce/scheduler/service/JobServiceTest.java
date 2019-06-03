@@ -178,8 +178,8 @@ public class JobServiceTest {
         verify(scheduler, times(2)).deleteJob(any());
     }
 
-    @Test
-    public void givenError_whenCleanSchedule_theCleanOtherSchedules() throws SchedulerException {
+    @Test(expected = JobException.class)
+    public void givenError_whenCleanSchedule_thenPropagateException() throws SchedulerException {
         String schedule1 = "schedule1";
         String schedule2 = "schedule1";
         JobKey jobKey = new JobKey(schedule1);
@@ -190,8 +190,6 @@ public class JobServiceTest {
         when(scheduler.deleteJob(jobKey)).thenThrow(new SchedulerException());
 
         classToTest.cleanSchedules(schedule1, schedule2);
-
-        verify(scheduler, times(2)).deleteJob(any());
     }
 
     private JobData getJobData(String jobId, String group) {
