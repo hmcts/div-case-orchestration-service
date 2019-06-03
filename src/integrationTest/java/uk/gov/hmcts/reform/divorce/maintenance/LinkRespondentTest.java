@@ -53,12 +53,12 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     public void givenInvalidPin_whenLinkRespondent_thenReturnUnAuthorised() {
         final UserDetails petitionerUserDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(
-                SUBMIT_COMPLETE_CASE_JSON_FILE_PATH,
+            SUBMIT_COMPLETE_CASE_JSON_FILE_PATH,
             petitionerUserDetails
         );
 
         Response cosResponse = linkRespondent(petitionerUserDetails.getAuthToken(),
-            caseDetails.getId(), "abcd1234");
+                caseDetails.getId(), "abcd1234");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), cosResponse.getStatusCode());
     }
