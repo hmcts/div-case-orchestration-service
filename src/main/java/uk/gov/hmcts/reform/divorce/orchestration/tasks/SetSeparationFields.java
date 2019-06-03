@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -12,7 +13,17 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DESERTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DESERTION_TIME_TOGETHER_PERMITTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_MENTAL_SEP_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PHYSICAL_SEP_DAIE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_DESERTION_DAIE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEP_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_SEP_REF_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_SEP_TIME_TOGETHER_PERMITTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_5YRS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEP_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @Component
@@ -22,14 +33,19 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
     public static final Integer FIVE = 5;
     public static final Integer SIX = 6;
     public static final Integer SEVEN = 7;
-
+    public static final String FACT_CANT_USE = "Based on the given date, the selected fact cannot be used for this divorce application";
+ 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
         String separationTimeTogetherPermitted = getSeparationTimeTogetherPermitted(caseData);
+        if (StringUtils.isEmpty(separationTimeTogetherPermitted)) {
+            context.setTransientObject(OrchestrationConstants.VALIDATION_ERROR_KEY, FACT_CANT_USE);
+            return caseData;
+        }
+
+        String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
         String sepReferenceDate = DateUtils.formatDateWithCustomerFacingFormat(getReferenceDate(caseData));
         String mostRecentSeperationDate = getReasonForDivorceSeparationDate(caseData);
-        String sepYears = String.valueOf(getSepYears(caseData));
 
         if (StringUtils.equalsIgnoreCase(DESERTION, reasonForDivorce)) {
             caseData.put(D_8_DESERTION_TIME_TOGETHER_PERMITTED, separationTimeTogetherPermitted);
@@ -38,6 +54,8 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
         }
         caseData.put(D_8_REASON_FOR_DIVORCE_SEP_DATE, mostRecentSeperationDate);
         caseData.put(D_8_SEP_REF_DATE, sepReferenceDate);
+
+        String sepYears = String.valueOf(getSepYears(caseData));
         caseData.put(SEP_YEARS, sepYears);
 
         return caseData;

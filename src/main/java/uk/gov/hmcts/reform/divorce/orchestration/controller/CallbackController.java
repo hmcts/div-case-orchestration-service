@@ -421,8 +421,13 @@ public class CallbackController {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
-            callbackResponseBuilder.data(
-                caseOrchestrationService.processSeparationFields(ccdCallbackRequest));
+            Map<String, Object> response = caseOrchestrationService.processSeparationFields(ccdCallbackRequest);
+
+            if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
+                callbackResponseBuilder.errors(getErrors(response));
+            } else {
+                callbackResponseBuilder.data(response);
+            }
         } catch (WorkflowException exception) {
             log.error("Failed processing calculateSeparationFields callback", exception);
             callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
