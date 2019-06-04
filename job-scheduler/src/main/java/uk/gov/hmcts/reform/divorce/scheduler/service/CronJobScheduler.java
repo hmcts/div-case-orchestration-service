@@ -10,11 +10,11 @@ import uk.gov.hmcts.reform.divorce.scheduler.config.SchedulerConfig;
 import uk.gov.hmcts.reform.divorce.scheduler.model.JobData;
 import uk.gov.hmcts.reform.divorce.scheduler.model.Schedule;
 
+import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 
 @EnableConfigurationProperties(SchedulerConfig.class)
 @ConditionalOnProperty(value = "scheduler.enabled", havingValue = "true", matchIfMissing = true)
@@ -50,10 +50,14 @@ public class CronJobScheduler {
         }
         log.info("scheduling cron jobs");
 
-        for (Schedule schedule: schedulerConfig.getSchedules()) {
-            jobService.scheduleJob(buildJobData(schedule), schedule.getCron());
-            log.info("completed scheduling job service {}", schedule.getName());
-        }
+        schedulerConfig.getSchedules()
+            .stream()
+            .filter(Schedule::isEnabled)
+            .forEach(schedule -> {
+                jobService.scheduleJob(buildJobData(schedule), schedule.getCron());
+                log.info("completed scheduling job service {}", schedule.getName());
+            });
+        log.info("All cron job scheduled");
     }
 
     private JobData buildJobData(Schedule schedule) {
