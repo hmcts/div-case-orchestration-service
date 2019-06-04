@@ -495,7 +495,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException {
 
-        return separationFieldsWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+        Map<String, Object> payLoad =  separationFieldsWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+
+        if (separationFieldsWorkflow.errors().isEmpty()) {
+            return payLoad;
+        } else {
+            return separationFieldsWorkflow.errors();
+        }
     }
 
     public Map<String, Object> processBulkCaseScheduleForHearing(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {

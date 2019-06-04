@@ -424,7 +424,7 @@ public class CallbackController {
             Map<String, Object> response = caseOrchestrationService.processSeparationFields(ccdCallbackRequest);
 
             if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
-                callbackResponseBuilder.errors(getErrors(response));
+                callbackResponseBuilder.errors(singletonList((String)response.get(VALIDATION_ERROR_KEY)));
             } else {
                 callbackResponseBuilder.data(response);
             }

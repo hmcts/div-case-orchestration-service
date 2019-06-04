@@ -34,11 +34,12 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
     public static final Integer SIX = 6;
     public static final Integer SEVEN = 7;
     public static final String FACT_CANT_USE = "Based on the given date, the selected fact cannot be used for this divorce application";
- 
+
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         String separationTimeTogetherPermitted = getSeparationTimeTogetherPermitted(caseData);
         if (StringUtils.isEmpty(separationTimeTogetherPermitted)) {
+            context.setTaskFailed(true);
             context.setTransientObject(OrchestrationConstants.VALIDATION_ERROR_KEY, FACT_CANT_USE);
             return caseData;
         }
@@ -112,7 +113,7 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
         return ChronoUnit.DAYS.between(sepDate, dateBeforeSepYears);
     }
 
-    //This is calculated based on six-month rule
+    //Calculated based on six-month rule
     private LocalDate getReferenceDate(Map<String, Object> caseData) throws TaskException {
         return getDateBeforeSepYears(caseData).minusMonths(SIX);
     }
