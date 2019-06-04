@@ -412,9 +412,10 @@ public class CallbackController {
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 401, message = "Not authorised"),
             @ApiResponse(code = 404, message = "Case not found")})
-    public ResponseEntity<CcdCallbackResponse> linkRespondent(
+    public ResponseEntity<CcdCallbackResponse> solicitorLinkCase(
+            @RequestHeader("Authorization")
             @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.debug("Processing solicitor link case callback. Case ID: {}", caseId);

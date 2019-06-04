@@ -17,19 +17,15 @@ import uk.gov.hmcts.reform.divorce.util.RestUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-import static junit.framework.TestCase.assertNull;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 
 public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
 
     private static final String PIN_USER_FIRST_NAME = "pinuserfirstname";
     private static final String PIN_USER_LAST_NAME = "pinuserfirstname";
     private static final String PAYMENT_REFERENCE_EVENT = "paymentReferenceGenerated";
-    private static final String TEST_AOS_AWAITING_EVENT = "testAosAwaiting";
     private static final String AOS_LETTER_HOLDER_ID = "AosLetterHolderId";
     private static final String RESPONDENT_SOLICITOR_CASE_NO = "RespondentSolicitorCaseNo";
     private static final String RESPONDENT_SOLICITOR_PIN = "RespondentSolicitorPin";
@@ -46,7 +42,7 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
                 idamTestSupportUtil.generatePin(PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME,
                         petitionerUserDetails.getAuthToken());
 
-        final CaseDetails caseDetails = submitCase(
+        CaseDetails caseDetails = submitCase(
                 "submit-unlinked-case.json",
                 petitionerUserDetails);
 
@@ -54,11 +50,6 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
                 null,
                 PAYMENT_REFERENCE_EVENT,
                 ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
-
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
-                null,
-                TEST_AOS_AWAITING_EVENT,
-                petitionerUserDetails);
 
         final UserDetails solicitorUser = createSolicitorUser();
 
@@ -69,8 +60,9 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
         );
 
         assertThat(linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
-        assertThat(linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
-        assertCaseDetailsRespondent(solicitorUser, String.valueOf(caseDetails.getId()));
+        assertThat(linkResponse.getBody().asString(),linkResponse.getBody().jsonPath().get("data"), is(notNullValue()));
+        caseDetails = ccdClientSupport.retrieveCaseForCaseworker(solicitorUser, String.valueOf(caseDetails.getId()));
+        assertThat(caseDetails.getData(), is(notNullValue()));
     }
 
     private Response linkSolicitor(String userToken, Long caseId, String pin) {
@@ -96,13 +88,5 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
                 headers,
                 ResourceLoader.objectToJson(payload)
         );
-    }
-
-    private void assertCaseDetailsRespondent(UserDetails userDetails, String caseId) {
-        CaseDetails caseDetails = ccdClientSupport.retrieveCaseForCaseworker(userDetails, caseId);
-
-        assertThat(caseDetails.getData().get(RESPONDENT_EMAIL_ADDRESS), is(userDetails.getEmailAddress()));
-        assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
-        assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE));
     }
 }

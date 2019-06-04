@@ -109,7 +109,9 @@ public abstract class IntegrationTest {
     protected UserDetails createSolicitorUser() {
         return warpInRetry(() -> {
             final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
-            return getUserDetails(username, PASSWORD, CASEWORKER_USERGROUP, CASEWORKER_DIVORCE_SOLICITOR_ROLE);
+            return getUserDetails(username, PASSWORD, CASEWORKER_USERGROUP,
+                    CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_SOLICITOR_ROLE
+            );
         });
     }
 
