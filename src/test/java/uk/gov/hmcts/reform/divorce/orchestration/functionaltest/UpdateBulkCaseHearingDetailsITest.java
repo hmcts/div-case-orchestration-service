@@ -66,7 +66,7 @@ public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
 
     private static final String REQUEST_JSON_PATH = "jsonExamples/payloads/bulkCaseCcdCallbackRequest.json";
     private static final String EXPECTED_CASE_UPDATE_JSON_PATH = "jsonExamples/payloads/bulkCaseUpdateCourtHearingDetails.json";
-    private static final String EXPECTED_CASE_UPDATE_EXISTING_HEARING_JSON_PATH= "jsonExamples/payloads/bulkCaseUpdateExistingHearingDetails.json";
+    private static final String EXPECTED_CASE_UPDATE_EXISTING_HEARING_JSON_PATH = "jsonExamples/payloads/bulkCaseUpdateExistingHearingDetails.json";
     private static final String BULK_CASE_ID = "1505150515051550";
     private static final String CASE_ID_FIRST = "1558711395612316";
     private static final String CASE_ID_SECOND = "1558711407435839";
@@ -92,23 +92,25 @@ public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
         stubSignInForCaseworker();
 
         String retrieveCaseOnePath = String.format(CMS_RETRIEVE_CASE_PATH, CASE_ID_FIRST);
-        String retrieveCaseTwoPath = String.format(CMS_RETRIEVE_CASE_PATH, CASE_ID_SECOND);
-
-        String updateCaseOnePath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_FIRST, UPDATE_COURT_HEARING_DETAILS_EVENT);
-        String updateCaseTwoPath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_SECOND, UPDATE_COURT_HEARING_DETAILS_EVENT);
-        String updateBulkCasePath = String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, LISTED_EVENT);
 
         stubCmsServerEndpoint(retrieveCaseOnePath, HttpStatus.OK, caseDataToCaseDetailsJson(Collections.emptyMap()), GET);
 
         CollectionMember<Map<String, Object>> existingCourtHearing = new CollectionMember<>();
         existingCourtHearing.setId("someRandomId");
         existingCourtHearing.setValue(ImmutableMap.of(
-            DATE_OF_HEARING_CCD_FIELD, "2011-11-11",
-            TIME_OF_HEARING_CCD_FIELD, "11:11"
+                DATE_OF_HEARING_CCD_FIELD, "2011-11-11",
+                TIME_OF_HEARING_CCD_FIELD, "11:11"
         ));
         List<CollectionMember> courtHearings = Collections.singletonList(existingCourtHearing);
+
+        String retrieveCaseTwoPath = String.format(CMS_RETRIEVE_CASE_PATH, CASE_ID_SECOND);
+
         stubCmsServerEndpoint(retrieveCaseTwoPath, HttpStatus.OK,
                 caseDataToCaseDetailsJson(Collections.singletonMap(DATETIME_OF_HEARING_CCD_FIELD, courtHearings)), GET);
+
+        String updateCaseOnePath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_FIRST, UPDATE_COURT_HEARING_DETAILS_EVENT);
+        String updateCaseTwoPath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_SECOND, UPDATE_COURT_HEARING_DETAILS_EVENT);
+        String updateBulkCasePath = String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, LISTED_EVENT);
 
         stubCmsServerEndpoint(updateCaseOnePath, HttpStatus.OK, "{}", POST);
         stubCmsServerEndpoint(updateCaseTwoPath, HttpStatus.OK, "{}", POST);
