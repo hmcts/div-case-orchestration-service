@@ -28,8 +28,6 @@ public class SetCourtHearingDetailsFromBulkCase implements Task<Map<String,Objec
     public Map<String, Object> execute(TaskContext context, Map<String, Object> bulkCaseData) throws TaskException {
         Map<String, Object> courtHearingDetails = new HashMap<>();
 
-        System.out.println(bulkCaseData);
-
         courtHearingDetails.put(COURT_NAME, bulkCaseData.get(COURT_NAME));
 
         Map<String, Object> dateAndTimeOfHearing = new HashMap<>();
@@ -44,8 +42,6 @@ public class SetCourtHearingDetailsFromBulkCase implements Task<Map<String,Objec
 
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         Map<String, Object> caseData = caseDetails.getCaseData();
-
-        System.out.println(caseData);
 
         List<CollectionMember> courtHearingCollection =
                 (ArrayList) caseData.getOrDefault(DATETIME_OF_HEARING_CCD_FIELD, new ArrayList<>());
