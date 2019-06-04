@@ -1,42 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
-        <suppress>
+    <suppress>
         <gav regex="true">.*</gav>
        <cve>CVE-2018-10237</cve>
     </suppress>
-        <suppress>
-            <notes><![CDATA[
-            file name: spring-security-rsa-1.0.8.RELEASE.jar
-            This has been updated, but it still shown some vulnerabilities that shouldn't be there
-            Issue reported on the DependencyCheck GitHub repo
-            https://github.com/jeremylong/DependencyCheck/issues/1665
-            ]]>
-            </notes>
-            <gav regex="true">.*</gav>
-            <cpe>cpe:/a:vmware:springsource_spring_security:1.0.8</cpe>
-            <cpe>cpe:/a:pivotal_software:spring_security:1.0.8,</cpe>
-            <cpe>cpe:/a:pivotal_software:spring_security_oauth:1.0.8</cpe>
-            <cpe>cpe:/a:pivotal:spring_security_oauth:1.0.8</cpe>
-            <cpe>cpe:/a:pivotal_software:spring_security:5.1.3</cpe>
-            <cve>CVE-2011-2731</cve>
-            <cve>CVE-2011-2732</cve>
-            <cve>CVE-2012-5055</cve>
-            <cve>CVE-2018-1260</cve>
-            <cve>CVE-2018-1258</cve>
-            <cve>CVE-2019-3795</cve>
-        </suppress>
-        <suppress>
-            <notes><![CDATA[
-             file name: pmd-java-5.8.1.jar
-             ]]></notes>
-            <gav regex="true">^net\.sourceforge\.pmd:pmd-java:.*$</gav>
-            <cve>CVE-2019-7722</cve>
-        </suppress>
-        <suppress>
-            <notes><![CDATA[
-           file name: pmd-core-5.8.1.jar
-           ]]></notes>
-            <gav regex="true">^net\.sourceforge\.pmd:pmd-core:.*$</gav>
-            <cve>CVE-2019-7722</cve>
-        </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: spring-security-rsa-1.0.8.RELEASE.jar
+        This has been updated, but it still shown some vulnerabilities that shouldn't be there
+        Issue reported on the DependencyCheck GitHub repo
+        https://github.com/jeremylong/DependencyCheck/issues/1665
+        ]]>
+        </notes>
+        <gav regex="true">.*</gav>
+        <cpe>cpe:/a:vmware:springsource_spring_security:1.0.8</cpe>
+        <cpe>cpe:/a:pivotal_software:spring_security:1.0.8,</cpe>
+        <cpe>cpe:/a:pivotal_software:spring_security_oauth:1.0.8</cpe>
+        <cpe>cpe:/a:pivotal:spring_security_oauth:1.0.8</cpe>
+        <cpe>cpe:/a:pivotal_software:spring_security:5.1.3</cpe>
+        <cve>CVE-2011-2731</cve>
+        <cve>CVE-2011-2732</cve>
+        <cve>CVE-2012-5055</cve>
+        <cve>CVE-2018-1260</cve>
+        <cve>CVE-2018-1258</cve>
+        <cve>CVE-2019-3795</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+         file name: pmd-java-5.8.1.jar
+         ]]></notes>
+        <gav regex="true">^net\.sourceforge\.pmd:pmd-java:.*$</gav>
+        <cve>CVE-2019-7722</cve>
+    </suppress>
 </suppressions>

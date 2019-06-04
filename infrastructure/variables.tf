@@ -66,3 +66,16 @@ variable "health_check_ttl" {
   type = "string"
   default = "4000"
 }
+
+variable "location_db" {
+  type    = "string"
+  default = "UK South"
+}
+
+variable "scheduler_re_create" {
+  default = "true"
+}
+
+variable "scheduler_enabled" {
+  default = "false"
+}

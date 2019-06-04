@@ -1,5 +1,5 @@
 provider "azurerm" {
-  version = "1.19.0"
+  version = "1.22.1"
 }
 
 locals {
@@ -25,6 +25,7 @@ locals {
 
   asp_name = "${var.env == "prod" ? "div-cos-prod" : "${var.raw_product}-${var.env}"}"
   asp_rg = "${var.env == "prod" ? "div-cos-prod" : "${var.raw_product}-${var.env}"}"
+  db_connection_options = "?sslmode=require"
 }
 
 module "div-cos" {
@@ -67,10 +68,46 @@ module "div-cos" {
     AOS_RESPONDED_DAYS_TO_COMPLETE                  = "${var.aos_responded_days_to_complete}"
     AOS_RESPONDED_AWAITING_ANSWER_DAYS_TO_RESPOND   = "${var.aos_responded_awaiting_answer_days_to_respond}"
     MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE     = "${var.health_check_ttl}"
+    SCHEDULER_RE_CREATE                             = "${var.scheduler_re_create}"
+    SCHEDULER_ENABLED                               = "${var.scheduler_enabled}"
 
     FEATURE_TOGGLE_SERVICE_API_BASEURL             = "${local.feature_toggle_baseurl}"
     SEND_LETTER_SERIVCE_BASEURL                    = "${local.send_letter_service_baseurl}"
+    DIV_SCHEDULER_DB_HOST                          = "${module.div-scheduler-db.host_name}"
+    DIV_SCHEDULER_DB_PORT                          = "${module.div-scheduler-db.postgresql_listen_port}"
+    DIV_SCHEDULER_DB_USER_NAME                     = "${module.div-scheduler-db.user_name}"
+    DIV_SCHEDULER_DB_PASSWORD                      = "${module.div-scheduler-db.postgresql_password}"
+    DIV_SCHEDULER_DB_NAME                          = "${module.div-scheduler-db.postgresql_database}"
+    FLYWAY_URL                                     = "jdbc:postgresql://${module.div-scheduler-db.host_name}:${module.div-scheduler-db.postgresql_listen_port}/${module.div-scheduler-db.postgresql_database}${local.db_connection_options}"
+    FLYWAY_USER                                    = "${module.div-scheduler-db.user_name}"
+    FLYWAY_PASSWORD                                = "${module.div-scheduler-db.postgresql_password}"
+    FLYWAY_NOOP_STRATEGY                           = "true"
   }
+}
+
+module "div-scheduler-db" {
+  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
+  product            = "${var.product}-${var.component}"
+  location           = "${var.location_db}"
+  env                = "${var.env}"
+  database_name      = "div_scheduler"
+  postgresql_user    = "div_scheduler"
+  postgresql_version = "10"
+  sku_name           = "GP_Gen5_2"
+  sku_tier           = "GeneralPurpose"
+  common_tags        = "${var.common_tags}"
+}
+
+resource "azurerm_key_vault_secret" "postgresql-user" {
+  name      = "${var.component}-postgresql-user"
+  value     = "${module.div-scheduler-db.user_name}"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
+}
+
+resource "azurerm_key_vault_secret" "postgresql-password" {
+  name      = "${var.component}-postgresql-password"
+  value     = "${module.div-scheduler-db.postgresql_password}"
+  vault_uri = "${data.azurerm_key_vault.div_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault" "div_key_vault" {
