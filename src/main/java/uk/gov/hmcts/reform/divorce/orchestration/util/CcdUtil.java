@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
@@ -43,4 +44,7 @@ public class CcdUtil {
         return DateUtils.formatDateWithCustomerFacingFormat(dueDate);
     }
 
+    public boolean isCcdDateTimeInThePast(String date) {
+        return LocalDateTime.parse(date).toLocalDate().isBefore(LocalDate.now(clock).plusDays(1));
+    }
 }
