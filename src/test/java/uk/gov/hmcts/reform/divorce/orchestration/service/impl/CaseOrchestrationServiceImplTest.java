@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
@@ -173,6 +174,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
+
+    @Mock
+    private RespondentSolicitorLinkCaseWorkflow respondentSolicitorLinkCaseWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -823,6 +827,30 @@ public class CaseOrchestrationServiceImplTest {
         expectedException.expectMessage(is("This operation threw an exception."));
 
         classUnderTest.processAosSolicitorNominated(ccdCallbackRequest);
+    }
+
+    @Test
+    public void testServiceCallsRightWorkflowWithRightData_ForProcessingAosSolicitorLinkCase()
+            throws WorkflowException, CaseOrchestrationServiceException {
+        String token = "token";
+        final UserDetails userDetails = UserDetails.builder().build();
+        when(respondentSolicitorLinkCaseWorkflow.run(eq(token), eq(ccdCallbackRequest.getCaseDetails())))
+                .thenReturn(userDetails);
+
+        assertThat(classUnderTest.processAosSolicitorLinkCase(token, ccdCallbackRequest), is(equalTo(requestPayload)));
+    }
+
+    @Test
+    public void shouldThrowException_ForProcessingAosSolicitorLinkCase_WhenWorkflowExceptionIsCaught()
+            throws WorkflowException, CaseOrchestrationServiceException {
+        String token = "token";
+        when(respondentSolicitorLinkCaseWorkflow.run(eq(token), eq(ccdCallbackRequest.getCaseDetails())))
+                .thenThrow(new WorkflowException("This operation threw an exception."));
+
+        expectedException.expect(CaseOrchestrationServiceException.class);
+        expectedException.expectMessage(is("This operation threw an exception."));
+
+        classUnderTest.processAosSolicitorLinkCase(token, ccdCallbackRequest);
     }
 
     @After

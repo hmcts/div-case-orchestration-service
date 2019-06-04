@@ -92,5 +92,5 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
-    Map<String, Object> processAosSolicitorLink(String authToken, CcdCallbackRequest request) throws CaseOrchestrationServiceException;
+    Map<String, Object> processAosSolicitorLinkCase(String authToken, CcdCallbackRequest request) throws CaseOrchestrationServiceException;
 }

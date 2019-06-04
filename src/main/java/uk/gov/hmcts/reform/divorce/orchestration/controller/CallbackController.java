@@ -424,7 +424,7 @@ public class CallbackController {
 
         try {
             callbackResponseBuilder.data(
-                    caseOrchestrationService.processAosSolicitorLink(authorizationToken, ccdCallbackRequest));
+                    caseOrchestrationService.processAosSolicitorLinkCase(authorizationToken, ccdCallbackRequest));
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format("Failed solicitor link case callback. Case ID:  %s", caseId),
                     exception);

@@ -38,18 +38,22 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
     public void givenAosAwaitingState_whenSolicitorLinksCase_thenCaseShouldBeLinked() throws Exception {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
-        final PinResponse pinResponse =
-                idamTestSupportUtil.generatePin(PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME,
-                        petitionerUserDetails.getAuthToken());
+        final PinResponse pinResponse = idamTestSupportUtil.generatePin(
+                PIN_USER_FIRST_NAME,
+                PIN_USER_LAST_NAME,
+                petitionerUserDetails.getAuthToken()
+        );
 
         CaseDetails caseDetails = submitCase(
                 "submit-unlinked-case.json",
-                petitionerUserDetails);
+                petitionerUserDetails
+        );
 
         updateCase(String.valueOf(caseDetails.getId()),
                 null,
                 PAYMENT_REFERENCE_EVENT,
-                ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
+                ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId())
+        );
 
         final UserDetails solicitorUser = createSolicitorUser();
 
@@ -68,10 +72,7 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
     private Response linkSolicitor(String userToken, Long caseId, String pin) {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
-
-        if (userToken != null) {
-            headers.put(HttpHeaders.AUTHORIZATION, userToken);
-        }
+        headers.put(HttpHeaders.AUTHORIZATION, userToken);
 
         HashMap<String, Object> caseData = new HashMap<>();
         caseData.put(RESPONDENT_SOLICITOR_CASE_NO, caseId);
@@ -83,10 +84,6 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
         HashMap<String, Object> payload = new HashMap<>();
         payload.put(CASE_DETAILS, caseDetails);
 
-        return RestUtil.postToRestService(
-                serverUrl + contextPath,
-                headers,
-                ResourceLoader.objectToJson(payload)
-        );
+        return RestUtil.postToRestService(serverUrl + contextPath, headers, ResourceLoader.objectToJson(payload));
     }
 }
