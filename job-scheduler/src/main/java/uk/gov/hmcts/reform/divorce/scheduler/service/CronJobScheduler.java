@@ -10,11 +10,11 @@ import uk.gov.hmcts.reform.divorce.scheduler.config.SchedulerConfig;
 import uk.gov.hmcts.reform.divorce.scheduler.model.JobData;
 import uk.gov.hmcts.reform.divorce.scheduler.model.Schedule;
 
-import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 
 @EnableConfigurationProperties(SchedulerConfig.class)
 @ConditionalOnProperty(value = "scheduler.enabled", havingValue = "true", matchIfMissing = true)
