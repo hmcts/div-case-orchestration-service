@@ -70,7 +70,7 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         final Map caseData = loadJsonToObject(BULK_PAYLOAD_CONTEXT_PATH + fileName, Map.class);
 
         Arrays.stream(additionalCaseData).forEach(
-                caseField -> caseData.put(caseField.getKey(), caseField.getValue())
+            caseField -> caseData.put(caseField.getKey(), caseField.getValue())
         );
 
         return ccdClientSupport.submitBulkCase(caseData, createCaseWorkerUser());
