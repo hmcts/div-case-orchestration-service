@@ -10,6 +10,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
+import java.util.HashMap;
+
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
@@ -25,9 +27,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_APPROVAL_DATE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(SpringRunner.class)
@@ -45,7 +50,29 @@ public class DecreeNisiAboutToBeGrantedTest {
     private CcdUtil ccdUtil;
 
     @Test
-    public void shouldReturnCaseDataPlusDnGrantedDate_AndState_WhenDNGranted() throws Exception {
+    public void shouldReturnCaseDataPlusDnGrantedDate_AndState_WhenDNGranted_AndCostsOrderGranted() throws Exception {
+        HashMap<Object, Object> caseData = new HashMap<>();
+        caseData.put(DECREE_NISI_GRANTED_CCD_FIELD, YES_VALUE);
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+        String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
+            singletonMap(CCD_CASE_DATA_FIELD, caseData)
+        ));
+
+        webClient.perform(post(API_URL).content(inputJson).contentType(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath(CCD_RESPONSE_DATA_FIELD, allOf(
+                    hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(YES_VALUE)),
+                    hasJsonPath(STATE_CCD_FIELD, equalTo(AWAITING_PRONOUNCEMENT)),
+                    hasJsonPath(WHO_PAYS_COSTS_CCD_FIELD, equalTo(WHO_PAYS_CCD_CODE_FOR_RESPONDENT)),
+                    hasJsonPath(DN_APPROVAL_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat()))
+                ))
+            )));
+    }
+
+    @Test
+    public void shouldReturnCaseDataPlusDnGrantedDate_AndState_WhenDNGranted_ButCostsOrderNotGranted() throws Exception {
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             singletonMap(CCD_CASE_DATA_FIELD,
                 singletonMap(DECREE_NISI_GRANTED_CCD_FIELD, YES_VALUE)
@@ -59,13 +86,14 @@ public class DecreeNisiAboutToBeGrantedTest {
                 hasJsonPath(CCD_RESPONSE_DATA_FIELD, allOf(
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(YES_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(AWAITING_PRONOUNCEMENT)),
+                    hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD),
                     hasJsonPath(DN_APPROVAL_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat()))
                 ))
             )));
     }
 
     @Test
-    public void shouldReturnCaseDataPlusDnGrantedDate_AndState_WhenDN_NOTGranted() throws Exception {
+    public void shouldReturnCaseDataPlusDnGrantedDate_AndState_WhenDN_NotGranted() throws Exception {
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             singletonMap(CCD_CASE_DATA_FIELD,
                 singletonMap(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE)
@@ -79,6 +107,7 @@ public class DecreeNisiAboutToBeGrantedTest {
                 hasJsonPath(CCD_RESPONSE_DATA_FIELD, allOf(
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(NO_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(AWAITING_CLARIFICATION)),
+                    hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD),
                     hasNoJsonPath(DN_APPROVAL_DATE_FIELD)
                 ))
             )));

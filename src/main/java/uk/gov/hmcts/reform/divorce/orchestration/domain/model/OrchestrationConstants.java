@@ -72,6 +72,8 @@ public class OrchestrationConstants {
     public static final String D_8_PAYMENTS = "Payments";
     public static final String BULK_LISTING_CASE_ID_FIELD = "BulkListingCaseId";
     public static final String UPDATE_COURT_HEARING_DETAILS_EVENT = "updateBulkCaseHearingDetails";
+    public static final String WHO_PAYS_COSTS_CCD_FIELD = "WhoPaysCosts";
+    public static final String WHO_PAYS_CCD_CODE_FOR_RESPONDENT = "respondent";
 
     //CCD DN fields
     public static final String DN_APPROVAL_DATE_CCD_FIELD = "DNApprovalDate";
@@ -164,7 +166,7 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_RDC_NAME_KEY = "RDC name";
     public static final String NOTIFICATION_COURT_ADDRESS_KEY = "court address";
     public static final String NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY = "form submission date limit";
-    public static final String IS_DRAFT_KEY =   "fetchedDraft";
+    public static final String IS_DRAFT_KEY = "fetchedDraft";
     public static final String STATEMENT_OF_TRUTH = "D8StatementOfTruth";
     public static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
     public static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
@@ -249,12 +251,12 @@ public class OrchestrationConstants {
     public static final String FORM_ID = "case-progression";
     public static final String UPDATE_RESPONDENT_DATA_ERROR_KEY = "respondent.data.not.updated_Error";
     public static final String SOLICITOR_VALIDATION_ERROR_KEY
-            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData_Error";
+        = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData_Error";
     public static final String VALIDATION_ERROR_KEY
-            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData_Error";
+        = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData_Error";
     public static final String BULK_PRINT_ERROR_KEY
-            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkPrinter_Error";
+        = "uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkPrinter_Error";
     public static final String EMAIL_ERROR_KEY
-            = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
+        = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
 
 }
