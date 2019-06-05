@@ -58,7 +58,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         );
 
         Response cosResponse = linkRespondent(petitionerUserDetails.getAuthToken(),
-                caseDetails.getId(), "abcd1234");
+            caseDetails.getId(), "abcd1234");
 
         assertEquals(HttpStatus.UNAUTHORIZED.value(), cosResponse.getStatusCode());
     }
@@ -85,7 +85,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
                 petitionerUserDetails.getAuthToken());
 
         final CaseDetails caseDetails = submitCase(
-                SUBMIT_COMPLETE_CASE_JSON_FILE_PATH,
+            SUBMIT_COMPLETE_CASE_JSON_FILE_PATH,
             petitionerUserDetails
         );
 
@@ -104,7 +104,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
                 petitionerUserDetails.getAuthToken());
 
         final CaseDetails caseDetails = submitCase(
-                SUBMIT_UNLINKED_CASE_JSON_FILE_PATH,
+            SUBMIT_UNLINKED_CASE_JSON_FILE_PATH,
             petitionerUserDetails);
 
         updateCase(String.valueOf(caseDetails.getId()),
@@ -127,11 +127,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             );
 
         assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
-
         Response caseResponse = retrieveAosCase(respondentUserDetails.getAuthToken());
-
         assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
-
         assertCaseDetailsRespondent(respondentUserDetails, String.valueOf(caseDetails.getId()));
     }
 
@@ -144,7 +141,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
                 petitionerUserDetails.getAuthToken());
 
         final CaseDetails caseDetails = submitCase(
-                SUBMIT_UNLINKED_CASE_JSON_FILE_PATH,
+            SUBMIT_UNLINKED_CASE_JSON_FILE_PATH,
             petitionerUserDetails);
 
         updateCase(String.valueOf(caseDetails.getId()),
@@ -168,11 +165,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             );
 
         assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
-
         Response caseResponse = retrieveAosCase(respondentUserDetails.getAuthToken());
-
         assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
-
         assertCaseDetailsRespondent(respondentUserDetails, String.valueOf(caseDetails.getId()));
     }
 
@@ -185,7 +179,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
                 petitionerUserDetails.getAuthToken());
 
         final CaseDetails caseDetails = submitCase(
-                SUBMIT_UNLINKED_CASE_JSON_FILE_PATH,
+            SUBMIT_UNLINKED_CASE_JSON_FILE_PATH,
             petitionerUserDetails);
 
         updateCase(String.valueOf(caseDetails.getId()),
@@ -208,11 +202,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             );
 
         assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
-
         Response caseResponse = retrieveAosCase(coRespondentUserDetails.getAuthToken());
-
         assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
-
         assertCaseDetailsCoRespondent(coRespondentUserDetails, String.valueOf(caseDetails.getId()));
     }
 
@@ -225,7 +216,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
                 petitionerUserDetails.getAuthToken());
 
         final CaseDetails caseDetails = submitCase(
-                SUBMIT_UNLINKED_CASE_JSON_FILE_PATH,
+            SUBMIT_UNLINKED_CASE_JSON_FILE_PATH,
             petitionerUserDetails);
 
         updateCase(String.valueOf(caseDetails.getId()),
@@ -248,11 +239,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             );
 
         assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
-
         Response caseResponse = retrieveAosCase(coRespondentUserDetails.getAuthToken());
-
         assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
-
         assertCaseDetailsCoRespondent(coRespondentUserDetails, String.valueOf(caseDetails.getId()));
 
         linkResponse =
@@ -263,7 +251,6 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             );
 
         assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
-
     }
 
     private void assertCaseDetailsRespondent(UserDetails userDetails, String caseId) {

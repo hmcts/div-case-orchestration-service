@@ -105,7 +105,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         verify(emailService).sendEmail(petitionerEmail,
             EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
             expectedTemplateVars,
-                coRespRespondedWhenAosUndefended);
+            coRespRespondedWhenAosUndefended);
     }
 
     @SuppressWarnings("unchecked")

@@ -5,3 +5,5 @@ idam_strategic_enabled = "true"
 capacity = "2"
 
 health_check_ttl = 30000
+
+scheduler_enabled = "true"
