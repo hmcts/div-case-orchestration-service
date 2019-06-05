@@ -48,7 +48,7 @@ public class EmailService {
         String referenceId = UUID.randomUUID().toString();
         String templateId = emailTemplatesConfig.getTemplates().get(templateName);
         Map<String, String> templateFields = (templateVars != null ? templateVars :
-            emailTemplatesConfig.getTemplateVars().get(templateId));
+            emailTemplatesConfig.getTemplateVars().get(templateName));
 
         return new EmailToSend(destinationAddress, templateId, templateFields, referenceId);
     }
