@@ -1,6 +1,5 @@
 java:
     environment:
-        APPLICATION_INSIGHTS_IKEY: "63c30ef9-a27b-4d38-8afc-4c180fb6ac33"
         APPINSIGHTS_INSTRUMENTATIONKEY: "019ed56f-e01d-4651-895d-bc6334f3d1b1"
         IDAM_API_URL: "https://idam-api.aat.platform.hmcts.net"
         UK_GOV_NOTIFY_API_KEY: "divorce_preprod_live_key-b86e6469-4927-4f50-a029-6ddb523330cf-2409ba37-b5e6-4f03-b052-7d0f0986888d"
