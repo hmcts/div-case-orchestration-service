@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithId;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdMapFlow;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCourtHearingDetailsFromBulkCase;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 public class UpdateCourtHearingDetailsWorkflowTest {
 
     @Mock
-    private GetCaseWithId getCaseWithId;
+    private GetCaseWithIdMapFlow getCaseWithIdMapFlow;
 
     @Mock
     private SetCourtHearingDetailsFromBulkCase setCourtHearingDetailsFromBulkCase;
