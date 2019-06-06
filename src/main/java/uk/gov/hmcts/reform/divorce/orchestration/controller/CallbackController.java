@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
@@ -30,10 +31,6 @@ import javax.ws.rs.core.MediaType;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERATE_AOS_INVITATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
 /**
  * Controller class for callback endpoints.
@@ -88,10 +85,10 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         Map<String, Object> response = caseOrchestrationService.processPbaPayment(ccdCallbackRequest, authorizationToken);
 
-        if (response != null && response.containsKey(SOLICITOR_VALIDATION_ERROR_KEY)) {
+        if (response != null && response.containsKey(OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(
                 CcdCallbackResponse.builder()
-                    .errors((List<String>) response.get(SOLICITOR_VALIDATION_ERROR_KEY))
+                    .errors((List<String>) response.get(OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY))
                     .build());
         }
 
@@ -193,7 +190,7 @@ public class CallbackController {
         Map<String, Object> response = caseOrchestrationService.ccdCallbackBulkPrintHandler(ccdCallbackRequest,
             authorizationToken);
 
-        if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
+        if (response != null && response.containsKey(OrchestrationConstants.BULK_PRINT_ERROR_KEY)) {
             return ResponseEntity.ok(
                 CcdCallbackResponse.builder()
                     .data(ImmutableMap.of())
@@ -220,13 +217,13 @@ public class CallbackController {
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> petitionIssuedCallback(
         @RequestHeader(value = "Authorization") String authorizationToken,
-        @RequestParam(value = GENERATE_AOS_INVITATION, required = false)
-        @ApiParam(GENERATE_AOS_INVITATION) boolean generateAosInvitation,
+        @RequestParam(value = OrchestrationConstants.GENERATE_AOS_INVITATION, required = false)
+        @ApiParam(OrchestrationConstants.GENERATE_AOS_INVITATION) boolean generateAosInvitation,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         Map<String, Object> response = caseOrchestrationService.handleIssueEventCallback(ccdCallbackRequest, authorizationToken,
             generateAosInvitation);
 
-        if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
+        if (response != null && response.containsKey(OrchestrationConstants.VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(
                 CcdCallbackResponse.builder()
                     .errors(getErrors(response))
@@ -312,7 +309,73 @@ public class CallbackController {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
-            callbackResponseBuilder.data(caseOrchestrationService.processSolDnReviewPetition(ccdCallbackRequest));
+            callbackResponseBuilder.data(
+                caseOrchestrationService.processSolDnDoc(
+                    ccdCallbackRequest,
+                    OrchestrationConstants.DOCUMENT_TYPE_PETITION,
+                    OrchestrationConstants.MINI_PETITION_LINK
+                )
+            );
+        } catch (CaseOrchestrationServiceException exception) {
+            log.error(format("Failed to process solicitor DN review petition for Case ID: %s", caseId), exception);
+            callbackResponseBuilder.errors(ImmutableList.of(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/sol-dn-resp-answers-doc",
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Populates Respondent Answers doc for solicitor DN journey")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> solDnRespAnswersDoc(@RequestBody CcdCallbackRequest ccdCallbackRequest) {
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.debug("Processing solicitor DN Respondent Answers doc for Case ID: {}", caseId);
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(
+                caseOrchestrationService.processSolDnDoc(
+                    ccdCallbackRequest,
+                    OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS,
+                    OrchestrationConstants.RESP_ANSWERS_LINK
+                )
+            );
+        } catch (CaseOrchestrationServiceException exception) {
+            log.error(format("Failed to process solicitor DN review petition for Case ID: %s", caseId), exception);
+            callbackResponseBuilder.errors(ImmutableList.of(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/sol-dn-co-resp-answers-doc",
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Populates Co-Respondent Answers doc for solicitor DN journey")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> solDnCoRespAnswersDoc(@RequestBody CcdCallbackRequest ccdCallbackRequest) {
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.debug("Processing solicitor DN Co-Respondent Answers doc for Case ID: {}", caseId);
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(
+                caseOrchestrationService.processSolDnDoc(
+                    ccdCallbackRequest,
+                    OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS,
+                    OrchestrationConstants.CO_RESP_ANSWERS_LINK
+                )
+            );
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format("Failed to process solicitor DN review petition for Case ID: %s", caseId), exception);
             callbackResponseBuilder.errors(ImmutableList.of(exception.getMessage()));
@@ -439,7 +502,7 @@ public class CallbackController {
     }
 
     private List<String> getErrors(Map<String, Object> response) {
-        ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
+        ValidationResponse validationResponse = (ValidationResponse) response.get(OrchestrationConstants.VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();
     }
 }
