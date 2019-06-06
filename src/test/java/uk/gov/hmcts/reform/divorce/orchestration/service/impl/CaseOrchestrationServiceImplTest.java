@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateResponden
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeNisiAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DocumentGenerationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentAnswersWorkflow;
@@ -61,7 +62,9 @@ import java.util.Map;
 
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
@@ -81,7 +84,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseOrchestrationServiceImplTest {
@@ -181,6 +183,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
+
+    @Mock
+    private DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -867,6 +872,28 @@ public class CaseOrchestrationServiceImplTest {
                 .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.validateBulkCaseListingData(requestPayload);
+    }
+
+    @Test
+    public void shouldCallWorkflow_ForDecreeNisiIsAboutToBeGranted() throws WorkflowException, CaseOrchestrationServiceException {
+        when(decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+
+        Map<String, Object> returnedPayload = classUnderTest.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest);
+
+        assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
+    }
+
+    @Test
+    public void shouldThrowServiceException_ForDecreeNisiIsAboutToBeGranted_WhenWorkflowExceptionIsCaught()
+        throws WorkflowException, CaseOrchestrationServiceException {
+        when(decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails()))
+            .thenThrow(new WorkflowException("This operation threw an exception."));
+
+        expectedException.expect(CaseOrchestrationServiceException.class);
+        expectedException.expectMessage(is("This operation threw an exception."));
+        expectedException.expectCause(is(instanceOf(WorkflowException.class)));
+
+        classUnderTest.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest);
     }
 
     @After
