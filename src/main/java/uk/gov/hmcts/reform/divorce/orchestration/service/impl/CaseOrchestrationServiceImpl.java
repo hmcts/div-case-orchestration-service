@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CoRespondentAnswerReceivedWorkflow;
@@ -47,6 +48,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -70,6 +72,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private static final String SUCCESS = "success";
     private static final String ONLINE = "online";
     private static final String PAYMENT = "payment";
+    private static final String COSTS_CLAIM_GRANTED = "CostsClaimGranted";
 
     private final IssueEventWorkflow issueEventWorkflow;
     private final CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
@@ -105,6 +108,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final GenerateCoRespondentAnswersWorkflow generateCoRespondentAnswersWorkflow;
     private final DocumentGenerationWorkflow documentGenerationWorkflow;
     private final RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
+    private final BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
+    private final ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -478,7 +483,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         return  result;
     }
 
-
     @Override
     public Map<String, Object> handleDocumentGenerationCallback(final CcdCallbackRequest ccdCallbackRequest, final String authToken,
                                                                 final String templateId, final String documentType, final String filename)
@@ -487,17 +491,28 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         return documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, documentType, filename);
     }
 
-
-    public final String COST_GRANTED = "CostsClaimGranted";
-
     @Override
-    public Map<String, Object> handleCostsOrderGeneration(final CcdCallbackRequest ccdCallbackRequest, final String authToken,
-                                                                final String templateId, final String documentType, final String filename)
+    public Map<String, Object> handleCostsOrderGenerationCallback(final CcdCallbackRequest ccdCallbackRequest, final String authToken,
+                                                          final String templateId, final String documentType, final String filename)
             throws WorkflowException {
-        if (String.valueOf(ccdCallbackRequest.getCaseDetails().getCaseData().get(COST_GRANTED)).equalsIgnoreCase(YES_VALUE))
+        if (String.valueOf(ccdCallbackRequest.getCaseDetails().getCaseData().get(COSTS_CLAIM_GRANTED)).equalsIgnoreCase(YES_VALUE)) {
             return documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, documentType, filename);
-        else
+        } else {
             return ccdCallbackRequest.getCaseDetails().getCaseData();
+        }
     }
 
+    @Override
+    public Map<String, Object> processBulkCaseScheduleForHearing(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        String bulkCaseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.info("Starting Bulk Schedule For Listing Callback on Bulk Case {}", bulkCaseId);
+        Map<String, Object> result = bulkCaseUpdateHearingDetailsEventWorkflow.run(ccdCallbackRequest, authToken);
+        log.info("Bulk Scheduling Successfully Initiated on Bulk Case {}", bulkCaseId);
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> validateBulkCaseListingData(Map<String, Object> caseData) throws WorkflowException {
+        return validateBulkCaseListingWorkflow.run(caseData);
+    }
 }

@@ -46,15 +46,6 @@ variable "common_tags" {
   type = "map"
 }
 
-variable "uk_gov_notify_email_templates" {
-  type = "string"
-  default = ""
-}
-
-variable "uk_gov_notify_email_template_vars" {
-  type = "string"
-}
-
 variable "service_auth_microservice_name" {
   default = "divorce_frontend"
 }
@@ -74,4 +65,17 @@ variable "idam_strategic_enabled" {
 variable "health_check_ttl" {
   type = "string"
   default = "4000"
+}
+
+variable "location_db" {
+  type    = "string"
+  default = "UK South"
+}
+
+variable "scheduler_re_create" {
+  default = "true"
+}
+
+variable "scheduler_enabled" {
+  default = "false"
 }

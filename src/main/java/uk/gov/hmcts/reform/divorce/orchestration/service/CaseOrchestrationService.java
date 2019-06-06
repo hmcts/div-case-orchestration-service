@@ -87,11 +87,15 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> generateBulkCaseForListing() throws WorkflowException;
 
-    Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, final String authToken, String templateId,
+    Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, String authToken, String templateId,
                                                          String documentType, String templateName) throws WorkflowException;
 
     Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
-    Map<String, Object> handleCostsOrderGeneration( CcdCallbackRequest ccdCallbackRequest,  String authToken,
+    Map<String, Object> processBulkCaseScheduleForHearing(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
+
+    Map<String, Object> validateBulkCaseListingData(Map<String, Object> caseData) throws WorkflowException;
+
+    Map<String, Object> handleCostsOrderGenerationCallback( CcdCallbackRequest ccdCallbackRequest,  String authToken,
                                                     String templateId,  String documentType,  String filename) throws WorkflowException;
 }
