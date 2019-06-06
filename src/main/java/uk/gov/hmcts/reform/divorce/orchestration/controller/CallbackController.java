@@ -375,6 +375,35 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    @PostMapping(path = "/generate-costs-order", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Generates the document and attaches it to the case")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Document has been attached to the case", response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> generateCostsOrder(
+            @RequestHeader(value = "Authorization") String authorizationToken,
+            @RequestParam(value = "templateId") @ApiParam("templateId") String templateId,
+            @RequestParam(value = "documentType") @ApiParam("documentType") String documentType,
+            @RequestParam(value = "filename") @ApiParam("filename") String filename,
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(caseOrchestrationService
+                    .handleCostsOrderGeneration(ccdCallbackRequest, authorizationToken, templateId, documentType, filename));
+            log.info("Generating document {} for case {}. Case id: {}", documentType, caseId);
+        } catch (WorkflowException exception) {
+            log.error("Document generation failed. Case id:  {}", caseId, exception);
+            callbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
     @PostMapping(path = "/aos-solicitor-nominated",
             consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles actions that need to happen once a respondent nominates a solicitor.")
