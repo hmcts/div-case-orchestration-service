@@ -499,9 +499,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
         if (separationFieldsWorkflow.errors().isEmpty()) {
             return payLoad;
-        } else {
-            return separationFieldsWorkflow.errors();
         }
+        return separationFieldsWorkflow.errors();
     }
 
     public Map<String, Object> processBulkCaseScheduleForHearing(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
