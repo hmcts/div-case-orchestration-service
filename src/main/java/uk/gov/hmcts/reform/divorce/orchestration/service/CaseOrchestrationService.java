@@ -97,4 +97,6 @@ public interface CaseOrchestrationService {
     Map<String, Object> processBulkCaseScheduleForHearing(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> validateBulkCaseListingData(Map<String, Object> caseData) throws WorkflowException;
+
+    Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 }

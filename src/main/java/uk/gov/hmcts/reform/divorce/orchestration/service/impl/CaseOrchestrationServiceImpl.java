@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingW
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CoRespondentAnswerReceivedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeNisiAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DocumentGenerationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentAnswersWorkflow;
@@ -110,6 +111,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SeparationFieldsWorkflow separationFieldsWorkflow;
     private final BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
     private final ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
+    private final DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -480,7 +482,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         log.info("Starting Bulk listing generation");
         Map<String, Object> result = processAwaitingPronouncementCasesWorkflow.run(authUtil.getCaseworkerToken());
         log.info("Bulk listing generation completed");
-        return  result;
+        return result;
     }
 
     @Override
@@ -515,4 +517,14 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> validateBulkCaseListingData(Map<String, Object> caseData) throws WorkflowException {
         return validateBulkCaseListingWorkflow.run(caseData);
     }
+
+    @Override
+    public Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+        try {
+            return decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails());
+        } catch (WorkflowException e) {
+            throw new CaseOrchestrationServiceException(e);
+        }
+    }
+
 }
