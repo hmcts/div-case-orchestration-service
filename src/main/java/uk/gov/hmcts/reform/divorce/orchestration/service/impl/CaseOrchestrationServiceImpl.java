@@ -59,11 +59,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
 
 @Slf4j
 @Service
@@ -73,7 +69,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private static final String SUCCESS = "success";
     private static final String ONLINE = "online";
     private static final String PAYMENT = "payment";
-    private static final String COSTS_CLAIM_GRANTED = "CostsClaimGranted";
 
     private final IssueEventWorkflow issueEventWorkflow;
     private final CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
@@ -497,7 +492,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> handleCostsOrderGenerationCallback(final CcdCallbackRequest ccdCallbackRequest, final String authToken,
                                                           final String templateId, final String documentType, final String filename)
             throws WorkflowException {
-        if (String.valueOf(ccdCallbackRequest.getCaseDetails().getCaseData().get(COSTS_CLAIM_GRANTED)).equalsIgnoreCase(YES_VALUE)) {
+        if (String.valueOf(ccdCallbackRequest.getCaseDetails().getCaseData().get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD)).equalsIgnoreCase(YES_VALUE)) {
             return documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, documentType, filename);
         } else {
             return ccdCallbackRequest.getCaseDetails().getCaseData();

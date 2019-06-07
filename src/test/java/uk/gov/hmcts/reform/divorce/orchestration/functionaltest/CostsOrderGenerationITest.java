@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
@@ -53,7 +54,7 @@ public class CostsOrderGenerationITest {
     private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
-    private static final Map<String, Object> CASE_DATA = new HashMap<>();
+    private static final Map<String, Object> CASE_DATA = Collections.singletonMap(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
 
     private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
         .caseData(CASE_DATA)
@@ -153,7 +154,7 @@ public class CostsOrderGenerationITest {
                 .caseData(CASE_DATA)
                 .build();
 
-        final Map<String, Object> formattedCaseData = emptyMap();
+        final Map<String, Object> formattedCaseData = Collections.singletonMap("Hello", "World");
 
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);

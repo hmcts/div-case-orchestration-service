@@ -81,8 +81,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -810,9 +809,6 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldCallTheRightWorkflow_ForCostsOrderDocumentGeneration() throws WorkflowException {
-        when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN , "a", "b", "c"))
-                .thenReturn(requestPayload);
-
         final Map<String, Object> result = classUnderTest
                 .handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
 
@@ -821,12 +817,28 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test(expected = WorkflowException.class)
     public void shouldThrowException_ForDocumentGeneration_WhenWorkflowExceptionIsCaught()
-        throws WorkflowException {
+            throws WorkflowException {
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN , "a", "b", "c"))
-            .thenThrow(new WorkflowException("This operation threw an exception"));
+                .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldThrowException_ForCostsOrderGeneration_WhenWorkflowExceptionIsCaught()
+            throws WorkflowException {
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails
+                (CaseDetails.builder().caseData(
+                        Collections.singletonMap(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes")
+                        ).build()
+                ).build();
+
+        when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN , "a", "b", "c"))
+                .thenThrow(new WorkflowException("This operation threw an exception"));
+
+        classUnderTest.handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
     }
 
     @Test
@@ -905,6 +917,24 @@ public class CaseOrchestrationServiceImplTest {
         expectedException.expectCause(is(instanceOf(WorkflowException.class)));
 
         classUnderTest.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest);
+    }
+
+    @Test
+    public void shouldGeneratePdfFile_ForCostOrderGenerator_When_COSTS_ORDER_GRANTED_is_YES_VALUE()
+            throws WorkflowException{
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails
+                (CaseDetails.builder().caseData(
+                        Collections.singletonMap(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes")
+                        ).build()
+                ).build();
+
+        when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN , "a", "b", "c"))
+                .thenReturn(requestPayload);
+
+        final Map<String, Object> result = classUnderTest
+                .handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+
+        assertThat(result, is(requestPayload));
     }
 
     @After
