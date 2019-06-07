@@ -29,6 +29,7 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -153,8 +154,8 @@ public class CostsOrderGenerationITest {
                 .documents(asList(documentGenerationResponse))
                 .caseData(CASE_DATA)
                 .build();
-
-        final Map<String, Object> formattedCaseData = Collections.singletonMap("Hello", "World");
+        final Map<String, Object> formattedCaseData =  emptyMap();
+        // final Map<String, Object> formattedCaseData = Collections.singletonMap("Hello", "World");
 
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
