@@ -43,7 +43,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmiss
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnReviewPetitionWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
@@ -100,7 +100,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final CoRespondentAnswerReceivedWorkflow coRespondentAnswerReceivedWorkflow;
     private final ProcessAwaitingPronouncementCasesWorkflow processAwaitingPronouncementCasesWorkflow;
     private final GetCaseWithIdWorkflow getCaseWithIdWorkflow;
-    private final SolicitorDnReviewPetitionWorkflow solicitorDnReviewPetitionWorkflow;
+    private final SolicitorDnFetchDocWorkflow solicitorDnFetchDocWorkflow;
     private final GenerateCoRespondentAnswersWorkflow generateCoRespondentAnswersWorkflow;
     private final DocumentGenerationWorkflow documentGenerationWorkflow;
     private final RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
@@ -443,9 +443,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> processSolDnReviewPetition(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+    public Map<String, Object> processSolDnDoc(CcdCallbackRequest ccdCallbackRequest, final String documentType, final String docLinkFieldName)
+        throws CaseOrchestrationServiceException {
         try {
-            return solicitorDnReviewPetitionWorkflow.run(ccdCallbackRequest.getCaseDetails());
+            return solicitorDnFetchDocWorkflow.run(ccdCallbackRequest.getCaseDetails(), documentType, docLinkFieldName);
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
         }
