@@ -34,8 +34,8 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-  compile group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-
+  annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
+  implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
