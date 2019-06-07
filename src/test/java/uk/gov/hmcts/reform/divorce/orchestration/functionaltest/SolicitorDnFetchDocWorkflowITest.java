@@ -38,7 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @PropertySource(value = "classpath:application.yml")
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class SolicitorDnReviewPetitionITest {
+public class SolicitorDnFetchDocWorkflowITest {
 
     private static final String API_URL = "/sol-dn-review-petition";
     private static final String MINI_PETITION_LINK = "minipetitionlink";
@@ -69,7 +69,7 @@ public class SolicitorDnReviewPetitionITest {
                         isJson(),
                         hasJsonPath("$.data", is(nullValue())),
                         hasJsonPath("$.errors",
-                                hasItem("Petition document not found")
+                                hasItem("petition document not found")
                         )
                 )));
     }
