@@ -803,6 +803,17 @@ public class CaseOrchestrationServiceImplTest {
         assertThat(result, is(requestPayload));
     }
 
+    @Test
+    public void shouldCallTheRightWorkflow_ForCostsOrderDocumentGeneration() throws WorkflowException {
+        when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN , "a", "b", "c"))
+                .thenReturn(requestPayload);
+
+        final Map<String, Object> result = classUnderTest
+                .handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+
+        assertThat(result, is(requestPayload));
+    }
+
     @Test(expected = WorkflowException.class)
     public void shouldThrowException_ForDocumentGeneration_WhenWorkflowExceptionIsCaught()
         throws WorkflowException {
