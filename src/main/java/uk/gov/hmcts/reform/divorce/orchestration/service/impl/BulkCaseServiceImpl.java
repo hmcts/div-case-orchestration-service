@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
-import lombok.AllArgsConstructor;
+import feign.FeignException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseCreateEvent;
@@ -30,13 +33,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class BulkCaseServiceImpl implements BulkCaseService {
+
+    @Value("${bulk-action.retries.max:4}")
+    private int maxRetries;
 
     private final LinkBulkCaseWorkflow linkBulkCaseWorkflow;
     private final UpdateCourtHearingDetailsWorkflow updateCourtHearingDetailsWorkflow;
     private final UpdateBulkCaseWorkflow updateBulkCaseWorkflow;
+
+    private int MAX_WAIT_INTERVAL = 30000;
 
     @Override
     @EventListener
@@ -49,19 +57,77 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         Map<String, Object> bulkCaseData = (Map<String, Object>) caseResponse.getOrDefault(CCD_CASE_DATA_FIELD, Collections.emptyMap());
         List<Map<String, Object>> divorceCaseList = (List<Map<String, Object>>) bulkCaseData.getOrDefault(CASE_LIST_KEY, Collections.emptyList());
 
-        divorceCaseList.forEach(caseElem -> {
-            try {
-                linkBulkCaseWorkflow.run(caseElem, bulkCaseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
-            } catch (Exception e) {
-                //TODO this will be handled on DIV-4811
-                log.error("Case update failed : for bulk case id {}", bulkCaseId, e );
-            }
+        final String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
 
-        });
+        retryableCases(divorceCaseList, bulkCaseId, authToken);
 
         long endTime = Instant.now().toEpochMilli();
         log.info("Completed bulk case process with bulk cased Id:{} in:{} millis", bulkCaseId, endTime - startTime);
+    }
 
+    private void notifyFailedCases(List<Map<String, Object>> failedCaess) {
+        log.error("Can not process following cases " + failedCaess);
+    }
+
+    private void retryableCases(List<Map<String, Object>> caseList, String bulkCaseId, String authToken) {
+        int retryCount = 0;
+        List<Map<String, Object>> retryCases = caseList;
+        final List<Map<String, Object>> failedCases = new ArrayList<>();
+        try {
+            while (!retryCases.isEmpty()) {
+                if (retryCount > 0) {
+                    long waitTime = Math.min(getWaitTimeExp(retryCount), MAX_WAIT_INTERVAL);
+                    log.info("waiting time {}", waitTime);
+                    Thread.sleep(waitTime);
+                }
+                retryCases = handlerFailedCases(retryCases, bulkCaseId, authToken, retryCount++, failedCases);
+
+            }
+        } catch (Exception e) {
+            failedCases.addAll(retryCases);
+        }
+
+        if (!failedCases.isEmpty()) {
+            this.notifyFailedCases(failedCases);
+        }
+    }
+
+    /*
+     * Returns the next wait interval, in milliseconds, using an exponential
+     * backoff algorithm.
+     */
+    public static long getWaitTimeExp(int retryCount) {
+        long waitTime = ((long) Math.pow(2, retryCount) * 1000L);
+        return waitTime;
+    }
+
+    private List<Map<String, Object>> handlerFailedCases(List<Map<String, Object>> caseList,
+                                                         String bulkCaseId,
+                                                         String authToken,
+                                                         int count,
+                                                         List<Map<String, Object>> failedCasesToRetry) {
+        if (count < maxRetries) {
+            List<Map<String, Object>> failedCases = new ArrayList<>();
+
+            caseList.forEach(caseElem -> {
+                try {
+                    linkBulkCaseWorkflow.run(caseElem, bulkCaseId, authToken);
+                } catch (FeignException e) {
+                    log.error("Case update failed : for bulk case id {}", bulkCaseId, e );
+                    if (e.status() >= HttpStatus.INTERNAL_SERVER_ERROR.value())  {
+                        failedCases.add(caseElem);
+                    } else {
+                        failedCasesToRetry.add(caseElem);
+                    }
+                } catch (Exception e) {
+                    log.error("Case update failed : for bulk case id {}", bulkCaseId, e );
+                    failedCasesToRetry.add(caseElem);
+                }
+            });
+            return failedCases;
+        } else {
+            throw new RuntimeException("Max retries exhausted");
+        }
     }
 
     @Override
