@@ -81,7 +81,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -829,11 +831,11 @@ public class CaseOrchestrationServiceImplTest {
     public void shouldThrowException_ForCostsOrderGeneration_WhenWorkflowExceptionIsCaught()
             throws WorkflowException {
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails
-                (CaseDetails.builder().caseData(
-                        Collections.singletonMap(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes")
-                        ).build()
-                ).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
+                CaseDetails.builder().caseData(
+                        Collections.singletonMap(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes"))
+                        .build())
+                .build();
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN , "a", "b", "c"))
                 .thenThrow(new WorkflowException("This operation threw an exception"));
@@ -920,13 +922,13 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldGeneratePdfFile_ForCostOrderGenerator_When_COSTS_ORDER_GRANTED_is_YES_VALUE()
-            throws WorkflowException{
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails
-                (CaseDetails.builder().caseData(
-                        Collections.singletonMap(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes")
-                        ).build()
-                ).build();
+    public void shouldGeneratePdfFile_ForCostOrderGenerator_When_Costs_order_granted_is_YES_Value()
+            throws WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
+                CaseDetails.builder().caseData(
+                        Collections.singletonMap(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes"))
+                        .build())
+                .build();
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN , "a", "b", "c"))
                 .thenReturn(requestPayload);
