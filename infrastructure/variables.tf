@@ -40,6 +40,10 @@ variable "capacity" {
   default = "1"
 }
 
+variable "instance_size" {
+  default = "I2"
+}
+
 variable "vault_env" {}
 
 variable "common_tags" {
