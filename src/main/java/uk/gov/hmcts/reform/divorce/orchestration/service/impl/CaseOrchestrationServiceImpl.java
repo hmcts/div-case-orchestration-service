@@ -515,4 +515,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         }
     }
 
+    @Override
+    public Map<String, Object> updateBulkCaseDnPronounce(Map<String, Object> caseData) throws WorkflowException {
+        return validateBulkCaseListingWorkflow.run(caseData);
+    }
 }
