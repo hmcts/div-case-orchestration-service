@@ -21,6 +21,8 @@ import javax.annotation.PostConstruct;
 
 import javax.annotation.PostConstruct;
 
+import javax.annotation.PostConstruct;
+
 @Slf4j
 @RunWith(SerenityRunner.class)
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})

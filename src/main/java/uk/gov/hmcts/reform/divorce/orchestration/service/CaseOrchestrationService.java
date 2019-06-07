@@ -98,4 +98,6 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> handleCostsOrderGenerationCallback( CcdCallbackRequest ccdCallbackRequest,  String authToken,
                                                     String templateId,  String documentType,  String filename) throws WorkflowException;
+
+    Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 }
