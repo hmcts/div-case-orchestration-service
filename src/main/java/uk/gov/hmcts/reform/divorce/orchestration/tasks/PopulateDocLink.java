@@ -10,17 +10,16 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Optional.ofNullable;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_DOCUMENT_LINK_FIELD;
 
 @Component
-public class PopulateMiniPetitionUrl implements Task<Map<String, Object>>  {
+public class PopulateDocLink implements Task<Map<String, Object>>  {
 
     private static final String D8DOCUMENTS_GENERATED = "D8DocumentsGenerated";
     private static final String VALUE = "value";
-    private static final String DOCUMENT_TYPE = "DocumentType";
-    private static final String PETITION_TYPE = "petition";
-
-    private static final String DOCUMENT_LINK = "DocumentLink";
-    private static final String MINI_PETITION_LINK = "minipetitionlink";
+    private static final String DOCUMENT_TYPE_KEY = "DocumentType";
+    private static final String DOCUMENT_LINK_KEY = "DocumentLink";
 
     @SuppressWarnings("unchecked")
     @Override
@@ -28,14 +27,16 @@ public class PopulateMiniPetitionUrl implements Task<Map<String, Object>>  {
         List<Map> documentList =
                 ofNullable(payload.get(D8DOCUMENTS_GENERATED)).map(i -> (List<Map>) i).orElse(new ArrayList<>());
 
+        String documentType = context.getTransientObject(DOCUMENT_TYPE);
+        String docLinkFieldName = context.getTransientObject(SOL_DOCUMENT_LINK_FIELD);
         Map<String, Object> petitionDocument = documentList
                 .stream()
-                .filter(map -> PETITION_TYPE.equals(((Map) map.get(VALUE)).get(DOCUMENT_TYPE)))
+                .filter(map -> documentType.equals(((Map) map.get(VALUE)).get(DOCUMENT_TYPE_KEY)))
                 .findFirst()
-                .orElseThrow(() -> new TaskException("Petition document not found"));
+                .orElseThrow(() -> new TaskException(documentType + " document not found"));
 
-        Map<String, Object> documentLink = (Map<String, Object>) ((Map) petitionDocument.get(VALUE)).get(DOCUMENT_LINK);
-        payload.put(MINI_PETITION_LINK, documentLink);
+        Map<String, Object> documentLink = (Map<String, Object>) ((Map) petitionDocument.get(VALUE)).get(DOCUMENT_LINK_KEY);
+        payload.put(docLinkFieldName, documentLink);
 
         return payload;
     }
