@@ -41,12 +41,12 @@ scheduler:
   re-create: ${SCHEDULER_RE_CREATE:true}
   enabled: ${SCHEDULER_ENABLED:false}
   schedules:
-    - name: 'Test Schedulder'
-      enabled: false
+    - name: 'CreateBulkCase'
+      enabled: true
       cronGroup: "NIGHTLY_CRON"
-      description: 'Scheduler to test'
-      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.ScheduleTestJob'
-      cron: ${SCHEDULER_SCHEDULES_TEST_CRON:0 0/1 * 1/1 * ? *}
+      description: 'Cron job to add awaiting pronouncement cases within a bulkcase'
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.CreateBulkCaseJob'
+      cron: ${SCHEDULER_SCHEDULES_CREATE_BULK_CASES_CRON:0 0 4 ? * * *} #Time to confirm with devops, right now 4:00AM
 
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
