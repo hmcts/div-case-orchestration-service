@@ -600,7 +600,7 @@ public class CallbackControllerTest {
     public void givenErrors_whenCalculateSeparationFields_thenReturnErrorResponse() throws WorkflowException {
         final List<String> expectedError = Collections.singletonList("Some error");
         final Map<String, Object> caseData =
-            Collections.singletonMap(VALIDATION_ERROR_KEY, "Some error");
+            Collections.singletonMap(OrchestrationConstants.VALIDATION_ERROR_KEY, "Some error");
         final CaseDetails caseDetails = CaseDetails.builder()
             .caseData(caseData)
             .build();
