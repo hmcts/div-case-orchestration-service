@@ -58,7 +58,7 @@ public class BulkCaseControllerTest {
     }
 
     @Test
-    public void whenvalidateBulkCaseListingData_thenReturnExpectedResponse() throws WorkflowException {
+    public void whenValidateBulkCaseListingData_thenReturnExpectedResponse() throws WorkflowException {
         CaseDetails caseDetails = CaseDetails.builder().caseData(Collections.emptyMap()).build();
         CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
@@ -72,7 +72,7 @@ public class BulkCaseControllerTest {
     }
 
     @Test
-    public void whenvalidateBulkCaseListingDataThrowsError_thenReturnExpectedResponse() throws WorkflowException {
+    public void whenValidateBulkCaseListingDataThrowsError_thenReturnExpectedResponse() throws WorkflowException {
         CaseDetails caseDetails = CaseDetails.builder().caseData(Collections.emptyMap()).build();
         CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
         String error = "error has occurred";
@@ -84,5 +84,19 @@ public class BulkCaseControllerTest {
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody(), is(CcdCallbackResponse.builder().errors(Collections.singletonList(error)).build()));
+    }
+
+    @Test
+    public void whenUpdateBulkCasePronouncementDate_thenReturnExpectedResponse() throws WorkflowException {
+        CaseDetails caseDetails = CaseDetails.builder().caseData(Collections.emptyMap()).build();
+        CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.updateBulkCaseDnPronounce(Collections.emptyMap()))
+                .thenReturn(Collections.emptyMap());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.updateCaseDnPronounce(request);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(CcdCallbackResponse.builder().data(Collections.emptyMap()).build()));
     }
 }
