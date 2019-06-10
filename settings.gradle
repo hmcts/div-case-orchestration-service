@@ -1,1 +1,2 @@
 rootProject.name = 'div-case-orchestration-service'
+include 'job-scheduler'

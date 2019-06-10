@@ -2,13 +2,51 @@ info:
   app:
     name: ${spring.application.name}
 
-
-
 spring:
+  datasource:
+    scheduler:
+      name: scheduler
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://${DIV_SCHEDULER_DB_HOST:localhost}:${DIV_SCHEDULER_DB_PORT:5432}/${DIV_SCHEDULER_DB_NAME:div_scheduler}${DIV_SCHEDULER_DB_CONN_OPTIONS:}
+      username: ${DIV_SCHEDULER_DB_USER_NAME:div_scheduler_user}
+      password: ${DIV_SCHEDULER_DB_PASSWORD:div_scheduler_passwd}
+      properties:
+      charSet: UTF-8
+  hikari:
+    minimumIdle: 2
+    maximumPoolSize: 10
+    idleTimeout: 10000
+    poolName: BulkScanHikariCP
+    maxLifetime: 7200000
+    connectionTimeout: 30000
   application:
     name: div-cos
   resources:
     static-locations:
+
+quartzProperties:
+  org.quartz:
+    scheduler:
+      instanceId: AUTO
+    jobStore:
+      isClustered: true
+      class: org.quartz.impl.jdbcjobstore.JobStoreTX
+      driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+      dataSource:  divDataSource
+    threadPool:
+      class: org.quartz.simpl.SimpleThreadPool
+      threadCount: 8
+
+scheduler:
+  re-create: ${SCHEDULER_RE_CREATE:true}
+  enabled: ${SCHEDULER_ENABLED:false}
+  schedules:
+    - name: 'CreateBulkCase'
+      enabled: true
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Cron job to add awaiting pronouncement cases within a bulkcase'
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.CreateBulkCaseJob'
+      cron: ${SCHEDULER_SCHEDULES_CREATE_BULK_CASES_CRON:0 0 4 ? * * *} #Time to confirm with devops, right now 4:00AM
 
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}

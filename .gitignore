@@ -24,3 +24,5 @@ target
 application-*.yml
 application-*.yaml
 application-local.properties
+
+ *.swp

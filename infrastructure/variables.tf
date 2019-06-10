@@ -40,6 +40,10 @@ variable "capacity" {
   default = "1"
 }
 
+variable "instance_size" {
+  default = "I2"
+}
+
 variable "vault_env" {}
 
 variable "common_tags" {
@@ -65,4 +69,17 @@ variable "idam_strategic_enabled" {
 variable "health_check_ttl" {
   type = "string"
   default = "4000"
+}
+
+variable "location_db" {
+  type    = "string"
+  default = "UK South"
+}
+
+variable "scheduler_re_create" {
+  default = "true"
+}
+
+variable "scheduler_enabled" {
+  default = "false"
 }

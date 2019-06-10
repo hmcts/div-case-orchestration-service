@@ -81,7 +81,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> coRespondentAnswerReceived(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
-    Map<String, Object> processSolDnReviewPetition(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
+    Map<String, Object> processSolDnDoc(CcdCallbackRequest ccdCallbackRequest, String documentType, String docLinkFieldName)
+        throws CaseOrchestrationServiceException;
 
     Map<String, Object> generateCoRespondentAnswers(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
@@ -97,4 +98,6 @@ public interface CaseOrchestrationService {
     Map<String, Object> validateBulkCaseListingData(Map<String, Object> caseData) throws WorkflowException;
 
     Map<String, Object> processAosSolicitorLinkCase(String authToken, CcdCallbackRequest request) throws CaseOrchestrationServiceException;
+
+    Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 }
