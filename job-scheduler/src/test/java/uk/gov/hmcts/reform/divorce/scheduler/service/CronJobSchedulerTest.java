@@ -37,7 +37,7 @@ public class CronJobSchedulerTest {
     public void whenReCreateScheduleIsFalse_thenDoNotCleanSchedules() {
         setEnableDelete(false);
         when(jobService.scheduleJob(any(), anyString())).thenReturn(new JobKey("name"));
-        when(schedulerConfig.getSchedules()).thenReturn(asList(Schedule.builder().cron("cron").build()));
+        when(schedulerConfig.getSchedules()).thenReturn(asList(Schedule.builder().enabled(true).cron("cron").build()));
 
         classToTest.scheduleCronJobs();
 
@@ -49,7 +49,23 @@ public class CronJobSchedulerTest {
     public void whenReCreateScheduleIsTrue_thenCleanSchedules() {
         setEnableDelete(true);
         when(jobService.scheduleJob(any(), anyString())).thenReturn(new JobKey("name"));
-        when(schedulerConfig.getSchedules()).thenReturn(asList(Schedule.builder().cron("cron").build()));
+        when(schedulerConfig.getSchedules()).thenReturn(asList(
+            Schedule.builder().enabled(true).cron("cron").build(),
+            Schedule.builder().enabled(true).cron("cron").build()));
+
+        classToTest.scheduleCronJobs();
+
+        verify(jobService, times(2)).scheduleJob(any(), anyString());
+        verify(jobService, times(1)).cleanSchedules(any());
+    }
+
+    @Test
+    public void whenScheduleIsDisabled_thenDoNotProcess() {
+        setEnableDelete(true);
+        when(jobService.scheduleJob(any(), anyString())).thenReturn(new JobKey("name"));
+        when(schedulerConfig.getSchedules()).thenReturn(asList(
+            Schedule.builder().enabled(false).cron("cron").build(),
+            Schedule.builder().enabled(true).cron("cron").build()));
 
         classToTest.scheduleCronJobs();
 
@@ -57,21 +73,31 @@ public class CronJobSchedulerTest {
         verify(jobService, times(1)).cleanSchedules(any());
     }
 
+
     @Test
     public void givenException_whenCreateScheduleIsTrue_thenCleanSchedules() {
         setEnableDelete(true);
 
         doThrow(new JobException("Error message", new Exception())).when(jobService).cleanSchedules(any());
-        when(schedulerConfig.getSchedules()).thenReturn(asList(Schedule.builder().cron("cron").build()));
+        when(schedulerConfig.getSchedules()).thenReturn(asList(Schedule.builder().enabled(true).cron("cron").build()));
 
         try {
-
             classToTest.scheduleCronJobs();
             fail("JobException expected");
         } catch (JobException e) {
             verify(jobService, never()).scheduleJob(any(), anyString());
             verify(jobService, times(1)).cleanSchedules(any());
         }
+    }
+
+    @Test(expected = JobException.class)
+    public void givenException_whenCreateSchedule_thenPropagateError() {
+        setEnableDelete(true);
+
+        when(schedulerConfig.getSchedules()).thenReturn(asList(Schedule.builder().enabled(true).cron("cron").build()));
+        when(jobService.scheduleJob(any(), anyString())).thenThrow(new JobException("Scheduler error", new Exception()));
+
+        classToTest.scheduleCronJobs();
     }
 
     private void setEnableDelete(boolean value) {

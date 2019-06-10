@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdMapFlow;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCourtHearingDetailsFromBulkCase;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
@@ -20,6 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @AllArgsConstructor
 public class UpdateCourtHearingDetailsWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
+    private final GetCaseWithIdMapFlow getCaseWithIdMapFlow;
     private final SetCourtHearingDetailsFromBulkCase setCourtHearingDetailsFromBulkCase;
     private final UpdateCaseInCCD updateCaseInCCD;
 
@@ -29,6 +31,7 @@ public class UpdateCourtHearingDetailsWorkflow extends DefaultWorkflow<Map<Strin
 
         return this.execute(
                 new Task[] {
+                    getCaseWithIdMapFlow,
                     setCourtHearingDetailsFromBulkCase,
                     updateCaseInCCD
                 },

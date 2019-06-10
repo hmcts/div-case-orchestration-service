@@ -214,6 +214,12 @@ public class OrchestrationConstants {
     public static final String DOCUMENT_FILENAME_FMT = "%s%s";
 
 
+    public static final String SOL_DOCUMENT_LINK_FIELD = "solDocumentLinkFieldName";
+    public static final String MINI_PETITION_LINK = "minipetitionlink";
+    public static final String RESP_ANSWERS_LINK = "respondentanswerslink";
+    public static final String CO_RESP_ANSWERS_LINK = "corespondentanswerslink";
+
+
     // Fees
     public static final String CURRENCY = "GBP";
     public static final String FEE_PAY_BY_ACCOUNT = "feePayByAccount";
