@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.job;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
