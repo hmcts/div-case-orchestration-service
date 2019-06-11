@@ -49,7 +49,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
@@ -337,8 +336,8 @@ public class SubmitRespondentAosCaseITest {
 
     private Map<String, Object> buildSolicitorRepresentationResponse() {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put("D8RespondentCorrespondenceSendToSol", YES_VALUE);
-        caseData.put(D8_RESPONDENT_SOLICITOR_NAME, "Some name");
+        caseData.put("respondentSolicitorRepresented", YES_VALUE);
+        caseData.put("D8RespondentSolicitorName", "Some name");
         caseData.put("D8RespondentSolicitorCompany", "Awesome Solicitors LLP");
         caseData.put("D8RespondentSolicitorEmail", "solicitor@localhost.local");
         caseData.put("D8RespondentSolicitorPhone", "2222222222");
