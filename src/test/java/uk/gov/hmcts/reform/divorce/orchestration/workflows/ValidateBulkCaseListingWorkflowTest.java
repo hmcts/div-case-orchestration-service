@@ -25,7 +25,7 @@ public class ValidateBulkCaseListingWorkflowTest {
     private ValidateBulkCaseListingWorkflow classUnderTest;
 
     @Test
-    public void whenvalidateBulkCaseListingData_thenProcessAsExpected() throws WorkflowException {
+    public void whenValidateBulkCaseListingData_thenProcessAsExpected() throws WorkflowException {
         final Task[] tasks = new Task[]{
             validateBulkCourtHearingDate
         };
