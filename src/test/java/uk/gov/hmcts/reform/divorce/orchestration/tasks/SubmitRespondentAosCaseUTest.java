@@ -220,7 +220,7 @@ public class SubmitRespondentAosCaseUTest {
 
     private Map<String, Object> buildSolicitorResponse() {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put("D8RespondentCorrespondenceSendToSol", YES_VALUE);
+        caseData.put("respondentSolicitorRepresented", YES_VALUE);
         caseData.put("D8RespondentSolicitorName", "Some name");
         caseData.put("D8RespondentSolicitorCompany", "Awesome Solicitors LLP");
         caseData.put("D8RespondentSolicitorEmail", "solicitor@localhost.local");
