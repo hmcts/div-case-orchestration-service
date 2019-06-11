@@ -1,0 +1,46 @@
+
+repositories {
+    mavenLocal()
+    maven {
+        url "https://dl.bintray.com/hmcts/hmcts-maven"
+    }
+    maven {
+        url 'https://repo.spring.io/libs-milestone'
+    }
+    jcenter()
+}
+
+compileJava {
+    options.compilerArgs << '-parameters' << '-Xlint:deprecation'
+}
+
+compileTestJava {
+    options.compilerArgs << '-Xlint:deprecation'
+}
+
+def versions = [
+  reformJavaLogging : '4.0.1',
+  jacksonDatabind   : '2.9.9',
+  flyway            : '5.2.4',
+  postgresql        : '42.2.5',
+  lombok            : '1.16.16',
+  assertj           : '3.11.1'
+]
+
+dependencies {
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
+  compile group: 'org.springframework.retry', name: 'spring-retry'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
+  compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
+  compile group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+
+  compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
+
+  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+  testCompile group: 'org.assertj', name: 'assertj-core', version: versions.assertj
+  compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
+     force = true
+  }
+}

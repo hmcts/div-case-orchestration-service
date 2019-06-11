@@ -20,20 +20,22 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.UNFORMATTED_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 
 @RunWith(SpringRunner.class)
 public class SendCoRespondentNotificationEmailTest {
-
-    private static final String D8_CASE_ID = "LV17D80101";
-    private static final String UNFORMATTED_CASE_ID = "0123456789";
 
     private TaskContext context;
     private Map<String, Object> testData;
@@ -59,10 +61,10 @@ public class SendCoRespondentNotificationEmailTest {
 
         expectedTemplateVars = new HashMap<>();
 
-        expectedTemplateVars.put("CCD reference", D8_CASE_ID);
+        expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, D8_CASE_ID);
         expectedTemplateVars.put("email address", TEST_USER_EMAIL);
-        expectedTemplateVars.put("first name", TEST_USER_FIRST_NAME);
-        expectedTemplateVars.put("last name", TEST_USER_LAST_NAME);
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_USER_FIRST_NAME);
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_USER_LAST_NAME);
     }
 
     @Test
@@ -81,10 +83,8 @@ public class SendCoRespondentNotificationEmailTest {
             any());
     }
 
-
     @Test
     public void shouldNotCallEmailServiceForCoRespGenericUpdateIfCoRespEmailDoesNotExist() throws TaskException {
-        // make sure it isn't triggered
 
         Map returnPayload = sendCoRespondentGenericUpdateNotificationEmail.execute(context, testData);
 

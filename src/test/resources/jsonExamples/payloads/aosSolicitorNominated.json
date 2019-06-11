@@ -3,7 +3,7 @@
     "id": "0123456789012345",
     "case_data": {
       "D8caseReference": "LV17D80100",
-      "D8RespondentCorrespondenceSendToSol": "Yes",
+      "respondentSolicitorRepresented": "Yes",
       "D8RespondentSolicitorName": "Justin",
       "D8RespondentSolicitorCompany": "Awesome Solicitors LLP",
       "D8RespondentSolicitorEmail": "solicitor@localhost.local",
