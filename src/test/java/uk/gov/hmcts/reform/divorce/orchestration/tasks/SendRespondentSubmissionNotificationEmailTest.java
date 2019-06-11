@@ -36,8 +36,15 @@ import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_COURT_ADDRESS_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
@@ -45,7 +52,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @RunWith(MockitoJUnitRunner.class)
 public class SendRespondentSubmissionNotificationEmailTest {
 
-    private static final String FORMATTED_CASE_ID = "LV17D80101";
     private static final String FORM_SUBMISSION_DUE_DATE = "20 September 2018";
 
     @Rule
@@ -99,14 +105,14 @@ public class SendRespondentSubmissionNotificationEmailTest {
             eq("respondent@divorce.co.uk"),
             templateParametersCaptor.capture());
         Map<String, String> templateParameters = templateParametersCaptor.getValue();
-        assertThat(templateParameters, hasEntry("case number", FORMATTED_CASE_ID));
+        assertThat(templateParameters, hasEntry(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID));
         assertThat(templateParameters, allOf(
             hasEntry("email address", "respondent@divorce.co.uk"),
-            hasEntry("first name", "Ted"),
-            hasEntry("last name", "Jones"),
-            hasEntry("husband or wife", "wife"),
-            hasEntry("RDC name", testCourt.getIdentifiableCentreName()),
-            hasEntry("court address", testCourt.getFormattedAddress()),
+            hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Ted"),
+            hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones"),
+            hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "wife"),
+            hasEntry(NOTIFICATION_RDC_NAME_KEY, testCourt.getIdentifiableCentreName()),
+            hasEntry(NOTIFICATION_COURT_ADDRESS_KEY, testCourt.getFormattedAddress()),
             hasEntry("form submission date limit", FORM_SUBMISSION_DUE_DATE)
         ));
         assertThat(templateParameters.size(), equalTo(8));
@@ -166,13 +172,13 @@ public class SendRespondentSubmissionNotificationEmailTest {
             eq("respondent@divorce.co.uk"),
             templateParametersCaptor.capture());
         Map<String, String> templateParameters = templateParametersCaptor.getValue();
-        assertThat(templateParameters, hasEntry("case number", FORMATTED_CASE_ID));
+        assertThat(templateParameters, hasEntry(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID));
         assertThat(templateParameters, allOf(
             hasEntry("email address", "respondent@divorce.co.uk"),
-            hasEntry("first name", "Sarah"),
-            hasEntry("last name", "Jones"),
-            hasEntry("husband or wife", "husband"),
-            hasEntry("RDC name", testCourt.getIdentifiableCentreName())
+            hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Sarah"),
+            hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones"),
+            hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "husband"),
+            hasEntry(NOTIFICATION_RDC_NAME_KEY, testCourt.getIdentifiableCentreName())
         ));
         assertThat(templateParameters.size(), equalTo(6));
         checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);

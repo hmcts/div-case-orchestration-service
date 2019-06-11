@@ -14,12 +14,12 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
-public class SendPetitionerGenericEmailNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class SendPetitionerEmailNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final SendPetitionerUpdateNotificationsEmail sendPetitionerUpdateNotificationsEmail;
 
     @Autowired
-    public SendPetitionerGenericEmailNotificationWorkflow(
+    public SendPetitionerEmailNotificationWorkflow(
             SendPetitionerUpdateNotificationsEmail sendPetitionerUpdateNotificationsEmail) {
         this.sendPetitionerUpdateNotificationsEmail = sendPetitionerUpdateNotificationsEmail;
     }
