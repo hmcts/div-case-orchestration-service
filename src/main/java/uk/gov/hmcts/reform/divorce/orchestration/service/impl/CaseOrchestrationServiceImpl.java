@@ -49,6 +49,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAos
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateBulkCaseDnPronounceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 
@@ -112,6 +113,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
     private final ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
     private final DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
+    private final UpdateBulkCaseDnPronounceWorkflow updateBulkCaseDnPronounceWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -522,4 +524,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         }
     }
 
+    @Override
+    public Map<String, Object> updateBulkCaseDnPronounce(Map<String, Object> caseData) throws WorkflowException {
+        return updateBulkCaseDnPronounceWorkflow.run(caseData);
+    }
 }
