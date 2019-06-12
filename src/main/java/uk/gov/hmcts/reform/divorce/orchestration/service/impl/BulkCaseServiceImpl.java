@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkCaseService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkBulkCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetryableWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateBulkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateCourtHearingDetailsWorkflow;
 
@@ -57,78 +58,72 @@ public class BulkCaseServiceImpl implements BulkCaseService {
 
         final String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
 
-        retryableCases(divorceCaseList, bulkCaseId, authToken);
+        retryableCases(linkBulkCaseWorkflow, divorceCaseList, bulkCaseId, authToken);
 
         long endTime = Instant.now().toEpochMilli();
         log.info("Completed bulk case process with bulk cased Id:{} in:{} millis", bulkCaseId, endTime - startTime);
     }
 
-    private void retryableCases(List<Map<String, Object>> caseList, String bulkCaseId, String authToken) {
+    private void retryableCases(RetryableWorkflow workflow, List<Map<String, Object>> caseList, String bulkCaseId, String authToken) {
         int retryCount = 0;
         List<Map<String, Object>> retryCases = caseList;
         final List<Map<String, Object>> failedCases = new ArrayList<>();
-
         try {
-            while (!retryCases.isEmpty()) {
+            while (!retryCases.isEmpty() && retryCount < maxRetries) {
                 if (retryCount > 0) {
                     exponentialWaitTime(retryCount);
                 }
-                retryCases = handlerFailedCases(retryCases, bulkCaseId, authToken, retryCount++, failedCases);
-
+                retryCases = handlerFailedCases(workflow, retryCases, bulkCaseId, authToken, failedCases);
+                retryCount++;
             }
             if (!retryCases.isEmpty()) {
-                failedCases.addAll(failedCases);
+                failedCases.addAll(retryCases);
             }
-        } catch (Exception e) {
-            failedCases.addAll(retryCases);
-        }
-
-        if (!failedCases.isEmpty()) {
-            this.notifyFailedCases(failedCases);
+        } finally {
+            if (!failedCases.isEmpty()) {
+                this.notifyFailedCases(bulkCaseId, failedCases);
+            }
         }
     }
 
-    private List<Map<String, Object>> handlerFailedCases(List<Map<String, Object>> caseList,
+    private List<Map<String, Object>> handlerFailedCases(RetryableWorkflow workflow,
+                                                         List<Map<String, Object>> caseList,
                                                          String bulkCaseId,
                                                          String authToken,
-                                                         int count,
                                                          List<Map<String, Object>> failedCasesToRetry) {
-        if (count < maxRetries) {
-            List<Map<String, Object>> failedCases = new ArrayList<>();
+        List<Map<String, Object>> failedCases = new ArrayList<>();
 
-            caseList.forEach(caseElem -> {
-                try {
-                    linkBulkCaseWorkflow.run(caseElem, bulkCaseId, authToken);
-                } catch (FeignException e) {
-                    log.error("Case update failed : for bulk case id {}", bulkCaseId, e);
-                    if (e.status() >= HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-                        failedCases.add(caseElem);
-                    } else {
-                        failedCasesToRetry.add(caseElem);
-                    }
-                } catch (Exception e) {
-                    log.error("Case update failed : for bulk case id {}", bulkCaseId, e);
+        caseList.forEach(caseElem -> {
+            try {
+                workflow.run(caseElem, bulkCaseId, authToken);
+            } catch (FeignException e) {
+                log.error("Case update failed : for bulk case id {}", bulkCaseId, e);
+                if (e.status() >= HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+                    failedCases.add(caseElem);
+                } else {
                     failedCasesToRetry.add(caseElem);
                 }
-            });
-            return failedCases;
-        } else {
-            throw new RuntimeException("Max retries exhausted");
-        }
+            } catch (Exception e) {
+                log.error("Case update failed : for bulk case id {}", bulkCaseId, e);
+                failedCasesToRetry.add(caseElem);
+            }
+        });
+        return failedCases;
     }
 
-    public long exponentialWaitTime(int retryCount) {
-        long waitTime = ((long) Math.pow(2, retryCount));
+    private long exponentialWaitTime(int retryCount) {
+        long waitTime = (long) Math.pow(2, retryCount);
         try {
+            log.info("Re-trying bulkCase with waiting time {}", waitTime);
             Thread.sleep(waitTime);
         } catch (InterruptedException e) {
-            log.warn("Thread sleep interrupted", e);
+            throw new RuntimeException("Thread sleep interrupted", e);
         }
         return waitTime;
     }
 
-    private void notifyFailedCases(List<Map<String, Object>> failedCases) {
-        log.error("Can not process following cases " + failedCases);
+    private void notifyFailedCases(String bulkCaseId, List<Map<String, Object>> failedCases) {
+        log.error("Can not process following cases {} for bulkCase {}",  failedCases, bulkCaseId);
     }
 
     @Override

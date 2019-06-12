@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @AllArgsConstructor
-public class LinkBulkCaseWorkflow  extends DefaultWorkflow<Map<String, Object>> {
+public class LinkBulkCaseWorkflow  extends DefaultWorkflow<Map<String, Object>> implements  RetryableWorkflow {
 
     static final String LINK_BULK_CASE_EVENT = "linkBulkCaseReference";
 
