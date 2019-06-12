@@ -82,6 +82,8 @@ public class OrchestrationConstants {
     public static final String UPDATE_COURT_HEARING_DETAILS_EVENT = "updateBulkCaseHearingDetails";
     public static final String WHO_PAYS_COSTS_CCD_FIELD = "WhoPaysCosts";
     public static final String WHO_PAYS_CCD_CODE_FOR_RESPONDENT = "respondent";
+    public static final String DECREE_NISI_GRANTED_DATE_KEY = "DecreeNisiGrantedDate";
+    public static final String DECREE_ABSOLUTE_ELIGIBLE_DATE = "DAEligibleFromDate";
 
     //CCD DN fields
     public static final String DN_APPROVAL_DATE_CCD_FIELD = "DNApprovalDate";
@@ -171,6 +173,7 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_ADDRESSEE_LAST_NAME_KEY = "last name";
     public static final String NOTIFICATION_HUSBAND_OR_WIFE = "husband or wife";
     public static final String NOTIFICATION_RELATIONSHIP_KEY = "relationship";
+    public static final String NOTIFICATION_CCD_REFERENCE_KEY = "CCD reference";
     public static final String NOTIFICATION_REFERENCE_KEY = "ref";
     public static final String NOTIFICATION_CASE_NUMBER_KEY = "case number";
     public static final String NOTIFICATION_RDC_NAME_KEY = "RDC name";

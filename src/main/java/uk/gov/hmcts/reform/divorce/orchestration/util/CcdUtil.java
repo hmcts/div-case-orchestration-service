@@ -47,4 +47,10 @@ public class CcdUtil {
     public boolean isCcdDateTimeInThePast(String date) {
         return LocalDateTime.parse(date).toLocalDate().isBefore(LocalDate.now(clock).plusDays(1));
     }
+
+    public String parseDecreeAbsoluteEligibleDate(LocalDate grantedDate) {
+        return DateUtils.formatDateFromLocalDate(
+                grantedDate.plusWeeks(6).plusDays(1)
+        );
+    }
 }

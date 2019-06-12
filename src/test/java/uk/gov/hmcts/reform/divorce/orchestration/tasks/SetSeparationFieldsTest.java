@@ -53,8 +53,8 @@ public class SetSeparationFieldsTest {
     @Test
     public void whenSep5Yrs_datesMoreThan5YrsInPast_calledExecuteShouldSetCalculatedDetailsOnPayload() throws TaskException {
 
-        String pastDate5Yrs8Mnths = DateUtils.formatLetterDateFromDateTime(LocalDateTime.now().minusYears(5).minusMonths(8));
-        String pastDate5Yrs9Mnths = DateUtils.formatLetterDateFromDateTime(LocalDateTime.now().minusYears(5).minusMonths(9));
+        String pastDate5Yrs8Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now().minusYears(5).minusMonths(8));
+        String pastDate5Yrs9Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now().minusYears(5).minusMonths(9));
 
         testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_5YRS);
         testData.put(D_8_MENTAL_SEP_DATE, pastDate5Yrs8Mnths);
@@ -75,8 +75,8 @@ public class SetSeparationFieldsTest {
     @Test
     public void whenSep5Yrs_datesLessThan5Yrs_executeShouldSetCalculatedDetailsOnPayload() throws TaskException {
 
-        String pastDate5Yrs8Mnths = DateUtils.formatLetterDateFromDateTime(LocalDateTime.now().minusYears(5).minusMonths(8));
-        String todayDate = DateUtils.formatLetterDateFromDateTime(LocalDateTime.now());
+        String pastDate5Yrs8Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now().minusYears(5).minusMonths(8));
+        String todayDate = DateUtils.formatDateFromDateTime(LocalDateTime.now());
 
         testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_5YRS);
         testData.put(D_8_MENTAL_SEP_DATE, pastDate5Yrs8Mnths);
@@ -90,8 +90,8 @@ public class SetSeparationFieldsTest {
     @Test
     public void whenSep2Yr_executeShouldSetCalculatedDetailsOnPayload() throws TaskException {
 
-        String pastDate2Yrs8Mnths = DateUtils.formatLetterDateFromDateTime(LocalDateTime.now().minusYears(2).minusMonths(8));
-        String pastDate2Yrs9Mnths = DateUtils.formatLetterDateFromDateTime(LocalDateTime.now().minusYears(2).minusMonths(9));
+        String pastDate2Yrs8Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now().minusYears(2).minusMonths(8));
+        String pastDate2Yrs9Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now().minusYears(2).minusMonths(9));
 
         testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_2YRS);
         testData.put(D_8_MENTAL_SEP_DATE, pastDate2Yrs8Mnths);
@@ -112,7 +112,7 @@ public class SetSeparationFieldsTest {
     @Test
     public void whenDesertion_executeShouldSetCalculatedDetailsOnPayload() throws TaskException {
 
-        String pastDate2Yrs6MnthsPlus1day = DateUtils.formatLetterDateFromDateTime(LocalDateTime.now().minusYears(2).minusMonths(6).plusDays(1));
+        String pastDate2Yrs6MnthsPlus1day = DateUtils.formatDateFromDateTime(LocalDateTime.now().minusYears(2).minusMonths(6).plusDays(1));
 
         testData.put(D_8_REASON_FOR_DIVORCE, DESERTION);
         testData.put(D_8_REASON_FOR_DIVORCE_DESERTION_DAIE, pastDate2Yrs6MnthsPlus1day);

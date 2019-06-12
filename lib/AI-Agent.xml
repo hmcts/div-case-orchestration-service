@@ -107,6 +107,8 @@
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateRespondentDetails">
             <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.job.CreateBulkCaseJob">
+            <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
+        </Class>
     </Instrumentation>
 </ApplicationInsightsAgent>
-

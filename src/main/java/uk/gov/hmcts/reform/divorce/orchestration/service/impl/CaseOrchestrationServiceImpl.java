@@ -37,8 +37,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkfl
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendDnPronouncedNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerGenericEmailNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
@@ -49,6 +50,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAos
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateBulkCaseDnPronounceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 
@@ -88,7 +90,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
-    private final SendPetitionerGenericEmailNotificationWorkflow sendPetitionerGenericEmailNotificationWorkflow;
+    private final SendPetitionerEmailNotificationWorkflow sendPetitionerEmailNotificationWorkflow;
     private final SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
     private final SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
     private final SendCoRespondSubmissionNotificationWorkflow sendCoRespondSubmissionNotificationWorkflow;
@@ -97,6 +99,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SubmitCoRespondentAosWorkflow submitCoRespondentAosWorkflow;
     private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
     private final DNSubmittedWorkflow dnSubmittedWorkflow;
+    private final SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
     private final GetCaseWorkflow getCaseWorkflow;
     private final AuthUtil authUtil;
     private final AmendPetitionWorkflow amendPetitionWorkflow;
@@ -112,6 +115,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
     private final ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
     private final DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
+    private final UpdateBulkCaseDnPronounceWorkflow updateBulkCaseDnPronounceWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -320,6 +324,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         }
     }
 
+    @Override
+    public Map<String, Object> sendRespondentSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
+            throws WorkflowException {
+        return sendRespondentSubmissionNotificationWorkflow.run(ccdCallbackRequest);
+    }
+
     private List<String> getNotificationErrors(Map<String, Object> notificationErrors) {
         return notificationErrors.entrySet()
             .stream()
@@ -336,7 +346,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(
         CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return sendPetitionerGenericEmailNotificationWorkflow.run(ccdCallbackRequest);
+        return sendPetitionerEmailNotificationWorkflow.run(ccdCallbackRequest);
     }
 
     @Override
@@ -345,9 +355,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> sendRespondentSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
-        throws WorkflowException {
-        return sendRespondentSubmissionNotificationWorkflow.run(ccdCallbackRequest);
+    public Map<String, Object> sendDnPronouncedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return sendDnPronouncedNotificationWorkflow.run(ccdCallbackRequest);
     }
 
     @Override
@@ -528,4 +537,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         }
     }
 
+    @Override
+    public Map<String, Object> updateBulkCaseDnPronounce(Map<String, Object> caseData) throws WorkflowException {
+        return updateBulkCaseDnPronounceWorkflow.run(caseData);
+    }
 }

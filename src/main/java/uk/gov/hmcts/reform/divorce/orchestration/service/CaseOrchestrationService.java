@@ -28,7 +28,6 @@ public interface CaseOrchestrationService {
 
     CaseDataResponse retrieveAosCase(String authorizationToken) throws WorkflowException;
 
-
     CaseDataResponse getCase(String authorizationToken) throws WorkflowException;
 
     UserDetails linkRespondent(String authToken, String caseId, String pin)
@@ -77,6 +76,8 @@ public interface CaseOrchestrationService {
 
     CcdCallbackResponse sendCoRespReceivedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
+    Map<String, Object> sendDnPronouncedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
     Map<String, Object> processCaseLinkedForHearingEvent(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
     Map<String, Object> coRespondentAnswerReceived(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
@@ -100,4 +101,6 @@ public interface CaseOrchestrationService {
     Map<String, Object> validateBulkCaseListingData(Map<String, Object> caseData) throws WorkflowException;
 
     Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
+
+    Map<String, Object> updateBulkCaseDnPronounce(Map<String, Object> caseData) throws WorkflowException;
 }

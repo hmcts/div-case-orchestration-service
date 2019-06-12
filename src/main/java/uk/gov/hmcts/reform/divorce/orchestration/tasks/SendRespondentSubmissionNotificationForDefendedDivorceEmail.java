@@ -16,6 +16,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_COURT_ADDRESS_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
@@ -49,14 +55,14 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         Court court = taskCommons.getCourt(divorceUnitKey);
 
         String caseId = getMandatoryPropertyValueAsString(caseDataPayload, D_8_CASE_REFERENCE);
-        templateFields.put("case number", caseId);
+        templateFields.put(NOTIFICATION_CASE_NUMBER_KEY, caseId);
 
         templateFields.put("email address", respondentEmailAddress);
-        templateFields.put("first name", respondentFirstName);
-        templateFields.put("last name", respondentLastName);
-        templateFields.put("husband or wife", petitionerRelationshipToRespondent);
-        templateFields.put("RDC name", court.getIdentifiableCentreName());
-        templateFields.put("court address", court.getFormattedAddress());
+        templateFields.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, respondentFirstName);
+        templateFields.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, respondentLastName);
+        templateFields.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
+        templateFields.put(NOTIFICATION_RDC_NAME_KEY, court.getIdentifiableCentreName());
+        templateFields.put(NOTIFICATION_COURT_ADDRESS_KEY, court.getFormattedAddress());
 
         String formSubmissionDateLimit = ccdUtil.getFormattedDueDate(caseDataPayload, CCD_DUE_DATE);
         templateFields.put("form submission date limit", formSubmissionDateLimit);

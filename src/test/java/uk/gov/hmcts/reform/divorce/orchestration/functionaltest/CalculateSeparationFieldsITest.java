@@ -51,8 +51,8 @@ public class CalculateSeparationFieldsITest {
     @Test
     public void givenCaseData_whenCalSepFields_thenReturnPayloadWithCalcFields() throws Exception {
 
-        String pastDate5Yrs8Mnths = DateUtils.formatLetterDateFromDateTime(LocalDateTime.now().minusYears(5).minusMonths(8));
-        String pastDate5Yrs9Mnths = DateUtils.formatLetterDateFromDateTime(LocalDateTime.now().minusYears(5).minusMonths(9));
+        String pastDate5Yrs8Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now().minusYears(5).minusMonths(8));
+        String pastDate5Yrs9Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now().minusYears(5).minusMonths(9));
         String pastDate5Yrs6Mnths = DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now().minusYears(5).minusMonths(6));
 
         Map<String, Object> testCaseData = ImmutableMap.of(D_8_REASON_FOR_DIVORCE, SEPARATION_5YRS,
