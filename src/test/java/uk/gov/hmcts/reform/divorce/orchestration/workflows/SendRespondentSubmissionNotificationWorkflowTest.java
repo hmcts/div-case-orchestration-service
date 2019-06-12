@@ -129,5 +129,4 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
 
         assertThat(returnedPayloadFromWorkflow.size(), is(incomingCaseDate.size() + 1));
     }
-
 }

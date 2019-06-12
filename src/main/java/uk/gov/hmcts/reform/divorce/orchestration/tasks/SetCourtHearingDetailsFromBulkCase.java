@@ -36,8 +36,8 @@ public class SetCourtHearingDetailsFromBulkCase implements Task<Map<String,Objec
 
         LocalDateTime hearingDateTime = LocalDateTime.parse((String) bulkCaseData.get(COURT_HEARING_DATE));
 
-        dateAndTimeOfHearing.put(DATE_OF_HEARING_CCD_FIELD, DateUtils.formatLetterDateFromDateTime(hearingDateTime));
-        dateAndTimeOfHearing.put(TIME_OF_HEARING_CCD_FIELD, DateUtils.formatLetterTimeFromDateTime(hearingDateTime));
+        dateAndTimeOfHearing.put(DATE_OF_HEARING_CCD_FIELD, DateUtils.formatDateFromDateTime(hearingDateTime));
+        dateAndTimeOfHearing.put(TIME_OF_HEARING_CCD_FIELD, DateUtils.formatTimeFromDateTime(hearingDateTime));
 
         CollectionMember<Map<String, Object>> dateAndTimeOfHearingItem = new CollectionMember<>();
         dateAndTimeOfHearingItem.setValue(dateAndTimeOfHearing);

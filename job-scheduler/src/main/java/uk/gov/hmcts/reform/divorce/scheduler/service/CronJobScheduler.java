@@ -55,7 +55,7 @@ public class CronJobScheduler {
             .filter(Schedule::isEnabled)
             .forEach(schedule -> {
                 jobService.scheduleJob(buildJobData(schedule), schedule.getCron());
-                log.info("completed scheduling job service {}", schedule.getName());
+                log.info("completed scheduling job service {} with cron {}", schedule.getName(), schedule.getCron());
             });
         log.info("All cron job scheduled");
     }
