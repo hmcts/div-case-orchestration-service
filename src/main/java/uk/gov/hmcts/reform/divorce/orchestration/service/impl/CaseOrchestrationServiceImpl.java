@@ -62,6 +62,7 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -499,6 +500,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                                           final String templateId, final String documentType, final String filename)
             throws WorkflowException {
         if (String.valueOf(ccdCallbackRequest.getCaseDetails().getCaseData()
+                .get(DIVORCE_COSTS_CLAIM_CCD_FIELD)).equalsIgnoreCase(YES_VALUE)
+            && String.valueOf(ccdCallbackRequest.getCaseDetails().getCaseData()
                 .get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD)).equalsIgnoreCase(YES_VALUE)) {
             return documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, documentType, filename);
         } else {

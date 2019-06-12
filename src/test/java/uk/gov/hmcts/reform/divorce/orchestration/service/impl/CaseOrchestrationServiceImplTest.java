@@ -82,6 +82,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
@@ -831,10 +832,12 @@ public class CaseOrchestrationServiceImplTest {
     public void shouldThrowException_ForCostsOrderGeneration_WhenWorkflowExceptionIsCaught()
             throws WorkflowException {
 
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
+
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-                CaseDetails.builder().caseData(
-                        Collections.singletonMap(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes"))
-                        .build())
+                CaseDetails.builder().caseData(caseData).build())
                 .build();
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN , "a", "b", "c"))
@@ -922,12 +925,15 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldGeneratePdfFile_ForCostOrderGenerator_When_Costs_order_granted_is_YES_Value()
+    public void shouldGeneratePdfFile_ForCostOrderGenerator_When_Costs_claim_granted_is_YES_Value()
             throws WorkflowException {
+
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
+
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-                CaseDetails.builder().caseData(
-                        Collections.singletonMap(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes"))
-                        .build())
+                CaseDetails.builder().caseData(caseData).build())
                 .build();
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN , "a", "b", "c"))
