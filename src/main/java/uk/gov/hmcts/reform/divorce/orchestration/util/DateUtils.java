@@ -16,11 +16,15 @@ public class DateUtils {
         return date.format(CLIENT_FACING_DATE_FORMAT);
     }
 
-    public static String formatLetterDateFromDateTime(LocalDateTime dateTime) {
-        return dateTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    public static String formatDateFromLocalDate(LocalDate date) {
+        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
-    public static String formatLetterTimeFromDateTime(LocalDateTime dateTime) {
+    public static String formatDateFromDateTime(LocalDateTime dateTime) {
+        return formatDateFromLocalDate(dateTime.toLocalDate());
+    }
+
+    public static String formatTimeFromDateTime(LocalDateTime dateTime) {
         return dateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 }
