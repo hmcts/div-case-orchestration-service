@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseCreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseUpdateCourtHearingEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.BulkUpdateException;
@@ -52,6 +54,11 @@ public class BulkCaseServiceImplTest {
 
     @InjectMocks
     private BulkCaseServiceImpl classToTest;
+
+    @Before
+    public void setup() {
+        ReflectionTestUtils.setField(classToTest, "maxRetries", 4);
+    }
 
     @Test
     public void givenEmptyData_thenCreateWorkflowIsNotExecuted() throws WorkflowException {
