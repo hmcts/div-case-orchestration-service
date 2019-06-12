@@ -34,8 +34,18 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LIMIT_DATE_TO_CONTACT_COURT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -53,9 +63,9 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
     private DefaultTaskContext testContext;
 
     private List<String> mandatoryFields = asList(
-        "RespEmailAddress",
-        "D8caseReference",
-        "D8RespondentFirstName",
+        RESPONDENT_EMAIL_ADDRESS,
+        D_8_CASE_REFERENCE,
+        RESP_FIRST_NAME_CCD_FIELD,
         "D8RespondentLastName",
         "D8InferredPetitionerGender",
         "DateOfHearing");
@@ -74,7 +84,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
         Map<String, Object> returnedPayload = sendRespondentCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
-                hasEntry("costs claim granted", NOTIFICATION_OPTIONAL_TEXT_YES_VALUE)
+                hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE)
         ));
 
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
@@ -90,7 +100,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
         Map<String, Object> returnedPayload = sendRespondentCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
-                hasEntry("costs claim granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
+                hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
         ));
 
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
@@ -126,13 +136,13 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
             argThat(new HamcrestArgumentMatcher<>(
                 allOf(
                     hasEntry("email address", "respondent@justice.uk"),
-                    hasEntry("case number", "HR290831"),
-                    hasEntry("first name", "Jane"),
-                    hasEntry("last name", "Jamed"),
+                    hasEntry(NOTIFICATION_CASE_NUMBER_KEY, "HR290831"),
+                    hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Jane"),
+                    hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jamed"),
                     optionalTextParametersMatcher,
-                    hasEntry("husband or wife", "husband"),
-                    hasEntry("date of hearing", "21 April 2019"),
-                    hasEntry("limit date to contact court", "07 April 2019")
+                    hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "husband"),
+                    hasEntry(DATE_OF_HEARING, "21 April 2019"),
+                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019")
                 )
             )));
     }

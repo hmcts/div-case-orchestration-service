@@ -40,7 +40,7 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_KEY, caseDetails.getCaseId()));
 
-        log.info("Running workflow for case id {}.", caseDetails.getCaseId());
+        log.info("Running CaseLinkedForHearingWorkflow for case id {}.", caseDetails.getCaseId());
 
         return returnedPayload;
     }
