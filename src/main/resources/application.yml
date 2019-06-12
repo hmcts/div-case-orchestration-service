@@ -42,7 +42,7 @@ scheduler:
   enabled: ${SCHEDULER_ENABLED:false}
   schedules:
     - name: 'CreateBulkCase'
-      enabled: true
+      enabled: ${SCHEDULER_SCHEDULES_CREATE_BULK_CASES_ENABLED:true}
       cronGroup: "NIGHTLY_CRON"
       description: 'Cron job to add awaiting pronouncement cases within a bulkcase'
       jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.CreateBulkCaseJob'
