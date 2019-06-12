@@ -71,6 +71,7 @@ module "div-cos" {
     MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE     = "${var.health_check_ttl}"
     SCHEDULER_RE_CREATE                             = "${var.scheduler_re_create}"
     SCHEDULER_ENABLED                               = "${var.scheduler_enabled}"
+    SCHEDULER_SCHEDULES_CREATE_BULK_CASES_CRON      = "${var.scheudler_schedules_create_bulk_cases_cron}"
 
     FEATURE_TOGGLE_SERVICE_API_BASEURL             = "${local.feature_toggle_baseurl}"
     SEND_LETTER_SERIVCE_BASEURL                    = "${local.send_letter_service_baseurl}"
