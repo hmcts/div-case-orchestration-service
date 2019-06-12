@@ -85,4 +85,13 @@ public class CcdUtilUTest {
         String futureDate = LocalDateTime.now(clock).plusMonths(1).toString();
         assertEquals(false, ccdUtil.isCcdDateTimeInThePast(futureDate));
     }
+
+    @Test
+    public void givenLocalDate_whenParseDecreeAbsoluteEligibleDate_thenReturnParsedDateString() {
+        LocalDate hearingDate = LocalDate.of(2000, 1, 1);
+        // 6 weeks and 1 day
+        String expectedDate = "2000-02-13";
+
+        assertEquals(expectedDate, ccdUtil.parseDecreeAbsoluteEligibleDate(hearingDate));
+    }
 }

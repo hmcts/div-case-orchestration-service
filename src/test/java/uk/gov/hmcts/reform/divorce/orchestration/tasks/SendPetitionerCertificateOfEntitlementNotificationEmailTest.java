@@ -34,8 +34,23 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_NOT_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LIMIT_DATE_TO_CONTACT_COURT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -53,11 +68,11 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
     private DefaultTaskContext testContext;
 
     private List<String> mandatoryFields = asList(
-        "D8PetitionerEmail",
-        "D8caseReference",
-        "D8PetitionerFirstName",
-        "D8PetitionerLastName",
-        "DateOfHearing");
+        D_8_PETITIONER_EMAIL,
+        D_8_CASE_REFERENCE,
+        D_8_PETITIONER_FIRST_NAME,
+        D_8_PETITIONER_LAST_NAME,
+        DATE_OF_HEARING_CCD_FIELD);
 
     @Before
     public void setUp() {
@@ -73,8 +88,8 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
         Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
-            hasEntry("costs claim granted", NOTIFICATION_OPTIONAL_TEXT_YES_VALUE),
-            hasEntry("costs claim not granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
+            hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE),
+            hasEntry(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
         ));
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
     }
@@ -83,13 +98,13 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
     public void testThatNotificationServiceIsCalled_WhenCostsClaimIsNotGranted() throws TaskException, IOException {
         Map<String, Object> incomingPayload = getJsonFromResourceFile(
                 CASE_LISTED_FOR_HEARING_JSON, CcdCallbackRequest.class).getCaseDetails().getCaseData();
-        incomingPayload.put("CostsClaimGranted", "NO");
+        incomingPayload.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "NO");
 
         Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
-            hasEntry("costs claim not granted", NOTIFICATION_OPTIONAL_TEXT_YES_VALUE),
-            hasEntry("costs claim granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
+            hasEntry(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE),
+            hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
         ));
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
     }
@@ -98,14 +113,14 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
     public void testThatNotificationServiceIsCalled_WhenCostsAreNotClaimed_ByAbsenceOfValues() throws TaskException, IOException {
         Map<String, Object> incomingPayload = getJsonFromResourceFile(
                 CASE_LISTED_FOR_HEARING_JSON, CcdCallbackRequest.class).getCaseDetails().getCaseData();
-        incomingPayload.remove("D8DivorceCostsClaim");
-        incomingPayload.remove("CostsClaimGranted");
+        incomingPayload.remove(DIVORCE_COSTS_CLAIM_CCD_FIELD);
+        incomingPayload.remove(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD);
 
         Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
-            hasEntry("costs claim not granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE),
-            hasEntry("costs claim granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
+            hasEntry(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE),
+            hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
         ));
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
     }
@@ -114,14 +129,14 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
     public void testThatNotificationServiceIsCalled_WhenCostsAreNotClaimed_ByNegationOfValues() throws TaskException, IOException {
         Map<String, Object> incomingPayload = getJsonFromResourceFile(
                 CASE_LISTED_FOR_HEARING_JSON, CcdCallbackRequest.class).getCaseDetails().getCaseData();
-        incomingPayload.put("D8DivorceCostsClaim", "No");
-        incomingPayload.put("CostsClaimGranted", "No");
+        incomingPayload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, NO_VALUE);
+        incomingPayload.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, NO_VALUE);
 
         Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
-            hasEntry("costs claim not granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE),
-            hasEntry("costs claim granted", NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
+            hasEntry(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE),
+            hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
         ));
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
     }
@@ -156,12 +171,12 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
             argThat(new HamcrestArgumentMatcher<>(
                 allOf(
                     hasEntry("email address", "petitioner@justice.uk"),
-                    hasEntry("case number", "HR290831"),
-                    hasEntry("first name", "James"),
-                    hasEntry("last name", "Johnson"),
+                    hasEntry(NOTIFICATION_CASE_NUMBER_KEY, "HR290831"),
+                    hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "James"),
+                    hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Johnson"),
                     optionalTextParametersMatcher,
-                    hasEntry("date of hearing", "21 April 2019"),
-                    hasEntry("limit date to contact court", "07 April 2019")
+                    hasEntry(DATE_OF_HEARING, "21 April 2019"),
+                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019")
                 )
             )));
     }
