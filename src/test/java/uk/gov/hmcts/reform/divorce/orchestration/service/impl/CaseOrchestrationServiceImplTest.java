@@ -929,7 +929,6 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-<<<<<<< HEAD
     public void shouldGeneratePdfFile_ForCostOrderGenerator_When_Costs_claim_granted_is_YES_Value()
             throws WorkflowException {
 
