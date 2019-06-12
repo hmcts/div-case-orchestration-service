@@ -17,6 +17,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TIME_OF_HEARING_CCD_FIELD;
@@ -25,7 +26,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SetCourtHearingDetailsFromBulkCase implements Task<Map<String,Object>> {
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> bulkCaseData) throws TaskException {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> bulkCaseDetails) throws TaskException {
+        Map<String, Object> bulkCaseData = (Map<String, Object>) bulkCaseDetails.get(CCD_CASE_DATA_FIELD);
         Map<String, Object> courtHearingDetails = new HashMap<>();
 
         courtHearingDetails.put(COURT_NAME, bulkCaseData.get(COURT_NAME));
