@@ -72,6 +72,9 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     @ClassRule
     public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
 
+    @Value("${bulk-action.retries.max:4}")
+    private int maxRetries;
+
     @Autowired
     ThreadPoolTaskExecutor asyncTaskExecutor;
 
@@ -181,7 +184,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
         waitAsyncCompleted();
 
-        verifyCmsServerEndpoint(4, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(maxRetries, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID3), RequestMethod.POST, UPDATE_BODY);
     }
