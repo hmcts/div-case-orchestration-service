@@ -123,36 +123,35 @@ public class CcdCallbackBulkPrintWorkflowTest {
     }
 
     @Test
-    public void whenSolicitorRepresentingRespondent() throws WorkflowException, TaskException {
+    public void whenSolicitorRepresentingRespondentAndRespSolicitorFeatureToggleDisabled() throws WorkflowException, TaskException {
+
+        ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", false);
 
         payload.put(D8_RESPONDENT_SOLICITOR_EMAIL, "foo@bar.com");
 
         when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
         when(modifyDueDate.execute(context, payload)).thenReturn(payload);
+        when(respondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
         when(coRespondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
-        when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
-        when(respondentSolicitorAosEmailSender.execute(context, payload)).thenReturn(payload);
 
         Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
         assertThat(response, is(payload));
 
         final InOrder inOrder = inOrder(
-                fetchPrintDocsFromDmStore,
-                respondentPinGenerator,
-                respondentSolicitorAosEmailSender,
-                coRespondentAosPackPrinter,
-                modifyDueDate
+            fetchPrintDocsFromDmStore,
+            respondentAosPackPrinter,
+            coRespondentAosPackPrinter,
+            modifyDueDate
         );
 
         inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);
-        inOrder.verify(respondentPinGenerator).execute(context, payload);
-        inOrder.verify(respondentSolicitorAosEmailSender).execute(context, payload);
+        inOrder.verify(respondentAosPackPrinter).execute(context, payload);
         inOrder.verify(coRespondentAosPackPrinter).execute(context, payload);
         inOrder.verify(modifyDueDate).execute(context, payload);
 
-        verifyZeroInteractions(respondentAosPackPrinter);
+        verifyZeroInteractions(respondentPinGenerator);
+        verifyZeroInteractions(respondentSolicitorAosEmailSender);
     }
-
 
     @Test
     public void whenSolicitorRepresentingRespondentAndRespSolicitorFeatureToggleEnabled() throws WorkflowException, TaskException {

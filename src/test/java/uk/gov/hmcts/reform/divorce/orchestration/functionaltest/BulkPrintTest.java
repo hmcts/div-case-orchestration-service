@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ff4j.FeatureToggle;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -111,6 +113,9 @@ public class BulkPrintTest extends IdamTestSupport {
 
     @MockBean
     private EmailClient emailClient;
+
+    @Autowired
+    private CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
 
     @Before
     public void setup() {
@@ -226,6 +231,8 @@ public class BulkPrintTest extends IdamTestSupport {
         mockEmailClientError();
         stubSendLetterService(HttpStatus.OK);
 
+        ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", false);
+
         final String petitionerFirstName = "petitioner first name";
         final String petitionerLastName = "petitioner last name";
 
@@ -260,6 +267,8 @@ public class BulkPrintTest extends IdamTestSupport {
         stubFeatureToggleService(true);
         stubSendLetterService(HttpStatus.INTERNAL_SERVER_ERROR);
 
+        ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", false);
+        
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .data(emptyMap())
             .errors(Collections.singletonList("Failed to bulk print documents"))
