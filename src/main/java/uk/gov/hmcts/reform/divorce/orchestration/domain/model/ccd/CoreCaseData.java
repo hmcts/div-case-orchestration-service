@@ -138,8 +138,8 @@ public class CoreCaseData extends AosCaseData {
     @JsonProperty("D8RespondentSolicitorCompany")
     private String d8RespondentSolicitorCompany;
 
-    @JsonProperty("D8RespondentCorrespondenceSendToSol")
-    private String d8RespondentCorrespondenceSendToSol;
+    @JsonProperty("respondentSolicitorRepresented")
+    private String respondentSolicitorRepresented;
 
     @JsonProperty("D8RespondentSolicitorAddress")
     private Address d8RespondentSolicitorAddress;

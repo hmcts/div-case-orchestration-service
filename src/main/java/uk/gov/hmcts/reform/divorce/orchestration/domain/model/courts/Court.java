@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
+import lombok.Data;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -12,9 +13,14 @@ import static java.util.stream.Collectors.joining;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINE_SEPARATOR;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 public class Court {
 
     private static final String CARE_OF_PREFIX = "c/o ";
+
+    @JsonProperty("courtId")
+    @Setter
+    private String courtId;
 
     @JsonProperty("serviceCentreName")
     @Setter
@@ -25,9 +31,11 @@ public class Court {
     private String divorceCentreName;
 
     @JsonProperty("divorceCentreAddressName")
+    @Setter
     private String divorceCentreAddressName;
 
     @JsonProperty("street")
+    @Setter
     private String street;
 
     @JsonProperty("poBox")
@@ -42,13 +50,25 @@ public class Court {
     @Setter
     private String postCode;
 
+    @JsonProperty("openingHours")
+    @Setter
+    private String openingHours;
+
+    @JsonProperty("email")
+    @Setter
+    private String email;
+
+    @JsonProperty("phoneNumber")
+    @Setter
+    private String phoneNumber;
+
     @JsonProperty("siteId")
     @Setter
-    @Getter
     private String siteId;
 
     private String formattedAddress;
 
+    @JsonIgnore
     public String getFormattedAddress() {
         if (formattedAddress == null) {
             formattedAddress = formatAddress();

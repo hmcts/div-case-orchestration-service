@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
@@ -33,10 +34,23 @@ public class CcdUtil {
             .format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN));
     }
 
+    public String getCurrentDateWithCustomerFacingFormat() {
+        return DateUtils.formatDateWithCustomerFacingFormat(java.time.LocalDate.now(clock));
+    }
+
     public String getFormattedDueDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {
         String dateAsString = getMandatoryPropertyValueAsString(caseData, dateToFormat);
         LocalDate dueDate = LocalDate.parse(dateAsString);
         return DateUtils.formatDateWithCustomerFacingFormat(dueDate);
     }
 
+    public boolean isCcdDateTimeInThePast(String date) {
+        return LocalDateTime.parse(date).toLocalDate().isBefore(LocalDate.now(clock).plusDays(1));
+    }
+
+    public String parseDecreeAbsoluteEligibleDate(LocalDate grantedDate) {
+        return DateUtils.formatDateFromLocalDate(
+                grantedDate.plusWeeks(6).plusDays(1)
+        );
+    }
 }

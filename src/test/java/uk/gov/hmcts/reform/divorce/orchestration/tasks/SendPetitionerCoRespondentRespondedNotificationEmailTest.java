@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.io.IOException;
@@ -36,6 +35,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @RunWith(MockitoJUnitRunner.class)
 public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
 
+    private static final String genericPetDataJsonFilePath = "/jsonExamples/payloads/genericPetitionerData.json";
+    private static final String coRespRespondedWhenAosUndefended = "co-respondent responded when aos is undefended";
+    private static final String coRespRespondedButRespHasNot = "co-respondent responded but respondent has not";
+
     @Mock
     private EmailService emailService;
 
@@ -45,9 +48,9 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasNot()
-            throws TaskException, IOException {
+            throws IOException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
-                "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
+                genericPetDataJsonFilePath, CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
 
         Map<String, String> expectedTemplateVars = new HashMap<>();
@@ -59,7 +62,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         when(emailService.sendEmail(petitionerEmail,
                 EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
                 expectedTemplateVars,
-            "co-respondent responded but respondent has not")
+                coRespRespondedButRespHasNot)
         ).thenReturn(null);
 
         DefaultTaskContext context = new DefaultTaskContext();
@@ -70,15 +73,15 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         verify(emailService).sendEmail(petitionerEmail,
             EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
             expectedTemplateVars,
-            "co-respondent responded but respondent has not");
+            coRespRespondedButRespHasNot);
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasNotDefended()
-            throws TaskException, IOException {
+            throws IOException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
-                "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
+                genericPetDataJsonFilePath, CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
 
@@ -91,7 +94,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         when(emailService.sendEmail(petitionerEmail,
                 EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
                 expectedTemplateVars,
-            "co-respondent responded when aos is undefended")
+                coRespRespondedWhenAosUndefended)
         ).thenReturn(null);
 
         DefaultTaskContext context = new DefaultTaskContext();
@@ -102,15 +105,15 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         verify(emailService).sendEmail(petitionerEmail,
             EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
             expectedTemplateVars,
-            "co-respondent responded when aos is undefended");
+            coRespRespondedWhenAosUndefended);
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasIsDefending()
-            throws TaskException, IOException {
+            throws IOException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
-                "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
+                genericPetDataJsonFilePath, CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);

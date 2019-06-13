@@ -34,7 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUT
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @PropertySource(value = "classpath:application.yml")
 @AutoConfigureMockMvc
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AuthenticateRespondentITest extends IdamTestSupport {
     private static final String API_URL = "/authenticate-respondent";
 

@@ -18,10 +18,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 
 @Component
 public class SendPetitionerSubmissionNotificationEmail implements Task<Map<String, Object>> {
+
+    private static final String EMAIL_DESC = "Submission Notification - Petitioner";
 
     private final EmailService emailService;
 
@@ -42,17 +48,17 @@ public class SendPetitionerSubmissionNotificationEmail implements Task<Map<Strin
             Map<String, String> templateVars = new HashMap<>();
 
             templateVars.put("email address", petitionerEmail);
-            templateVars.put("first name", (String) caseData.get(D_8_PETITIONER_FIRST_NAME));
-            templateVars.put("last name", (String) caseData.get(D_8_PETITIONER_LAST_NAME));
+            templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_FIRST_NAME));
+            templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));
 
             String divorceUnitKey = caseData.get(DIVORCE_UNIT_JSON_KEY).toString();
             Court court = taskCommons.getCourt(divorceUnitKey);
-            templateVars.put("RDC name", court.getIdentifiableCentreName());
+            templateVars.put(NOTIFICATION_RDC_NAME_KEY, court.getIdentifiableCentreName());
 
-            String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
-            templateVars.put("CCD reference", formatCaseIdToReferenceNumber(caseId));
+            String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
+            templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, formatCaseIdToReferenceNumber(caseId));
 
-            emailService.sendEmail(petitionerEmail, EmailTemplateNames.APPLIC_SUBMISSION.name(), templateVars, "submission notification");
+            emailService.sendEmail(petitionerEmail, EmailTemplateNames.APPLIC_SUBMISSION.name(), templateVars, EMAIL_DESC);
         }
 
         return caseData;

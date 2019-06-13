@@ -66,13 +66,26 @@ To run all mutation tests execute the following command:
 
 ```
 
+### Enable schedule
+
+Schedule service is disabled by default in local environment. 
+If you want to enable it, set the environment variable `SCHEDULER_ENABLED` to `true` or override application property `scheduler.enabled`
+
+#### Handling database
+
+Database will get initiated when you run ```docker-compose up``` for the first time by execute all scripts from database directory.
+
+You don't need to migrate database manually since migrations are executed every time the application bootstraps.
+
+[scheduler config](./job-scheduler)
+
 ### Integration tests
 
 To run all integration tests locally:
 
-* Make a copy of `src/main/resources/example-application-aat.yaml` as `src/main/resources/application-aat.yaml`
+* Make a copy of `src/main/resources/example-application-aat.yml` as `src/main/resources/application-aat.yml`
 * Make a copy of `src/integrationTest/resources/example-application-local.properties` as `src/integrationTest/resources/application-local.properties`
-* Replace the `replace_me` secrets in the _newly created_ files. You can get the values from SCM and Azure secrets key vault (the new files are in .gitignore and should ***not*** be committed to git)
+* Replace the `replace_me` secrets in both of the _newly created_ files. You can get the values from SCM and Azure secrets key vault (the new files are in .gitignore and should ***not*** be committed to git)
 * Start the app with AAT config using `./gradlew clean bootRunAat`
 * Start the test with AAT config using `./gradlew clean functional`
 

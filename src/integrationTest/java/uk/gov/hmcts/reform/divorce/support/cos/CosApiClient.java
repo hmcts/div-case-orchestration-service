@@ -51,6 +51,12 @@ public interface CosApiClient {
     Map<String, Object> aosSubmitted(@RequestBody Map<String, Object> caseDataContent);
 
     @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/aos-solicitor-nominated"
+    )
+    Map<String, Object> aosSolicitorNominated(@RequestBody Map<String, Object> caseDataContent);
+
+    @RequestMapping(
         method = RequestMethod.POST,
         value = "/dn-submitted"
     )
@@ -96,5 +102,11 @@ public interface CosApiClient {
     )
     Map<String, Object> caseLinkedForHearing(@RequestHeader(AUTHORIZATION) String authorisation,
                                              @RequestBody Map<String, Object> caseDataContent);
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/bulk/pronounce/submit"
+    )
+    Map<String, Object> bulkPronouncement(@RequestBody CcdCallbackRequest ccdCallbackRequest);
 
 }

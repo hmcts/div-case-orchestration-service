@@ -7,8 +7,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.courtallocation.CourtAllocator;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +33,9 @@ public class CourtAllocationTaskTest {
     @Mock
     private CourtAllocator courtAllocator;
 
+    @Mock
+    private TaskCommons taskCommons;
+
     @InjectMocks
     private CourtAllocationTask courtAllocationTask;
 
@@ -45,11 +50,12 @@ public class CourtAllocationTaskTest {
     }
 
     @Test
-    public void shouldReturnSelectedCourtAsPartOfOutgoingMap_AndCourtInfoIsWrittenToTaskContext() {
-        HashMap incomingMap = new HashMap<>();
+    public void shouldReturnSelectedCourtAsPartOfOutgoingMap_AndCourtInfoIsWrittenToTaskContext() throws TaskException {
+        Map incomingMap = new HashMap<>();
         incomingMap.put("firstKey", "firstValue");
         incomingMap.put(REASON_FOR_DIVORCE_KEY, "testReason");
 
+        Court testCourt = mockCourtLookup("selectedCourtForReason");
         Map<String, Object> outgoingMap = courtAllocationTask.execute(context, incomingMap);
 
         assertThat(outgoingMap, allOf(
@@ -57,28 +63,14 @@ public class CourtAllocationTaskTest {
             hasEntry(is(REASON_FOR_DIVORCE_KEY), is("testReason")),
             hasEntry(is(SELECTED_COURT_KEY), is("selectedCourtForReason"))
         ));
-        assertThat(context.getTransientObject(SELECTED_COURT), equalTo("selectedCourtForReason"));
+        assertThat(context.getTransientObject(SELECTED_COURT), equalTo(testCourt));
     }
 
     @Test
-    public void shouldOverwriteSelectedCourtFromIncomingMap_AndCourtInfoIsWrittenToTaskContext() {
-        HashMap incomingMap = new HashMap<>();
-        incomingMap.put("firstKey", "firstValue");
-        incomingMap.put(REASON_FOR_DIVORCE_KEY, "testReason");
-        incomingMap.put(SELECTED_COURT_KEY, "previouslySelectedCourt");
+    public void shouldRandomlySelectCourtEvenWithoutReasonForDivorce_AndCourtInfoIsWrittenToTaskContext() throws TaskException {
+        Court testCourt = mockCourtLookup("randomlySelectedCourt");
 
-        Map<String, Object> outgoingMap = courtAllocationTask.execute(context, incomingMap);
-
-        assertThat(outgoingMap, allOf(
-            hasEntry(is("firstKey"), is("firstValue")),
-            hasEntry(is(SELECTED_COURT_KEY), is("selectedCourtForReason"))
-        ));
-        assertThat(context.getTransientObject(SELECTED_COURT), equalTo("selectedCourtForReason"));
-    }
-
-    @Test
-    public void shouldRandomlySelectCourtEvenWithoutReasonForDivorce_AndCourtInfoIsWrittenToTaskContext() {
-        HashMap incomingMap = new HashMap<>();
+        Map incomingMap = new HashMap<>();
         incomingMap.put("firstKey", "firstValue");
 
         Map<String, Object> outgoingMap = courtAllocationTask.execute(context, incomingMap);
@@ -87,7 +79,33 @@ public class CourtAllocationTaskTest {
             hasEntry(is("firstKey"), is("firstValue")),
             hasEntry(is(SELECTED_COURT_KEY), is("randomlySelectedCourt"))
         ));
-        assertThat(context.getTransientObject(SELECTED_COURT), equalTo("randomlySelectedCourt"));
+        assertThat(context.getTransientObject(SELECTED_COURT), equalTo(testCourt));
+    }
+
+    @Test
+    public void shouldOverwriteSelectedCourtFromIncomingMap_AndCourtInfoIsWrittenToTaskContext() throws TaskException {
+        Map incomingMap = new HashMap<>();
+        incomingMap.put("firstKey", "firstValue");
+        incomingMap.put(REASON_FOR_DIVORCE_KEY, "testReason");
+        incomingMap.put(SELECTED_COURT_KEY, "previouslySelectedCourt");
+
+        Court testCourt = mockCourtLookup("selectedCourtForReason");
+        Map<String, Object> outgoingMap = courtAllocationTask.execute(context, incomingMap);
+
+        assertThat(outgoingMap, allOf(
+            hasEntry(is("firstKey"), is("firstValue")),
+            hasEntry(is(SELECTED_COURT_KEY), is("selectedCourtForReason"))
+        ));
+        assertThat(context.getTransientObject(SELECTED_COURT), equalTo(testCourt));
+    }
+
+    private Court mockCourtLookup(String courtId) throws TaskException {
+        Court testCourt = new Court();
+        testCourt.setCourtId(courtId);
+
+        when(taskCommons.getCourt(courtId)).thenReturn(testCourt);
+
+        return testCourt;
     }
 
 }

@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.divorce.orchestration.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
+import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailToSend;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -21,11 +21,8 @@ public class EmailService {
     @Autowired
     private EmailClient emailClient;
 
-    @Value("#{${uk.gov.notify.email.templates}}")
-    private Map<String, String> emailTemplates;
-
-    @Value("#{${uk.gov.notify.email.template.vars}}")
-    private Map<String, Map<String, String>> emailTemplateVars;
+    @Autowired
+    private EmailTemplatesConfig emailTemplatesConfig;
 
     public Map<String, Object> sendEmail(String destinationAddress,
                                          String templateName,
@@ -49,12 +46,9 @@ public class EmailService {
                                       String templateName,
                                       Map<String, String> templateVars) {
         String referenceId = UUID.randomUUID().toString();
-        String templateId = emailTemplates.get(templateName);
-        Map<String, String> templateFields = (templateVars != null
-            ?
-            templateVars
-            :
-            emailTemplateVars.get(templateName));
+        String templateId = emailTemplatesConfig.getTemplates().get(templateName);
+        Map<String, String> templateFields = (templateVars != null ? templateVars :
+            emailTemplatesConfig.getTemplateVars().get(templateId));
 
         return new EmailToSend(destinationAddress, templateId, templateFields, referenceId);
     }
@@ -75,10 +69,10 @@ public class EmailService {
     private void sendEmailUsingClient(EmailToSend emailToSend, String emailDescription) throws NotificationClientException {
         log.debug("Attempting to send {} email. Reference ID: {}", emailDescription, emailToSend.getReferenceId());
         emailClient.sendEmail(
-                emailToSend.getTemplateId(),
-                emailToSend.getDestinationEmailAddress(),
-                emailToSend.getTemplateFields(),
-                emailToSend.getReferenceId()
+            emailToSend.getTemplateId(),
+            emailToSend.getDestinationEmailAddress(),
+            emailToSend.getTemplateFields(),
+            emailToSend.getReferenceId()
         );
         log.info("Sending email success. Reference ID: {}", emailToSend.getReferenceId());
     }

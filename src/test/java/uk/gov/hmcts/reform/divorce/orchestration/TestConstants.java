@@ -5,19 +5,8 @@ public class TestConstants {
     public static final String TEST_CASE_FAMILY_MAN_ID = "test.family.man.id";
     public static final String TEST_STATE = "test.state";
     public static final String TEST_PIN = "abcd1234";
-    public static final String TEST_DOC_URL = "test.doc.url";
-    public static final String TEST_FILENAME = "test.filename";
     public static final String TEST_EXPECTED_DUE_DATE = "2020-10-20";
     public static final String TEST_EXPECTED_DUE_DATE_FORMATTED = "20 October 2020";
-    public static String TEST_TOKEN = "test.token";
-    public static String TEST_EVENT_ID = "test.event.id";
-    public static String AUTH_TOKEN = "test.auth.token";
-    public static String BEARER_AUTH_TOKEN = "Bearer test.auth.token";
-    public static String CASEWORKER_AUTH_TOKEN = "caseworker.auth.token";
-    public static String AUTH_TOKEN_1 = "test.auth.token1";
-    public static String TEST_EMAIL = "test.email";
-    public static String BEARER_AUTH_TOKEN_1 = "Bearer test.auth.token1";
-    public static String TEST_CODE = "test.code";
     public static final String TEST_USER_ID = "test.user.id";
     public static final String TEST_COURT = "serviceCentre";
     public static final String TEST_ERROR = "test.error";
@@ -25,7 +14,6 @@ public class TestConstants {
     public static final String TEST_PIN_CODE = "test.pin.code";
     public static final String TEST_LETTER_HOLDER_ID_CODE = "test.letter.holder.id";
     public static final String TEST_AOS_INVITATION_FILE_NAME = "aosinvitation" + TEST_CASE_ID;
-    public static final String TEST_MINI_PETITION_FILE_NAME = "d8petition" + TEST_CASE_ID;
     public static final String TEST_CO_RESPONDENT_AOS_FILE_NAME = "co-respondentaosinvitation" + TEST_CASE_ID;
     public static final String TEST_USER_EMAIL = "test@email.com";
     public static final Double TEST_FEE_AMOUNT = 550d;
@@ -49,5 +37,16 @@ public class TestConstants {
     public static final String TEST_REASON_UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
     public static final String AOS_AWAITING_STATE = "AosAwaiting";
     public static final String AWAITING_CONSIDERATION_GENERAL_APPLICATION = "AwaitingConsiderationGeneralApplication";
+    public static final String D8_CASE_ID = "LV17D80101";
+    public static final String UNFORMATTED_CASE_ID = "0123456789";
+    public static String TEST_TOKEN = "test.token";
+    public static String TEST_EVENT_ID = "test.event.id";
+    public static String AUTH_TOKEN = "test.auth.token";
+    public static String BEARER_AUTH_TOKEN = "Bearer test.auth.token";
+    public static String CASEWORKER_AUTH_TOKEN = "caseworker.auth.token";
+    public static String AUTH_TOKEN_1 = "test.auth.token1";
+    public static String TEST_EMAIL = "test.email";
+    public static String BEARER_AUTH_TOKEN_1 = "Bearer test.auth.token1";
+    public static String TEST_CODE = "test.code";
 
 }

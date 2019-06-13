@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public interface CaseMaintenanceClient {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
         @PathVariable("caseId") String caseId,
         @PathVariable("eventId") String eventId,
-        @RequestBody Map<String, Object> updateCase
+        @RequestBody Map<String, Object> requestBody
     );
 
     @RequestMapping(
@@ -122,4 +123,36 @@ public interface CaseMaintenanceClient {
     )
     Map<String, Object> getDrafts(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/casemaintenance/version/1/search",
+            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    SearchResult searchCases(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
+            @RequestBody String query
+    );
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/casemaintenance/version/1/bulk/submit",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> submitBulkCase(
+        @RequestBody Map<String, Object> bulkCase,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken
+    );
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/casemaintenance/version/1/bulk/updateCase/{caseId}/{eventId}",
+            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> updateBulkCase(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
+            @PathVariable("caseId") String caseId,
+            @PathVariable("eventId") String eventId,
+            @RequestBody Map<String, Object> requestBody
+    );
 }

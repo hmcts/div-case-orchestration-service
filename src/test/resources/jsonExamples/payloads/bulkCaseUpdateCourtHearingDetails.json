@@ -1,0 +1,12 @@
+{
+  "CourtName": "Name of Court",
+  "DateAndTimeOfHearing": [
+    {
+      "id": null,
+      "value": {
+        "DateOfHearing": "2000-01-01",
+        "TimeOfHearing": "10:20"
+      }
+    }
+  ]
+}

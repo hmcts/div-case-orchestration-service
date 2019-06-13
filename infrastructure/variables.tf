@@ -40,19 +40,14 @@ variable "capacity" {
   default = "1"
 }
 
+variable "instance_size" {
+  default = "I2"
+}
+
 variable "vault_env" {}
 
 variable "common_tags" {
   type = "map"
-}
-
-variable "uk_gov_notify_email_templates" {
-  type = "string"
-  default = ""
-}
-
-variable "uk_gov_notify_email_template_vars" {
-  type = "string"
 }
 
 variable "service_auth_microservice_name" {
@@ -69,4 +64,27 @@ variable "aos_responded_awaiting_answer_days_to_respond" {
 
 variable "idam_strategic_enabled" {
   default = "true"
+}
+
+variable "health_check_ttl" {
+  type = "string"
+  default = "4000"
+}
+
+variable "location_db" {
+  type    = "string"
+  default = "UK South"
+}
+
+variable "scheduler_re_create" {
+  default = "true"
+}
+
+variable "scheduler_enabled" {
+  default = "false"
+}
+
+variable "scheudler_schedules_create_bulk_cases_cron" {
+  type    = "string"
+  default = "0 0 4 ? * * *"
 }

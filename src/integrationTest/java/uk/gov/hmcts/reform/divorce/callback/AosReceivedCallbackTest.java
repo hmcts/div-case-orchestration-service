@@ -6,16 +6,12 @@ import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
-import java.util.List;
 import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
@@ -43,16 +39,19 @@ public class AosReceivedCallbackTest extends IntegrationTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void givenCaseWithoutEmail_whenSubmitAOS_thenReturnNotificationError() {
+    public void givenCaseWithoutEmail_whenSubmitAOS_thenReturnAOSDataPlusAnswersDocument() {
 
         Map<String, Object> aosCaseWithoutEmailAddress = ResourceLoader
                 .loadJsonToObject(ERROR_CASE_RESPONSE, Map.class);
         Map<String, Object> response = cosApiClient
                 .aosReceived(createCaseWorkerUser().getAuthToken(), aosCaseWithoutEmailAddress);
+        Map<String, Object> resData = (Map<String, Object>) response.get(DATA);
+        String jsonResponse = objectToJson(response);
 
-        assertNull(response.get(DATA));
-        List<String> error = (List<String>) response.get(ERRORS);
-        assertEquals(1,error.size());
-        assertTrue(error.get(0).contains("email_address is a required property"));
+        assertNotNull(resData);
+        assertThat(jsonResponse, hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName",
+            is(DOCUMENT_TYPE_RESPONDENT_ANSWERS)));
+        assertThat(jsonResponse, hasJsonPath("$.data.D8caseReference",
+            is("LV17D80100")));
     }
 }
