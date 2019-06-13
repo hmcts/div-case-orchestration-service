@@ -26,7 +26,7 @@ java:
         FLYWAY_URL : "jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/div_scheduler"
         FLYWAY_USER : div_scheduler_user
         FLYWAY_PASSWORD : div_scheduler_passwd
-        SCHEDULER_SCHEDULES_CREATE_BULK_CASES_CRON: "0 0 10,11,12,13,14,15,16,17,18 ? * * *"
+        SCHEDULER_SCHEDULES_CREATE_BULK_CASES_ENABLED: false
         SCHEDULER_RE_CREATE: true
         SCHEDULER_ENABLED: true
     # Don't modify below here

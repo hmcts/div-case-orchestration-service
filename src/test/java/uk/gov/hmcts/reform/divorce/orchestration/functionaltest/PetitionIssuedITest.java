@@ -55,6 +55,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ACCESS_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
@@ -94,8 +96,6 @@ public class PetitionIssuedITest extends IdamTestSupport {
     private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
     private static final String PETITION_ISSUE_FEE_CONTEXT_PATH = "/fees-and-payments/version/1/petition-issue-fee";
-    private static final String PETITIONER_FIRST_NAME = "petitioner first name";
-    private static final String PETITIONER_LAST_NAME = "petitioner last name";
 
     private static final Map<String, Object> CASE_DATA = new HashMap<>();
 
@@ -125,8 +125,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
     @BeforeClass
     public static void beforeClass() {
-        CASE_DATA.put(D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME);
-        CASE_DATA.put(D_8_PETITIONER_LAST_NAME, PETITIONER_LAST_NAME);
+        CASE_DATA.put(D_8_PETITIONER_FIRST_NAME, TEST_USER_FIRST_NAME);
+        CASE_DATA.put(D_8_PETITIONER_LAST_NAME, TEST_USER_LAST_NAME);
         CASE_DATA.put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
         CASE_DATA.put(CO_RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
         CASE_DATA.put(ISSUE_DATE, LocalDate.now().format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
@@ -286,8 +286,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         final PinRequest pinRequest =
             PinRequest.builder()
-                .firstName(PETITIONER_FIRST_NAME)
-                .lastName(PETITIONER_LAST_NAME)
+                .firstName(TEST_USER_FIRST_NAME)
+                .lastName(TEST_USER_LAST_NAME)
                 .build();
 
         final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
@@ -342,8 +342,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         final PinRequest pinRequest =
             PinRequest.builder()
-                .firstName(PETITIONER_FIRST_NAME)
-                .lastName(PETITIONER_LAST_NAME)
+                .firstName(TEST_USER_FIRST_NAME)
+                .lastName(TEST_USER_LAST_NAME)
                 .build();
 
         final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
@@ -418,8 +418,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         final PinRequest pinRequest =
             PinRequest.builder()
-                .firstName(PETITIONER_FIRST_NAME)
-                .lastName(PETITIONER_LAST_NAME)
+                .firstName(TEST_USER_FIRST_NAME)
+                .lastName(TEST_USER_LAST_NAME)
                 .build();
 
         final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();

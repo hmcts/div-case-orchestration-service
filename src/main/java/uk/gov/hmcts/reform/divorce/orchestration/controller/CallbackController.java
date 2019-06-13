@@ -81,6 +81,23 @@ public class CallbackController {
         return ResponseEntity.ok(caseOrchestrationService.dnSubmitted(ccdCallbackRequest, authorizationToken));
     }
 
+    @PostMapping(path = "/dn-pronounced",
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Generate/dispatch a notification email to the petitioner and respondent when the Decree Nisi has been pronounced")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
+                    response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> dnPronounced(
+            @RequestHeader(value = "Authorization", required = false) String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        caseOrchestrationService.sendDnPronouncedNotificationEmail(ccdCallbackRequest);
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .data(ccdCallbackRequest.getCaseDetails().getCaseData())
+                .build());
+    }
+
     @SuppressWarnings("unchecked")
     @PostMapping(path = "/process-pba-payment", consumes = MediaType.APPLICATION_JSON,
         produces = MediaType.APPLICATION_JSON)
