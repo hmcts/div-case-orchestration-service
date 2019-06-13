@@ -120,6 +120,7 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
             log.error("Re-trying bulkCase with waiting time {} seconds", waitTime);
             Thread.sleep(waitTime * backoffBaseRate);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException("Thread sleep interrupted", e);
         }
     }
