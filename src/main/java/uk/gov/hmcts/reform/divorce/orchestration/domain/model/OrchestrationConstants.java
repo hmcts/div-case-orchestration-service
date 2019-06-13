@@ -84,10 +84,11 @@ public class OrchestrationConstants {
     public static final String D_8_SEP_TIME_TOGETHER_PERMITTED = "D8SeparationTimeTogetherPermitted";
     public static final String D_8_DESERTION_TIME_TOGETHER_PERMITTED =  "D8DesertionTimeTogetherPermitted";
     public static final String UPDATE_COURT_HEARING_DETAILS_EVENT = "updateBulkCaseHearingDetails";
+    public static final String UPDATE_COURT_DN_PRONOUNCEMENT_DATE_EVENT = "dnPronounced";
     public static final String WHO_PAYS_COSTS_CCD_FIELD = "WhoPaysCosts";
     public static final String WHO_PAYS_CCD_CODE_FOR_RESPONDENT = "respondent";
-    public static final String DECREE_NISI_GRANTED_DATE_KEY = "DecreeNisiGrantedDate";
-    public static final String DECREE_ABSOLUTE_ELIGIBLE_DATE = "DAEligibleFromDate";
+    public static final String DECREE_NISI_GRANTED_DATE_CCD_FIELD = "DecreeNisiGrantedDate";
+    public static final String DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD = "DAEligibleFromDate";
 
     //CCD DN fields
     public static final String DN_APPROVAL_DATE_CCD_FIELD = "DNApprovalDate";

@@ -15,8 +15,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_ELIGIBLE_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SetDnGrantedDateTest {
@@ -40,8 +40,8 @@ public class SetDnGrantedDateTest {
         String expectedGrantedDate = "2000-01-01";
         String expectedEligibleDate = "2000-02-13";
 
-        assertEquals(expectedGrantedDate, payload.get(DECREE_NISI_GRANTED_DATE_KEY));
-        assertEquals(expectedEligibleDate, payload.get(DECREE_ABSOLUTE_ELIGIBLE_DATE));
+        assertEquals(expectedGrantedDate, payload.get(DECREE_NISI_GRANTED_DATE_CCD_FIELD));
+        assertEquals(expectedEligibleDate, payload.get(DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD));
         verify(ccdUtil).parseDecreeAbsoluteEligibleDate(courtHearingLocalDate);
     }
 }

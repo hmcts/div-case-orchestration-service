@@ -450,6 +450,7 @@ def sonarExclusions = [
         '**uk/gov/hmcts/reform/divorce/orchestration/**/config/**/*',
         '**uk/gov/hmcts/reform/divorce/orchestration/OrchestrationServiceApplication.java',
         '**uk/gov/hmcts/reform/divorce/orchestration/client/**',
+        '**uk/gov/hmcts/reform/divorce/orchestration/event/**/*',
         '**uk/gov/hmcts/reform/divorce/orchestration/framework/workflow/task/DefaultTaskContext.java',
         '**uk/gov/hmcts/reform/divorce/scheduler/model/*',
         '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*'

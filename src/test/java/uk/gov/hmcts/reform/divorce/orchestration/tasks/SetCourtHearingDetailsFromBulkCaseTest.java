@@ -14,11 +14,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_DETAILS_CONTEXT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
@@ -48,12 +50,14 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
 
     @Test
     public void givenCourtHearingDetailsFromBulkCase_whenSetCourtHearingDetailsOnCcdCase_thenReturnFormattedData() throws TaskException {
-        Map<String, Object> bulkCaseData = ImmutableMap.of(
-            ID, TEST_CASE_ID,
-            CCD_CASE_DATA_FIELD, ImmutableMap.of(
-                COURT_NAME_CCD_FIELD, COURT_NAME,
-                COURT_HEARING_DATE_CCD_FIELD, COURT_HEARING_DATE_TIME
-            ));
+        Map<String, Object> bulkCaseDetails = ImmutableMap.of(
+                ID, TEST_CASE_ID,
+                CCD_CASE_DATA_FIELD, ImmutableMap.of(
+                        COURT_NAME_CCD_FIELD, COURT_NAME,
+                        COURT_HEARING_DATE_CCD_FIELD, COURT_HEARING_DATE_TIME
+                ));
+
+        context.setTransientObject(BULK_CASE_DETAILS_CONTEXT_KEY, bulkCaseDetails);
 
         CaseDetails caseDetails = CaseDetails.builder()
                 .caseData(Collections.emptyMap())
@@ -72,17 +76,19 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
 
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        assertEquals(expectedResult, classUnderTest.execute(context, bulkCaseData));
+        assertEquals(expectedResult, classUnderTest.execute(context, new HashMap<>()));
     }
 
     @Test
     public void givenCourtHearingDetailsFromBulkCase_whenSetCourtHearingDetailsOnCcdCaseWithExistingHearing_thenReturnFormattedData() throws TaskException {
-        Map<String, Object> caseData = ImmutableMap.of(
-            ID, TEST_CASE_ID,
-            CCD_CASE_DATA_FIELD, ImmutableMap.of(
-            COURT_NAME_CCD_FIELD, COURT_NAME,
-            COURT_HEARING_DATE_CCD_FIELD, COURT_HEARING_DATE_TIME
-        ));
+        Map<String, Object> bulkCaseDetails = ImmutableMap.of(
+                ID, TEST_CASE_ID,
+                CCD_CASE_DATA_FIELD, ImmutableMap.of(
+                        COURT_NAME_CCD_FIELD, COURT_NAME,
+                        COURT_HEARING_DATE_CCD_FIELD, COURT_HEARING_DATE_TIME
+                ));
+
+        context.setTransientObject(BULK_CASE_DETAILS_CONTEXT_KEY, bulkCaseDetails);
 
         CollectionMember<Map<String, Object>> existingDateTimeCollection = new CollectionMember<>();
         existingDateTimeCollection.setValue(ImmutableMap.of(
@@ -112,6 +118,6 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
 
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        assertEquals(expectedResult, classUnderTest.execute(context, caseData));
+        assertEquals(expectedResult, classUnderTest.execute(context, new HashMap<>()));
     }
 }
