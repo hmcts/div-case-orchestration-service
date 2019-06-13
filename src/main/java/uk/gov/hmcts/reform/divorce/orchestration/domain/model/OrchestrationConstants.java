@@ -71,6 +71,14 @@ public class OrchestrationConstants {
     public static final String CCD_DUE_DATE = "dueDate";
     public static final String D_8_PAYMENTS = "Payments";
     public static final String BULK_LISTING_CASE_ID_FIELD = "BulkListingCaseId";
+    public static final String D_8_REASON_FOR_DIVORCE_DESERTION_DAIE = "D8ReasonForDivorceDesertionDate";
+    public static final String D_8_REASON_FOR_DIVORCE_SEP_DATE = "D8ReasonForDivorceSeperationDate";
+    public static final String D_8_MENTAL_SEP_DATE = "D8MentalSeparationDate";
+    public static final String D_8_PHYSICAL_SEP_DAIE = "D8PhysicalSeparationDate";
+    public static final String D_8_SEP_REF_DATE = "D8SeparationReferenceDate";
+    public static final String SEP_YEARS = "SepYears";
+    public static final String D_8_SEP_TIME_TOGETHER_PERMITTED = "D8SeparationTimeTogetherPermitted";
+    public static final String D_8_DESERTION_TIME_TOGETHER_PERMITTED =  "D8DesertionTimeTogetherPermitted";
     public static final String UPDATE_COURT_HEARING_DETAILS_EVENT = "updateBulkCaseHearingDetails";
     public static final String WHO_PAYS_COSTS_CCD_FIELD = "WhoPaysCosts";
     public static final String WHO_PAYS_CCD_CODE_FOR_RESPONDENT = "respondent";
@@ -149,6 +157,8 @@ public class OrchestrationConstants {
     public static final String ADULTERY = "adultery";
     public static final String SEPARATION_2YRS = "separation-2-years";
     public static final String UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
+    public static final String SEPARATION_5YRS = "separation-5-years";
+    public static final String DESERTION = "desertion";
 
     // Case state
     public static final String AWAITING_PAYMENT = "AwaitingPayment";

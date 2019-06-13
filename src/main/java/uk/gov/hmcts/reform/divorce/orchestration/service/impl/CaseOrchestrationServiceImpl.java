@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarifi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
@@ -113,6 +114,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final GenerateCoRespondentAnswersWorkflow generateCoRespondentAnswersWorkflow;
     private final DocumentGenerationWorkflow documentGenerationWorkflow;
     private final RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
+    private final SeparationFieldsWorkflow separationFieldsWorkflow;
     private final BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
     private final ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
     private final DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
@@ -519,6 +521,17 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
+    public Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest)
+        throws WorkflowException {
+
+        Map<String, Object> payLoad =  separationFieldsWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+
+        if (separationFieldsWorkflow.errors().isEmpty()) {
+            return payLoad;
+        }
+        return separationFieldsWorkflow.errors();
+    }
+
     public Map<String, Object> processBulkCaseScheduleForHearing(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
         String bulkCaseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.info("Starting Bulk Schedule For Listing Callback on Bulk Case {}", bulkCaseId);
