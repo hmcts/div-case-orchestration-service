@@ -77,4 +77,17 @@ public class BulkCaseController {
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
     }
+
+    @PostMapping(path = "/bulk/pronounce/submit")
+    @ApiOperation(value = "Callback to set required data on case when DN Pronounced")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Required pronouncement data has been set successfully"),
+            @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> updateCaseDnPronounce(
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .data(orchestrationService.updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails().getCaseData()))
+                .build());
+    }
 }

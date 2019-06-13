@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
 
-    private static final String RESP_CORRESPONDENCE_SEND_TO_SOL = "D8RespondentCorrespondenceSendToSol";
+    private static final String RESP_SOL_REPRESENTED = "respondentSolicitorRepresented";
     private final CaseMaintenanceClient caseMaintenanceClient;
     private final CcdUtil ccdUtil;
 
@@ -72,8 +72,8 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
     }
 
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> submissionData) {
-        final String respondentCorrespondenceSendToSolicitor = (String) submissionData.get(RESP_CORRESPONDENCE_SEND_TO_SOL);
-        return YES_VALUE.equalsIgnoreCase(respondentCorrespondenceSendToSolicitor);
+        final String respondentSolicitorRepresented = (String) submissionData.get(RESP_SOL_REPRESENTED);
+        return YES_VALUE.equalsIgnoreCase(respondentSolicitorRepresented);
     }
 
     private boolean isRespondentDefendingDivorce(Map<String, Object> submissionData) {
