@@ -26,6 +26,9 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
     @Value("${bulk-action.retries.max:4}")
     private int maxRetries;
 
+    @Value("${bulk-action.retries.backoff.base-rate:1000}")
+    private int backoffBaseRate;
+
     /**
      * Process a specific case within a bulk case.
      *
@@ -115,7 +118,7 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
         long waitTime = (long) Math.pow(2, retryCount);
         try {
             log.error("Re-trying bulkCase with waiting time {} seconds", waitTime);
-            Thread.sleep(waitTime * 1000);
+            Thread.sleep(waitTime * backoffBaseRate);
         } catch (InterruptedException e) {
             throw new RuntimeException("Thread sleep interrupted", e);
         }

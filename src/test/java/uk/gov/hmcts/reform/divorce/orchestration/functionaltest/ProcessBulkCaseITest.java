@@ -75,6 +75,9 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     @Value("${bulk-action.retries.max:4}")
     private int maxRetries;
 
+    @Value("${bulk-action.retries.backoff.base-rate:1000}")
+    private int backoffBaseRate;
+
     @Autowired
     ThreadPoolTaskExecutor asyncTaskExecutor;
 

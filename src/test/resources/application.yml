@@ -273,6 +273,8 @@ bulk-action:
   page-size: 50
   retries:
     max: 2
+    backoff:
+      base-rate: 1
 
 # GENERAL SPRING BOOT ACTUATOR CONFIG
 # Context path for Spring Boot Actuator endpoints
