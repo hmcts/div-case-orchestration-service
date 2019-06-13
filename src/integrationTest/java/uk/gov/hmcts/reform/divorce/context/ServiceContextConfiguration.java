@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import com.google.common.collect.ImmutableList;
 import feign.Feign;
+import feign.Request;
 import feign.RequestInterceptor;
+import feign.RequestTemplate;
 import feign.codec.Decoder;
 import feign.jackson.JacksonEncoder;
 import org.apache.http.entity.ContentType;
@@ -62,74 +64,78 @@ public class ServiceContextConfiguration {
 
     @Bean("ccdSubmissionTokenGenerator")
     public AuthTokenGenerator ccdSubmissionAuthTokenGenerator(
-            @Value("${auth.provider.ccdsubmission.client.key}") final String secret,
-            @Value("${auth.provider.ccdsubmission.microservice}") final String microService,
-            @Value("${idam.s2s-auth.url}") final String s2sUrl
+        @Value("${auth.provider.ccdsubmission.client.key}") final String secret,
+        @Value("${auth.provider.ccdsubmission.microservice}") final String microService,
+        @Value("${idam.s2s-auth.url}") final String s2sUrl
     ) {
         final ServiceAuthorisationApi serviceAuthorisationApi = Feign.builder()
-                .encoder(new JacksonEncoder())
-                .contract(new SpringMvcContract())
-                .target(ServiceAuthorisationApi.class, s2sUrl);
+            .encoder(new JacksonEncoder())
+            .contract(new SpringMvcContract())
+            .target(ServiceAuthorisationApi.class, s2sUrl);
 
         return new ServiceAuthTokenGenerator(secret, microService, serviceAuthorisationApi);
     }
 
     @Bean("documentGeneratorTokenGenerator")
     public AuthTokenGenerator ccdDocumentGeneratorAuthTokenGenerator(
-            @Value("${auth.provider.documentgenerator.client.key}") final String secret,
-            @Value("${auth.provider.documentgenerator.microservice}") final String microService,
-            @Value("${idam.s2s-auth.url}") final String s2sUrl
+        @Value("${auth.provider.documentgenerator.client.key}") final String secret,
+        @Value("${auth.provider.documentgenerator.microservice}") final String microService,
+        @Value("${idam.s2s-auth.url}") final String s2sUrl
     ) {
         final ServiceAuthorisationApi serviceAuthorisationApi = Feign.builder()
-                .encoder(new JacksonEncoder())
-                .contract(new SpringMvcContract())
-                .target(ServiceAuthorisationApi.class, s2sUrl);
+            .encoder(new JacksonEncoder())
+            .contract(new SpringMvcContract())
+            .target(ServiceAuthorisationApi.class, s2sUrl);
 
         return new ServiceAuthTokenGenerator(secret, microService, serviceAuthorisationApi);
     }
 
     @Bean
     public RequestInterceptor requestInterceptor() {
-        return template -> template.header(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+        return (RequestTemplate template) -> {
+            if (template.request().httpMethod() == Request.HttpMethod.POST) {
+                template.header(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+            }
+        };
     }
 
     @Bean
     public CoreCaseDataApi getCoreCaseDataApi(
-            @Value("${core_case_data.api.url}") final String coreCaseDataApiUrl) {
+        @Value("${core_case_data.api.url}") final String coreCaseDataApiUrl) {
         return Feign.builder()
-                .requestInterceptor(requestInterceptor())
-                .encoder(new JacksonEncoder())
-                .decoder(feignDecoder())
-                .contract(new SpringMvcContract())
-                .target(CoreCaseDataApi.class, coreCaseDataApiUrl);
+            .requestInterceptor(requestInterceptor())
+            .encoder(new JacksonEncoder())
+            .decoder(feignDecoder())
+            .contract(new SpringMvcContract())
+            .target(CoreCaseDataApi.class, coreCaseDataApiUrl);
     }
 
     @Bean
     public CaseMaintenanceClient getCaseMaintenanceClient(
-            @Value("${case_maintenance.api.url}") final String caseMaintenanceUrl) {
+        @Value("${case_maintenance.api.url}") final String caseMaintenanceUrl) {
         return Feign.builder()
-                .requestInterceptor(requestInterceptor())
-                .encoder(new JacksonEncoder())
-                .decoder(feignDecoder())
-                .contract(new SpringMvcContract())
-                .target(CaseMaintenanceClient.class, caseMaintenanceUrl);
+            .requestInterceptor(requestInterceptor())
+            .encoder(new JacksonEncoder())
+            .decoder(feignDecoder())
+            .contract(new SpringMvcContract())
+            .target(CaseMaintenanceClient.class, caseMaintenanceUrl);
     }
 
     @Bean
     public CosApiClient getCosApiClient(
-            @Value("${case.orchestration.service.base.uri}") final String cosApiClientUrl) {
+        @Value("${case.orchestration.service.base.uri}") final String cosApiClientUrl) {
         return Feign.builder()
-                .requestInterceptor(requestInterceptor())
-                .encoder(new JacksonEncoder())
-                .decoder(feignDecoder())
-                .contract(new SpringMvcContract())
-                .target(CosApiClient.class, cosApiClientUrl);
+            .requestInterceptor(requestInterceptor())
+            .encoder(new JacksonEncoder())
+            .decoder(feignDecoder())
+            .contract(new SpringMvcContract())
+            .target(CosApiClient.class, cosApiClientUrl);
     }
 
     @Bean
     public Decoder feignDecoder() {
         MappingJackson2HttpMessageConverter jacksonConverter =
-                new MappingJackson2HttpMessageConverter(customObjectMapper());
+            new MappingJackson2HttpMessageConverter(customObjectMapper());
         jacksonConverter.setSupportedMediaTypes(ImmutableList.of(MediaType.APPLICATION_JSON));
 
         ObjectFactory<HttpMessageConverters> objectFactory = () -> new HttpMessageConverters(jacksonConverter);

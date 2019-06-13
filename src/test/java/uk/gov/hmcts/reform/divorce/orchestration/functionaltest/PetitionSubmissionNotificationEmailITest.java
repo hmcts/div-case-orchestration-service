@@ -18,8 +18,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +54,7 @@ public class PetitionSubmissionNotificationEmailITest {
     private static final String EMAIL_CONTEXT_PATH = "https://api.notifications.service.gov.uk";
 
     private Map<String, Object> caseData;
-    private CreateEvent createEvent;
+    private CcdCallbackRequest ccdCallbackRequest;
 
     @Autowired
     private MockMvc webClient;
@@ -76,7 +76,7 @@ public class PetitionSubmissionNotificationEmailITest {
             .state(TEST_STATE)
             .build();
 
-        createEvent = CreateEvent.builder()
+        ccdCallbackRequest = CcdCallbackRequest.builder()
                 .caseDetails(caseDetails)
                 .build();
     }
@@ -90,7 +90,7 @@ public class PetitionSubmissionNotificationEmailITest {
         stubEmailServerEndpoint();
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(createEvent))
+                .content(convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

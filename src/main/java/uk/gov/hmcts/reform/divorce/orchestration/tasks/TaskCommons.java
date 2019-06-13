@@ -36,10 +36,10 @@ public class TaskCommons {
                           String destinationEmailAddress,
                           Map<String, String> templateParameters) throws TaskException {
         try {
-            emailService.sendEmail(emailTemplate,
-                    emailDescription,
-                    destinationEmailAddress,
-                    templateParameters);
+            emailService.sendEmailAndReturnExceptionIfFails(destinationEmailAddress,
+                    emailTemplate.name(),
+                    templateParameters,
+                    emailDescription);
         } catch (NotificationClientException e) {
             log.error(e.getMessage(), e);
             throw new TaskException("Failed to send e-mail", e);

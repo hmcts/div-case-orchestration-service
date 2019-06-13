@@ -63,7 +63,10 @@ public class DnSubmittedEmailNotificationTaskUTest {
         );
         target.execute(context, payload);
 
-        verify(emailService).sendEmail(EmailTemplateNames.DN_SUBMISSION, TEST_USER_EMAIL, notificationTemplateVars);
+        verify(emailService).sendEmailAndReturnExceptionIfFails(TEST_USER_EMAIL,
+            EmailTemplateNames.DN_SUBMISSION.name(),
+            notificationTemplateVars,
+            "DN Submission");
 
     }
 
@@ -75,7 +78,7 @@ public class DnSubmittedEmailNotificationTaskUTest {
         Map<String, Object> payload = mock(Map.class);
 
         doThrow(new NotificationClientException(new Exception(TEST_ERROR)))
-                .when(emailService).sendEmail(any(), any(), any());
+                .when(emailService).sendEmailAndReturnExceptionIfFails(any(), any(), any(), any());
 
         Map<String, Object> taskResponse = target.execute(context, payload);
 
@@ -100,7 +103,10 @@ public class DnSubmittedEmailNotificationTaskUTest {
 
         target.execute(context, payload);
 
-        verify(emailService).sendEmail(EmailTemplateNames.DN_SUBMISSION, null, notificationTemplateVars);
+        verify(emailService).sendEmailAndReturnExceptionIfFails(null,
+            EmailTemplateNames.DN_SUBMISSION.name(),
+            notificationTemplateVars,
+            "DN Submission");
 
     }
 

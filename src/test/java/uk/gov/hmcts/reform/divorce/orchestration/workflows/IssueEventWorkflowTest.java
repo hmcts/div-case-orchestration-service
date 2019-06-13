@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGenerat
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFee;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetCoRespondentLinkingFields;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDate;
@@ -43,6 +45,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueEventWorkflowTest {
+
     private IssueEventWorkflow issueEventWorkflow;
 
     @Mock
@@ -66,13 +69,19 @@ public class IssueEventWorkflowTest {
     @Mock
     private CoRespondentPinGenerator coRespondentPinGenerator;
 
-
     @Mock
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
 
-    @Mock private GetPetitionIssueFee getPetitionIssueFee;
+    @Mock
+    private GetPetitionIssueFee getPetitionIssueFee;
 
-    private CreateEvent createEventRequest;
+    @Mock
+    private ResetRespondentLinkingFields resetRespondentLinkingFields;
+
+    @Mock
+    private ResetCoRespondentLinkingFields resetCoRespondentLinkingFields;
+
+    private CcdCallbackRequest ccdCallbackRequestRequest;
     private Map<String, Object> payload;
     private TaskContext context;
 
@@ -88,7 +97,9 @@ public class IssueEventWorkflowTest {
                         respondentLetterGenerator,
                         getPetitionIssueFee,
                         coRespondentLetterGenerator,
-                        caseFormatterAddDocuments);
+                        caseFormatterAddDocuments,
+                        resetRespondentLinkingFields,
+                        resetCoRespondentLinkingFields);
 
         payload = new HashMap<>();
 
@@ -98,8 +109,8 @@ public class IssueEventWorkflowTest {
             .caseData(payload)
             .build();
 
-        createEventRequest =
-                CreateEvent.builder()
+        ccdCallbackRequestRequest =
+                CcdCallbackRequest.builder()
                         .eventId(TEST_EVENT_ID)
                         .token(TEST_TOKEN)
                         .caseDetails(
@@ -124,10 +135,11 @@ public class IssueEventWorkflowTest {
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
-
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, true);
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
 
         //Then
         assertThat(response, is(payload));
@@ -153,9 +165,11 @@ public class IssueEventWorkflowTest {
         when(coRespondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(coRespondentLetterGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, true);
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
 
         //Then
         assertThat(response, is(payload));
@@ -173,9 +187,11 @@ public class IssueEventWorkflowTest {
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, true);
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
 
         //Then
         assertThat(response, is(payload));
@@ -198,9 +214,11 @@ public class IssueEventWorkflowTest {
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, true);
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
 
         //Then
         assertThat(response, is(payload));
@@ -218,9 +236,10 @@ public class IssueEventWorkflowTest {
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, true);
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
 
         //Then
         assertThat(response, is(payload));
@@ -239,9 +258,10 @@ public class IssueEventWorkflowTest {
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = issueEventWorkflow.run(createEventRequest, AUTH_TOKEN, false);
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, false);
 
         //Then
         assertThat(response, is(payload));

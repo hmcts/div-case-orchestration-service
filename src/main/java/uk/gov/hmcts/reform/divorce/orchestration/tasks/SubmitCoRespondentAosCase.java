@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.Validati
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -58,7 +57,7 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> submissionData) throws TaskException {
-        final String authToken = (String) context.getTransientObject(AUTH_TOKEN_JSON_KEY);
+        final String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
 
         final CaseDetails currentCaseDetails = caseMaintenanceClient.retrieveAosCase(authToken);
 
@@ -81,7 +80,7 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
         }
 
         submissionData.put(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
-        submissionData.put(RECEIVED_AOS_FROM_CO_RESP_DATE, CcdUtil.getCurrentDate());
+        submissionData.put(RECEIVED_AOS_FROM_CO_RESP_DATE, LocalDate.now(clock).format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
 
         final Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
             authToken,

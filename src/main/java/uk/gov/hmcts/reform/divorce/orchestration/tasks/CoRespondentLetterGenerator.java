@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ACCESS_CODE;
@@ -22,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_INVITATION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_FEE_FOR_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_FEE_JSON_KEY;
@@ -38,7 +40,7 @@ public class CoRespondentLetterGenerator implements Task<Map<String, Object>> {
     @Override
     @SuppressWarnings("Duplicates")
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
-        final CaseDetails caseDetails = (CaseDetails) context.getTransientObject(CASE_DETAILS_JSON_KEY);
+        final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
 
         final NumberFormat poundsOnlyFormat = new DecimalFormat("#");
         final String petitionIssueFee = poundsOnlyFormat.format(((FeeResponse) context.getTransientObject(PETITION_ISSUE_FEE_JSON_KEY)).getAmount());
@@ -53,14 +55,16 @@ public class CoRespondentLetterGenerator implements Task<Map<String, Object>> {
                         PETITION_ISSUE_FEE_FOR_LETTER, petitionIssueFee)
                     )
                     .build(),
-                String.valueOf(context.getTransientObject(AUTH_TOKEN_JSON_KEY))
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY)
             );
 
         coRespondentInvitation.setDocumentType(DOCUMENT_TYPE_CO_RESPONDENT_INVITATION);
         coRespondentInvitation.setFileName(String.format(CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT,
                 caseDetails.getCaseId()));
 
-        context.setTransientObject(CO_RESPONDENT_INVITATION_TEMPLATE_NAME, coRespondentInvitation);
+        final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION,
+            new LinkedHashSet<>());
+        documentCollection.add(coRespondentInvitation);
 
         return caseData;
     }

@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -24,29 +22,20 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseCreationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.AllocatedCourt;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
 
-
-import static java.util.Collections.singletonList;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERATE_AOS_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
@@ -58,37 +47,6 @@ public class OrchestrationController {
     @Autowired
     private CaseOrchestrationService orchestrationService;
 
-    @PostMapping(path = "/petition-issued",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles Issue callback from CCD")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is "
-                    + "attached to the case",
-                    response = CcdCallbackResponse.class),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 500, message = "Internal Server Error")
-            })
-    public ResponseEntity<CcdCallbackResponse> petitionIssuedCallback(
-        @RequestHeader(value = "Authorization") String authorizationToken,
-        @RequestParam(value = GENERATE_AOS_INVITATION, required = false)
-        @ApiParam(GENERATE_AOS_INVITATION) boolean generateAosInvitation,
-        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
-        Map<String, Object> response = orchestrationService.ccdCallbackHandler(caseDetailsRequest, authorizationToken,
-            generateAosInvitation);
-
-        if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
-            return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
-                    .errors(getErrors(response))
-                    .build());
-        }
-
-        return ResponseEntity.ok(
-            CcdCallbackResponse.builder()
-                .data(response)
-                .build());
-    }
-
     @PutMapping(path = "/payment-update",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles payment update callbacks")
@@ -97,44 +55,11 @@ public class OrchestrationController {
             + " to the case",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Internal Server Error")
-        })
+        @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity paymentUpdate(@RequestBody PaymentUpdate paymentUpdate) throws WorkflowException {
 
         orchestrationService.update(paymentUpdate);
         return ResponseEntity.ok().build();
-    }
-
-    @PostMapping(path = "/bulk-print",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles bulk print callback from CCD")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Callback was processed "
-        + "successfully or in case of an error message is "
-        + "attached to the case",
-            response = CcdCallbackResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Internal Server Error")})
-    public ResponseEntity<CcdCallbackResponse> bulkPrint(
-        @RequestHeader(value = "Authorization") String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
-
-        Map<String, Object> response = orchestrationService.ccdCallbackBulkPrintHandler(caseDetailsRequest,
-            authorizationToken);
-
-        if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
-            return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
-                    .data(ImmutableMap.of())
-                    .warnings(ImmutableList.of())
-                    .errors(singletonList("Failed to bulk print documents"))
-                    .build());
-        }
-        return ResponseEntity.ok(
-            CcdCallbackResponse.builder()
-                .data(response)
-                .errors(Collections.emptyList())
-                .warnings(Collections.emptyList())
-                .build());
     }
 
     @PostMapping(path = "/submit",
@@ -154,15 +79,14 @@ public class OrchestrationController {
 
         if (serviceResponse.containsKey(VALIDATION_ERROR_KEY)) {
             endpointResponse = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            log.error("Bad request. Found this validation error: {}", serviceResponse.get(VALIDATION_ERROR_KEY));
         } else {
             CaseCreationResponse caseCreationResponse = new CaseCreationResponse();
             caseCreationResponse.setCaseId(String.valueOf(serviceResponse.get(ID)));
             caseCreationResponse.setStatus(SUCCESS_STATUS);
 
-            Optional.ofNullable(serviceResponse.get(ALLOCATED_COURT_KEY))
-                .map(String.class::cast)
-                .map(AllocatedCourt::new)
-                .ifPresent(caseCreationResponse::setAllocatedCourt);
+            Court allocatedCourt = (Court) serviceResponse.get(ALLOCATED_COURT_KEY);
+            caseCreationResponse.setAllocatedCourt(allocatedCourt);
 
             endpointResponse = ResponseEntity.ok(caseCreationResponse);
         }
@@ -195,8 +119,8 @@ public class OrchestrationController {
         @ApiResponse(code = 200, message = "A draft exists. The draft content is in the response body"),
         @ApiResponse(code = 404, message = "Draft does not exist")})
     public ResponseEntity<Map<String, Object>> retrieveDraft(
-            @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
-            @RequestHeader("Authorization") final String authorizationToken)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
+        @RequestHeader("Authorization") final String authorizationToken)
         throws WorkflowException {
 
         Map<String, Object> response = orchestrationService.getDraft(authorizationToken);
@@ -217,8 +141,8 @@ public class OrchestrationController {
         @RequestBody
         @NotNull Map<String, Object> payload,
         @RequestParam(value = "sendEmail", required = false)
-        @ApiParam(value = "Determines if the petitioner should receive the notification that the draft has been saved")
-        final String sendEmail) throws WorkflowException {
+        @ApiParam(value = "Determines if the petitioner should receive the notification that the draft has been saved") final String sendEmail)
+        throws WorkflowException {
 
         // Deprecation Warning: sendEmail as String instead of Boolean to be backwards compatible with current PFE
         return ResponseEntity.ok(orchestrationService.saveDraft(payload, authorizationToken, sendEmail));
@@ -243,10 +167,10 @@ public class OrchestrationController {
             response = CaseDataResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CaseDataResponse> retrieveAosCase(
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken) throws WorkflowException {
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken) throws WorkflowException {
 
         return ResponseEntity.ok(orchestrationService.retrieveAosCase(
-                authorizationToken));
+            authorizationToken));
     }
 
     @GetMapping(path = "/retrieve-case", produces = MediaType.APPLICATION_JSON)
@@ -308,69 +232,6 @@ public class OrchestrationController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @PostMapping(path = "/petition-updated",
-        consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Generate/dispatch a notification email to the petitioner when the application is updated")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
-            response = CcdCallbackResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> petitionUpdated(
-        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
-        orchestrationService.sendPetitionerGenericUpdateNotificationEmail(caseDetailsRequest);
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseDetailsRequest.getCaseDetails().getCaseData())
-            .build());
-    }
-
-    @PostMapping(path = "/petition-submitted",
-        consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Generate/dispatch a notification email to the petitioner when the application is submitted")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
-            response = CcdCallbackResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> petitionSubmitted(
-        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
-
-        orchestrationService.sendPetitionerSubmissionNotificationEmail(caseDetailsRequest);
-
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseDetailsRequest.getCaseDetails().getCaseData())
-            .build());
-    }
-
-    @PostMapping(path = "/aos-submitted",
-        consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Generate/dispatch a notification email to the respondent when their AOS is submitted")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
-            response = CcdCallbackResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> respondentAOSSubmitted(
-        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) {
-
-        Map<String, Object> returnedCaseData;
-
-        try {
-            returnedCaseData = orchestrationService.sendRespondentSubmissionNotificationEmail(caseDetailsRequest);
-        } catch (WorkflowException e) {
-            return ResponseEntity.ok(CcdCallbackResponse.builder()
-                .errors(singletonList(e.getMessage()))
-                .build());
-        }
-
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(returnedCaseData)
-            .build());
-    }
-
     @PostMapping(path = "/petition-issue-fees",
         consumes = MediaType.APPLICATION_JSON,
         produces = MediaType.APPLICATION_JSON)
@@ -380,48 +241,11 @@ public class OrchestrationController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> getPetitionIssueFees(
-        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(orchestrationService.setOrderSummary(caseDetailsRequest))
+            .data(orchestrationService.setOrderSummary(ccdCallbackRequest))
             .build()
         );
-    }
-
-    @SuppressWarnings("unchecked")
-    @PostMapping(path = "/process-pba-payment", consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Solicitor pay callback")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback to receive payment from the solicitor",
-            response = CcdCallbackResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> processPbaPayment(
-        @RequestHeader(value = "Authorization") String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
-        Map<String, Object> response = orchestrationService.processPbaPayment(caseDetailsRequest, authorizationToken);
-
-        if (response != null && response.containsKey(SOLICITOR_VALIDATION_ERROR_KEY)) {
-            return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
-                    .errors((List<String>) response.get(SOLICITOR_VALIDATION_ERROR_KEY))
-                    .build());
-        }
-
-        return ResponseEntity.ok(CcdCallbackResponse.builder().data(response).build());
-    }
-
-    @PostMapping(path = "/solicitor-create", consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Solicitor pay callback")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback to populate missing requirement fields when "
-            + "creating solicitor cases.", response = CcdCallbackResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> solicitorCreate(
-        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(orchestrationService.solicitorCreate(caseDetailsRequest))
-            .build());
     }
 
     @PostMapping(path = "/aos-received")
@@ -434,8 +258,8 @@ public class OrchestrationController {
         @RequestHeader("Authorization")
         @ApiParam(value = "JWT authorisation token issued by IDAM",
             required = true) final String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
-        return ResponseEntity.ok(orchestrationService.aosReceived(caseDetailsRequest, authorizationToken));
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return ResponseEntity.ok(orchestrationService.aosReceived(ccdCallbackRequest, authorizationToken));
     }
 
     @PostMapping(path = "/co-respondent-received")
@@ -444,8 +268,8 @@ public class OrchestrationController {
         @ApiResponse(code = 200, message = "Notification sent successful"),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> corespReceived(
-        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
-        return ResponseEntity.ok(orchestrationService.sendCoRespReceivedNotificationEmail(caseDetailsRequest));
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return ResponseEntity.ok(orchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest));
     }
 
     @PostMapping(path = "/submit-aos/{caseId}",
@@ -497,24 +321,6 @@ public class OrchestrationController {
             orchestrationService.submitDnCase(divorceSession, authorizationToken, caseId));
     }
 
-    @PostMapping(path = "/dn-submitted")
-    @ApiOperation(value = "Decree nisi submitted confirmation notification ")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Notification sent successful"),
-        @ApiResponse(code = 401, message = "User Not Authenticated"),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> dnSubmitted(
-        @RequestHeader("Authorization")
-        @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CreateEvent caseDetailsRequest) throws WorkflowException {
-        return ResponseEntity.ok(orchestrationService.dnSubmitted(caseDetailsRequest, authorizationToken));
-    }
-
-    private List<String> getErrors(Map<String, Object> response) {
-        ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
-        return validationResponse.getErrors();
-    }
-
     @PutMapping(path = "/amend-petition/{caseId}")
     @ApiOperation(
         value = "Creates a new draft copy of user's old case to be amended, updates old case to AmendPetition state")
@@ -525,11 +331,13 @@ public class OrchestrationController {
         @ApiResponse(code = 404,
             message = "No draft was created as no existing case found.")})
     public ResponseEntity<Map<String, Object>> amendPetition(@RequestHeader("Authorization")
-                                                           @ApiParam(value = "JWT authorisation token issued by IDAM",
-                                                               required = true) final String authorizationToken,
+                                                             @ApiParam(value = "JWT authorisation token issued by IDAM",
+                                                                 required = true) final String authorizationToken,
                                                              @PathVariable String caseId)
         throws WorkflowException {
 
         return ResponseEntity.ok(orchestrationService.amendPetition(caseId, authorizationToken));
     }
+
+
 }

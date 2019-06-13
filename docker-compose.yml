@@ -1,0 +1,22 @@
+---
+version: '2.1' 
+
+services: 
+  div-database:
+    build:
+      context: docker/database
+    image: hmcts/div-database
+    healthcheck:
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    environment:
+       DIV_SCHEDULER_DB_USER_NAME: div_scheduler_user
+       DIV_SCHEDULER_DB_PASSWORD: div_scheduler_passwd
+    ports:
+      - 5432:5432
+    volumes:
+      - div-database-data:/var/lib/postgresql/data
+
+volumes:
+  div-database-data:

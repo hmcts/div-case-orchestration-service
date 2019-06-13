@@ -3,15 +3,13 @@ package uk.gov.hmcts.reform.divorce.orchestration.service;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
+import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.service.notify.NotificationClientException;
-
-import java.util.Map;
 
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -30,97 +28,36 @@ public class EmailServiceTest {
     @Autowired
     private EmailService emailService;
 
-    @Value("#{${uk.gov.notify.email.templates}}")
-    private Map<String, String> emailTemplates;
-
-    @Value("#{${uk.gov.notify.email.template.vars}}")
-    private Map<String, Map<String, String>> emailTemplateVars;
+    @Autowired
+    private EmailTemplatesConfig emailTemplatesConfig;
 
     @Test
-    public void sendSaveDraftConfirmationEmailShouldCallTheEmailClientToSendAnEmail()
+    public void sendEmailForSubmissionConfirmationShouldCallTheEmailClientToSendAnEmail()
         throws NotificationClientException {
-        emailService.sendSaveDraftConfirmationEmail(EMAIL_ADDRESS);
+        emailService.sendEmail(EMAIL_ADDRESS,
+            EmailTemplateNames.APPLIC_SUBMISSION.name(),
+            null,
+            "submission notification");
 
         verify(mockClient).sendEmail(
-            eq(emailTemplates.get(EmailTemplateNames.SAVE_DRAFT.name())),
+            eq(emailTemplatesConfig.getTemplates().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
             eq(EMAIL_ADDRESS),
-            eq(emailTemplateVars.get(EmailTemplateNames.SAVE_DRAFT.name())),
+            eq(emailTemplatesConfig.getTemplateVars().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
             anyString());
     }
 
     @Test
-    public void sendSaveDraftConfirmationEmailShouldNotPropagateNotificationClientException()
+    public void sendEmailShouldNotPropagateNotificationClientException()
         throws NotificationClientException {
         doThrow(new NotificationClientException(new Exception("Exception inception")))
             .when(mockClient).sendEmail(anyString(), anyString(), eq(null), anyString());
-
         try {
-            emailService.sendSaveDraftConfirmationEmail(EMAIL_ADDRESS);
+            emailService.sendEmail(EMAIL_ADDRESS,
+                EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
+                null,
+                "resp does not consent to 2 year separation update notification");
         } catch (Exception e) {
             fail();
         }
-
-    }
-
-    @Test
-    public void sendSubmissionConfirmationEmailShouldCallTheEmailClientToSendAnEmail()
-        throws NotificationClientException {
-        emailService.sendPetitionerSubmissionNotificationEmail(EMAIL_ADDRESS, null);
-
-        verify(mockClient).sendEmail(
-            eq(emailTemplates.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
-            eq(EMAIL_ADDRESS),
-            eq(emailTemplateVars.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
-            anyString());
-    }
-
-    @Test
-    public void sendSubmissionConfirmationEmailShouldNotPropagateNotificationClientException()
-        throws NotificationClientException {
-        doThrow(new NotificationClientException(new Exception("Exception inception")))
-            .when(mockClient).sendEmail(anyString(), anyString(), eq(null), anyString());
-
-        try {
-            emailService.sendPetitionerSubmissionNotificationEmail(EMAIL_ADDRESS, null);
-        } catch (Exception e) {
-            fail();
-        }
-
-    }
-
-    @Test
-    public void sendGenericUpdateEmailShouldCallTheEmailClientToSendAnEmail()
-            throws NotificationClientException {
-        emailService.sendPetitionerSubmissionNotificationEmail(EMAIL_ADDRESS, null);
-
-        verify(mockClient).sendEmail(
-                eq(emailTemplates.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
-                eq(EMAIL_ADDRESS),
-                eq(emailTemplateVars.get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
-                anyString());
-    }
-
-    @Test
-    public void sendRespDoesNotAdmitAdulteryUpdateEmailShouldCallTheEmailClientToSendAnEmail()
-            throws NotificationClientException {
-        emailService.sendPetitionerRespDoesNotAdmitAdulteryUpdateNotificationEmail(EMAIL_ADDRESS, null);
-
-        verify(mockClient).sendEmail(
-                eq(emailTemplates.get(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name())),
-                eq(EMAIL_ADDRESS),
-                eq(emailTemplateVars.get(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name())),
-                anyString());
-    }
-
-    @Test
-    public void sendRespDoesNotConsentTo2YearSepUpdateEmailShouldCallTheEmailClientToSendAnEmail()
-            throws NotificationClientException {
-        emailService.sendPetitionerRespDoesNotConsent2YrsSepUpdateNotificationEmail(EMAIL_ADDRESS, null);
-
-        verify(mockClient).sendEmail(
-                eq(emailTemplates.get(EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name())),
-                eq(EMAIL_ADDRESS),
-                eq(emailTemplateVars.get(EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name())),
-                anyString());
     }
 }

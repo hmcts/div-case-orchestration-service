@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.LocalDate;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.PaymentClient;
@@ -34,7 +33,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_CHANNEL_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_DATE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_DATE_PATTERN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_FEE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_FEE_ID_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_REFERENCE;
@@ -58,11 +56,12 @@ public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
     private final PaymentClient paymentClient;
     private final AuthTokenGenerator serviceAuthGenerator;
     private final TaskCommons taskCommons;
+    private final CcdUtil ccdUtil;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         Object payment = null;
-        if (AWAITING_PAYMENT.equalsIgnoreCase((String) context.getTransientObject(CASE_STATE_JSON_KEY))) {
+        if (AWAITING_PAYMENT.equalsIgnoreCase(context.getTransientObject(CASE_STATE_JSON_KEY))) {
             Map<String, Object> successPaymentFromSession = searchSuccessStatePayment(caseData);
 
             if (successPaymentFromSession != null) {
@@ -82,7 +81,7 @@ public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
         if (payment == null) {
             context.setTaskFailed(true);
         } else {
-            String caseId = String.valueOf(context.getTransientObject(CASE_ID_JSON_KEY));
+            String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
             String reference = (String) ((Map) payment).get(PAYMENT_REFERENCE);
             log.info("Case Id {} has successful payment with ref {}", caseId, reference);
             paymentMap = ImmutableMap.of(
@@ -98,7 +97,7 @@ public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
             .put(PAYMENT_CHANNEL_KEY, PAYMENT_CHANNEL)
             .put(PAYMENT_TRANSACTION_ID_KEY, paymentInfo.get(EXTERNAL_REFERENCE))
             .put(PAYMENT_REFERENCE_KEY, paymentInfo.get(PAYMENT_SERVICE_REFERENCE))
-            .put(PAYMENT_DATE_KEY, LocalDate.now().toString(PAYMENT_DATE_PATTERN))
+            .put(PAYMENT_DATE_KEY, ccdUtil.getCurrentDatePaymentFormat())
             .put(PAYMENT_AMOUNT_KEY, String.valueOf((Integer) paymentInfo.get(PAYMENT_SERVICE_AMOUNT_KEY) * 100))
             .put(PAYMENT_STATUS_KEY, paymentInfo.get(STATUS_FROM_PAYMENT))
             .put(PAYMENT_FEE_ID_KEY, PAYMENT_FEE_ID)
@@ -108,7 +107,7 @@ public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
 
     private Map<String, Object> mapPaymentFromCCDModel(Map<String, Object> ccdFormatPaymentInfo) {
         Map<String, Object> mapCopy = Maps.newHashMap(ccdFormatPaymentInfo);
-        mapCopy.put(PAYMENT_DATE_KEY, CcdUtil.mapCCDDateToDivorceDate(
+        mapCopy.put(PAYMENT_DATE_KEY, ccdUtil.mapCCDDateToDivorceDate(
             (String) ccdFormatPaymentInfo.get(PAYMENT_DATE_KEY)));
         return mapCopy;
     }

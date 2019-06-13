@@ -8,14 +8,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCoRespondentRespondedNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,20 +62,26 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
     private GenericEmailNotification emailTask;
 
     @Mock
+    private SendPetitionerCoRespondentRespondedNotificationEmail petitionerEmailTask;
+
+    @Mock
     private TaskCommons taskCommons;
+
+    @Mock
+    private CcdUtil ccdUtil;
 
     @InjectMocks
     private SendCoRespondSubmissionNotificationWorkflow classToTest;
 
     @Test
-    public void givenUndefendedCoResp_whenSendEmail_thenSendUndefendedTemplate() throws WorkflowException {
+    public void givenUndefendedCoResp_whenSendEmail_thenSendUndefendedTemplate() throws WorkflowException, TaskException {
 
-        CreateEvent caseEvent = createSubmittedCoEvent(ImmutableMap.of(CO_RESPONDENT_DEFENDS_DIVORCE, "No"));
+        CcdCallbackRequest ccdCallbackRequest = createSubmittedCoEvent(ImmutableMap.of(CO_RESPONDENT_DEFENDS_DIVORCE, "No"));
 
-        classToTest.run(caseEvent);
+        classToTest.run(ccdCallbackRequest);
 
         ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
-        verify(emailTask).execute(argument.capture(), eq(caseEvent.getCaseDetails().getCaseData()));
+        verify(emailTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
         TaskContext capturedTask = argument.getValue();
 
@@ -85,25 +94,28 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
     @Test
     public void givenDefendedCoResp_whenSendEmail_thenSendDefendedTemplate() throws Exception {
 
-        CreateEvent caseEvent = createSubmittedCoEvent(ImmutableMap.of(
+        CcdCallbackRequest ccdCallbackRequest = createSubmittedCoEvent(ImmutableMap.of(
             CO_RESPONDENT_DEFENDS_DIVORCE, "Yes",
             CO_RESPONDENT_DUE_DATE, TEST_EXPECTED_DUE_DATE));
         Court court = new Court();
         court.setDivorceCentreName(TEST_COURT);
         when(taskCommons.getCourt(TEST_COURT)).thenReturn(court);
 
-        classToTest.run(caseEvent);
+        when(ccdUtil.getFormattedDueDate(ccdCallbackRequest.getCaseDetails().getCaseData(),
+            CO_RESPONDENT_DUE_DATE)).thenReturn(TEST_EXPECTED_DUE_DATE_FORMATTED);
+
+        classToTest.run(ccdCallbackRequest);
 
         ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
-        verify(emailTask).execute(argument.capture(), eq(caseEvent.getCaseDetails().getCaseData()));
+        verify(emailTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
         TaskContext capturedTask = argument.getValue();
 
         DefaultTaskContext expectedContext = createdExpectedContext(ImmutableMap.of(
-                NOTIFICATION_RDC_NAME_KEY, court.getIdentifiableCentreName(),
-                NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, TEST_EXPECTED_DUE_DATE_FORMATTED,
-                NOTIFICATION_COURT_ADDRESS_KEY, court.getFormattedAddress()
-                ),
+            NOTIFICATION_RDC_NAME_KEY, court.getIdentifiableCentreName(),
+            NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, TEST_EXPECTED_DUE_DATE_FORMATTED,
+            NOTIFICATION_COURT_ADDRESS_KEY, court.getFormattedAddress()
+            ),
             EmailTemplateNames.CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION);
 
         assertThat(expectedContext, equalTo(capturedTask));
@@ -126,12 +138,12 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
         return expectedContext;
     }
 
-    private CreateEvent createSubmittedCoEvent(Map<String,Object> extraFields) {
+    private CcdCallbackRequest createSubmittedCoEvent(Map<String, Object> extraFields) {
 
         Map<String, Object> caseData = new HashMap<>(extraFields);
 
         caseData.put(D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
-        caseData.put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, TEST_USER_FIRST_NAME) ;
+        caseData.put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, TEST_USER_FIRST_NAME);
         caseData.put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, TEST_USER_LAST_NAME);
         caseData.put(CO_RESP_EMAIL_ADDRESS, TEST_EMAIL);
         caseData.put(D_8_DIVORCE_UNIT, TEST_COURT);
@@ -141,7 +153,7 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
             .caseData(caseData)
             .build();
 
-        return  CreateEvent
+        return CcdCallbackRequest
             .builder()
             .caseDetails(caseDetails)
             .build();

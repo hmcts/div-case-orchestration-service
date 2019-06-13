@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -22,34 +22,36 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
+    private static final String NOT_DEFENDING_NOT_ADMITTING = "NoNoAdmission";
+
     @Autowired
     private SendRespondentSubmissionNotificationForDefendedDivorceEmail
-            sendRespondentSubmissionNotificationForDefendedDivorceEmailTask;
+        sendRespondentSubmissionNotificationForDefendedDivorceEmailTask;
 
     @Autowired
     private SendRespondentSubmissionNotificationForUndefendedDivorceEmail
-            sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
+        sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
 
-    public Map<String, Object> run(CreateEvent caseRequestDetails) throws WorkflowException {
-        Map<String, Object> caseData = caseRequestDetails.getCaseDetails().getCaseData();
-        String defended = (String)caseData.get(RESP_WILL_DEFEND_DIVORCE);
+    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        String defended = (String) caseData.get(RESP_WILL_DEFEND_DIVORCE);
 
         Task[] tasks;
 
         if (YES_VALUE.equalsIgnoreCase(defended)) {
-            tasks = new Task[]{sendRespondentSubmissionNotificationForDefendedDivorceEmailTask};
-        } else if (NO_VALUE.equalsIgnoreCase(defended)) {
-            tasks = new Task[]{sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask};
+            tasks = new Task[] {sendRespondentSubmissionNotificationForDefendedDivorceEmailTask};
+        } else if (NO_VALUE.equalsIgnoreCase(defended) || NOT_DEFENDING_NOT_ADMITTING.equalsIgnoreCase(defended)) {
+            tasks = new Task[] {sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask};
         } else {
             String errorMessage = String.format("%s field doesn't contain a valid value: %s",
                 RESP_WILL_DEFEND_DIVORCE, defended);
-            log.error(errorMessage);
+            log.error(String.format("%s. %n Case id: %s.", errorMessage, ccdCallbackRequest.getCaseDetails().getCaseId()));
             throw new WorkflowException(errorMessage);
         }
 
         return execute(tasks,
-                caseData,
-                ImmutablePair.of(CASE_ID_JSON_KEY, caseRequestDetails.getCaseDetails().getCaseId())
+            caseData,
+            ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId())
         );
     }
 }

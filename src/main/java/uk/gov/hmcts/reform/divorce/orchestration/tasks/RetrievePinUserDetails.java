@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -11,12 +12,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
@@ -39,7 +39,7 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) throws TaskException {
         String pinCode = authenticatePinUser(
-            String.valueOf(context.getTransientObject(RESPONDENT_PIN)),
+            context.getTransientObject(RESPONDENT_PIN),
             authClientId,
             authRedirectUrl);
 
@@ -60,12 +60,15 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
         }
 
         final String letterHolderId = pinUserDetails.getId();
-        final Map<String, Object> caseData = (HashMap) context.getTransientObject(CCD_CASE_DATA);
+        final Map<String, Object> caseData = ((CaseDetails) context
+            .getTransientObject(CASE_DETAILS_JSON_KEY))
+            .getCaseData();
+
         final String coRespondentLetterHolderId = (String) caseData.get(CO_RESPONDENT_LETTER_HOLDER_ID);
         final String respondentLetterHolderId = (String) caseData.get(RESPONDENT_LETTER_HOLDER_ID);
         final boolean isRespondent = letterHolderId.equals(respondentLetterHolderId);
         final boolean isCoRespondent = letterHolderId.equals(coRespondentLetterHolderId);
-        final String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
+        final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
 
         if (isRespondent) {
             context.setTransientObject(RESPONDENT_LETTER_HOLDER_ID, letterHolderId);

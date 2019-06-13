@@ -1,14 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.Locale;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
@@ -16,29 +15,42 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @SuppressWarnings("squid:S1118")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@Component
 public class CcdUtil {
 
-    private static final DateTimeFormatter CLIENT_FACING_DATE_FORMAT = DateTimeFormatter
-            .ofLocalizedDate(FormatStyle.LONG)
-            .withLocale(Locale.UK);
+    private final Clock clock;
 
-    public static String getCurrentDate() {
-        return LocalDate.now().toString(CCD_DATE_FORMAT);
+    public String getCurrentDateCcdFormat() {
+        return LocalDate.now(clock).format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT));
     }
 
-    public static String getCurrentDatePlusDays(int days) {
-        return LocalDate.now().plusDays(days).toString(CCD_DATE_FORMAT);
+    public String getCurrentDatePaymentFormat() {
+        return LocalDate.now(clock).format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN));
     }
 
-    public static String mapCCDDateToDivorceDate(String date) {
-        return LocalDate.parse(date, DateTimeFormat.forPattern(CCD_DATE_FORMAT)).toString(PAYMENT_DATE_PATTERN);
+    public String mapCCDDateToDivorceDate(String date) {
+        return LocalDate.parse(date, DateTimeFormatter.ofPattern(CCD_DATE_FORMAT))
+            .format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN));
     }
 
-    public static String getFormattedDueDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {
+    public String getCurrentDateWithCustomerFacingFormat() {
+        return DateUtils.formatDateWithCustomerFacingFormat(java.time.LocalDate.now(clock));
+    }
+
+    public String getFormattedDueDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {
         String dateAsString = getMandatoryPropertyValueAsString(caseData, dateToFormat);
-        java.time.LocalDate dueDate = java.time.LocalDate.parse(dateAsString);
-        return dueDate.format(CLIENT_FACING_DATE_FORMAT);
+        LocalDate dueDate = LocalDate.parse(dateAsString);
+        return DateUtils.formatDateWithCustomerFacingFormat(dueDate);
     }
 
+    public boolean isCcdDateTimeInThePast(String date) {
+        return LocalDateTime.parse(date).toLocalDate().isBefore(LocalDate.now(clock).plusDays(1));
+    }
+
+    public String parseDecreeAbsoluteEligibleDate(LocalDate grantedDate) {
+        return DateUtils.formatDateFromLocalDate(
+                grantedDate.plusWeeks(6).plusDays(1)
+        );
+    }
 }

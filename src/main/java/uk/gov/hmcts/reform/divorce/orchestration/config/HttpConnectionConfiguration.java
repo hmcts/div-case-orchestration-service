@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -22,7 +20,6 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.logging.httpcomponents.OutboundRequestIdSettingInterceptor;
-import uk.gov.hmcts.reform.logging.httpcomponents.OutboundRequestLoggingInterceptor;
 
 import static java.util.Arrays.asList;
 
@@ -90,8 +87,6 @@ public class HttpConnectionConfiguration {
             .create()
             .useSystemProperties()
             .addInterceptorFirst(new OutboundRequestIdSettingInterceptor())
-            .addInterceptorFirst((HttpRequestInterceptor) new OutboundRequestLoggingInterceptor())
-            .addInterceptorLast((HttpResponseInterceptor) new OutboundRequestLoggingInterceptor())
             .setDefaultRequestConfig(config)
             .build();
 

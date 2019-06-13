@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
 
 @Component
 public class GetCaseWithId implements Task<UserDetails> {
@@ -28,11 +28,10 @@ public class GetCaseWithId implements Task<UserDetails> {
 
     @Override
     public UserDetails execute(TaskContext context, UserDetails payload) throws TaskException {
-        CaseDetails caseDetails;
-
         final String caseWorkerToken = authUtil.getCaseworkerToken();
-        final String caseId = String.valueOf(context.getTransientObject(CASE_ID_JSON_KEY));
-        caseDetails = caseMaintenanceClient.retrievePetitionById(
+        final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
+
+        CaseDetails caseDetails = caseMaintenanceClient.retrievePetitionById(
             caseWorkerToken,
             caseId
         );
@@ -43,7 +42,7 @@ public class GetCaseWithId implements Task<UserDetails> {
             );
         }
 
-        context.setTransientObject(CCD_CASE_DATA, caseDetails.getCaseData());
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
         return null;
     }

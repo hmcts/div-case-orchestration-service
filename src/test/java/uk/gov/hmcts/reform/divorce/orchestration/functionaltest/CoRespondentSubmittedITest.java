@@ -16,8 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
@@ -30,7 +30,6 @@ import java.util.Map;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -52,7 +51,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_COURT_ADDRESS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -100,7 +98,7 @@ public class CoRespondentSubmittedITest {
             CO_RESP_EMAIL_ADDRESS, TEST_EMAIL,
             CO_RESPONDENT_DEFENDS_DIVORCE, NO_VALUE
         );
-        CreateEvent caseEvent = CreateEvent.builder().eventId(CASE_ID)
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(CASE_ID)
                 .caseDetails(CaseDetails.builder()
                         .caseData(caseDetailMap)
                         .build())
@@ -108,12 +106,12 @@ public class CoRespondentSubmittedITest {
 
         CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
                 .builder()
-                .data(caseEvent.getCaseDetails().getCaseData())
+                .data(ccdCallbackRequest.getCaseDetails().getCaseData())
                 .build();
         String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
-                .content(ObjectMapperTestUtil.convertObjectToJsonString(caseEvent))
+                .content(ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(expectedResponse));
@@ -133,7 +131,7 @@ public class CoRespondentSubmittedITest {
         caseDetailMap.put(D_8_DIVORCE_UNIT, TEST_COURT);
 
 
-        CreateEvent caseEvent = CreateEvent.builder().eventId(EVENT_ID)
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(EVENT_ID)
                 .caseDetails(CaseDetails.builder()
                         .caseId(CASE_ID)
                         .caseData(caseDetailMap)
@@ -142,13 +140,13 @@ public class CoRespondentSubmittedITest {
 
         CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
             .builder()
-            .data(caseEvent.getCaseDetails().getCaseData())
+            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
             .build();
 
         String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
-                .content(ObjectMapperTestUtil.convertObjectToJsonString(caseEvent))
+                .content(ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(expectedResponse));
@@ -169,16 +167,5 @@ public class CoRespondentSubmittedITest {
         notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, CO_RESP_LAST_NAME);
         notificationTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, D8_ID);
         verify(mockClient).sendEmail(any(), eq(email), eq(notificationTemplateVars), any());
-    }
-
-    private void mockEmailClient(String email, Map<String, String> additionalData)
-            throws NotificationClientException {
-
-        Map<String, String> notificationTemplateVars = new HashMap<>(additionalData);
-        notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, CO_RESP_FIRST_NAME);
-        notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, CO_RESP_LAST_NAME);
-        notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, D8_ID);
-        when(mockClient.sendEmail(any(), eq(email), eq(notificationTemplateVars), any()))
-                .thenThrow(new NotificationClientException(new Exception("error")));
     }
 }

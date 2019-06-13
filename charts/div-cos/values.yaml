@@ -1,0 +1,18 @@
+java:
+    applicationPort: 4012
+    environment:
+        REFORM_SERVICE_NAME: "cos"
+        REFORM_TEAM: "div"
+        SLOT: "PRODUCTION"
+        SERVICE_AUTH_MICROSERVICE : "divorce_frontend"
+
+    keyVaults:
+        "div":
+            resourceGroup: div
+            secrets:
+                - ccd-submission-s2s-auth-secret
+                - div-doc-s2s-auth-secret
+                - idam-secret
+                - frontend-secret
+                - idam-citizen-password
+                - idam-caseworker-password

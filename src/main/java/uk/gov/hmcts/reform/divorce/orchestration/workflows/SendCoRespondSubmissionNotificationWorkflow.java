@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCoRespondentRespondedNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
@@ -44,10 +45,16 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
     private final GenericEmailNotification emailTask;
 
     @Autowired
+    private final SendPetitionerCoRespondentRespondedNotificationEmail petitionerEmailTask;
+
+    @Autowired
     private final TaskCommons taskCommons;
 
-    public Map<String, Object> run(CreateEvent caseRequestDetails) throws WorkflowException {
-        Map<String, Object> caseData = caseRequestDetails.getCaseDetails().getCaseData();
+    @Autowired
+    private final CcdUtil ccdUtil;
+
+    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         String caseNumber = (String) caseData.get(D_8_CASE_REFERENCE);
         String firstName = (String) caseData.get(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME);
@@ -67,7 +74,7 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
             try {
                 Court assignedCourt = taskCommons.getCourt(rdcName);
                 templateVars.put(NOTIFICATION_RDC_NAME_KEY, assignedCourt.getIdentifiableCentreName());
-                String formSubmissionDateLimit = CcdUtil.getFormattedDueDate(caseData, CO_RESPONDENT_DUE_DATE);
+                String formSubmissionDateLimit = ccdUtil.getFormattedDueDate(caseData, CO_RESPONDENT_DUE_DATE);
 
                 templateVars.put(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, formSubmissionDateLimit);
                 templateVars.put(NOTIFICATION_COURT_ADDRESS_KEY, assignedCourt.getFormattedAddress());
@@ -78,10 +85,11 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
         }
 
         return execute(new Task[] {
-            emailTask
+            emailTask,
+            petitionerEmailTask
             },
             caseData,
-            ImmutablePair.of(CASE_ID_JSON_KEY, caseRequestDetails.getCaseDetails().getCaseId()),
+            ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId()),
             ImmutablePair.of(NOTIFICATION_EMAIL, corespondentEmail),
             ImmutablePair.of(NOTIFICATION_TEMPLATE, template),
             ImmutablePair.of(NOTIFICATION_TEMPLATE_VARS, templateVars)

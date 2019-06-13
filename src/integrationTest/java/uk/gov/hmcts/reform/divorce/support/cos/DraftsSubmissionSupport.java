@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
 import java.util.Map;
 
-
 @Slf4j
 @Component
 public class DraftsSubmissionSupport {

@@ -21,12 +21,13 @@
   "petitionerLastName":"Smith",
   "livingArrangementsLiveTogether":"No",
   "petitionerFirstName":"John",
-  "courts":"eastMidlands",
+  "courts":"serviceCentre",
   "claimsCosts":"Yes",
   "reasonForDivorceShowDesertion":"true",
   "jurisdictionConfidentLegal":"Yes",
   "respondentLastName":"Jamed",
   "reasonForDivorceShowTwoYearsSeparation":"true",
+  "respEmailAddress":"respondent@notifications.service.gov.uk",
   "petitionerCorrespondenceAddress":{
     "postcodeManual":null,
     "addressConfirmed":"true",
@@ -113,9 +114,9 @@
       "poBox": "PO Box 10447",
       "postCode": "NG2 9QN",
       "openingHours": "Telephone Enquiries from: 8.30am to 5pm",
-      "email": "divorcecase@justice.gov.uk",
+      "email": "contactdivorce@justice.gov.uk",
       "phoneNumber": "0300 303 0642",
-      "siteId": "AA01"
+      "siteId": "AA07"
     }
   },
   "reasonForDivorceShowFiveYearsSeparation":"true",
@@ -245,6 +246,6 @@
     "postcodeError":null,
     "url":null
   },
-  "receivedAosFromResp": "YES",
-  "receivedAosFromRespDate": "2018-10-22"
+  "receivedAosFromResp": "Yes",
+  "receivedAosFromRespDate": "2018-10-22T00:00:00.000+0000"
 }
