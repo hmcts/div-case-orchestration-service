@@ -29,3 +29,7 @@ output "aos_responded_days_to_complete" {
 output "aos_responded_awaiting_answer_days_to_respond" {
   value = "${var.aos_responded_awaiting_answer_days_to_respond}"
 }
+
+output "scheudler_schedules_create_bulk_cases_cron" {
+  value = "${var.scheudler_schedules_create_bulk_cases_cron}"
+}

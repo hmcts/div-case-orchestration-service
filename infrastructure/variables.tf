@@ -83,3 +83,8 @@ variable "scheduler_re_create" {
 variable "scheduler_enabled" {
   default = "false"
 }
+
+variable "scheudler_schedules_create_bulk_cases_cron" {
+  type    = "string"
+  default = "0 0 4 ? * * *"
+}
