@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
@@ -30,16 +31,6 @@ import javax.ws.rs.core.MediaType;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_ANSWERS_LINK;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERATE_AOS_INVITATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_LINK;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
 /**
  * Controller class for callback endpoints.
@@ -111,10 +102,10 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         Map<String, Object> response = caseOrchestrationService.processPbaPayment(ccdCallbackRequest, authorizationToken);
 
-        if (response != null && response.containsKey(SOLICITOR_VALIDATION_ERROR_KEY)) {
+        if (response != null && response.containsKey(OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(
                 CcdCallbackResponse.builder()
-                    .errors((List<String>) response.get(SOLICITOR_VALIDATION_ERROR_KEY))
+                    .errors((List<String>) response.get(OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY))
                     .build());
         }
 
@@ -216,7 +207,7 @@ public class CallbackController {
         Map<String, Object> response = caseOrchestrationService.ccdCallbackBulkPrintHandler(ccdCallbackRequest,
             authorizationToken);
 
-        if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
+        if (response != null && response.containsKey(OrchestrationConstants.BULK_PRINT_ERROR_KEY)) {
             return ResponseEntity.ok(
                 CcdCallbackResponse.builder()
                     .data(ImmutableMap.of())
@@ -243,13 +234,13 @@ public class CallbackController {
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> petitionIssuedCallback(
         @RequestHeader(value = "Authorization") String authorizationToken,
-        @RequestParam(value = GENERATE_AOS_INVITATION, required = false)
-        @ApiParam(GENERATE_AOS_INVITATION) boolean generateAosInvitation,
+        @RequestParam(value = OrchestrationConstants.GENERATE_AOS_INVITATION, required = false)
+        @ApiParam(OrchestrationConstants.GENERATE_AOS_INVITATION) boolean generateAosInvitation,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         Map<String, Object> response = caseOrchestrationService.handleIssueEventCallback(ccdCallbackRequest, authorizationToken,
             generateAosInvitation);
 
-        if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
+        if (response != null && response.containsKey(OrchestrationConstants.VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(
                 CcdCallbackResponse.builder()
                     .errors(getErrors(response))
@@ -338,8 +329,8 @@ public class CallbackController {
             callbackResponseBuilder.data(
                 caseOrchestrationService.processSolDnDoc(
                     ccdCallbackRequest,
-                    DOCUMENT_TYPE_PETITION,
-                    MINI_PETITION_LINK
+                    OrchestrationConstants.DOCUMENT_TYPE_PETITION,
+                    OrchestrationConstants.MINI_PETITION_LINK
                 )
             );
         } catch (CaseOrchestrationServiceException exception) {
@@ -368,8 +359,8 @@ public class CallbackController {
             callbackResponseBuilder.data(
                 caseOrchestrationService.processSolDnDoc(
                     ccdCallbackRequest,
-                    DOCUMENT_TYPE_RESPONDENT_ANSWERS,
-                    RESP_ANSWERS_LINK
+                    OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS,
+                    OrchestrationConstants.RESP_ANSWERS_LINK
                 )
             );
         } catch (CaseOrchestrationServiceException exception) {
@@ -398,8 +389,8 @@ public class CallbackController {
             callbackResponseBuilder.data(
                 caseOrchestrationService.processSolDnDoc(
                     ccdCallbackRequest,
-                    DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS,
-                    CO_RESP_ANSWERS_LINK
+                    OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS,
+                    OrchestrationConstants.CO_RESP_ANSWERS_LINK
                 )
             );
         } catch (CaseOrchestrationServiceException exception) {
@@ -515,8 +506,8 @@ public class CallbackController {
         try {
             Map<String, Object> response = caseOrchestrationService.processSeparationFields(ccdCallbackRequest);
 
-            if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
-                callbackResponseBuilder.errors(singletonList((String)response.get(VALIDATION_ERROR_KEY)));
+            if (response != null && response.containsKey(OrchestrationConstants.VALIDATION_ERROR_KEY)) {
+                callbackResponseBuilder.errors(singletonList((String)response.get(OrchestrationConstants.VALIDATION_ERROR_KEY)));
             } else {
                 callbackResponseBuilder.data(response);
             }
@@ -558,8 +549,42 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+
+    @PostMapping(path = "/dn-cost-options",
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Callback to get dynamic list of cost options in DN.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
+            + "attached to the case",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> dnCostOptions(
+        @RequestBody @ApiParam("CaseData")
+            CcdCallbackRequest ccdCallbackRequest) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            Map<String, Object> response = caseOrchestrationService.fetchDynamicList(
+                ccdCallbackRequest, OrchestrationConstants.DIVORCE_COST_OPTIONS_DN
+            );
+
+            if (response != null && response.containsKey(OrchestrationConstants.VALIDATION_ERROR_KEY)) {
+                callbackResponseBuilder.errors(singletonList((String)response.get(OrchestrationConstants.VALIDATION_ERROR_KEY)));
+            } else {
+                callbackResponseBuilder.data(response);
+            }
+        } catch (CaseOrchestrationServiceException exception) {
+            log.error("Failed processing calculateSeparationFields callback", exception);
+            callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
     private List<String> getErrors(Map<String, Object> response) {
-        ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
+        ValidationResponse validationResponse = (ValidationResponse) response.get(OrchestrationConstants.VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();
     }
 }

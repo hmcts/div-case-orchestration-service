@@ -54,6 +54,7 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_SUBMISSION_AOS_COMPLETED_EVENT_ID = "co-RespAOSCompleted";
     public static final String CO_RESPONDENT_SUBMISSION_AWAITING_DN_EVENT_ID = "co-RespAwaitingDN";
     public static final String CO_RESPONDENT_SUBMISSION_AWAITING_LA_EVENT_ID = "co-RespAwaitingLAReferral";
+    public static final String RESP_AGREE_TO_COSTS = "RespAgreeToCosts";
     public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "RespAdmitOrConsentToFact";
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
@@ -278,4 +279,6 @@ public class OrchestrationConstants {
     public static final String EMAIL_ERROR_KEY
         = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
 
+    //Dynamic List ID in CCD
+    public static final String DIVORCE_COST_OPTIONS_DN = "DivorceCostsOptionDN";
 }
