@@ -87,7 +87,6 @@ public class BulkCaseController {
             @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-                .data(orchestrationService.updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails().getCaseData()))
-                .build());
+                .data(orchestrationService.updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails())).build());
     }
 }

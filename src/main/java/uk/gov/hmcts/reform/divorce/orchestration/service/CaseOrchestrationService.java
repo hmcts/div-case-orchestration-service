@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
@@ -102,5 +103,5 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
-    Map<String, Object> updateBulkCaseDnPronounce(Map<String, Object> caseData) throws WorkflowException;
+    Map<String, Object> updateBulkCaseDnPronounce(CaseDetails caseDetails) throws WorkflowException;
 }

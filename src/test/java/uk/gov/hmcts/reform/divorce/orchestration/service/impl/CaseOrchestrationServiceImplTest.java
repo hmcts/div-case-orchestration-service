@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
@@ -52,7 +53,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAos
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateBulkCaseDnPronounceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 
@@ -193,7 +193,7 @@ public class CaseOrchestrationServiceImplTest {
     private DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
 
     @Mock
-    private UpdateBulkCaseDnPronounceWorkflow updateBulkCaseDnPronounceWorkflow;
+    private BulkCaseUpdateDnPronounceDatesWorkflow bulkCaseUpdateDnPronounceDatesWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -924,10 +924,10 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldCallWorkflow_ForBulkCaseUpdatePronouncementDate() throws WorkflowException, CaseOrchestrationServiceException {
-        when(updateBulkCaseDnPronounceWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData()))
+        when(bulkCaseUpdateDnPronounceDatesWorkflow.run(ccdCallbackRequest.getCaseDetails()))
                 .thenReturn(singletonMap("returnedKey", "returnedValue"));
 
-        Map<String, Object> returnedPayload = classUnderTest.updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails().getCaseData());
+        Map<String, Object> returnedPayload = classUnderTest.updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails());
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
     }
