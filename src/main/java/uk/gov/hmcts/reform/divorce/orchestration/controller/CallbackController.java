@@ -497,6 +497,37 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    @PostMapping(path = "/calculate-separation-fields",
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Callback to calculate ccd separation fields based on provided separation dates.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
+            + "attached to the case",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> calculateSeparationFields(
+        @RequestBody @ApiParam("CaseData")
+            CcdCallbackRequest ccdCallbackRequest) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            Map<String, Object> response = caseOrchestrationService.processSeparationFields(ccdCallbackRequest);
+
+            if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
+                callbackResponseBuilder.errors(singletonList((String)response.get(VALIDATION_ERROR_KEY)));
+            } else {
+                callbackResponseBuilder.data(response);
+            }
+        } catch (WorkflowException exception) {
+            log.error("Failed processing calculateSeparationFields callback", exception);
+            callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
     @PostMapping(path = "/dn-about-to-be-granted",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles CCD case data just before Decree Nisi is granted")
