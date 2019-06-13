@@ -231,7 +231,7 @@ public class BulkPrintTest extends IdamTestSupport {
         mockEmailClientError();
         stubSendLetterService(HttpStatus.OK);
 
-        ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", false);
+        ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", true);
 
         final String petitionerFirstName = "petitioner first name";
         final String petitionerLastName = "petitioner last name";
@@ -267,7 +267,7 @@ public class BulkPrintTest extends IdamTestSupport {
         stubFeatureToggleService(true);
         stubSendLetterService(HttpStatus.INTERNAL_SERVER_ERROR);
 
-        ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", false);
+        ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", true);
         
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .data(emptyMap())
