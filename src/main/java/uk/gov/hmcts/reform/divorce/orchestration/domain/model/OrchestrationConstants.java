@@ -111,12 +111,9 @@ public class OrchestrationConstants {
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
     public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
-    public static final String AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
     public static final String AWAITING_PRONOUNCEMENT = "AwaitingPronouncement";
     public static final String AWAITING_CLARIFICATION = "AwaitingClarification";
-    public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String DEFENDED = "DefendedDivorce";
-    public static final String DN_AWAITING = "DNAwaiting";
 
     // CCD Co-Respondent Fields
     public static final String CO_RESP_LINKED_TO_CASE = "CoRespLinkedToCase";
@@ -184,11 +181,6 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
     public static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
 
-    // CCD Respondent Fields
-    public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
-    public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
-    public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
-    public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
 
     // Courts
     public static final String DIVORCE_CENTRE_SITEID_JSON_KEY = "D8SelectedDivorceCentreSiteId";
