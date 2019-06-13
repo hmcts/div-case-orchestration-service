@@ -8,6 +8,7 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -122,7 +123,40 @@ public class CcdCallbackBulkPrintWorkflowTest {
     }
 
     @Test
-    public void whenSolicitorRepresentingRespondent() throws WorkflowException, TaskException {
+    public void whenSolicitorRepresentingRespondentAndRespSolicitorFeatureToggleDisabled() throws WorkflowException, TaskException {
+
+        ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", false);
+
+        payload.put(D8_RESPONDENT_SOLICITOR_EMAIL, "foo@bar.com");
+
+        when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
+        when(modifyDueDate.execute(context, payload)).thenReturn(payload);
+        when(respondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
+        when(coRespondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
+
+        Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
+        assertThat(response, is(payload));
+
+        final InOrder inOrder = inOrder(
+            fetchPrintDocsFromDmStore,
+            respondentAosPackPrinter,
+            coRespondentAosPackPrinter,
+            modifyDueDate
+        );
+
+        inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);
+        inOrder.verify(respondentAosPackPrinter).execute(context, payload);
+        inOrder.verify(coRespondentAosPackPrinter).execute(context, payload);
+        inOrder.verify(modifyDueDate).execute(context, payload);
+
+        verifyZeroInteractions(respondentPinGenerator);
+        verifyZeroInteractions(respondentSolicitorAosEmailSender);
+    }
+
+    @Test
+    public void whenSolicitorRepresentingRespondentAndRespSolicitorFeatureToggleEnabled() throws WorkflowException, TaskException {
+
+        ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", true);
 
         payload.put(D8_RESPONDENT_SOLICITOR_EMAIL, "foo@bar.com");
 
@@ -136,11 +170,11 @@ public class CcdCallbackBulkPrintWorkflowTest {
         assertThat(response, is(payload));
 
         final InOrder inOrder = inOrder(
-                fetchPrintDocsFromDmStore,
-                respondentPinGenerator,
-                respondentSolicitorAosEmailSender,
-                coRespondentAosPackPrinter,
-                modifyDueDate
+            fetchPrintDocsFromDmStore,
+            respondentPinGenerator,
+            respondentSolicitorAosEmailSender,
+            coRespondentAosPackPrinter,
+            modifyDueDate
         );
 
         inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -44,19 +45,23 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
 
     private final ModifyDueDate modifyDueDate;
 
+    private final boolean featureToggleRespSolicitor;
+
     @Autowired
     public CcdCallbackBulkPrintWorkflow(final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore,
                                         final RespondentAosPackPrinter respondentAosPackPrinter,
                                         final CoRespondentAosPackPrinter coRespondentAosPackPrinter,
                                         final RespondentPinGenerator respondentPinGenerator,
                                         final SendRespondentSolicitorAosInvitationEmail respondentSolicitorAosEmailSender,
-                                        final ModifyDueDate modifyDueDate) {
+                                        final ModifyDueDate modifyDueDate,
+                                        @Value("${feature-toggle.toggle.feature_resp_solicitor_details}") String featureToggleRespSolicitor) {
         this.fetchPrintDocsFromDmStore = fetchPrintDocsFromDmStore;
         this.respondentAosPackPrinter = respondentAosPackPrinter;
         this.coRespondentAosPackPrinter = coRespondentAosPackPrinter;
         this.respondentPinGenerator = respondentPinGenerator;
         this.respondentSolicitorAosEmailSender = respondentSolicitorAosEmailSender;
         this.modifyDueDate = modifyDueDate;
+        this.featureToggleRespSolicitor = Boolean.valueOf(featureToggleRespSolicitor);
     }
 
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
@@ -78,9 +83,11 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
     }
 
     private List<Task> getRespondentAosCommunicationTasks(final Map<String, Object> caseData) {
-        final String solicitorEmail = (String) caseData.get(D8_RESPONDENT_SOLICITOR_EMAIL);
-        if (isNotEmpty(solicitorEmail)) {
-            return asList(respondentPinGenerator, respondentSolicitorAosEmailSender);
+        if (featureToggleRespSolicitor) {
+            final String solicitorEmail = (String) caseData.get(D8_RESPONDENT_SOLICITOR_EMAIL);
+            if (isNotEmpty(solicitorEmail)) {
+                return asList(respondentPinGenerator, respondentSolicitorAosEmailSender);
+            }
         }
         return singletonList(respondentAosPackPrinter);
     }
