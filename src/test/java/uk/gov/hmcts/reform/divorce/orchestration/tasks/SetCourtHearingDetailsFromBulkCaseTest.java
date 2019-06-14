@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -20,6 +19,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
@@ -48,11 +48,11 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
 
     @Test
     public void givenCourtHearingDetailsFromBulkCase_whenSetCourtHearingDetailsOnCcdCase_thenReturnFormattedData() throws TaskException {
-        Map<String, Object> caseData = ImmutableMap.of(
+        Map<String, Object> bulkCaseData = ImmutableMap.of(
             ID, TEST_CASE_ID,
             CCD_CASE_DATA_FIELD, ImmutableMap.of(
-            COURT_NAME_CCD_FIELD, COURT_NAME,
-            COURT_HEARING_DATE, COURT_HEARING_DATE_TIME
+                COURT_NAME_CCD_FIELD, COURT_NAME,
+                COURT_HEARING_DATE_CCD_FIELD, COURT_HEARING_DATE_TIME
             ));
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -72,7 +72,7 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
 
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        assertEquals(expectedResult, classUnderTest.execute(context, caseData));
+        assertEquals(expectedResult, classUnderTest.execute(context, bulkCaseData));
     }
 
     @Test
@@ -81,13 +81,13 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
             ID, TEST_CASE_ID,
             CCD_CASE_DATA_FIELD, ImmutableMap.of(
             COURT_NAME_CCD_FIELD, COURT_NAME,
-            BulkCaseConstants.COURT_HEARING_DATE, COURT_HEARING_DATE_TIME
+            COURT_HEARING_DATE_CCD_FIELD, COURT_HEARING_DATE_TIME
         ));
 
         CollectionMember<Map<String, Object>> existingDateTimeCollection = new CollectionMember<>();
         existingDateTimeCollection.setValue(ImmutableMap.of(
-                DATE_OF_HEARING_CCD_FIELD, "1999-10-10",
-                TIME_OF_HEARING_CCD_FIELD, "12:55"
+            DATE_OF_HEARING_CCD_FIELD, "1999-10-10",
+            TIME_OF_HEARING_CCD_FIELD, "12:55"
         ));
 
         List<CollectionMember> courtHearings = new ArrayList<>();
@@ -99,15 +99,15 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
 
         CollectionMember<Map<String, Object>> newDateTimeCollection = new CollectionMember<>();
         newDateTimeCollection.setValue(ImmutableMap.of(
-                DATE_OF_HEARING_CCD_FIELD, COURT_HEARING_DATE,
-                TIME_OF_HEARING_CCD_FIELD, COURT_HEARING_TIME
+            DATE_OF_HEARING_CCD_FIELD, COURT_HEARING_DATE,
+            TIME_OF_HEARING_CCD_FIELD, COURT_HEARING_TIME
         ));
 
         courtHearings.add(newDateTimeCollection);
 
         Map<String, Object> expectedResult = ImmutableMap.of(
             COURT_NAME_CCD_FIELD, COURT_NAME,
-                DATETIME_OF_HEARING_CCD_FIELD, courtHearings
+            DATETIME_OF_HEARING_CCD_FIELD, courtHearings
         );
 
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);

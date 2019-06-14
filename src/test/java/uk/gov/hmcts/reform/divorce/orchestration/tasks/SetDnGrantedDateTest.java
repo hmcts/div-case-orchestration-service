@@ -14,7 +14,7 @@ import java.util.HashMap;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_ELIGIBLE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_KEY;
 
@@ -30,7 +30,7 @@ public class SetDnGrantedDateTest {
     @Test
     public void testGenerateIssueDateSetsDateToNow() throws TaskException {
         HashMap<String, Object> payload = new HashMap<>();
-        payload.put(COURT_HEARING_DATE, "2000-01-01T10:20:55.000");
+        payload.put(COURT_HEARING_DATE_CCD_FIELD, "2000-01-01T10:20:55.000");
 
         LocalDate courtHearingLocalDate = LocalDate.of(2000, 1, 1);
         when(ccdUtil.parseDecreeAbsoluteEligibleDate(courtHearingLocalDate)).thenCallRealMethod();

@@ -20,7 +20,7 @@ public class BulkCaseConstants {
     public static final String SEARCH_RESULT_KEY = "SearchResult";
 
     public static final String COURT_NAME_CCD_FIELD = "CourtName";
-    public static final String COURT_HEARING_DATE = "hearingDate";
+    public static final String COURT_HEARING_DATE_CCD_FIELD = "hearingDate";
 
     public static final String BULKCASE_CREATION_ERROR = "BulKCaseCreation_Error";
 
