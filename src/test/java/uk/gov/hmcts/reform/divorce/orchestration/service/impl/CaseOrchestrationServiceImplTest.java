@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarifi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
@@ -182,6 +183,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
+
+    @Mock
+    private SeparationFieldsWorkflow separationFieldsWorkflow;
 
     @Mock
     private ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
@@ -844,6 +848,24 @@ public class CaseOrchestrationServiceImplTest {
         expectedException.expectMessage(is("This operation threw an exception."));
 
         classUnderTest.processAosSolicitorNominated(ccdCallbackRequest);
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_ForProcessSeparationFields() throws WorkflowException {
+        when(separationFieldsWorkflow.run(eq(ccdCallbackRequest.getCaseDetails().getCaseData())))
+            .thenReturn(requestPayload);
+
+        assertThat(classUnderTest.processSeparationFields(ccdCallbackRequest),
+            is(equalTo(requestPayload)));
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldThrowException_ForProcessSeparationFields_WhenWorkflowExceptionIsCaught()
+        throws WorkflowException {
+        when(separationFieldsWorkflow.run(eq(ccdCallbackRequest.getCaseDetails().getCaseData())))
+            .thenThrow(new WorkflowException("This operation threw an exception"));
+
+        classUnderTest.processSeparationFields(ccdCallbackRequest);
     }
 
     @Test
