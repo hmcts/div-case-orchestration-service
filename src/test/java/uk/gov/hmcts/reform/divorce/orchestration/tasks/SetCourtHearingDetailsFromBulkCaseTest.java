@@ -20,6 +20,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
@@ -50,8 +51,8 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
         Map<String, Object> caseData = ImmutableMap.of(
             ID, TEST_CASE_ID,
             CCD_CASE_DATA_FIELD, ImmutableMap.of(
-            BulkCaseConstants.COURT_NAME, COURT_NAME,
-            BulkCaseConstants.COURT_HEARING_DATE, COURT_HEARING_DATE_TIME
+            COURT_NAME_CCD_FIELD, COURT_NAME,
+            COURT_HEARING_DATE, COURT_HEARING_DATE_TIME
             ));
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -65,7 +66,7 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
         ));
 
         Map<String, Object> expectedResult = ImmutableMap.of(
-            BulkCaseConstants.COURT_NAME, COURT_NAME,
+            COURT_NAME_CCD_FIELD, COURT_NAME,
             DATETIME_OF_HEARING_CCD_FIELD, Collections.singletonList(expectedDateTimeCollection)
         );
 
@@ -79,7 +80,7 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
         Map<String, Object> caseData = ImmutableMap.of(
             ID, TEST_CASE_ID,
             CCD_CASE_DATA_FIELD, ImmutableMap.of(
-            BulkCaseConstants.COURT_NAME, COURT_NAME,
+            COURT_NAME_CCD_FIELD, COURT_NAME,
             BulkCaseConstants.COURT_HEARING_DATE, COURT_HEARING_DATE_TIME
         ));
 
@@ -105,7 +106,7 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
         courtHearings.add(newDateTimeCollection);
 
         Map<String, Object> expectedResult = ImmutableMap.of(
-            BulkCaseConstants.COURT_NAME, COURT_NAME,
+            COURT_NAME_CCD_FIELD, COURT_NAME,
                 DATETIME_OF_HEARING_CCD_FIELD, courtHearings
         );
 

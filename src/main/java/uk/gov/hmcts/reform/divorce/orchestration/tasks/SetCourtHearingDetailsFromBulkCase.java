@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
@@ -30,7 +30,7 @@ public class SetCourtHearingDetailsFromBulkCase implements Task<Map<String,Objec
         Map<String, Object> bulkCaseData = (Map<String, Object>) bulkCaseDetails.get(CCD_CASE_DATA_FIELD);
         Map<String, Object> courtHearingDetails = new HashMap<>();
 
-        courtHearingDetails.put(COURT_NAME, bulkCaseData.get(COURT_NAME));
+        courtHearingDetails.put(COURT_NAME_CCD_FIELD, bulkCaseData.get(COURT_NAME_CCD_FIELD));
 
         Map<String, Object> dateAndTimeOfHearing = new HashMap<>();
 
