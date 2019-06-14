@@ -498,25 +498,28 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/calculate-separation-fields",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+            consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Callback to calculate ccd separation fields based on provided separation dates.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
-            + "attached to the case",
-            response = CcdCallbackResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Internal Server Error")})
+            @ApiResponse(
+                    code = 200,
+                    message = "Callback was processed successfully or in case of an error, message is attached to the case",
+                    response = CcdCallbackResponse.class
+            ),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> calculateSeparationFields(
-        @RequestBody @ApiParam("CaseData")
-            CcdCallbackRequest ccdCallbackRequest) {
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
+            @RequestHeader(value = "Authorization") String authorizationToken) {
 
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
-            Map<String, Object> response = caseOrchestrationService.processSeparationFields(ccdCallbackRequest);
+            Map<String, Object> response = caseOrchestrationService
+                    .processSeparationFields(ccdCallbackRequest, authorizationToken);
 
             if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
-                callbackResponseBuilder.errors(singletonList((String)response.get(VALIDATION_ERROR_KEY)));
+                callbackResponseBuilder.errors(singletonList((String) response.get(VALIDATION_ERROR_KEY)));
             } else {
                 callbackResponseBuilder.data(response);
             }

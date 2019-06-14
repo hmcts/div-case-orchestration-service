@@ -606,10 +606,11 @@ public class CallbackControllerTest {
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder().data(Collections.emptyMap()).build();
 
-        when(caseOrchestrationService.processSeparationFields(ccdCallbackRequest))
+        when(caseOrchestrationService.processSeparationFields(ccdCallbackRequest, AUTH_TOKEN))
             .thenReturn(Collections.emptyMap());
 
-        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.calculateSeparationFields(ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest
+                .calculateSeparationFields(ccdCallbackRequest, AUTH_TOKEN);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
@@ -631,10 +632,11 @@ public class CallbackControllerTest {
             .errors(expectedError)
             .build();
 
-        when(caseOrchestrationService.processSeparationFields(ccdCallbackRequest))
+        when(caseOrchestrationService.processSeparationFields(ccdCallbackRequest, AUTH_TOKEN))
             .thenReturn(caseData);
 
-        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.calculateSeparationFields(ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest
+                .calculateSeparationFields(ccdCallbackRequest, AUTH_TOKEN);
 
         assertEquals(HttpStatus.OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());

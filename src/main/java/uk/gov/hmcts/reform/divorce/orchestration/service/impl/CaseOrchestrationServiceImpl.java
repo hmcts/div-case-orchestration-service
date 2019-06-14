@@ -504,10 +504,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest)
+    public Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest, String authToken)
         throws WorkflowException {
 
-        Map<String, Object> payLoad =  separationFieldsWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+        Map<String, Object> payLoad =  separationFieldsWorkflow.run(ccdCallbackRequest.getCaseDetails(), authToken);
 
         if (separationFieldsWorkflow.errors().isEmpty()) {
             return payLoad;
