@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -30,10 +31,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_SERVICE_CENTRE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EAST_MIDLANDS_DIVORCE_UNIT;
 
 @Component
 @Slf4j
@@ -116,8 +115,9 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private boolean isServiceCentreOrNottinghamDivorceUnit(Map<String, Object> caseData) {
         final String court = String.valueOf(caseData.get(DIVORCE_UNIT_JSON_KEY));
-        return DIVORCE_UNIT_SERVICE_CENTRE.equalsIgnoreCase(court)
-            || EAST_MIDLANDS_DIVORCE_UNIT.equalsIgnoreCase(court);
+
+        return CourtEnum.EASTMIDLANDS.getId().equalsIgnoreCase(court)
+            || CourtEnum.SERVICE_CENTER.getId().equalsIgnoreCase(court);
     }
 
     @SuppressWarnings("Duplicates")

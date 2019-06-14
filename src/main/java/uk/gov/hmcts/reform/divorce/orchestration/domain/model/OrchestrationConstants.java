@@ -190,11 +190,9 @@ public class OrchestrationConstants {
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
 
-    // Courts
+    // Court Data Keys
     public static final String DIVORCE_CENTRE_SITEID_JSON_KEY = "D8SelectedDivorceCentreSiteId";
     public static final String DIVORCE_UNIT_JSON_KEY = "D8DivorceUnit";
-    public static final String DIVORCE_UNIT_SERVICE_CENTRE = "serviceCentre";
-    public static final String EAST_MIDLANDS_DIVORCE_UNIT = "eastMidlands";
 
     // Document Generator
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";
