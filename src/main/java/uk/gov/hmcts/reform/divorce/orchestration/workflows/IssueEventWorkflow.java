@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_SERVICE_CENTRE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EAST_MIDLANDS_DIVORCE_UNIT;
 
 @Component
 @Slf4j
@@ -87,7 +88,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         final Map<String, Object> caseData = caseDetails.getCaseData();
 
-        if (generateAosInvitation && isServiceCentreDivorceUnit(caseData)) {
+        if (generateAosInvitation && isServiceCentreOrNottinghamDivorceUnit(caseData)) {
             tasks.add(respondentPinGenerator);
             tasks.add(respondentLetterGenerator);
 
@@ -113,8 +114,10 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         );
     }
 
-    private boolean isServiceCentreDivorceUnit(Map<String, Object> caseData) {
-        return DIVORCE_UNIT_SERVICE_CENTRE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_UNIT_JSON_KEY)));
+    private boolean isServiceCentreOrNottinghamDivorceUnit(Map<String, Object> caseData) {
+        final String court = String.valueOf(caseData.get(DIVORCE_UNIT_JSON_KEY));
+        return DIVORCE_UNIT_SERVICE_CENTRE.equalsIgnoreCase(court)
+            || EAST_MIDLANDS_DIVORCE_UNIT.equalsIgnoreCase(court);
     }
 
     @SuppressWarnings("Duplicates")

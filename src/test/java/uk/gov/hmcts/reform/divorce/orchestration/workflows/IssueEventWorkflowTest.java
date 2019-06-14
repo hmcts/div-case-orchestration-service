@@ -42,6 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EAST_MIDLANDS_DIVORCE_UNIT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueEventWorkflowTest {
@@ -126,7 +127,32 @@ public class IssueEventWorkflowTest {
 
     @Test
     public void givenGenerateAosInvitationIsTrueAndIsServiceCentre_whenRun_thenProceedAsExpected() throws WorkflowException {
-        payload.put("D8DivorceUnit", "serviceCentre");
+        payload.put("D8DivorceUnit", DIVORCE_UNIT_SERVICE_CENTRE);
+
+        //Given
+        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(setIssueDate.execute(context, payload)).thenReturn(payload);
+        when(petitionGenerator.execute(context, payload)).thenReturn(payload);
+        when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
+        when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
+        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+
+        //When
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
+
+        //Then
+        assertThat(response, is(payload));
+
+        verifyZeroInteractions(getPetitionIssueFee);
+        verifyZeroInteractions(coRespondentPinGenerator);
+        verifyZeroInteractions(coRespondentLetterGenerator);
+    }
+
+    @Test
+    public void givenGenerateAosInvitationIsTrueAndIsNottinghamDivorceUnit_whenRun_thenProceedAsExpected() throws WorkflowException {
+        payload.put("D8DivorceUnit", EAST_MIDLANDS_DIVORCE_UNIT);
 
         //Given
         when(validateCaseData.execute(context, payload)).thenReturn(payload);

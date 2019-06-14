@@ -458,7 +458,7 @@ public class CallbackController {
         try {
             callbackResponseBuilder.data(caseOrchestrationService
                 .handleDocumentGenerationCallback(ccdCallbackRequest, authorizationToken, templateId, documentType, filename));
-            log.info("Generating document {} for case {}. Case id: {}", documentType, caseId);
+            log.info("Generating document {} for case {}", documentType, caseId);
         } catch (WorkflowException exception) {
             log.error("Document generation failed. Case id:  {}", caseId, exception);
             callbackResponseBuilder.errors(asList(exception.getMessage()));
