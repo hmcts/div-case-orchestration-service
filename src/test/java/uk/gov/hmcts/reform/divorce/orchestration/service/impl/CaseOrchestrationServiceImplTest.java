@@ -53,6 +53,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateBulkCaseDnPronounceWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDynamicListWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 
@@ -84,6 +85,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COST_OPTIONS_DN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 
@@ -194,6 +196,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private UpdateBulkCaseDnPronounceWorkflow updateBulkCaseDnPronounceWorkflow;
+
+    @Mock
+    private UpdateDynamicListWorkflow updateDynamicListWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -930,6 +935,28 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> returnedPayload = classUnderTest.updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails().getCaseData());
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_ForFetchDynamicList() throws WorkflowException, CaseOrchestrationServiceException {
+        when(updateDynamicListWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(DIVORCE_COST_OPTIONS_DN)))
+            .thenReturn(requestPayload);
+
+        assertThat(classUnderTest.fetchDynamicList(ccdCallbackRequest, DIVORCE_COST_OPTIONS_DN),
+            is(equalTo(requestPayload)));
+    }
+
+    @Test
+    public void shouldThrowException_ForFetchDynamicList_WhenWorkflowExceptionIsCaught()
+        throws WorkflowException, CaseOrchestrationServiceException {
+        when(updateDynamicListWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(DIVORCE_COST_OPTIONS_DN)))
+            .thenThrow(new WorkflowException("This operation threw an exception"));
+
+        expectedException.expect(CaseOrchestrationServiceException.class);
+        expectedException.expectMessage(is("This operation threw an exception"));
+        expectedException.expectCause(is(instanceOf(WorkflowException.class)));
+
+        classUnderTest.fetchDynamicList(ccdCallbackRequest, DIVORCE_COST_OPTIONS_DN);
     }
 
     @After

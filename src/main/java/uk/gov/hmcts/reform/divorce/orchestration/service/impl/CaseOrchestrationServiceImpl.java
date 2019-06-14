@@ -117,7 +117,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
     private final DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
     private final UpdateBulkCaseDnPronounceWorkflow updateBulkCaseDnPronounceWorkflow;
-
     private final UpdateDynamicListWorkflow updateDynamicListWorkflow;
 
     @Override

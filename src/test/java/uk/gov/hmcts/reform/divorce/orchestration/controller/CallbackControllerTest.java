@@ -692,4 +692,45 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getErrors(), hasItem(equalTo("An error happened when processing this request.")));
         verify(caseOrchestrationService).processCaseBeforeDecreeNisiIsGranted(eq(ccdCallbackRequest));
     }
+
+    @Test
+    public void testDnCostOptions() throws CaseOrchestrationServiceException {
+        Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(incomingPayload)
+                .build())
+            .build();
+
+        when(caseOrchestrationService
+            .fetchDynamicList(incomingRequest, OrchestrationConstants.DIVORCE_COST_OPTIONS_DN)
+        ).thenReturn(incomingPayload);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnCostOptions(incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+        verify(caseOrchestrationService)
+            .fetchDynamicList(incomingRequest, OrchestrationConstants.DIVORCE_COST_OPTIONS_DN);
+    }
+
+    @Test
+    public void testDnCostOptionsPopulatesErrorsIfExceptionIsThrown() throws CaseOrchestrationServiceException {
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .build())
+            .build();
+
+        when(caseOrchestrationService
+            .fetchDynamicList(incomingRequest, OrchestrationConstants.DIVORCE_COST_OPTIONS_DN)
+        ).thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnCostOptions(incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
+        verify(caseOrchestrationService)
+            .fetchDynamicList(incomingRequest, OrchestrationConstants.DIVORCE_COST_OPTIONS_DN);
+    }
 }
