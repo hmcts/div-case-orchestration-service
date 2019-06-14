@@ -67,7 +67,7 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
                 if (retryCount > 0) {
                     exponentialWaitTime(retryCount);
                 }
-                retryCases = handlerFailedCases(retryCases, bulkCaseId, authToken, failedCases, bulkCaseResponse);
+                retryCases = handleFailedCases(retryCases, bulkCaseId, authToken, failedCases, bulkCaseResponse);
                 retryCount ++;
             }
 
@@ -82,11 +82,11 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
         return failedCases.isEmpty();
     }
 
-    private List<Map<String, Object>> handlerFailedCases(List<Map<String, Object>> caseList,
-                                                         String bulkCaseId,
-                                                         String authToken,
-                                                         List<Map<String, Object>> failedCasesToRetry,
-                                                         Map<String, Object> bulkCaseData) {
+    private List<Map<String, Object>> handleFailedCases(List<Map<String, Object>> caseList,
+                                                        String bulkCaseId,
+                                                        String authToken,
+                                                        List<Map<String, Object>> failedCasesToRetry,
+                                                        Map<String, Object> bulkCaseData) {
         final List<Map<String, Object>> failedCases = new ArrayList<>();
 
         caseList.forEach(caseElem -> {
