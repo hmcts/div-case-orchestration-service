@@ -69,7 +69,8 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
             try {
                 if (minimunCasesToProcess <= searchResult.getCases().size()) {
                     Map<String, Object> bulkCase = createBulkCase(searchResult);
-                    Map<String, Object> bulkCaseResult = caseMaintenanceClient.submitBulkCase(bulkCase, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
+                    Map<String, Object> bulkCaseResult = caseMaintenanceClient.submitBulkCase(bulkCase,
+                        context.getTransientObject(AUTH_TOKEN_JSON_KEY));
                     bulkCases.add(bulkCaseResult);
                 } else {
                     log.info("Number of cases do not reach the minimum, Case list size {}", searchResult.getCases().size());
@@ -138,6 +139,5 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
         return  String.format("%s %s vs %s %s", petitionerFirstName, petitionerLastName, respondentFirstName,
             respondentLastName);
     }
-
 
 }
