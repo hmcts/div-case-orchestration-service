@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 
 @Component
@@ -124,7 +125,10 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private boolean isAdulteryCaseWithCoRespondent(final Map<String, Object> caseData) {
         final String divorceReason = String.valueOf(caseData.getOrDefault(D_8_REASON_FOR_DIVORCE, EMPTY));
         final String coRespondentNamed = String.valueOf(caseData.getOrDefault(D_8_CO_RESPONDENT_NAMED, EMPTY));
+        final String coRespondentNamedOld = String.valueOf(caseData.getOrDefault(D_8_CO_RESPONDENT_NAMED_OLD, EMPTY));
 
-        return ADULTERY.equals(divorceReason) && "YES".equals(coRespondentNamed);
+        // we need to ensure older cases can be used before we fixed config in DIV-5068
+        return ADULTERY.equals(divorceReason)
+            && ("YES".equals(coRespondentNamed) || "YES".equals(coRespondentNamedOld));
     }
 }

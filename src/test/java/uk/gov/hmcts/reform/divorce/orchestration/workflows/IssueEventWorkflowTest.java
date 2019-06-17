@@ -41,6 +41,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 
@@ -180,6 +181,32 @@ public class IssueEventWorkflowTest {
         payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
         payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
         payload.put(D_8_CO_RESPONDENT_NAMED, "YES");
+
+        //Given
+        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(setIssueDate.execute(context, payload)).thenReturn(payload);
+        when(petitionGenerator.execute(context, payload)).thenReturn(payload);
+        when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
+        when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
+        when(getPetitionIssueFee.execute(context, payload)).thenReturn(payload);
+        when(coRespondentPinGenerator.execute(context, payload)).thenReturn(payload);
+        when(coRespondentLetterGenerator.execute(context, payload)).thenReturn(payload);
+        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+
+        //When
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
+
+        //Then
+        assertThat(response, is(payload));
+    }
+
+    @Test
+    public void givenCaseIsAdulteryWithNamedCoRespondentNottinghamRdcRespondentPackGen_whenRun_thenProceedAsExpected() throws WorkflowException {
+        payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
+        payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        payload.put(D_8_CO_RESPONDENT_NAMED_OLD, "YES");
 
         //Given
         when(validateCaseData.execute(context, payload)).thenReturn(payload);
