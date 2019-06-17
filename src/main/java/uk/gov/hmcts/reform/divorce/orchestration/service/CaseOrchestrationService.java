@@ -60,6 +60,9 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
+    Map<String, Object> solicitorUpdate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+        throws WorkflowException;
+
     Map<String, Object> submitRespondentAosCase(Map<String, Object> payload, String authorizationToken, String caseId)
         throws WorkflowException;
 
@@ -94,7 +97,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
-    Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
+    Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> processBulkCaseScheduleForHearing(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 

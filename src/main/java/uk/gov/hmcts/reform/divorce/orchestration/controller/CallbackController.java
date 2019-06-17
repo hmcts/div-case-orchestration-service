@@ -135,6 +135,25 @@ public class CallbackController {
             .build());
     }
 
+    @PostMapping(
+        path = "/solicitor-update",
+        consumes = MediaType.APPLICATION_JSON,
+        produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Solicitor updated a case callback")
+    @ApiResponses(value = {
+        @ApiResponse(
+            code = 200,
+            message = "Callback to populate missing requirement fields when creating solicitor cases.",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> solicitorUpdate(
+        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(caseOrchestrationService.solicitorUpdate(ccdCallbackRequest, authorizationToken))
+            .build());
+    }
+
     @PostMapping(path = "/aos-submitted",
         consumes = MediaType.APPLICATION_JSON,
         produces = MediaType.APPLICATION_JSON)
@@ -501,22 +520,19 @@ public class CallbackController {
             consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Callback to calculate ccd separation fields based on provided separation dates.")
     @ApiResponses(value = {
-            @ApiResponse(
-                    code = 200,
-                    message = "Callback was processed successfully or in case of an error, message is attached to the case",
-                    response = CcdCallbackResponse.class
-            ),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 500, message = "Internal Server Error")})
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
+            + "attached to the case",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> calculateSeparationFields(
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
-            @RequestHeader(value = "Authorization") String authorizationToken) {
+        @RequestBody @ApiParam("CaseData")
+            CcdCallbackRequest ccdCallbackRequest) {
 
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
-            Map<String, Object> response = caseOrchestrationService
-                    .processSeparationFields(ccdCallbackRequest, authorizationToken);
+            Map<String, Object> response = caseOrchestrationService.processSeparationFields(ccdCallbackRequest);
 
             if (response != null && response.containsKey(VALIDATION_ERROR_KEY)) {
                 callbackResponseBuilder.errors(singletonList((String) response.get(VALIDATION_ERROR_KEY)));

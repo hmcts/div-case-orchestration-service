@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorUpdateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
@@ -89,6 +90,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SetOrderSummaryWorkflow setOrderSummaryWorkflow;
     private final ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
+    private final SolicitorUpdateWorkflow solicitorUpdateWorkflow;
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
     private final SendPetitionerEmailNotificationWorkflow sendPetitionerEmailNotificationWorkflow;
     private final SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
@@ -388,6 +390,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
+    public Map<String, Object> solicitorUpdate(
+            CcdCallbackRequest ccdCallbackRequest, String authorizationToken) throws WorkflowException {
+        return solicitorUpdateWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
+    }
+
+    @Override
     public Map<String, Object> submitRespondentAosCase(Map<String, Object> divorceSession, String authorizationToken,
                                                        String caseId)
         throws WorkflowException {
@@ -504,10 +512,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest, String authToken)
+    public Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException {
 
-        Map<String, Object> payLoad =  separationFieldsWorkflow.run(ccdCallbackRequest.getCaseDetails(), authToken);
+        Map<String, Object> payLoad =  separationFieldsWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
 
         if (separationFieldsWorkflow.errors().isEmpty()) {
             return payLoad;

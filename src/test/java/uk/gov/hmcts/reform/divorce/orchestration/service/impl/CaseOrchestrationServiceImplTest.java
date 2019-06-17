@@ -848,20 +848,19 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldCallTheRightWorkflow_ForProcessSeparationFields() throws WorkflowException {
-        when(separationFieldsWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(AUTH_TOKEN)))
+        when(separationFieldsWorkflow.run(eq(ccdCallbackRequest.getCaseDetails().getCaseData())))
             .thenReturn(requestPayload);
 
-        assertThat(classUnderTest.processSeparationFields(ccdCallbackRequest, AUTH_TOKEN),
-            is(equalTo(requestPayload)));
+        assertThat(classUnderTest.processSeparationFields(ccdCallbackRequest), is(equalTo(requestPayload)));
     }
 
     @Test(expected = WorkflowException.class)
     public void shouldThrowException_ForProcessSeparationFields_WhenWorkflowExceptionIsCaught()
         throws WorkflowException {
-        when(separationFieldsWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(AUTH_TOKEN)))
+        when(separationFieldsWorkflow.run(eq(ccdCallbackRequest.getCaseDetails().getCaseData())))
             .thenThrow(new WorkflowException("This operation threw an exception"));
 
-        classUnderTest.processSeparationFields(ccdCallbackRequest, AUTH_TOKEN);
+        classUnderTest.processSeparationFields(ccdCallbackRequest);
     }
 
     @Test

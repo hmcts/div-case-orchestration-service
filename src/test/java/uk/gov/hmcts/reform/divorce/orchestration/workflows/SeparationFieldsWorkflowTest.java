@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSeparationFields;
@@ -18,7 +17,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEP_DATE;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,14 +41,10 @@ public class SeparationFieldsWorkflowTest {
 
     @Test
     public void runShouldExecuteTasksAndReturnPayload() throws Exception {
-        Map<String, Object> resultData = Collections.singletonMap(
-                D_8_REASON_FOR_DIVORCE_SEP_DATE, FIXED_DATE
-        );
-        CaseDetails caseDetails = CaseDetails.builder().caseData(testData).build();
-
+        Map<String, Object> resultData = Collections.singletonMap(D_8_REASON_FOR_DIVORCE_SEP_DATE, FIXED_DATE);
         when(setSeparationFields.execute(context, testData)).thenReturn(resultData);
 
-        assertEquals(resultData, separationFieldsWorkflow.run(caseDetails, AUTH_TOKEN));
+        assertEquals(resultData, separationFieldsWorkflow.run(testData));
 
         verify(setSeparationFields).execute(context, testData);
     }
