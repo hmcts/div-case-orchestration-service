@@ -21,9 +21,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DRAFT_MINI_PETITION_TEMPLATE_NAME;
 
-
 @Component
 public class AddMiniPetitionDraftTask implements Task<Map<String, Object>> {
+
+    public static final String DOCUMENT_TYPE = "petition";
+    public static final String DOCUMENT_NAME = "draft-mini-petition-";
 
     private final DocumentGeneratorClient documentGeneratorClient;
 
@@ -45,9 +47,8 @@ public class AddMiniPetitionDraftTask implements Task<Map<String, Object>> {
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY)
             );
 
-        generatedDocumentInfo.setDocumentType("petition");
-        generatedDocumentInfo.setFileName(
-                format(DOCUMENT_FILENAME_FMT, "draft-mini-petition-", caseDetails.getCaseId()));
+        generatedDocumentInfo.setDocumentType(DOCUMENT_TYPE);
+        generatedDocumentInfo.setFileName(format(DOCUMENT_FILENAME_FMT, DOCUMENT_NAME, caseDetails.getCaseId()));
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context
                 .computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
