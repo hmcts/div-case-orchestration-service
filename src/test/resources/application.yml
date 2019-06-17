@@ -12,6 +12,12 @@ spring:
       password: ${DIV_SCHEDULER_DB_PASSWORD:div_scheduler_passwd}
       properties:
       charSet: UTF-8
+#    scheduler:
+#      name: scheduler
+#      driver-class-name: org.h2.Driver
+#      url: jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1
+#      properties:
+#      charSet: UTF-8
   hikari:
     minimumIdle: 2
     maximumPoolSize: 10
@@ -106,6 +112,13 @@ send-letter:
 bulk-print:
   dueDate: 9
 
+bulk-action:
+  page-size: 50
+  retries:
+    max: 4
+    backoff:
+      base-rate: 1000
+  min-cases: 2
 uk:
   gov:
     notify:

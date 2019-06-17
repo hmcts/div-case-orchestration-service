@@ -255,6 +255,14 @@ documentation:
   swagger:
     enabled: true
 
+bulk-action:
+  page-size: 50
+  retries:
+    max: 4
+    backoff:
+      base-rate: 1000
+  min-cases: 30
+
 # GENERAL SPRING BOOT ACTUATOR CONFIG
 # Context path for Spring Boot Actuator endpoints
 # Allow actuator endpoints to be accessed without requiring authentication
