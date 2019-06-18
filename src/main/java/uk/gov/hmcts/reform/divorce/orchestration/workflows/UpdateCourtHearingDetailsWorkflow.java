@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.RetryableBulkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdMapFlow;
@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @AllArgsConstructor
-public class UpdateCourtHearingDetailsWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class UpdateCourtHearingDetailsWorkflow extends RetryableBulkCaseWorkflow {
 
     private final GetCaseWithIdMapFlow getCaseWithIdMapFlow;
     private final SetCourtHearingDetailsFromBulkCase setCourtHearingDetailsFromBulkCase;

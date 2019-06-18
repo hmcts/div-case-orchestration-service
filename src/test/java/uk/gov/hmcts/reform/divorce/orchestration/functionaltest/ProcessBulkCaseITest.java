@@ -43,6 +43,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_LIST_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_LIST_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
@@ -64,11 +65,18 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
     private static final String CASE_ID1 = "1546883073634741";
     private static final String CASE_ID2 = "1546883073634742";
+    private static final String CASE_ID3 = "1546883073634743";
     private static final String BULK_CASE_ID = "1557223513377278";
     private static final String UPDATE_BODY = convertObjectToJsonString(
         ImmutableMap.of(BULK_LISTING_CASE_ID_FIELD, new CaseLink(BULK_CASE_ID)));
     @ClassRule
     public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
+
+    @Value("${bulk-action.retries.max:4}")
+    private int maxRetries;
+
+    @Value("${bulk-action.retries.backoff.base-rate:1000}")
+    private int backoffBaseRate;
 
     @Autowired
     ThreadPoolTaskExecutor asyncTaskExecutor;
@@ -97,6 +105,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
         stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.OK, getCmsBulkCaseResponse(), POST);
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID1), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID2), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID3), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
         stubSignInForCaseworker();
         webClient.perform(post(API_URL)
             .contentType(APPLICATION_JSON)
@@ -106,6 +115,8 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
         waitAsyncCompleted();
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID3), RequestMethod.POST, UPDATE_BODY);
+
     }
 
     @Test
@@ -126,6 +137,31 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
             .andExpect(jsonPath(BULK_CASE_LIST_KEY).isEmpty());
 
         verifyCmsServerEndpoint(0, CMS_UPDATE_CASE, RequestMethod.POST, UPDATE_BODY);
+    }
+
+    @Test
+    public void give4XError_whenUpdateDivorceCase_thenProcessOtherCases() throws Exception {
+        SearchResult result = SearchResult.builder()
+            .cases(Arrays.asList(prepareBulkCase(), prepareBulkCase(), prepareBulkCase()))
+            .build();
+
+        stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
+        stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID1), HttpStatus.NOT_ACCEPTABLE, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID2), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID3), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+
+        stubSignInForCaseworker();
+        webClient.perform(post(API_URL)
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        waitAsyncCompleted();
+
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID3), RequestMethod.POST, UPDATE_BODY);
     }
 
     @Test
@@ -151,15 +187,20 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     }
 
     @Test
-    public void giveError_whenUpdateDivorceCase_thenProcessOtherCases() throws Exception {
+    public void give5XError_whenUpdateDivorceCase_thenRetryCasesProcessOtherCases() throws Exception {
         SearchResult result = SearchResult.builder()
-            .cases(Arrays.asList(prepareBulkCase(),prepareBulkCase()))
+            .cases(Arrays.asList(prepareBulkCase(), prepareBulkCase(), prepareBulkCase()))
+            .build();
+        CaseDetails.builder()
+            .caseId(TestConstants.TEST_CASE_ID)
+            .caseData(ImmutableMap.of(CASE_LIST_KEY, result.getCases()))
             .build();
 
         stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
         stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.OK, getCmsBulkCaseResponse(), POST);
-        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID1), HttpStatus.NOT_FOUND, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID1), HttpStatus.SERVICE_UNAVAILABLE, getCmsBulkCaseResponse(), POST);
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID2), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID3), HttpStatus.UNAUTHORIZED, getCmsBulkCaseResponse(), POST);
 
         stubSignInForCaseworker();
         webClient.perform(post(API_URL)
@@ -169,8 +210,9 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
         waitAsyncCompleted();
 
-        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(maxRetries, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID3), RequestMethod.POST, UPDATE_BODY);
     }
 
     private void waitAsyncCompleted() {

@@ -111,8 +111,9 @@ bulk-action:
   retries:
     max: 4
     backoff:
-      base-rate: 1000
+      base-rate: 1
   min-cases: 2
+
 uk:
   gov:
     notify:
