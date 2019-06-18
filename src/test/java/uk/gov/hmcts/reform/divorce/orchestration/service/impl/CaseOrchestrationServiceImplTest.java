@@ -48,6 +48,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmiss
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorUpdateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
@@ -140,6 +141,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private SolicitorCreateWorkflow solicitorCreateWorkflow;
+
+    @Mock
+    private SolicitorUpdateWorkflow solicitorUpdateWorkflow;
 
     @Mock
     private SubmitRespondentAosCaseWorkflow submitRespondentAosCaseWorkflow;
@@ -669,6 +673,23 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(requestPayload, actual);
 
         verify(solicitorCreateWorkflow).run(requestPayload);
+    }
+
+    @Test
+    public void givenCaseData_whenSolicitorUpdate_thenReturnPayload() throws Exception {
+        // given
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+
+        when(solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN))
+                .thenReturn(requestPayload);
+
+        // when
+        Map<String, Object> actual = classUnderTest.solicitorUpdate(ccdCallbackRequest, AUTH_TOKEN);
+
+        // then
+        assertEquals(caseDetails.getCaseData(), actual);
+
+        verify(solicitorUpdateWorkflow).run(caseDetails, AUTH_TOKEN);
     }
 
     @Test
