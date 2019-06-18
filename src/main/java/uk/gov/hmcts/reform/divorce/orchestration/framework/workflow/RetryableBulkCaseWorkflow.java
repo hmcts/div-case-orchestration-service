@@ -96,7 +96,7 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
                 caseId = String.valueOf(caseLink.get(CASE_REFERENCE_FIELD));
                 this.run(bulkCaseData, caseId, authToken);
             } catch (FeignException e) {
-                log.error("Case update failed : for bulk case id {} and caseId {}", bulkCaseId, caseId, e);
+                log.error("Case update failed : for bulk case id {} and caseId {}. Cause {}", bulkCaseId, caseId, e.contentUTF8(), e);
                 if (e.status() >= HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                     casesToRetry.add(caseElem);
                 } else {
