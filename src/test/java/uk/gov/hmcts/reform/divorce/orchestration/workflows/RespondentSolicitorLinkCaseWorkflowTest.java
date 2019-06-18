@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import feign.FeignException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,5 +88,34 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
         inOrder.verify(getCaseWithId).execute(context, userDetails);
         inOrder.verify(retrievePinUserDetails).execute(context, userDetails);
         inOrder.verify(linkRespondent).execute(context, userDetails);
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void caseNotFoundIsWrappedInWorkflowException() throws WorkflowException, TaskException {
+        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+
+        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.NotFound("test", null));
+
+        respondentSolicitorLinkCaseWorkflow.run(TEST_TOKEN, caseDetails);
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void authorisationErrorIsWrappedInWorkflowException() throws WorkflowException, TaskException {
+        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+
+        when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(linkRespondent.execute(any(), eq(userDetails))).thenThrow(new FeignException.Unauthorized("test", null));
+
+        respondentSolicitorLinkCaseWorkflow.run(TEST_TOKEN, caseDetails);
+    }
+
+    @Test(expected = FeignException.class)
+    public void otherExceptionsNotWrappedInWorkflowException() throws WorkflowException, TaskException {
+        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+
+        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.GatewayTimeout("test", null));
+
+        respondentSolicitorLinkCaseWorkflow.run(TEST_TOKEN, caseDetails);
     }
 }

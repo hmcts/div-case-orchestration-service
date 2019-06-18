@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
@@ -46,16 +48,25 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
         final String caseId = respondentSolicitorCaseLink.get(CASE_REFERENCE);
         final String pin = (String) caseDetails.getCaseData().get(RESPONDENT_SOLICITOR_PIN);
 
-        return this.execute(
-            new Task[] {
-                getCaseWithId,
-                retrievePinUserDetails,
-                linkRespondent
-            },
-            userDetails,
-            ImmutablePair.of(RESPONDENT_PIN, pin),
-            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
-        );
+        try {
+            return this.execute(
+                new Task[] {
+                    getCaseWithId,
+                    retrievePinUserDetails,
+                    linkRespondent
+                },
+                userDetails,
+                ImmutablePair.of(RESPONDENT_PIN, pin),
+                ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+                ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
+            );
+        } catch (FeignException e) {
+            if (e.status() == HttpStatus.NOT_FOUND.value()) {
+                throw new WorkflowException("Case not found - please check the case ID", e);
+            } else if (e.status() == HttpStatus.UNAUTHORIZED.value()) {
+                throw new WorkflowException("Authentication error - please check the case ID/PIN code", e);
+            }
+            throw e;
+        }
     }
 }
