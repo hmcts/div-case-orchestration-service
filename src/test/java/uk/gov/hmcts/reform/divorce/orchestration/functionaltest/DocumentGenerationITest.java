@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_CONTACT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -181,7 +181,7 @@ public class DocumentGenerationITest {
 
         // Data matching application properties.
         Map<String, Object> formattedDocumentCaseData = new HashMap<>();
-        formattedDocumentCaseData.put(COURT_NAME, "Liverpool Civil and Family Court Hearing Centre");
+        formattedDocumentCaseData.put(COURT_NAME_CCD_FIELD, "Liverpool Civil and Family Court Hearing Centre");
         formattedDocumentCaseData.put(COURT_CONTACT_JSON_KEY,
                 "35 Vernon Street\nLiverpool\nL2 2BX\ncontactdivorce@justice.gov.uk\n0300 303 0642");
         CaseDetails expectedDocumentCaseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(formattedDocumentCaseData).build();
@@ -199,7 +199,7 @@ public class DocumentGenerationITest {
                         .build();
 
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(COURT_NAME, "liverpool");
+        caseData.put(COURT_NAME_CCD_FIELD, "liverpool");
 
         final DocumentUpdateRequest documentUpdateRequest =
                 DocumentUpdateRequest.builder()

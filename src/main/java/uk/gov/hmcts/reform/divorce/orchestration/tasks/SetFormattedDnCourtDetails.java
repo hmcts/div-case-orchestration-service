@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_CONTACT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COURT_DETAILS;
@@ -26,18 +26,18 @@ public class SetFormattedDnCourtDetails implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        if (caseData.containsKey(COURT_NAME)) {
+        if (caseData.containsKey(COURT_NAME_CCD_FIELD)) {
             try {
-                DnCourt dnCourt = taskCommons.getDnCourt(String.valueOf(caseData.get(COURT_NAME)));
+                DnCourt dnCourt = taskCommons.getDnCourt(String.valueOf(caseData.get(COURT_NAME_CCD_FIELD)));
 
                 context.setTransientObject(DN_COURT_DETAILS, ImmutableMap.of(
-                        COURT_NAME, dnCourt.getName(),
+                        COURT_NAME_CCD_FIELD, dnCourt.getName(),
                         COURT_CONTACT_JSON_KEY, dnCourt.getFormattedContactDetails()
                 ));
             } catch (CourtDetailsNotFound exception) {
                 CaseDetails caseDetails = context.computeTransientObjectIfAbsent(CASE_DETAILS_JSON_KEY, CaseDetails.builder().build());
                 log.warn("Decree Nisi court details not found for court id {} on case {}. Will not be set in context.",
-                        caseData.get(COURT_NAME), caseDetails.getCaseId());
+                        caseData.get(COURT_NAME_CCD_FIELD), caseDetails.getCaseId());
             }
         }
 
