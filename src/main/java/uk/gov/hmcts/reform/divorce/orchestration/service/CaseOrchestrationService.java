@@ -100,7 +100,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> validateBulkCaseListingData(Map<String, Object> caseData) throws WorkflowException;
 
-    Map<String, Object> processAosSolicitorLinkCase(String authToken, CcdCallbackRequest request) throws CaseOrchestrationServiceException;
+    Map<String, Object> processAosSolicitorLinkCase(CcdCallbackRequest request, String authToken) throws CaseOrchestrationServiceException;
 
     Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 

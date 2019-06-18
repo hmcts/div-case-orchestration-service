@@ -604,7 +604,7 @@ public class CallbackControllerTest {
                 .build();
 
         String token = "token";
-        when(caseOrchestrationService.processAosSolicitorLinkCase(token, incomingRequest))
+        when(caseOrchestrationService.processAosSolicitorLinkCase(incomingRequest, token))
                 .thenReturn(incomingPayload);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorLinkCase(token, incomingRequest);
@@ -624,7 +624,7 @@ public class CallbackControllerTest {
                 .build();
 
         String token = "token";
-        when(caseOrchestrationService.processAosSolicitorLinkCase("token", incomingRequest))
+        when(caseOrchestrationService.processAosSolicitorLinkCase(incomingRequest, "token"))
                 .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorLinkCase(token, incomingRequest);

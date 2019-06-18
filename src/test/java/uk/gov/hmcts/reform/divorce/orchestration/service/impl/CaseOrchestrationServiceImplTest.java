@@ -912,7 +912,7 @@ public class CaseOrchestrationServiceImplTest {
         when(respondentSolicitorLinkCaseWorkflow.run(eq(token), eq(ccdCallbackRequest.getCaseDetails())))
                 .thenReturn(userDetails);
 
-        assertThat(classUnderTest.processAosSolicitorLinkCase(token, ccdCallbackRequest), is(equalTo(requestPayload)));
+        assertThat(classUnderTest.processAosSolicitorLinkCase(ccdCallbackRequest, token), is(equalTo(requestPayload)));
     }
 
     @Test
@@ -925,7 +925,7 @@ public class CaseOrchestrationServiceImplTest {
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectMessage(is("This operation threw an exception."));
 
-        classUnderTest.processAosSolicitorLinkCase(token, ccdCallbackRequest);
+        classUnderTest.processAosSolicitorLinkCase(ccdCallbackRequest, token);
     }
 
     @Test

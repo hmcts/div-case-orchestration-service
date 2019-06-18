@@ -478,7 +478,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> processAosSolicitorLinkCase(String authToken, CcdCallbackRequest request) throws CaseOrchestrationServiceException {
+    public Map<String, Object> processAosSolicitorLinkCase(CcdCallbackRequest request, String authToken) throws CaseOrchestrationServiceException {
         try {
             respondentSolicitorLinkCaseWorkflow.run(authToken, request.getCaseDetails());
             return request.getCaseDetails().getCaseData();
