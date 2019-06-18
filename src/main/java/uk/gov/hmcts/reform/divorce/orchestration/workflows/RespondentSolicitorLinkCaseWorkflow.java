@@ -32,9 +32,9 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
     private final LinkRespondent linkRespondent;
 
     @Autowired
-    public RespondentSolicitorLinkCaseWorkflow(RetrievePinUserDetails retrievePinUserDetails,
-                                               LinkRespondent linkRespondent,
-                                               GetCaseWithId getCaseWithId) {
+    public RespondentSolicitorLinkCaseWorkflow(GetCaseWithId getCaseWithId,
+                                               RetrievePinUserDetails retrievePinUserDetails,
+                                               LinkRespondent linkRespondent) {
         this.retrievePinUserDetails = retrievePinUserDetails;
         this.linkRespondent = linkRespondent;
         this.getCaseWithId = getCaseWithId;
