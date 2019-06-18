@@ -19,10 +19,6 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import javax.annotation.PostConstruct;
 
-import javax.annotation.PostConstruct;
-
-import javax.annotation.PostConstruct;
-
 @Slf4j
 @RunWith(SerenityRunner.class)
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
@@ -83,7 +79,7 @@ public abstract class IntegrationTest {
     protected UserDetails createCaseWorkerUser() {
         synchronized (this) {
             if (caseWorkerUser == null) {
-                caseWorkerUser = warpInRetry(() -> getUserDetails(
+                caseWorkerUser = wrapInRetry(() -> getUserDetails(
                     CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN, CASE_WORKER_PASSWORD,
                     CASEWORKER_USERGROUP,
                     CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
@@ -95,21 +91,21 @@ public abstract class IntegrationTest {
     }
 
     protected UserDetails createCitizenUser() {
-        return warpInRetry(() -> {
+        return wrapInRetry(() -> {
             final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
             return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, CITIZEN_ROLE);
         });
     }
 
     protected UserDetails createCitizenUser(String role) {
-        return warpInRetry(() -> {
+        return wrapInRetry(() -> {
             final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
             return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, role);
         });
     }
 
     protected UserDetails createSolicitorUser() {
-        return warpInRetry(() -> {
+        return wrapInRetry(() -> {
             final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
             return getUserDetails(username, PASSWORD, CASEWORKER_USERGROUP,
                     CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_SOLICITOR_ROLE
@@ -135,7 +131,7 @@ public abstract class IntegrationTest {
         }
     }
 
-    private UserDetails warpInRetry(Supplier<UserDetails> supplier) {
+    private UserDetails wrapInRetry(Supplier<UserDetails> supplier) {
         //tactical solution as sometimes the newly created user is somehow corrupted and won't generate a code..
         int count = 0;
         int maxTries = 5;
