@@ -42,7 +42,7 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
         this.linkRespondent = linkRespondent;
     }
 
-    public UserDetails run(String authToken, CaseDetails caseDetails) throws WorkflowException {
+    public UserDetails run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         final UserDetails userDetails = UserDetails.builder().authToken(authToken).build();
         final Map<String, String> respondentSolicitorCaseLink = (Map<String, String>) caseDetails.getCaseData().get(RESPONDENT_SOLICITOR_CASE_NO);
         final String caseId = respondentSolicitorCaseLink.get(CASE_REFERENCE);

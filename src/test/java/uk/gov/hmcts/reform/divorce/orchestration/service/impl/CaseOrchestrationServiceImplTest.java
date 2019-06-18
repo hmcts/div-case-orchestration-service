@@ -909,7 +909,7 @@ public class CaseOrchestrationServiceImplTest {
             throws WorkflowException, CaseOrchestrationServiceException {
         String token = "token";
         final UserDetails userDetails = UserDetails.builder().build();
-        when(respondentSolicitorLinkCaseWorkflow.run(eq(token), eq(ccdCallbackRequest.getCaseDetails())))
+        when(respondentSolicitorLinkCaseWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(token)))
                 .thenReturn(userDetails);
 
         assertThat(classUnderTest.processAosSolicitorLinkCase(ccdCallbackRequest, token), is(equalTo(requestPayload)));
@@ -919,7 +919,7 @@ public class CaseOrchestrationServiceImplTest {
     public void shouldThrowException_ForProcessingAosSolicitorLinkCase_WhenWorkflowExceptionIsCaught()
             throws WorkflowException, CaseOrchestrationServiceException {
         String token = "token";
-        when(respondentSolicitorLinkCaseWorkflow.run(eq(token), eq(ccdCallbackRequest.getCaseDetails())))
+        when(respondentSolicitorLinkCaseWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(token)))
                 .thenThrow(new WorkflowException("This operation threw an exception."));
 
         expectedException.expect(CaseOrchestrationServiceException.class);

@@ -81,7 +81,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(linkRespondent.execute(any(), eq(userDetails))).thenReturn(userDetails);
 
-        UserDetails actual = respondentSolicitorLinkCaseWorkflow.run(TEST_TOKEN, caseDetails);
+        UserDetails actual = respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
 
         InOrder inOrder = inOrder(getCaseWithId, retrievePinUserDetails, linkRespondent);
         assertThat(actual, is(userDetails));
@@ -96,7 +96,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.NotFound("test", null));
 
-        respondentSolicitorLinkCaseWorkflow.run(TEST_TOKEN, caseDetails);
+        respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }
 
     @Test(expected = WorkflowException.class)
@@ -107,7 +107,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(linkRespondent.execute(any(), eq(userDetails))).thenThrow(new FeignException.Unauthorized("test", null));
 
-        respondentSolicitorLinkCaseWorkflow.run(TEST_TOKEN, caseDetails);
+        respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }
 
     @Test(expected = FeignException.class)
@@ -116,6 +116,6 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.GatewayTimeout("test", null));
 
-        respondentSolicitorLinkCaseWorkflow.run(TEST_TOKEN, caseDetails);
+        respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }
 }
