@@ -34,6 +34,7 @@ public abstract class IntegrationTest {
     private static final String CASEWORKER_DIVORCE_ROLE = "caseworker-divorce";
     private static final String CASEWORKER_DIVORCE_COURTADMIN_ROLE = "caseworker-divorce-courtadmin";
     private static final String CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE = "caseworker-divorce-courtadmin_beta";
+    private static final String CASEWORKER_DIVORCE_SOLICITOR_ROLE = "caseworker-divorce-solicitor";
     private static final String CASEWORKER_ROLE = "caseworker";
     private static final String PASSWORD = "genericPassword123";
     private static final String CITIZEN_USERGROUP = "citizens";
@@ -91,6 +92,15 @@ public abstract class IntegrationTest {
             }
             return caseWorkerUser;
         }
+    }
+
+    protected UserDetails createSolicitorUser() {
+        return warpInRetry(() -> {
+            final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
+            return getUserDetails(username, PASSWORD, CASEWORKER_USERGROUP,
+                    CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_SOLICITOR_ROLE
+            );
+        });
     }
 
     protected UserDetails createCitizenUser() {
