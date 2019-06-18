@@ -58,7 +58,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> processPbaPayment(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
-    Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+    Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+        throws WorkflowException;
 
     Map<String, Object> solicitorUpdate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
         throws WorkflowException;

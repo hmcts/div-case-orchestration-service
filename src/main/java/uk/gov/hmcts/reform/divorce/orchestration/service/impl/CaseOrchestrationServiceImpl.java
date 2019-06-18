@@ -385,20 +385,20 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return solicitorCreateWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+    public Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+            throws WorkflowException {
+        return solicitorCreateWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
     }
 
     @Override
-    public Map<String, Object> solicitorUpdate(
-            CcdCallbackRequest ccdCallbackRequest, String authorizationToken) throws WorkflowException {
+    public Map<String, Object> solicitorUpdate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+            throws WorkflowException {
         return solicitorUpdateWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
     }
 
     @Override
-    public Map<String, Object> submitRespondentAosCase(Map<String, Object> divorceSession, String authorizationToken,
-                                                       String caseId)
-        throws WorkflowException {
+    public Map<String, Object> submitRespondentAosCase(
+            Map<String, Object> divorceSession, String authorizationToken, String caseId) throws WorkflowException {
         Map<String, Object> payload = submitRespondentAosCaseWorkflow.run(divorceSession, authorizationToken, caseId);
 
         log.info("Updated respondent AOS with CASE ID: {}", payload.get(ID));

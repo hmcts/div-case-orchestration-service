@@ -95,9 +95,9 @@ public class CallbackControllerTest {
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
 
-        when(caseOrchestrationService.solicitorCreate(ccdCallbackRequest)).thenReturn(caseData);
+        when(caseOrchestrationService.solicitorCreate(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorCreate(ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorCreate(AUTH_TOKEN, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 

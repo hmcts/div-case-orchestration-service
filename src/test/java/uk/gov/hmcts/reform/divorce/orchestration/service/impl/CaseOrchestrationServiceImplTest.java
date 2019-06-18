@@ -663,16 +663,18 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenCaseData_whenSolicitorCreate_thenReturnPayload() throws Exception {
         // given
-        when(solicitorCreateWorkflow.run(requestPayload))
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+
+        when(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN))
             .thenReturn(requestPayload);
 
         // when
-        Map<String, Object> actual = classUnderTest.solicitorCreate(ccdCallbackRequest);
+        Map<String, Object> actual = classUnderTest.solicitorCreate(ccdCallbackRequest, AUTH_TOKEN);
 
         // then
-        assertEquals(requestPayload, actual);
+        assertEquals(caseDetails.getCaseData(), actual);
 
-        verify(solicitorCreateWorkflow).run(requestPayload);
+        verify(solicitorCreateWorkflow).run(caseDetails, AUTH_TOKEN);
     }
 
     @Test
