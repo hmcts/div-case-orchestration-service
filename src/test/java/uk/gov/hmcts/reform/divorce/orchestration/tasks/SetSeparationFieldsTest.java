@@ -113,7 +113,9 @@ public class SetSeparationFieldsTest {
     public void whenDesertion_executeShouldSetCalculatedDetailsOnPayload() throws TaskException {
 
         String pastDate2Yrs6MnthsPlus1day = DateUtils.formatDateFromDateTime(LocalDateTime.now().minusYears(2).minusMonths(6).plusDays(1));
-
+        String pastDate2Yrs6MnthsPlus1dayInClientFormat = DateUtils.formatDateWithCustomerFacingFormat(
+            LocalDate.now().minusYears(2).minusMonths(6).plusDays(1)
+        );
         testData.put(D_8_REASON_FOR_DIVORCE, DESERTION);
         testData.put(D_8_REASON_FOR_DIVORCE_DESERTION_DAIE, pastDate2Yrs6MnthsPlus1day);
 
@@ -125,7 +127,7 @@ public class SetSeparationFieldsTest {
         assertThat(resultMap, allOf(
             hasEntry(is(D_8_DESERTION_TIME_TOGETHER_PERMITTED), is("25 weeks and 6 days")),
             hasEntry(is(D_8_REASON_FOR_DIVORCE_SEP_DATE), is(pastDate2Yrs6MnthsPlus1day)),
-            hasEntry(is(D_8_SEP_REF_DATE), is(pastDate2Yrs6Mnths)),
+            hasEntry(is(D_8_SEP_REF_DATE), is(pastDate2Yrs6MnthsPlus1dayInClientFormat)),
             hasEntry(is(SEP_YEARS), is("2"))
         ));
     }
