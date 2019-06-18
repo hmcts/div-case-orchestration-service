@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.BulkUpdateException;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 
 import java.util.Collections;
@@ -35,6 +36,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.awaitility.Awaitility.await;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -72,12 +74,13 @@ public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
     private static final String CASE_ID_SECOND = "1558711407435839";
 
     private static final String TEST_AUTH_TOKEN = "testAuthToken";
+    private static final String UPDATED_STATUS = "statusUpdated";
 
     @ClassRule
     public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
 
     @Autowired
-    ThreadPoolTaskExecutor asyncTaskExecutor;
+    private ThreadPoolTaskExecutor asyncTaskExecutor;
 
     @Autowired
     private MockMvc webClient;
@@ -131,6 +134,97 @@ public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
         verifyCmsServerEndpoint(1, updateBulkCasePath, RequestMethod.POST, "{}");
     }
 
+    @Test
+    public void givenErrorCallbackRequestWithTwoCaseLinks_thenRetryUpdateCase() throws Exception {
+        stubSignInForCaseworker();
+
+        String retrieveCaseOnePath = String.format(CMS_RETRIEVE_CASE_PATH, CASE_ID_FIRST);
+
+        stubCmsServerEndpoint(retrieveCaseOnePath, HttpStatus.OK, caseDataToCaseDetailsJson(Collections.emptyMap()), GET);
+
+        CollectionMember<Map<String, Object>> existingCourtHearing = new CollectionMember<>();
+        existingCourtHearing.setId("someRandomId");
+        existingCourtHearing.setValue(ImmutableMap.of(
+            DATE_OF_HEARING_CCD_FIELD, "2011-11-11",
+            TIME_OF_HEARING_CCD_FIELD, "11:11"
+        ));
+        List<CollectionMember> courtHearings = Collections.singletonList(existingCourtHearing);
+
+        String retrieveCaseTwoPath = String.format(CMS_RETRIEVE_CASE_PATH, CASE_ID_SECOND);
+
+        stubCmsServerEndpoint(retrieveCaseTwoPath, HttpStatus.OK,
+            caseDataToCaseDetailsJson(Collections.singletonMap(DATETIME_OF_HEARING_CCD_FIELD, courtHearings)), GET);
+
+        String updateCaseOnePath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_FIRST, UPDATE_COURT_HEARING_DETAILS_EVENT);
+        stubCmsServerEndpoint(updateCaseOnePath, HttpStatus.OK, "{}", POST);
+
+        String updateCaseTwoPath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_SECOND, UPDATE_COURT_HEARING_DETAILS_EVENT);
+        statefulStubCmsServerEndpoint(updateCaseTwoPath, HttpStatus.SERVICE_UNAVAILABLE, "{}", POST, STARTED, UPDATED_STATUS);
+        statefulStubCmsServerEndpoint(updateCaseTwoPath, HttpStatus.OK, "{}", POST, UPDATED_STATUS, STARTED);
+
+        String updateBulkCasePath = String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, LISTED_EVENT);
+        stubCmsServerEndpoint(updateBulkCasePath, HttpStatus.OK, "{}", POST);
+
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
+            .header(AUTHORIZATION, TEST_AUTH_TOKEN)
+            .content(loadResourceAsString(REQUEST_JSON_PATH))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        waitAsyncCompleted();
+
+        verifyCmsServerEndpoint(1, updateCaseOnePath, RequestMethod.POST, loadResourceAsString(EXPECTED_CASE_UPDATE_JSON_PATH));
+        verifyCmsServerEndpoint(2, updateCaseTwoPath, RequestMethod.POST,
+            loadResourceAsString(EXPECTED_CASE_UPDATE_EXISTING_HEARING_JSON_PATH));
+        verifyCmsServerEndpoint(1, updateBulkCasePath, RequestMethod.POST, "{}");
+    }
+
+    @Test(expected = BulkUpdateException.class)
+    public void givenClientError_whenUpdateCase_thenNotUpdateBulkCase() throws Exception {
+        stubSignInForCaseworker();
+
+        String retrieveCaseOnePath = String.format(CMS_RETRIEVE_CASE_PATH, CASE_ID_FIRST);
+
+        stubCmsServerEndpoint(retrieveCaseOnePath, HttpStatus.OK, caseDataToCaseDetailsJson(Collections.emptyMap()), GET);
+
+        CollectionMember<Map<String, Object>> existingCourtHearing = new CollectionMember<>();
+        existingCourtHearing.setId("someRandomId");
+        existingCourtHearing.setValue(ImmutableMap.of(
+            DATE_OF_HEARING_CCD_FIELD, "2011-11-11",
+            TIME_OF_HEARING_CCD_FIELD, "11:11"
+        ));
+        List<CollectionMember> courtHearings = Collections.singletonList(existingCourtHearing);
+
+        String retrieveCaseTwoPath = String.format(CMS_RETRIEVE_CASE_PATH, CASE_ID_SECOND);
+
+        stubCmsServerEndpoint(retrieveCaseTwoPath, HttpStatus.OK,
+            caseDataToCaseDetailsJson(Collections.singletonMap(DATETIME_OF_HEARING_CCD_FIELD, courtHearings)), GET);
+
+        String updateCaseOnePath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_FIRST, UPDATE_COURT_HEARING_DETAILS_EVENT);
+        stubCmsServerEndpoint(updateCaseOnePath, HttpStatus.OK, "{}", POST);
+
+        String updateCaseTwoPath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_SECOND, UPDATE_COURT_HEARING_DETAILS_EVENT);
+        statefulStubCmsServerEndpoint(updateCaseTwoPath, HttpStatus.NOT_ACCEPTABLE, "{}", POST, STARTED, UPDATED_STATUS);
+        statefulStubCmsServerEndpoint(updateCaseTwoPath, HttpStatus.OK, "{}", POST, UPDATED_STATUS, STARTED);
+
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
+            .header(AUTHORIZATION, TEST_AUTH_TOKEN)
+            .content(loadResourceAsString(REQUEST_JSON_PATH))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        waitAsyncCompleted();
+
+        verifyCmsServerEndpoint(1, updateCaseOnePath, RequestMethod.POST, loadResourceAsString(EXPECTED_CASE_UPDATE_JSON_PATH));
+        verifyCmsServerEndpoint(1, updateCaseTwoPath, RequestMethod.POST,
+            loadResourceAsString(EXPECTED_CASE_UPDATE_EXISTING_HEARING_JSON_PATH));
+
+        String updateBulkCasePath = String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, LISTED_EVENT);
+        verifyCmsServerEndpoint(0, updateBulkCasePath, RequestMethod.POST, "{}");
+    }
+
     private void waitAsyncCompleted() {
         await().until(() -> asyncTaskExecutor.getThreadPoolExecutor().getActiveCount() == 0);
     }
@@ -141,6 +235,18 @@ public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
                         .withStatus(status.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                         .withBody(body)));
+    }
+
+    private void statefulStubCmsServerEndpoint(String path, HttpStatus status, String body, HttpMethod method, String initilaState, String endState) {
+        cmsServiceServer.stubFor(WireMock.request(method.name(),urlEqualTo(path))
+            .inScenario("Test")
+            .whenScenarioStateIs(initilaState)
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(body))
+            .willSetStateTo(endState));
+
     }
 
     private void verifyCmsServerEndpoint(int times, String path, RequestMethod method, String body) {

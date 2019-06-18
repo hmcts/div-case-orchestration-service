@@ -64,7 +64,7 @@ public class BulkCaseServiceImplTest {
     }
 
     @Test
-    public void givenCaseList_thenExecuteCreateWorkflowForEachCase() throws WorkflowException {
+    public void givenCaseList_thenExecuteCreateWorkflowForEachCase() {
         TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         Map<String, Object> caseData = ImmutableMap.of("SomeKey", "SomeValue");
@@ -73,25 +73,7 @@ public class BulkCaseServiceImplTest {
 
         BulkCaseCreateEvent event = new BulkCaseCreateEvent(taskContext, caseDetail);
         classToTest.handleBulkCaseCreateEvent(event);
-        verify(linkBulkCaseWorkflow, times(2)).run(caseData, TEST_CASE_ID, AUTH_TOKEN);
-    }
-
-    @Test
-    public void givenException_whenHandleCreateCase_thenExecuteOtherCases() throws WorkflowException {
-        TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        Map<String, Object> failedCaseData = ImmutableMap.of("ErrorKey", "SomeValue");
-        Map<String, Object> correctCaseData = ImmutableMap.of("SomeKey", "SomeValue");
-        Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
-            CCD_CASE_DATA_FIELD, ImmutableMap.of(CASE_LIST_KEY, Arrays.asList(failedCaseData, correctCaseData)));
-
-        when(linkBulkCaseWorkflow.run(failedCaseData, TEST_CASE_ID, AUTH_TOKEN)).thenThrow(new WorkflowException("Workflow failed"));
-
-        BulkCaseCreateEvent event = new BulkCaseCreateEvent(taskContext, caseDetail);
-        classToTest.handleBulkCaseCreateEvent(event);
-        verify(linkBulkCaseWorkflow, times(1)).run(failedCaseData, TEST_CASE_ID, AUTH_TOKEN);
-        verify(linkBulkCaseWorkflow, times(1)).run(correctCaseData, TEST_CASE_ID, AUTH_TOKEN);
-
+        verify(linkBulkCaseWorkflow, times(1)).executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
     }
 
     @Test(expected = BulkUpdateException.class)
@@ -116,14 +98,18 @@ public class BulkCaseServiceImplTest {
                 CCD_CASE_DATA_FIELD, ImmutableMap.of(BULK_CASE_ACCEPTED_LIST_KEY, Arrays.asList(caseData, caseData)));
 
         BulkCaseUpdateCourtHearingEvent event = new BulkCaseUpdateCourtHearingEvent(taskContext, caseDetail);
+
+        when(updateCourtHearingDetailsWorkflow.executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN)).thenReturn(true);
+
         classToTest.handleBulkCaseUpdateCourtHearingEvent(event);
-        verify(updateCourtHearingDetailsWorkflow, times(2))
-                .run((Map<String, Object>) caseDetail.get(CCD_CASE_DATA_FIELD), TEST_CASE_ID, AUTH_TOKEN);
+
+        verify(updateCourtHearingDetailsWorkflow, times(1))
+                .executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
         verify(updateBulkCaseWorkflow, times(1)).run(Collections.emptyMap(), AUTH_TOKEN, TEST_CASE_ID, LISTED_EVENT);
     }
 
     @Test(expected = BulkUpdateException.class)
-    public void givenException_whenHandleUpdateHearingCase_thenExecuteOtherCases() throws WorkflowException {
+    public void givenError_whenHandleUpdateHearingCase_thenRaiseBulkUpdateException() throws WorkflowException {
         TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
@@ -133,15 +119,11 @@ public class BulkCaseServiceImplTest {
                 CCD_CASE_DATA_FIELD, ImmutableMap.of(BULK_CASE_ACCEPTED_LIST_KEY, Arrays.asList(failedCaseData, caseData)));
 
         when(updateCourtHearingDetailsWorkflow
-                .run((Map<String, Object>) caseDetail.get(CCD_CASE_DATA_FIELD), FAILED_CASE_ID, AUTH_TOKEN))
-                .thenThrow(new WorkflowException("Workflow failed"));
+                .executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN))
+                .thenReturn(false);
 
         BulkCaseUpdateCourtHearingEvent event = new BulkCaseUpdateCourtHearingEvent(taskContext, caseDetail);
         classToTest.handleBulkCaseUpdateCourtHearingEvent(event);
-        verify(updateCourtHearingDetailsWorkflow, times(1))
-                .run((Map<String, Object>) caseDetail.get(CCD_CASE_DATA_FIELD), FAILED_CASE_ID, AUTH_TOKEN);
-        verify(updateCourtHearingDetailsWorkflow, times(1))
-                .run((Map<String, Object>) caseDetail.get(CCD_CASE_DATA_FIELD), TEST_CASE_ID, AUTH_TOKEN);
         verify(updateBulkCaseWorkflow, never()).run(any(), any(), any(), any());
     }
 }
