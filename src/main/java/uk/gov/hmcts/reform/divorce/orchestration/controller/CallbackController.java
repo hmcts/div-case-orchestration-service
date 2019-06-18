@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -460,10 +461,14 @@ public class CallbackController {
         try {
             callbackResponseBuilder.data(caseOrchestrationService
                 .handleDocumentGenerationCallback(ccdCallbackRequest, authorizationToken, templateId, documentType, filename));
-            log.info("Generating document {} for case {}. Case id: {}", documentType, caseId);
+            log.info("Generating document {} for case {}.", documentType, caseId);
         } catch (WorkflowException exception) {
             log.error("Document generation failed. Case id:  {}", caseId, exception);
-            callbackResponseBuilder.errors(asList(exception.getMessage()));
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(callbackResponseBuilder.errors(
+                            asList(exception.getMessage())).build());
+
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
@@ -490,10 +495,13 @@ public class CallbackController {
         try {
             callbackResponseBuilder.data(caseOrchestrationService
                     .handleCostsOrderGenerationCallback(ccdCallbackRequest, authorizationToken, templateId, documentType, filename));
-            log.info("Generating document {} for case {}. Case id: {}", documentType, caseId);
+            log.info("Generated document {} for case {}.", documentType, caseId);
         } catch (WorkflowException exception) {
             log.error("Document generation failed. Case id:  {}", caseId, exception);
-            callbackResponseBuilder.errors(asList(exception.getMessage()));
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(callbackResponseBuilder.errors(
+                            asList(exception.getMessage())).build());
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());

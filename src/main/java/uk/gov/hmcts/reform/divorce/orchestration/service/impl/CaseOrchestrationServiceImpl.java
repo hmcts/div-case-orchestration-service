@@ -510,10 +510,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> handleCostsOrderGenerationCallback(final CcdCallbackRequest ccdCallbackRequest, final String authToken,
                                                           final String templateId, final String documentType, final String filename)
             throws WorkflowException {
-        if (String.valueOf(ccdCallbackRequest.getCaseDetails().getCaseData()
-                .get(DIVORCE_COSTS_CLAIM_CCD_FIELD)).equalsIgnoreCase(YES_VALUE)
-            && String.valueOf(ccdCallbackRequest.getCaseDetails().getCaseData()
-                .get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD)).equalsIgnoreCase(YES_VALUE)) {
+
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        if (YES_VALUE.equalsIgnoreCase(String.valueOf(
+                caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)) )
+            && YES_VALUE.equalsIgnoreCase(String.valueOf(
+                caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD)))) {
             return documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, documentType, filename);
         } else {
             return ccdCallbackRequest.getCaseDetails().getCaseData();

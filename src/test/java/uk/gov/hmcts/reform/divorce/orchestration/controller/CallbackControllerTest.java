@@ -537,7 +537,7 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void givenWorkflowException_whenGenerateDocuments_thenReturnErrors() throws WorkflowException {
+    public void givenWorkflowException_whenGenerateDocuments_thenReturnInternalServerError() throws WorkflowException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -554,8 +554,26 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c",
             incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(HttpStatus.INTERNAL_SERVER_ERROR));
         assertThat(response.getBody().getErrors(), contains(errorString));
+    }
+
+    @Test
+    public void whenGenerateCostsOrderDocument_thenExecuteService() throws WorkflowException {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(payload)
+                        .build())
+                .build();
+
+        when(caseOrchestrationService
+                .handleCostsOrderGenerationCallback(incomingRequest, AUTH_TOKEN, "a", "b", "c"))
+                .thenReturn(payload);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCostsOrder(AUTH_TOKEN, "a", incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
     }
 
     @Test

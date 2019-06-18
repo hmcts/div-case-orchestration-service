@@ -826,6 +826,38 @@ public class CaseOrchestrationServiceImplTest {
         assertThat(result, is(requestPayload));
     }
 
+    @Test
+    public void shouldNotGenerateCostsOrder_WhenCostsClaimIsNo() throws WorkflowException {
+
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
+                CaseDetails.builder().caseData(caseData).build())
+                .build();
+
+        classUnderTest
+                .handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+
+        verifyZeroInteractions(documentGenerationWorkflow);
+    }
+
+    @Test
+    public void shouldNotGenerateCostsOrder_WhenCostsClaimGrantedIsNo() throws WorkflowException {
+
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "No");
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
+                CaseDetails.builder().caseData(caseData).build())
+                .build();
+
+        classUnderTest
+                .handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+
+        verifyZeroInteractions(documentGenerationWorkflow);
+    }
+
     @Test(expected = WorkflowException.class)
     public void shouldThrowException_ForDocumentGeneration_WhenWorkflowExceptionIsCaught()
             throws WorkflowException {
