@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -38,8 +39,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_SERVICE_CENTRE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 
@@ -126,7 +128,32 @@ public class IssueEventWorkflowTest {
 
     @Test
     public void givenGenerateAosInvitationIsTrueAndIsServiceCentre_whenRun_thenProceedAsExpected() throws WorkflowException {
-        payload.put("D8DivorceUnit", "serviceCentre");
+        payload.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.SERVICE_CENTER.getId());
+
+        //Given
+        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(setIssueDate.execute(context, payload)).thenReturn(payload);
+        when(petitionGenerator.execute(context, payload)).thenReturn(payload);
+        when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
+        when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
+        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+
+        //When
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
+
+        //Then
+        assertThat(response, is(payload));
+
+        verifyZeroInteractions(getPetitionIssueFee);
+        verifyZeroInteractions(coRespondentPinGenerator);
+        verifyZeroInteractions(coRespondentLetterGenerator);
+    }
+
+    @Test
+    public void givenGenerateAosInvitationIsTrueAndIsNottinghamDivorceUnit_whenRun_thenProceedAsExpected() throws WorkflowException {
+        payload.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getId());
 
         //Given
         when(validateCaseData.execute(context, payload)).thenReturn(payload);
@@ -151,7 +178,7 @@ public class IssueEventWorkflowTest {
 
     @Test
     public void givenCaseIsAdulteryWithNamedCoRespondentAndRespondentLetterCanBeGenerated_whenRun_thenProceedAsExpected() throws WorkflowException {
-        payload.put(D_8_DIVORCE_UNIT, DIVORCE_UNIT_SERVICE_CENTRE);
+        payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
         payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
         payload.put(D_8_CO_RESPONDENT_NAMED, "YES");
 
@@ -176,8 +203,34 @@ public class IssueEventWorkflowTest {
     }
 
     @Test
+    public void givenCaseIsAdulteryWithNamedCoRespondentNottinghamRdcRespondentPackGen_whenRun_thenProceedAsExpected() throws WorkflowException {
+        payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
+        payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        payload.put(D_8_CO_RESPONDENT_NAMED_OLD, "YES");
+
+        //Given
+        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(setIssueDate.execute(context, payload)).thenReturn(payload);
+        when(petitionGenerator.execute(context, payload)).thenReturn(payload);
+        when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
+        when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
+        when(getPetitionIssueFee.execute(context, payload)).thenReturn(payload);
+        when(coRespondentPinGenerator.execute(context, payload)).thenReturn(payload);
+        when(coRespondentLetterGenerator.execute(context, payload)).thenReturn(payload);
+        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+
+        //When
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
+
+        //Then
+        assertThat(response, is(payload));
+    }
+
+    @Test
     public void givenCaseIsNotAdulteryAndRespondentLetterCanBeGenerated_whenRun_thenCoRespondentLetterIsNotGenerated() throws WorkflowException {
-        payload.put(D_8_DIVORCE_UNIT, DIVORCE_UNIT_SERVICE_CENTRE);
+        payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
         payload.put(D_8_REASON_FOR_DIVORCE, "foo");
 
         //Given
@@ -203,7 +256,7 @@ public class IssueEventWorkflowTest {
 
     @Test
     public void givenCaseIsAdulteryButCoRespondentNotNamedAndRespondentLetterCanBeGenerated_whenRun_thenCoRespondentLetterIsNotGenerated() throws WorkflowException {
-        payload.put(D_8_DIVORCE_UNIT, DIVORCE_UNIT_SERVICE_CENTRE);
+        payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
         payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
         payload.put(D_8_CO_RESPONDENT_NAMED, "No");
 
