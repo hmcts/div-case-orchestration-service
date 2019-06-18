@@ -37,9 +37,9 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
     public RespondentSolicitorLinkCaseWorkflow(GetCaseWithId getCaseWithId,
                                                RetrievePinUserDetails retrievePinUserDetails,
                                                LinkRespondent linkRespondent) {
+        this.getCaseWithId = getCaseWithId;
         this.retrievePinUserDetails = retrievePinUserDetails;
         this.linkRespondent = linkRespondent;
-        this.getCaseWithId = getCaseWithId;
     }
 
     public UserDetails run(String authToken, CaseDetails caseDetails) throws WorkflowException {
