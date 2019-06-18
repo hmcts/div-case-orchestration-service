@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithId;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
 
+import java.util.Map;
+
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
@@ -23,6 +25,7 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
 
     private static final String RESPONDENT_SOLICITOR_PIN = "RespondentSolicitorPin";
     private static final String RESPONDENT_SOLICITOR_CASE_NO = "RespondentSolicitorCaseNo";
+    private static final String CASE_REFERENCE = "CaseReference";
 
     private final GetCaseWithId getCaseWithId;
     private final RetrievePinUserDetails retrievePinUserDetails;
@@ -39,7 +42,8 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
 
     public UserDetails run(String authToken, CaseDetails caseDetails) throws WorkflowException {
         final UserDetails userDetails = UserDetails.builder().authToken(authToken).build();
-        final String caseId = String.valueOf(caseDetails.getCaseData().get(RESPONDENT_SOLICITOR_CASE_NO));
+        final Map<String, String> respondentSolicitorCaseLink = (Map<String, String>) caseDetails.getCaseData().get(RESPONDENT_SOLICITOR_CASE_NO);
+        final String caseId = respondentSolicitorCaseLink.get(CASE_REFERENCE);
         final String pin = (String) caseDetails.getCaseData().get(RESPONDENT_SOLICITOR_PIN);
 
         return this.execute(

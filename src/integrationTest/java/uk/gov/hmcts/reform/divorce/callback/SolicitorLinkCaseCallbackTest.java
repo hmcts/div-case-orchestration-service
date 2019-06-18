@@ -29,6 +29,7 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
     private static final String AOS_LETTER_HOLDER_ID = "AosLetterHolderId";
     private static final String RESPONDENT_SOLICITOR_CASE_NO = "RespondentSolicitorCaseNo";
     private static final String RESPONDENT_SOLICITOR_PIN = "RespondentSolicitorPin";
+    private static final String CASE_REFERENCE = "CaseReference";
 
 
     @Value("${case.orchestration.solicitor.solicitor-link-case.context-path}")
@@ -75,7 +76,9 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
         headers.put(HttpHeaders.AUTHORIZATION, userToken);
 
         HashMap<String, Object> caseData = new HashMap<>();
-        caseData.put(RESPONDENT_SOLICITOR_CASE_NO, caseId);
+        HashMap<String, Object> respondentSolicitorCaseLink = new HashMap<>();
+        caseData.put(CASE_REFERENCE, caseId);
+        caseData.put(RESPONDENT_SOLICITOR_CASE_NO, respondentSolicitorCaseLink);
         caseData.put(RESPONDENT_SOLICITOR_PIN, pin);
 
         HashMap<String, Object> caseDetails = new HashMap<>();

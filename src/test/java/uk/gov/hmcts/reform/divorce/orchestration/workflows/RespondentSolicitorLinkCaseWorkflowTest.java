@@ -37,6 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class RespondentSolicitorLinkCaseWorkflowTest {
 
+    private static final String CASE_REFERENCE = "CaseReference";
     private static final String RESPONDENT_SOLICITOR_CASE_NO = "RespondentSolicitorCaseNo";
     private static final String RESPONDENT_SOLICITOR_PIN = "RespondentSolicitorPin";
 
@@ -56,7 +57,9 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     @Before
     public void setUp() {
         Map<String, Object> payload = new HashMap<>();
-        payload.put(RESPONDENT_SOLICITOR_CASE_NO, TEST_CASE_ID);
+        Map<String, Object> respondentSolicitorCaseLink = new HashMap<>();
+        respondentSolicitorCaseLink.put(CASE_REFERENCE, TEST_CASE_ID);
+        payload.put(RESPONDENT_SOLICITOR_CASE_NO, respondentSolicitorCaseLink);
         payload.put(RESPONDENT_SOLICITOR_PIN, TEST_PIN);
         caseDetails = CaseDetails.builder()
                 .caseId(TEST_CASE_ID)
