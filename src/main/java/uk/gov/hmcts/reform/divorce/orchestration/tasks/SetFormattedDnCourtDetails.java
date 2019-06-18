@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_CONTACT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COURT_DETAILS;
 
@@ -33,7 +35,9 @@ public class SetFormattedDnCourtDetails implements Task<Map<String, Object>> {
                         COURT_CONTACT_JSON_KEY, dnCourt.getFormattedContactDetails()
                 ));
             } catch (CourtDetailsNotFound exception) {
-                log.warn("Decree Nisi court details not found. Will not be set in context.");
+                CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
+                log.warn("Decree Nisi court details not found for court id {} on case {}. Will not be set in context.",
+                        caseData.get(COURT_NAME), caseDetails.getCaseId());
             }
         }
 
