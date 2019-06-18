@@ -44,9 +44,9 @@ public class DocumentGenerationTask implements Task<Map<String, Object>> {
             // We do not want any modifications in this task to affect the actual caseData.
             Map<String, Object> copyOfCaseData = new HashMap<>();
             copyOfCaseData.putAll(caseData);
-            caseDetails = caseDetails.toBuilder().caseData(copyOfCaseData).build();
+            copyOfCaseData.putAll(context.getTransientObject(DN_COURT_DETAILS));
 
-            caseDetails.getCaseData().putAll(context.getTransientObject(DN_COURT_DETAILS));
+            caseDetails = caseDetails.toBuilder().caseData(copyOfCaseData).build();
         }
 
         final GeneratedDocumentInfo generatedDocumentInfo =
