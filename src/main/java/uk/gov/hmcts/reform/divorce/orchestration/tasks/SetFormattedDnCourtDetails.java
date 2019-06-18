@@ -35,7 +35,7 @@ public class SetFormattedDnCourtDetails implements Task<Map<String, Object>> {
                         COURT_CONTACT_JSON_KEY, dnCourt.getFormattedContactDetails()
                 ));
             } catch (CourtDetailsNotFound exception) {
-                CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
+                CaseDetails caseDetails = context.computeTransientObjectIfAbsent(CASE_DETAILS_JSON_KEY, CaseDetails.builder().build());
                 log.warn("Decree Nisi court details not found for court id {} on case {}. Will not be set in context.",
                         caseData.get(COURT_NAME), caseDetails.getCaseId());
             }
