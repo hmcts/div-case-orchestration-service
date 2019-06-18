@@ -179,13 +179,6 @@ public class DocumentGenerationITest {
         final String documentType = "b";
         final String filename = "c";
 
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(COURT_NAME, "liverpool");
-
-        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
-
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
         // Data matching application properties.
         Map<String, Object> formattedDocumentCaseData = new HashMap<>();
         formattedDocumentCaseData.put(COURT_NAME, "Liverpool Civil and Family Court Hearing Centre");
@@ -205,6 +198,9 @@ public class DocumentGenerationITest {
                         .fileName(filename + TEST_CASE_ID)
                         .build();
 
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(COURT_NAME, "liverpool");
+
         final DocumentUpdateRequest documentUpdateRequest =
                 DocumentUpdateRequest.builder()
                         .documents(asList(documentGenerationResponse))
@@ -215,6 +211,10 @@ public class DocumentGenerationITest {
 
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, AUTH_TOKEN)

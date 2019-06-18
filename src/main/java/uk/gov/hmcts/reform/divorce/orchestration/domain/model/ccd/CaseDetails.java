@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder(toBuilder=true)
+@Builder(toBuilder = true)
 public class CaseDetails {
 
     @JsonProperty("case_data")

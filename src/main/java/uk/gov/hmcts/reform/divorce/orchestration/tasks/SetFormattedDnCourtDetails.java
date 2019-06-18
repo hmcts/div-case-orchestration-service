@@ -32,7 +32,7 @@ public class SetFormattedDnCourtDetails implements Task<Map<String, Object>> {
                         COURT_NAME, dnCourt.getName(),
                         COURT_CONTACT_JSON_KEY, dnCourt.getFormattedContactDetails()
                 ));
-            } catch(CourtDetailsNotFound exception) {
+            } catch (CourtDetailsNotFound exception) {
                 log.warn("Decree Nisi court details not found. Will not be set in context.");
             }
         }
