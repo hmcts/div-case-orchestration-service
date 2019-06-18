@@ -577,6 +577,27 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void givenWorkflowException_whenGenerateCostsOrderDocuments_thenReturnInternalServerError() throws WorkflowException {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(payload)
+                        .build())
+                .build();
+
+        String errorString = "foo";
+
+        when(caseOrchestrationService
+                .handleCostsOrderGenerationCallback(incomingRequest, AUTH_TOKEN, "a", "b", "c"))
+                .thenThrow(new WorkflowException(errorString));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCostsOrder(AUTH_TOKEN, "a", incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getErrors(), contains(errorString));
+    }
+
+    @Test
     public void testAosSolicitorNominated() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
