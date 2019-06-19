@@ -300,6 +300,7 @@ bulk-action:
     max: 4
     backoff:
       base-rate: 1000
+  min-cases: 30
 
 # GENERAL SPRING BOOT ACTUATOR CONFIG
 # Context path for Spring Boot Actuator endpoints
