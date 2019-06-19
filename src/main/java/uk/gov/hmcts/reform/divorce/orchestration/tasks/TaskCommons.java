@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -29,6 +30,10 @@ public class TaskCommons {
         } catch (CourtDetailsNotFound courtDetailsNotFound) {
             throw new TaskException(courtDetailsNotFound);
         }
+    }
+
+    public DnCourt getDnCourt(String courtId) throws CourtDetailsNotFound {
+        return courtLookupService.getDnCourtByKey(courtId);
     }
 
     public void sendEmail(EmailTemplateNames emailTemplate,
