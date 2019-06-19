@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+
 public class PaymentUpdateCallbackTest extends IntegrationTest {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/callback/";
