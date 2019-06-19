@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +32,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentGenerationWorkflowTest {
+
+    @Mock
+    private SetFormattedDnCourtDetails setFormattedDnCourtDetails;
 
     @Mock
     private DocumentGenerationTask documentGenerationTask;
@@ -60,6 +64,7 @@ public class DocumentGenerationWorkflowTest {
 
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
+        when(setFormattedDnCourtDetails.execute(context, payload)).thenReturn(payload);
         when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
 
@@ -68,8 +73,9 @@ public class DocumentGenerationWorkflowTest {
 
         assertThat(result, is(payload));
 
-        final InOrder inOrder = inOrder(documentGenerationTask, caseFormatterAddDocuments);
+        final InOrder inOrder = inOrder(setFormattedDnCourtDetails, documentGenerationTask, caseFormatterAddDocuments);
 
+        inOrder.verify(setFormattedDnCourtDetails).execute(context, payload);
         inOrder.verify(documentGenerationTask).execute(context, payload);
         inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
     }
