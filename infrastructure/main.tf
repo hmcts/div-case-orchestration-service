@@ -56,7 +56,7 @@ module "div-cos" {
     PAYMENT_API_BASEURL                             = "${local.payment_api_baseurl}"
     SERVICE_AUTH_PROVIDER_URL                       = "${local.service_auth_provider_baseurl}"
     SERVICE_AUTH_MICROSERVICE                       = "${var.service_auth_microservice_name}"
-    SERVICE_AUTH_SECRET                             = "${data.azurerm_key_vault_secreDRAFT_CCD_CHECK_ENABLEDt.frontend_secret.value}"
+    SERVICE_AUTH_SECRET                             = "${data.azurerm_key_vault_secret.frontend_secret.value}"
     IDAM_API_URL                                    = "${var.idam_api_baseurl}"
     IDAM_API_REDIRECT_URL                           = "${local.petitioner_fe_baseurl}/authenticated"
     AUTH2_CLIENT_SECRET                             = "${data.azurerm_key_vault_secret.auth-idam-client-secret.value}"
