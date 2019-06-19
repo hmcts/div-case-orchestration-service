@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.scheduler.service.JobService;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
-
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

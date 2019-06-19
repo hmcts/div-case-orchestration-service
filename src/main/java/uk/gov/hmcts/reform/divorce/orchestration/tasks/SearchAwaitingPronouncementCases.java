@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
