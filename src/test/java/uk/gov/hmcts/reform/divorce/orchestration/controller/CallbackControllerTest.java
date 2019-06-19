@@ -39,6 +39,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_DOCUMENT_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CallbackControllerTest {
@@ -554,7 +556,7 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c",
             incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.INTERNAL_SERVER_ERROR));
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody().getErrors(), contains(errorString));
     }
 
@@ -588,10 +590,10 @@ public class CallbackControllerTest {
         String errorString = "foo";
 
         when(caseOrchestrationService
-                .handleCostsOrderGenerationCallback(incomingRequest, AUTH_TOKEN, "a", "b", "c"))
+                .handleCostsOrderGenerationCallback(incomingRequest, AUTH_TOKEN, COSTS_ORDER_TEMPLATE_ID, COST_ORDER_DOCUMENT_TYPE, "c"))
                 .thenThrow(new WorkflowException(errorString));
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCostsOrder(AUTH_TOKEN, "a", incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCostsOrder(AUTH_TOKEN, "c", incomingRequest);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody().getErrors(), contains(errorString));

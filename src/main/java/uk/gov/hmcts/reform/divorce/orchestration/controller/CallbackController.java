@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -464,11 +463,7 @@ public class CallbackController {
             log.info("Generating document {} for case {}.", documentType, caseId);
         } catch (WorkflowException exception) {
             log.error("Document generation failed. Case id:  {}", caseId, exception);
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(callbackResponseBuilder.errors(
-                            asList(exception.getMessage())).build());
-
+            callbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
@@ -487,21 +482,16 @@ public class CallbackController {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
-        String templateId = COSTS_ORDER_TEMPLATE_ID;
-        String documentType = COST_ORDER_DOCUMENT_TYPE;
-
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
             callbackResponseBuilder.data(caseOrchestrationService
-                    .handleCostsOrderGenerationCallback(ccdCallbackRequest, authorizationToken, templateId, documentType, filename));
-            log.info("Generated document {} for case {}.", documentType, caseId);
+                    .handleCostsOrderGenerationCallback(ccdCallbackRequest, authorizationToken,
+                            COSTS_ORDER_TEMPLATE_ID, COST_ORDER_DOCUMENT_TYPE, filename));
+            log.info("Generated document {} for case {}.", COST_ORDER_DOCUMENT_TYPE, caseId);
         } catch (WorkflowException exception) {
             log.error("Document generation failed. Case id:  {}", caseId, exception);
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(callbackResponseBuilder.errors(
-                            asList(exception.getMessage())).build());
+            callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
