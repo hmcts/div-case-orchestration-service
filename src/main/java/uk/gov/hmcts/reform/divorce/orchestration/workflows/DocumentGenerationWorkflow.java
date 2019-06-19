@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
 
 import java.util.Map;
 
@@ -21,13 +22,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
+    private final SetFormattedDnCourtDetails setFormattedDnCourtDetails;
+
     private final DocumentGenerationTask documentGenerationTask;
 
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Autowired
-    public DocumentGenerationWorkflow(final DocumentGenerationTask documentGenerationTask,
+    public DocumentGenerationWorkflow(final SetFormattedDnCourtDetails setFormattedDnCourtDetails,
+                                      final DocumentGenerationTask documentGenerationTask,
                                       final CaseFormatterAddDocuments caseFormatterAddDocuments) {
+        this.setFormattedDnCourtDetails = setFormattedDnCourtDetails;
         this.documentGenerationTask = documentGenerationTask;
         this.caseFormatterAddDocuments = caseFormatterAddDocuments;
     }
@@ -36,7 +41,7 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
                                    final String documentType, final String filename) throws WorkflowException {
 
         return this.execute(
-            new Task[] {documentGenerationTask, caseFormatterAddDocuments},
+            new Task[] {setFormattedDnCourtDetails, documentGenerationTask, caseFormatterAddDocuments},
             ccdCallbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),
