@@ -25,7 +25,7 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.17.0'
     id 'io.spring.dependency-management' version '1.0.6.RELEASE'
     id 'jacoco'
-    id 'org.owasp.dependencycheck' version '4.0.2'
+    id 'org.owasp.dependencycheck' version '5.0.0'
     id 'com.jfrog.bintray' version '1.8.0'
     id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.sonarqube' version '2.5'
@@ -54,7 +54,7 @@ allprojects {
     checkstyle {
         maxWarnings = 0
 
-        toolVersion = '7.2'
+        toolVersion = '8.21'
         // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
         configDir = new File(rootDir, './')
     }
@@ -197,9 +197,9 @@ dependencyCheck {
 def versions = [
         commonsIo                       : '2.5',
         commonsLang3                    : '3.7',
-        springfoxSwagger                : '2.7.0',
+        springfoxSwagger                : '2.9.2',
         lombok                          : '1.16.16',
-        puppyCrawl                      : '7.6',
+        puppyCrawl                      : '8.21',
         reformsJavaLogging              : '4.0.1',
         reformHealth                    : '0.0.3',
         reformPropertiesVolume          : '0.0.4',
@@ -229,7 +229,8 @@ def versions = [
         commonsMath3                    : '3.6.1',
         postgresql                      : '42.2.5',
         hibernateTypes                  : '2.4.0',
-        flyway                          : '5.2.4'
+        flyway                          : '5.2.4',
+        elasticsearch                   : '7.1.1'
 ]
 
 dependencies {
@@ -243,7 +244,7 @@ dependencies {
     compile group: 'org.jdbi', name: 'jdbi', version: '2.78'
     compile('org.springframework.boot:spring-boot-starter-web')
 
-    compile('org.elasticsearch.client:transport:7.0.0')
+    compile('org.elasticsearch.client:transport:7.1.1')
 
     compile group: 'com.puppycrawl.tools', name: 'checkstyle', version: versions.puppyCrawl
     compile group: 'commons-io', name: 'commons-io', version: versions.commonsIo
@@ -267,6 +268,7 @@ dependencies {
                 exclude group: 'io.reactivex', module: 'rxnetty-servo'
             }
 
+    compile group: 'org.elasticsearch', name: 'elasticsearch', version: versions.elasticsearch
     compile group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
     compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: versions.reformSpringBootAutoConfigure
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: versions.reformHealth
