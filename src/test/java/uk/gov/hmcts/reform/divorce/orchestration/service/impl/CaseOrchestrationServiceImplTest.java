@@ -821,7 +821,7 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldCallTheRightWorkflow_ForCostsOrderDocumentGeneration() throws WorkflowException {
         final Map<String, Object> result = classUnderTest
-                .handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+            .handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
 
         assertThat(result, is(requestPayload));
     }
@@ -833,11 +833,11 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-                CaseDetails.builder().caseData(caseData).build())
-                .build();
+            CaseDetails.builder().caseData(caseData).build())
+            .build();
 
         classUnderTest
-                .handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+            .handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
 
         verifyZeroInteractions(documentGenerationWorkflow);
     }
@@ -849,11 +849,11 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "No");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-                CaseDetails.builder().caseData(caseData).build())
-                .build();
+            CaseDetails.builder().caseData(caseData).build())
+            .build();
 
         classUnderTest
-                .handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+            .handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
 
         verifyZeroInteractions(documentGenerationWorkflow);
     }
@@ -877,11 +877,11 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-                CaseDetails.builder().caseData(caseData).build())
-                .build();
+            CaseDetails.builder().caseData(caseData).build())
+            .build();
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN , "a", "b", "c"))
-                .thenThrow(new WorkflowException("This operation threw an exception"));
+            .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
     }
@@ -991,14 +991,14 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-                CaseDetails.builder().caseData(caseData).build())
-                .build();
+            CaseDetails.builder().caseData(caseData).build())
+            .build();
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN , "a", "b", "c"))
-                .thenReturn(requestPayload);
+            .thenReturn(requestPayload);
 
         final Map<String, Object> result = classUnderTest
-                .handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+            .handleCostsOrderGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
 
         assertThat(result, is(requestPayload));
     }

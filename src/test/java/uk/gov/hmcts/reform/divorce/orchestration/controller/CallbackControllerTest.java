@@ -539,7 +539,7 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void givenWorkflowException_whenGenerateDocuments_thenReturnInternalServerError() throws WorkflowException {
+    public void givenWorkflowException_whenGenerateDocuments_thenReturnErrors() throws WorkflowException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -579,7 +579,7 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void givenWorkflowException_whenGenerateCostsOrderDocuments_thenReturnInternalServerError() throws WorkflowException {
+    public void givenWorkflowException_whenGenerateCostsOrderDocuments_thenReturnErrors() throws WorkflowException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
