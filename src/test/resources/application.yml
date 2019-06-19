@@ -106,6 +106,14 @@ send-letter:
 bulk-print:
   dueDate: 9
 
+bulk-action:
+  page-size: 50
+  retries:
+    max: 4
+    backoff:
+      base-rate: 1
+  min-cases: 2
+
 uk:
   gov:
     notify:
@@ -306,13 +314,6 @@ health:
 documentation:
   swagger:
     enabled: true
-
-bulk-action:
-  page-size: 50
-  retries:
-    max: 2
-    backoff:
-      base-rate: 1
 
 # GENERAL SPRING BOOT ACTUATOR CONFIG
 # Context path for Spring Boot Actuator endpoints
