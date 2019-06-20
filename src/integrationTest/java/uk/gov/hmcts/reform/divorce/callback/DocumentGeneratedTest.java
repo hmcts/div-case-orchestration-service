@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 public class DocumentGeneratedTest extends IntegrationTest {
 
     private static final String CCD_CALLBACK_REQUEST = "fixtures/callback/basic-case.json";
+    private static final String TEST_CASE_ID = "0123456789012345";
 
     @Autowired
     private CosApiClient cosApiClient;
@@ -29,13 +30,12 @@ public class DocumentGeneratedTest extends IntegrationTest {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(CCD_CALLBACK_REQUEST, CcdCallbackRequest.class);
 
         Map<String, Object> response = cosApiClient
-                .generateDocument(ccdCallbackRequest, MINI_PETITION_TEMPLATE_NAME, DOCUMENT_TYPE_PETITION, MINI_PETITION_TEMPLATE_NAME);
+                .generateDocument(createCaseWorkerUser().getAuthToken(), ccdCallbackRequest,
+                        MINI_PETITION_TEMPLATE_NAME, DOCUMENT_TYPE_PETITION, MINI_PETITION_TEMPLATE_NAME);
 
         String jsonResponse = objectToJson(response);
 
         assertThat(jsonResponse, hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName",
-                is(DOCUMENT_TYPE_PETITION)));
-        assertThat(jsonResponse, hasJsonPath("$.data.D8caseReference",
-                is("LV17D80100")));
+                is(MINI_PETITION_TEMPLATE_NAME + TEST_CASE_ID)));
     }
 }

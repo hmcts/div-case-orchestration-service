@@ -2,7 +2,7 @@
   "token": "token",
   "event_id": "eventId",
   "case_details": {
-    "caseId": "id",
+    "id": "0123456789012345",
     "state": "state",
     "case_data": {
       "createdDate": "2018-06-07",

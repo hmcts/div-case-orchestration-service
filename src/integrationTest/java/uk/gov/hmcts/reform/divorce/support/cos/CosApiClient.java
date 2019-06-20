@@ -113,7 +113,8 @@ public interface CosApiClient {
             method = RequestMethod.POST,
             value = "/generate-document"
     )
-    Map<String, Object> generateDocument(@RequestBody CcdCallbackRequest ccdCallbackRequest,
+    Map<String, Object> generateDocument(@RequestHeader(AUTHORIZATION) String authorisation,
+                                         @RequestBody CcdCallbackRequest ccdCallbackRequest,
                                          @RequestParam(name = "templateId") String templateId,
                                          @RequestParam(name = "documentType") String documentType,
                                          @RequestParam(name = "filename") String filename);
@@ -122,5 +123,6 @@ public interface CosApiClient {
             method = RequestMethod.POST,
             value = "generate-dn-pronouncement-documents"
     )
-    Map<String, Object> generateDnPronouncedDocuments(@RequestBody CcdCallbackRequest ccdCallbackRequest);
+    Map<String, Object> generateDnPronouncedDocuments(@RequestHeader(AUTHORIZATION) String authorisation,
+                                                      @RequestBody CcdCallbackRequest ccdCallbackRequest);
 }
