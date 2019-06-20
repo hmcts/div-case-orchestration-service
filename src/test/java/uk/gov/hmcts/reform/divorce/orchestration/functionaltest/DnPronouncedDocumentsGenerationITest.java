@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
@@ -39,8 +40,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -50,8 +57,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @PropertySource(value = "classpath:application.yml")
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class CostsOrderGenerationITest {
-    private static final String API_URL = "/generate-costs-order";
+public class DnPronouncedDocumentsGenerationITest {
+    private static final String API_URL = "/generate-dn-pronouncement-documents";
     private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
@@ -96,79 +103,110 @@ public class CostsOrderGenerationITest {
     }
 
     @Test
-    public void givenTemplateIdIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .param("documentType", "a")
-            .param("filename", "b"))
-            .andExpect(status().isBadRequest());
-    }
+    public void happyPathWithCostsOrder() throws Exception {
 
-
-    @Test
-    public void givenDocumentTypeIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .param("templateId", "a")
-            .param("filename", "b"))
-            .andExpect(status().isBadRequest());
-    }
-
-
-    @Test
-    public void givenFilenameIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .param("templateId", "a")
-            .param("documentType", "b"))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void happyPath() throws Exception {
-
-        final String templateId = "a";
-        final String documentType = "b";
-        final String filename = "c";
-
-        final GenerateDocumentRequest documentGenerationRequest =
+        final GenerateDocumentRequest dnDocumentGenerationRequest =
             GenerateDocumentRequest.builder()
-                .template(templateId)
+                .template(DECREE_NISI_TEMPLATE_ID)
                 .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
                 .build();
 
-        final GeneratedDocumentInfo documentGenerationResponse =
+        final GenerateDocumentRequest costsOrderDocumentGenerationRequest =
+                GenerateDocumentRequest.builder()
+                        .template(COSTS_ORDER_TEMPLATE_ID)
+                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
+                        .build();
+
+        final GeneratedDocumentInfo dnDocumentGenerationResponse =
             GeneratedDocumentInfo.builder()
-                .documentType(documentType)
-                .fileName(filename + TEST_CASE_ID)
+                .documentType(DECREE_NISI_DOCUMENT_TYPE)
+                .fileName(DECREE_NISI_FILENAME + TEST_CASE_ID)
                 .build();
 
-        final DocumentUpdateRequest documentUpdateRequest =
+        final GeneratedDocumentInfo costsOrderDocumentGenerationResponse =
+                GeneratedDocumentInfo.builder()
+                        .documentType(COSTS_ORDER_DOCUMENT_TYPE)
+                        .fileName(COSTS_ORDER_DOCUMENT_TYPE + TEST_CASE_ID)
+                        .build();
+
+        final DocumentUpdateRequest dnDocumentUpdateRequest =
             DocumentUpdateRequest.builder()
-                .documents(asList(documentGenerationResponse))
+                .documents(asList(dnDocumentGenerationResponse))
                 .caseData(CASE_DATA)
                 .build();
-        final Map<String, Object> formattedCaseData =  emptyMap();
 
-        stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
+        final DocumentUpdateRequest costsOrderDocumentUpdateRequest =
+                DocumentUpdateRequest.builder()
+                        .documents(asList(costsOrderDocumentGenerationResponse))
+                        .caseData(CASE_DATA)
+                        .build();
+
+        final Map<String, Object> emptyCaseData =  emptyMap();
+
+        stubDocumentGeneratorServerEndpoint(dnDocumentGenerationRequest, dnDocumentGenerationResponse);
+        stubFormatterServerEndpoint(dnDocumentUpdateRequest, emptyCaseData);
+
+        stubDocumentGeneratorServerEndpoint(costsOrderDocumentGenerationRequest, costsOrderDocumentGenerationResponse);
+        stubFormatterServerEndpoint(costsOrderDocumentUpdateRequest, emptyCaseData);
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
-            .param("templateId", "a")
-            .param("documentType", "b")
-            .param("filename", "c")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
+            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+    }
+
+    @Test
+    public void happyPathWithoutCostsOrder() throws Exception {
+
+        Map<String, Object> caseData = Collections.singletonMap(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, NO_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+                .caseDetails(caseDetails)
+                .build();
+
+
+        final GenerateDocumentRequest dnDocumentGenerationRequest =
+                GenerateDocumentRequest.builder()
+                        .template(DECREE_NISI_TEMPLATE_ID)
+                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                        .build();
+
+        final GeneratedDocumentInfo dnDocumentGenerationResponse =
+                GeneratedDocumentInfo.builder()
+                        .documentType(DECREE_NISI_DOCUMENT_TYPE)
+                        .fileName(DECREE_NISI_FILENAME + TEST_CASE_ID)
+                        .build();
+
+        final DocumentUpdateRequest dnDocumentUpdateRequest =
+                DocumentUpdateRequest.builder()
+                        .documents(asList(dnDocumentGenerationResponse))
+                        .caseData(caseData)
+                        .build();
+
+        final Map<String, Object> emptyCaseData =  emptyMap();
+
+        stubDocumentGeneratorServerEndpoint(dnDocumentGenerationRequest, dnDocumentGenerationResponse);
+        stubFormatterServerEndpoint(dnDocumentUpdateRequest, emptyCaseData);
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        webClient.perform(post(API_URL)
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .content(convertObjectToJsonString(ccdCallbackRequest))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
     }
 
 
