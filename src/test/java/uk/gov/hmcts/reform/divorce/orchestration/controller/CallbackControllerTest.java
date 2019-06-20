@@ -570,7 +570,7 @@ public class CallbackControllerTest {
                 .build();
 
         when(caseOrchestrationService
-                .handleCostsOrderGenerationCallback(incomingRequest, AUTH_TOKEN, COSTS_ORDER_TEMPLATE_ID, COST_ORDER_DOCUMENT_TYPE, "c"))
+                .handleCostsOrderGenerationCallback(incomingRequest, AUTH_TOKEN, COSTS_ORDER_TEMPLATE_ID, COST_ORDER_DOCUMENT_TYPE, "a"))
                 .thenReturn(payload);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCostsOrder(AUTH_TOKEN, "a", incomingRequest);
