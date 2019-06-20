@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.Setter;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -23,10 +24,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SearchAwaitingPronouncementCases implements Task<Map<String, Object>> {
 
-    private static final String HEARING_DATE = "data.hearingDate";
+    private static final String HEARING_DATE = "data.DateAndTimeOfHearing";
     private static final String BULK_LISTING_CASE_ID = "data.BulkListingCaseId";
-
+    private static final String DN_OUTCOME_CHECKED_BY_LA = "data.DnOutcomeLaChecked";
     @Value("${bulk-action.page-size:50}")
+    @Setter
     private int pageSize;
 
     private final CaseMaintenanceClient caseMaintenanceClient;
@@ -46,10 +48,12 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
             QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_PRONOUNCEMENT);
             QueryBuilder hearingDate = QueryBuilders.existsQuery(HEARING_DATE);
             QueryBuilder bulkListingCaseId = QueryBuilders.existsQuery(BULK_LISTING_CASE_ID);
+            QueryBuilder checkByLaField = QueryBuilders.existsQuery(DN_OUTCOME_CHECKED_BY_LA);
 
-            final QueryBuilder query = QueryBuilders
+            QueryBuilder query = QueryBuilders
                 .boolQuery()
                 .must(stateQuery)
+                .must(checkByLaField)
                 .mustNot(hearingDate)
                 .mustNot(bulkListingCaseId);
 

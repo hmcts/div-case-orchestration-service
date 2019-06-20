@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_APPROVAL_DATE_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_CHECKED_BY_LA_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
 public class AddDecreeNisiApprovalDateTask implements Task<Map<String, Object>> {
@@ -25,8 +27,8 @@ public class AddDecreeNisiApprovalDateTask implements Task<Map<String, Object>> 
         Map<String, Object> payload = new HashMap<>(incomingPayload);
 
         payload.put(DN_APPROVAL_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat());
+        payload.put(DN_OUTCOME_CHECKED_BY_LA_CCD_FIELD, YES_VALUE);
 
         return payload;
     }
-
 }
