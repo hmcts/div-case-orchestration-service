@@ -109,4 +109,18 @@ public interface CosApiClient {
     )
     Map<String, Object> bulkPronouncement(@RequestBody CcdCallbackRequest ccdCallbackRequest);
 
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/generate-document"
+    )
+    Map<String, Object> generateDocument(@RequestBody CcdCallbackRequest ccdCallbackRequest,
+                                         @RequestParam(name = "templateId") String templateId,
+                                         @RequestParam(name = "documentType") String documentType,
+                                         @RequestParam(name = "filename") String filename);
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "generate-dn-pronouncement-documents"
+    )
+    Map<String, Object> generateDnPronouncedDocuments(@RequestBody CcdCallbackRequest ccdCallbackRequest);
 }
