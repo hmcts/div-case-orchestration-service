@@ -98,7 +98,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     @Test
     public void givenCaseList_thenCreateBulkCaseAndUpdateAllCases() throws Exception {
         SearchResult result = SearchResult.builder()
-            .cases(Arrays.asList(prepareBulkCase()))
+            .cases(Arrays.asList(prepareBulkCase(), prepareBulkCase()))
             .build();
 
         stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
@@ -122,7 +122,8 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     @Test
     public void givenError_whenCreateBulkCase_thenCasesAreNotUpdated() throws Exception {
         SearchResult result = SearchResult.builder()
-            .cases(Arrays.asList(prepareBulkCase()))
+            .cases(Arrays.asList(prepareBulkCase(), prepareBulkCase()))
+            .total(2)
             .build();
 
         stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
@@ -141,7 +142,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     @Test
     public void give4XError_whenUpdateDivorceCase_thenProcessOtherCases() throws Exception {
         SearchResult result = SearchResult.builder()
-            .cases(Arrays.asList(prepareBulkCase()))
+            .cases(Arrays.asList(prepareBulkCase(), prepareBulkCase(), prepareBulkCase()))
             .build();
 
         stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
@@ -164,9 +165,31 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     }
 
     @Test
-    public void give5XError_whenUpdateDivorceCase_thenRetryCasesProcessOtherCases() throws Exception {
+    public void givenSearchWithoutMinimumCases_whenCreateBulkCase_thenBulkCasesIsNotCreated() throws Exception {
         SearchResult result = SearchResult.builder()
             .cases(Arrays.asList(prepareBulkCase()))
+            .total(1)
+            .build();
+
+        stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
+        stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+
+        stubSignInForCaseworker();
+        webClient.perform(post(API_URL)
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath(BULK_CASE_LIST_KEY).isEmpty());
+
+        verifyCmsServerEndpoint(0, CMS_BULK_CASE_SUBMIT, RequestMethod.POST);
+
+        verifyCmsServerEndpoint(0, CMS_UPDATE_CASE, RequestMethod.POST, UPDATE_BODY);
+    }
+
+    @Test
+    public void give5XError_whenUpdateDivorceCase_thenRetryCasesProcessOtherCases() throws Exception {
+        SearchResult result = SearchResult.builder()
+            .cases(Arrays.asList(prepareBulkCase(), prepareBulkCase(), prepareBulkCase()))
             .build();
         CaseDetails.builder()
             .caseId(TestConstants.TEST_CASE_ID)
@@ -210,6 +233,11 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withBody(body)));
+    }
+
+    private void verifyCmsServerEndpoint(int times, String path, RequestMethod method) {
+        cmsServiceServer.verify(times, new RequestPatternBuilder(method, urlEqualTo(path))
+            .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE)));
     }
 
     private void verifyCmsServerEndpoint(int times, String path, RequestMethod method, String body) {
