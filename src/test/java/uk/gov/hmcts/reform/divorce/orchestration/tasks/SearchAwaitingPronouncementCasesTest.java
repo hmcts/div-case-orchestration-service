@@ -40,7 +40,7 @@ public class SearchAwaitingPronouncementCasesTest {
         final DefaultTaskContext context = new DefaultTaskContext();
 
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-
+        classUnderTest.setPageSize(10);
         final SearchResult cmsSearchResponse =
                 SearchResult.builder()
                     .cases(Collections.emptyList())
