@@ -65,7 +65,11 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -507,19 +511,22 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> handleCostsOrderGenerationCallback(final CcdCallbackRequest ccdCallbackRequest, final String authToken,
-                                                          final String templateId, final String documentType, final String filename)
+    public Map<String, Object> handleDnPronouncementDocumentGeneration(final CcdCallbackRequest ccdCallbackRequest, final String authToken)
             throws WorkflowException {
 
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
-        if (YES_VALUE.equalsIgnoreCase(String.valueOf(
-                caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)) )
-            && YES_VALUE.equalsIgnoreCase(String.valueOf(
-                caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD)))) {
-            return documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, documentType, filename);
-        } else {
-            return ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
+                DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));
+
+        if (YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD)))) {
+
+            // DocumentType is clear enough to use as the file name
+            caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
+                    COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE));
         }
+
+        return caseData;
     }
 
     @Override

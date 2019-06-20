@@ -218,8 +218,11 @@ public class OrchestrationConstants {
     public static final String DOCUMENT_TEMPLATE_ID = "documentTemplateId";
     public static final String DOCUMENT_FILENAME = "documentFilename";
     public static final String DOCUMENT_FILENAME_FMT = "%s%s";
-    public static final String COST_ORDER_DOCUMENT_TYPE = "costsOrder";
+    public static final String COSTS_ORDER_DOCUMENT_TYPE = "costsOrder";
     public static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
+    public static final String DECREE_NISI_DOCUMENT_TYPE = "dnGranted";
+    public static final String DECREE_NISI_FILENAME = "decreeNisi";
+    public static final String DECREE_NISI_TEMPLATE_ID = "FL-DIV-GNO-ENG-00021.docx";
 
 
     public static final String SOL_DOCUMENT_LINK_FIELD = "solDocumentLinkFieldName";

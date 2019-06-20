@@ -100,8 +100,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> validateBulkCaseListingData(Map<String, Object> caseData) throws WorkflowException;
 
-    Map<String, Object> handleCostsOrderGenerationCallback(CcdCallbackRequest ccdCallbackRequest,  String authToken,
-                                                           String templateId,  String documentType,  String filename) throws WorkflowException;
+    Map<String, Object> handleDnPronouncementDocumentGeneration(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 

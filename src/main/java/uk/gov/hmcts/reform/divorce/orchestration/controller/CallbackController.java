@@ -31,8 +31,6 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_TEMPLATE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
@@ -469,15 +467,14 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/generate-costs-order", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Generates the document and attaches it to the case")
+    @PostMapping(path = "/generate-dn-pronouncement-documents", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Generates the documents for Decree Nisi Pronouncement and attaches it to the case")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Document has been attached to the case", response = CcdCallbackResponse.class),
             @ApiResponse(code = 400, message = "Bad Request"),
             @ApiResponse(code = 500, message = "Internal Server Error")})
-    public ResponseEntity<CcdCallbackResponse> generateCostsOrder(
+    public ResponseEntity<CcdCallbackResponse> generateDnDocuments(
             @RequestHeader(value = "Authorization") String authorizationToken,
-            @RequestParam(value = "filename") @ApiParam("filename") String filename,
             @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
@@ -486,11 +483,10 @@ public class CallbackController {
 
         try {
             callbackResponseBuilder.data(caseOrchestrationService
-                    .handleCostsOrderGenerationCallback(ccdCallbackRequest, authorizationToken,
-                            COSTS_ORDER_TEMPLATE_ID, COST_ORDER_DOCUMENT_TYPE, filename));
-            log.info("Generated document {} for case {}.", COST_ORDER_DOCUMENT_TYPE, caseId);
+                    .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, authorizationToken));
+            log.info("Generated decree nisi documents for case {}.", caseId);
         } catch (WorkflowException exception) {
-            log.error("Document generation failed. Case id:  {}", caseId, exception);
+            log.error("Document generation failed. Case id: {}", caseId, exception);
             callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 

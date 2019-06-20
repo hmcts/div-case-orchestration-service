@@ -39,8 +39,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_TEMPLATE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_DOCUMENT_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CallbackControllerTest {
@@ -561,7 +559,7 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void whenGenerateCostsOrderDocument_thenExecuteService() throws WorkflowException {
+    public void whenGenerateDnPronouncedDocuments_thenExecuteService() throws WorkflowException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
@@ -570,16 +568,16 @@ public class CallbackControllerTest {
                 .build();
 
         when(caseOrchestrationService
-                .handleCostsOrderGenerationCallback(incomingRequest, AUTH_TOKEN, COSTS_ORDER_TEMPLATE_ID, COST_ORDER_DOCUMENT_TYPE, "a"))
+                .handleDnPronouncementDocumentGeneration(incomingRequest, AUTH_TOKEN))
                 .thenReturn(payload);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCostsOrder(AUTH_TOKEN, "a", incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDnDocuments(AUTH_TOKEN, incomingRequest);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
     }
 
     @Test
-    public void givenWorkflowException_whenGenerateCostsOrderDocuments_thenReturnErrors() throws WorkflowException {
+    public void givenWorkflowException_whenGenerateDnPronouncedDocuments_thenReturnErrors() throws WorkflowException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
@@ -590,10 +588,10 @@ public class CallbackControllerTest {
         String errorString = "foo";
 
         when(caseOrchestrationService
-                .handleCostsOrderGenerationCallback(incomingRequest, AUTH_TOKEN, COSTS_ORDER_TEMPLATE_ID, COST_ORDER_DOCUMENT_TYPE, "c"))
+                .handleDnPronouncementDocumentGeneration(incomingRequest, AUTH_TOKEN))
                 .thenThrow(new WorkflowException(errorString));
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCostsOrder(AUTH_TOKEN, "c", incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDnDocuments(AUTH_TOKEN, incomingRequest);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody().getErrors(), contains(errorString));
