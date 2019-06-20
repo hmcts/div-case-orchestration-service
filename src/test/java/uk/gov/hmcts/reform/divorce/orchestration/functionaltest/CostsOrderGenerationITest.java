@@ -155,7 +155,6 @@ public class CostsOrderGenerationITest {
                 .caseData(CASE_DATA)
                 .build();
         final Map<String, Object> formattedCaseData =  emptyMap();
-        // final Map<String, Object> formattedCaseData = Collections.singletonMap("Hello", "World");
 
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
