@@ -219,7 +219,7 @@ public class OrchestrationConstants {
     public static final String DOCUMENT_FILENAME = "documentFilename";
     public static final String DOCUMENT_FILENAME_FMT = "%s%s";
     public static final String COST_ORDER_DOCUMENT_TYPE = "costsOrder";
-    public static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00023.docx";
+    public static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
 
 
     public static final String SOL_DOCUMENT_LINK_FIELD = "solDocumentLinkFieldName";
