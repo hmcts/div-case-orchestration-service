@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import com.google.common.collect.ImmutableMap;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,13 +19,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -40,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_DOCUMENT_TYPE;
@@ -62,7 +64,10 @@ public class DnPronouncedDocumentsGenerationITest {
     private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
-    private static final Map<String, Object> CASE_DATA = Collections.singletonMap(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+    private static final Map<String, Object> CASE_DATA = ImmutableMap.of(
+        DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE,
+        BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID)
+    );
 
     private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
         .caseData(CASE_DATA)
@@ -100,6 +105,33 @@ public class DnPronouncedDocumentsGenerationITest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void happyPathWithNoBulkCaseLinkId() throws Exception {
+
+        Map<String, Object> caseData = ImmutableMap.of(
+            DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, NO_VALUE
+        );
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+                .caseDetails(caseDetails)
+                .build();
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        webClient.perform(post(API_URL)
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .content(convertObjectToJsonString(ccdCallbackRequest))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
     }
 
     @Test
@@ -163,7 +195,10 @@ public class DnPronouncedDocumentsGenerationITest {
     @Test
     public void happyPathWithoutCostsOrder() throws Exception {
 
-        Map<String, Object> caseData = Collections.singletonMap(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, NO_VALUE);
+        Map<String, Object> caseData = ImmutableMap.of(
+            DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, NO_VALUE,
+            BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID)
+        );
 
         CaseDetails caseDetails = CaseDetails.builder()
                 .caseData(caseData)
@@ -173,7 +208,6 @@ public class DnPronouncedDocumentsGenerationITest {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
                 .caseDetails(caseDetails)
                 .build();
-
 
         final GenerateDocumentRequest dnDocumentGenerationRequest =
                 GenerateDocumentRequest.builder()
