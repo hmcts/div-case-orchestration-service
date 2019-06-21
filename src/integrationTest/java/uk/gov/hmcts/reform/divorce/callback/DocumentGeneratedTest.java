@@ -35,7 +35,9 @@ public class DocumentGeneratedTest extends IntegrationTest {
 
         String jsonResponse = objectToJson(response);
 
-        assertThat(jsonResponse, hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName",
-                is(MINI_PETITION_TEMPLATE_NAME + TEST_CASE_ID)));
+        assertThat(
+                jsonResponse,
+                hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName", is(MINI_PETITION_TEMPLATE_NAME + TEST_CASE_ID))
+        );
     }
 }
