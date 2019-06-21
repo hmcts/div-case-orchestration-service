@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SearchAwaitingPronouncementCases implements Task<Map<String, Object>> {
 
-    private static final String HEARING_DATE = "data.hearingDate";
+    private static final String HEARING_DATE = "data.DateAndTimeOfHearing";
     private static final String BULK_LISTING_CASE_ID = "data.BulkListingCaseId";
 
     @Value("${bulk-action.page-size:50}")
