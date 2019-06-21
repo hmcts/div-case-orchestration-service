@@ -20,6 +20,7 @@ public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
 
     private static final String BULK_CREATE_JSON_FILE = "bulk-create.json";
     private static final String BULK_UPDATE_JSON_FILE = "bulk-update-listing.json";
+    private static final String SCHEDULE_CREATED_EVENT_ID = "create";
     private static final String SCHEDULE_FOR_LISTING_EVENT_ID = "scheduleForListing";
     private static final String BULK_CASE_ACCEPTED_LIST_KEY = "CaseAcceptedList";
     private static final String BULK_HEARING_DATE_TIME_KEY = "hearingDate";
@@ -45,10 +46,12 @@ public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
         List<CollectionMember<CaseLink>> acceptedCases = ImmutableList.of(caseLink1, caseLink2);
 
         String bulkCaseId = submitBulkCase(BULK_CREATE_JSON_FILE, Pair.of(BULK_CASE_ACCEPTED_LIST_KEY, acceptedCases))
-                .getId().toString();
+            .getId().toString();
+
+        updateCase(bulkCaseId, null, SCHEDULE_CREATED_EVENT_ID, true);
 
         updateCase(bulkCaseId, BULK_UPDATE_JSON_FILE, SCHEDULE_FOR_LISTING_EVENT_ID, true,
-                Pair.of(BULK_HEARING_DATE_TIME_KEY, LocalDateTime.now().plusMonths(3).toString()));
+            Pair.of(BULK_HEARING_DATE_TIME_KEY, LocalDateTime.now().plusMonths(3).toString()));
 
         validateCaseWithAwaitingTime(createCaseWorkerUser(), caseId1);
         validateCaseWithAwaitingTime(createCaseWorkerUser(), caseId2);
