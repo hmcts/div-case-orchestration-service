@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow;
 
 import com.google.common.collect.ImmutableMap;
 import feign.FeignException;
+import feign.Request;
+import feign.RetryableException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +12,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.BulkUpdateException;
 
+import java.util.Date;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
@@ -64,7 +67,32 @@ public class RetryableBulkCaseWorkflowTest {
     }
 
     @Test
-    public void given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
+    public void givenServiceUnavailableException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
+        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.ServiceUnavailable("Error", "Error".getBytes()));
+    }
+
+    @Test
+    public void givenBadGatewayException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
+        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.BadGateway("Error", "Error".getBytes()));
+    }
+
+    @Test
+    public void givenGatewayTimeoutException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
+        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.GatewayTimeout("Error", "Error".getBytes()));
+    }
+
+    @Test
+    public void givenRetryableException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
+        RetryableException retryableException = new RetryableException(-1, "Error", Request.HttpMethod.GET, new Date());
+        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(retryableException);
+    }
+
+    @Test
+    public void givenInternalServerErrorException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
+        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.InternalServerError("Error", "Error".getBytes()));
+    }
+
+    public void given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(FeignException expectedException) throws WorkflowException {
         Map<String, Object> caseData1 = ImmutableMap.of(VALUE_KEY, ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID_1));
         Map<String, Object> caseData2 = ImmutableMap.of(VALUE_KEY, ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID_2));
         Map<String, Object> bulkCaseData = ImmutableMap.of(BULK_CASE_ACCEPTED_LIST_KEY, asList(caseData1, caseData2));
@@ -72,7 +100,7 @@ public class RetryableBulkCaseWorkflowTest {
             CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(retryableBulkCaseWorkflow.run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN))
-            .thenThrow(new FeignException.ServiceUnavailable("Error", "Error".getBytes()));
+            .thenThrow(expectedException);
 
         boolean executionSuccessful = retryableBulkCaseWorkflow.executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
 
