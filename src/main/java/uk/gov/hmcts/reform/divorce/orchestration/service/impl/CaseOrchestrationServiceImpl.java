@@ -578,7 +578,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> updateBulkCaseDnPronounce(CaseDetails caseDetails) throws WorkflowException {
-        return bulkCaseUpdateDnPronounceDatesWorkflow.run(caseDetails);
+    public Map<String, Object> updateBulkCaseDnPronounce(CaseDetails caseDetails, String authToken) throws WorkflowException {
+        return bulkCaseUpdateDnPronounceDatesWorkflow.run(caseDetails, authToken);
     }
 }

@@ -21,9 +21,11 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_DETAILS_CONTEXT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATE_CCD_FIELD;
@@ -62,6 +64,7 @@ public class BulkCaseUpdateDnPronounceDatesWorkflowTest {
         );
 
         context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(BULK_CASE_DETAILS_CONTEXT_KEY, expectedBulkCaseDetails);
     }
 
@@ -70,7 +73,7 @@ public class BulkCaseUpdateDnPronounceDatesWorkflowTest {
         when(setDnGrantedDate.execute(context, testData)).thenReturn(testData);
         when(updateDivorceCasePronouncementDateWithinBulk.execute(context, testData)).thenReturn(testData);
 
-        assertEquals(testData, bulkCaseUpdateDnPronounceDatesWorkflow.run(caseDetails));
+        assertEquals(testData, bulkCaseUpdateDnPronounceDatesWorkflow.run(caseDetails, AUTH_TOKEN));
 
         verify(setDnGrantedDate).execute(context, testData);
         verify(updateDivorceCasePronouncementDateWithinBulk).execute(context, testData);

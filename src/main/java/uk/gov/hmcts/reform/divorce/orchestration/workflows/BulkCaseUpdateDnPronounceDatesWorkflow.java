@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDivorceCasePronounc
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_DETAILS_CONTEXT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
 @Component
 @AllArgsConstructor
@@ -23,7 +24,7 @@ public class BulkCaseUpdateDnPronounceDatesWorkflow extends DefaultWorkflow<Map<
     private final SetDnGrantedDate setDnGrantedDate;
     private final UpdateDivorceCasePronouncementDateWithinBulk updateDivorceCasePronouncementDateWithinBulk;
 
-    public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
+    public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
 
         Map<String, Object> bulkCaseDetailsAsMap = objectMapper.convertValue(caseDetails, Map.class);
 
@@ -33,6 +34,7 @@ public class BulkCaseUpdateDnPronounceDatesWorkflow extends DefaultWorkflow<Map<
                     updateDivorceCasePronouncementDateWithinBulk
                 },
                 caseDetails.getCaseData(),
+                ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
                 ImmutablePair.of(BULK_CASE_DETAILS_CONTEXT_KEY, bulkCaseDetailsAsMap)
         );
     }
