@@ -73,6 +73,6 @@ public class DnPronouncedDocumentsGeneratedTest extends IntegrationTest {
                 hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName", is(DECREE_NISI_FILENAME + TEST_CASE_ID)));
         assertThat(
                 jsonResponse,
-                hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName", is(COSTS_ORDER_DOCUMENT_TYPE + TEST_CASE_ID)));
+                hasJsonPath("$.data.D8DocumentsGenerated[1].value.DocumentFileName", is(COSTS_ORDER_DOCUMENT_TYPE + TEST_CASE_ID)));
     }
 }
