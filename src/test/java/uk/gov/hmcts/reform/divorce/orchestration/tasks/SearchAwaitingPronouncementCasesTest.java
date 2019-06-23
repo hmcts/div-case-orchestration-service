@@ -59,6 +59,6 @@ public class SearchAwaitingPronouncementCasesTest {
         verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
             jsonPathValueMatcher("$.query.bool.must_not[*].exists.field", hasItems("data.BulkListingCaseId", "data.DateAndTimeOfHearing"))));
         verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
-            jsonPathValueMatcher("$.query.bool.must[*].exists.field", hasItem("data.DnOutcomeLaChecked"))));
+            jsonPathValueMatcher("$.query.bool.must[*].exists.field", hasItem("data.DnOutcomeCase"))));
     }
 }
