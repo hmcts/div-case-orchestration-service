@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.RetryableBulkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDnGrantedDateFromBulkCase;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDnGrantedDetailsFromBulkCase;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
 import java.util.HashMap;
@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @AllArgsConstructor
 public class UpdatePronouncementDateWorkflow extends RetryableBulkCaseWorkflow {
 
-    private final SetDnGrantedDateFromBulkCase setDnGrantedDateFromBulkCase;
+    private final SetDnGrantedDetailsFromBulkCase setDnGrantedDetailsFromBulkCase;
     private final UpdateCaseInCCD updateCaseInCCD;
 
     public Map<String, Object> run(Map<String, Object> bulkCaseDetails,
@@ -31,7 +31,7 @@ public class UpdatePronouncementDateWorkflow extends RetryableBulkCaseWorkflow {
 
         return this.execute(
                 new Task[] {
-                    setDnGrantedDateFromBulkCase,
+                    setDnGrantedDetailsFromBulkCase,
                     updateCaseInCCD
                 },
                 new HashMap<>(),

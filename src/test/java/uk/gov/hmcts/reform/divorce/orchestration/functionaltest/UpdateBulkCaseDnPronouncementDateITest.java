@@ -88,6 +88,7 @@ public class UpdateBulkCaseDnPronouncementDateITest extends IdamTestSupport {
         // Matching request json
         String courtHearingDate = "2000-01-01";
         String eligibleDate = "2000-02-13";
+        String pronouncementJudge = "District Judge";
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
                 .header(AUTHORIZATION, TEST_AUTH_TOKEN)
@@ -97,6 +98,7 @@ public class UpdateBulkCaseDnPronouncementDateITest extends IdamTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.DecreeNisiGrantedDate", equalTo(courtHearingDate)))
                 .andExpect(jsonPath("$.data.DAEligibleFromDate", equalTo(eligibleDate)))
+                .andExpect(jsonPath("$.data.PronouncementJudge", equalTo(pronouncementJudge)))
                 .andExpect(jsonPath("$.errors", nullValue()));
 
         waitAsyncCompleted();

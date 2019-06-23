@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDnGrantedDateFromBulkCase;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDnGrantedDetailsFromBulkCase;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
 import java.util.Collections;
@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class UpdatePronouncementDateWorkflowTest {
 
     @Mock
-    private SetDnGrantedDateFromBulkCase setDnGrantedDateFromBulkCase;
+    private SetDnGrantedDetailsFromBulkCase setDnGrantedDetailsFromBulkCase;
 
     @Mock
     private UpdateCaseInCCD updateCaseInCCD;
@@ -41,7 +41,7 @@ public class UpdatePronouncementDateWorkflowTest {
     @Test
     public void setDecreeNisiPronouncementDateFromBulkCase_thenProceedAsExpected() throws TaskException, WorkflowException {
         final Task[] tasks = new Task[] {
-            setDnGrantedDateFromBulkCase,
+            setDnGrantedDetailsFromBulkCase,
             updateCaseInCCD
         };
 

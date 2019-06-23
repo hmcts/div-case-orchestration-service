@@ -89,6 +89,7 @@ public class OrchestrationConstants {
     public static final String WHO_PAYS_CCD_CODE_FOR_RESPONDENT = "respondent";
     public static final String DECREE_NISI_GRANTED_DATE_CCD_FIELD = "DecreeNisiGrantedDate";
     public static final String DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD = "DAEligibleFromDate";
+    public static final String PRONOUNCEMENT_JUDGE_CCD_FIELD = "PronouncementJudge";
 
     //CCD DN fields
     public static final String DN_APPROVAL_DATE_CCD_FIELD = "DNApprovalDate";

@@ -23,15 +23,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SetDnGrantedDateFromBulkCaseTest {
+public class SetDnGrantedDetailsFromBulkCaseTest {
 
     private static final String DN_GRANTED_DATE = "2020-01-01";
     private static final String DA_ELIGIBLE_FROM_DATE = "2021-01-01";
+    private static final String PRONOUNCEMENT_JUDGE = "District Judge";
 
     @InjectMocks
-    private SetDnGrantedDateFromBulkCase classUnderTest;
+    private SetDnGrantedDetailsFromBulkCase classUnderTest;
 
     private TaskContext context;
 
@@ -47,6 +49,7 @@ public class SetDnGrantedDateFromBulkCaseTest {
                 CCD_CASE_DATA_FIELD, ImmutableMap.of(
                         DECREE_NISI_GRANTED_DATE_CCD_FIELD, DN_GRANTED_DATE,
                         DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD, DA_ELIGIBLE_FROM_DATE,
+                        PRONOUNCEMENT_JUDGE_CCD_FIELD, PRONOUNCEMENT_JUDGE,
                         "extraField", "extraValueThatShouldBeDropped"
                 ));
 
@@ -56,7 +59,8 @@ public class SetDnGrantedDateFromBulkCaseTest {
 
         Map<String, Object> expectedResult = ImmutableMap.of(
             DECREE_NISI_GRANTED_DATE_CCD_FIELD, DN_GRANTED_DATE,
-            DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD, DA_ELIGIBLE_FROM_DATE
+            DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD, DA_ELIGIBLE_FROM_DATE,
+            PRONOUNCEMENT_JUDGE_CCD_FIELD, PRONOUNCEMENT_JUDGE
         );
 
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);

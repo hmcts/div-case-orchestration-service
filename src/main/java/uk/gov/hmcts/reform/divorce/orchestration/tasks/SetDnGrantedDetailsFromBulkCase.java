@@ -11,9 +11,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 
 @Component
-public class SetDnGrantedDateFromBulkCase implements Task<Map<String,Object>> {
+public class SetDnGrantedDetailsFromBulkCase implements Task<Map<String,Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
@@ -22,6 +23,7 @@ public class SetDnGrantedDateFromBulkCase implements Task<Map<String,Object>> {
 
         payload.put(DECREE_NISI_GRANTED_DATE_CCD_FIELD, bulkCaseData.get(DECREE_NISI_GRANTED_DATE_CCD_FIELD));
         payload.put(DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD, bulkCaseData.get(DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD));
+        payload.put(PRONOUNCEMENT_JUDGE_CCD_FIELD, bulkCaseData.get(PRONOUNCEMENT_JUDGE_CCD_FIELD));
 
         return payload;
     }
