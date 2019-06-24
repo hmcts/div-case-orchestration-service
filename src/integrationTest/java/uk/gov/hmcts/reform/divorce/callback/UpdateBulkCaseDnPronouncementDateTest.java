@@ -19,12 +19,12 @@ public class UpdateBulkCaseDnPronouncementDateTest extends IntegrationTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void whenCaseLinkedForHearingIsCalledBack_thenReturnAOSData() {
+    public void whenBulkCaseScheduledForPronouncement_thenReturnUpdatedBulkData() {
         CaseDetails caseDetails = CaseDetails.builder()
                 .caseData(Collections.singletonMap("hearingDate", "2000-01-01T10:20:55.000"))
                 .build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-        Map<String, Object> response = cosApiClient.bulkPronouncement(ccdCallbackRequest);
+        Map<String, Object> response = cosApiClient.bulkPronouncement(createCaseWorkerUser().getAuthToken(), ccdCallbackRequest);
 
         Map<String, Object> responseData = (Map<String, Object>) response.get(DATA);
         assertEquals(responseData.get("DecreeNisiGrantedDate"), "2000-01-01");

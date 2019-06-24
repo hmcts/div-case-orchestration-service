@@ -107,7 +107,8 @@ public interface CosApiClient {
             method = RequestMethod.POST,
             value = "/bulk/pronounce/submit"
     )
-    Map<String, Object> bulkPronouncement(@RequestBody CcdCallbackRequest ccdCallbackRequest);
+    Map<String, Object> bulkPronouncement(@RequestHeader(AUTHORIZATION) String authorisation,
+                                          @RequestBody CcdCallbackRequest ccdCallbackRequest);
 
     @RequestMapping(
             method = RequestMethod.POST,
