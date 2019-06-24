@@ -676,20 +676,39 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void testDnAboutToBeGrantedHandlesGenericException() throws CaseOrchestrationServiceException {
-        when(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(any()))
-            .thenThrow(RuntimeException.class);
-
+    public void testAddDnOutcomeCallsRightServiceMethod() throws WorkflowException {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .caseData(singletonMap("testKey", "testValue"))
                 .build())
             .build();
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnAboutToBeGranted(ccdCallbackRequest);
+
+        when(caseOrchestrationService.addDNOutcomeFlag(ccdCallbackRequest))
+            .thenReturn(singletonMap("newKey", "newValue"));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.addDnOutcomeFlag(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(response.getBody().getData(), hasEntry("newKey", "newValue"));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+        verify(caseOrchestrationService).addDNOutcomeFlag(eq(ccdCallbackRequest));
+    }
+
+    @Test
+    public void testDnAboutToBeGrantedHandlesGenericException() throws WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(singletonMap("testKey", "testValue"))
+                .build())
+            .build();
+        when(caseOrchestrationService.addDNOutcomeFlag(ccdCallbackRequest))
+            .thenThrow(new RuntimeException("An error happened when processing this request."));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.addDnOutcomeFlag(ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem(equalTo("An error happened when processing this request.")));
-        verify(caseOrchestrationService).processCaseBeforeDecreeNisiIsGranted(eq(ccdCallbackRequest));
+        verify(caseOrchestrationService).addDNOutcomeFlag(eq(ccdCallbackRequest));
     }
 }

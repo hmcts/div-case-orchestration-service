@@ -89,6 +89,7 @@ public class OrchestrationConstants {
 
     //CCD DN fields
     public static final String DN_APPROVAL_DATE_CCD_FIELD = "DNApprovalDate";
+    public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
