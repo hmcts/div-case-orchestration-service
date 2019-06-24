@@ -89,8 +89,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> generateBulkCaseForListing() throws WorkflowException;
 
-    Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, final String authToken, String templateId,
-                                                         String documentType, String templateName) throws WorkflowException;
+    Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, String authToken, String templateId,
+                                                         String documentType, String filename) throws WorkflowException;
 
     Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
@@ -101,6 +101,8 @@ public interface CaseOrchestrationService {
     Map<String, Object> addDNOutcomeFlag(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> validateBulkCaseListingData(Map<String, Object> caseData) throws WorkflowException;
+
+    Map<String, Object> handleDnPronouncementDocumentGeneration(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
