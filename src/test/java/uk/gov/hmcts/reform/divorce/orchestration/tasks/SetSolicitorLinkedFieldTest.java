@@ -19,7 +19,6 @@ import java.util.Map;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AOS_AWAITING_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
@@ -28,9 +27,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_LINK_EMAIL;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SetSolicitorLinkedFieldTest {
+
+    private static final String RESP_SOLICITOR_LINKED_EMAIL = "RespSolicitorLinkedEmail";
+    private static final String SOL_EMAIL = "sol@test.local";
 
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
@@ -47,13 +51,13 @@ public class SetSolicitorLinkedFieldTest {
         final CaseDetails caseDetails =
                 CaseDetails.builder()
                         .caseId(TEST_CASE_ID)
-                        .state(AOS_AWAITING_STATE)
+                        .state(LINK_RESPONDENT_GENERIC_EVENT_ID)
                         .caseData(caseData)
                         .build();
 
         final Map<String, Object> dataToUpdate =
                 ImmutableMap.of(
-                        "RespSolicitorLinked", "Yes"
+                        RESP_SOLICITOR_LINKED_EMAIL, SOL_EMAIL
                 );
 
         final TaskContext taskContext = new DefaultTaskContext();
@@ -61,12 +65,13 @@ public class SetSolicitorLinkedFieldTest {
         taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         taskContext.setTransientObject(IS_RESPONDENT, true);
         taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+        taskContext.setTransientObject(SOLICITOR_LINK_EMAIL, SOL_EMAIL);
 
-        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_AWAITING_STATE, dataToUpdate))
+        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, LINK_RESPONDENT_GENERIC_EVENT_ID, dataToUpdate))
                 .thenReturn(null);
 
         Assert.assertEquals(payload, setSolicitorLinkedField.execute(taskContext, payload));
 
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_AWAITING_STATE, dataToUpdate);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, LINK_RESPONDENT_GENERIC_EVENT_ID, dataToUpdate);
     }
 }

@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithId;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorLinkedField;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_LINK_EMAIL;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RespondentSolicitorLinkCaseWorkflowTest {
@@ -41,13 +43,19 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     private static final String CASE_REFERENCE = "CaseReference";
     private static final String RESPONDENT_SOLICITOR_CASE_NO = "RespondentSolicitorCaseNo";
     private static final String RESPONDENT_SOLICITOR_PIN = "RespondentSolicitorPin";
+    private static final String SOL_EMAIL = "sol@test.local";
 
     @Mock
     private GetCaseWithId getCaseWithId;
+
     @Mock
     private RetrievePinUserDetails retrievePinUserDetails;
+
     @Mock
     private LinkRespondent linkRespondent;
+
+    @Mock
+    private SetSolicitorLinkedField setSolicitorLinkedField;
 
     @InjectMocks
     private RespondentSolicitorLinkCaseWorkflow respondentSolicitorLinkCaseWorkflow;
@@ -71,23 +79,26 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, TEST_TOKEN);
         context.setTransientObject(RESPONDENT_PIN, TEST_PIN);
+        context.setTransientObject(SOLICITOR_LINK_EMAIL, SOL_EMAIL);
     }
 
     @Test
-    public void runCallsTheThreeCorrectTasksInTheRightOrder() throws WorkflowException, TaskException {
-        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+    public void runCallsTheFourCorrectTasksInTheRightOrder() throws WorkflowException, TaskException {
+        final UserDetails userDetails = UserDetails.builder().email(SOL_EMAIL).authToken(TEST_TOKEN).build();
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(linkRespondent.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(setSolicitorLinkedField.execute(any(), eq(userDetails))).thenReturn(userDetails);
 
         UserDetails actual = respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
 
-        InOrder inOrder = inOrder(getCaseWithId, retrievePinUserDetails, linkRespondent);
-        assertThat(actual, is(userDetails));
+        InOrder inOrder = inOrder(getCaseWithId, retrievePinUserDetails, linkRespondent, setSolicitorLinkedField);
         inOrder.verify(getCaseWithId).execute(context, userDetails);
         inOrder.verify(retrievePinUserDetails).execute(context, userDetails);
         inOrder.verify(linkRespondent).execute(context, userDetails);
+        inOrder.verify(setSolicitorLinkedField).execute(context, userDetails);
+        assertThat(actual, is(userDetails));
     }
 
     @Test(expected = WorkflowException.class)

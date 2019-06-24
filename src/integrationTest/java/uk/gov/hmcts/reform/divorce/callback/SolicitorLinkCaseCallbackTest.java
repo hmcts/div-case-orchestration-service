@@ -25,7 +25,8 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
 
     private static final String PIN_USER_FIRST_NAME = "pinuserfirstname";
     private static final String PIN_USER_LAST_NAME = "pinuserfirstname";
-    private static final String PAYMENT_REFERENCE_EVENT = "paymentReferenceGenerated";
+    private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
+    private static final String AOS_NOMINATE_SOL_EVENT_ID = "aosNominateSol";
     private static final String AOS_LETTER_HOLDER_ID = "AosLetterHolderId";
     private static final String RESPONDENT_SOLICITOR_CASE_NO = "RespondentSolicitorCaseNo";
     private static final String RESPONDENT_SOLICITOR_PIN = "RespondentSolicitorPin";
@@ -36,7 +37,9 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
     private String contextPath;
 
     @Test
-    public void givenAosAwaitingState_whenSolicitorLinksCase_thenCaseShouldBeLinked() throws Exception {
+    public void givenAosAwaitingState_whenSolicitorLinksCase_thenCaseShouldBeLinked() {
+        //given
+
         final UserDetails petitionerUserDetails = createCitizenUser();
 
         final PinResponse pinResponse = idamTestSupportUtil.generatePin(
@@ -50,14 +53,12 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
                 petitionerUserDetails
         );
 
-        updateCase(String.valueOf(caseDetails.getId()),
-                null,
-                PAYMENT_REFERENCE_EVENT,
-                ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId())
-        );
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, petitionerUserDetails);
+        updateCase(String.valueOf(caseDetails.getId()), null, AOS_NOMINATE_SOL_EVENT_ID, ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
 
-        final UserDetails solicitorUser = createSolicitorUser();
+        UserDetails solicitorUser = createSolicitorUser();
 
+        //when
         Response linkResponse = linkSolicitor(
                         solicitorUser.getAuthToken(),
                         caseDetails.getId(),
@@ -68,6 +69,17 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
         assertThat(linkResponse.getBody().asString(),linkResponse.getBody().jsonPath().get("data"), is(notNullValue()));
         caseDetails = ccdClientSupport.retrieveCaseForCaseworker(solicitorUser, String.valueOf(caseDetails.getId()));
         assertThat(caseDetails.getData(), is(notNullValue()));
+
+        //linking with a different user should fail
+        solicitorUser = createSolicitorUser();
+
+        linkResponse = linkSolicitor(
+                solicitorUser.getAuthToken(),
+                caseDetails.getId(),
+                pinResponse.getPin()
+        );
+        assertThat(linkResponse.getBody().asString(), linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
+        assertThat(linkResponse.getBody().asString(),linkResponse.getBody().jsonPath().get("errors"), is(notNullValue()));
     }
 
     private Response linkSolicitor(String userToken, Long caseId, String pin) {

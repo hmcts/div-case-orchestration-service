@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import feign.FeignException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -14,14 +14,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithId;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorLinkedField;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_LINK_EMAIL;
 
 @Component
+@AllArgsConstructor
 @Slf4j
 public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDetails> {
 
@@ -32,15 +35,7 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
     private final GetCaseWithId getCaseWithId;
     private final RetrievePinUserDetails retrievePinUserDetails;
     private final LinkRespondent linkRespondent;
-
-    @Autowired
-    public RespondentSolicitorLinkCaseWorkflow(GetCaseWithId getCaseWithId,
-                                               RetrievePinUserDetails retrievePinUserDetails,
-                                               LinkRespondent linkRespondent) {
-        this.getCaseWithId = getCaseWithId;
-        this.retrievePinUserDetails = retrievePinUserDetails;
-        this.linkRespondent = linkRespondent;
-    }
+    private final SetSolicitorLinkedField setSolicitorLinkedField;
 
     public UserDetails run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         final UserDetails userDetails = UserDetails.builder().authToken(authToken).build();
@@ -53,12 +48,14 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
                 new Task[] {
                     getCaseWithId,
                     retrievePinUserDetails,
-                    linkRespondent
+                    linkRespondent,
+                    setSolicitorLinkedField
                 },
                 userDetails,
                 ImmutablePair.of(RESPONDENT_PIN, pin),
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-                ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
+                ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
+                ImmutablePair.of(SOLICITOR_LINK_EMAIL, userDetails.getEmail())
             );
         } catch (FeignException e) {
             if (e.status() == HttpStatus.NOT_FOUND.value()) {
