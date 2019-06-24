@@ -47,6 +47,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetDNOutcomeFlagWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
@@ -203,6 +204,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private UpdateBulkCaseDnPronounceWorkflow updateBulkCaseDnPronounceWorkflow;
+
+    @Mock
+    private SetDNOutcomeFlagWorkflow setDNOutcomeFlagWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1020,19 +1024,19 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-            CaseDetails.builder().caseData(caseData).build())
-            .build();
+                CaseDetails.builder().caseData(caseData).build())
+                .build();
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
                 DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME))
-            .thenReturn(caseData);
+                .thenReturn(caseData);
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
                 COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE))
                 .thenReturn(requestPayload);
 
         final Map<String, Object> result = classUnderTest
-            .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+                .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         Map<String, Object> expectedResult = new HashMap<>();
         expectedResult.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
@@ -1042,11 +1046,22 @@ public class CaseOrchestrationServiceImplTest {
         assertThat(result, is(expectedResult));
     }
 
-    public void shouldCallWorkflow_ForBulkCaseUpdatePronouncementDate() throws WorkflowException, CaseOrchestrationServiceException {
+    @Test
+    public void shouldCallWorkflow_ForBulkCaseUpdatePronouncementDate() throws WorkflowException {
         when(updateBulkCaseDnPronounceWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData()))
                 .thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         Map<String, Object> returnedPayload = classUnderTest.updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails().getCaseData());
+
+        assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
+    }
+
+    @Test
+    public void shouldCallWorkflow_ForAddDnOutcomeFlag() throws WorkflowException {
+        when(setDNOutcomeFlagWorkflow.run(ccdCallbackRequest.getCaseDetails()))
+            .thenReturn(singletonMap("returnedKey", "returnedValue"));
+
+        Map<String, Object> returnedPayload = classUnderTest.addDNOutcomeFlag(ccdCallbackRequest);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
     }
