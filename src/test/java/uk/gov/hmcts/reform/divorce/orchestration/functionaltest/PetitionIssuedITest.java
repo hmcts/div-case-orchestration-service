@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
@@ -63,7 +64,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_INVITATION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_SERVICE_CENTRE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
@@ -336,7 +336,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
         throws Exception {
 
         CcdCallbackRequest ccdCallbackRequestWithServiceCentre = CREATE_EVENT;
-        ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_DIVORCE_UNIT, DIVORCE_UNIT_SERVICE_CENTRE);
+        ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_DIVORCE_UNIT,
+            CourtEnum.SERVICE_CENTER.getId());
 
         final ValidationResponse validationResponse = ValidationResponse.builder().build();
 
@@ -410,7 +411,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
         throws Exception {
 
         CcdCallbackRequest ccdCallbackRequestWithServiceCentre = CREATE_EVENT;
-        ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_DIVORCE_UNIT, DIVORCE_UNIT_SERVICE_CENTRE);
+        ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_DIVORCE_UNIT,
+            CourtEnum.SERVICE_CENTER.getId());
         ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
         ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_CO_RESPONDENT_NAMED, "YES");
 

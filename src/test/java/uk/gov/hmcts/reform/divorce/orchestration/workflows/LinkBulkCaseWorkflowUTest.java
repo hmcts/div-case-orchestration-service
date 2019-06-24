@@ -20,8 +20,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkBulkCaseWorkflow.LINK_BULK_CASE_EVENT;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -47,7 +47,7 @@ public class LinkBulkCaseWorkflowUTest {
 
         Map<String, Object>  expectedResponse = ImmutableMap.of("someKey", "someValue");
         when(classToTest.execute(tasks, data, ImmutablePair.of(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN),
-            ImmutablePair.of(BULK_LISTING_CASE_ID_FIELD, TEST_CASE_ID),
+            ImmutablePair.of(CASE_ID_JSON_KEY, TEST_CASE_ID),
             ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, LINK_BULK_CASE_EVENT))).thenReturn(expectedResponse);
 
         Map<String, Object> actual = classToTest.run(data, TEST_CASE_ID, AUTH_TOKEN);

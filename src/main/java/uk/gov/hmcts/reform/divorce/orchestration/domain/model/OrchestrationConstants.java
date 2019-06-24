@@ -12,6 +12,7 @@ public class OrchestrationConstants {
 
     // Task context properties
     public static final String CCD_CASE_DATA = "ccdCaseData";
+    public static final String DN_COURT_DETAILS = "dnCourtDetails";
 
     // Authentication
     public static final String ACCESS_CODE = "access_code";
@@ -44,6 +45,7 @@ public class OrchestrationConstants {
     public static final String D_8_DIVORCED_WHO = "D8DivorceWho";
     public static final String D_8_REASON_FOR_DIVORCE = "D8ReasonForDivorce";
     public static final String D_8_CO_RESPONDENT_NAMED = "D8ReasonForDivorceAdulteryWishToName";
+    public static final String D_8_CO_RESPONDENT_NAMED_OLD = "D8ReasonForDivorceAdulteryIsNamed";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String NOT_RECEIVED_AOS_EVENT_ID = "aosNotReceived";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID = "co-RespAOSReceivedAwaiting";
@@ -190,10 +192,11 @@ public class OrchestrationConstants {
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
 
-    // Courts
+    // Court Data Keys
     public static final String DIVORCE_CENTRE_SITEID_JSON_KEY = "D8SelectedDivorceCentreSiteId";
     public static final String DIVORCE_UNIT_JSON_KEY = "D8DivorceUnit";
     public static final String DIVORCE_UNIT_SERVICE_CENTRE = "serviceCentre";
+    public static final String COURT_CONTACT_JSON_KEY = "CourtContactDetails";
 
     // Document Generator
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";
