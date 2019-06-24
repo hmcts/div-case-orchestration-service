@@ -416,7 +416,7 @@ task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dep
 }
 
 task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
-    printf Runtime.runtime.availableProcessors().toString()
+    printf ("Available processors: " + Runtime.runtime.availableProcessors().toString())
     maxParallelForks = 4
     forkEvery = 10
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
