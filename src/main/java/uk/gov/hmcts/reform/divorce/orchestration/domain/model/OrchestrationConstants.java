@@ -9,6 +9,8 @@ import java.time.Period;
 public class OrchestrationConstants {
 
     public static final String LINE_SEPARATOR = System.lineSeparator();
+    public static final String SPACE_SEPARATOR = " ";
+    public static final String EMPTY_STRING = "";
 
     // Task context properties
     public static final String CCD_CASE_DATA = "ccdCaseData";
@@ -197,6 +199,8 @@ public class OrchestrationConstants {
     public static final String DIVORCE_UNIT_JSON_KEY = "D8DivorceUnit";
     public static final String DIVORCE_UNIT_SERVICE_CENTRE = "serviceCentre";
     public static final String COURT_CONTACT_JSON_KEY = "CourtContactDetails";
+    public static final String EMAIL_LABEL = "Email:";
+    public static final String PHONE_LABEL = "Phone:";
 
     // Document Generator
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";
