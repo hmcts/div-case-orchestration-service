@@ -4,12 +4,12 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +23,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SearchAwaitingPronouncementCases implements Task<Map<String, Object>> {
 
-    private static final int PAGE_SIZE = 50;
-    private static final String HEARING_DATE = "data.hearingDate";
+    private static final String HEARING_DATE = "data.DateAndTimeOfHearing";
     private static final String BULK_LISTING_CASE_ID = "data.BulkListingCaseId";
+
+    @Value("${bulk-action.page-size:50}")
+    private int pageSize;
 
     private final CaseMaintenanceClient caseMaintenanceClient;
 
@@ -55,7 +57,7 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
                 .searchSource()
                 .query(query)
                 .from(from)
-                .size(PAGE_SIZE);
+                .size(pageSize);
 
             SearchResult result = caseMaintenanceClient.searchCases(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY),

@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 
 public interface BulkCaseService {
 
-    void handleBulkCaseCreateEvent(BulkCaseCreateEvent event);
+    void handleBulkCaseCreateEvent(BulkCaseCreateEvent event) throws WorkflowException;
 
     void handleBulkCaseUpdateCourtHearingEvent(BulkCaseUpdateCourtHearingEvent event) throws WorkflowException;
 }

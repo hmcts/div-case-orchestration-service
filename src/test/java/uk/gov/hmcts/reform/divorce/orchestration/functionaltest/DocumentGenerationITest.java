@@ -39,6 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_CONTACT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -170,6 +172,61 @@ public class DocumentGenerationITest {
             .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
     }
 
+    @Test
+    public void happyPathWithDnCourt() throws Exception {
+
+        final String templateId = "a";
+        final String documentType = "b";
+        final String filename = "c";
+
+        // Data matching application properties.
+        Map<String, Object> formattedDocumentCaseData = new HashMap<>();
+        formattedDocumentCaseData.put(COURT_NAME_CCD_FIELD, "Liverpool Civil and Family Court Hearing Centre");
+        formattedDocumentCaseData.put(COURT_CONTACT_JSON_KEY,
+                "35 Vernon Street\nLiverpool\nL2 2BX\ncontactdivorce@justice.gov.uk\n0300 303 0642");
+        CaseDetails expectedDocumentCaseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(formattedDocumentCaseData).build();
+
+        final GenerateDocumentRequest documentGenerationRequest =
+                GenerateDocumentRequest.builder()
+                        .template(templateId)
+                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, expectedDocumentCaseDetails))
+                        .build();
+
+        final GeneratedDocumentInfo documentGenerationResponse =
+                GeneratedDocumentInfo.builder()
+                        .documentType(documentType)
+                        .fileName(filename + TEST_CASE_ID)
+                        .build();
+
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(COURT_NAME_CCD_FIELD, "liverpool");
+
+        final DocumentUpdateRequest documentUpdateRequest =
+                DocumentUpdateRequest.builder()
+                        .documents(asList(documentGenerationResponse))
+                        .caseData(caseData)
+                        .build();
+
+        final Map<String, Object> formattedCaseData = emptyMap();
+
+        stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
+        stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        webClient.perform(post(API_URL)
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .content(convertObjectToJsonString(ccdCallbackRequest))
+                .param("templateId", "a")
+                .param("documentType", "b")
+                .param("filename", "c")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
+    }
 
     private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest generateDocumentRequest,
                                                      GeneratedDocumentInfo response) {

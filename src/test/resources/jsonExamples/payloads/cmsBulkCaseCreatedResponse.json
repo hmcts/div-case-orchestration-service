@@ -2,28 +2,40 @@
   "id" : 1557223513377278,
   "case_data" : {
     "CaseList" : [ {
-      "value" : {
-        "CaseReference" : {
-          "CaseReference" : "1546883073634741"
+        "value" : {
+          "CaseReference" : {
+            "CaseReference" : "1546883073634741"
+          }
         }
-      }
-    },
+      },
       {
         "value" : {
           "CaseReference" : {
             "CaseReference" : "1546883073634742"
           }
         }
+      },
+      {
+        "value" : {
+          "CaseReference" : {
+            "CaseReference" : "1546883073634743"
+          }
+        }
       }],
     "CaseTitle" : "Divorce bulk case for Listing 2019-05-07",
     "CaseAcceptedList" : [ {
-      "value" : {
-        "CaseReference" : "1546883073634741"
-      }
-    },
+        "value" : {
+          "CaseReference" : "1546883073634741"
+        }
+      },
       {
         "value" : {
           "CaseReference" : "1546883073634742"
+        }
+      },
+      {
+        "value" : {
+          "CaseReference" : "1546883073634743"
         }
       } ]
   }

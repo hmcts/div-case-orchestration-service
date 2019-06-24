@@ -106,6 +106,14 @@ send-letter:
 bulk-print:
   dueDate: 9
 
+bulk-action:
+  page-size: 50
+  retries:
+    max: 4
+    backoff:
+      base-rate: 1
+  min-cases: 2
+
 uk:
   gov:
     notify:
@@ -219,6 +227,44 @@ court:
       phoneNumber: '0300 303 0642'
       siteId: 'AA07'
       courtId: 'serviceCentre'
+
+dncourt:
+  locations:
+    liverpool:
+      name: "Liverpool Civil and Family Court Hearing Centre"
+      address: "35 Vernon Street\nLiverpool\nL2 2BX"
+      email: "contactdivorce@justice.gov.uk"
+      phone: "0300 303 0642"
+    nottingham:
+      name: "Nottingham County Court and Family Court Hearing Centre"
+      address: "60 Canal Street\nNottingham\nNG1 7EJ"
+      email: "contactdivorce@justice.gov.uk"
+      phone: "0300 303 0642"
+    bradford:
+      name: "Bradford Law Courts"
+      address: "Exchange Square\nDrake Street\nBradford\nWest Yorkshire\nBD1 1JA"
+      email: "contactdivorce@justice.gov.uk"
+      phone: "0300 303 0642"
+    wrexham:
+      name: "Wrexham Divorce Unit"
+      address: "The Law Courts\nBodhyfryd\nLL12 7BP"
+      email: "contactdivorce@justice.gov.uk"
+      phone: "0300 303 0642"
+    newport:
+      name: "Newport (Gwent) Civil and Family Court"
+      address: "Clarence House\nClarence Place\nNewport\nNP19 7AA"
+      email: "contactdivorce@justice.gov.uk"
+      phone: "0300 303 0642"
+    portTalbot:
+      name: "Port Talbot Justice Centre"
+      address: "Harbourside Road\nPort Talbot\nSA13 1SB"
+      email: "contactdivorce@justice.gov.uk"
+      phone: "0300 303 0642"
+    southampton:
+      name: "The Family Court at Southampton"
+      address: "London Road\nSouthampton\nSO15 2XQ"
+      email: "contactdivorce@justice.gov.uk"
+      phone: "0300 303 0642"
 
 idam:
   api:

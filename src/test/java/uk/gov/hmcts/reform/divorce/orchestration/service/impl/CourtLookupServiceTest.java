@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.rules.ExpectedException.none;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINE_SEPARATOR;
 
@@ -74,4 +76,26 @@ public class CourtLookupServiceTest {
         courtLookupService.getCourtByKey("unknownCourt");
     }
 
+    @Test
+    public void testDnCourtIsReturnedWithCorrectDetails() throws CourtDetailsNotFound {
+        DnCourt foundCourt = courtLookupService.getDnCourtByKey("liverpool");
+
+        assertEquals(foundCourt.getName(), "Liverpool Civil and Family Court Hearing Centre");
+        assertEquals(foundCourt.getAddress(), "35 Vernon Street\nLiverpool\nL2 2BX");
+        assertEquals(foundCourt.getEmail(), "contactdivorce@justice.gov.uk");
+        assertEquals(foundCourt.getPhone(), "0300 303 0642");
+
+        String expectedContactDetails = foundCourt.getAddress() + LINE_SEPARATOR
+                + foundCourt.getEmail() + LINE_SEPARATOR
+                + foundCourt.getPhone();
+        assertEquals(foundCourt.getFormattedContactDetails(), expectedContactDetails);
+    }
+
+    @Test
+    public void testExceptionInThrownWhenDnCourtIsNotFound() throws CourtDetailsNotFound {
+        expectedException.expect(CourtDetailsNotFound.class);
+        expectedException.expectMessage("Could not find court by using key \"unknownCourt\"");
+
+        courtLookupService.getDnCourtByKey("unknownCourt");
+    }
 }

@@ -45,7 +45,7 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
         }
 
         String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
-        String sepReferenceDate = DateUtils.formatDateWithCustomerFacingFormat(getReferenceDate(caseData));
+        String sepReferenceDate = DateUtils.formatDateWithCustomerFacingFormat(getSeparationReferenceDate(caseData));
         String mostRecentSeperationDate = getReasonForDivorceSeparationDate(caseData);
 
         if (StringUtils.equalsIgnoreCase(DESERTION, reasonForDivorce)) {
@@ -116,6 +116,14 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
     //Calculated based on six-month rule
     private LocalDate getReferenceDate(Map<String, Object> caseData) throws TaskException {
         return getDateBeforeSepYears(caseData).minusMonths(SIX);
+    }
+
+    private LocalDate getSeparationReferenceDate(Map<String, Object> caseData) throws TaskException {
+        Long timeTogetherMonths = getLivingTogetherMonths(caseData);
+        if (timeTogetherMonths >= SIX) {
+            return getReferenceDate(caseData);
+        }
+        return LocalDate.parse(getReasonForDivorceSeparationDate(caseData));
     }
 
     /*

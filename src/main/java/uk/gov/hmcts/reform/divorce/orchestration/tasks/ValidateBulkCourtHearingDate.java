@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
 
 @Component
 public class ValidateBulkCourtHearingDate implements Task<Map<String, Object>> {
@@ -19,7 +19,7 @@ public class ValidateBulkCourtHearingDate implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> bulkCaseData) throws TaskException {
-        if (ccdUtil.isCcdDateTimeInThePast(String.valueOf(bulkCaseData.get(COURT_HEARING_DATE)))) {
+        if (ccdUtil.isCcdDateTimeInThePast(String.valueOf(bulkCaseData.get(COURT_HEARING_DATE_CCD_FIELD)))) {
             throw new TaskException("Court hearing date is in the past");
         }
 

@@ -19,10 +19,13 @@ public class BulkCaseConstants {
     public static final String BULK_CASE_LIST_KEY = "BulkCases";
     public static final String SEARCH_RESULT_KEY = "SearchResult";
 
-    public static final String COURT_NAME = "CourtName";
-    public static final String COURT_HEARING_DATE = "hearingDate";
+    public static final String COURT_NAME_CCD_FIELD = "CourtName";
+    public static final String COURT_HEARING_DATE_CCD_FIELD = "hearingDate";
 
-    public static final String BULKCASE_CREATION_ERROR = "BulKCaseCreation_Error";
-
+    //Bulk case events
     public static final String LISTED_EVENT = "listed";
+    public static final String CREATE_EVENT = "create";
+
+    //Errors
+    public static final String BULKCASE_CREATION_ERROR = "BulKCaseCreation_Error";
 }

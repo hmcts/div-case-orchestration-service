@@ -2,8 +2,9 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
 import feign.FeignException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
@@ -43,9 +44,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BulkCaseCreate implements Task<Map<String, Object>> {
     static final String BULK_CASE_TITLE = "Divorce bulk Case %s";
+
+    @Value("${bulk-action.min-cases:30}")
+    private int minimunCasesToProcess;
 
     private final CaseMaintenanceClient caseMaintenanceClient;
 
@@ -63,9 +67,15 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
         List<Map<String, Object>> bulkCases = new ArrayList<>();
         searchResultList.forEach(searchResult -> {
             try {
-                Map<String, Object> bulkCase = createBulkCase(searchResult);
-                Map<String, Object> bulkCaseResult = caseMaintenanceClient.submitBulkCase(bulkCase,context.getTransientObject(AUTH_TOKEN_JSON_KEY));
-                bulkCases.add(bulkCaseResult);
+                if (minimunCasesToProcess <= searchResult.getCases().size()) {
+                    Map<String, Object> bulkCase = createBulkCase(searchResult);
+                    Map<String, Object> bulkCaseResult = caseMaintenanceClient.submitBulkCase(bulkCase,
+                        context.getTransientObject(AUTH_TOKEN_JSON_KEY));
+                    bulkCases.add(bulkCaseResult);
+                } else {
+                    log.info("Number of cases do not reach the minimum, Case list size {}", searchResult.getCases().size());
+                }
+
             } catch (FeignException e) {
                 //Ignore bulk case creation failed. Next schedule should pickup the remaining cases
                 // Still need to handle timeout, as the BulkCase could be created.
@@ -129,6 +139,5 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
         return  String.format("%s %s vs %s %s", petitionerFirstName, petitionerLastName, respondentFirstName,
             respondentLastName);
     }
-
 
 }
