@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CREATE_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.LISTED_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
@@ -33,15 +34,20 @@ public class BulkCaseServiceImpl implements BulkCaseService {
 
     @Override
     @EventListener
-    public void handleBulkCaseCreateEvent(BulkCaseCreateEvent event) {
+    public void handleBulkCaseCreateEvent(BulkCaseCreateEvent event) throws WorkflowException {
         long startTime = Instant.now().toEpochMilli();
         TaskContext context = (TaskContext) event.getSource();
         Map<String, Object> caseResponse = event.getCaseDetails();
         final String bulkCaseId = String.valueOf(caseResponse.get(OrchestrationConstants.ID));
 
-        linkBulkCaseWorkflow.executeWithRetries(caseResponse, bulkCaseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
+        boolean success = linkBulkCaseWorkflow.executeWithRetries(caseResponse, bulkCaseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
+
+        if (!success) {
+            throw new BulkUpdateException(String.format("Failed to updating bulk case link for some cases on bulk case id %s", bulkCaseId));
+        }
 
         long endTime = Instant.now().toEpochMilli();
+        updateBulkCaseWorkflow.run(Collections.emptyMap(), context.getTransientObject(AUTH_TOKEN_JSON_KEY), bulkCaseId, CREATE_EVENT);
         log.info("Completed bulk case process with bulk cased Id:{} in:{} millis", bulkCaseId, endTime - startTime);
     }
 
