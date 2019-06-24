@@ -64,7 +64,7 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
                         pinResponse.getPin()
         );
 
-        assertThat(linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
+        assertThat(linkResponse.getBody().asString(), linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
         assertThat(linkResponse.getBody().asString(),linkResponse.getBody().jsonPath().get("data"), is(notNullValue()));
         caseDetails = ccdClientSupport.retrieveCaseForCaseworker(solicitorUser, String.valueOf(caseDetails.getId()));
         assertThat(caseDetails.getData(), is(notNullValue()));
@@ -77,7 +77,7 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
 
         HashMap<String, Object> caseData = new HashMap<>();
         HashMap<String, Object> respondentSolicitorCaseLink = new HashMap<>();
-        caseData.put(CASE_REFERENCE, caseId);
+        respondentSolicitorCaseLink.put(CASE_REFERENCE, String.valueOf(caseId));
         caseData.put(RESPONDENT_SOLICITOR_CASE_NO, respondentSolicitorCaseLink);
         caseData.put(RESPONDENT_SOLICITOR_PIN, pin);
 
