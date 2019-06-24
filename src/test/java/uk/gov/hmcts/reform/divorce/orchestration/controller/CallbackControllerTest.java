@@ -559,6 +559,45 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void whenGenerateDnPronouncedDocuments_thenExecuteService() throws WorkflowException {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(payload)
+                        .build())
+                .build();
+
+        when(caseOrchestrationService
+                .handleDnPronouncementDocumentGeneration(incomingRequest, AUTH_TOKEN))
+                .thenReturn(payload);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDnDocuments(AUTH_TOKEN, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    }
+
+    @Test
+    public void givenWorkflowException_whenGenerateDnPronouncedDocuments_thenReturnErrors() throws WorkflowException {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(payload)
+                        .build())
+                .build();
+
+        String errorString = "foo";
+
+        when(caseOrchestrationService
+                .handleDnPronouncementDocumentGeneration(incomingRequest, AUTH_TOKEN))
+                .thenThrow(new WorkflowException(errorString));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDnDocuments(AUTH_TOKEN, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getErrors(), contains(errorString));
+    }
+
+    @Test
     public void testAosSolicitorNominated() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
