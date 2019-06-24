@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CARE_OF_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_CONTACT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COURT_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMAIL_LABEL;
@@ -60,7 +61,8 @@ public class SetFormattedDnCourtDetailsTest {
 
         assertEquals(contextDnCourtDetails.get(COURT_NAME_CCD_FIELD), TEST_COURT_NAME);
         assertEquals(contextDnCourtDetails.get(COURT_CONTACT_JSON_KEY),
-                TEST_COURT_ADDRESS + LINE_SEPARATOR + LINE_SEPARATOR
+                CARE_OF_PREFIX + SPACE_SEPARATOR + TEST_COURT_NAME + LINE_SEPARATOR
+                + TEST_COURT_ADDRESS + LINE_SEPARATOR + LINE_SEPARATOR
                 + EMAIL_LABEL + SPACE_SEPARATOR + TEST_COURT_EMAIL + LINE_SEPARATOR
                 + PHONE_LABEL + SPACE_SEPARATOR + TEST_COURT_PHONE);
         assertEquals(outputPayload, payload);
