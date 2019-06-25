@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
@@ -89,8 +90,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> generateBulkCaseForListing() throws WorkflowException;
 
-    Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, final String authToken, String templateId,
-                                                         String documentType, String templateName) throws WorkflowException;
+    Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, String authToken, String templateId,
+                                                         String documentType, String filename) throws WorkflowException;
 
     Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
@@ -98,9 +99,13 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> processBulkCaseScheduleForHearing(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
+    Map<String, Object> addDNOutcomeFlag(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
     Map<String, Object> validateBulkCaseListingData(Map<String, Object> caseData) throws WorkflowException;
+
+    Map<String, Object> handleDnPronouncementDocumentGeneration(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
-    Map<String, Object> updateBulkCaseDnPronounce(Map<String, Object> caseData) throws WorkflowException;
+    Map<String, Object> updateBulkCaseDnPronounce(CaseDetails caseDetails, String authToken) throws WorkflowException;
 }
