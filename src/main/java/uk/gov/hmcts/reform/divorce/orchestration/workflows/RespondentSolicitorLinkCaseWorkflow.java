@@ -21,7 +21,6 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_LINK_EMAIL;
 
 @Component
 @AllArgsConstructor
@@ -54,8 +53,7 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
                 userDetails,
                 ImmutablePair.of(RESPONDENT_PIN, pin),
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-                ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
-                ImmutablePair.of(SOLICITOR_LINK_EMAIL, userDetails.getEmail())
+                ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
             );
         } catch (FeignException e) {
             if (e.status() == HttpStatus.NOT_FOUND.value()) {

@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.util.RestUtil;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -79,7 +80,7 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
                 pinResponse.getPin()
         );
         assertThat(linkResponse.getBody().asString(), linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
-        assertThat(linkResponse.getBody().asString(),linkResponse.getBody().jsonPath().get("errors"), is(notNullValue()));
+        assertThat(linkResponse.getBody().asString(),linkResponse.getBody().jsonPath().get("errors"), containsString("test"));
     }
 
     private Response linkSolicitor(String userToken, Long caseId, String pin) {

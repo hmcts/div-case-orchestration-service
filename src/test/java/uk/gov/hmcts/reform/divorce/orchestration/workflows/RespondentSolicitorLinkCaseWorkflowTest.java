@@ -35,7 +35,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_LINK_EMAIL;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RespondentSolicitorLinkCaseWorkflowTest {
@@ -43,7 +42,6 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     private static final String CASE_REFERENCE = "CaseReference";
     private static final String RESPONDENT_SOLICITOR_CASE_NO = "RespondentSolicitorCaseNo";
     private static final String RESPONDENT_SOLICITOR_PIN = "RespondentSolicitorPin";
-    private static final String SOL_EMAIL = "sol@test.local";
 
     @Mock
     private GetCaseWithId getCaseWithId;
@@ -79,12 +77,11 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, TEST_TOKEN);
         context.setTransientObject(RESPONDENT_PIN, TEST_PIN);
-        context.setTransientObject(SOLICITOR_LINK_EMAIL, SOL_EMAIL);
     }
 
     @Test
     public void runCallsTheFourCorrectTasksInTheRightOrder() throws WorkflowException, TaskException {
-        final UserDetails userDetails = UserDetails.builder().email(SOL_EMAIL).authToken(TEST_TOKEN).build();
+        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
