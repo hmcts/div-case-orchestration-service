@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_DETAILS_CONTEXT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
@@ -26,11 +27,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SetCourtHearingDetailsFromBulkCase implements Task<Map<String,Object>> {
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> bulkCaseDetails) throws TaskException {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
+        Map<String, Object> bulkCaseDetails = context.getTransientObject(BULK_CASE_DETAILS_CONTEXT_KEY);
         Map<String, Object> bulkCaseData = (Map<String, Object>) bulkCaseDetails.get(CCD_CASE_DATA_FIELD);
-        Map<String, Object> courtHearingDetails = new HashMap<>();
 
-        courtHearingDetails.put(COURT_NAME_CCD_FIELD, bulkCaseData.get(COURT_NAME_CCD_FIELD));
+        payload.put(COURT_NAME_CCD_FIELD, bulkCaseData.get(COURT_NAME_CCD_FIELD));
 
         Map<String, Object> dateAndTimeOfHearing = new HashMap<>();
 
@@ -49,8 +50,8 @@ public class SetCourtHearingDetailsFromBulkCase implements Task<Map<String,Objec
                 (ArrayList) caseData.getOrDefault(DATETIME_OF_HEARING_CCD_FIELD, new ArrayList<>());
         courtHearingCollection.add(dateAndTimeOfHearingItem);
 
-        courtHearingDetails.put(DATETIME_OF_HEARING_CCD_FIELD, courtHearingCollection);
+        payload.put(DATETIME_OF_HEARING_CCD_FIELD, courtHearingCollection);
 
-        return courtHearingDetails;
+        return payload;
     }
 }

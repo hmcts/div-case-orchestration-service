@@ -8,8 +8,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdMapFlow;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCourtHearingDetailsFromBulkCase;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDnGrantedDetailsFromBulkCase;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
 import java.util.Collections;
@@ -24,28 +24,24 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_COURT_HEARING_DETAILS_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_COURT_DN_PRONOUNCEMENT_DATE_EVENT;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UpdateCourtHearingDetailsWorkflowTest {
+public class UpdatePronouncementDateWorkflowTest {
 
     @Mock
-    private GetCaseWithIdMapFlow getCaseWithIdMapFlow;
-
-    @Mock
-    private SetCourtHearingDetailsFromBulkCase setCourtHearingDetailsFromBulkCase;
+    private SetDnGrantedDetailsFromBulkCase setDnGrantedDetailsFromBulkCase;
 
     @Mock
     private UpdateCaseInCCD updateCaseInCCD;
 
     @InjectMocks
-    private UpdateCourtHearingDetailsWorkflow classUnderTest;
+    private UpdatePronouncementDateWorkflow classUnderTest;
 
     @Test
-    public void setCourtHearingDetailsFromBulkCase_thenProceedAsExpected() throws WorkflowException {
+    public void setDecreeNisiPronouncementDateFromBulkCase_thenProceedAsExpected() throws TaskException, WorkflowException {
         final Task[] tasks = new Task[] {
-            getCaseWithIdMapFlow,
-            setCourtHearingDetailsFromBulkCase,
+            setDnGrantedDetailsFromBulkCase,
             updateCaseInCCD
         };
 
@@ -56,7 +52,7 @@ public class UpdateCourtHearingDetailsWorkflowTest {
             new HashMap<>(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN),
             ImmutablePair.of(BULK_CASE_DETAILS_CONTEXT_KEY, Collections.emptyMap()),
-            ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, UPDATE_COURT_HEARING_DETAILS_EVENT),
+            ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, UPDATE_COURT_DN_PRONOUNCEMENT_DATE_EVENT),
             ImmutablePair.of(CASE_ID_JSON_KEY, TEST_CASE_ID)
         )).thenReturn(expected);
 
