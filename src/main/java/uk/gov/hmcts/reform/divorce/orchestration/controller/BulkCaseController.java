@@ -84,10 +84,12 @@ public class BulkCaseController {
             @ApiResponse(code = 200, message = "Required pronouncement data has been set successfully"),
             @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> updateCaseDnPronounce(
+            @RequestHeader("Authorization")
+            @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
             @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-                .data(orchestrationService.updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails().getCaseData()))
-                .build());
+                .data(orchestrationService
+                        .updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails(), authorizationToken)).build());
     }
 }
