@@ -6,8 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.RetryableBulkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdMapFlow;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCourtHearingDetailsFromBulkCase;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDnGrantedDetailsFromBulkCase;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
 import java.util.HashMap;
@@ -17,14 +16,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_COURT_HEARING_DETAILS_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_COURT_DN_PRONOUNCEMENT_DATE_EVENT;
 
 @Component
 @AllArgsConstructor
-public class UpdateCourtHearingDetailsWorkflow extends RetryableBulkCaseWorkflow {
+public class UpdatePronouncementDateWorkflow extends RetryableBulkCaseWorkflow {
 
-    private final GetCaseWithIdMapFlow getCaseWithIdMapFlow;
-    private final SetCourtHearingDetailsFromBulkCase setCourtHearingDetailsFromBulkCase;
+    private final SetDnGrantedDetailsFromBulkCase setDnGrantedDetailsFromBulkCase;
     private final UpdateCaseInCCD updateCaseInCCD;
 
     public Map<String, Object> run(Map<String, Object> bulkCaseDetails,
@@ -33,14 +31,13 @@ public class UpdateCourtHearingDetailsWorkflow extends RetryableBulkCaseWorkflow
 
         return this.execute(
                 new Task[] {
-                    getCaseWithIdMapFlow,
-                    setCourtHearingDetailsFromBulkCase,
+                    setDnGrantedDetailsFromBulkCase,
                     updateCaseInCCD
                 },
                 new HashMap<>(),
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
                 ImmutablePair.of(BULK_CASE_DETAILS_CONTEXT_KEY, bulkCaseDetails),
-                ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, UPDATE_COURT_HEARING_DETAILS_EVENT),
+                ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, UPDATE_COURT_DN_PRONOUNCEMENT_DATE_EVENT),
                 ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
         );
     }

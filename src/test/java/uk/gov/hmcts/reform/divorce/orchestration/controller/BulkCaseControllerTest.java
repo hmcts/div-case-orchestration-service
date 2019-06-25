@@ -19,6 +19,8 @@ import java.util.Map;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkCaseControllerTest {
@@ -88,13 +90,13 @@ public class BulkCaseControllerTest {
 
     @Test
     public void whenUpdateBulkCasePronouncementDate_thenReturnExpectedResponse() throws WorkflowException {
-        CaseDetails caseDetails = CaseDetails.builder().caseData(Collections.emptyMap()).build();
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(Collections.emptyMap()).build();
         CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        when(caseOrchestrationService.updateBulkCaseDnPronounce(Collections.emptyMap()))
+        when(caseOrchestrationService.updateBulkCaseDnPronounce(caseDetails, AUTH_TOKEN))
                 .thenReturn(Collections.emptyMap());
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.updateCaseDnPronounce(request);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.updateCaseDnPronounce(AUTH_TOKEN, request);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody(), is(CcdCallbackResponse.builder().data(Collections.emptyMap()).build()));
