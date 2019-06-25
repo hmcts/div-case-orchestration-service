@@ -1,0 +1,112 @@
+{
+  "token": "token",
+  "event_id": "eventId",
+  "case_details": {
+    "id": "0123456789012345",
+    "state": "state",
+    "case_data": {
+      "createdDate": "2018-06-07",
+      "D8caseReference": "LV17D80100",
+      "D8ScreenHasMarriageBroken": "YES",
+      "D8ScreenHasRespondentAddress": "YES",
+      "D8ScreenHasMarriageCert": "YES",
+      "D8ScreenHasPrinter": "YES",
+      "D8DivorceWho": "husband",
+      "D8MarriageIsSameSexCouple": "NO",
+      "D8MarriageDate": "2001-02-02",
+      "D8PetitionerNameDifferentToMarriageCert": "YES",
+      "D8PetitionerEmail": "simulate-delivered@notifications.service.gov.uk",
+      "D8PetitionerPhoneNumber": "01234567890",
+      "D8PetitionerFirstName": "John",
+      "D8PetitionerLastName": "Smith",
+      "D8DerivedPetitionerCurrentFullName": "John Smith",
+      "D8PetitionerNameChangedHow": [
+        "marriageCertificate"
+      ],
+      "D8PetitionerContactDetailsConfidential": "share",
+      "D8PetitionerHomeAddress": {
+        "PostCode": "SW9 9PE"
+      },
+      "D8DerivedPetitionerHomeAddress": "82 Landor Road\nLondon\nSW9 9PE",
+      "D8PetitionerCorrespondenceAddress": {
+        "PostCode": "AB24 232"
+      },
+      "D8DerivedPetitionerCorrespondenceAddr": "84 Landor Road\nLondon\nSW9 9PE",
+      "D8PetitionerCorrespondenceUseHomeAddress": "NO",
+      "D8RespondentFirstName": "Jane",
+      "D8RespondentLastName": "Jamed",
+      "D8DerivedRespondentCurrentName": "Jane Jamed",
+      "D8DerivedRespondentSolicitorDetails": "Justin\nCase\n90 Landor Road\nLondon\nSW9 9PE",
+      "D8RespondentHomeAddress": {
+        "PostCode": "SS SSS"
+      },
+      "D8DerivedRespondentHomeAddress": "88 Landor Road\nLondon\nSW9 9PE",
+      "D8RespondentCorrespondenceAddress": {
+        "PostCode": "SW9 9PE"
+      },
+      "D8DerivedRespondentCorrespondenceAddr": "82 Landor Road\nLondon\nSW9 9PE",
+      "D8RespondentCorrespondenceUseHomeAddress": "Solicitor",
+      "D8RespondentLivesAtLastAddress": "NO",
+      "D8LivingArrangementsLastLivedTogether": "NO",
+      "D8LivingArrangementsLiveTogether": "NO",
+      "D8LegalProceedings": "YES",
+      "D8LegalProceedingsRelated": [
+        "children"
+      ],
+      "D8LegalProceedingsDetails": "The legal proceeding details",
+      "D8ReasonForDivorce": "unreasonable-behaviour",
+      "D8DerivedStatementOfCase": "My wife is having an affair this week.",
+      "D8ReasonForDivorceBehaviourDetails": "My wife is having an affair this week.",
+      "D8ReasonForDivorceAdulteryIsNamed": "NO",
+      "D8FinancialOrder": "YES",
+      "D8FinancialOrderFor": [
+        "petitioner",
+        "children"
+      ],
+      "D8HelpWithFeesNeedHelp": "YES",
+      "D8HelpWithFeesAppliedForFees": "YES",
+      "D8HelpWithFeesReferenceNumber": "HWF-123-456",
+      "D8DivorceCostsClaim": "YES",
+      "D8DivorceClaimFrom": [
+        "respondent"
+      ],
+      "D8JurisdictionConfidentLegal": "YES",
+      "D8JurisdictionConnection": [
+        "A",
+        "C"
+      ],
+      "D8JurisdictionPetitionerResidence": "YES",
+      "D8JurisdictionRespondentResidence": "YES",
+      "D8DivorceUnit": "serviceCentre",
+      "D8ReasonForDivorceShowAdultery": "YES",
+      "D8ReasonForDivorceShowUnreasonableBehavi": "YES",
+      "D8ReasonForDivorceShowTwoYearsSeparation": "YES",
+      "D8ReasonForDivorceShowDesertion": "YES",
+      "D8ReasonForDivorceLimitReasons": "NO",
+      "D8ReasonForDivorceEnableAdultery": "YES",
+      "D8ClaimsCostsAppliedForFees": "YES",
+      "D8StatementOfTruth": "YES",
+      "D8ReasonForDivorceClaimingAdultery": "NO",
+      "D8MarriageCanDivorce": "YES",
+      "D8MarriagePetitionerName": "John Doe",
+      "D8MarriageRespondentName": "Jenny Benny",
+      "D8DerivedRespondentSolicitorAddr": "90 Landor Road\nLondon\nSW9 9PE",
+      "D8DerivedLivingArrangementsLastLivedAddr": "Flat A-B\n86 Landor Road\nLondon\nSW9 9PE",
+      "D8Connections": {
+        "A": "The Petitioner and the Respondent are habitually resident in England and Wales",
+        "C": "The Respondent is habitually resident in England and Wales"
+      },
+      "D8ReasonForDivorceHasMarriage": "YES",
+      "D8ReasonForDivorceShowFiveYearsSeparatio": "YES",
+      "D8ReasonForDivorceClaiming5YearSeparatio": "NO",
+      "D8Cohort": "onlineSubmissionPrivateBeta",
+      "D8InferredPetitionerGender": "female",
+      "D8InferredRespondentGender": "male",
+      "ReceivedAOSfromRespDate": "2018-10-22",
+      "ReceivedAOSfromResp": "YES",
+      "BulkListingCaseId" : {
+        "CaseReference" : "1546883073634741"
+      }
+    }
+  }
+}
