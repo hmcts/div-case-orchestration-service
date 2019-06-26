@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPayment;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveMiniPetitionDraftDocumentsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData;
 
 import java.util.Map;
@@ -20,19 +21,23 @@ public class ProcessPbaPaymentWorkflow extends DefaultWorkflow<Map<String, Objec
 
     private final ValidateSolicitorCaseData validateSolicitorCaseData;
     private final ProcessPbaPayment processPbaPayment;
+    private final RemoveMiniPetitionDraftDocumentsTask removeMiniPetitionDraftDocumentsTask;
 
     @Autowired
     public ProcessPbaPaymentWorkflow(ProcessPbaPayment processPbaPayment,
-                                     ValidateSolicitorCaseData validateSolicitorCaseData) {
+                                     ValidateSolicitorCaseData validateSolicitorCaseData,
+                                     RemoveMiniPetitionDraftDocumentsTask removeMiniPetitionDraftDocumentsTask) {
         this.validateSolicitorCaseData = validateSolicitorCaseData;
         this.processPbaPayment = processPbaPayment;
+        this.removeMiniPetitionDraftDocumentsTask = removeMiniPetitionDraftDocumentsTask;
     }
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
 
         return this.execute(new Task[] {
             validateSolicitorCaseData,
-            processPbaPayment
+            processPbaPayment,
+            removeMiniPetitionDraftDocumentsTask
         },
             ccdCallbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
