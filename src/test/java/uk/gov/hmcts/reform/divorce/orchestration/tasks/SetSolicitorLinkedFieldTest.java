@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.util.Collections;
 import java.util.Map;
@@ -33,11 +32,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class SetSolicitorLinkedFieldTest {
 
-    private static final String RESP_SOLICITOR_LINKED_EMAIL = "RespSolicitorLinkedEmail";
+    private static final String RESP_SOLICITOR_LINKED_EMAIL = "RespSolLinkedEmail";
     private static final String SOL_EMAIL = "sol@test.local";
-
-    @Mock
-    private AuthUtil authUtil;
 
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
@@ -68,8 +64,6 @@ public class SetSolicitorLinkedFieldTest {
         taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         taskContext.setTransientObject(IS_RESPONDENT, true);
         taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-
-        when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, LINK_RESPONDENT_GENERIC_EVENT_ID, dataToUpdate))
                 .thenReturn(null);
