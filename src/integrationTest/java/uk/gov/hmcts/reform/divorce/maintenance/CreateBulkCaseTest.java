@@ -52,9 +52,7 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
 
         List<String> casesList = response.jsonPath().get("BulkCases.case_data.CaseAcceptedList[0].value.CaseReference");
         final UserDetails caseworker = createCaseWorkerUser();
-        casesList.forEach( caseId -> {
-            validateWithAwaitingTime(caseworker, caseId);
-        });
+        casesList.forEach(caseId -> validateWithAwaitingTime(caseworker, caseId));
     }
 
     private void validateWithAwaitingTime(UserDetails user, String caseId) {
