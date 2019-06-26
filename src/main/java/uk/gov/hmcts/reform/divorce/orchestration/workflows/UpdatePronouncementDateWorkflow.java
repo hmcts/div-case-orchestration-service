@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_COURT_DN_PRONOUNCEMENT_DATE_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT;
 
 @Component
 @AllArgsConstructor
@@ -37,7 +37,7 @@ public class UpdatePronouncementDateWorkflow extends RetryableBulkCaseWorkflow {
                 new HashMap<>(),
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
                 ImmutablePair.of(BULK_CASE_DETAILS_CONTEXT_KEY, bulkCaseDetails),
-                ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, UPDATE_COURT_DN_PRONOUNCEMENT_DATE_EVENT),
+                ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT),
                 ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
         );
     }
