@@ -226,6 +226,7 @@ public class OrchestrationConstants {
     public static final String DOCUMENT_TEMPLATE_ID = "documentTemplateId";
     public static final String DOCUMENT_FILENAME = "documentFilename";
     public static final String DOCUMENT_FILENAME_FMT = "%s%s";
+    public static final String DOCUMENTS_GENERATED = "DocumentsGenerated";
     public static final String COSTS_ORDER_DOCUMENT_TYPE = "costsOrder";
     public static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
     public static final String DECREE_NISI_DOCUMENT_TYPE = "dnGranted";
@@ -293,5 +294,4 @@ public class OrchestrationConstants {
         = "uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkPrinter_Error";
     public static final String EMAIL_ERROR_KEY
         = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
-
 }
