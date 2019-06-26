@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -17,6 +16,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import java.util.Collections;
 import java.util.Map;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_LINKED_EMAIL;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SetSolicitorLinkedFieldTest {
@@ -44,7 +46,7 @@ public class SetSolicitorLinkedFieldTest {
     @Test
     public void whenTaskIsCalled_setSolicitorLinkedFieldToTrue() throws TaskException {
 
-        final UserDetails payload = UserDetails.builder().email(SOL_EMAIL).build();
+        final UserDetails userDetails = UserDetails.builder().build();
 
         final Map<String, Object> caseData = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
         final CaseDetails caseDetails =
@@ -64,11 +66,12 @@ public class SetSolicitorLinkedFieldTest {
         taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         taskContext.setTransientObject(IS_RESPONDENT, true);
         taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+        taskContext.setTransientObject(SOLICITOR_LINKED_EMAIL, SOL_EMAIL);
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, LINK_RESPONDENT_GENERIC_EVENT_ID, dataToUpdate))
                 .thenReturn(null);
 
-        Assert.assertEquals(payload, setSolicitorLinkedField.execute(taskContext, payload));
+        assertThat(userDetails, is(setSolicitorLinkedField.execute(taskContext, userDetails)));
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, LINK_RESPONDENT_GENERIC_EVENT_ID, dataToUpdate);
     }

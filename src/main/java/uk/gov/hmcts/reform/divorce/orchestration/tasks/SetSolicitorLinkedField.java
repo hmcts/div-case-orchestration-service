@@ -31,7 +31,7 @@ public class SetSolicitorLinkedField implements Task<UserDetails> {
 
         Map<String, Object> updateFields = new HashMap<>();
         try {
-            updateFields.put(SOLICITOR_LINKED_EMAIL, payload.getEmail());
+            updateFields.put(SOLICITOR_LINKED_EMAIL, context.getTransientObject(SOLICITOR_LINKED_EMAIL));
 
             caseMaintenanceClient.updateCase(
                     context.getTransientObject(AUTH_TOKEN_JSON_KEY),

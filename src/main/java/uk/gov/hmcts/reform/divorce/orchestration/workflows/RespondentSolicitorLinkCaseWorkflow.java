@@ -33,10 +33,10 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
     private static final String CASE_REFERENCE = "CaseReference";
 
     private final GetCaseWithId getCaseWithId;
+    private final ValidateExistingSolicitorLink validateExistingSolicitorLink;
     private final RetrievePinUserDetails retrievePinUserDetails;
     private final LinkRespondent linkRespondent;
     private final SetSolicitorLinkedField setSolicitorLinkedField;
-    private final ValidateExistingSolicitorLink validateExistingSolicitorLink;
 
     public UserDetails run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         final UserDetails userDetails = UserDetails.builder().authToken(authToken).build();

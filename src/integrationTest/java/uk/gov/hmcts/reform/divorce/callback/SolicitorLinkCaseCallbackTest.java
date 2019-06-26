@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.divorce.util.RestUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -67,10 +67,22 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
                         pinResponse.getPin()
         );
 
-        assertThat(linkResponse.getBody().asString(), linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
-        assertThat(linkResponse.getBody().asString(),linkResponse.getBody().jsonPath().get("data"), is(notNullValue()));
+        String responseString = linkResponse.getBody().asString();
+        assertThat(responseString, linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
+        assertThat(responseString,linkResponse.getBody().jsonPath().get("data"), is(notNullValue()));
         caseDetails = ccdClientSupport.retrieveCaseForCaseworker(solicitorUser, caseId);
         assertThat(caseDetails.getData(), is(notNullValue()));
+
+        //linking with the same user again is okay
+        linkResponse = linkSolicitor(
+                solicitorUser.getAuthToken(),
+                caseDetails.getId(),
+                pinResponse.getPin()
+        );
+
+        responseString = linkResponse.getBody().asString();
+        assertThat(responseString, linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
+        assertThat(responseString,linkResponse.getBody().jsonPath().get("data"), is(notNullValue()));
 
         //linking with a different user should fail
         solicitorUser = createSolicitorUser();
@@ -80,8 +92,9 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
                 caseDetails.getId(),
                 pinResponse.getPin()
         );
-        assertThat(linkResponse.getBody().asString(), linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
-        assertThat(linkResponse.getBody().asString(),linkResponse.getBody().jsonPath().get("errors"), containsString("test"));
+        responseString = linkResponse.getBody().asString();
+        assertThat(responseString, linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
+        assertThat(responseString,linkResponse.getBody().jsonPath().getList(ERRORS), hasItem("Case is already linked - ID " + caseId));
     }
 
     private Response linkSolicitor(String userToken, Long caseId, String pin) {
