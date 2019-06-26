@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
     url = "${idam.api.url}",
     qualifier = "strategicIdamClient",
     configuration = StrategicIdamClient.Configuration.class)
-@ConditionalOnProperty(value = "idam.strategic.enabled", havingValue = "true")
 public interface StrategicIdamClient extends IdamClient {
     @RequestMapping(
         method = RequestMethod.GET,
