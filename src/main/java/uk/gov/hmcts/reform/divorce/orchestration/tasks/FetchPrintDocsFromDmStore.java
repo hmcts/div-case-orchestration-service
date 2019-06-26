@@ -2,20 +2,20 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.elasticsearch.rest.RestRequest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,9 +50,11 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
     private AuthTokenGenerator authTokenGenerator;
+    private final RestTemplate restTemplate;
 
-    public FetchPrintDocsFromDmStore(AuthTokenGenerator authTokenGenerator) {
+    public FetchPrintDocsFromDmStore(AuthTokenGenerator authTokenGenerator, RestTemplate restTemplate) {
         this.authTokenGenerator = authTokenGenerator;
+        this.restTemplate = restTemplate;
     }
 
     @Override
@@ -67,29 +69,18 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
     private void populateDocumentBytes(TaskContext context, Map<String, GeneratedDocumentInfo> generatedDocumentInfos) {
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         for (GeneratedDocumentInfo generatedDocumentInfo : generatedDocumentInfos.values()) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set(SERVICE_AUTHORIZATION, authTokenGenerator.generate());
+            headers.set(USER_ROLES, CASEWORKER_DIVORCE);
+            HttpEntity<RestRequest> httpEntity = new HttpEntity<>(headers);
 
-            byte[] bytes = null;
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                 CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build()) {
-                HttpGet request = new HttpGet(generatedDocumentInfo.getUrl());
-                request.setHeader(SERVICE_AUTHORIZATION, authTokenGenerator.generate());
-                request.setHeader(USER_ROLES, CASEWORKER_DIVORCE);
-                CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(request);
-                InputStream is = closeableHttpResponse.getEntity().getContent();
-
-                byte[] byteChunk = new byte[4096];
-                int readBytes;
-                while ( (readBytes = is.read(byteChunk)) > 0 ) {
-                    baos.write(byteChunk, 0, readBytes);
-                }
-                bytes = baos.toByteArray();
-
-            } catch (IOException e) {
-
+            ResponseEntity<byte[]> response = restTemplate.exchange(generatedDocumentInfo.getUrl(), HttpMethod.GET, httpEntity, byte[].class);
+            if (response.getStatusCode() != HttpStatus.OK) {
                 log.error("Failed to get bytes from document store for document {} in case Id {}",
-                    generatedDocumentInfo.getUrl(), caseDetails.getCaseId());
+                        generatedDocumentInfo.getUrl(), caseDetails.getCaseId());
+                throw new RuntimeException(String.format("Unexpected code from DM store: %s ", response.getStatusCode()));
             }
-            generatedDocumentInfo.setBytes(bytes);
+            generatedDocumentInfo.setBytes(response.getBody());
         }
     }
 
@@ -105,8 +96,7 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
         for (Map<String, Object> document : documentList) {
             Map<String, Object> value = ((Map) document.get(VALUE));
             String documentType = getStringValue(value, DOCUMENT_TYPE);
-            Map<String, Object> documentLink =
-                ofNullable(getValue(value, DOCUMENT_LINK)).map(obj -> (Map) obj).orElse(null);
+            Map<String, Object> documentLink = (Map) ofNullable(getValue(value, DOCUMENT_LINK)).orElse(null);
 
             if (ofNullable(documentLink).isPresent()) {
                 GeneratedDocumentInfo gdi = GeneratedDocumentInfo.builder()
