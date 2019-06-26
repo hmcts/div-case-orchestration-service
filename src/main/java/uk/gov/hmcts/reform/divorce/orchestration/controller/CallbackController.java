@@ -611,6 +611,34 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    @PostMapping(path = "/solicitor-link-case")
+    @ApiOperation(value = "Authorize the solicitor's respondent to the case")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Solicitor authenticated"),
+            @ApiResponse(code = 400, message = "Bad request"),
+            @ApiResponse(code = 401, message = "Not authorised"),
+            @ApiResponse(code = 404, message = "Case not found")})
+    public ResponseEntity<CcdCallbackResponse> solicitorLinkCase(
+            @RequestHeader("Authorization")
+            @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.debug("Processing solicitor link case callback. Case ID: {}", caseId);
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(
+                    caseOrchestrationService.processAosSolicitorLinkCase(ccdCallbackRequest, authorizationToken));
+        } catch (CaseOrchestrationServiceException exception) {
+            log.error(format("Failed solicitor link case callback. Case ID:  %s", caseId),
+                    exception);
+            callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
 
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
