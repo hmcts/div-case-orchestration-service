@@ -585,10 +585,6 @@ public class CallbackControllerTest {
                 .build())
             .build();
 
-        when(caseOrchestrationService
-            .handleApproveDACallback(incomingRequest, AUTH_TOKEN))
-            .thenReturn(payload);
-
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDnDocuments(AUTH_TOKEN, incomingRequest);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
