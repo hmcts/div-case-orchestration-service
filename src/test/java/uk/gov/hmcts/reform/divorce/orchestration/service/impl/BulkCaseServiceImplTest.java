@@ -122,7 +122,7 @@ public class BulkCaseServiceImplTest {
         Map<String, Object> caseLink = ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID);
         Map<String, Object> caseData = ImmutableMap.of(VALUE_KEY, caseLink);
         Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
-                CCD_CASE_DATA_FIELD, ImmutableMap.of(BULK_CASE_ACCEPTED_LIST_KEY, Arrays.asList(caseData, caseData)));
+            CCD_CASE_DATA_FIELD, ImmutableMap.of(BULK_CASE_ACCEPTED_LIST_KEY, Arrays.asList(caseData, caseData)));
 
         BulkCaseUpdateCourtHearingEvent event = new BulkCaseUpdateCourtHearingEvent(taskContext, caseDetail);
 
@@ -131,7 +131,7 @@ public class BulkCaseServiceImplTest {
         classToTest.handleBulkCaseUpdateCourtHearingEvent(event);
 
         verify(updateCourtHearingDetailsWorkflow, times(1))
-                .executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
+            .executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
         verify(updateBulkCaseWorkflow, times(1)).run(Collections.emptyMap(), AUTH_TOKEN, TEST_CASE_ID, LISTED_EVENT);
     }
 
@@ -143,11 +143,11 @@ public class BulkCaseServiceImplTest {
         Map<String, Object> caseData = ImmutableMap.of(VALUE_KEY, ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID));
         Map<String, Object> failedCaseData = ImmutableMap.of(VALUE_KEY, ImmutableMap.of(CASE_REFERENCE_FIELD, FAILED_CASE_ID));
         Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
-                CCD_CASE_DATA_FIELD, ImmutableMap.of(BULK_CASE_ACCEPTED_LIST_KEY, Arrays.asList(failedCaseData, caseData)));
+            CCD_CASE_DATA_FIELD, ImmutableMap.of(BULK_CASE_ACCEPTED_LIST_KEY, Arrays.asList(failedCaseData, caseData)));
 
         when(updateCourtHearingDetailsWorkflow
-                .executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN))
-                .thenReturn(false);
+            .executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN))
+            .thenReturn(false);
 
         BulkCaseUpdateCourtHearingEvent event = new BulkCaseUpdateCourtHearingEvent(taskContext, caseDetail);
         classToTest.handleBulkCaseUpdateCourtHearingEvent(event);

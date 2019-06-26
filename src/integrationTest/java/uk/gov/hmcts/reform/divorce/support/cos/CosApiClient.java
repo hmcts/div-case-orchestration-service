@@ -102,13 +102,14 @@ public interface CosApiClient {
     )
     Map<String, Object> caseLinkedForHearing(@RequestHeader(AUTHORIZATION) String authorisation,
                                              @RequestBody Map<String, Object> caseDataContent);
-
+    
     @RequestMapping(
             method = RequestMethod.POST,
             value = "/bulk/pronounce/submit"
     )
     Map<String, Object> bulkPronouncement(@RequestHeader(AUTHORIZATION) String authorisation,
                                           @RequestBody CcdCallbackRequest ccdCallbackRequest);
+
 
     @RequestMapping(
             method = RequestMethod.POST,
