@@ -19,8 +19,8 @@ public class ValidateExistingSolicitorLink implements Task<UserDetails> {
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         String existingSolicitorEmail = (String) caseDetails.getCaseData().get(SOLICITOR_LINKED_EMAIL);
 
-        if(!Strings.isNullOrEmpty(existingSolicitorEmail)) {
-            if(!solicitorDetails.getEmail().equals(existingSolicitorEmail)) {
+        if (!Strings.isNullOrEmpty(existingSolicitorEmail)) {
+            if (!solicitorDetails.getEmail().equals(existingSolicitorEmail)) {
                 throw new TaskException(String.format("Case %s is already linked", caseDetails.getCaseId()));
             }
         }
