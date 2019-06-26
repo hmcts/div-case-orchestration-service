@@ -33,3 +33,7 @@ output "aos_responded_awaiting_answer_days_to_respond" {
 output "scheudler_schedules_create_bulk_cases_cron" {
   value = "${var.scheudler_schedules_create_bulk_cases_cron}"
 }
+
+output "feature_resp_solicitor_details" {
+  value = "${var.feature_resp_solicitor_details}"
+}
