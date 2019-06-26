@@ -1,0 +1,141 @@
+{
+  "event_id": "uploadDocument",
+  "case_details": {
+    "id": "1517833758870511",
+    "jurisdiction": "DIVORCE",
+    "state": "Issued",
+    "case_type_id": "DIVORCE",
+    "created_date": "2018-02-05T12:29:17.81",
+    "last_modified": "2018-02-05T14:57:11.346",
+    "security_classification": "PUBLIC",
+    "case_data": {
+      "D8DivorceCostsClaim": "YES",
+      "D8DivorceClaimFrom": [
+        "correspondent"
+      ],
+      "D8FinancialOrder": "YES",
+      "D8FinancialOrderFor": [
+        "petitioner",
+        "children"
+      ],
+      "D8JurisdictionConnection": [
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "D8ReasonForDivorce": "adultery",
+      "D8ReasonForDivorceBehaviourDetails": "My wife is having an affair this week.",
+      "D8ReasonForDivorceAdulteryDetails": "Adultery Details",
+      "D8ReasonForDivorceAdulteryWishToName": "YES",
+      "D8ReasonForDivorceAdultery3rdPartyFName": "Ben",
+      "D8ReasonForDivorceAdultery3rdPartyLName": "Stark",
+      "D8DerivedReasonForDivorceAdultery3rdAddr": "Headquarters 1120 N Street Sacramento 916-654-5266\t\nP.O. Box 942873 Sacramento, CA 94273-0001",
+      "D8ReasonForDivorceAdulteryKnowWhere": "YES",
+      "D8ReasonForDivorceAdulteryKnowWhen": "YES",
+      "D8ReasonForDivorceAdulteryWhenDetails": "Last Friday",
+      "D8ReasonForDivorceAdulteryWhereDetails": "On the street",
+      "D8LegalProceedings": "YES",
+      "D8LegalProceedingsDetails": "Insert proper text for the legal proceeding details",
+      "D8DerivedRespondentHomeAddress": "82 Landor Road\nLondon\nSW9 9PE",
+      "D8RespondentSolicitorEmail": "saul.goodman@gusfring.com",
+      "D8RespondentSolicitorName": "saul goodman",
+      "D8PetitionerNameChangedHow": [
+        "marriageCertificate"
+      ],
+      "D8DerivedPetitionerHomeAddress": "82 Landor Road\nLondon\nSW9 9PE",
+      "D8RespondentHomeAddress": {
+        "PostCode": "SW9 9PE"
+      },
+      "D8ScreenHasRespondentAddress": "YES",
+      "D8JurisdictionPetitionerDomicile": "NO",
+      "D8ScreenHasMarriageCert": "YES",
+      "D8PetitionerHomeAddress": {
+        "PostCode": "SW9 9PE"
+      },
+      "D8ScreenHasMarriageBroken": "YES",
+      "D8InferredRespondentGender": "male",
+      "D8StatementOfTruth": "YES",
+      "D8ReasonForDivorceEnableAdultery": "YES",
+      "D8ReasonForDivorceShowAdultery": "YES",
+      "D8LivingArrangementsLiveTogether": "YES",
+      "D8ReasonForDivorceHasMarriage": "YES",
+      "D8RespondentCorrespondenceUseHomeAddress": "No",
+      "D8JurisdictionRespondentDomicile": "NO",
+      "D8Connections": {
+        "A": "The Petitioner and the Respondent are habitually resident in England and Wales",
+        "B": "The Petitioner and the Respondent were last habitually resident, insofar as one of them still resides there",
+        "C": "The Respondent is habitually resident in England and Wales",
+        "D": "The Petitioner is habitually resident in England and Wales and has resided there for at least a year immediately prior to the presentation of the petition",
+        "E": "The Petitioner is domiciled and habitually resident in England and Wales and has resided there for at least six months immediately prior to the petition",
+        "F": "The Petitioner and Respondent are both domiciled in England and Wales",
+        "G": "The courts of England and Wales have residual jurisdiction, meaning either: no other court in any EU Member State has jurisdiction and either the Petitioner or the Respondent is domiciled in England and Wales; or (for same sex couples only) the Petitioner or the Respondent married each other in England and Wales, no other court in any EU Member State has jurisdiction, and it would be in the interests of justice for the court to assume jurisdiction in this case"
+      },
+      "D8PetitionerCorrespondenceAddress": {
+        "PostCode": "SW9 9PE"
+      },
+      "D8RespondentLastName": "Jamed",
+      "D8PetitionerNameDifferentToMarriageCert": "YES",
+      "D8LegalProceedingsRelated": [
+        "children"
+      ],
+      "D8PetitionerLastName": "Smith",
+      "D8ReasonForDivorceAdulteryIsNamed": "NO",
+      "D8PetitionerPhoneNumber": "01234567890",
+      "D8ClaimsCostsAppliedForFees": "NO",
+      "D8ReasonForDivorceShowTwoYearsSeparation": "YES",
+      "D8PetitionerCorrespondenceUseHomeAddress": "YES",
+      "D8ResidualJurisdictionEligible": "YES",
+      "D8ReasonForDivorceLimitReasons": "NO",
+      "D8PetitionerEmail": "simulate-delivered@notifications.service.gov.uk",
+      "D8ReasonForDivorceClaiming5YearSeparatio": "NO",
+      "D8DivorceUnit": "eastMidlands",
+      "D8ReasonForDivorceShowDesertion": "YES",
+      "D8DerivedRespondentCorrespondenceAddr": "82 Landor Road\nLondon\nSW9 9PE",
+      "D8MarriagePetitionerName": "John Doe",
+      "D8Cohort": "onlineSubmissionPrivateBeta",
+      "D8MarriageIsSameSexCouple": "YES",
+      "D8ReasonForDivorceShowFiveYearsSeparatio": "YES",
+      "D8MarriageDate": "2001-02-02",
+      "D8caseReference": "LV17D80100",
+      "D8HelpWithFeesNeedHelp": "NO",
+      "D8JurisdictionRespondentResidence": "NO",
+      "D8DivorceWho": "husband",
+      "D8MarriageCanDivorce": "YES",
+      "D8ScreenHasPrinter": "YES",
+      "D8ConnectionSummary": "Manual",
+      "D8RespondentFirstName": "Jane",
+      "D8ReasonForDivorceShowUnreasonableBehavi": "YES",
+      "D8DocumentsUploaded": [
+        {
+          "id": "8a70ad2f-9d63-4d33-9b3b-d32ee9f6a919",
+          "value": {
+            "DocumentLink": {
+              "document_url": "http://em-api-gateway-web:3404/documents/51400ac5-158d-4177-bdda-ec0058b77c81",
+              "document_filename": "victorian-marriage-certificate.pdf",
+              "document_binary_url": "http://em-api-gateway-web:3404/documents/51400ac5-158d-4177-bdda-ec0058b77c81/binary"
+            },
+            "DocumentType": "other",
+            "DocumentComment": "",
+            "DocumentFileName": "victorian-marriage-certificate.pdf",
+            "DocumentDateAdded": "2018-02-05",
+            "DocumentEmailContent": ""
+          }
+        }
+      ],
+      "D8DerivedPetitionerCorrespondenceAddr": "82 Landor Road\nLondon\nSW9 9PE",
+      "D8JurisdictionPetitionerResidence": "NO",
+      "D8ReasonForDivorceClaimingAdultery": "NO",
+      "D8PetitionerFirstName": "ČĆĐŁukasz John",
+      "D8MarriageRespondentName": "Jenny Benny",
+      "D8PetitionerContactDetailsConfidential": "share",
+      "createdDate": "2018-02-05",
+      "D8MarriagePlaceOfMarriage": "In a church",
+      "D8RespondentCorrespondenceAddress": {
+        "PostCode": "SW9 9PE"
+      },
+      "D8InferredPetitionerGender": "female",
+      "D8JurisdictionHabituallyResLast6Months": "NO"
+    }
+  }
+}

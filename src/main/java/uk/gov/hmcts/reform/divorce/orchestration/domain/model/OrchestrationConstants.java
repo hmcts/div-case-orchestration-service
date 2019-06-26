@@ -84,7 +84,7 @@ public class OrchestrationConstants {
     public static final String D_8_SEP_TIME_TOGETHER_PERMITTED = "D8SeparationTimeTogetherPermitted";
     public static final String D_8_DESERTION_TIME_TOGETHER_PERMITTED =  "D8DesertionTimeTogetherPermitted";
     public static final String UPDATE_COURT_HEARING_DETAILS_EVENT = "updateBulkCaseHearingDetails";
-    public static final String UPDATE_COURT_DN_PRONOUNCEMENT_DATE_EVENT = "dnPronounced";
+    public static final String UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT = "dnPronouncedBulk";
     public static final String WHO_PAYS_COSTS_CCD_FIELD = "WhoPaysCosts";
     public static final String WHO_PAYS_CCD_CODE_FOR_RESPONDENT = "respondent";
     public static final String DECREE_NISI_GRANTED_DATE_CCD_FIELD = "DecreeNisiGrantedDate";
@@ -225,6 +225,7 @@ public class OrchestrationConstants {
     public static final String DOCUMENT_TEMPLATE_ID = "documentTemplateId";
     public static final String DOCUMENT_FILENAME = "documentFilename";
     public static final String DOCUMENT_FILENAME_FMT = "%s%s";
+    public static final String DOCUMENTS_GENERATED = "DocumentsGenerated";
     public static final String COSTS_ORDER_DOCUMENT_TYPE = "costsOrder";
     public static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
     public static final String DECREE_NISI_DOCUMENT_TYPE = "dnGranted";
@@ -293,5 +294,4 @@ public class OrchestrationConstants {
         = "uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkPrinter_Error";
     public static final String EMAIL_ERROR_KEY
         = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
-
 }

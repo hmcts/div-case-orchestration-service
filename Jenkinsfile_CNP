@@ -49,6 +49,7 @@ withPipeline(type, product, component) {
 
     // Kubernetes does not retrieve variables from the output terraform
     before('functionalTest:preview') {
+        env.FEATURE_RESP_SOLICITOR_DETAILS = 'true'
         env.test_environment = 'aat'
     }
 

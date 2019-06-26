@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_COURT_DN_PRONOUNCEMENT_DATE_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UpdatePronouncementDateWorkflowTest {
@@ -52,7 +52,7 @@ public class UpdatePronouncementDateWorkflowTest {
             new HashMap<>(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN),
             ImmutablePair.of(BULK_CASE_DETAILS_CONTEXT_KEY, Collections.emptyMap()),
-            ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, UPDATE_COURT_DN_PRONOUNCEMENT_DATE_EVENT),
+            ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT),
             ImmutablePair.of(CASE_ID_JSON_KEY, TEST_CASE_ID)
         )).thenReturn(expected);
 
