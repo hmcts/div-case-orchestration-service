@@ -17,16 +17,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
-public class ProcessPbaPaymentWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class SolicitorSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final ValidateSolicitorCaseData validateSolicitorCaseData;
     private final ProcessPbaPayment processPbaPayment;
     private final RemoveMiniPetitionDraftDocumentsTask removeMiniPetitionDraftDocumentsTask;
 
     @Autowired
-    public ProcessPbaPaymentWorkflow(ProcessPbaPayment processPbaPayment,
-                                     ValidateSolicitorCaseData validateSolicitorCaseData,
-                                     RemoveMiniPetitionDraftDocumentsTask removeMiniPetitionDraftDocumentsTask) {
+    public SolicitorSubmissionWorkflow(ProcessPbaPayment processPbaPayment,
+                                       ValidateSolicitorCaseData validateSolicitorCaseData,
+                                       RemoveMiniPetitionDraftDocumentsTask removeMiniPetitionDraftDocumentsTask) {
         this.validateSolicitorCaseData = validateSolicitorCaseData;
         this.processPbaPayment = processPbaPayment;
         this.removeMiniPetitionDraftDocumentsTask = removeMiniPetitionDraftDocumentsTask;

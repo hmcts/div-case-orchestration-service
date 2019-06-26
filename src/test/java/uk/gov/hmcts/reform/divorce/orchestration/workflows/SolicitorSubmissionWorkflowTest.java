@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ProcessPbaPaymentWorkflowTest {
+public class SolicitorSubmissionWorkflowTest {
 
     @Mock
     private ValidateSolicitorCaseData validateSolicitorCaseData;
@@ -42,7 +42,7 @@ public class ProcessPbaPaymentWorkflowTest {
     private RemoveMiniPetitionDraftDocumentsTask removeMiniPetitionDraftDocumentsTask;
 
     @InjectMocks
-    private ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
+    private SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
 
     private CcdCallbackRequest ccdCallbackRequestRequest;
     private Map<String, Object> testData;
@@ -77,7 +77,7 @@ public class ProcessPbaPaymentWorkflowTest {
         when(processPbaPayment.execute(context, testData)).thenReturn(testData);
         when(removeMiniPetitionDraftDocumentsTask.execute(context, testData)).thenReturn(testData);
 
-        assertEquals(testData, processPbaPaymentWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN));
+        assertEquals(testData, solicitorSubmissionWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN));
 
         InOrder inOrder = inOrder(validateSolicitorCaseData, processPbaPayment, removeMiniPetitionDraftDocumentsTask);
 
