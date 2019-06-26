@@ -102,7 +102,7 @@ public interface CosApiClient {
     )
     Map<String, Object> caseLinkedForHearing(@RequestHeader(AUTHORIZATION) String authorisation,
                                              @RequestBody Map<String, Object> caseDataContent);
-    
+
     @RequestMapping(
             method = RequestMethod.POST,
             value = "/bulk/pronounce/submit"
@@ -123,8 +123,16 @@ public interface CosApiClient {
 
     @RequestMapping(
             method = RequestMethod.POST,
-            value = "generate-dn-pronouncement-documents"
+            value = "/generate-dn-pronouncement-documents"
     )
     Map<String, Object> generateDnPronouncedDocuments(@RequestHeader(AUTHORIZATION) String authorisation,
                                                       @RequestBody CcdCallbackRequest ccdCallbackRequest);
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/approve-da"
+    )
+    Map<String, Object> approveDA(@RequestHeader(AUTHORIZATION) String authorisation,
+                                  @RequestBody CcdCallbackRequest ccdCallbackRequest);
+
 }
