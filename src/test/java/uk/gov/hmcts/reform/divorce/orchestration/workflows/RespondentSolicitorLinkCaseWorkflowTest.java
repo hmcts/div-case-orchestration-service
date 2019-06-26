@@ -90,12 +90,12 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
 
         UserDetails actual = respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
 
+        assertThat(actual, is(userDetails));
         InOrder inOrder = inOrder(getCaseWithId, retrievePinUserDetails, linkRespondent, setSolicitorLinkedField);
         inOrder.verify(getCaseWithId).execute(context, userDetails);
         inOrder.verify(retrievePinUserDetails).execute(context, userDetails);
         inOrder.verify(linkRespondent).execute(context, userDetails);
         inOrder.verify(setSolicitorLinkedField).execute(context, userDetails);
-        assertThat(actual, is(userDetails));
     }
 
     @Test(expected = WorkflowException.class)

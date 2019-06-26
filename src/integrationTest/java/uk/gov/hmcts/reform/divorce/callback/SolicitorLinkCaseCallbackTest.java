@@ -54,8 +54,9 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
                 petitionerUserDetails
         );
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, petitionerUserDetails);
-        updateCase(String.valueOf(caseDetails.getId()), null, AOS_NOMINATE_SOL_EVENT_ID, ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
+        String caseId = String.valueOf(caseDetails.getId());
+        updateCaseForCitizen(caseId, null, TEST_AOS_STARTED_EVENT_ID, petitionerUserDetails);
+        updateCase(caseId, null, AOS_NOMINATE_SOL_EVENT_ID, ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
 
         UserDetails solicitorUser = createSolicitorUser();
 
@@ -68,7 +69,7 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
 
         assertThat(linkResponse.getBody().asString(), linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
         assertThat(linkResponse.getBody().asString(),linkResponse.getBody().jsonPath().get("data"), is(notNullValue()));
-        caseDetails = ccdClientSupport.retrieveCaseForCaseworker(solicitorUser, String.valueOf(caseDetails.getId()));
+        caseDetails = ccdClientSupport.retrieveCaseForCaseworker(solicitorUser, caseId);
         assertThat(caseDetails.getData(), is(notNullValue()));
 
         //linking with a different user should fail
