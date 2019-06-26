@@ -24,6 +24,7 @@ import java.util.Map;
 
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 
 @Component
 @Slf4j
@@ -40,8 +41,6 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
     private static final String DOCUMENT_FILENAME = "document_filename";
 
     private static final String DOCUMENTS_GENERATED = "DocumentsGenerated";
-
-    private static final String D8DOCUMENTS_GENERATED = "D8DocumentsGenerated";
 
     private static final String CASEWORKER_DIVORCE = "caseworker-divorce";
 
