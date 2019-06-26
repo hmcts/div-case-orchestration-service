@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithId;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorLinkedField;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateExistingSolicitorLink;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +46,9 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
 
     @Mock
     private GetCaseWithId getCaseWithId;
+
+    @Mock
+    private ValidateExistingSolicitorLink validateExistingSolicitorLink;
 
     @Mock
     private RetrievePinUserDetails retrievePinUserDetails;
@@ -84,6 +88,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
         final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(validateExistingSolicitorLink.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(linkRespondent.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(setSolicitorLinkedField.execute(any(), eq(userDetails))).thenReturn(userDetails);
@@ -91,8 +96,9 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
         UserDetails actual = respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
 
         assertThat(actual, is(userDetails));
-        InOrder inOrder = inOrder(getCaseWithId, retrievePinUserDetails, linkRespondent, setSolicitorLinkedField);
+        InOrder inOrder = inOrder(getCaseWithId, validateExistingSolicitorLink, retrievePinUserDetails, linkRespondent, setSolicitorLinkedField);
         inOrder.verify(getCaseWithId).execute(context, userDetails);
+        inOrder.verify(validateExistingSolicitorLink).execute(context, userDetails);
         inOrder.verify(retrievePinUserDetails).execute(context, userDetails);
         inOrder.verify(linkRespondent).execute(context, userDetails);
         inOrder.verify(setSolicitorLinkedField).execute(context, userDetails);
@@ -112,6 +118,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
         final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(validateExistingSolicitorLink.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(linkRespondent.execute(any(), eq(userDetails))).thenThrow(new FeignException.Unauthorized("test", null));
 

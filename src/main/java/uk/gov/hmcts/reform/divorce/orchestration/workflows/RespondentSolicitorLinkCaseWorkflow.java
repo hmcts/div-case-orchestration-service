@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithId;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorLinkedField;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateExistingSolicitorLink;
 
 import java.util.Map;
 
@@ -35,6 +36,7 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
     private final RetrievePinUserDetails retrievePinUserDetails;
     private final LinkRespondent linkRespondent;
     private final SetSolicitorLinkedField setSolicitorLinkedField;
+    private final ValidateExistingSolicitorLink validateExistingSolicitorLink;
 
     public UserDetails run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         final UserDetails userDetails = UserDetails.builder().authToken(authToken).build();
@@ -46,6 +48,7 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
             return this.execute(
                 new Task[] {
                     getCaseWithId,
+                    validateExistingSolicitorLink,
                     retrievePinUserDetails,
                     linkRespondent,
                     setSolicitorLinkedField
