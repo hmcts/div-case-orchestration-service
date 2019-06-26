@@ -109,7 +109,7 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> processPbaPayment(
         @RequestHeader(value = "Authorization") String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        Map<String, Object> response = caseOrchestrationService.processPbaPayment(ccdCallbackRequest, authorizationToken);
+        Map<String, Object> response = caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, authorizationToken);
 
         if (response != null && response.containsKey(SOLICITOR_VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(
