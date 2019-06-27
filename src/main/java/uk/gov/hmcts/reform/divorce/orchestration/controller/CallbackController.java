@@ -640,7 +640,7 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/clear-state")
+    @PostMapping(path = "/clean-state")
     @ApiOperation(value = "Clear state from case data")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed"),
