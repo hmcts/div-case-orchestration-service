@@ -62,12 +62,11 @@ public class CourtLookupServiceTest {
         Court foundCourt = courtLookupService.getCourtByKey("serviceCentre");
 
         assertThat(foundCourt.getCourtId(), is("serviceCentre"));
-        assertThat(foundCourt.getIdentifiableCentreName(), is("Courts and Tribunals Service Centre"));
-        String expectedAddress = "Courts and Tribunals Service Centre" + LINE_SEPARATOR
-                + "c/o East Midlands Regional Divorce Centre" + LINE_SEPARATOR
-                + "PO Box 10447" + LINE_SEPARATOR
-                + "Nottingham" + LINE_SEPARATOR
-                + "NG2 9QN";
+        assertThat(foundCourt.getIdentifiableCentreName(), is("HMCTS Digital Divorce"));
+        String expectedAddress = "HMCTS Digital Divorce" + LINE_SEPARATOR
+                + "PO Box 12706" + LINE_SEPARATOR
+                + "Harlow" + LINE_SEPARATOR
+                + "CM20 9QT";
         assertThat(foundCourt.getFormattedAddress(), is(expectedAddress));
     }
 

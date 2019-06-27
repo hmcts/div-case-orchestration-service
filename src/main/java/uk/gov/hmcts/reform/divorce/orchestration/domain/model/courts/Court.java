@@ -16,15 +16,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Data
 public class Court {
 
-    private static final String CARE_OF_PREFIX = "c/o ";
-
     @JsonProperty("courtId")
     @Setter
     private String courtId;
-
-    @JsonProperty("serviceCentreName")
-    @Setter
-    private String serviceCentreName;
 
     @JsonProperty("divorceCentre")
     @Setter
@@ -80,10 +74,6 @@ public class Court {
     private String formatAddress() {
         List<String> addressLines = new ArrayList<>();
 
-        if (isServiceCentre()) {
-            addressLines.add(serviceCentreName);
-        }
-
         addressLines.add(getDivorceCentreNameFormattedForAddress());
 
         if (isPOBoxAddress()) {
@@ -104,32 +94,16 @@ public class Court {
         return poBox != null;
     }
 
-    private boolean isServiceCentre() {
-        //serviceCentreName is a field in the json. If it's null, it means the court is not a service centre
-        return serviceCentreName != null;
-    }
-
     private String getDivorceCentreNameFormattedForAddress() {
         StringBuffer stringBuffer = new StringBuffer();
 
-        if (isServiceCentre()) {
-            stringBuffer.append(CARE_OF_PREFIX);
-        }
         stringBuffer.append(divorceCentreName);
 
         return stringBuffer.toString();
     }
 
     public String getIdentifiableCentreName() {
-        String identifiableCentreName;
-
-        if (isServiceCentre()) {
-            identifiableCentreName = serviceCentreName;
-        } else {
-            identifiableCentreName = divorceCentreName;
-        }
-
-        return identifiableCentreName;
+        return divorceCentreName;
     }
 
 }
