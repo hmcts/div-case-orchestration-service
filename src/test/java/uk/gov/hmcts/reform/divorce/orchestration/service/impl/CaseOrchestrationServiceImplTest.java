@@ -37,7 +37,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
@@ -51,6 +50,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmiss
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorUpdateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
@@ -147,7 +147,7 @@ public class CaseOrchestrationServiceImplTest {
     private SetOrderSummaryWorkflow setOrderSummaryWorkflow;
 
     @Mock
-    private ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
+    private SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
 
     @Mock
     private SolicitorCreateWorkflow solicitorCreateWorkflow;
@@ -642,35 +642,35 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenCaseData_whenProcessPbaPayment_thenReturnPayload() throws Exception {
         // given
-        when(processPbaPaymentWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
+        when(solicitorSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
                 .thenReturn(requestPayload);
 
         // when
-        Map<String, Object> actual = classUnderTest.processPbaPayment(ccdCallbackRequest, AUTH_TOKEN);
+        Map<String, Object> actual = classUnderTest.solicitorSubmission(ccdCallbackRequest, AUTH_TOKEN);
 
         // then
         assertEquals(requestPayload, actual);
 
-        verify(processPbaPaymentWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
+        verify(solicitorSubmissionWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
     }
 
 
     @Test
     public void givenCaseDataInvalid_whenProcessPbaPayment_thenReturnListOfErrors() throws Exception {
         // given
-        when(processPbaPaymentWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
+        when(solicitorSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
                 .thenReturn(requestPayload);
         Map<String, Object> errors = Collections.singletonMap("new_Error", "An Error");
-        when(processPbaPaymentWorkflow.errors()).thenReturn(errors);
+        when(solicitorSubmissionWorkflow.errors()).thenReturn(errors);
 
         // when
-        Map<String, Object> actual = classUnderTest.processPbaPayment(ccdCallbackRequest, AUTH_TOKEN);
+        Map<String, Object> actual = classUnderTest.solicitorSubmission(ccdCallbackRequest, AUTH_TOKEN);
 
         // then
         assertEquals(errors, actual);
 
-        verify(processPbaPaymentWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
-        verify(processPbaPaymentWorkflow, times(2)).errors();
+        verify(solicitorSubmissionWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
+        verify(solicitorSubmissionWorkflow, times(2)).errors();
     }
 
     @Test
