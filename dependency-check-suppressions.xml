@@ -25,11 +25,4 @@
         <cve>CVE-2018-1258</cve>
         <cve>CVE-2019-3795</cve>
     </suppress>
-    <suppress>
-        <notes><![CDATA[
-         file name: pmd-java-5.8.1.jar
-         ]]></notes>
-        <gav regex="true">^net\.sourceforge\.pmd:pmd-java:.*$</gav>
-        <cve>CVE-2019-7722</cve>
-    </suppress>
 </suppressions>
