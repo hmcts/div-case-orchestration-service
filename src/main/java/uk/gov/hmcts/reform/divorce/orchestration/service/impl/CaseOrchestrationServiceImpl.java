@@ -536,7 +536,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
                     DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));
 
-            if (YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD)))) {
+            if (Objects.nonNull(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD))) {
 
                 // DocumentType is clear enough to use as the file name
                 caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,

@@ -196,7 +196,6 @@ public class DnPronouncedDocumentsGenerationITest {
     public void happyPathWithoutCostsOrder() throws Exception {
 
         Map<String, Object> caseData = ImmutableMap.of(
-            DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, NO_VALUE,
             BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID)
         );
 
