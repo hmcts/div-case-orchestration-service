@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.ResponseBody;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,11 +24,10 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 import static uk.gov.hmcts.reform.divorce.util.RestUtil.postToRestService;
 
-@Slf4j
 public class BulkPrintCallbackTest extends IntegrationTest {
 
-    private static final String FIXTURES_ISSUE_PETITION_CCD_CALLBACK_AOS_INVITATION_JSON =
-        "fixtures/issue-petition/ccd-callback-aos-invitation.json";
+    private static final String RESPONDENT_AOS_INVITATION = "fixtures/issue-petition/ccd-callback-aos-invitation.json";
+    private static final String RESPONDENT_SOLICITOR_AOS_INVITATION = "fixtures/issue-petition/ccd-callback-solicitor-aos-invitation.json";
 
     @Value("${case.orchestration.petition-issued.context-path}")
     private String issueContextPath;
@@ -58,10 +56,10 @@ public class BulkPrintCallbackTest extends IntegrationTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void givenValidCaseData_whenReceivedBulkPrint_thenDueDatePopulated() throws Exception {
+    public void givenRespondentAos_whenReceivedBulkPrint_thenDueDatePopulated() throws Exception {
 
         Map response = postToRestService(serverUrl + issueContextPath + "?generateAosInvitation=true", citizenHeaders,
-            loadJson(FIXTURES_ISSUE_PETITION_CCD_CALLBACK_AOS_INVITATION_JSON))
+            loadJson(RESPONDENT_AOS_INVITATION))
             .getBody()
             .as(Map.class);
 
@@ -71,14 +69,34 @@ public class BulkPrintCallbackTest extends IntegrationTest {
         );
         ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders,
             ResourceLoader.objectToJson(ccdCallbackRequest)).getBody();
-        assertThat("Response body is not a JSON: " + body.print(),
-                body.print(),
+        assertThat("Response body is not a JSON: " + body.asString(),
+                body.asString(),
                 isJson()
         );
         String result = ((Map) body.jsonPath().get("data")).get("dueDate").toString();
-        assertEquals("Due date is not as expected ",
-            LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
-        log.info(result);
+        assertEquals(LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
+    }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    public void givenRespondentSolicitorAos_whenReceivedBulkPrint_thenDueDatePopulated() throws Exception {
+
+        Map response = postToRestService(serverUrl + issueContextPath + "?generateAosInvitation=true", citizenHeaders,
+            loadJson(RESPONDENT_SOLICITOR_AOS_INVITATION))
+            .getBody()
+            .as(Map.class);
+
+        CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(CaseDetails.builder().caseData(
+            (Map) response.get("data")).caseId("323").state("submitted").build()
+        );
+        ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders,
+            ResourceLoader.objectToJson(ccdCallbackRequest)).getBody();
+        assertThat("Response body is not a JSON: " + body.asString(),
+            body.asString(),
+            isJson()
+        );
+        String result = ((Map) body.jsonPath().get("data")).get("dueDate").toString();
+        assertEquals(LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
     }
 }

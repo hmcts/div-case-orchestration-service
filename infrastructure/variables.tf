@@ -88,3 +88,7 @@ variable "scheudler_schedules_create_bulk_cases_cron" {
   type    = "string"
   default = "0 0 4 ? * * *"
 }
+
+variable "feature_resp_solicitor_details" {
+  default = false
+}

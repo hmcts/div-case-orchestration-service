@@ -634,6 +634,46 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void testAosSolicitorLinkCase() throws CaseOrchestrationServiceException {
+        Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(incomingPayload)
+                        .build())
+                .build();
+
+        String token = "token";
+        when(caseOrchestrationService.processAosSolicitorLinkCase(incomingRequest, token))
+                .thenReturn(incomingPayload);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorLinkCase(token, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldReturnOk_WithErrors_AndNoCaseData_WhenExceptionIsCaughtInAosSolicitorLinkCase() throws CaseOrchestrationServiceException {
+        Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(incomingPayload)
+                        .build())
+                .build();
+
+        String token = "token";
+        when(caseOrchestrationService.processAosSolicitorLinkCase(incomingRequest, "token"))
+                .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorLinkCase(token, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(nullValue()));
+        assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
+    }
+
+    @Test
     public void givenNoErrors_whenCalculateSeparationFields_thenCallbackWorksAsExpected() throws WorkflowException {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
