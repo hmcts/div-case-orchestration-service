@@ -11,18 +11,24 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 
 @Component
-public class SetDnGrantedDate implements Task<Map<String,Object>> {
+public class SetDnPronouncementDetails implements Task<Map<String,Object>> {
 
     @Autowired
     CcdUtil ccdUtil;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+
+        if (isNull(caseData.get(PRONOUNCEMENT_JUDGE_CCD_FIELD))) {
+            throw new TaskException("Judge who pronounced field must be set.");
+        }
 
         // Decree Nisi Granted Date is the same date as the Court Hearing Date at the time of Pronouncement
         LocalDateTime hearingDateTime = LocalDateTime.parse((String) caseData.get(COURT_HEARING_DATE_CCD_FIELD));
