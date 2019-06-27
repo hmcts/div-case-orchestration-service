@@ -16,6 +16,6 @@ public class QueueCleanStateTask extends AsyncTask<Map<String, Object>> {
 
     @Override
     public List<ApplicationEvent> getApplicationEvent(TaskContext context, Map<String, Object> payload) {
-        return  singletonList(new CleanStatusEvent(context, payload));
+        return  singletonList(new CleanStatusEvent(context));
     }
 }
