@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow;
 import feign.FeignException;
 import feign.RetryableException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.BulkUpdateException;
 
@@ -101,7 +100,7 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
                 | FeignException.GatewayTimeout
                 | FeignException.ServiceUnavailable
                 | RetryableException e) {
-                String errorMessage = e.content() == null ? Strings.EMPTY : e.getMessage();
+                String errorMessage = e.content() == null ? e.getMessage() : e.contentUTF8();
                 log.error("Case update failed, added to retry list: for bulk case id {} and caseId {}. Cause {}",
                     bulkCaseId, caseId, errorMessage, e);
                 casesToRetry.add(caseElem);
