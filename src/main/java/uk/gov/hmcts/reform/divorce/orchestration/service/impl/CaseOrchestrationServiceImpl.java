@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCallbackWorkflow;
@@ -45,10 +44,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetDNOutcomeFlagWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorUpdateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
@@ -98,7 +97,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RetrieveAosCaseWorkflow retrieveAosCaseWorkflow;
     private final LinkRespondentWorkflow linkRespondentWorkflow;
     private final SetOrderSummaryWorkflow setOrderSummaryWorkflow;
-    private final ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
+    private final SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
     private final SolicitorUpdateWorkflow solicitorUpdateWorkflow;
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
@@ -129,7 +128,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RespondentSolicitorLinkCaseWorkflow respondentSolicitorLinkCaseWorkflow;
     private final DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
     private final BulkCaseUpdateDnPronounceDatesWorkflow bulkCaseUpdateDnPronounceDatesWorkflow;
-    private final SetDNOutcomeFlagWorkflow setDNOutcomeFlagWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -379,11 +377,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> processPbaPayment(CcdCallbackRequest ccdCallbackRequest,
-                                                 String authToken) throws WorkflowException {
-        Map<String, Object> payLoad = processPbaPaymentWorkflow.run(ccdCallbackRequest, authToken);
+    public Map<String, Object> solicitorSubmission(CcdCallbackRequest ccdCallbackRequest,
+                                                   String authToken) throws WorkflowException {
+        Map<String, Object> payLoad = solicitorSubmissionWorkflow.run(ccdCallbackRequest, authToken);
 
-        if (processPbaPaymentWorkflow.errors().isEmpty()) {
+        if (solicitorSubmissionWorkflow.errors().isEmpty()) {
             log.info("Callback pay by account for solicitor with CASE ID: {} successfully completed",
                 ccdCallbackRequest.getCaseDetails().getCaseId());
             return payLoad;
@@ -392,7 +390,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 ccdCallbackRequest
                     .getCaseDetails()
                     .getCaseId());
-            return processPbaPaymentWorkflow.errors();
+            return solicitorSubmissionWorkflow.errors();
         }
     }
 
@@ -572,14 +570,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         log.info("Starting Bulk Schedule For Listing Callback on Bulk Case {}", bulkCaseId);
         Map<String, Object> result = bulkCaseUpdateHearingDetailsEventWorkflow.run(ccdCallbackRequest, authToken);
         log.info("Bulk Scheduling Successfully Initiated on Bulk Case {}", bulkCaseId);
-        return result;
-    }
-
-    @Override
-    public Map<String, Object> addDNOutcomeFlag(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-
-        Map<String, Object> result = setDNOutcomeFlagWorkflow.run(ccdCallbackRequest.getCaseDetails());
-        log.info("Added dn outcome flag for case id {}", ccdCallbackRequest.getCaseDetails().getCaseId());
         return result;
     }
 

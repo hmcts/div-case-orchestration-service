@@ -115,7 +115,7 @@ public class CallbackControllerTest {
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
 
-        when(caseOrchestrationService.processPbaPayment(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
+        when(caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
@@ -139,7 +139,7 @@ public class CallbackControllerTest {
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
 
-        when(caseOrchestrationService.processPbaPayment(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(invalidResponse);
+        when(caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(invalidResponse);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
@@ -752,42 +752,5 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem(equalTo("This is a test error message.")));
         verify(caseOrchestrationService).processCaseBeforeDecreeNisiIsGranted(eq(ccdCallbackRequest));
-    }
-
-    @Test
-    public void testAddDnOutcomeCallsRightServiceMethod() throws WorkflowException {
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseData(singletonMap("testKey", "testValue"))
-                .build())
-            .build();
-
-        when(caseOrchestrationService.addDNOutcomeFlag(ccdCallbackRequest))
-            .thenReturn(singletonMap("newKey", "newValue"));
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.addDnOutcomeFlag(ccdCallbackRequest);
-
-        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
-        assertThat(response.getBody().getData(), hasEntry("newKey", "newValue"));
-        assertThat(response.getBody().getErrors(), is(nullValue()));
-        verify(caseOrchestrationService).addDNOutcomeFlag(eq(ccdCallbackRequest));
-    }
-
-    @Test
-    public void testDnAboutToBeGrantedHandlesGenericException() throws WorkflowException {
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseData(singletonMap("testKey", "testValue"))
-                .build())
-            .build();
-        when(caseOrchestrationService.addDNOutcomeFlag(ccdCallbackRequest))
-            .thenThrow(new RuntimeException("An error happened when processing this request."));
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.addDnOutcomeFlag(ccdCallbackRequest);
-
-        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
-        assertThat(response.getBody().getData(), is(nullValue()));
-        assertThat(response.getBody().getErrors(), hasItem(equalTo("An error happened when processing this request.")));
-        verify(caseOrchestrationService).addDNOutcomeFlag(eq(ccdCallbackRequest));
     }
 }

@@ -109,7 +109,7 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> processPbaPayment(
         @RequestHeader(value = "Authorization") String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        Map<String, Object> response = caseOrchestrationService.processPbaPayment(ccdCallbackRequest, authorizationToken);
+        Map<String, Object> response = caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, authorizationToken);
 
         if (response != null && response.containsKey(SOLICITOR_VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(
@@ -604,32 +604,6 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/add-dn-outcome-flag",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Add case flag to mark is processed by dn outcome process")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
-            + "attached to the case",
-            response = CcdCallbackResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request"),
-        @ApiResponse(code = 500, message = "Internal Server Error")})
-    public ResponseEntity<CcdCallbackResponse> addDnOutcomeFlag(
-        @RequestBody @ApiParam("CaseData")
-            CcdCallbackRequest ccdCallbackRequest) {
-
-        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-
-        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
-        try {
-            callbackResponseBuilder.data(caseOrchestrationService.addDNOutcomeFlag(ccdCallbackRequest));
-            log.info("Added DnOutcome flag for Case id: {}", caseId);
-        } catch (Exception exception) {
-            log.error(format("Failed to add DN outcome flag for  Case id:  %s", caseId), exception);
-            callbackResponseBuilder.errors(asList(exception.getMessage()));
-        }
-
-        return ResponseEntity.ok(callbackResponseBuilder.build());
-    }
 
     @PostMapping(path = "/solicitor-link-case")
     @ApiOperation(value = "Authorize the solicitor's respondent to the case")

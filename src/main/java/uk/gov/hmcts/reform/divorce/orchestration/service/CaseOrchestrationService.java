@@ -57,7 +57,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> setOrderSummary(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
-    Map<String, Object> processPbaPayment(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
+    Map<String, Object> solicitorSubmission(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
         throws WorkflowException;
@@ -102,8 +102,6 @@ public interface CaseOrchestrationService {
     Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> processBulkCaseScheduleForHearing(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
-
-    Map<String, Object> addDNOutcomeFlag(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> validateBulkCaseListingData(Map<String, Object> caseData) throws WorkflowException;
 
