@@ -73,17 +73,6 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
         caseDetails = ccdClientSupport.retrieveCaseForCaseworker(solicitorUser, caseId);
         assertThat(caseDetails.getData(), is(notNullValue()));
 
-        //linking with the same user again is okay
-        linkResponse = linkSolicitor(
-                solicitorUser.getAuthToken(),
-                caseDetails.getId(),
-                pinResponse.getPin()
-        );
-
-        responseString = linkResponse.getBody().asString();
-        assertThat(responseString, linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
-        assertThat(responseString,linkResponse.getBody().jsonPath().get("data"), is(notNullValue()));
-
         //linking with a different user should fail
         solicitorUser = createSolicitorUser();
 

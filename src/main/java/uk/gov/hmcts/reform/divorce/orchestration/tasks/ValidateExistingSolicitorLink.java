@@ -27,9 +27,7 @@ public class ValidateExistingSolicitorLink implements Task<UserDetails> {
         UserDetails solicitorDetails = idamClient.retrieveUserDetails(context.getTransientObject(AUTH_TOKEN_JSON_KEY));
         context.setTransientObject(SOLICITOR_LINKED_EMAIL, solicitorDetails.getEmail());
         if (!Strings.isNullOrEmpty(existingSolicitorEmail)) {
-            if (!existingSolicitorEmail.equals(solicitorDetails.getEmail())) {
-                throw new TaskException(String.format("Case is already linked - ID %s", caseDetails.getCaseId()));
-            }
+            throw new TaskException(String.format("Case is already linked - ID %s", caseDetails.getCaseId()));
         }
         return payload;
     }

@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.util.Collections;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
@@ -40,23 +42,8 @@ public class ValidateExistingSolicitorLinkTest {
         UserDetails userDetails = UserDetails.builder().email("test@sol.local").build();
         when(idamClient.retrieveUserDetails(TOKEN)).thenReturn(userDetails);
 
-        validateCaseData.execute(context, userDetails);
-    }
-
-    @Test
-    public void doesNothingIfSolicitorLinkedFieldIfEmailsMatch() throws TaskException {
-        TaskContext context = new DefaultTaskContext();
-        String solicitorEmail = "test@sol.local";
-        CaseDetails caseDetails = CaseDetails.builder().caseData(
-                Collections.singletonMap(SOLICITOR_LINKED_EMAIL, solicitorEmail)
-        ).build();
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, TOKEN);
-
-        UserDetails userDetails = UserDetails.builder().email(solicitorEmail).build();
-        when(idamClient.retrieveUserDetails(TOKEN)).thenReturn(userDetails);
-
-        validateCaseData.execute(context, userDetails);
+        UserDetails returnedUserDetails = validateCaseData.execute(context, userDetails);
+        assertThat(returnedUserDetails, is(userDetails));
     }
 
     @Test(expected = TaskException.class)
