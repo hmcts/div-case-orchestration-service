@@ -853,7 +853,7 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldGenerateDecreeNisiDocumentOnly_WhenCostsClaimGrantedIsNo() throws WorkflowException {
+    public void shouldGenerateBothDocuments_WhenCostsClaimGrantedIsNo() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "No");
@@ -867,6 +867,8 @@ public class CaseOrchestrationServiceImplTest {
 
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
                 DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
+                COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
