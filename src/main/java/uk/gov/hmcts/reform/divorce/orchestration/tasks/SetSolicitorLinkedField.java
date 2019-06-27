@@ -17,7 +17,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_LINKED_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_RESPONDENT_DATA_ERROR_KEY;
 
 @AllArgsConstructor
 @Component
@@ -40,7 +39,6 @@ public class SetSolicitorLinkedField implements Task<UserDetails> {
                     updateFields
             );
         } catch (FeignException exception) {
-            context.setTransientObject(UPDATE_RESPONDENT_DATA_ERROR_KEY, payload);
             throw new TaskException("Case update failed", exception);
         }
 

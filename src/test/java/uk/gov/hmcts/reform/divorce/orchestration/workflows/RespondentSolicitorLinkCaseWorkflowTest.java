@@ -84,7 +84,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     }
 
     @Test
-    public void runCallsTheFourCorrectTasksInTheRightOrder() throws WorkflowException, TaskException {
+    public void runCallsTheFiveCorrectTasksInTheRightOrder() throws WorkflowException, TaskException {
         final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
