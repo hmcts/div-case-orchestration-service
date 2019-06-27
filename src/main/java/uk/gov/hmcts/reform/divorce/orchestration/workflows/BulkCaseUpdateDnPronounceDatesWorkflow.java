@@ -30,7 +30,7 @@ public class BulkCaseUpdateDnPronounceDatesWorkflow extends DefaultWorkflow<Map<
 
         return this.execute(
                 new Task[] {
-                        setDnPronouncementDetails,
+                    setDnPronouncementDetails,
                     updateDivorceCasePronouncementDateWithinBulk
                 },
                 caseDetails.getCaseData(),
