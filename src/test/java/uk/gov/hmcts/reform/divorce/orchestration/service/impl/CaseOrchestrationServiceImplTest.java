@@ -53,7 +53,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetDNOutcomeFlagWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
@@ -214,9 +213,6 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private BulkCaseUpdateDnPronounceDatesWorkflow bulkCaseUpdateDnPronounceDatesWorkflow;
-
-    @Mock
-    private SetDNOutcomeFlagWorkflow setDNOutcomeFlagWorkflow;
 
     @Mock
     private CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
@@ -1092,16 +1088,6 @@ public class CaseOrchestrationServiceImplTest {
                 .thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         Map<String, Object> returnedPayload = classUnderTest.updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN);
-
-        assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
-    }
-
-    @Test
-    public void shouldCallWorkflow_ForAddDnOutcomeFlag() throws WorkflowException {
-        when(setDNOutcomeFlagWorkflow.run(ccdCallbackRequest.getCaseDetails()))
-            .thenReturn(singletonMap("returnedKey", "returnedValue"));
-
-        Map<String, Object> returnedPayload = classUnderTest.addDNOutcomeFlag(ccdCallbackRequest);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
     }

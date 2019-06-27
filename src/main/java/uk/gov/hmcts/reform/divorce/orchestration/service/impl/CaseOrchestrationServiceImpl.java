@@ -50,7 +50,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetDNOutcomeFlagWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
@@ -134,7 +133,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RespondentSolicitorLinkCaseWorkflow respondentSolicitorLinkCaseWorkflow;
     private final DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
     private final BulkCaseUpdateDnPronounceDatesWorkflow bulkCaseUpdateDnPronounceDatesWorkflow;
-    private final SetDNOutcomeFlagWorkflow setDNOutcomeFlagWorkflow;
     private final CleanStateFromCaseDataWorkflow cleanStateFromCaseDataWorkflow;
     private final CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
 
@@ -573,14 +571,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         log.info("Starting Bulk Schedule For Listing Callback on Bulk Case {}", bulkCaseId);
         Map<String, Object> result = bulkCaseUpdateHearingDetailsEventWorkflow.run(ccdCallbackRequest, authToken);
         log.info("Bulk Scheduling Successfully Initiated on Bulk Case {}", bulkCaseId);
-        return result;
-    }
-
-    @Override
-    public Map<String, Object> addDNOutcomeFlag(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-
-        Map<String, Object> result = setDNOutcomeFlagWorkflow.run(ccdCallbackRequest.getCaseDetails());
-        log.info("Added dn outcome flag for case id {}", ccdCallbackRequest.getCaseDetails().getCaseId());
         return result;
     }
 
