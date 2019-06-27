@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import java.util.Map;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 public class TaskUtils {
@@ -18,6 +19,20 @@ public class TaskUtils {
 
         String propertyValue = (String) propertiesMap.get(key);
         if (isNullOrEmpty(propertyValue)) {
+            throw buildTaskExceptionForMandatoryProperty(key);
+        }
+
+        return propertyValue;
+    }
+
+    public static Object getMandatoryPropertyValueAsObject(Map<String, Object> propertiesMap, String key)
+            throws TaskException {
+        if (!propertiesMap.containsKey(key)) {
+            throw buildTaskExceptionForMandatoryProperty(key);
+        }
+
+        Object propertyValue = propertiesMap.get(key);
+        if (isNull(propertyValue)) {
             throw buildTaskExceptionForMandatoryProperty(key);
         }
 
