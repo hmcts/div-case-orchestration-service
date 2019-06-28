@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
@@ -52,6 +53,8 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
             "Resp does not consent to 2 year separation update notification";
     private static final String SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC =
         "Resp response submission notification sent to solicitor";
+    private static final String SOL_GENERIC_UPDATE_EMAIL_DESC =
+        "Generic Update Notification - Petitioner solicitor";
 
     private final EmailService emailService;
 
@@ -86,9 +89,19 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
             templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
             templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
 
-            emailService.sendEmail(petSolicitorEmail,
-                EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED.name(),
-                templateVars, SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC);
+            String receivedAosFromResp = (String) caseData.get(RECEIVED_AOS_FROM_RESP);
+            if (StringUtils.equalsIgnoreCase(receivedAosFromResp, YES_VALUE)) {
+                emailService.sendEmail(petSolicitorEmail,
+                    EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED.name(),
+                    templateVars,
+                    SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC);
+            } else {
+                emailService.sendEmail(
+                        petSolicitorEmail,
+                        EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name(),
+                        templateVars,
+                        SOL_GENERIC_UPDATE_EMAIL_DESC);
+            }
 
         } else if (StringUtils.isNotBlank(petitionerEmail)) {
 
