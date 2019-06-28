@@ -88,8 +88,15 @@ public class BulkCaseController {
             @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
             @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-                .data(orchestrationService
-                        .updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails(), authorizationToken)).build());
+        CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            ccdCallbackResponseBuilder.data(orchestrationService
+                    .updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails(), authorizationToken));
+        } catch (WorkflowException exception) {
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
     }
 }
