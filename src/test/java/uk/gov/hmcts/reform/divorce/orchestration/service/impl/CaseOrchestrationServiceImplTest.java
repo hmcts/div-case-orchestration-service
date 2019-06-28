@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateResponden
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CleanStatusCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeNisiAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
@@ -207,6 +208,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private BulkCaseUpdateDnPronounceDatesWorkflow bulkCaseUpdateDnPronounceDatesWorkflow;
+
+    @Mock
+    private CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1078,6 +1082,16 @@ public class CaseOrchestrationServiceImplTest {
                 .thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         Map<String, Object> returnedPayload = classUnderTest.updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN);
+
+        assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
+    }
+
+    @Test
+    public void shouldCallCleanStatusCallbackWorkflow() throws WorkflowException {
+        when(cleanStatusCallbackWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(singletonMap("returnedKey", "returnedValue"));
+
+        Map<String, Object> returnedPayload = classUnderTest.cleanStateCallback(ccdCallbackRequest, AUTH_TOKEN);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
     }
