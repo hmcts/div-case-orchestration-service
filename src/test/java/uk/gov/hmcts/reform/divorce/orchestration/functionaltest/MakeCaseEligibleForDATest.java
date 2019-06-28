@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +13,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
+
+import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -35,21 +38,26 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @AutoConfigureMockMvc
 public class MakeCaseEligibleForDATest {
 
-    private static final String TEST_CASE_ID = "testCaseId";
-    private static final String API_URL = "/make-case-eligible-for-da/" + TEST_CASE_ID;
-
     @Autowired
     private MockMvc webClient;
 
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(4010);
 
+    private String caseId;
+
+    @Before
+    public void setUp() {
+        caseId = UUID.randomUUID().toString();
+    }
+
     @Test
     public void testEndpointReturnsSuccessCode() throws Exception {
-        String cmsEndpoint = format("/casemaintenance/version/1/updateCase/%s/%s", TEST_CASE_ID, MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID);
+        String cmsEndpoint = format("/casemaintenance/version/1/updateCase/%s/%s", caseId, MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID);
         stubFor(WireMock.post(urlEqualTo(cmsEndpoint)).willReturn(aResponse().withStatus(200)));
 
-        webClient.perform(post(API_URL).accept(APPLICATION_JSON))
+        webClient.perform(post(format("/make-case-eligible-for-da/%s", caseId))
+            .accept(APPLICATION_JSON))
             .andExpect(status().isOk());
 
         verify(postRequestedFor(urlEqualTo(cmsEndpoint)).withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE)));
@@ -57,10 +65,11 @@ public class MakeCaseEligibleForDATest {
 
     @Test
     public void testEndpointReturnsErrorMessage() throws Exception {
-        String cmsEndpoint = format("/casemaintenance/version/1/updateCase/%s/%s", TEST_CASE_ID, MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID);
+        String cmsEndpoint = format("/casemaintenance/version/1/updateCase/%s/%s", caseId, MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID);
         stubFor(WireMock.post(urlEqualTo(cmsEndpoint)).willReturn(aResponse().withStatus(500)));
 
-        webClient.perform(post(API_URL).accept(APPLICATION_JSON))
+        webClient.perform(post(format("/make-case-eligible-for-da/%s", caseId))
+            .accept(APPLICATION_JSON))
             .andExpect(status().isInternalServerError())
             .andExpect(content().string(is(notNullValue())));
 
