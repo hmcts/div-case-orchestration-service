@@ -20,13 +20,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SetDnPronouncementDetailsTest {
+public class SetDnPronouncementDetailsTaskTest {
 
     @Mock
     private CcdUtil ccdUtil;
 
     @InjectMocks
-    private SetDnPronouncementDetails setDnPronouncementDetails;
+    private SetDnPronouncementDetailsTask setDnPronouncementDetailsTask;
 
     @Test
     public void testSetDnPronouncementDetailsSetsTheDateFieldsProperly() throws TaskException {
@@ -37,7 +37,7 @@ public class SetDnPronouncementDetailsTest {
         LocalDate courtHearingLocalDate = LocalDate.of(2000, 1, 1);
         when(ccdUtil.parseDecreeAbsoluteEligibleDate(courtHearingLocalDate)).thenCallRealMethod();
 
-        setDnPronouncementDetails.execute(null, payload);
+        setDnPronouncementDetailsTask.execute(null, payload);
 
         String expectedGrantedDate = "2000-01-01";
         String expectedEligibleDate = "2000-02-13";
@@ -52,6 +52,6 @@ public class SetDnPronouncementDetailsTest {
         HashMap<String, Object> payload = new HashMap<>();
         payload.put(COURT_HEARING_DATE_CCD_FIELD, "2000-01-01T10:20:55.000");
 
-        setDnPronouncementDetails.execute(null, payload);
+        setDnPronouncementDetailsTask.execute(null, payload);
     }
 }

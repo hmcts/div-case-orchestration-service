@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 
 @Component
-public class SetDnPronouncementDetails implements Task<Map<String,Object>> {
+public class SetDnPronouncementDetailsTask implements Task<Map<String,Object>> {
 
     @Autowired
     CcdUtil ccdUtil;
