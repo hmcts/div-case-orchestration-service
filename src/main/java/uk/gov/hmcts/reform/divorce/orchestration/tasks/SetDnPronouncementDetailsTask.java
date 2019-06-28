@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
@@ -26,7 +26,7 @@ public class SetDnPronouncementDetailsTask implements Task<Map<String,Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
-        if (isNull(caseData.get(PRONOUNCEMENT_JUDGE_CCD_FIELD))) {
+        if (!isJudgeAssigned(caseData)) {
             throw new TaskException("Judge who pronounced field must be set.");
         }
 
@@ -38,5 +38,9 @@ public class SetDnPronouncementDetailsTask implements Task<Map<String,Object>> {
         caseData.put(DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD, ccdUtil.parseDecreeAbsoluteEligibleDate(hearingDateTime.toLocalDate()));
 
         return caseData;
+    }
+
+    private boolean isJudgeAssigned(Map<String, Object> caseData) {
+        return nonNull(caseData.get(PRONOUNCEMENT_JUDGE_CCD_FIELD));
     }
 }

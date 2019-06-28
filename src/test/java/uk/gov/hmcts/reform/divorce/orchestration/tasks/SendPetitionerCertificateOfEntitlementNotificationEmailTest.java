@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -60,9 +58,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
 
     private static final String CASE_LISTED_FOR_HEARING_JSON = "/jsonExamples/payloads/caseListedForHearing.json";
-
-    @Spy
-    private ObjectMapper objectMapper;
 
     @Mock
     private TaskCommons taskCommons;

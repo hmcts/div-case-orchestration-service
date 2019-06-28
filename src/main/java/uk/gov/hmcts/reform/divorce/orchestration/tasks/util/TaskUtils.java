@@ -4,9 +4,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 public class TaskUtils {
@@ -27,16 +27,8 @@ public class TaskUtils {
 
     public static Object getMandatoryPropertyValueAsObject(Map<String, Object> propertiesMap, String key)
             throws TaskException {
-        if (!propertiesMap.containsKey(key)) {
-            throw buildTaskExceptionForMandatoryProperty(key);
-        }
-
-        Object propertyValue = propertiesMap.get(key);
-        if (isNull(propertyValue)) {
-            throw buildTaskExceptionForMandatoryProperty(key);
-        }
-
-        return propertyValue;
+        return Optional.ofNullable(propertiesMap.get(key))
+                .orElseThrow(() -> buildTaskExceptionForMandatoryProperty(key));
     }
 
     public static String getCaseId(TaskContext context) throws TaskException {
