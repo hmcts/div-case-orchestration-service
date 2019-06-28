@@ -125,8 +125,6 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID3), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, CREATE_EVENT), RequestMethod.POST);
-
-
     }
 
     @Test

@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateResponden
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CleanStatusCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeNisiAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
@@ -211,6 +212,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private BulkCaseUpdateDnPronounceDatesWorkflow bulkCaseUpdateDnPronounceDatesWorkflow;
+
+    @Mock
+    private CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -876,7 +880,7 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldGenerateDecreeNisiDocumentOnly_WhenCostsClaimGrantedIsNo() throws WorkflowException {
+    public void shouldGenerateBothDocuments_WhenCostsClaimGrantedIsNo() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "No");
@@ -890,6 +894,8 @@ public class CaseOrchestrationServiceImplTest {
 
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
                 DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
+                COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
@@ -1098,6 +1104,16 @@ public class CaseOrchestrationServiceImplTest {
                 .thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         Map<String, Object> returnedPayload = classUnderTest.updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN);
+
+        assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
+    }
+
+    @Test
+    public void shouldCallCleanStatusCallbackWorkflow() throws WorkflowException {
+        when(cleanStatusCallbackWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(singletonMap("returnedKey", "returnedValue"));
+
+        Map<String, Object> returnedPayload = classUnderTest.cleanStateCallback(ccdCallbackRequest, AUTH_TOKEN);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
     }
