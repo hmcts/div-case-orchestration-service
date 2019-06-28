@@ -26,12 +26,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class ApproveDAWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final DocumentGenerationTask documentGenerationTask;
-
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Autowired
     public ApproveDAWorkflow(final DocumentGenerationTask documentGenerationTask,
-                                      final CaseFormatterAddDocuments caseFormatterAddDocuments) {
+                                final CaseFormatterAddDocuments caseFormatterAddDocuments) {
         this.documentGenerationTask = documentGenerationTask;
         this.caseFormatterAddDocuments = caseFormatterAddDocuments;
     }
