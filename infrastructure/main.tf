@@ -100,6 +100,7 @@ module "div-scheduler-db" {
   sku_name           = "GP_Gen5_2"
   sku_tier           = "GeneralPurpose"
   common_tags        = "${var.common_tags}"
+  subscription       = "${var.subscription}"
 }
 
 resource "azurerm_key_vault_secret" "postgresql-user" {
