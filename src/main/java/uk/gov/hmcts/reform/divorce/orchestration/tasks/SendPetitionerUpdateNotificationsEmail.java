@@ -23,10 +23,19 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_AGREES_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
@@ -41,6 +50,8 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
             "Resp does not admit adultery update notification - no reply from co-resp";
     private static final String AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC =
             "Resp does not consent to 2 year separation update notification";
+    private static final String SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC =
+        "Resp response submission notification sent to solicitor";
 
     private final EmailService emailService;
 
@@ -53,19 +64,37 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
+        String petSolicitorEmail = (String) caseData.get(PET_SOL_EMAIL);
+        String petSolicitorAgreesEmail = (String) caseData.get(PET_SOL_AGREES_EMAIL);
 
-        if (StringUtils.isNotBlank(petitionerEmail)) {
+        String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
+        String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
 
-            String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
-            String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
-            String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
 
-            Map<String, String> templateVars = new HashMap<>();
+        Map<String, String> templateVars = new HashMap<>();
+        templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, ccdReference);
 
-            templateVars.put("email address", petitionerEmail);
+        if (StringUtils.isNotBlank(petSolicitorEmail) && StringUtils.equalsIgnoreCase(petSolicitorAgreesEmail, YES_VALUE)) {
+
+            String respFirstName = getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD);
+            String respLastName = getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD);
+            String solicitorName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
+
+            templateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
+            templateVars.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
+            templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
+            templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
+
+            emailService.sendEmail(petSolicitorEmail,
+                EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED.name(),
+                templateVars, SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC);
+
+        } else if (StringUtils.isNotBlank(petitionerEmail)) {
+
+            templateVars.put(NOTIFICATION_EMAIL, petitionerEmail);
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
-            templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, ccdReference);
 
             String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
             String relationship = getMandatoryPropertyValueAsString(caseData, D_8_DIVORCED_WHO);

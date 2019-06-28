@@ -91,6 +91,11 @@ public class OrchestrationConstants {
     public static final String DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD = "DAEligibleFromDate";
     public static final String PRONOUNCEMENT_JUDGE_CCD_FIELD = "PronouncementJudge";
 
+
+    public static final String PET_SOL_EMAIL = "PetitionerSolicitorEmail";
+    public static final String PET_SOL_AGREES_EMAIL = "SolicitorAgreeToReceiveEmails";
+    public static final String PET_SOL_NAME = "PetitionerSolicitorName";
+
     //CCD DN fields
     public static final String DN_APPROVAL_DATE_CCD_FIELD = "DNApprovalDate";
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
@@ -190,6 +195,9 @@ public class OrchestrationConstants {
     public static final String STATEMENT_OF_TRUTH = "D8StatementOfTruth";
     public static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
     public static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
+    public static final String NOTIFICATION_PET_NAME = "petitioner name";
+    public static final String NOTIFICATION_RESP_NAME = "respondent name";
+    public static final String NOTIFICATION_SOLICITOR_NAME = "solicitor name";
 
     // CCD Respondent Fields
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
