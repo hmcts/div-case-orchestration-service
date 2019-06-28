@@ -101,4 +101,19 @@ public class BulkCaseControllerTest {
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody(), is(CcdCallbackResponse.builder().data(Collections.emptyMap()).build()));
     }
+
+    @Test
+    public void whenpdateBulkCasePronouncementDateThrowsError_thenReturnExpectedResponse() throws WorkflowException {
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(Collections.emptyMap()).build();
+        CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        String error = "error has occurred";
+
+        when(caseOrchestrationService.updateBulkCaseDnPronounce(caseDetails, AUTH_TOKEN))
+                .thenThrow(new WorkflowException(error));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.updateCaseDnPronounce(AUTH_TOKEN, request);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(CcdCallbackResponse.builder().errors(Collections.singletonList(error)).build()));
+    }
 }
