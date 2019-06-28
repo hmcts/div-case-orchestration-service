@@ -43,10 +43,6 @@ public class UpdateBulkCaseDnPronouncementDateTest extends IntegrationTest {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
         Map<String, Object> response = cosApiClient.bulkPronouncement(createCaseWorkerUser().getAuthToken(), ccdCallbackRequest);
 
-        Map<String, Object> responseData = (Map<String, Object>) response.get(DATA);
-        assertEquals(responseData.get("DecreeNisiGrantedDate"), null);
-        assertEquals(responseData.get("DAEligibleFromDate"), null);
-
         assertNotNull(response.get(ERRORS));
     }
 }
