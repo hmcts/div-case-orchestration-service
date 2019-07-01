@@ -197,6 +197,7 @@ court:
       siteId: 'AA04'
       courtId: 'northWest'
     serviceCentre:
+      serviceCentreName: 'Courts and Tribunals Service Centre'
       divorceCentreName: 'HMCTS Digital Divorce'
       courtCity: 'Harlow'
       poBox: 'PO Box 12706'

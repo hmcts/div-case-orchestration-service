@@ -55,7 +55,7 @@ public class SendPetitionerUpdateNotificationEmailTest {
     private static final String TEST_COURT_KEY = "westMidlands";
     private static final String TEST_COURT_DISPLAY_NAME = "West Midlands Regional Divorce Centre";
     private static final String SERVICE_CENTRE_KEY = "serviceCentre";
-    private static final String SERVICE_CENTRE_DISPLAY_NAME = "HMCTS Digital Divorce";
+    private static final String SERVICE_CENTRE_DISPLAY_NAME = "Courts and Tribunals Service Centre";
 
     @Mock
     EmailService emailService;
@@ -93,7 +93,7 @@ public class SendPetitionerUpdateNotificationEmailTest {
         when(taskCommons.getCourt(TEST_COURT_KEY)).thenReturn(testCourt);
 
         Court testCourtServiceCentre = new Court();
-        testCourtServiceCentre.setDivorceCentreName(SERVICE_CENTRE_DISPLAY_NAME);
+        testCourtServiceCentre.setServiceCentreName(SERVICE_CENTRE_DISPLAY_NAME);
         when(taskCommons.getCourt(SERVICE_CENTRE_KEY)).thenReturn(testCourtServiceCentre);
     }
 

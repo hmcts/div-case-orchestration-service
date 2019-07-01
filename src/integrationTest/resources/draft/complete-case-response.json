@@ -95,6 +95,7 @@
       "siteId" : "AA04"
     },
     "serviceCentre": {
+      "serviceCentreName": "Courts and Tribunals Service Centre",
       "divorceCentre": "HMCTS Digital Divorce",
       "courtCity": "Harlow",
       "poBox": "PO Box 12706",

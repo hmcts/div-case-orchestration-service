@@ -20,6 +20,10 @@ public class Court {
     @Setter
     private String courtId;
 
+    @JsonProperty("serviceCentreName")
+    @Setter
+    private String serviceCentreName;
+
     @JsonProperty("divorceCentre")
     @Setter
     private String divorceCentreName;
@@ -74,6 +78,10 @@ public class Court {
     private String formatAddress() {
         List<String> addressLines = new ArrayList<>();
 
+        if (isServiceCentre()) {
+            addressLines.add(serviceCentreName);
+        }
+
         addressLines.add(getDivorceCentreNameFormattedForAddress());
 
         if (isPOBoxAddress()) {
@@ -94,6 +102,11 @@ public class Court {
         return poBox != null;
     }
 
+    private boolean isServiceCentre() {
+        //serviceCentreName is a field in the json. If it's null, it means the court is not a service centre
+        return serviceCentreName != null;
+    }
+
     private String getDivorceCentreNameFormattedForAddress() {
         StringBuffer stringBuffer = new StringBuffer();
 
@@ -103,7 +116,15 @@ public class Court {
     }
 
     public String getIdentifiableCentreName() {
-        return divorceCentreName;
+        String identifiableCentreName;
+
+        if (isServiceCentre()) {
+            identifiableCentreName = serviceCentreName;
+        } else {
+            identifiableCentreName = divorceCentreName;
+        }
+
+        return identifiableCentreName;
     }
 
 }

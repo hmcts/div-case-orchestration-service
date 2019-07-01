@@ -133,6 +133,7 @@ public class SubmitCaseTest {
         Court allocatedCourt = courtLookupService.getCourtByKey(allocatedCourtId);
         assertThat(responseBody, hasJsonPath("$.allocatedCourt", allOf(
             hasJsonPath("courtId", is(allocatedCourtId)),
+            hasJsonPath("serviceCentreName", is(allocatedCourt.getServiceCentreName())),
             hasJsonPath("divorceCentre", is(allocatedCourt.getDivorceCentreName())),
             hasJsonPath("divorceCentreAddressName", is(allocatedCourt.getDivorceCentreAddressName())),
             hasJsonPath("street", is(allocatedCourt.getStreet())),
@@ -170,7 +171,7 @@ public class SubmitCaseTest {
                 hasJsonPath("$.status", equalTo(SUCCESS_STATUS)),
                 hasJsonPath("$.allocatedCourt", allOf(
                     hasJsonPath("courtId", equalTo("serviceCentre")),
-                    hasJsonPath("divorceCentre", equalTo("HMCTS Digital Divorce"))
+                    hasJsonPath("serviceCentreName", equalTo("Courts and Tribunals Service Centre"))
                 ))
             )));
     }
