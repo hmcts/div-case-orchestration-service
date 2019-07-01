@@ -1,14 +1,14 @@
-# Divorce Case Orchestration Service
+# Divorce Case Orchestration Service [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This application orchestrates a workflow based on the requested business requirement.
 
-## Getting started
+## Setup
 
-### Prerequisites
+**Prerequisites**
 
 - [JDK 8](https://www.oracle.com/java)
 
-### Building
+**Building**
 
 The project uses [Gradle](https://gradle.org) as a build tool but you don't have to install it locally since there is a
 `./gradlew` wrapper script.
@@ -24,7 +24,7 @@ To get the project to build in IntelliJ IDEA, you have to:
  - Install the Lombok plugin: Preferences -> Plugins
  - Enable Annotation Processing: Preferences -> Build, Execution, Deployment -> Compiler -> Annotation Processors
 
-### Running
+**Running**
 
 You can run the application by executing following command:
 
@@ -34,14 +34,14 @@ You can run the application by executing following command:
 
 The application will start locally on `http://localhost:4012`
 
-### API documentation
+**API documentation**
 
 API documentation is provided with Swagger:
  - `http://localhost:4012/swagger-ui.html` - UI to interact with the API resources
 
-## Developing
+## Testing
 
-### Unit tests
+**Unit tests**
 
 To run all unit tests please execute following command:
 
@@ -49,7 +49,7 @@ To run all unit tests please execute following command:
     ./gradlew test
 ```
 
-### Coding style tests
+**Coding style tests**
 
 To run all checks (including unit tests) please execute following command:
 
@@ -57,7 +57,7 @@ To run all checks (including unit tests) please execute following command:
     ./gradlew check
 ```
 
-### Mutation tests
+**Mutation tests**
 
 To run all mutation tests execute the following command:
 
@@ -66,20 +66,7 @@ To run all mutation tests execute the following command:
 
 ```
 
-### Enable schedule
-
-Schedule service is disabled by default in local environment. 
-If you want to enable it, set the environment variable `SCHEDULER_ENABLED` to `true` or override application property `scheduler.enabled`
-
-#### Handling database
-
-Database will get initiated when you run ```docker-compose up``` for the first time by execute all scripts from database directory.
-
-You don't need to migrate database manually since migrations are executed every time the application bootstraps.
-
-[scheduler config](./job-scheduler)
-
-### Integration tests
+**Integration tests**
 
 To run all integration tests locally:
 
@@ -89,12 +76,27 @@ To run all integration tests locally:
 * Start the app with AAT config using `./gradlew clean bootRunAat`
 * Start the test with AAT config using `./gradlew clean functional`
 
-## Versioning
+## Developing
+
+**Enable schedule**
+
+Schedule service is disabled by default in local environment. 
+If you want to enable it, set the environment variable `SCHEDULER_ENABLED` to `true` or override application property `scheduler.enabled`
+
+**Handling database**
+
+Database will get initiated when you run ```docker-compose up``` for the first time by execute all scripts from database directory.
+
+You don't need to migrate database manually since migrations are executed every time the application bootstraps.
+
+[scheduler config](./job-scheduler)
+
+**Versioning**
 
 We use [SemVer](http://semver.org/) for versioning.
 For the versions available, see the tags on this repository.
 
-## Standard API
+**Standard API**
 
 We follow [RESTful API standards](https://hmcts.github.io/restful-api-standards/).
 
