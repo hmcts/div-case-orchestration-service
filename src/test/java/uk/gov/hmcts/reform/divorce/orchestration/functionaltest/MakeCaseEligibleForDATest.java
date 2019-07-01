@@ -26,6 +26,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -46,36 +48,46 @@ public class MakeCaseEligibleForDATest {
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(4010);
 
+    private String authorisationToken;
     private String caseId;
 
     @Before
     public void setUp() {
+        authorisationToken = UUID.randomUUID().toString();
         caseId = UUID.randomUUID().toString();
     }
 
     @Test
     public void testEndpointReturnsSuccessCode() throws Exception {
         String cmsEndpoint = format("/casemaintenance/version/1/updateCase/%s/%s", caseId, MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID);
-        stubFor(WireMock.post(urlEqualTo(cmsEndpoint)).willReturn(aResponse().withStatus(200)));
+        stubFor(WireMock.post(urlEqualTo(cmsEndpoint))
+            .willReturn(aResponse().withStatus(200)));
 
         webClient.perform(post(format("/make-case-eligible-for-da/%s", caseId))
+            .header(AUTHORIZATION, authorisationToken)
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(postRequestedFor(urlEqualTo(cmsEndpoint)).withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE)));
+        verify(postRequestedFor(urlEqualTo(cmsEndpoint))
+            .withHeader(AUTHORIZATION, equalTo(authorisationToken))
+            .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE)));
     }
 
     @Test
     public void testEndpointReturnsErrorMessage() throws Exception {
         String cmsEndpoint = format("/casemaintenance/version/1/updateCase/%s/%s", caseId, MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID);
-        stubFor(WireMock.post(urlEqualTo(cmsEndpoint)).willReturn(aResponse().withStatus(500)));
+        stubFor(WireMock.post(urlEqualTo(cmsEndpoint))
+            .willReturn(aResponse().withStatus(500)));
 
         webClient.perform(post(format("/make-case-eligible-for-da/%s", caseId))
+            .header(AUTHORIZATION, authorisationToken)
             .accept(APPLICATION_JSON))
             .andExpect(status().isInternalServerError())
             .andExpect(content().string(is(notNullValue())));
 
-        verify(postRequestedFor(urlEqualTo(cmsEndpoint)).withHeader("Content-Type", equalTo(APPLICATION_JSON_VALUE)));
+        verify(postRequestedFor(urlEqualTo(cmsEndpoint))
+            .withHeader(AUTHORIZATION, equalTo(authorisationToken))
+            .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE)));
     }
 
 }
