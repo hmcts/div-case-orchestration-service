@@ -131,7 +131,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final BulkCaseUpdateDnPronounceDatesWorkflow bulkCaseUpdateDnPronounceDatesWorkflow;
     private final CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
     private final ApproveDAWorkflow approveDAWorkflow;
-    private final ApproveDAWorkflow approveDAWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
