@@ -85,7 +85,7 @@ public class CourtLookupServiceTest {
 
         assertEquals(foundCourt.getName(), "Liverpool Civil and Family Court Hearing Centre");
         assertEquals(foundCourt.getAddress(), "35 Vernon Street\nLiverpool\nL2 2BX");
-        assertEquals(foundCourt.getEmail(), "contactdivorce@justice.gov.uk");
+        assertEquals(foundCourt.getEmail(), "divorcecase@justice.gov.uk");
         assertEquals(foundCourt.getPhone(), "0300 303 0642");
 
         String expectedContactDetails = foundCourt.getAddress() + LINE_SEPARATOR + LINE_SEPARATOR
