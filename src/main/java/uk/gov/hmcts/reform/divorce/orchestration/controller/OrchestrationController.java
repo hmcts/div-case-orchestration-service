@@ -348,15 +348,17 @@ public class OrchestrationController {
             response = CaseResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<Map<String, Object>> makeCaseEligibleForDecreeAbsolute(
-        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
+        @RequestHeader(value = "Authorization") String authorizationToken,
         @PathVariable String caseId) {
 
         ResponseEntity<Map<String, Object>> responseEntity;
 
         try {
             responseEntity = ResponseEntity.ok(orchestrationService.makeCaseEligibleForDA(authorizationToken, caseId));
+            log.info("Case id {} made eligible for DA.", caseId);
         } catch (CaseOrchestrationServiceException e) {
             responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            log.error("Error occurred making case id {} eligible for DA.", caseId);
         }
 
         return responseEntity;

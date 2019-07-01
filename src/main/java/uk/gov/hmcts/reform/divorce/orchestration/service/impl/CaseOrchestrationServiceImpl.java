@@ -65,6 +65,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
@@ -540,7 +541,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));
 
             if (YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)))
-                    && Objects.nonNull(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD))) {
+                && Objects.nonNull(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD))) {
 
                 // DocumentType is clear enough to use as the file name
                 caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
@@ -601,7 +602,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
         try {
             returnedPayload = makeCaseEligibleForDecreeAbsoluteWorkflow.run(authorisationToken, caseId);
+            log.info("Case id {} made eligible for DA.", caseId);
         } catch (WorkflowException e) {
+            log.error(format("Error occurred making case id %s eligible for DA.", caseId), e);
             throw new CaseOrchestrationServiceException(e);
         }
 
