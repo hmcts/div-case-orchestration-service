@@ -103,4 +103,6 @@ public interface CaseOrchestrationService {
     Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
     Map<String, Object> updateBulkCaseDnPronounce(Map<String, Object> caseData) throws WorkflowException;
+
+    Map<String, Object> solicitorCreatedCallback(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 }

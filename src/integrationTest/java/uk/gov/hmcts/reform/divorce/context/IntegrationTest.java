@@ -28,13 +28,14 @@ import javax.annotation.PostConstruct;
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
     private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER";
+    private static final String SOLICITOR_USERNAME = "TEST_SOLICITOR_USER";
     private static final String EMAIL_DOMAIN = "@notifications.service.gov.uk";
-    private static final String CASE_WORKER_PASSWORD = "genericPassword123";
     private static final String CITIZEN_ROLE = "citizen";
     private static final String CASEWORKER_DIVORCE_ROLE = "caseworker-divorce";
     private static final String CASEWORKER_DIVORCE_COURTADMIN_ROLE = "caseworker-divorce-courtadmin";
     private static final String CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE = "caseworker-divorce-courtadmin_beta";
     private static final String CASEWORKER_ROLE = "caseworker";
+    private static final String SOLICITOR_ROLE = "caseworker-divorce-solicitor";
     private static final String PASSWORD = "genericPassword123";
     private static final String CITIZEN_USERGROUP = "citizens";
     private static final String CASEWORKER_USERGROUP = "caseworker";
@@ -67,7 +68,9 @@ public abstract class IntegrationTest {
         if (!Strings.isNullOrEmpty(httpProxy)) {
             try {
                 URL proxy = new URL(httpProxy);
-                InetAddress.getByName(proxy.getHost()).isReachable(2000); // check proxy connectivity
+                if (!InetAddress.getByName(proxy.getHost()).isReachable(2000)) { // check proxy connectivity
+                    throw new IOException("Could not reach proxy in timeout time");
+                }
                 System.setProperty("http.proxyHost", proxy.getHost());
                 System.setProperty("http.proxyPort", Integer.toString(proxy.getPort()));
                 System.setProperty("https.proxyHost", proxy.getHost());
@@ -83,7 +86,7 @@ public abstract class IntegrationTest {
         synchronized (this) {
             if (caseWorkerUser == null) {
                 caseWorkerUser = warpInRetry(() -> getUserDetails(
-                    CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN, CASE_WORKER_PASSWORD,
+                    CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN,
                     CASEWORKER_USERGROUP,
                     CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
                     CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
@@ -93,32 +96,46 @@ public abstract class IntegrationTest {
         }
     }
 
+    protected UserDetails createSolicitorUser() {
+        synchronized (this) {
+            if (caseWorkerUser == null) {
+                caseWorkerUser = warpInRetry(() -> getUserDetails(
+                    SOLICITOR_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN,
+                    CASEWORKER_USERGROUP,
+                    CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
+                    SOLICITOR_ROLE
+                ));
+            }
+            return caseWorkerUser;
+        }
+    }
+
     protected UserDetails createCitizenUser() {
         return warpInRetry(() -> {
             final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
-            return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, CITIZEN_ROLE);
+            return getUserDetails(username, CITIZEN_USERGROUP, CITIZEN_ROLE);
         });
     }
 
     protected UserDetails createCitizenUser(String role) {
         return warpInRetry(() -> {
             final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
-            return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, role);
+            return getUserDetails(username, CITIZEN_USERGROUP, role);
         });
     }
 
-    private UserDetails getUserDetails(String username, String password, String userGroup, String... role) {
+    private UserDetails getUserDetails(String username, String userGroup, String... role) {
         synchronized (this) {
-            idamTestSupportUtil.createUser(username, password, userGroup, role);
+            idamTestSupportUtil.createUser(username, PASSWORD, userGroup, role);
 
-            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
+            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, PASSWORD);
 
             final String userId = idamTestSupportUtil.getUserId(authToken);
 
             return UserDetails.builder()
                 .username(username)
                 .emailAddress(username)
-                .password(password)
+                .password(PASSWORD)
                 .authToken(authToken)
                 .id(userId)
                 .build();

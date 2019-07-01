@@ -155,4 +155,14 @@ public interface CaseMaintenanceClient {
             @PathVariable("eventId") String eventId,
             @RequestBody Map<String, Object> requestBody
     );
+
+    @RequestMapping(
+            method = RequestMethod.PUT,
+            value = "/casemaintenance/version/1/bulk/add-petitioner-solicitor-role/{caseId}",
+            headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    void addPetitionerSolicitorRole(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
+            @PathVariable("caseId") String caseId
+    );
 }

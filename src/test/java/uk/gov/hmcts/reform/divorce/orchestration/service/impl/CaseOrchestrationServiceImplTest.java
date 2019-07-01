@@ -48,6 +48,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmiss
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
@@ -194,6 +195,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private UpdateBulkCaseDnPronounceWorkflow updateBulkCaseDnPronounceWorkflow;
+
+    @Mock
+    private SolicitorCreatedWorkflow solicitorCreatedWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -928,6 +932,16 @@ public class CaseOrchestrationServiceImplTest {
                 .thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         Map<String, Object> returnedPayload = classUnderTest.updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails().getCaseData());
+
+        assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
+    }
+
+    @Test
+    public void givenSolicitorCreatedCase_whenCallbackFired_thenWorkflowIsCalled() throws WorkflowException {
+        when(solicitorCreatedWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
+                .thenReturn(singletonMap("returnedKey", "returnedValue"));
+
+        Map<String, Object> returnedPayload = classUnderTest.solicitorCreatedCallback(ccdCallbackRequest, AUTH_TOKEN);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
     }

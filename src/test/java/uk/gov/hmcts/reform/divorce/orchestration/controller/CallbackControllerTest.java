@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
+import org.hibernate.jdbc.Work;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -691,5 +692,20 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem(equalTo("An error happened when processing this request.")));
         verify(caseOrchestrationService).processCaseBeforeDecreeNisiIsGranted(eq(ccdCallbackRequest));
+    }
+
+    @Test
+    public void givenSolicitorCreatedCallbackFired_whenExecute_thenReturnCaseData() throws WorkflowException {
+        Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(incomingPayload)
+                .build())
+            .build();
+
+        ResponseEntity<Map<String, Object>> response = classUnderTest.solicitorCreated(incomingRequest, AUTH_TOKEN);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        verify(caseOrchestrationService).solicitorCreatedCallback(incomingRequest, AUTH_TOKEN);
     }
 }

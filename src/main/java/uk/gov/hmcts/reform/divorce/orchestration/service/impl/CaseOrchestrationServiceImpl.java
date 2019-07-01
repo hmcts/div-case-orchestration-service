@@ -45,6 +45,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmiss
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
@@ -116,6 +117,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
     private final DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
     private final UpdateBulkCaseDnPronounceWorkflow updateBulkCaseDnPronounceWorkflow;
+    private final SolicitorCreatedWorkflow solicitorCreatedWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -540,5 +542,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> updateBulkCaseDnPronounce(Map<String, Object> caseData) throws WorkflowException {
         return updateBulkCaseDnPronounceWorkflow.run(caseData);
+    }
+
+    @Override
+    public Map<String, Object> solicitorCreatedCallback(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        return solicitorCreatedWorkflow.run(ccdCallbackRequest, authToken);
     }
 }

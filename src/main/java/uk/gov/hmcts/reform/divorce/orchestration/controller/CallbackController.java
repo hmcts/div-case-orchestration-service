@@ -135,6 +135,19 @@ public class CallbackController {
             .build());
     }
 
+    @PostMapping(path = "/solicitor-created")
+    @ApiOperation(value = "Case has been created by solicitor, then this post-create callback is fired")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Notification sent successful"),
+        @ApiResponse(code = 401, message = "User Not Authenticated"),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<Map<String, Object>> solicitorCreated(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
+        @RequestHeader("Authorization")
+        @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken) throws WorkflowException {
+        return ResponseEntity.ok(caseOrchestrationService.solicitorCreatedCallback(ccdCallbackRequest, authorizationToken));
+    }
+
     @PostMapping(path = "/aos-submitted",
         consumes = MediaType.APPLICATION_JSON,
         produces = MediaType.APPLICATION_JSON)
