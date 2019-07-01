@@ -15,10 +15,10 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.AllOf.allOf;
@@ -56,7 +56,7 @@ public class SetSeparationFieldsTest {
         context = new DefaultTaskContext();
 
         when(clock.instant()).thenReturn(Instant.parse("2019-06-30T10:00:00.00Z"));
-        when(clock.getZone()).thenReturn(ZoneId.of("GMT"));
+        when(clock.getZone()).thenReturn(UTC);
     }
 
     @Test
