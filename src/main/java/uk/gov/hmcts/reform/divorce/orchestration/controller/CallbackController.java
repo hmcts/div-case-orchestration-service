@@ -509,7 +509,7 @@ public class CallbackController {
 
         try {
             callbackResponseBuilder.data(caseOrchestrationService.handleApproveDACallback(ccdCallbackRequest, authorizationToken));
-            log.info("Generated decree nisi documents for case {}.", caseId);
+            log.info("Generated decree absolute documents for case {}.", caseId);
         } catch (WorkflowException exception) {
             log.error("Document generation failed. Case id: {}", caseId, exception);
             callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));

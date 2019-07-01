@@ -128,11 +128,5 @@ public interface CosApiClient {
     Map<String, Object> generateDnPronouncedDocuments(@RequestHeader(AUTHORIZATION) String authorisation,
                                                       @RequestBody CcdCallbackRequest ccdCallbackRequest);
 
-    @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/approve-da"
-    )
-    Map<String, Object> approveDA(@RequestHeader(AUTHORIZATION) String authorisation,
-                                  @RequestBody CcdCallbackRequest ccdCallbackRequest);
 
 }
