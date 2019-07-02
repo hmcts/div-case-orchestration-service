@@ -9,14 +9,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_APPROVAL_DATE_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_DECISION_DATE_FIELD;
 
 @Component
-public class AddDecreeNisiApprovalDateTask implements Task<Map<String, Object>> {
+public class AddDecreeNisiDecisionDateTask implements Task<Map<String, Object>> {
 
     private CcdUtil ccdUtil;
 
-    public AddDecreeNisiApprovalDateTask(@Autowired CcdUtil ccdUtil) {
+    public AddDecreeNisiDecisionDateTask(@Autowired CcdUtil ccdUtil) {
         this.ccdUtil = ccdUtil;
     }
 
@@ -24,7 +24,7 @@ public class AddDecreeNisiApprovalDateTask implements Task<Map<String, Object>> 
     public Map<String, Object> execute(TaskContext context, Map<String, Object> incomingPayload) {
         Map<String, Object> payload = new HashMap<>(incomingPayload);
 
-        payload.put(DN_APPROVAL_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat());
+        payload.put(DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat());
 
         return payload;
     }

@@ -50,7 +50,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_APPROVAL_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_DECISION_DATE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
@@ -188,7 +188,7 @@ public class BulkCaseCreateUTest {
 
         caseData.put(D_8_CASE_REFERENCE, FAMILY_MAN_NUMBER);
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, CLAIM_COST_OPTION);
-        caseData.put(DN_APPROVAL_DATE_CCD_FIELD, DN_APPROVAL_DATE);
+        caseData.put(DN_DECISION_DATE_FIELD, DN_APPROVAL_DATE);
 
         return SearchResult.builder()
             .total(10)

@@ -47,6 +47,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
@@ -65,6 +66,7 @@ public class DnPronouncedDocumentsGenerationITest {
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.of(
+        DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE,
         DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE,
         BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID)
     );
@@ -196,7 +198,6 @@ public class DnPronouncedDocumentsGenerationITest {
     public void happyPathWithoutCostsOrder() throws Exception {
 
         Map<String, Object> caseData = ImmutableMap.of(
-            DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, NO_VALUE,
             BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID)
         );
 

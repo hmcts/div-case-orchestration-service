@@ -8,7 +8,15 @@
       "D8PetitionerLastName": "Johnson",
       "D8DivorceCostsClaim": "YES",
       "CostsClaimGranted": "YES",
-      "DateOfHearing": "2019-04-21",
+      "DateAndTimeOfHearing": [
+        {
+          "id": "a5961401-e669-4637-97b9-b9ea2ddbb2bd",
+          "value": {
+            "DateOfHearing": "2019-04-21",
+            "TimeOfHearing": "15:00"
+          }
+        }
+      ],
       "D8RespondentFirstName":"Jane",
       "D8RespondentLastName":"Jamed",
       "RespEmailAddress": "respondent@justice.uk",

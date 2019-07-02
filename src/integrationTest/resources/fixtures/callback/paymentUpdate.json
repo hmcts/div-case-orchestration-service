@@ -25,6 +25,6 @@
   "payment_group_reference":"2011-11111111111",
   "reference":"RC-1111-1111-1111-1111",
   "service_name":"Divorce",
-  "site_id":"CTSC",
+  "site_id":"serviceCentre",
   "status":"Success"
 }

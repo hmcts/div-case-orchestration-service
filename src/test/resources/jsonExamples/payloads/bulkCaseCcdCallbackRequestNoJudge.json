@@ -1,0 +1,55 @@
+{
+  "token":"none",
+  "event_id":"eventId",
+  "case_details": {
+    "id": "1505150515051550",
+    "jurisdiction": "DIVORCE",
+    "state": "someState",
+    "case_type_id": "DIVORCE",
+    "case_data": {
+      "CourtName": "Name of Court",
+      "hearingDate": "2000-01-01T10:20:55.000",
+      "CaseTitle": "Title",
+      "CaseList": [
+        {
+          "id": "6c8a94a4-1566-43fa-a797-b559221aaef0",
+          "value": {
+            "CostOrder": null,
+            "CaseParties": "John Smith vs Jane Jamed",
+            "CaseReference": {
+              "CaseReference": "1558711395612316"
+            },
+            "DNApprovalDate": null,
+            "FamilyManReference": "LV17D80100"
+          }
+        },
+        {
+          "id": "72ac194e-8066-49fa-9f54-50b4b0fb79bf",
+          "value": {
+            "CostOrder": null,
+            "CaseParties": "John Smith vs Jane Jamed",
+            "CaseReference": {
+              "CaseReference": "1558711407435839"
+            },
+            "DNApprovalDate": null,
+            "FamilyManReference": "LV17D80100"
+          }
+        }
+      ],
+      "CaseAcceptedList": [
+        {
+          "id": "21445968-27b8-4274-bb6d-91d33c27affa",
+          "value": {
+            "CaseReference": "1558711395612316"
+          }
+        },
+        {
+          "id": "9f9387a0-ae41-4f2c-b6d5-8c8202650e07",
+          "value": {
+            "CaseReference": "1558711407435839"
+          }
+        }
+      ]
+    }
+  }
+}
