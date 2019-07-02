@@ -2,8 +2,9 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
 import feign.FeignException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
@@ -34,7 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_APPROVAL_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_DECISION_DATE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
@@ -43,9 +44,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BulkCaseCreate implements Task<Map<String, Object>> {
     static final String BULK_CASE_TITLE = "Divorce bulk Case %s";
+
+    @Value("${bulk-action.min-cases:30}")
+    private int minimunCasesToProcess;
 
     private final CaseMaintenanceClient caseMaintenanceClient;
 
@@ -63,9 +67,15 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
         List<Map<String, Object>> bulkCases = new ArrayList<>();
         searchResultList.forEach(searchResult -> {
             try {
-                Map<String, Object> bulkCase = createBulkCase(searchResult);
-                Map<String, Object> bulkCaseResult = caseMaintenanceClient.submitBulkCase(bulkCase,context.getTransientObject(AUTH_TOKEN_JSON_KEY));
-                bulkCases.add(bulkCaseResult);
+                if (minimunCasesToProcess <= searchResult.getCases().size()) {
+                    Map<String, Object> bulkCase = createBulkCase(searchResult);
+                    Map<String, Object> bulkCaseResult = caseMaintenanceClient.submitBulkCase(bulkCase,
+                        context.getTransientObject(AUTH_TOKEN_JSON_KEY));
+                    bulkCases.add(bulkCaseResult);
+                } else {
+                    log.info("Number of cases do not reach the minimum, Case list size {}", searchResult.getCases().size());
+                }
+
             } catch (FeignException e) {
                 //Ignore bulk case creation failed. Next schedule should pickup the remaining cases
                 // Still need to handle timeout, as the BulkCase could be created.
@@ -111,7 +121,7 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
         caseInBulk.put(CASE_PARTIES_FIELD, getCaseParties(caseDetails));
         caseInBulk.put(FAMILY_MAN_REFERENCE_FIELD, caseDetails.getCaseData().get(D_8_CASE_REFERENCE));
         caseInBulk.put(COST_ORDER_FIELD, caseDetails.getCaseData().get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
-        caseInBulk.put(DN_APPROVAL_DATE_FIELD, caseDetails.getCaseData().get(DN_APPROVAL_DATE_CCD_FIELD));
+        caseInBulk.put(DN_APPROVAL_DATE_FIELD, caseDetails.getCaseData().get(DN_DECISION_DATE_FIELD));
         return ImmutableMap.of(VALUE_KEY, caseInBulk);
     }
 
@@ -129,6 +139,5 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
         return  String.format("%s %s vs %s %s", petitionerFirstName, petitionerLastName, respondentFirstName,
             respondentLastName);
     }
-
 
 }

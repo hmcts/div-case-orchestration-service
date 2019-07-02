@@ -471,10 +471,36 @@ public class CallbackController {
         try {
             callbackResponseBuilder.data(caseOrchestrationService
                 .handleDocumentGenerationCallback(ccdCallbackRequest, authorizationToken, templateId, documentType, filename));
-            log.info("Generating document {} for case id: {}.", documentType, caseId);
+            log.info("Generating document {} for case {}.", documentType, caseId);
         } catch (WorkflowException exception) {
             log.error("Document generation failed. Case id:  {}", caseId, exception);
             callbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/generate-dn-pronouncement-documents", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Generates the documents for Decree Nisi Pronouncement and attaches it to the case")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Document has been attached to the case", response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> generateDnDocuments(
+            @RequestHeader(value = "Authorization") String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(caseOrchestrationService
+                    .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, authorizationToken));
+            log.info("Generated decree nisi documents for case {}.", caseId);
+        } catch (WorkflowException exception) {
+            log.error("Document generation failed. Case id: {}", caseId, exception);
+            callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
@@ -567,6 +593,56 @@ public class CallbackController {
             log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
             callbackResponseBuilder.errors(asList(GENERIC_ERROR_MESSAGE));
         }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+
+    @PostMapping(path = "/solicitor-link-case")
+    @ApiOperation(value = "Authorize the solicitor's respondent to the case")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Solicitor authenticated"),
+            @ApiResponse(code = 400, message = "Bad request"),
+            @ApiResponse(code = 401, message = "Not authorised"),
+            @ApiResponse(code = 404, message = "Case not found")})
+    public ResponseEntity<CcdCallbackResponse> solicitorLinkCase(
+            @RequestHeader("Authorization")
+            @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.debug("Processing solicitor link case callback. Case ID: {}", caseId);
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(
+                    caseOrchestrationService.processAosSolicitorLinkCase(ccdCallbackRequest, authorizationToken));
+        } catch (CaseOrchestrationServiceException exception) {
+            log.error(format("Failed solicitor link case callback. Case ID:  %s", caseId),
+                    exception);
+            callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/clean-state")
+    @ApiOperation(value = "Clear state from case data")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed"),
+        @ApiResponse(code = 401, message = "Not authorised"),
+        @ApiResponse(code = 404, message = "Case not found")})
+    public ResponseEntity<CcdCallbackResponse> clearStateCallback(
+        @RequestHeader("Authorization")
+        @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        callbackResponseBuilder.data(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, authorizationToken));
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.debug("Cleared case state. Case ID: {}", caseId);
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }

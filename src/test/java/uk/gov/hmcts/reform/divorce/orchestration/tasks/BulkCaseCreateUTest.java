@@ -2,11 +2,13 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
 import feign.FeignException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -48,7 +50,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_APPROVAL_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_DECISION_DATE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
@@ -77,13 +79,33 @@ public class BulkCaseCreateUTest {
     @InjectMocks
     private BulkCaseCreate classToTest;
 
+
+    @Before
+    public void setUp() {
+        setMinimumNumberOfCases(1);
+    }
+
     @Test
-    public void givenEmptyList_thenDoNothing() {
+    public void givenEmptyList_thenReturnEmptyResponse() {
         TaskContext context = new DefaultTaskContext();
         context.setTransientObject(SEARCH_RESULT_KEY, Collections.emptyList());
         Map<String, Object> response = classToTest.execute(context, null);
 
         assertTrue(response.isEmpty());
+        verify(caseMaintenanceClient, never()).submitBulkCase(any(),any());
+    }
+
+    @Test
+    public void givenSearchListWithLessThanMinimumNumber_thenDoNothing() {
+        setMinimumNumberOfCases(10);
+
+        TaskContext context = new DefaultTaskContext();
+        SearchResult  searchResult = createSearchResult();
+        context.setTransientObject(SEARCH_RESULT_KEY, Collections.singletonList(searchResult));
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+
+        classToTest.execute(context, null);
+
         verify(caseMaintenanceClient, never()).submitBulkCase(any(),any());
     }
 
@@ -132,6 +154,10 @@ public class BulkCaseCreateUTest {
         assertThat(context.getTransientObject(BULKCASE_CREATION_ERROR), is(Collections.singletonList(ERROR_CASE_ID)));
     }
 
+    private void setMinimumNumberOfCases(int minimunNoCases) {
+        ReflectionTestUtils.setField(classToTest, "minimunCasesToProcess", minimunNoCases);
+    }
+
     private Map<String, Object> bulkCaseFormat() {
 
         Map<String, Object> caseInBulk = new HashMap<>();
@@ -162,7 +188,7 @@ public class BulkCaseCreateUTest {
 
         caseData.put(D_8_CASE_REFERENCE, FAMILY_MAN_NUMBER);
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, CLAIM_COST_OPTION);
-        caseData.put(DN_APPROVAL_DATE_CCD_FIELD, DN_APPROVAL_DATE);
+        caseData.put(DN_DECISION_DATE_FIELD, DN_APPROVAL_DATE);
 
         return SearchResult.builder()
             .total(10)

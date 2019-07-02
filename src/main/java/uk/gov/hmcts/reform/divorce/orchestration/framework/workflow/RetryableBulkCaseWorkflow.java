@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow;
 
 import feign.FeignException;
+import feign.RetryableException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.BulkUpdateException;
 
 import java.util.ArrayList;
@@ -85,28 +85,31 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
     private List<Map<String, Object>> handleFailedCases(List<Map<String, Object>> caseList,
                                                         String bulkCaseId,
                                                         String authToken,
-                                                        List<Map<String, Object>> failedCasesToRetry,
+                                                        List<Map<String, Object>> nonRetryableCases,
                                                         Map<String, Object> bulkCaseData) {
-        final List<Map<String, Object>> failedCases = new ArrayList<>();
+        final List<Map<String, Object>> casesToRetry = new ArrayList<>();
 
         caseList.forEach(caseElem -> {
+            String caseId = "";
             try {
                 Map<String, Object> caseLink = (Map<String, Object>) caseElem.get(VALUE_KEY);
-                String caseId = String.valueOf(caseLink.get(CASE_REFERENCE_FIELD));
+                caseId = String.valueOf(caseLink.get(CASE_REFERENCE_FIELD));
                 this.run(bulkCaseData, caseId, authToken);
-            } catch (FeignException e) {
-                log.error("Case update failed : for bulk case id {}", bulkCaseId, e);
-                if (e.status() >= HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-                    failedCases.add(caseElem);
-                } else {
-                    failedCasesToRetry.add(caseElem);
-                }
+            } catch (FeignException.BadGateway
+                | FeignException.InternalServerError
+                | FeignException.GatewayTimeout
+                | FeignException.ServiceUnavailable
+                | RetryableException e) {
+                String errorMessage = e.content() == null ? e.getMessage() : e.contentUTF8();
+                log.error("Case update failed, added to retry list: for bulk case id {} and caseId {}. Cause {}",
+                    bulkCaseId, caseId, errorMessage, e);
+                casesToRetry.add(caseElem);
             } catch (Exception e) {
-                log.error("Case update failed : for bulk case id {}", bulkCaseId, e);
-                failedCasesToRetry.add(caseElem);
+                log.error("Case update failed : for bulk case id {}  and caseId {}", bulkCaseId, caseId, e);
+                nonRetryableCases.add(caseElem);
             }
         });
-        return failedCases;
+        return casesToRetry;
     }
 
     /**

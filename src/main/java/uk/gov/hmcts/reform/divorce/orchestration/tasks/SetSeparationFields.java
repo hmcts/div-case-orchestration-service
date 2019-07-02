@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.apache.commons.lang3.StringUtils;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
@@ -29,6 +31,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 public class SetSeparationFields implements Task<Map<String, Object>> {
 
+    @Autowired
+    private Clock clock;
+
     public static final Integer TWO = 2;
     public static final Integer FIVE = 5;
     public static final Integer SIX = 6;
@@ -45,7 +50,7 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
         }
 
         String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
-        String sepReferenceDate = DateUtils.formatDateWithCustomerFacingFormat(getReferenceDate(caseData));
+        String sepReferenceDate = DateUtils.formatDateWithCustomerFacingFormat(getSeparationReferenceDate(caseData));
         String mostRecentSeperationDate = getReasonForDivorceSeparationDate(caseData);
 
         if (StringUtils.equalsIgnoreCase(DESERTION, reasonForDivorce)) {
@@ -92,7 +97,7 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
      *  Find a date before 5 yrs for sep5Yr, before 2 yr for Sep2Yr & Desertion
      */
     private LocalDate getDateBeforeSepYears(Map<String, Object> caseData) throws TaskException {
-        return LocalDate.now().minusYears(getSepYears(caseData));
+        return LocalDate.now(clock).minusYears(getSepYears(caseData));
     }
 
     private Long getLivingTogetherMonths(Map<String, Object> caseData) throws TaskException {
@@ -116,6 +121,14 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
     //Calculated based on six-month rule
     private LocalDate getReferenceDate(Map<String, Object> caseData) throws TaskException {
         return getDateBeforeSepYears(caseData).minusMonths(SIX);
+    }
+
+    private LocalDate getSeparationReferenceDate(Map<String, Object> caseData) throws TaskException {
+        Long timeTogetherMonths = getLivingTogetherMonths(caseData);
+        if (timeTogetherMonths >= SIX) {
+            return getReferenceDate(caseData);
+        }
+        return LocalDate.parse(getReasonForDivorceSeparationDate(caseData));
     }
 
     /*

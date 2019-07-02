@@ -19,23 +19,18 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import javax.annotation.PostConstruct;
 
-import javax.annotation.PostConstruct;
-
-import javax.annotation.PostConstruct;
-
 @Slf4j
 @RunWith(SerenityRunner.class)
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
     private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER";
-    private static final String SOLICITOR_USERNAME = "TEST_SOLICITOR_USER";
     private static final String EMAIL_DOMAIN = "@notifications.service.gov.uk";
     private static final String CITIZEN_ROLE = "citizen";
     private static final String CASEWORKER_DIVORCE_ROLE = "caseworker-divorce";
     private static final String CASEWORKER_DIVORCE_COURTADMIN_ROLE = "caseworker-divorce-courtadmin";
     private static final String CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE = "caseworker-divorce-courtadmin_beta";
+    private static final String CASEWORKER_DIVORCE_SOLICITOR_ROLE = "caseworker-divorce-solicitor";
     private static final String CASEWORKER_ROLE = "caseworker";
-    private static final String SOLICITOR_ROLE = "caseworker-divorce-solicitor";
     private static final String PASSWORD = "genericPassword123";
     private static final String CITIZEN_USERGROUP = "citizens";
     private static final String CASEWORKER_USERGROUP = "caseworker";
@@ -85,7 +80,7 @@ public abstract class IntegrationTest {
     protected UserDetails createCaseWorkerUser() {
         synchronized (this) {
             if (caseWorkerUser == null) {
-                caseWorkerUser = warpInRetry(() -> getUserDetails(
+                caseWorkerUser = wrapInRetry(() -> getUserDetails(
                     CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN,
                     CASEWORKER_USERGROUP,
                     CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
@@ -96,31 +91,26 @@ public abstract class IntegrationTest {
         }
     }
 
-    protected UserDetails createSolicitorUser() {
-        synchronized (this) {
-            if (caseWorkerUser == null) {
-                caseWorkerUser = warpInRetry(() -> getUserDetails(
-                    SOLICITOR_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN,
-                    CASEWORKER_USERGROUP,
-                    CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
-                    SOLICITOR_ROLE
-                ));
-            }
-            return caseWorkerUser;
-        }
-    }
-
     protected UserDetails createCitizenUser() {
-        return warpInRetry(() -> {
+        return wrapInRetry(() -> {
             final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
-            return getUserDetails(username, CITIZEN_USERGROUP, CITIZEN_ROLE);
+            return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, CITIZEN_ROLE);
         });
     }
 
     protected UserDetails createCitizenUser(String role) {
-        return warpInRetry(() -> {
+        return wrapInRetry(() -> {
             final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
-            return getUserDetails(username, CITIZEN_USERGROUP, role);
+            return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, role);
+        });
+    }
+
+    protected UserDetails createSolicitorUser() {
+        return wrapInRetry(() -> {
+            final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
+            return getUserDetails(username, PASSWORD, CASEWORKER_USERGROUP,
+                CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_SOLICITOR_ROLE
+            );
         });
     }
 
@@ -142,7 +132,7 @@ public abstract class IntegrationTest {
         }
     }
 
-    private UserDetails warpInRetry(Supplier<UserDetails> supplier) {
+    private UserDetails wrapInRetry(Supplier<UserDetails> supplier) {
         //tactical solution as sometimes the newly created user is somehow corrupted and won't generate a code..
         int count = 0;
         int maxTries = 5;

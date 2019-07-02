@@ -10,6 +10,7 @@
             "CourtName": "Name of Court",
             "hearingDate": "2000-01-01T10:20:55.000",
             "CaseTitle": "Title",
+            "PronouncementJudge": "District Judge",
             "CaseList": [
                 {
                     "id": "6c8a94a4-1566-43fa-a797-b559221aaef0",

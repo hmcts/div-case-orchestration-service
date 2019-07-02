@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.client;
 
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
