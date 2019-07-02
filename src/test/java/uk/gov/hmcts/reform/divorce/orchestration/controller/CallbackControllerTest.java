@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
-import org.hibernate.jdbc.Work;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -25,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -783,9 +783,14 @@ public class CallbackControllerTest {
                 .build())
             .build();
 
-        ResponseEntity<Map<String, Object>> response = classUnderTest.solicitorCreated(incomingRequest, AUTH_TOKEN);
+        when(caseOrchestrationService.solicitorCreatedCallback(incomingRequest, AUTH_TOKEN))
+            .thenReturn(singletonMap("newKey", "newValue"));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorCreated(AUTH_TOKEN, incomingRequest);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
-        verify(caseOrchestrationService).solicitorCreatedCallback(incomingRequest, AUTH_TOKEN);
+        assertThat(Objects.requireNonNull(response.getBody()).getData(), hasEntry("newKey", "newValue"));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+        verify(caseOrchestrationService).solicitorCreatedCallback(eq(incomingRequest), eq(AUTH_TOKEN));
     }
 }

@@ -158,7 +158,7 @@ public interface CaseMaintenanceClient {
 
     @RequestMapping(
             method = RequestMethod.PUT,
-            value = "/casemaintenance/version/1/bulk/add-petitioner-solicitor-role/{caseId}",
+            value = "/casemaintenance/version/1/add-petitioner-solicitor-role/{caseId}",
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     void addPetitionerSolicitorRole(

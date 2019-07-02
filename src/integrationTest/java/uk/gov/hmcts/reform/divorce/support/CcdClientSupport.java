@@ -42,14 +42,14 @@ public class CcdClientSupport {
     private AuthTokenGenerator authTokenGenerator;
 
     public CaseDetails submitCase(Object data, UserDetails userDetails) {
-        return submitCase(data, userDetails, caseType, ccdCallbackRequestId);
+        return submitCaseAsEvent(data, userDetails, caseType, ccdCallbackRequestId);
     }
 
     public CaseDetails submitCaseForSolicitor(Object data, UserDetails userDetails) {
-        return submitCase(data, userDetails, caseType, solicitorCreateEventId);
+        return submitCaseAsEvent(data, userDetails, caseType, solicitorCreateEventId);
     }
 
-    private CaseDetails submitCase(Object data, UserDetails userDetails, String caseType, String eventId) {
+    private CaseDetails submitCaseAsEvent(Object data, UserDetails userDetails, String caseType, String eventId) {
         final String serviceToken = authTokenGenerator.generate();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startForCaseworker(
@@ -82,7 +82,7 @@ public class CcdClientSupport {
     }
 
     public CaseDetails submitBulkCase(Object data, UserDetails userDetails) {
-        return submitCase(data, userDetails, bulkCaseType, bulkCreateEvent);
+        return submitCaseAsEvent(data, userDetails, bulkCaseType, bulkCreateEvent);
     }
 
     CaseDetails updateForCitizen(String caseId, Object data, String eventId, UserDetails userDetails) {

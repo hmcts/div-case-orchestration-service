@@ -141,11 +141,13 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Notification sent successful"),
         @ApiResponse(code = 401, message = "User Not Authenticated"),
         @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<Map<String, Object>> solicitorCreated(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
+    public ResponseEntity<CcdCallbackResponse> solicitorCreated(
         @RequestHeader("Authorization")
-        @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken) throws WorkflowException {
-        return ResponseEntity.ok(caseOrchestrationService.solicitorCreatedCallback(ccdCallbackRequest, authorizationToken));
+        @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(caseOrchestrationService.solicitorCreatedCallback(ccdCallbackRequest, authorizationToken))
+            .build());
     }
 
     @PostMapping(path = "/aos-submitted",

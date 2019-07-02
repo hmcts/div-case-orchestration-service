@@ -49,7 +49,6 @@ public class OrchestrationConstants {
     public static final String D_8_CO_RESPONDENT_NAMED = "D8ReasonForDivorceAdulteryWishToName";
     public static final String D_8_CO_RESPONDENT_NAMED_OLD = "D8ReasonForDivorceAdulteryIsNamed";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
-    public static final String NOT_RECEIVED_AOS_EVENT_ID = "aosNotReceived";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID = "co-RespAOSReceivedAwaiting";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_STARTED_EVENT_ID = "co-RespAOSReceivedStarted";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_SUBMIT_AWAIT_EVENT_ID = "co-RespAOSReceivedAwaitingAnswer";
@@ -83,8 +82,6 @@ public class OrchestrationConstants {
     public static final String SEP_YEARS = "SepYears";
     public static final String D_8_SEP_TIME_TOGETHER_PERMITTED = "D8SeparationTimeTogetherPermitted";
     public static final String D_8_DESERTION_TIME_TOGETHER_PERMITTED =  "D8DesertionTimeTogetherPermitted";
-    public static final String UPDATE_COURT_HEARING_DETAILS_EVENT = "updateBulkCaseHearingDetails";
-    public static final String UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT = "dnPronouncedBulk";
     public static final String WHO_PAYS_COSTS_CCD_FIELD = "WhoPaysCosts";
     public static final String WHO_PAYS_CCD_CODE_FOR_RESPONDENT = "respondent";
     public static final String DECREE_NISI_GRANTED_DATE_CCD_FIELD = "DecreeNisiGrantedDate";
@@ -95,6 +92,9 @@ public class OrchestrationConstants {
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
 
     // CCD Events
+    public static final String NOT_RECEIVED_AOS_EVENT_ID = "aosNotReceived";
+    public static final String UPDATE_COURT_HEARING_DETAILS_EVENT = "updateBulkCaseHearingDetails";
+    public static final String UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT = "dnPronouncedBulk";
     public static final String DN_RECEIVED = "dnReceived";
     public static final String DN_RECEIVED_AOS_COMPLETE = "dnReceivedAosCompleted";
     public static final String AMEND_PETITION_EVENT = "amendPetition";
@@ -107,6 +107,7 @@ public class OrchestrationConstants {
     public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
     public static final String START_AOS_EVENT_ID = "startAos";
     public static final String PAYMENT_MADE_EVENT = "paymentMade";
+    public static final String SOLICITOR_CREATE_EVENT = "solicitorCreate";
 
     // CCD Case States
     public static final String AOS_AWAITING = "AosAwaiting";
