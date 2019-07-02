@@ -23,7 +23,7 @@ public class AddPetitionerSolicitorRoleUTest {
     private AddPetitionerSolicitorRole classUnderTest;
 
     @Test
-    public void givenCaseExists_whenGetCase_thenReturnExpectedOutput() {
+    public void givenCaseExists_whenAddingPetSolicitorRole_thenReturnExpectedOutput() {
         final DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
