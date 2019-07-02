@@ -42,50 +42,18 @@ public class CcdClientSupport {
     private AuthTokenGenerator authTokenGenerator;
 
     public CaseDetails submitCaseForCitizen(Object data, UserDetails userDetails) {
-        return submitCaseForCitizen(data, userDetails, divorceCaseType);
+        return submitCaseForCitizenAsEvent(data, userDetails, divorceCaseType);
     }
 
     public CaseDetails submitCaseForSolicitor(Object data, UserDetails userDetails) {
-        return submitCaseForCaseWorker(data, userDetails, divorceCaseType, solicitorCreateEventId);
+        return submitCaseForCaseWorkerAsEvent(data, userDetails, divorceCaseType, solicitorCreateEventId);
     }
 
     public CaseDetails submitBulkCase(Object data, UserDetails userDetails) {
-        return submitCaseForCaseWorker(data, userDetails, bulkCaseType, bulkCreateEvent);
+        return submitCaseForCaseWorkerAsEvent(data, userDetails, bulkCaseType, bulkCreateEvent);
     }
 
-    private CaseDetails submitCaseForCaseWorker(Object data, UserDetails userDetails, String caseType, String eventId) {
-        final String serviceToken = authTokenGenerator.generate();
-
-        StartEventResponse startEventResponse = coreCaseDataApi.startForCaseworker(
-            userDetails.getAuthToken(),
-            serviceToken,
-            userDetails.getId(),
-            jurisdictionId,
-            caseType,
-            eventId);
-
-        final CaseDataContent caseDataContent = CaseDataContent.builder()
-            .eventToken(startEventResponse.getToken())
-            .event(
-                Event.builder()
-                    .id(startEventResponse.getEventId())
-                    .summary(DIVORCE_CASE_SUBMISSION_EVENT_SUMMARY)
-                    .description(DIVORCE_CASE_SUBMISSION_EVENT_DESCRIPTION)
-                    .build()
-            ).data(data)
-            .build();
-
-        return coreCaseDataApi.submitForCaseworker(
-            userDetails.getAuthToken(),
-            serviceToken,
-            userDetails.getId(),
-            jurisdictionId,
-            caseType,
-            true,
-            caseDataContent);
-    }
-
-    private CaseDetails submitCaseForCitizen(Object data, UserDetails userDetails, String caseType) {
+    private CaseDetails submitCaseForCitizenAsEvent(Object data, UserDetails userDetails, String caseType) {
         final String serviceToken = authTokenGenerator.generate();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startForCitizen(
@@ -108,6 +76,38 @@ public class CcdClientSupport {
             .build();
 
         return coreCaseDataApi.submitForCitizen(
+            userDetails.getAuthToken(),
+            serviceToken,
+            userDetails.getId(),
+            jurisdictionId,
+            caseType,
+            true,
+            caseDataContent);
+    }
+
+    private CaseDetails submitCaseForCaseWorkerAsEvent(Object data, UserDetails userDetails, String caseType, String eventId) {
+        final String serviceToken = authTokenGenerator.generate();
+
+        StartEventResponse startEventResponse = coreCaseDataApi.startForCaseworker(
+            userDetails.getAuthToken(),
+            serviceToken,
+            userDetails.getId(),
+            jurisdictionId,
+            caseType,
+            eventId);
+
+        final CaseDataContent caseDataContent = CaseDataContent.builder()
+            .eventToken(startEventResponse.getToken())
+            .event(
+                Event.builder()
+                    .id(startEventResponse.getEventId())
+                    .summary(DIVORCE_CASE_SUBMISSION_EVENT_SUMMARY)
+                    .description(DIVORCE_CASE_SUBMISSION_EVENT_DESCRIPTION)
+                    .build()
+            ).data(data)
+            .build();
+
+        return coreCaseDataApi.submitForCaseworker(
             userDetails.getAuthToken(),
             serviceToken,
             userDetails.getId(),
