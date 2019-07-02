@@ -59,7 +59,7 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             caseField -> caseData.put(caseField.getKey(), caseField.getValue())
         );
 
-        return ccdClientSupport.submitCase(caseData, userDetails);
+        return ccdClientSupport.submitCaseForCitizen(caseData, userDetails);
     }
 
     protected CaseDetails submitCase(String fileName) {

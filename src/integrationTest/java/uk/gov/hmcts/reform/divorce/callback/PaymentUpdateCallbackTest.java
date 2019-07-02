@@ -39,7 +39,7 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
 
         UserDetails citizenUser = createCitizenUser();
 
-        String caseId = ccdClientSupport.submitCase(
+        String caseId = ccdClientSupport.submitCaseForCitizen(
                 ResourceLoader.loadJsonToObject(SUBMIT_PAYLOAD_CONTEXT_PATH + "submit-case-data.json", Map.class),
                 citizenUser
         ).getId().toString();

@@ -94,21 +94,21 @@ public abstract class IntegrationTest {
     protected UserDetails createCitizenUser() {
         return wrapInRetry(() -> {
             final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
-            return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, CITIZEN_ROLE);
+            return getUserDetails(username, CITIZEN_USERGROUP, CITIZEN_ROLE);
         });
     }
 
     protected UserDetails createCitizenUser(String role) {
         return wrapInRetry(() -> {
             final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
-            return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, role);
+            return getUserDetails(username, CITIZEN_USERGROUP, role);
         });
     }
 
     protected UserDetails createSolicitorUser() {
         return wrapInRetry(() -> {
             final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
-            return getUserDetails(username, PASSWORD, CASEWORKER_USERGROUP,
+            return getUserDetails(username, CASEWORKER_USERGROUP,
                 CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_SOLICITOR_ROLE
             );
         });
