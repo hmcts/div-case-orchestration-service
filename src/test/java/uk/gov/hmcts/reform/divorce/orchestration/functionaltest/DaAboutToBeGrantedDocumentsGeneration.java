@@ -52,8 +52,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @PropertySource(value = "classpath:application.yml")
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class DaApprovedDocumentsGenerationITest {
-    private static final String API_URL = "/approve-da";
+public class DaAboutToBeGrantedDocumentsGeneration {
+    private static final String API_URL = "/da-about-to-be-granted";
     private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
@@ -78,27 +78,7 @@ public class DaApprovedDocumentsGenerationITest {
     public static WireMockClassRule formatterServiceServer = new WireMockClassRule(4011);
 
     @Test
-    public void givenBodyIsNull_whenEndpointInvoked_thenReturnBadRequest()
-        throws Exception {
-        webClient.perform(post(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void givenAuthHeaderIsNull_whenEndpointInvoked_thenReturnBadRequest()
-        throws Exception {
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void happyPathApproveDecreeAbsolute() throws Exception {
+    public void assertCallBackFromDaAboutToBeGrantedRequest() throws Exception {
 
         final GenerateDocumentRequest daDocumentGenerationRequest =
             GenerateDocumentRequest.builder()
@@ -133,6 +113,26 @@ public class DaApprovedDocumentsGenerationITest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+    }
+
+    @Test
+    public void givenBodyIsNull_whenEndpointInvoked_thenReturnBadRequest()
+        throws Exception {
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void givenAuthHeaderIsNull_whenEndpointInvoked_thenReturnBadRequest()
+        throws Exception {
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest generateDocumentRequest,

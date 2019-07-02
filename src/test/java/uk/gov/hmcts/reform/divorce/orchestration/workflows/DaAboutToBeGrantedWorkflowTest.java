@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ApproveDAWorkflowTest {
+public class DaAboutToBeGrantedWorkflowTest {
 
     @Mock
     private DocumentGenerationTask documentGenerationTask;
@@ -42,7 +42,7 @@ public class ApproveDAWorkflowTest {
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @InjectMocks
-    private ApproveDAWorkflow approveDAWorkflow;
+    private DaAboutToBeGrantedWorkflow daAboutToBeGrantedWorkflow;
 
     @Test
     public void callsTheRequiredTasksInOrder() throws WorkflowException {
@@ -66,12 +66,11 @@ public class ApproveDAWorkflowTest {
         when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
 
-        final Map<String, Object> result = approveDAWorkflow.run(ccdCallbackRequest, "auth");
+        final Map<String, Object> result = daAboutToBeGrantedWorkflow.run(ccdCallbackRequest, "auth");
 
         assertThat(result, is(payload));
 
         final InOrder inOrder = inOrder(documentGenerationTask, caseFormatterAddDocuments);
-
         inOrder.verify(documentGenerationTask).execute(context, payload);
         inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
     }

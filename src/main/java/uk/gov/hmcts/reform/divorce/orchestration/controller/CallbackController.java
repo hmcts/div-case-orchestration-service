@@ -493,13 +493,13 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/approve-da", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Approving Decree Absolute and attaches it to the case")
+    @PostMapping(path = "/da-about-to-be-granted", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Handle generating Decree Absolute certificate and email notifications to petitioner and respondent")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Decree Absolute approved", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 200, message = "Decree Absolute certificate generated and emails sent.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
-    public ResponseEntity<CcdCallbackResponse> approveDA(
+    public ResponseEntity<CcdCallbackResponse> daAboutToBeGranted(
         @RequestHeader(value = "Authorization") String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
@@ -508,11 +508,11 @@ public class CallbackController {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
-            callbackResponseBuilder.data(caseOrchestrationService.handleApproveDACallback(ccdCallbackRequest, authorizationToken));
+            callbackResponseBuilder.data(caseOrchestrationService.handleGrantDACallback(ccdCallbackRequest, authorizationToken));
             log.info("Generated decree absolute documents for case {}.", caseId);
         } catch (WorkflowException exception) {
             log.error("Document generation failed. Case id: {}", caseId, exception);
-            callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
