@@ -51,6 +51,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkfl
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDaCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
@@ -112,6 +113,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SubmitRespondentAosCaseWorkflow submitRespondentAosCaseWorkflow;
     private final SubmitCoRespondentAosWorkflow submitCoRespondentAosWorkflow;
     private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
+    private final SubmitDaCaseWorkflow submitDaCaseWorkflow;
     private final DNSubmittedWorkflow dnSubmittedWorkflow;
     private final SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
     private final GetCaseWorkflow getCaseWorkflow;
@@ -428,6 +430,16 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> payload = submitDnCaseWorkflow.run(divorceSession, authorizationToken, caseId);
 
         log.info("Submitted DN with CASE ID: {}.", payload.get(ID));
+        return payload;
+    }
+
+    @Override
+    public Map<String, Object> submitDaCase(Map<String, Object> divorceSession, String authorizationToken,
+                                            String caseId)
+            throws WorkflowException {
+        Map<String, Object> payload = submitDaCaseWorkflow.run(divorceSession, authorizationToken, caseId);
+
+        log.info("Submitted Decree Absolute with CASE ID: {}.", payload.get(ID));
         return payload;
     }
 

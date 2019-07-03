@@ -58,6 +58,7 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_SUBMISSION_AOS_COMPLETED_EVENT_ID = "co-RespAOSCompleted";
     public static final String CO_RESPONDENT_SUBMISSION_AWAITING_DN_EVENT_ID = "co-RespAwaitingDN";
     public static final String CO_RESPONDENT_SUBMISSION_AWAITING_LA_EVENT_ID = "co-RespAwaitingLAReferral";
+    public static final String DECREE_ABSOLUTE_REQUESTED_EVENT_ID = "RequestDA";
     public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "RespAdmitOrConsentToFact";
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
@@ -123,6 +124,7 @@ public class OrchestrationConstants {
     public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String DEFENDED = "DefendedDivorce";
     public static final String DN_AWAITING = "DNAwaiting";
+    public static final String DN_PRONOUNCED = "DNPronounced";
 
     // CCD Co-Respondent Fields
     public static final String CO_RESP_LINKED_TO_CASE = "CoRespLinkedToCase";

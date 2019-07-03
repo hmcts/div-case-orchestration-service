@@ -69,8 +69,10 @@ public interface CaseOrchestrationService {
 
     CcdCallbackResponse dnSubmitted(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
-
     Map<String, Object> submitDnCase(Map<String, Object> divorceSession, String authorizationToken, String caseId)
+            throws WorkflowException;
+
+    Map<String, Object> submitDaCase(Map<String, Object> divorceSession, String authorizationToken, String caseId)
             throws WorkflowException;
 
     Map<String, Object> amendPetition(String caseId, String authorisation) throws WorkflowException;
