@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 public class SubmitDaCaseTest extends CcdSubmissionSupport {
@@ -29,6 +30,7 @@ public class SubmitDaCaseTest extends CcdSubmissionSupport {
     public void givenUserTokenIsNull_whenSubmitDa_thenReturnBadRequest() throws Exception {
         try {
             cosApiClient.submitDaCase(null, Collections.emptyMap(), TEST_CASE_ID);
+            fail();
         } catch (FeignException exception) {
             assertEquals(BAD_REQUEST.value(), exception.status());
         }
