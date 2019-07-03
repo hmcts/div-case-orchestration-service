@@ -79,6 +79,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> sendDnPronouncedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
+    Map<String, Object> sendDaGrantedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
     Map<String, Object> processCaseLinkedForHearingEvent(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
     Map<String, Object> coRespondentAnswerReceived(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;

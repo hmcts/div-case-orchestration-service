@@ -89,6 +89,7 @@ public class OrchestrationConstants {
     public static final String WHO_PAYS_CCD_CODE_FOR_RESPONDENT = "respondent";
     public static final String DECREE_NISI_GRANTED_DATE_CCD_FIELD = "DecreeNisiGrantedDate";
     public static final String DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD = "DAEligibleFromDate";
+    public static final String DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD = "DecreeAbsoluteGrantedDate";
     public static final String PRONOUNCEMENT_JUDGE_CCD_FIELD = "PronouncementJudge";
 
     //CCD DN fields
@@ -177,6 +178,7 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_TEMPLATE_VARS = "notification_template_vars";
     public static final String NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY = "first name";
     public static final String NOTIFICATION_ADDRESSEE_LAST_NAME_KEY = "last name";
+    public static final String NOTIFICATION_EMAIL_ADDRESS_KEY = "email address";
     public static final String NOTIFICATION_HUSBAND_OR_WIFE = "husband or wife";
     public static final String NOTIFICATION_RELATIONSHIP_KEY = "relationship";
     public static final String NOTIFICATION_CCD_REFERENCE_KEY = "CCD reference";
@@ -189,6 +191,7 @@ public class OrchestrationConstants {
     public static final String STATEMENT_OF_TRUTH = "D8StatementOfTruth";
     public static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
     public static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
+    public static final String NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE = "limit date to download certificate";
 
     // CCD Respondent Fields
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
