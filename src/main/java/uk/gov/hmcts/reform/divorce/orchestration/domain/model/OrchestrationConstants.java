@@ -176,7 +176,7 @@ public class OrchestrationConstants {
     public static final String AWAITING_HWF_DECISION = "AwaitingHWFDecision";
 
     // Notification
-    public static final String NOTIFICATION_EMAIL = "email_address";
+    public static final String NOTIFICATION_EMAIL = "email address";
     public static final String NOTIFICATION_SEND_EMAIL = "send_email";
     public static final String NOTIFICATION_TEMPLATE = "notification_template";
     public static final String NOTIFICATION_TEMPLATE_VARS = "notification_template_vars";
