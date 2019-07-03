@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateResponden
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CleanStatusCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeNisiAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
@@ -38,6 +39,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
@@ -48,7 +50,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetDNOutcomeFlagWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
@@ -75,6 +76,7 @@ import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -93,6 +95,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
@@ -200,13 +203,16 @@ public class CaseOrchestrationServiceImplTest {
     private ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
 
     @Mock
+    private RespondentSolicitorLinkCaseWorkflow respondentSolicitorLinkCaseWorkflow;
+
+    @Mock
     private DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
 
     @Mock
     private BulkCaseUpdateDnPronounceDatesWorkflow bulkCaseUpdateDnPronounceDatesWorkflow;
 
     @Mock
-    private SetDNOutcomeFlagWorkflow setDNOutcomeFlagWorkflow;
+    private CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -853,9 +859,30 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldGenerateDecreeNisiDocumentOnly_WhenCostsClaimGrantedIsNo() throws WorkflowException {
+    public void shouldGenerateOnlyDnDocuments_WhenPetitionerCostsClaimIsNo() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
+                CaseDetails.builder().caseData(caseData).build())
+                .build();
+
+        classUnderTest
+                .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
+                DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow, never()).run(ccdCallbackRequest, AUTH_TOKEN,
+                COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
+        verifyNoMoreInteractions(documentGenerationWorkflow);
+    }
+
+    @Test
+    public void shouldGenerateBothDocuments_WhenCostsClaimGrantedIsNo() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "No");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
@@ -867,6 +894,8 @@ public class CaseOrchestrationServiceImplTest {
 
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
                 DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
+                COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
@@ -874,6 +903,7 @@ public class CaseOrchestrationServiceImplTest {
     public void shouldGenerateBothDocuments_WhenCostsClaimGrantedIsYes() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
@@ -906,6 +936,7 @@ public class CaseOrchestrationServiceImplTest {
 
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
@@ -994,6 +1025,30 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
+    public void testServiceCallsRightWorkflowWithRightData_ForProcessingAosSolicitorLinkCase()
+            throws WorkflowException, CaseOrchestrationServiceException {
+        String token = "token";
+        final UserDetails userDetails = UserDetails.builder().build();
+        when(respondentSolicitorLinkCaseWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(token)))
+                .thenReturn(userDetails);
+
+        assertThat(classUnderTest.processAosSolicitorLinkCase(ccdCallbackRequest, token), is(equalTo(requestPayload)));
+    }
+
+    @Test
+    public void shouldThrowException_ForProcessingAosSolicitorLinkCase_WhenWorkflowExceptionIsCaught()
+            throws WorkflowException, CaseOrchestrationServiceException {
+        String token = "token";
+        when(respondentSolicitorLinkCaseWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(token)))
+                .thenThrow(new WorkflowException("This operation threw an exception."));
+
+        expectedException.expect(CaseOrchestrationServiceException.class);
+        expectedException.expectMessage(is("This operation threw an exception."));
+
+        classUnderTest.processAosSolicitorLinkCase(ccdCallbackRequest, token);
+    }
+
+    @Test
     public void shouldCallWorkflow_ForDecreeNisiIsAboutToBeGranted() throws WorkflowException, CaseOrchestrationServiceException {
         when(decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails())).thenReturn(singletonMap("returnedKey", "returnedValue"));
 
@@ -1021,6 +1076,7 @@ public class CaseOrchestrationServiceImplTest {
 
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
@@ -1040,6 +1096,7 @@ public class CaseOrchestrationServiceImplTest {
 
         Map<String, Object> expectedResult = new HashMap<>();
         expectedResult.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        expectedResult.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         expectedResult.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
         expectedResult.putAll(requestPayload);
 
@@ -1057,11 +1114,11 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldCallWorkflow_ForAddDnOutcomeFlag() throws WorkflowException {
-        when(setDNOutcomeFlagWorkflow.run(ccdCallbackRequest.getCaseDetails()))
+    public void shouldCallCleanStatusCallbackWorkflow() throws WorkflowException {
+        when(cleanStatusCallbackWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
             .thenReturn(singletonMap("returnedKey", "returnedValue"));
 
-        Map<String, Object> returnedPayload = classUnderTest.addDNOutcomeFlag(ccdCallbackRequest);
+        Map<String, Object> returnedPayload = classUnderTest.cleanStateCallback(ccdCallbackRequest, AUTH_TOKEN);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
     }

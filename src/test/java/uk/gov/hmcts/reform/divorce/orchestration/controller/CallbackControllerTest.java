@@ -634,6 +634,46 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void testAosSolicitorLinkCase() throws CaseOrchestrationServiceException {
+        Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(incomingPayload)
+                        .build())
+                .build();
+
+        String token = "token";
+        when(caseOrchestrationService.processAosSolicitorLinkCase(incomingRequest, token))
+                .thenReturn(incomingPayload);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorLinkCase(token, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldReturnOk_WithErrors_AndNoCaseData_WhenExceptionIsCaughtInAosSolicitorLinkCase() throws CaseOrchestrationServiceException {
+        Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                        .caseData(incomingPayload)
+                        .build())
+                .build();
+
+        String token = "token";
+        when(caseOrchestrationService.processAosSolicitorLinkCase(incomingRequest, "token"))
+                .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorLinkCase(token, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(nullValue()));
+        assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
+    }
+
+    @Test
     public void givenNoErrors_whenCalculateSeparationFields_thenCallbackWorksAsExpected() throws WorkflowException {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
@@ -715,39 +755,21 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void testAddDnOutcomeCallsRightServiceMethod() throws WorkflowException {
+    public void testClearStateCallRightServiceMethod() throws WorkflowException {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .caseData(singletonMap("testKey", "testValue"))
                 .build())
             .build();
 
-        when(caseOrchestrationService.addDNOutcomeFlag(ccdCallbackRequest))
+        when(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, AUTH_TOKEN))
             .thenReturn(singletonMap("newKey", "newValue"));
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.addDnOutcomeFlag(ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.clearStateCallback(AUTH_TOKEN, ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
         assertThat(response.getBody().getData(), hasEntry("newKey", "newValue"));
         assertThat(response.getBody().getErrors(), is(nullValue()));
-        verify(caseOrchestrationService).addDNOutcomeFlag(eq(ccdCallbackRequest));
-    }
-
-    @Test
-    public void testDnAboutToBeGrantedHandlesGenericException() throws WorkflowException {
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseData(singletonMap("testKey", "testValue"))
-                .build())
-            .build();
-        when(caseOrchestrationService.addDNOutcomeFlag(ccdCallbackRequest))
-            .thenThrow(new RuntimeException("An error happened when processing this request."));
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.addDnOutcomeFlag(ccdCallbackRequest);
-
-        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
-        assertThat(response.getBody().getData(), is(nullValue()));
-        assertThat(response.getBody().getErrors(), hasItem(equalTo("An error happened when processing this request.")));
-        verify(caseOrchestrationService).addDNOutcomeFlag(eq(ccdCallbackRequest));
+        verify(caseOrchestrationService).cleanStateCallback(eq(ccdCallbackRequest), eq(AUTH_TOKEN));
     }
 }

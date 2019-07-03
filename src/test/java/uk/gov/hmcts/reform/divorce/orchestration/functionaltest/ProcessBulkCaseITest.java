@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.google.common.collect.ImmutableMap;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -56,6 +57,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.
 @PropertySource(value = "classpath:application.yml")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
+@Slf4j
 public class ProcessBulkCaseITest extends IdamTestSupport {
 
     private static final String CMS_SEARCH = "/casemaintenance/version/1/search";
@@ -122,7 +124,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID3), RequestMethod.POST, UPDATE_BODY);
-
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, CREATE_EVENT), RequestMethod.POST);
     }
 
     @Test
@@ -142,7 +144,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
             .andExpect(status().isOk())
             .andExpect(jsonPath(BULK_CASE_LIST_KEY).isEmpty());
 
-        verifyCmsServerEndpoint(0, CMS_UPDATE_CASE, RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(0, CMS_UPDATE_CASE, RequestMethod.POST);
     }
 
     @Test
@@ -158,16 +160,24 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID3), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
 
         stubSignInForCaseworker();
-        webClient.perform(post(API_URL)
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
-            .andExpect(status().isOk());
+        try {
+            webClient.perform(post(API_URL)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-        waitAsyncCompleted();
-
+            waitAsyncCompleted();
+        } catch (BulkUpdateException e) {
+            /*This exception normally happens before waitAsync so the mock client context silence the exception however if the execution takes longer
+              to execute an the exception happen after mock client context this will be propagated to the main context making this test fail
+              intermittently.
+            */
+            log.info("BulkUpdateException expected", e);
+        }
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID3), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(0, String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, CREATE_EVENT), RequestMethod.POST);
     }
 
     @Test

@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDnGrantedDate;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDnPronouncementDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDivorceCasePronouncementDateWithinBulk;
 
 import java.util.Map;
@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class BulkCaseUpdateDnPronounceDatesWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final ObjectMapper objectMapper;
-    private final SetDnGrantedDate setDnGrantedDate;
+    private final SetDnPronouncementDetailsTask setDnPronouncementDetailsTask;
     private final UpdateDivorceCasePronouncementDateWithinBulk updateDivorceCasePronouncementDateWithinBulk;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
@@ -30,7 +30,7 @@ public class BulkCaseUpdateDnPronounceDatesWorkflow extends DefaultWorkflow<Map<
 
         return this.execute(
                 new Task[] {
-                    setDnGrantedDate,
+                    setDnPronouncementDetailsTask,
                     updateDivorceCasePronouncementDateWithinBulk
                 },
                 caseDetails.getCaseData(),

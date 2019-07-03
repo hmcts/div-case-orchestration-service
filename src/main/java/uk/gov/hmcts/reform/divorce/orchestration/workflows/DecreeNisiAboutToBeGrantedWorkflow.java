@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiApprovalDateTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiDecisionDateTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDnOutcomeFlagFieldTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
 
 import java.util.ArrayList;
@@ -21,13 +23,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
+@RequiredArgsConstructor
 public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
-    private AddDecreeNisiApprovalDateTask addDecreeNisiApprovalDateTask;
+    private final AddDecreeNisiDecisionDateTask addDecreeNisiDecisionDateTask;
 
     @Autowired
-    private DefineWhoPaysCostsOrderTask defineWhoPaysCostsOrderTask;
+    private final DefineWhoPaysCostsOrderTask defineWhoPaysCostsOrderTask;
+
+    @Autowired
+    private final AddDnOutcomeFlagFieldTask addDnOutcomeFlagFieldTask;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
         List<Task> tasksToRun = new ArrayList<>();
@@ -35,10 +41,10 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
         String newCaseEndState = AWAITING_CLARIFICATION;
         Map<String, Object> caseData = caseDetails.getCaseData();
         Object decreeNisiGranted = caseData.get(DECREE_NISI_GRANTED_CCD_FIELD);
+        tasksToRun.add(addDecreeNisiDecisionDateTask);
         if (YES_VALUE.equals(decreeNisiGranted)) {
             newCaseEndState = AWAITING_PRONOUNCEMENT;
-            tasksToRun.add(addDecreeNisiApprovalDateTask);
-
+            tasksToRun.add(addDnOutcomeFlagFieldTask);
             Object costsClaimGranted = caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD);
             if (YES_VALUE.equals(costsClaimGranted)) {
                 tasksToRun.add(defineWhoPaysCostsOrderTask);

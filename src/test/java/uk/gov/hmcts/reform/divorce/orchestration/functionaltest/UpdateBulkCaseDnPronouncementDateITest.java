@@ -28,6 +28,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -37,7 +38,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.PRONOUNCED_EVENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_COURT_DN_PRONOUNCEMENT_DATE_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
 @RunWith(SpringRunner.class)
@@ -54,6 +55,7 @@ public class UpdateBulkCaseDnPronouncementDateITest extends IdamTestSupport {
     private static final String CMS_UPDATE_BULK_CASE_PATH = "/casemaintenance/version/1/bulk/updateCase/%s/%s";
 
     private static final String REQUEST_JSON_PATH = "jsonExamples/payloads/bulkCaseCcdCallbackRequest.json";
+    private static final String MISSING_JUDGE_REQUEST_JSON_PATH = "jsonExamples/payloads/bulkCaseCcdCallbackRequestNoJudge.json";
     private static final String EXPECTED_CASE_UPDATE_JSON_PATH = "jsonExamples/payloads/bulkCasePronouncementDate.json";
     private static final String BULK_CASE_ID = "1505150515051550";
     private static final String CASE_ID_FIRST = "1558711395612316";
@@ -77,8 +79,8 @@ public class UpdateBulkCaseDnPronouncementDateITest extends IdamTestSupport {
 
     @Test
     public void givenCallbackRequestWithDnPronouncementDateBulkCaseData_thenReturnCallbackResponse() throws Exception {
-        String updateCaseOnePath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_FIRST, UPDATE_COURT_DN_PRONOUNCEMENT_DATE_EVENT);
-        String updateCaseTwoPath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_SECOND, UPDATE_COURT_DN_PRONOUNCEMENT_DATE_EVENT);
+        String updateCaseOnePath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_FIRST, UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT);
+        String updateCaseTwoPath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_SECOND, UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT);
         String updateBulkCasePath = String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, PRONOUNCED_EVENT);
 
         stubCmsServerEndpoint(updateCaseOnePath, HttpStatus.OK, "{}", POST);
@@ -106,6 +108,17 @@ public class UpdateBulkCaseDnPronouncementDateITest extends IdamTestSupport {
         verifyCmsServerEndpoint(1, updateCaseOnePath, RequestMethod.POST, loadResourceAsString(EXPECTED_CASE_UPDATE_JSON_PATH));
         verifyCmsServerEndpoint(1, updateCaseTwoPath, RequestMethod.POST, loadResourceAsString(EXPECTED_CASE_UPDATE_JSON_PATH));
         verifyCmsServerEndpoint(1, updateBulkCasePath, RequestMethod.POST, "{}");
+    }
+
+    @Test
+    public void givenCallbackRequestWithNoJudgeCaseData_thenReturnCallbackResponseWithError() throws Exception {
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
+                .header(AUTHORIZATION, TEST_AUTH_TOKEN)
+                .content(loadResourceAsString(MISSING_JUDGE_REQUEST_JSON_PATH))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.errors", notNullValue()));
     }
 
     private void waitAsyncCompleted() {

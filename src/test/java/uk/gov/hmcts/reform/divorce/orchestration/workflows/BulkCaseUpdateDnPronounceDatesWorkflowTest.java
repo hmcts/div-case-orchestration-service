@@ -12,7 +12,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDnGrantedDate;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDnPronouncementDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDivorceCasePronouncementDateWithinBulk;
 
 import java.util.Collections;
@@ -37,7 +37,7 @@ public class BulkCaseUpdateDnPronounceDatesWorkflowTest {
     ObjectMapper objectMapper;
 
     @Mock
-    SetDnGrantedDate setDnGrantedDate;
+    SetDnPronouncementDetailsTask setDnPronouncementDetailsTask;
 
     @Mock
     UpdateDivorceCasePronouncementDateWithinBulk updateDivorceCasePronouncementDateWithinBulk;
@@ -70,12 +70,12 @@ public class BulkCaseUpdateDnPronounceDatesWorkflowTest {
 
     @Test
     public void runShouldExecuteTasksAndReturnPayload() throws Exception {
-        when(setDnGrantedDate.execute(context, testData)).thenReturn(testData);
+        when(setDnPronouncementDetailsTask.execute(context, testData)).thenReturn(testData);
         when(updateDivorceCasePronouncementDateWithinBulk.execute(context, testData)).thenReturn(testData);
 
         assertEquals(testData, bulkCaseUpdateDnPronounceDatesWorkflow.run(caseDetails, AUTH_TOKEN));
 
-        verify(setDnGrantedDate).execute(context, testData);
+        verify(setDnPronouncementDetailsTask).execute(context, testData);
         verify(updateDivorceCasePronouncementDateWithinBulk).execute(context, testData);
     }
 }
