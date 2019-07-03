@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasNot()
-            throws IOException {
+        throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
                 genericPetDataJsonFilePath, CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
@@ -79,7 +80,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasNotDefended()
-            throws IOException {
+        throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
                 genericPetDataJsonFilePath, CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
@@ -111,7 +112,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasIsDefending()
-            throws IOException {
+        throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
                 genericPetDataJsonFilePath, CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());

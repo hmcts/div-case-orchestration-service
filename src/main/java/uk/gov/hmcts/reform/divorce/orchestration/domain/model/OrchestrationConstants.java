@@ -93,7 +93,6 @@ public class OrchestrationConstants {
 
 
     public static final String PET_SOL_EMAIL = "PetitionerSolicitorEmail";
-    public static final String PET_SOL_AGREES_EMAIL = "SolicitorAgreeToReceiveEmails";
     public static final String PET_SOL_NAME = "PetitionerSolicitorName";
 
     //CCD DN fields
