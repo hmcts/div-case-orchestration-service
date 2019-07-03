@@ -63,6 +63,8 @@ public class OrchestrationConstants {
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
+    public static final String DN_COSTS_OPTIONS_CCD_FIELD = "DivorceCostsOptionDN";
+    public static final String DN_COSTS_ENDCLAIM_VALUE = "endClaim";
     public static final String DIVORCE_COSTS_CLAIM_CCD_FIELD = "D8DivorceCostsClaim";
     public static final String DN_COSTS_CLAIM_CCD_FIELD = "DivorceCostsOptionDN";
     public static final String DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD = "CostsClaimGranted";
