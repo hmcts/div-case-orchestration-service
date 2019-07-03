@@ -43,7 +43,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_YES_VALUE;
@@ -139,7 +138,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
             eq("respondent@justice.uk"),
             argThat(new HamcrestArgumentMatcher<>(
                 allOf(
-                    hasEntry(NOTIFICATION_EMAIL, "respondent@justice.uk"),
+                    hasEntry("email address", "respondent@justice.uk"),
                     hasEntry(NOTIFICATION_CASE_NUMBER_KEY, "HR290831"),
                     hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Jane"),
                     hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jamed"),

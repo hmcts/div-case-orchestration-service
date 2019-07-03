@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCED_WHO;
@@ -24,7 +23,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
@@ -54,7 +52,6 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
-        String eventId = context.getTransientObject(CASE_EVENT_ID_JSON_KEY);
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
 
         if (StringUtils.isNotBlank(petitionerEmail)) {
@@ -65,17 +62,21 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
 
             Map<String, String> templateVars = new HashMap<>();
 
-            templateVars.put(NOTIFICATION_EMAIL, petitionerEmail);
+            templateVars.put("email address", petitionerEmail);
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, ccdReference);
 
+            String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
             String relationship = getMandatoryPropertyValueAsString(caseData, D_8_DIVORCED_WHO);
+            String respAdmitOrConsentToFact = (String) caseData.get(RESP_ADMIT_OR_CONSENT_TO_FACT);
+            String isCoRespNamed = (String) caseData.get(D_8_CO_RESPONDENT_NAMED);
+            String receivedAosFromCoResp = (String) caseData.get(RECEIVED_AOS_FROM_CO_RESP);
 
-            if (isAdulteryAndNoConsent(caseData)) {
+            if (reasonForDivorce.equals(ADULTERY) && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
                 templateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
 
-                if (isCoRespNamedAndNotReplied(caseData)) {
+                if (StringUtils.equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !StringUtils.equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE)) {
                     emailService.sendEmail(petitionerEmail,
                             EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
                             templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC);
@@ -85,7 +86,8 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
                             templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC);
                 }
 
-            } else if (isSep2YrAndNoConsent(caseData)) {
+            } else if (reasonForDivorce.equals(SEPARATION_2YRS)
+                    && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
                 templateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
 
                 emailService.sendEmail(petitionerEmail,
@@ -101,31 +103,5 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
             }
         }
         return caseData;
-    }
-
-    private boolean isAdulteryAndNoConsent(Map<String, Object> caseData) {
-        String reasonForDivorce = getFieldAsStringOrNull(caseData, D_8_REASON_FOR_DIVORCE);
-        String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseData, RESP_ADMIT_OR_CONSENT_TO_FACT);
-        return StringUtils.equalsIgnoreCase(ADULTERY, reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
-    }
-
-    private boolean isSep2YrAndNoConsent(Map<String, Object> caseData) {
-        String reasonForDivorce = getFieldAsStringOrNull(caseData, D_8_REASON_FOR_DIVORCE);
-        String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseData, RESP_ADMIT_OR_CONSENT_TO_FACT);
-        return StringUtils.equalsIgnoreCase(SEPARATION_2YRS, reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
-    }
-
-    private boolean isCoRespNamedAndNotReplied(Map<String, Object> caseData) {
-        String isCoRespNamed = getFieldAsStringOrNull(caseData, D_8_CO_RESPONDENT_NAMED);
-        String receivedAosFromCoResp = getFieldAsStringOrNull(caseData, RECEIVED_AOS_FROM_CO_RESP);
-        return StringUtils.equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !StringUtils.equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE);
-    }
-
-    private String getFieldAsStringOrNull(final Map<String, Object>  caseData, String fieldKey) {
-        Object fieldValue = caseData.get(fieldKey);
-        if (fieldValue == null) {
-            return null;
-        }
-        return fieldValue.toString();
     }
 }
