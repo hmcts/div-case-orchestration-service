@@ -64,7 +64,7 @@ public class CourtLookupServiceTest {
         assertThat(foundCourt.getCourtId(), is("serviceCentre"));
         assertThat(foundCourt.getIdentifiableCentreName(), is("Courts and Tribunals Service Centre"));
         String expectedAddress = "Courts and Tribunals Service Centre" + LINE_SEPARATOR
-                + "HMCTS Digital Divorce" + LINE_SEPARATOR
+                + "c/o HMCTS Digital Divorce" + LINE_SEPARATOR
                 + "PO Box 12706" + LINE_SEPARATOR
                 + "Harlow" + LINE_SEPARATOR
                 + "CM20 9QT";
