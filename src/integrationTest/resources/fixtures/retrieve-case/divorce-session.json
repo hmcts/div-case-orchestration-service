@@ -107,15 +107,15 @@
       "email":"eastmidlandsdivorce@hmcts.gsi.gov.uk"
     },
     "serviceCentre":{
-      "poBox":"PO Box 10447",
+      "poBox":"PO Box 12706",
       "phoneNumber":"0300 303 0642",
       "serviceCentreName":"Courts and Tribunals Service Centre",
-      "divorceCentre":"East Midlands Regional Divorce Centre",
+      "divorceCentre":"HMCTS Digital Divorce",
       "siteId":"AA07",
-      "postCode":"NG2 9QN",
+      "postCode":"CM20 9QT",
       "openingHours":"Telephone Enquiries from: 8.30am to 5pm",
-      "courtCity":"Nottingham",
-      "email":"contactdivorce@justice.gov.uk"
+      "courtCity":"Harlow",
+      "email":"divorcecase@justice.gov.uk"
     }
   },
   "reasonForDivorceShowFiveYearsSeparation":"true",
