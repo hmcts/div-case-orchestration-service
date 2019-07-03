@@ -24,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_YES_VALUE;
@@ -41,7 +42,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils.formatDat
 public class SendRespondentCertificateOfEntitlementNotificationEmail implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESCRIPTION = "Respondent Notification - Certificate of Entitlement";
-    private static final String EMAIL_ADDRESS = "email address";
 
     @Autowired
     private TaskCommons taskCommons;
@@ -65,7 +65,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
 
         Map<String, String> templateParameters = new HashMap<>();
 
-        templateParameters.put(EMAIL_ADDRESS, respondentEmail);
+        templateParameters.put(NOTIFICATION_EMAIL, respondentEmail);
         templateParameters.put(NOTIFICATION_CASE_NUMBER_KEY, familyManCaseId);
         templateParameters.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, respondentFirstName);
         templateParameters.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, respondentLastName);
