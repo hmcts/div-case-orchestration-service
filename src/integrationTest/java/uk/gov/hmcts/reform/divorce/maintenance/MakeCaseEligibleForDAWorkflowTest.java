@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
@@ -27,8 +28,11 @@ public class MakeCaseEligibleForDAWorkflowTest extends RetrieveCaseSupport {
     private static final String STATE_KEY = "state";
 
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";
+    private static final String NO_STATE_CHANGE_EVENT_ID = "paymentReferenceGenerated";
 
     private static final String makeCasesEligibleForDAcontrollerPath = "/cases/da/make-eligible";
+    private static final String DECREE_NISI_GRANTED_DATE_KEY = "DecreeNisiGrantedDate";
+    public static final String DECREE_NISI_GRANTED_DATE = "2019-03-31";
 
     @Test
     public void givenCaseIsInDNPronounced_WhenMakeCaseEligibleForDAIsCalled_CaseStateIsAwaitingDecreeAbsolute() {
@@ -37,10 +41,19 @@ public class MakeCaseEligibleForDAWorkflowTest extends RetrieveCaseSupport {
             Pair.of(D_8_PETITIONER_EMAIL, citizenUser.getEmailAddress()));
 
         String caseId = String.valueOf(caseDetails.getId());
-        log.info("Case " + caseId + " created.");
+        log.debug("Case " + caseId + " created.");
+
+        updateCase(String.valueOf(caseDetails.getId()),
+                null,
+                NO_STATE_CHANGE_EVENT_ID,
+                ImmutablePair.of(DECREE_NISI_GRANTED_DATE_KEY,
+                        MakeCaseEligibleForDAWorkflowTest.DECREE_NISI_GRANTED_DATE));
+
+        log.debug(String.format("%s=%s set in the case [%s]",
+                DECREE_NISI_GRANTED_DATE_KEY,  DECREE_NISI_GRANTED_DATE, caseId));
 
         updateCaseForCitizen(caseId, null, TEST_DN_PRONOUNCED, citizenUser);
-        log.info("Case " + caseId + " moved to DNPronounced.");
+        log.debug("Case " + caseId + " moved to DNPronounced.");
 
         UserDetails caseWorkerUser = createCaseWorkerUser();
         makeCasesEligibleForDa(caseWorkerUser.getAuthToken());
