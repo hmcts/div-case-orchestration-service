@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -28,7 +29,7 @@ public class SubmitDaCaseWorkflow extends DefaultWorkflow<Map<String, Object>> {
             new Task[] {
                 updateCaseInCCD
             },
-            payload,
+            Collections.emptyMap(), // Currently there is no requirement to update CCD with data.
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
             ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, DECREE_ABSOLUTE_REQUESTED_EVENT_ID)

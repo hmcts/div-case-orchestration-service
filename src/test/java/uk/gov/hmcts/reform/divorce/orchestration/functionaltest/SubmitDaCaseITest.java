@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,7 +97,7 @@ public class SubmitDaCaseITest {
     }
 
     @Test
-    public void givenDnReceivedAndAosCompleted_whenSubmitDa_thenProceedAsExpected() throws Exception {
+    public void givenCaseUpdateIsSuccessful_whenSubmitDa_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData();
         final String caseDataString = convertObjectToJsonString(caseData);
         final Map<String, Object> caseDetails = new HashMap<>();
@@ -104,7 +105,7 @@ public class SubmitDaCaseITest {
         caseDetails.put(CASE_STATE_JSON_KEY, DN_PRONOUNCED);
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
-        stubMaintenanceServerEndpointForUpdate(OK, DECREE_ABSOLUTE_REQUESTED_EVENT_ID, caseData, caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, DECREE_ABSOLUTE_REQUESTED_EVENT_ID, Collections.emptyMap(), caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)

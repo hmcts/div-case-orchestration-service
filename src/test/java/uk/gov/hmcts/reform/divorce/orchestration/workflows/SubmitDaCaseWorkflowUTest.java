@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -44,7 +45,7 @@ public class SubmitDaCaseWorkflowUTest {
             updateCaseInCCD
         };
 
-        when(classUnderTest.execute(tasks, inputData, authTokenPair, caseIdPair, eventIdPair)).thenReturn(expectedOutput);
+        when(classUnderTest.execute(tasks, Collections.emptyMap(), authTokenPair, caseIdPair, eventIdPair)).thenReturn(expectedOutput);
 
         assertEquals(expectedOutput, classUnderTest.run(inputData, AUTH_TOKEN, TEST_CASE_ID));
     }
