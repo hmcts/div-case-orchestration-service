@@ -8,9 +8,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToDaCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -26,6 +26,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class SubmitDaCaseWorkflowUTest {
     @Mock
+    private FormatDivorceSessionToDaCaseData formatDivorceSessionToDaCaseDataTest;
+
+    @Mock
     private UpdateCaseInCCD updateCaseInCCD;
 
     @InjectMocks
@@ -33,7 +36,7 @@ public class SubmitDaCaseWorkflowUTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void whenSubmitDnCase_thenProcessAsExpected() throws WorkflowException {
+    public void whenSubmitDaCase_thenProcessAsExpected() throws WorkflowException {
         final Map<String, Object> inputData = mock(Map.class);
         final Map<String, Object> expectedOutput = mock(Map.class);
 
@@ -42,10 +45,11 @@ public class SubmitDaCaseWorkflowUTest {
         final ImmutablePair<String, Object> eventIdPair = new ImmutablePair<>(CASE_EVENT_ID_JSON_KEY, DECREE_ABSOLUTE_REQUESTED_EVENT_ID);
 
         final Task[] tasks = new Task[]{
+            formatDivorceSessionToDaCaseDataTest,
             updateCaseInCCD
         };
 
-        when(classUnderTest.execute(tasks, Collections.emptyMap(), authTokenPair, caseIdPair, eventIdPair)).thenReturn(expectedOutput);
+        when(classUnderTest.execute(tasks, inputData, authTokenPair, caseIdPair, eventIdPair)).thenReturn(expectedOutput);
 
         assertEquals(expectedOutput, classUnderTest.run(inputData, AUTH_TOKEN, TEST_CASE_ID));
     }

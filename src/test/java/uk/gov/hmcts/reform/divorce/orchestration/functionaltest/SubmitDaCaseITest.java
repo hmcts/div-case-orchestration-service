@@ -51,10 +51,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class SubmitDaCaseITest {
     private static final String API_URL = String.format("/submit-da/%s", TEST_CASE_ID);
+    private static final String FORMAT_TO_DA_CASE_CONTEXT_PATH = "/caseformatter/version/1/to-da-submit-format";
     private static final String UPDATE_CONTEXT_PATH = "/casemaintenance/version/1/updateCase/" + TEST_CASE_ID + "/";
 
     @Autowired
     private MockMvc webClient;
+
+    @ClassRule
+    public static WireMockClassRule formatterServiceServer = new WireMockClassRule(4011);
 
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(4010);
@@ -77,6 +81,22 @@ public class SubmitDaCaseITest {
             .andExpect(status().isBadRequest());
     }
 
+
+    @Test
+    public void givenCaseFormatterFails_whenSubmitDn_thenPropagateTheException() throws Exception {
+        final Map<String, Object> caseData = getCaseData();
+
+        stubFormatterServerEndpoint(BAD_REQUEST, caseData, TEST_ERROR);
+
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .content(convertObjectToJsonString(caseData))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString(TEST_ERROR)));
+    }
+
     @Test
     public void givenCaseUpdateFails_whenSubmitDa_thenPropagateTheException() throws Exception {
         final Map<String, Object> caseData = new HashMap<>();
@@ -85,6 +105,7 @@ public class SubmitDaCaseITest {
         caseDetails.put(CASE_STATE_JSON_KEY, DN_PRONOUNCED);
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
+        stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
         stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, DECREE_ABSOLUTE_REQUESTED_EVENT_ID, caseData, TEST_ERROR);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -105,6 +126,7 @@ public class SubmitDaCaseITest {
         caseDetails.put(CASE_STATE_JSON_KEY, DN_PRONOUNCED);
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
+        stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
         stubMaintenanceServerEndpointForUpdate(OK, DECREE_ABSOLUTE_REQUESTED_EVENT_ID, Collections.emptyMap(), caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -114,6 +136,15 @@ public class SubmitDaCaseITest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(caseDataString));
+    }
+
+    private void stubFormatterServerEndpoint(HttpStatus status, Map<String, Object> caseData, String response) {
+        formatterServiceServer.stubFor(post(FORMAT_TO_DA_CASE_CONTEXT_PATH)
+                .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
+                .willReturn(aResponse()
+                        .withStatus(status.value())
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                        .withBody(response)));
     }
 
     private void stubMaintenanceServerEndpointForUpdate(HttpStatus status, String caseEventId,
