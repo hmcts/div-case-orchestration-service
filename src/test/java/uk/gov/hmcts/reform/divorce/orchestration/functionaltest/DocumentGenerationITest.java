@@ -160,8 +160,8 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
         // Data matching application properties.
         Map<String, Object> formattedDocumentCaseData = new HashMap<>();
         formattedDocumentCaseData.put(COURT_NAME_CCD_FIELD, "Liverpool Civil and Family Court Hearing Centre");
-        formattedDocumentCaseData.put(COURT_CONTACT_JSON_KEY, "c\\o Liverpool Civil and Family Court Hearing Centre"
-                + "\n35 Vernon Street\nLiverpool\nL2 2BX\n\nEmail: contactdivorce@justice.gov.uk\nPhone: 0300 303 0642");
+        formattedDocumentCaseData.put(COURT_CONTACT_JSON_KEY, "c/o Liverpool Civil and Family Court Hearing Centre"
+            + "\n35 Vernon Street\nLiverpool\nL2 2BX\n\nEmail: divorcecase@justice.gov.uk\nPhone: 0300 303 0642");
         CaseDetails expectedDocumentCaseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(formattedDocumentCaseData).build();
 
         final GenerateDocumentRequest documentGenerationRequest =

@@ -234,7 +234,7 @@ public class OrchestrationConstants {
     public static final String SEND_VIA_POST = "Post";
 
     // Court Data Keys
-    public static final String CARE_OF_PREFIX = "c\\o";
+    public static final String CARE_OF_PREFIX = "c/o";
     public static final String DIVORCE_CENTRE_SITEID_JSON_KEY = "D8SelectedDivorceCentreSiteId";
     public static final String DIVORCE_UNIT_JSON_KEY = "D8DivorceUnit";
     public static final String COURT_CONTACT_JSON_KEY = "CourtContactDetails";
