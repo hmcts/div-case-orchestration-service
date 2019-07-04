@@ -107,8 +107,8 @@ public class OrchestrationConstants {
     public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
     public static final String START_AOS_EVENT_ID = "startAos";
     public static final String PAYMENT_MADE_EVENT = "paymentMade";
-    public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID = "MakeEligibleForDA_Petitioner";
     public static final String AWAITING_DECREE_ABSOLUTE = "AwaitingDecreeAbsolute";
+    public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID = "MakeEligibleForDA_Petitioner";
 
     // CCD Case States
     public static final String AOS_AWAITING = "AosAwaiting";
@@ -123,6 +123,10 @@ public class OrchestrationConstants {
     public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String DEFENDED = "DefendedDivorce";
     public static final String DN_AWAITING = "DNAwaiting";
+    public static final String DN_PRONOUNCED = "DNPronounced";
+    public static final String AWAITING_DA = "AwaitingDecreeAbsolute";
+    public static final String DA_REQUESTED = "DARequested";
+    public static final String DIVROCE_GRANTED = "DivorceGranted";
 
     // CCD Co-Respondent Fields
     public static final String CO_RESP_LINKED_TO_CASE = "CoRespLinkedToCase";
@@ -282,6 +286,11 @@ public class OrchestrationConstants {
     public static final String PAYMENT_SITE_ID_KEY = "PaymentSiteId";
 
     public static final String SEARCH_PAGE_KEY = "SEARCH_PAGE";
+
+    // DA related
+    public static final String AWAITING_DA_PERIOD_KEY = "awaitingDAPeriod";
+    public static final String CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT = "casesEligibleForDAProcessedCount";
+
 
     // Validation
     public static final String ERROR_STATUS = "error";

@@ -54,6 +54,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAos
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 
@@ -130,6 +131,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RespondentSolicitorLinkCaseWorkflow respondentSolicitorLinkCaseWorkflow;
     private final DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
     private final BulkCaseUpdateDnPronounceDatesWorkflow bulkCaseUpdateDnPronounceDatesWorkflow;
+    private final UpdateDNPronouncedCasesWorkflow updateDNPronouncedCasesWorkflow;
     private final CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
     private final MakeCaseEligibleForDecreeAbsoluteWorkflow makeCaseEligibleForDecreeAbsoluteWorkflow;
 
@@ -342,7 +344,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> sendRespondentSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
-        throws WorkflowException {
+            throws WorkflowException {
         return sendRespondentSubmissionNotificationWorkflow.run(ccdCallbackRequest);
     }
 
@@ -531,7 +533,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> handleDnPronouncementDocumentGeneration(final CcdCallbackRequest ccdCallbackRequest, final String authToken)
-        throws WorkflowException {
+            throws WorkflowException {
 
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
@@ -556,7 +558,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException {
 
-        Map<String, Object> payLoad = separationFieldsWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+        Map<String, Object> payLoad =  separationFieldsWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
 
         if (separationFieldsWorkflow.errors().isEmpty()) {
             return payLoad;

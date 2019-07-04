@@ -82,6 +82,8 @@ case:
     service:
       api:
         baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://localhost:4010}
+  event:
+    awaiting-da-period: 43 #in days
 
 fees-and-payments:
   service:
