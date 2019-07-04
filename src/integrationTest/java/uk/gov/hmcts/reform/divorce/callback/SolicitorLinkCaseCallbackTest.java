@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.util.RestUtil;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -25,7 +26,8 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
 
     private static final String PIN_USER_FIRST_NAME = "pinuserfirstname";
     private static final String PIN_USER_LAST_NAME = "pinuserfirstname";
-    private static final String PAYMENT_REFERENCE_EVENT = "paymentReferenceGenerated";
+    private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
+    private static final String AOS_NOMINATE_SOL_EVENT_ID = "aosNominateSol";
     private static final String AOS_LETTER_HOLDER_ID = "AosLetterHolderId";
     private static final String RESPONDENT_SOLICITOR_CASE_NO = "RespondentSolicitorCaseNo";
     private static final String RESPONDENT_SOLICITOR_PIN = "RespondentSolicitorPin";
@@ -36,7 +38,9 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
     private String contextPath;
 
     @Test
-    public void givenAosAwaitingState_whenSolicitorLinksCase_thenCaseShouldBeLinked() throws Exception {
+    public void givenAosAwaitingState_whenSolicitorLinksCase_thenCaseShouldBeLinked() {
+        //given
+
         final UserDetails petitionerUserDetails = createCitizenUser();
 
         final PinResponse pinResponse = idamTestSupportUtil.generatePin(
@@ -50,24 +54,36 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
                 petitionerUserDetails
         );
 
-        updateCase(String.valueOf(caseDetails.getId()),
-                null,
-                PAYMENT_REFERENCE_EVENT,
-                ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId())
-        );
+        String caseId = String.valueOf(caseDetails.getId());
+        updateCaseForCitizen(caseId, null, TEST_AOS_STARTED_EVENT_ID, petitionerUserDetails);
+        updateCase(caseId, null, AOS_NOMINATE_SOL_EVENT_ID, ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
 
-        final UserDetails solicitorUser = createSolicitorUser();
+        UserDetails solicitorUser = createSolicitorUser();
 
+        //when
         Response linkResponse = linkSolicitor(
                         solicitorUser.getAuthToken(),
                         caseDetails.getId(),
                         pinResponse.getPin()
         );
 
-        assertThat(linkResponse.getBody().asString(), linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
-        assertThat(linkResponse.getBody().asString(),linkResponse.getBody().jsonPath().get("data"), is(notNullValue()));
-        caseDetails = ccdClientSupport.retrieveCaseForCaseworker(solicitorUser, String.valueOf(caseDetails.getId()));
+        String responseString = linkResponse.getBody().asString();
+        assertThat(responseString, linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
+        assertThat(responseString,linkResponse.getBody().jsonPath().get("data"), is(notNullValue()));
+        caseDetails = ccdClientSupport.retrieveCaseForCaseworker(solicitorUser, caseId);
         assertThat(caseDetails.getData(), is(notNullValue()));
+
+        //linking with a different user should fail
+        solicitorUser = createSolicitorUser();
+
+        linkResponse = linkSolicitor(
+                solicitorUser.getAuthToken(),
+                caseDetails.getId(),
+                pinResponse.getPin()
+        );
+        responseString = linkResponse.getBody().asString();
+        assertThat(responseString, linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
+        assertThat(responseString,linkResponse.getBody().jsonPath().getList(ERRORS), hasItem("Case is already linked - ID " + caseId));
     }
 
     private Response linkSolicitor(String userToken, Long caseId, String pin) {

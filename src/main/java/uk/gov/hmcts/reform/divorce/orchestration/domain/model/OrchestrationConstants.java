@@ -236,6 +236,7 @@ public class OrchestrationConstants {
     public static final String MINI_PETITION_LINK = "minipetitionlink";
     public static final String RESP_ANSWERS_LINK = "respondentanswerslink";
     public static final String CO_RESP_ANSWERS_LINK = "corespondentanswerslink";
+    public static final String SOLICITOR_LINKED_EMAIL = "RespSolLinkedEmail";
 
 
     // Fees
