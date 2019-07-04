@@ -1,0 +1,11 @@
+{
+  "event_id": "DARequested",
+  "case_details": {
+    "id": "1517833758870511",
+    "jurisdiction": "DIVORCE",
+    "case_data": {
+      "D8DivorceCostsClaim": "YES",
+      "D8StatementOfTruth": "YES"
+    }
+  }
+}
