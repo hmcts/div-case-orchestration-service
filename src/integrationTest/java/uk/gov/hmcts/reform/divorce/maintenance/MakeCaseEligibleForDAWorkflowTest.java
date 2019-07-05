@@ -20,6 +20,7 @@ import java.util.Map;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -61,9 +62,10 @@ public class MakeCaseEligibleForDAWorkflowTest extends RetrieveCaseSupport {
         UserDetails caseWorkerUser = createCaseWorkerUser();
         makeCasesEligibleForDa(caseWorkerUser.getAuthToken());
 
-        await().pollInterval(3, SECONDS).atMost(15, SECONDS).until(() -> {
+        await().pollInterval(3, SECONDS).atMost(20, SECONDS).untilAsserted(() -> {
             final Response retrievedCase = retrieveCase(citizenUser.getAuthToken());
-            return AWAITING_DA.equals(retrievedCase.path(STATE_KEY));
+            log.debug("found case id: " + retrievedCase.path("caseId"));
+            assertThat(retrievedCase.path(STATE_KEY), equalTo(AWAITING_DA));
         });
     }
 
