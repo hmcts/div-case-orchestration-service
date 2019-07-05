@@ -39,10 +39,10 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
             Pair.of(D_8_PETITIONER_EMAIL, citizenUser.getEmailAddress()));
 
         String caseId = String.valueOf(caseDetails.getId());
-        log.warn("Case " + caseId + " created.");
+        log.info("Case " + caseId + " created.");
 
         updateCaseForCitizen(caseId, null, TEST_DN_PRONOUNCED, citizenUser);
-        log.warn("Case " + caseId + " moved to DNPronounced.");
+        log.info("Case " + caseId + " moved to DNPronounced.");
 
         UserDetails caseWorkerUser = createCaseWorkerUser();
         makeCaseEligibleForDa(caseWorkerUser.getAuthToken(), caseId);

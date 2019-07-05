@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DecreeAbsoluteService;
@@ -11,8 +10,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCas
 @Service
 public class DecreeAbsoluteServiceImpl implements DecreeAbsoluteService {
 
-    @Autowired
     private UpdateDNPronouncedCasesWorkflow updateDNPronouncedCasesWorkflow;
+
+    public DecreeAbsoluteServiceImpl(UpdateDNPronouncedCasesWorkflow updateDNPronouncedCasesWorkflow) {
+        this.updateDNPronouncedCasesWorkflow = updateDNPronouncedCasesWorkflow;
+    }
 
     @Override
     public int enableCaseEligibleForDecreeAbsolute(String authToken) throws WorkflowException {
