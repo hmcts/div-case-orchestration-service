@@ -30,9 +30,9 @@ public class MakeCaseEligibleForDAWorkflowTest extends RetrieveCaseSupport {
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";
     private static final String NO_STATE_CHANGE_EVENT_ID = "paymentReferenceGenerated";
 
-    private static final String makeCasesEligibleForDAcontrollerPath = "/cases/da/make-eligible";
+    private static final String MAKE_CASES_ELIGIBLE_FOR_DA_ENDPOINT = "/cases/da/make-eligible";
     private static final String DECREE_NISI_GRANTED_DATE_KEY = "DecreeNisiGrantedDate";
-    public static final String DECREE_NISI_GRANTED_DATE = "2019-03-31";
+    private static final String DECREE_NISI_GRANTED_DATE = "2019-03-31";
 
     @Test
     public void givenCaseIsInDNPronounced_WhenMakeCaseEligibleForDAIsCalled_CaseStateIsAwaitingDecreeAbsolute() {
@@ -70,9 +70,8 @@ public class MakeCaseEligibleForDAWorkflowTest extends RetrieveCaseSupport {
             headers.put(HttpHeaders.AUTHORIZATION, userToken);
         }
 
-        System.out.println(serverUrl + makeCasesEligibleForDAcontrollerPath);
         Response response = RestUtil.postToRestService(
-            serverUrl + makeCasesEligibleForDAcontrollerPath,
+            serverUrl + MAKE_CASES_ELIGIBLE_FOR_DA_ENDPOINT,
             headers,
             null,
             new HashMap<>()
