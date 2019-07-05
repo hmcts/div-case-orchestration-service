@@ -37,15 +37,15 @@ public class UpdateDNPronouncedCasesWorkflow extends DefaultWorkflow<Map<String,
 
     public int run(String authToken) throws WorkflowException {
         this.execute(
-                new Task[]{
-                    searchDNPronouncedCases,
-                    updateDNPronouncedCase
-                },
-                null,
-                ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-                ImmutablePair.of(SEARCH_PAGE_KEY, 0),
-                ImmutablePair.of(AWAITING_DA_PERIOD_KEY, awaitingDAPeriod),
-                ImmutablePair.of(CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT, 0)
+            new Task[] {
+                searchDNPronouncedCases,
+                updateDNPronouncedCase
+            },
+            null,
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+            ImmutablePair.of(SEARCH_PAGE_KEY, 0),
+            ImmutablePair.of(AWAITING_DA_PERIOD_KEY, awaitingDAPeriod),
+            ImmutablePair.of(CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT, 0)
         );
         return getContext().getTransientObject(CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT);
     }

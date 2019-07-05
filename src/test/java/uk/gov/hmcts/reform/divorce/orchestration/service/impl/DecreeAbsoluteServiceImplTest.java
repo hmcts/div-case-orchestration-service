@@ -8,11 +8,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCasesWorkflow;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -29,30 +27,23 @@ public class DecreeAbsoluteServiceImplTest {
     @Mock
     private UpdateDNPronouncedCasesWorkflow updateDNPronouncedCasesWorkflow;
 
-    @Mock
-    private AuthUtil authUtil;
-
-
     @Test
     public void run_10CasesEligibleForDA_10CasesProcessed() throws WorkflowException {
-        when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
         when(updateDNPronouncedCasesWorkflow.run(AUTH_TOKEN)).thenReturn(10);
 
-        int casesProcessed = classUnderTest.enableCaseEligibleForDecreeAbsolute();
+        int casesProcessed = classUnderTest.enableCaseEligibleForDecreeAbsolute(AUTH_TOKEN);
 
         assertEquals(10, casesProcessed);
-        verify(updateDNPronouncedCasesWorkflow, times(1)).run(AUTH_TOKEN);
+        verify(updateDNPronouncedCasesWorkflow).run(AUTH_TOKEN);
     }
 
     @Test
     public void run_throwsWorkflowException_workflowExceptionThrown() throws WorkflowException {
         expectedException.expect(WorkflowException.class);
         expectedException.expectMessage("a WorkflowException message");
-        when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
         when(updateDNPronouncedCasesWorkflow.run(AUTH_TOKEN)).thenThrow(new WorkflowException(" a WorkflowException message"));
 
-        classUnderTest.enableCaseEligibleForDecreeAbsolute();
+        classUnderTest.enableCaseEligibleForDecreeAbsolute(AUTH_TOKEN);
     }
-
 
 }

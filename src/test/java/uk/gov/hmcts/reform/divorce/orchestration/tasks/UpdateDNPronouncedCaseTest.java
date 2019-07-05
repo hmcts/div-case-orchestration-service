@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,11 +25,24 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateDNPronouncedCaseTest {
+
     @Mock
     private ApplicationEventPublisher applicationEventPublisherMock;
 
     @InjectMocks
     private UpdateDNPronouncedCase classToTest;
+
+    @Test
+    public void givenListCase_thenPublishEvents() throws TaskException {
+        TaskContext context = new DefaultTaskContext();
+        String[] caseIds = {"someId1", "someId2"};
+        context.setTransientObject(SEARCH_RESULT_KEY, Arrays.asList(caseIds));
+        Map<String, Object> payload = new HashMap<>();
+
+        classToTest.execute(context, payload);
+
+        verify(applicationEventPublisherMock, times(2)).publishEvent(any());
+    }
 
     @Test
     public void givenEmptyMap_whenGetEvents_thenReturnEmptyList() {
@@ -49,17 +63,5 @@ public class UpdateDNPronouncedCaseTest {
         List<ApplicationEvent> result = classToTest.getApplicationEvent(context, payload);
 
         assertEquals(2, result.size());
-    }
-
-    @Test
-    public void givenListCase_thenPublishEvents() {
-        TaskContext context = new DefaultTaskContext();
-        String[] caseIds = {"someId1", "someId2"};
-        context.setTransientObject(SEARCH_RESULT_KEY, Arrays.asList(caseIds));
-        Map<String, Object> payload = new HashMap<>();
-
-        classToTest.getApplicationEvent(context, payload);
-
-        verify(applicationEventPublisherMock, times(2)).publishEvent(any());
     }
 }

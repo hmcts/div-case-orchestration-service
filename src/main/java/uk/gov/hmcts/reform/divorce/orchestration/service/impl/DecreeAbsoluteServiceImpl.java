@@ -5,28 +5,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DecreeAbsoluteService;
-import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCasesWorkflow;
 
 @Slf4j
 @Service
 public class DecreeAbsoluteServiceImpl implements DecreeAbsoluteService {
 
-    private final UpdateDNPronouncedCasesWorkflow updateDNPronouncedCasesWorkflow;
-    private final AuthUtil authUtil;
-
     @Autowired
-    public DecreeAbsoluteServiceImpl(UpdateDNPronouncedCasesWorkflow updateDNPronouncedCasesWorkflow,
-                                     AuthUtil authUtil) {
-        this.updateDNPronouncedCasesWorkflow = updateDNPronouncedCasesWorkflow;
-        this.authUtil = authUtil;
-    }
+    private UpdateDNPronouncedCasesWorkflow updateDNPronouncedCasesWorkflow;
 
     @Override
-    public int enableCaseEligibleForDecreeAbsolute() throws WorkflowException {
+    public int enableCaseEligibleForDecreeAbsolute(String authToken) throws WorkflowException {
         log.info("Start processing cases eligible for DA ...");
-        int casesProcessed = updateDNPronouncedCasesWorkflow.run(authUtil.getCaseworkerToken());
+        int casesProcessed = updateDNPronouncedCasesWorkflow.run(authToken);
         log.info(String.format("Completed processing cases [%d] eligible for DA", casesProcessed));
         return casesProcessed;
     }
+
 }

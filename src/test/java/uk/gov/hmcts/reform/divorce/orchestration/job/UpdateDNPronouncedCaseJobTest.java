@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.job;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -11,13 +12,15 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DecreeAbsoluteService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateDNPronouncedCaseJobTest {
+
+    private static final String TEST_AUTH_TOKEN = "testAuthToken";
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -28,21 +31,31 @@ public class UpdateDNPronouncedCaseJobTest {
     @Mock
     private JobExecutionContext jobExecutionContextMock;
 
+    @Mock
+    private AuthUtil authUtil;
+
     @InjectMocks
     private UpdateDNPronouncedCaseJob classToTest;
+
+    @Before
+    public void setUp() {
+        when(authUtil.getCaseworkerToken()).thenReturn(TEST_AUTH_TOKEN);
+    }
 
     @Test
     public void execute_updateToAwaitingDA_updateExecuted() throws JobExecutionException, WorkflowException {
         classToTest.execute(jobExecutionContextMock);
-        verify(decreeAbsoluteServiceMock, times(1)).enableCaseEligibleForDecreeAbsolute();
+
+        verify(decreeAbsoluteServiceMock).enableCaseEligibleForDecreeAbsolute(TEST_AUTH_TOKEN);
     }
 
     @Test
     public void execute_updateToAwaitingDA_JobExceptionThrown() throws JobExecutionException, WorkflowException {
         expectedException.expect(JobExecutionException.class);
         expectedException.expectMessage("Case update failed");
-        doThrow(new WorkflowException("a WorkflowException message")).when(decreeAbsoluteServiceMock).enableCaseEligibleForDecreeAbsolute();
+        when(decreeAbsoluteServiceMock.enableCaseEligibleForDecreeAbsolute(TEST_AUTH_TOKEN)).thenThrow(WorkflowException.class);
 
         classToTest.execute(jobExecutionContextMock);
     }
+
 }

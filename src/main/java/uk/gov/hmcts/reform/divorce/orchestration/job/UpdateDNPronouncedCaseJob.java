@@ -7,16 +7,21 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DecreeAbsoluteService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 @Slf4j
 public class UpdateDNPronouncedCaseJob implements Job {
+
     @Autowired
     private DecreeAbsoluteService decreeAbsoluteService;
+
+    @Autowired
+    private AuthUtil authUtil;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
-            decreeAbsoluteService.enableCaseEligibleForDecreeAbsolute();
+            decreeAbsoluteService.enableCaseEligibleForDecreeAbsolute(authUtil.getCaseworkerToken());
             log.info("UpdateDNPronouncedCaseJob executed");
         } catch (WorkflowException e) {
             throw new JobExecutionException("Case update failed", e);

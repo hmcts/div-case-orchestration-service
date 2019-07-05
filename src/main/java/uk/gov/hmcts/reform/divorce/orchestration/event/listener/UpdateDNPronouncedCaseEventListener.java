@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 @Slf4j
 public class UpdateDNPronouncedCaseEventListener implements ApplicationListener<UpdateDNPronouncedCaseEvent> {
+
     @Autowired
     private CaseOrchestrationService caseOrchestrationService;
 
@@ -23,7 +24,7 @@ public class UpdateDNPronouncedCaseEventListener implements ApplicationListener<
         try {
             caseOrchestrationService.makeCaseEligibleForDA(event.getAuthToken(), event.getCaseId());
             updateCasesProcessedCount((TaskContext) event.getSource());
-            log.info(String.format("UpdateDNPronouncedCaseEvent [%s] has been published", event.getCaseId()));
+            log.info(String.format("UpdateDNPronouncedCaseEvent [%s] has been processed", event.getCaseId()));
         } catch (CaseOrchestrationServiceException e) {
             log.error(String.format("Exception thrown while processing UpdateDNPronouncedCaseEvent [%s]: %s",
                     event.getCaseId(), e.getMessage()), e);
