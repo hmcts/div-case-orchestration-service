@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import feign.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponents;
@@ -17,13 +15,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LOCATION_HEADER;
 
 @Component
-@ConditionalOnProperty(value = "idam.strategic.enabled", havingValue = "true")
 public class RetrievePinUserDetailsFromStrategicIdam extends RetrievePinUserDetails {
 
     private final StrategicIdamClient idamClient;
 
     @Autowired
-    public RetrievePinUserDetailsFromStrategicIdam(@Qualifier("strategicIdamClient") StrategicIdamClient idamClient) {
+    public RetrievePinUserDetailsFromStrategicIdam(StrategicIdamClient idamClient) {
         this.idamClient = idamClient;
     }
 
