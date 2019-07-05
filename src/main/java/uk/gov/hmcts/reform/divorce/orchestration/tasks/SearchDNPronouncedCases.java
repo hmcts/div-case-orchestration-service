@@ -88,6 +88,7 @@ public class SearchDNPronouncedCases implements Task<Map<String, Object>> {
             finalResult.getCases().addAll(currentSearchResult.getCases());
         }
         while (searchTotalNumberOfResults > rollingSearchResultSize);
+        log.info("Search found {} cases.",  finalResult.getCases().size());
         return finalResult;
     }
 
