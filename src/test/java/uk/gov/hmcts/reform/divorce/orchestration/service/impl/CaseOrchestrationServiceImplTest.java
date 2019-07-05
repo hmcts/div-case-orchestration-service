@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
@@ -213,6 +214,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
+
+    @Mock
+    private MakeCaseEligibleForDecreeAbsoluteWorkflow makeCaseEligibleForDecreeAbsoluteWorkFlow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1121,6 +1125,26 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> returnedPayload = classUnderTest.cleanStateCallback(ccdCallbackRequest, AUTH_TOKEN);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
+    }
+
+    @Test
+    public void testThatWorkflowIsCalled_ForMakeCaseEligibleForDA() throws WorkflowException, CaseOrchestrationServiceException {
+        when(makeCaseEligibleForDecreeAbsoluteWorkFlow.run("testToken", "testCaseId")).thenReturn(expectedPayload);
+
+        Map<String, Object> returnedPayload = classUnderTest.makeCaseEligibleForDA("testToken", "testCaseId");
+
+        assertThat(returnedPayload, equalTo(expectedPayload));
+    }
+
+    @Test
+    public void testThatWhenWorkflowThrowsException_ForMakeCaseEligibleForDA_ErrorMessagesAreReturned()
+        throws WorkflowException, CaseOrchestrationServiceException {
+
+        when(makeCaseEligibleForDecreeAbsoluteWorkFlow.run("testToken", "testCaseId")).thenThrow(new WorkflowException("Something failed"));
+        expectedException.expect(CaseOrchestrationServiceException.class);
+        expectedException.expectMessage("Something failed");
+
+        classUnderTest.makeCaseEligibleForDA("testToken", "testCaseId");
     }
 
     @After
