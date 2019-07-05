@@ -25,7 +25,7 @@ public class UpdateDNPronouncedCaseEventListener implements ApplicationListener<
             updateCasesProcessedCount((TaskContext) event.getSource());
             log.info(String.format("UpdateDNPronouncedCaseEvent [%s] has been published", event.getCaseId()));
         } catch (CaseOrchestrationServiceException e) {
-            log.error(String.format("Exception thrown while publishing UpdateDNPronouncedCaseEvent [%s]: %s",
+            log.error(String.format("Exception thrown while processing UpdateDNPronouncedCaseEvent [%s]: %s",
                     event.getCaseId(), e.getMessage()), e);
         }
     }

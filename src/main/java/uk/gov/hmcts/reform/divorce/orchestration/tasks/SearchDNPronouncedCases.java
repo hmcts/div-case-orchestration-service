@@ -42,7 +42,7 @@ public class SearchDNPronouncedCases implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         int start = context.<Integer>getTransientObjectOptional("FROM").orElse(0);
-        int pageSize = context.<Integer>getTransientObjectOptional("PAGE_SIZE").orElse(50);;
+        int pageSize = context.<Integer>getTransientObjectOptional("PAGE_SIZE").orElse(50);
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
         String coolOffPeriodInDN = context.getTransientObject(AWAITING_DA_PERIOD_KEY);
 
