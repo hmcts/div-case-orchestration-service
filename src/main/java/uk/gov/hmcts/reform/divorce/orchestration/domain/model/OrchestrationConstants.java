@@ -81,7 +81,7 @@ public class OrchestrationConstants {
     public static final String D_8_SEP_REF_DATE = "D8SeparationReferenceDate";
     public static final String SEP_YEARS = "SepYears";
     public static final String D_8_SEP_TIME_TOGETHER_PERMITTED = "D8SeparationTimeTogetherPermitted";
-    public static final String D_8_DESERTION_TIME_TOGETHER_PERMITTED =  "D8DesertionTimeTogetherPermitted";
+    public static final String D_8_DESERTION_TIME_TOGETHER_PERMITTED = "D8DesertionTimeTogetherPermitted";
     public static final String WHO_PAYS_COSTS_CCD_FIELD = "WhoPaysCosts";
     public static final String WHO_PAYS_CCD_CODE_FOR_RESPONDENT = "respondent";
     public static final String DECREE_NISI_GRANTED_DATE_CCD_FIELD = "DecreeNisiGrantedDate";
@@ -107,6 +107,8 @@ public class OrchestrationConstants {
     public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
     public static final String START_AOS_EVENT_ID = "startAos";
     public static final String PAYMENT_MADE_EVENT = "paymentMade";
+    public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID = "MakeEligibleForDA_Petitioner";
+    public static final String AWAITING_DECREE_ABSOLUTE = "AwaitingDecreeAbsolute";
     public static final String SOLICITOR_CREATE_EVENT = "solicitorCreate";
 
     // CCD Case States
@@ -237,6 +239,7 @@ public class OrchestrationConstants {
     public static final String MINI_PETITION_LINK = "minipetitionlink";
     public static final String RESP_ANSWERS_LINK = "respondentanswerslink";
     public static final String CO_RESP_ANSWERS_LINK = "corespondentanswerslink";
+    public static final String SOLICITOR_LINKED_EMAIL = "RespSolLinkedEmail";
 
 
     // Fees

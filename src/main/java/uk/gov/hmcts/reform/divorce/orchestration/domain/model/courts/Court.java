@@ -16,6 +16,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Data
 public class Court {
 
+    private static final String CARE_OF_PREFIX = "c/o ";
+
     @JsonProperty("courtId")
     @Setter
     private String courtId;
@@ -109,6 +111,10 @@ public class Court {
 
     private String getDivorceCentreNameFormattedForAddress() {
         StringBuffer stringBuffer = new StringBuffer();
+
+        if (isServiceCentre()) {
+            stringBuffer.append(CARE_OF_PREFIX);
+        }
 
         stringBuffer.append(divorceCentreName);
 
