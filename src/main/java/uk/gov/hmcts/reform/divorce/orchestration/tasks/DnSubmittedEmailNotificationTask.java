@@ -55,7 +55,7 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
         String petitionerEmail = Objects.toString(data.get(D_8_PETITIONER_EMAIL), null);
 
         Map<String, String> notificationTemplateVars = new HashMap<>();
-        EmailTemplateNames template = null;
+        String template = null;
         String emailToBeSentTo = null;
 
         if (StringUtils.isNotBlank(petSolicitorEmail)) {
@@ -68,18 +68,18 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
             notificationTemplateVars.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
             notificationTemplateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
             notificationTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
-            template = EmailTemplateNames.SOL_APPLICANT_DN_SUBMITTED;
+            template = EmailTemplateNames.SOL_APPLICANT_DN_SUBMITTED.name();
             emailToBeSentTo = petSolicitorEmail;
         } else {
             notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
             notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
             notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, ccdReference);
-            template = EmailTemplateNames.DN_SUBMISSION;
+            template = EmailTemplateNames.DN_SUBMISSION.name();
             emailToBeSentTo = petitionerEmail;
         }
         try {
             emailService.sendEmailAndReturnExceptionIfFails(emailToBeSentTo,
-                template.name(), notificationTemplateVars, "DN Submission");
+                template, notificationTemplateVars, "DN Submission");
         } catch (NotificationClientException e) {
             log.warn("Error sending email on DN submitted for case {}", ccdReference, e);
             context.setTransientObject(OrchestrationConstants.EMAIL_ERROR_KEY, e.getMessage());

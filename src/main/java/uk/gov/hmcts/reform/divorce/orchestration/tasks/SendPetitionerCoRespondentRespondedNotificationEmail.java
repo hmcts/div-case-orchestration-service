@@ -66,7 +66,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
             templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
             templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
 
-            emailService.sendEmail(petitionerEmail,
+            emailService.sendEmail(petSolicitorEmail,
                 EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
                 templateVars,
                 "co-respondent responded - notification to solicitor");

@@ -95,72 +95,74 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
             templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
             templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
 
-            if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_RECVD_EVENT)) {
-                emailService.sendEmail(petSolicitorEmail,
-                    EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED.name(),
-                    templateVars,
-                    SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC);
-            } else if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_NOT_RECVD_EVENT)) {
-                emailService.sendEmail(petSolicitorEmail,
-                    EmailTemplateNames.SOL_APPLICANT_RESP_NOT_RESPONDED.name(),
-                    templateVars,
-                    SOL_APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC);
-            } else {
-                emailService.sendEmail(
-                        petSolicitorEmail,
-                        EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name(),
-                        templateVars,
-                        SOL_GENERIC_UPDATE_EMAIL_DESC);
-            }
-
+            sendSolicitorEmail(petSolicitorEmail, eventId, templateVars);
         } else if (StringUtils.isNotBlank(petitionerEmail)) {
+            String relationship = getMandatoryPropertyValueAsString(caseData, D_8_DIVORCED_WHO);
             templateVars.put(NOTIFICATION_EMAIL, petitionerEmail);
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
+            templateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
 
-            String relationship = getMandatoryPropertyValueAsString(caseData, D_8_DIVORCED_WHO);
-            if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_NOT_RECVD_EVENT)) {
-                emailService.sendEmail(petSolicitorEmail,
-                    EmailTemplateNames.PETITIONER_RESP_NOT_RESPONDED.name(),
-                    templateVars,
-                    APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC);
-            } else if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_RECVD_EVENT)) {
-                if (isAdulteryAndNoConsent(caseData)) {
-                    templateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
+            sendPetitionerEmail(caseData, petitionerEmail, eventId, templateVars);
+        }
+        return caseData;
+    }
 
-                    if (isCoRespNamedAndNotReplied(caseData)) {
-                        emailService.sendEmail(petitionerEmail,
-                                EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
-                                templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC);
-                    } else {
-                        emailService.sendEmail(petitionerEmail,
-                                EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
-                                templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC);
-                    }
+    private void sendSolicitorEmail(String petSolicitorEmail, String eventId, Map<String, String> templateVars) {
+        if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_RECVD_EVENT)) {
+            emailService.sendEmail(petSolicitorEmail,
+                EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED.name(),
+                templateVars,
+                SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC);
+        } else if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_NOT_RECVD_EVENT)) {
+            emailService.sendEmail(petSolicitorEmail,
+                EmailTemplateNames.SOL_APPLICANT_RESP_NOT_RESPONDED.name(),
+                templateVars,
+                SOL_APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC);
+        } else {
+            emailService.sendEmail(
+                petSolicitorEmail,
+                EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name(),
+                templateVars,
+                SOL_GENERIC_UPDATE_EMAIL_DESC);
+        }
+    }
 
-                } else if (isSep2YrAndNoConsent(caseData)) {
-                    templateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
-
+    private void sendPetitionerEmail(Map<String, Object> caseData, String petitionerEmail,
+                                     String eventId, Map<String, String> templateVars) {
+        if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_NOT_RECVD_EVENT)) {
+            emailService.sendEmail(petitionerEmail,
+                EmailTemplateNames.PETITIONER_RESP_NOT_RESPONDED.name(),
+                templateVars,
+                APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC);
+        } else if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_RECVD_EVENT)) {
+            if (isAdulteryAndNoConsent(caseData)) {
+                if (isCoRespNamedAndNotReplied(caseData)) {
                     emailService.sendEmail(petitionerEmail,
-                            EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
-                            templateVars, AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC);
-
+                        EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
+                        templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC);
                 } else {
-                    emailService.sendEmail(
-                        petitionerEmail,
-                        EmailTemplateNames.GENERIC_UPDATE.name(),
-                        templateVars,
-                        GENERIC_UPDATE_EMAIL_DESC);
+                    emailService.sendEmail(petitionerEmail,
+                        EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
+                        templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC);
                 }
+            } else if (isSep2YrAndNoConsent(caseData)) {
+                emailService.sendEmail(petitionerEmail,
+                    EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
+                    templateVars, AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC);
+
             } else {
                 emailService.sendEmail(
                     petitionerEmail,
                     EmailTemplateNames.GENERIC_UPDATE.name(),
-                    templateVars,
-                    GENERIC_UPDATE_EMAIL_DESC);
+                    templateVars, GENERIC_UPDATE_EMAIL_DESC);
             }
+        } else {
+            emailService.sendEmail(
+                petitionerEmail,
+                EmailTemplateNames.GENERIC_UPDATE.name(),
+                templateVars, GENERIC_UPDATE_EMAIL_DESC);
         }
-        return caseData;
     }
 
     private boolean isAdulteryAndNoConsent(Map<String, Object> caseData) {

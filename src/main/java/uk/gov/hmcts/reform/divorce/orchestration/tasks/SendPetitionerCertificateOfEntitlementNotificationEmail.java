@@ -61,7 +61,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
 
 
         String petSolicitorEmail = (String) payload.get(PET_SOL_EMAIL);
-        String petitionerEmail = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_EMAIL);
+        String petitionerEmail = (String) payload.get(D_8_PETITIONER_EMAIL);
         String familyManCaseId = getMandatoryPropertyValueAsString(payload, D_8_CASE_REFERENCE);
         String petitionerFirstName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_LAST_NAME);
