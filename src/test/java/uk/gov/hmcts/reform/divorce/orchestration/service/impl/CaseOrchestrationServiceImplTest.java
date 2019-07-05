@@ -59,6 +59,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCa
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -218,6 +219,9 @@ public class CaseOrchestrationServiceImplTest {
     @Mock
     private MakeCaseEligibleForDecreeAbsoluteWorkflow makeCaseEligibleForDecreeAbsoluteWorkFlow;
 
+    @Mock
+    private ApplicantDecreeAbsoluteEligibilityWorkflow applicantDecreeAbsoluteEligibilityWorkflow;
+
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
 
@@ -234,15 +238,15 @@ public class CaseOrchestrationServiceImplTest {
     public void setUp() {
         requestPayload = singletonMap("requestPayloadKey", "requestPayloadValue");
         ccdCallbackRequest = CcdCallbackRequest.builder()
-                .caseDetails(
-                        CaseDetails.builder()
-                                .caseData(requestPayload)
-                                .caseId(TEST_CASE_ID)
-                                .state(TEST_STATE)
-                                .build())
-                .eventId(TEST_EVENT_ID)
-                .token(TEST_TOKEN)
-                .build();
+            .caseDetails(
+                CaseDetails.builder()
+                    .caseData(requestPayload)
+                    .caseId(TEST_CASE_ID)
+                    .state(TEST_STATE)
+                    .build())
+            .eventId(TEST_EVENT_ID)
+            .token(TEST_TOKEN)
+            .build();
         expectedPayload = Collections.singletonMap(RESPONDENT_PIN, TEST_PIN);
     }
 
@@ -475,7 +479,7 @@ public class CaseOrchestrationServiceImplTest {
         when(getCaseWithIdWorkflow.run(any())).thenReturn(caseDetails);
 
         when(updateToCCDWorkflow.run(any(), any(), any()))
-                .thenReturn(requestPayload);
+            .thenReturn(requestPayload);
 
         when(authUtil.getCaseworkerToken()).thenReturn("testtoken");
 
@@ -486,11 +490,11 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(requestPayload, actual);
 
         Payment payment = Payment.builder()
-                .paymentFeeId("X243")
-                .paymentChannel("online")
-                .paymentStatus("success")
-                .paymentAmount("55000")
-                .build();
+            .paymentFeeId("X243")
+            .paymentChannel("online")
+            .paymentStatus("success")
+            .paymentAmount("55000")
+            .build();
 
         final Map<String, Object> updateEvent = new HashMap<>();
         updateEvent.put("eventData", singletonMap("payment", payment));
@@ -586,7 +590,7 @@ public class CaseOrchestrationServiceImplTest {
     public void givenCaseData_whenSendPetitionerSubmissionNotification_thenReturnPayload() throws Exception {
         // given
         when(sendPetitionerSubmissionNotificationWorkflow.run(ccdCallbackRequest))
-                .thenReturn(requestPayload);
+            .thenReturn(requestPayload);
 
         // when
         Map<String, Object> actual = classUnderTest.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest);
@@ -601,7 +605,7 @@ public class CaseOrchestrationServiceImplTest {
     public void givenCaseData_whenSendPetitionerGenericEmailNotification_thenReturnPayload() throws Exception {
         // given
         when(sendPetitionerEmailNotificationWorkflow.run(ccdCallbackRequest))
-                .thenReturn(requestPayload);
+            .thenReturn(requestPayload);
         // when
         Map<String, Object> actual = classUnderTest.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest);
         // then
@@ -624,7 +628,7 @@ public class CaseOrchestrationServiceImplTest {
         when(sendRespondentSubmissionNotificationWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
 
         Map<String, Object> returnedPayload = classUnderTest
-                .sendRespondentSubmissionNotificationEmail(ccdCallbackRequest);
+            .sendRespondentSubmissionNotificationEmail(ccdCallbackRequest);
 
         assertEquals(requestPayload, returnedPayload);
         verify(sendRespondentSubmissionNotificationWorkflow).run(ccdCallbackRequest);
@@ -649,7 +653,7 @@ public class CaseOrchestrationServiceImplTest {
     public void givenCaseData_whenProcessPbaPayment_thenReturnPayload() throws Exception {
         // given
         when(processPbaPaymentWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
-                .thenReturn(requestPayload);
+            .thenReturn(requestPayload);
 
         // when
         Map<String, Object> actual = classUnderTest.processPbaPayment(ccdCallbackRequest, AUTH_TOKEN);
@@ -665,7 +669,7 @@ public class CaseOrchestrationServiceImplTest {
     public void givenCaseDataInvalid_whenProcessPbaPayment_thenReturnListOfErrors() throws Exception {
         // given
         when(processPbaPaymentWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
-                .thenReturn(requestPayload);
+            .thenReturn(requestPayload);
         Map<String, Object> errors = Collections.singletonMap("new_Error", "An Error");
         when(processPbaPaymentWorkflow.errors()).thenReturn(errors);
 
@@ -723,13 +727,13 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void givenNoError_whenExecuteDnSubmittedWorkflow_thenReturnCaseData() throws WorkflowException {
-        CcdCallbackResponse expectedResponse =  CcdCallbackResponse.builder()
-                .data(ccdCallbackRequest.getCaseDetails().getCaseData())
-                .build();
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
+            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
+            .build();
 
         when(dnSubmittedWorkflow
-                .run(ccdCallbackRequest, AUTH_TOKEN))
-                .thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
+            .run(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
 
         CcdCallbackResponse ccdResponse = classUnderTest.dnSubmitted(ccdCallbackRequest, AUTH_TOKEN);
 
@@ -738,7 +742,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void givenNoError_whenExecuteCoRespReceivedWorkflow_thenReturnCaseData() throws WorkflowException {
-        CcdCallbackResponse expectedResponse =  CcdCallbackResponse.builder()
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
             .data(ccdCallbackRequest.getCaseDetails().getCaseData())
             .build();
 
@@ -756,8 +760,8 @@ public class CaseOrchestrationServiceImplTest {
 
         Map<String, Object> workflowError = singletonMap("ErrorKey", "Error value");
         when(dnSubmittedWorkflow
-                .run(ccdCallbackRequest, AUTH_TOKEN))
-                .thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
+            .run(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(ccdCallbackRequest.getCaseDetails().getCaseData());
 
         when(dnSubmittedWorkflow.errors()).thenReturn(workflowError);
 
@@ -805,7 +809,7 @@ public class CaseOrchestrationServiceImplTest {
         when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
         when(processAwaitingPronouncementCasesWorkflow.run(AUTH_TOKEN)).thenReturn(expectedResult);
 
-        Map<String, Object>  actual = classUnderTest.generateBulkCaseForListing();
+        Map<String, Object> actual = classUnderTest.generateBulkCaseForListing();
 
         assertEquals(expectedResult, actual);
     }
@@ -821,7 +825,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test(expected = WorkflowException.class)
     public void shouldThrowException_ForCoRespondentAnswersGeneratorEvent_WhenWorkflowExceptionIsCaught()
-            throws WorkflowException {
+        throws WorkflowException {
         when(generateCoRespondentAnswersWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(AUTH_TOKEN)))
             .thenThrow(new WorkflowException("This operation threw an exception"));
 
@@ -830,7 +834,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldCallTheRightWorkflow_ForDocumentGeneration() throws WorkflowException {
-        when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN , "a", "b", "c"))
+        when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c"))
             .thenReturn(requestPayload);
 
         final Map<String, Object> result = classUnderTest
@@ -853,11 +857,11 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "No");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-                CaseDetails.builder().caseData(caseData).build())
-                .build();
+            CaseDetails.builder().caseData(caseData).build())
+            .build();
 
         classUnderTest
-                .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+            .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         verifyZeroInteractions(documentGenerationWorkflow);
     }
@@ -869,16 +873,16 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-                CaseDetails.builder().caseData(caseData).build())
-                .build();
+            CaseDetails.builder().caseData(caseData).build())
+            .build();
 
         classUnderTest
-                .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+            .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-                DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
+            DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
         verify(documentGenerationWorkflow, never()).run(ccdCallbackRequest, AUTH_TOKEN,
-                COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
+            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
@@ -897,9 +901,9 @@ public class CaseOrchestrationServiceImplTest {
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-                DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
+            DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-                COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
+            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
@@ -911,32 +915,32 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-                CaseDetails.builder().caseData(caseData).build())
-                .build();
+            CaseDetails.builder().caseData(caseData).build())
+            .build();
 
         classUnderTest
-                .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+            .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-                DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
+            DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-                COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
+            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
     @Test(expected = WorkflowException.class)
     public void shouldThrowException_ForDocumentGeneration_WhenWorkflowExceptionIsCaught()
-            throws WorkflowException {
+        throws WorkflowException {
 
-        when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN , "a", "b", "c"))
-                .thenThrow(new WorkflowException("This operation threw an exception"));
+        when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c"))
+            .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
     }
 
     @Test(expected = WorkflowException.class)
     public void shouldThrowException_ForDnPronouncedDocumentsGeneration_WhenWorkflowExceptionIsCaught()
-            throws WorkflowException {
+        throws WorkflowException {
 
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
@@ -948,7 +952,7 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
-                COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE))
+            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE))
             .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
@@ -956,7 +960,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void testServiceCallsRightWorkflowWithRightData_ForProcessingAosSolicitorNominated()
-            throws WorkflowException, CaseOrchestrationServiceException {
+        throws WorkflowException, CaseOrchestrationServiceException {
         when(respondentSolicitorNominatedWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()))).thenReturn(requestPayload);
 
         assertThat(classUnderTest.processAosSolicitorNominated(ccdCallbackRequest), is(equalTo(requestPayload)));
@@ -964,9 +968,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldThrowException_ForProcessingAosSolicitorNominated_WhenWorkflowExceptionIsCaught()
-            throws WorkflowException, CaseOrchestrationServiceException {
+        throws WorkflowException, CaseOrchestrationServiceException {
         when(respondentSolicitorNominatedWorkflow.run(eq(ccdCallbackRequest.getCaseDetails())))
-                .thenThrow(new WorkflowException("This operation threw an exception."));
+            .thenThrow(new WorkflowException("This operation threw an exception."));
 
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectMessage(is("This operation threw an exception."));
@@ -995,17 +999,17 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldCallTheRightWorkflow_ForProcessBulkCaseScheduleForHearing() throws WorkflowException {
         when(bulkCaseUpdateHearingDetailsEventWorkflow.run(eq(ccdCallbackRequest), eq(AUTH_TOKEN)))
-                .thenReturn(requestPayload);
+            .thenReturn(requestPayload);
 
         assertThat(classUnderTest.processBulkCaseScheduleForHearing(ccdCallbackRequest, AUTH_TOKEN),
-                is(equalTo(requestPayload)));
+            is(equalTo(requestPayload)));
     }
 
     @Test(expected = WorkflowException.class)
     public void shouldThrowException_ForProcessBulkCaseScheduleForHearing_WhenWorkflowExceptionIsCaught()
-            throws WorkflowException {
+        throws WorkflowException {
         when(bulkCaseUpdateHearingDetailsEventWorkflow.run(eq(ccdCallbackRequest), eq(AUTH_TOKEN)))
-                .thenThrow(new WorkflowException("This operation threw an exception"));
+            .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.processBulkCaseScheduleForHearing(ccdCallbackRequest, AUTH_TOKEN);
     }
@@ -1013,38 +1017,38 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldCallTheRightWorkflow_ForvalidateBulkCaseListingData() throws WorkflowException {
         when(validateBulkCaseListingWorkflow.run(eq(requestPayload)))
-                .thenReturn(requestPayload);
+            .thenReturn(requestPayload);
 
         assertThat(classUnderTest.validateBulkCaseListingData(requestPayload),
-                is(equalTo(requestPayload)));
+            is(equalTo(requestPayload)));
     }
 
     @Test(expected = WorkflowException.class)
     public void shouldThrowException_ForvalidateBulkCaseListingData_WhenWorkflowExceptionIsCaught()
-            throws WorkflowException {
+        throws WorkflowException {
         when(validateBulkCaseListingWorkflow.run(eq(requestPayload)))
-                .thenThrow(new WorkflowException("This operation threw an exception"));
+            .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.validateBulkCaseListingData(requestPayload);
     }
 
     @Test
     public void testServiceCallsRightWorkflowWithRightData_ForProcessingAosSolicitorLinkCase()
-            throws WorkflowException, CaseOrchestrationServiceException {
+        throws WorkflowException, CaseOrchestrationServiceException {
         String token = "token";
         final UserDetails userDetails = UserDetails.builder().build();
         when(respondentSolicitorLinkCaseWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(token)))
-                .thenReturn(userDetails);
+            .thenReturn(userDetails);
 
         assertThat(classUnderTest.processAosSolicitorLinkCase(ccdCallbackRequest, token), is(equalTo(requestPayload)));
     }
 
     @Test
     public void shouldThrowException_ForProcessingAosSolicitorLinkCase_WhenWorkflowExceptionIsCaught()
-            throws WorkflowException, CaseOrchestrationServiceException {
+        throws WorkflowException, CaseOrchestrationServiceException {
         String token = "token";
         when(respondentSolicitorLinkCaseWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(token)))
-                .thenThrow(new WorkflowException("This operation threw an exception."));
+            .thenThrow(new WorkflowException("This operation threw an exception."));
 
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectMessage(is("This operation threw an exception."));
@@ -1076,7 +1080,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldGeneratePdfFile_ForDecreeNisiAndCostOrder_When_Costs_claim_granted_is_YES_Value()
-            throws WorkflowException {
+        throws WorkflowException {
 
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
@@ -1084,19 +1088,19 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-                CaseDetails.builder().caseData(caseData).build())
-                .build();
+            CaseDetails.builder().caseData(caseData).build())
+            .build();
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
-                DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME))
-                .thenReturn(caseData);
+            DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME))
+            .thenReturn(caseData);
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
-                COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE))
-                .thenReturn(requestPayload);
+            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE))
+            .thenReturn(requestPayload);
 
         final Map<String, Object> result = classUnderTest
-                .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+            .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         Map<String, Object> expectedResult = new HashMap<>();
         expectedResult.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
@@ -1110,7 +1114,7 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldCallWorkflow_ForBulkCaseUpdatePronouncementDate() throws WorkflowException {
         when(bulkCaseUpdateDnPronounceDatesWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN))
-                .thenReturn(singletonMap("returnedKey", "returnedValue"));
+            .thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         Map<String, Object> returnedPayload = classUnderTest.updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN);
 
@@ -1145,6 +1149,29 @@ public class CaseOrchestrationServiceImplTest {
         expectedException.expectMessage("Something failed");
 
         classUnderTest.makeCaseEligibleForDA("testToken", "testCaseId");
+    }
+
+    @Test
+    public void shouldCallRightWorkflow_WhenProcessingCaseToBeMadeEligibleForDAForPetitioner()
+        throws CaseOrchestrationServiceException, WorkflowException {
+        when(applicantDecreeAbsoluteEligibilityWorkflow.run(any(), any())).thenReturn(expectedPayload);
+
+        Map<String, Object> returnedPayload = classUnderTest.processApplicantDecreeAbsoluteEligibility(ccdCallbackRequest);
+
+        assertThat(returnedPayload, equalTo(expectedPayload));
+        verify(applicantDecreeAbsoluteEligibilityWorkflow).run(eq(TEST_CASE_ID), eq(requestPayload));
+    }
+
+    @Test
+    public void shouldThrowNewException_IfExceptionIsThrown_WhenProcessingCaseToBeMadeEligibleForDAForPetitioner()
+        throws CaseOrchestrationServiceException, WorkflowException {
+
+        WorkflowException testFailureCause = new WorkflowException("Not good...");
+        when(applicantDecreeAbsoluteEligibilityWorkflow.run(any(), any())).thenThrow(testFailureCause);
+        expectedException.expect(CaseOrchestrationServiceException.class);
+        expectedException.expectCause(equalTo(testFailureCause));
+
+        classUnderTest.processApplicantDecreeAbsoluteEligibility(ccdCallbackRequest);
     }
 
     @After
