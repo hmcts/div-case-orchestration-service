@@ -10,9 +10,10 @@ public interface DecreeAbsoluteService {
 
     /**
      * Process cases which are eligible for Decree Absolute.
+     *
+     * @param authToken Authorisation token
      * @return a number of cases are processed
      * @throws WorkflowException if any exception occurs
-     * @param authToken
      */
     int enableCaseEligibleForDecreeAbsolute(String authToken) throws WorkflowException;
 
