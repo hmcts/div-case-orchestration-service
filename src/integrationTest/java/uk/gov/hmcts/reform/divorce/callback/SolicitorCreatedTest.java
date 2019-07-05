@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.hmcts.reform.divorce.support.CcdClientSupport;
@@ -36,15 +37,20 @@ public class SolicitorCreatedTest extends IntegrationTest {
     public void givenCaseCreated_whenCallbackMade_shouldAssignCorrectRole() {
         final Map<String, Object> caseData = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
         final UserDetails solicitorUser = createSolicitorUser();
-        ccdClientSupport.submitCaseForSolicitor(caseData, solicitorUser);
+        uk.gov.hmcts.reform.ccd.client.model.CaseDetails caseDetails = ccdClientSupport.submitCaseForSolicitor(caseData, solicitorUser);
 
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         headers.put(HttpHeaders.AUTHORIZATION, solicitorUser.getAuthToken());
 
-        final CcdCallbackRequest callbackData = new CcdCallbackRequest();
-        callbackData.getCaseDetails().setCaseData(caseData);
-        callbackData.setEventId(SOLICITOR_CREATE_EVENT);
+        final CcdCallbackRequest callbackData = CcdCallbackRequest.builder()
+                .eventId(SOLICITOR_CREATE_EVENT)
+                .caseDetails(CaseDetails.builder()
+                        .caseId(String.valueOf(caseDetails.getId()))
+                        .state(caseDetails.getState())
+                        .caseData(caseData)
+                        .build())
+                .build();
 
         Response response = RestUtil.postToRestService(
             serverUrl + contextPath,
