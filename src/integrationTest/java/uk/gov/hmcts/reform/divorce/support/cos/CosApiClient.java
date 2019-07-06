@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.support.cos;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -135,4 +136,13 @@ public interface CosApiClient {
         value = "/process-applicant-da-eligibility"
     )
     CcdCallbackResponse flagCaseAsEligibleForDAForApplicant(@RequestBody CcdCallbackRequest ccdCallbackRequest);
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/submit-da/{caseId}"
+    )
+    Map<String, Object> submitDaCase(@RequestHeader(AUTHORIZATION) String authorisation,
+                                     @RequestBody Map<String, Object> caseData,
+                                     @PathVariable("caseId") String caseId
+    );
 }
