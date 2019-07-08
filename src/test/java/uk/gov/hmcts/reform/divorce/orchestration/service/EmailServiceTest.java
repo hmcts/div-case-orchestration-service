@@ -46,6 +46,22 @@ public class EmailServiceTest {
             anyString());
     }
 
+
+    @Test
+    public void useConfigTemplateVarsWhenAvailable()
+        throws NotificationClientException {
+        emailService.sendEmail(EMAIL_ADDRESS,
+            EmailTemplateNames.SAVE_DRAFT.name(),
+            null,
+            "save draft");
+
+        verify(mockClient).sendEmail(
+            eq(emailTemplatesConfig.getTemplates().get(EmailTemplateNames.SAVE_DRAFT.name())),
+            eq(EMAIL_ADDRESS),
+            eq(emailTemplatesConfig.getTemplateVars().get(EmailTemplateNames.SAVE_DRAFT.name())),
+            anyString());
+    }
+
     @Test
     public void sendEmailShouldNotPropagateNotificationClientException()
         throws NotificationClientException {

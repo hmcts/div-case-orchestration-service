@@ -115,6 +115,7 @@ public class Court {
         if (isServiceCentre()) {
             stringBuffer.append(CARE_OF_PREFIX);
         }
+
         stringBuffer.append(divorceCentreName);
 
         return stringBuffer.toString();

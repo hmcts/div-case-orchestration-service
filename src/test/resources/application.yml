@@ -99,12 +99,21 @@ feature-toggle:
       baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://localhost:4028}
   toggle:
     bulk-printer-toggle-name: "divorce_bulk_print"
+    feature_resp_solicitor_details: ${FEATURE_RESP_SOLICITOR_DETAILS:false}
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
 
 bulk-print:
   dueDate: 9
+
+bulk-action:
+  page-size: 50
+  retries:
+    max: 4
+    backoff:
+      base-rate: 1
+  min-cases: 2
 
 uk:
   gov:
@@ -138,6 +147,7 @@ uk:
           AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY: 78e21621-66bd-4c70-a294-15210724b0f6
           AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: 341119b9-5a8d-4c5e-9296-2e6bfa37c49d
           AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS: 2781acfa-3f60-4fc9-8d5b-de35cf121893
+          CASE_ELIGIBLE_FOR_NOTIFICATION_FOR_APPLICANT: 71fd2e7e-42dc-4dcf-a9bb-007ae9d4b27f
 
 
 court-distribution-config:
@@ -210,15 +220,53 @@ court:
       courtId: 'northWest'
     serviceCentre:
       serviceCentreName: 'Courts and Tribunals Service Centre'
-      divorceCentreName: 'East Midlands Regional Divorce Centre'
-      courtCity: 'Nottingham'
-      poBox: 'PO Box 10447'
-      postCode: 'NG2 9QN'
+      divorceCentreName: 'HMCTS Digital Divorce'
+      courtCity: 'Harlow'
+      poBox: 'PO Box 12706'
+      postCode: 'CM20 9QT'
       openingHours: 'Telephone Enquiries from: 8.30am to 5pm'
-      email: 'contactdivorce@justice.gov.uk'
+      email: 'divorcecase@justice.gov.uk'
       phoneNumber: '0300 303 0642'
       siteId: 'AA07'
       courtId: 'serviceCentre'
+
+dncourt:
+  locations:
+    liverpool:
+      name: "Liverpool Civil and Family Court Hearing Centre"
+      address: "35 Vernon Street\nLiverpool\nL2 2BX"
+      email: "divorcecase@justice.gov.uk"
+      phone: "0300 303 0642"
+    nottingham:
+      name: "Nottingham County Court and Family Court Hearing Centre"
+      address: "60 Canal Street\nNottingham\nNG1 7EJ"
+      email: "divorcecase@justice.gov.uk"
+      phone: "0300 303 0642"
+    bradford:
+      name: "Bradford Law Courts"
+      address: "Exchange Square\nDrake Street\nBradford\nWest Yorkshire\nBD1 1JA"
+      email: "divorcecase@justice.gov.uk"
+      phone: "0300 303 0642"
+    wrexham:
+      name: "Wrexham Divorce Unit"
+      address: "The Law Courts\nBodhyfryd\nLL12 7BP"
+      email: "divorcecase@justice.gov.uk"
+      phone: "0300 303 0642"
+    newport:
+      name: "Newport (Gwent) Civil and Family Court"
+      address: "Clarence House\nClarence Place\nNewport\nNP19 7AA"
+      email: "divorcecase@justice.gov.uk"
+      phone: "0300 303 0642"
+    portTalbot:
+      name: "Port Talbot Justice Centre"
+      address: "Harbourside Road\nPort Talbot\nSA13 1SB"
+      email: "divorcecase@justice.gov.uk"
+      phone: "0300 303 0642"
+    southampton:
+      name: "The Family Court at Southampton"
+      address: "London Road\nSouthampton\nSO15 2XQ"
+      email: "divorcecase@justice.gov.uk"
+      phone: "0300 303 0642"
 
 idam:
   api:

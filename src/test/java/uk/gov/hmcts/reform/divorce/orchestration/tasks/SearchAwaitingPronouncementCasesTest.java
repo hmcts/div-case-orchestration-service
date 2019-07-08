@@ -12,13 +12,19 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.SEARCH_RESULT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PRONOUNCEMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.JsonPathMatcher.jsonPathValueMatcher;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SearchAwaitingPronouncementCasesTest {
@@ -32,8 +38,9 @@ public class SearchAwaitingPronouncementCasesTest {
     @Test
     public void givenCasesExists_whenSearchCases_thenReturnExpectedOutput() throws TaskException {
         final DefaultTaskContext context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        classUnderTest.setPageSize(10);
         final SearchResult cmsSearchResponse =
                 SearchResult.builder()
                     .cases(Collections.emptyList())
@@ -42,9 +49,16 @@ public class SearchAwaitingPronouncementCasesTest {
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any())).thenReturn(cmsSearchResponse);
 
         classUnderTest.execute(context, null);
+
         Object actual = context.getTransientObject(SEARCH_RESULT_KEY);
+
         assertEquals(cmsSearchResponse.getCases(), actual);
 
+        verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
+            jsonPathValueMatcher("$.query.bool.must[*].match.state.query", hasItem(AWAITING_PRONOUNCEMENT))));
+        verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
+            jsonPathValueMatcher("$.query.bool.must_not[*].exists.field", hasItems("data.BulkListingCaseId", "data.DateAndTimeOfHearing"))));
+        verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
+            jsonPathValueMatcher("$.query.bool.must[*].exists.field", hasItem("data.DnOutcomeCase"))));
     }
-
 }

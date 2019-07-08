@@ -1,15 +1,16 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.Setter;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,14 +19,20 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.SEARCH_RESULT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PRONOUNCEMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
 
 @Component
 public class SearchAwaitingPronouncementCases implements Task<Map<String, Object>> {
 
-    private static final int PAGE_SIZE = 50;
-    private static final String HEARING_DATE = "data.hearingDate";
-    private static final String BULK_LISTING_CASE_ID = "data.BulkListingCaseId";
+    private static final String HEARING_DATE = String.format("data.%s", DATETIME_OF_HEARING_CCD_FIELD);
+    private static final String BULK_LISTING_CASE_ID = String.format("data.%s",BULK_LISTING_CASE_ID_FIELD);
+    private static final String IS_DN_OUTCOME_CASE = String.format("data.%s", DN_OUTCOME_FLAG_CCD_FIELD);
+    @Value("${bulk-action.page-size:50}")
+    @Setter
+    private int pageSize;
 
     private final CaseMaintenanceClient caseMaintenanceClient;
 
@@ -44,10 +51,12 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
             QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_PRONOUNCEMENT);
             QueryBuilder hearingDate = QueryBuilders.existsQuery(HEARING_DATE);
             QueryBuilder bulkListingCaseId = QueryBuilders.existsQuery(BULK_LISTING_CASE_ID);
+            QueryBuilder checkByLaField = QueryBuilders.existsQuery(IS_DN_OUTCOME_CASE);
 
-            final QueryBuilder query = QueryBuilders
+            QueryBuilder query = QueryBuilders
                 .boolQuery()
                 .must(stateQuery)
+                .must(checkByLaField)
                 .mustNot(hearingDate)
                 .mustNot(bulkListingCaseId);
 
@@ -55,7 +64,7 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
                 .searchSource()
                 .query(query)
                 .from(from)
-                .size(PAGE_SIZE);
+                .size(pageSize);
 
             SearchResult result = caseMaintenanceClient.searchCases(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY),

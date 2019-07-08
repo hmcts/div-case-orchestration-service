@@ -84,6 +84,8 @@ module "div-cos" {
     FLYWAY_USER                                    = "${module.div-scheduler-db.user_name}"
     FLYWAY_PASSWORD                                = "${module.div-scheduler-db.postgresql_password}"
     FLYWAY_NOOP_STRATEGY                           = "true"
+
+    FEATURE_RESP_SOLICITOR_DETAILS                 = "${var.feature_resp_solicitor_details}"
   }
 }
 

@@ -81,10 +81,15 @@ variable "scheduler_re_create" {
 }
 
 variable "scheduler_enabled" {
-  default = "false"
+  default = "true"
 }
 
 variable "scheudler_schedules_create_bulk_cases_cron" {
   type    = "string"
   default = "0 0 4 ? * * *"
+}
+
+variable "feature_resp_solicitor_details" {
+  type    = "string"
+  default = "false"
 }

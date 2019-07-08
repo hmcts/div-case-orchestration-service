@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpd
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
@@ -300,6 +302,20 @@ public class OrchestrationControllerTest {
     }
 
     @Test
+    public void whenSubmitDa_thenProceedAsExpected() throws WorkflowException {
+        final Map<String, Object> daCase = Collections.emptyMap();
+
+        when(caseOrchestrationService.submitDaCase(daCase, AUTH_TOKEN, TEST_CASE_ID)).thenReturn(daCase);
+
+        ResponseEntity<Map<String, Object>> response = classUnderTest.submitDa(AUTH_TOKEN, TEST_CASE_ID, daCase);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(daCase, response.getBody());
+
+        verify(caseOrchestrationService).submitDaCase(daCase, AUTH_TOKEN, TEST_CASE_ID);
+    }
+
+    @Test
     public void whenAmendPetition_thenReturnDraftAndUpdateState() throws Exception {
         final String caseId = "test.id";
         final Map<String, Object> caseData = Collections.singletonMap(
@@ -324,7 +340,6 @@ public class OrchestrationControllerTest {
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
-
         when(caseOrchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest)).thenReturn(expectedResponse);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.corespReceived(ccdCallbackRequest);
@@ -332,4 +347,23 @@ public class OrchestrationControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }
+
+    @Test
+    public void testServiceIsCalledAccordingly_ForMakeCaseEligibleForDA() throws CaseOrchestrationServiceException {
+        ResponseEntity<Map<String, Object>> response = classUnderTest.makeCaseEligibleForDecreeAbsolute("testAuthToken", "testCaseId");
+
+        verify(caseOrchestrationService).makeCaseEligibleForDA("testAuthToken", "testCaseId");
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+    }
+
+    @Test
+    public void testFailure_WhenExceptionIsThrown_ForMakeCaseEligibleForDA() throws CaseOrchestrationServiceException {
+        when(caseOrchestrationService.makeCaseEligibleForDA("testAuthToken", "testCaseId")).thenThrow(CaseOrchestrationServiceException.class);
+
+        ResponseEntity<Map<String, Object>> response = classUnderTest.makeCaseEligibleForDecreeAbsolute("testAuthToken", "testCaseId");
+
+        verify(caseOrchestrationService).makeCaseEligibleForDA("testAuthToken", "testCaseId");
+        assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR));
+    }
+
 }

@@ -63,8 +63,6 @@ public class PetitionIssueTest extends IntegrationTest {
     private static final String D8_CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT = "co-respondentaosinvitation%s.pdf";
     private static final String CO_RESPONDENT_LETTER_HOLDER_ID = "data.CoRespLetterHolderId";
 
-
-    private static final String CASE_ERROR_KEY = "errors";
     private static final String CASE_ID = "1517833758870511";
     private static final String ISSUE_DATE = "data.IssueDate";
 
@@ -86,7 +84,7 @@ public class PetitionIssueTest extends IntegrationTest {
             "invalid-ccd-callback-petition-issued.json", null);
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertEquals(EXPECTED_ERROR, cosResponse.path(CASE_ERROR_KEY));
+        assertEquals(EXPECTED_ERROR, cosResponse.path(ERRORS));
     }
 
     @Test
@@ -126,6 +124,17 @@ public class PetitionIssueTest extends IntegrationTest {
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertGeneratedDocumentsExists(cosResponse, true, false);
+        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
+    }
+
+
+    @Test
+    public void givenGenerateAosTrueAndEastMidlandsRdc_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
+        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
+            "ccd-callback-aos-invitation-east-midlands.json", true);
+
+        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
+        assertGeneratedDocumentsExists(cosResponse, true, true);
         assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
 

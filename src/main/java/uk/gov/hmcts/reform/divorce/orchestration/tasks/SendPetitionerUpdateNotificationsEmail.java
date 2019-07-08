@@ -36,11 +36,11 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
 
     private static final String GENERIC_UPDATE_EMAIL_DESC = "Generic Update Notification - Petitioner";
     private static final String AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC =
-            "Resp does not admit adultery update notification";
+        "Resp does not admit adultery update notification";
     private static final String AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC =
-            "Resp does not admit adultery update notification - no reply from co-resp";
+        "Resp does not admit adultery update notification - no reply from co-resp";
     private static final String AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC =
-            "Resp does not consent to 2 year separation update notification";
+        "Resp does not consent to 2 year separation update notification";
 
     private final EmailService emailService;
 
@@ -78,30 +78,31 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
 
                 if (StringUtils.equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !StringUtils.equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE)) {
                     emailService.sendEmail(petitionerEmail,
-                            EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
-                            templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC);
+                        EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
+                        templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC);
                 } else {
                     emailService.sendEmail(petitionerEmail,
-                            EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
-                            templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC);
+                        EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
+                        templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC);
                 }
 
             } else if (reasonForDivorce.equals(SEPARATION_2YRS)
-                    && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
+                && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact)) {
                 templateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
 
                 emailService.sendEmail(petitionerEmail,
-                        EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
-                        templateVars, AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC);
+                    EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
+                    templateVars, AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC);
 
             } else {
                 emailService.sendEmail(
-                        petitionerEmail,
-                        EmailTemplateNames.GENERIC_UPDATE.name(),
-                        templateVars,
-                        GENERIC_UPDATE_EMAIL_DESC);
+                    petitionerEmail,
+                    EmailTemplateNames.GENERIC_UPDATE.name(),
+                    templateVars,
+                    GENERIC_UPDATE_EMAIL_DESC);
             }
         }
         return caseData;
     }
 }
+
