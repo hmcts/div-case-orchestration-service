@@ -24,5 +24,6 @@
         <cve>CVE-2018-1260</cve>
         <cve>CVE-2018-1258</cve>
         <cve>CVE-2019-3795</cve>
+        <cve>CVE-2019-12814</cve>
     </suppress>
 </suppressions>
