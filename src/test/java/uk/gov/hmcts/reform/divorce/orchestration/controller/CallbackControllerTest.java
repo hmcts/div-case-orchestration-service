@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -38,6 +37,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -61,7 +61,7 @@ public class CallbackControllerTest {
         final ResponseEntity<CcdCallbackResponse> response = classUnderTest.requestClarificationFromPetitioner(ccdCallbackRequest);
         final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody(), is(expectedResponse));
     }
 
@@ -81,7 +81,7 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest
             .dnSubmitted(AUTH_TOKEN, ccdCallbackRequest);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }
 
@@ -101,7 +101,7 @@ public class CallbackControllerTest {
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }
 
@@ -121,7 +121,7 @@ public class CallbackControllerTest {
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }
 
@@ -147,7 +147,7 @@ public class CallbackControllerTest {
             .errors(Collections.singletonList(OrchestrationConstants.ERROR_STATUS))
             .build();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }
 
@@ -162,7 +162,7 @@ public class CallbackControllerTest {
         when(caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest)).thenReturn(caseData);
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionUpdated(null, ccdCallbackRequest);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }
 
@@ -178,7 +178,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.respondentAOSSubmitted(null, ccdCallbackRequest);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(OK, response.getStatusCode());
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
         assertEquals(expectedResponse, response.getBody());
     }
@@ -199,7 +199,7 @@ public class CallbackControllerTest {
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }
 
@@ -207,8 +207,8 @@ public class CallbackControllerTest {
     public void whenDnPronouncedCallback_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
+            .caseData(caseData)
+            .build();
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
 
@@ -218,7 +218,7 @@ public class CallbackControllerTest {
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }
 
@@ -248,7 +248,7 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.petitionIssuedCallback(AUTH_TOKEN,
             false, ccdCallbackRequest);
 
-        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
     }
 
@@ -280,7 +280,7 @@ public class CallbackControllerTest {
             .thenReturn(Collections.emptyMap());
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.bulkPrint(AUTH_TOKEN, ccdCallbackRequest);
 
-        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
     }
 
@@ -302,7 +302,7 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.petitionIssuedCallback(AUTH_TOKEN,
             true, ccdCallbackRequest);
 
-        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
     }
 
@@ -318,7 +318,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.caseLinkedForHearing(incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
         assertThat(response.getBody().getErrors(), is(nullValue()));
     }
@@ -336,7 +336,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.caseLinkedForHearing(incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
     }
@@ -353,7 +353,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.respondentAnswerReceived(incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
     }
 
     @Test
@@ -371,7 +371,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnReviewPetition(incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
         assertThat(response.getBody().getErrors(), is(nullValue()));
         verify(caseOrchestrationService)
@@ -391,7 +391,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnReviewPetition(incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
         verify(caseOrchestrationService)
@@ -413,7 +413,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnRespAnswersDoc(incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
         assertThat(response.getBody().getErrors(), is(nullValue()));
         verify(caseOrchestrationService)
@@ -433,7 +433,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnRespAnswersDoc(incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
         verify(caseOrchestrationService)
@@ -455,7 +455,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnCoRespAnswersDoc(incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
         assertThat(response.getBody().getErrors(), is(nullValue()));
         verify(caseOrchestrationService).processSolDnDoc(
@@ -476,7 +476,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnCoRespAnswersDoc(incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
         verify(caseOrchestrationService).processSolDnDoc(
@@ -496,7 +496,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCoRespondentAnswers(AUTH_TOKEN, incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
     }
 
     @Test
@@ -514,7 +514,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateCoRespondentAnswers(AUTH_TOKEN, incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getErrors().contains(errorString), is(true));
     }
 
@@ -533,7 +533,7 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c",
             incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
     }
 
     @Test
@@ -554,7 +554,7 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c",
             incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getErrors(), contains(errorString));
     }
 
@@ -562,38 +562,38 @@ public class CallbackControllerTest {
     public void whenGenerateDnPronouncedDocuments_thenExecuteService() throws WorkflowException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                        .caseData(payload)
-                        .build())
-                .build();
+            .caseDetails(CaseDetails.builder()
+                .caseData(payload)
+                .build())
+            .build();
 
         when(caseOrchestrationService
-                .handleDnPronouncementDocumentGeneration(incomingRequest, AUTH_TOKEN))
-                .thenReturn(payload);
+            .handleDnPronouncementDocumentGeneration(incomingRequest, AUTH_TOKEN))
+            .thenReturn(payload);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDnDocuments(AUTH_TOKEN, incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
     }
 
     @Test
     public void givenWorkflowException_whenGenerateDnPronouncedDocuments_thenReturnErrors() throws WorkflowException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                        .caseData(payload)
-                        .build())
-                .build();
+            .caseDetails(CaseDetails.builder()
+                .caseData(payload)
+                .build())
+            .build();
 
         String errorString = "foo";
 
         when(caseOrchestrationService
-                .handleDnPronouncementDocumentGeneration(incomingRequest, AUTH_TOKEN))
-                .thenThrow(new WorkflowException(errorString));
+            .handleDnPronouncementDocumentGeneration(incomingRequest, AUTH_TOKEN))
+            .thenThrow(new WorkflowException(errorString));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDnDocuments(AUTH_TOKEN, incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getErrors(), contains(errorString));
     }
 
@@ -610,7 +610,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosSolicitorNominated(incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
         assertThat(response.getBody().getErrors(), is(nullValue()));
     }
@@ -628,7 +628,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosSolicitorNominated(incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
     }
@@ -637,18 +637,18 @@ public class CallbackControllerTest {
     public void testAosSolicitorLinkCase() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                        .caseData(incomingPayload)
-                        .build())
-                .build();
+            .caseDetails(CaseDetails.builder()
+                .caseData(incomingPayload)
+                .build())
+            .build();
 
         String token = "token";
         when(caseOrchestrationService.processAosSolicitorLinkCase(incomingRequest, token))
-                .thenReturn(incomingPayload);
+            .thenReturn(incomingPayload);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorLinkCase(token, incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
         assertThat(response.getBody().getErrors(), is(nullValue()));
     }
@@ -657,18 +657,18 @@ public class CallbackControllerTest {
     public void shouldReturnOk_WithErrors_AndNoCaseData_WhenExceptionIsCaughtInAosSolicitorLinkCase() throws CaseOrchestrationServiceException {
         Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                        .caseData(incomingPayload)
-                        .build())
-                .build();
+            .caseDetails(CaseDetails.builder()
+                .caseData(incomingPayload)
+                .build())
+            .build();
 
         String token = "token";
         when(caseOrchestrationService.processAosSolicitorLinkCase(incomingRequest, "token"))
-                .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
+            .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorLinkCase(token, incomingRequest);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
     }
@@ -690,7 +690,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.calculateSeparationFields(ccdCallbackRequest);
 
-        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
     }
 
@@ -715,7 +715,7 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.calculateSeparationFields(ccdCallbackRequest);
 
-        assertEquals(HttpStatus.OK, actual.getStatusCode());
+        assertEquals(OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
     }
 
@@ -730,7 +730,7 @@ public class CallbackControllerTest {
             .build();
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnAboutToBeGranted(ccdCallbackRequest);
 
-        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), hasEntry("newKey", "newValue"));
         assertThat(response.getBody().getErrors(), is(nullValue()));
         verify(caseOrchestrationService).processCaseBeforeDecreeNisiIsGranted(eq(ccdCallbackRequest));
@@ -748,7 +748,7 @@ public class CallbackControllerTest {
             .build();
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnAboutToBeGranted(ccdCallbackRequest);
 
-        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem(equalTo("This is a test error message.")));
         verify(caseOrchestrationService).processCaseBeforeDecreeNisiIsGranted(eq(ccdCallbackRequest));
@@ -767,9 +767,42 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.clearStateCallback(AUTH_TOKEN, ccdCallbackRequest);
 
-        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), hasEntry("newKey", "newValue"));
         assertThat(response.getBody().getErrors(), is(nullValue()));
         verify(caseOrchestrationService).cleanStateCallback(eq(ccdCallbackRequest), eq(AUTH_TOKEN));
     }
+
+    @Test
+    public void testServiceMethodIsCalled_WhenFlagCaseAsEligibleForDecreeAbsoluteForPetitioner() throws CaseOrchestrationServiceException {
+        when(caseOrchestrationService.processApplicantDecreeAbsoluteEligibility(any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+
+        CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
+            .build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.processApplicantDecreeAbsoluteEligibility(callbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+        verify(caseOrchestrationService).processApplicantDecreeAbsoluteEligibility(callbackRequest);
+    }
+
+    @Test
+    public void testFlagCaseAsEligibleForDecreeAbsoluteForPetitioner_HandlesServiceException() throws CaseOrchestrationServiceException {
+        when(caseOrchestrationService.processApplicantDecreeAbsoluteEligibility(any()))
+            .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(singletonMap("testKey", "testValue"))
+                .build())
+            .build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.processApplicantDecreeAbsoluteEligibility(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), is(nullValue()));
+        assertThat(response.getBody().getErrors(), hasItem(equalTo("This is a test error message.")));
+        verify(caseOrchestrationService).processApplicantDecreeAbsoluteEligibility(eq(ccdCallbackRequest));
+    }
+
 }

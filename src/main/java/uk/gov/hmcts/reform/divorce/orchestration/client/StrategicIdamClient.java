@@ -6,7 +6,6 @@ import feign.httpclient.ApacheHttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
     url = "${idam.api.url}",
     qualifier = "strategicIdamClient",
     configuration = StrategicIdamClient.Configuration.class)
-@ConditionalOnProperty(value = "idam.strategic.enabled", havingValue = "true")
 public interface StrategicIdamClient extends IdamClient {
     @RequestMapping(
         method = RequestMethod.GET,

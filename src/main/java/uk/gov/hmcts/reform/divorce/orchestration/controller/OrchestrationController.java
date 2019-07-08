@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
 import java.util.Map;
 
@@ -321,6 +322,23 @@ public class OrchestrationController {
             orchestrationService.submitDnCase(divorceSession, authorizationToken, caseId));
     }
 
+    @PostMapping(path = "/submit-da/{caseId}",
+            consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Handles Decree Absolute update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
+                    response = CaseResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<Map<String, Object>> submitDa(
+            @RequestHeader(value = "Authorization") String authorizationToken,
+            @PathVariable String caseId,
+            @RequestBody @ApiParam("Decree Absolute Data as required") Map<String, Object> divorceSession)
+            throws WorkflowException {
+
+        return ResponseEntity.ok(
+                orchestrationService.submitDaCase(divorceSession, authorizationToken, caseId));
+    }
+
     @PutMapping(path = "/amend-petition/{caseId}")
     @ApiOperation(
         value = "Creates a new draft copy of user's old case to be amended, updates old case to AmendPetition state")
@@ -339,5 +357,28 @@ public class OrchestrationController {
         return ResponseEntity.ok(orchestrationService.amendPetition(caseId, authorizationToken));
     }
 
+    @PostMapping(path = "/make-case-eligible-for-da/{caseId}",
+        produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Makes a case eligible for Decree Absolute")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Case was updated in CCD",
+            response = CaseResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<Map<String, Object>> makeCaseEligibleForDecreeAbsolute(
+        @RequestHeader(value = "Authorization") String authorizationToken,
+        @PathVariable String caseId) {
+
+        ResponseEntity<Map<String, Object>> responseEntity;
+
+        try {
+            responseEntity = ResponseEntity.ok(orchestrationService.makeCaseEligibleForDA(authorizationToken, caseId));
+            log.info("Case id {} made eligible for DA.", caseId);
+        } catch (CaseOrchestrationServiceException e) {
+            responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            log.error("Error occurred making case id {} eligible for DA.", caseId);
+        }
+
+        return responseEntity;
+    }
 
 }
