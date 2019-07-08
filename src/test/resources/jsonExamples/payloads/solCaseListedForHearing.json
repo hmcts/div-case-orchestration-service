@@ -21,7 +21,9 @@
           }
         }
       ],
-      "RespEmailAddress": "respondent@justice.uk"
+      "RespEmailAddress": "respondent@justice.uk",
+      "D8RespondentSolicitorName": "Respondent Solicitor name",
+      "D8RespondentSolicitorEmail": "respsolicitor@justice.uk"
     }
   }
 }

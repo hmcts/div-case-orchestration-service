@@ -4,6 +4,8 @@
     "case_data" : {
       "CoRespDefendsDivorce" : "Yes",
       "DueDateCoResp" : "2020-10-20",
+      "D8PetitionerFirstName": "Petitioner First Name",
+      "D8PetitionerLastName": "Petitioner First Name",
       "D8ReasonForDivorceAdultery3rdPartyFName" : "user first namé with accent",
       "D8ReasonForDivorceAdultery3rdPartyLName" : "user last namé with accent",
       "D8DivorceUnit" : "eastMidlands",

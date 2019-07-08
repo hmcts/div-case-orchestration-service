@@ -59,7 +59,6 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
         log.info("Executing task to notify petitioner about certificate of entitlement. Case id: {}",
             (String) context.getTransientObject(CASE_ID_JSON_KEY));
 
-
         String petSolicitorEmail = (String) payload.get(PET_SOL_EMAIL);
         String petitionerEmail = (String) payload.get(D_8_PETITIONER_EMAIL);
         String familyManCaseId = getMandatoryPropertyValueAsString(payload, D_8_CASE_REFERENCE);

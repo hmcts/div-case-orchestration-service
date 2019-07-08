@@ -136,27 +136,32 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
                 templateVars,
                 APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC);
         } else if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_RECVD_EVENT)) {
-            if (isAdulteryAndNoConsent(caseData)) {
-                if (isCoRespNamedAndNotReplied(caseData)) {
-                    emailService.sendEmail(petitionerEmail,
-                        EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
-                        templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC);
-                } else {
-                    emailService.sendEmail(petitionerEmail,
-                        EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
-                        templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC);
-                }
-            } else if (isSep2YrAndNoConsent(caseData)) {
-                emailService.sendEmail(petitionerEmail,
-                    EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
-                    templateVars, AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC);
+            sendAosAnswerRecvdPetEmail(caseData, petitionerEmail, templateVars);
+        } else {
+            emailService.sendEmail(
+                petitionerEmail,
+                EmailTemplateNames.GENERIC_UPDATE.name(),
+                templateVars, GENERIC_UPDATE_EMAIL_DESC);
+        }
+    }
 
+    private void sendAosAnswerRecvdPetEmail(Map<String, Object> caseData, String petitionerEmail,
+                                            Map<String, String> templateVars) {
+        if (isAdulteryAndNoConsent(caseData)) {
+            if (isCoRespNamedAndNotReplied(caseData)) {
+                emailService.sendEmail(petitionerEmail,
+                    EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
+                    templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC);
             } else {
-                emailService.sendEmail(
-                    petitionerEmail,
-                    EmailTemplateNames.GENERIC_UPDATE.name(),
-                    templateVars, GENERIC_UPDATE_EMAIL_DESC);
+                emailService.sendEmail(petitionerEmail,
+                    EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
+                    templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC);
             }
+        } else if (isSep2YrAndNoConsent(caseData)) {
+            emailService.sendEmail(petitionerEmail,
+                EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
+                templateVars, AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC);
+
         } else {
             emailService.sendEmail(
                 petitionerEmail,
