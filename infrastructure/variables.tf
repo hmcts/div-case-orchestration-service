@@ -90,7 +90,8 @@ variable "scheudler_schedules_create_bulk_cases_cron" {
 }
 
 variable "feature_resp_solicitor_details" {
-  default = false
+  type    = "string"
+  default = "false"
 }
 
 variable "documentation_swagger_enabled" {

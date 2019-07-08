@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.support.cos;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.divorce.context.ServiceContextConfiguration;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 
 import java.util.Map;
 
@@ -33,7 +35,7 @@ public interface CosApiClient {
         value = "/co-respondent-answered"
     )
     Map<String, Object> coRespAnswerReceived(@RequestHeader(AUTHORIZATION) String authorisation,
-                                       @RequestBody CcdCallbackRequest caseDataContent
+                                             @RequestBody CcdCallbackRequest caseDataContent
     );
 
     @RequestMapping(
@@ -51,8 +53,8 @@ public interface CosApiClient {
     Map<String, Object> aosSubmitted(@RequestBody Map<String, Object> caseDataContent);
 
     @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/aos-solicitor-nominated"
+        method = RequestMethod.POST,
+        value = "/aos-solicitor-nominated"
     )
     Map<String, Object> aosSolicitorNominated(@RequestBody Map<String, Object> caseDataContent);
 
@@ -102,18 +104,18 @@ public interface CosApiClient {
     )
     Map<String, Object> caseLinkedForHearing(@RequestHeader(AUTHORIZATION) String authorisation,
                                              @RequestBody Map<String, Object> caseDataContent);
-    
+
     @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/bulk/pronounce/submit"
+        method = RequestMethod.POST,
+        value = "/bulk/pronounce/submit"
     )
     Map<String, Object> bulkPronouncement(@RequestHeader(AUTHORIZATION) String authorisation,
                                           @RequestBody CcdCallbackRequest ccdCallbackRequest);
 
 
     @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/generate-document"
+        method = RequestMethod.POST,
+        value = "/generate-document"
     )
     Map<String, Object> generateDocument(@RequestHeader(AUTHORIZATION) String authorisation,
                                          @RequestBody CcdCallbackRequest ccdCallbackRequest,
@@ -122,9 +124,25 @@ public interface CosApiClient {
                                          @RequestParam(name = "filename") String filename);
 
     @RequestMapping(
-            method = RequestMethod.POST,
-            value = "generate-dn-pronouncement-documents"
+        method = RequestMethod.POST,
+        value = "generate-dn-pronouncement-documents"
     )
     Map<String, Object> generateDnPronouncedDocuments(@RequestHeader(AUTHORIZATION) String authorisation,
                                                       @RequestBody CcdCallbackRequest ccdCallbackRequest);
+
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/process-applicant-da-eligibility"
+    )
+    CcdCallbackResponse flagCaseAsEligibleForDAForApplicant(@RequestBody CcdCallbackRequest ccdCallbackRequest);
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/submit-da/{caseId}"
+    )
+    Map<String, Object> submitDaCase(@RequestHeader(AUTHORIZATION) String authorisation,
+                                     @RequestBody Map<String, Object> caseData,
+                                     @PathVariable("caseId") String caseId
+    );
 }
