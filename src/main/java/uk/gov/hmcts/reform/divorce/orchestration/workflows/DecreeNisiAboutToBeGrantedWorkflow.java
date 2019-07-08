@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiApprovalDateTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDnOutcomeFlagFieldTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
 
@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
-    private final AddDecreeNisiApprovalDateTask addDecreeNisiApprovalDateTask;
+    private final AddDecreeNisiDecisionDateTask addDecreeNisiDecisionDateTask;
 
     @Autowired
     private final DefineWhoPaysCostsOrderTask defineWhoPaysCostsOrderTask;
@@ -41,9 +41,9 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
         String newCaseEndState = AWAITING_CLARIFICATION;
         Map<String, Object> caseData = caseDetails.getCaseData();
         Object decreeNisiGranted = caseData.get(DECREE_NISI_GRANTED_CCD_FIELD);
+        tasksToRun.add(addDecreeNisiDecisionDateTask);
         if (YES_VALUE.equals(decreeNisiGranted)) {
             newCaseEndState = AWAITING_PRONOUNCEMENT;
-            tasksToRun.add(addDecreeNisiApprovalDateTask);
             tasksToRun.add(addDnOutcomeFlagFieldTask);
             Object costsClaimGranted = caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD);
             if (YES_VALUE.equals(costsClaimGranted)) {

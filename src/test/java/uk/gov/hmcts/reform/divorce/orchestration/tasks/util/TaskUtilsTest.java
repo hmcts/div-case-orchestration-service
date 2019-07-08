@@ -6,6 +6,7 @@ import org.junit.rules.ExpectedException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +47,27 @@ public class TaskUtilsTest {
         caseDataPayload.put("testKey", null);
 
         TaskUtils.getMandatoryPropertyValueAsString(caseDataPayload, "testKey");
+    }
+
+    @Test
+    public void getMandatoryPropertyValueAsObject() throws TaskException {
+        Map<String, Object> caseDataPayload = new HashMap<>();
+        caseDataPayload.put("testKey", Collections.emptyList());
+
+        Object value = TaskUtils.getMandatoryPropertyValueAsObject(caseDataPayload, "testKey");
+
+        assertThat(value, equalTo(Collections.emptyList()));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenMandatoryObjectFieldIsNull() throws TaskException {
+        expectedException.expect(TaskException.class);
+        expectedException.expectMessage("Could not evaluate value of mandatory property \"testKey\"");
+
+        Map<String, Object> caseDataPayload = new HashMap<>();
+        caseDataPayload.put("testKey", null);
+
+        TaskUtils.getMandatoryPropertyValueAsObject(caseDataPayload, "testKey");
     }
 
     @Test

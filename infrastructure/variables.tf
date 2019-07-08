@@ -81,7 +81,7 @@ variable "scheduler_re_create" {
 }
 
 variable "scheduler_enabled" {
-  default = "false"
+  default = "true"
 }
 
 variable "scheudler_schedules_create_bulk_cases_cron" {
@@ -90,5 +90,6 @@ variable "scheudler_schedules_create_bulk_cases_cron" {
 }
 
 variable "feature_resp_solicitor_details" {
-  default = false
+  type    = "string"
+  default = "false"
 }

@@ -58,6 +58,7 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_SUBMISSION_AOS_COMPLETED_EVENT_ID = "co-RespAOSCompleted";
     public static final String CO_RESPONDENT_SUBMISSION_AWAITING_DN_EVENT_ID = "co-RespAwaitingDN";
     public static final String CO_RESPONDENT_SUBMISSION_AWAITING_LA_EVENT_ID = "co-RespAwaitingLAReferral";
+    public static final String DECREE_ABSOLUTE_REQUESTED_EVENT_ID = "RequestDA";
     public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "RespAdmitOrConsentToFact";
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
@@ -82,7 +83,7 @@ public class OrchestrationConstants {
     public static final String D_8_SEP_REF_DATE = "D8SeparationReferenceDate";
     public static final String SEP_YEARS = "SepYears";
     public static final String D_8_SEP_TIME_TOGETHER_PERMITTED = "D8SeparationTimeTogetherPermitted";
-    public static final String D_8_DESERTION_TIME_TOGETHER_PERMITTED =  "D8DesertionTimeTogetherPermitted";
+    public static final String D_8_DESERTION_TIME_TOGETHER_PERMITTED = "D8DesertionTimeTogetherPermitted";
     public static final String UPDATE_COURT_HEARING_DETAILS_EVENT = "updateBulkCaseHearingDetails";
     public static final String UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT = "dnPronouncedBulk";
     public static final String WHO_PAYS_COSTS_CCD_FIELD = "WhoPaysCosts";
@@ -92,7 +93,6 @@ public class OrchestrationConstants {
     public static final String PRONOUNCEMENT_JUDGE_CCD_FIELD = "PronouncementJudge";
 
     //CCD DN fields
-    public static final String DN_APPROVAL_DATE_CCD_FIELD = "DNApprovalDate";
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
 
     // CCD Events
@@ -108,6 +108,8 @@ public class OrchestrationConstants {
     public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
     public static final String START_AOS_EVENT_ID = "startAos";
     public static final String PAYMENT_MADE_EVENT = "paymentMade";
+    public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID = "MakeEligibleForDA_Petitioner";
+    public static final String AWAITING_DECREE_ABSOLUTE = "AwaitingDecreeAbsolute";
 
     // CCD Case States
     public static final String AOS_AWAITING = "AosAwaiting";
@@ -122,6 +124,7 @@ public class OrchestrationConstants {
     public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String DEFENDED = "DefendedDivorce";
     public static final String DN_AWAITING = "DNAwaiting";
+    public static final String DN_PRONOUNCED = "DNPronounced";
 
     // CCD Co-Respondent Fields
     public static final String CO_RESP_LINKED_TO_CASE = "CoRespLinkedToCase";
@@ -136,7 +139,7 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_DUE_DATE = "DueDateCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED = "ReceivedAnswerFromCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED_DATE = "ReceivedAnswerFromCoRespDate";
-    public static final String DN_APPROVAL_DATE_FIELD = "DNApprovalDate";
+    public static final String DN_DECISION_DATE_FIELD = "DNApprovalDate";
 
     // Divorce Session
     public static final String DIVORCE_SESSION_EXISTING_PAYMENTS = "existingPayments";
@@ -237,6 +240,7 @@ public class OrchestrationConstants {
     public static final String MINI_PETITION_LINK = "minipetitionlink";
     public static final String RESP_ANSWERS_LINK = "respondentanswerslink";
     public static final String CO_RESP_ANSWERS_LINK = "corespondentanswerslink";
+    public static final String SOLICITOR_LINKED_EMAIL = "RespSolLinkedEmail";
 
 
     // Fees

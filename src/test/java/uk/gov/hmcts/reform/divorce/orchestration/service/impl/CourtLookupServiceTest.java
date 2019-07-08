@@ -64,10 +64,10 @@ public class CourtLookupServiceTest {
         assertThat(foundCourt.getCourtId(), is("serviceCentre"));
         assertThat(foundCourt.getIdentifiableCentreName(), is("Courts and Tribunals Service Centre"));
         String expectedAddress = "Courts and Tribunals Service Centre" + LINE_SEPARATOR
-                + "c/o East Midlands Regional Divorce Centre" + LINE_SEPARATOR
-                + "PO Box 10447" + LINE_SEPARATOR
-                + "Nottingham" + LINE_SEPARATOR
-                + "NG2 9QN";
+                + "c/o HMCTS Digital Divorce" + LINE_SEPARATOR
+                + "PO Box 12706" + LINE_SEPARATOR
+                + "Harlow" + LINE_SEPARATOR
+                + "CM20 9QT";
         assertThat(foundCourt.getFormattedAddress(), is(expectedAddress));
     }
 
@@ -85,7 +85,7 @@ public class CourtLookupServiceTest {
 
         assertEquals(foundCourt.getName(), "Liverpool Civil and Family Court Hearing Centre");
         assertEquals(foundCourt.getAddress(), "35 Vernon Street\nLiverpool\nL2 2BX");
-        assertEquals(foundCourt.getEmail(), "contactdivorce@justice.gov.uk");
+        assertEquals(foundCourt.getEmail(), "divorcecase@justice.gov.uk");
         assertEquals(foundCourt.getPhone(), "0300 303 0642");
 
         String expectedContactDetails = foundCourt.getAddress() + LINE_SEPARATOR + LINE_SEPARATOR
