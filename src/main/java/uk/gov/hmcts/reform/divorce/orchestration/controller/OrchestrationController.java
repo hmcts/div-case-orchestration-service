@@ -322,6 +322,23 @@ public class OrchestrationController {
             orchestrationService.submitDnCase(divorceSession, authorizationToken, caseId));
     }
 
+    @PostMapping(path = "/submit-da/{caseId}",
+            consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Handles Decree Absolute update")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
+                    response = CaseResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<Map<String, Object>> submitDa(
+            @RequestHeader(value = "Authorization") String authorizationToken,
+            @PathVariable String caseId,
+            @RequestBody @ApiParam("Decree Absolute Data as required") Map<String, Object> divorceSession)
+            throws WorkflowException {
+
+        return ResponseEntity.ok(
+                orchestrationService.submitDaCase(divorceSession, authorizationToken, caseId));
+    }
+
     @PutMapping(path = "/amend-petition/{caseId}")
     @ApiOperation(
         value = "Creates a new draft copy of user's old case to be amended, updates old case to AmendPetition state")
