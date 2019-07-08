@@ -136,6 +136,7 @@ uk:
           SOL_APPLICANT_RESP_NOT_RESPONDED: 88b793ee-d888-4d87-bd3d-8f3a36353135
           SOL_GENERAL_CASE_UPDATE: 951d26d9-e5fc-40de-a9da-d3ab957cb5e3
           SOL_RESP_COE_NOTIFICATION: e7117ed4-83ff-43f9-8521-e70d31063c7e
+          CASE_ELIGIBLE_FOR_NOTIFICATION_FOR_APPLICANT: 71fd2e7e-42dc-4dcf-a9bb-007ae9d4b27f
 
 court-distribution-config:
   distribution:
