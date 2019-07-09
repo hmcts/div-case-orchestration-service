@@ -72,6 +72,7 @@ module "div-cos" {
     SCHEDULER_RE_CREATE                             = "${var.scheduler_re_create}"
     SCHEDULER_ENABLED                               = "${var.scheduler_enabled}"
     SCHEDULER_SCHEDULES_CREATE_BULK_CASES_CRON      = "${var.scheudler_schedules_create_bulk_cases_cron}"
+    DOCUMENTATION_SWAGGER_ENABLED                   = "${var.documentation_swagger_enabled}"
 
     FEATURE_TOGGLE_SERVICE_API_BASEURL             = "${local.feature_toggle_baseurl}"
     SEND_LETTER_SERIVCE_BASEURL                    = "${local.send_letter_service_baseurl}"

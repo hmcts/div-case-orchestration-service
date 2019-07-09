@@ -37,3 +37,7 @@ output "scheudler_schedules_create_bulk_cases_cron" {
 output "feature_resp_solicitor_details" {
   value = "${var.feature_resp_solicitor_details}"
 }
+
+output "documentation_swagger_enabled" {
+  value = "${var.documentation_swagger_enabled}"
+}

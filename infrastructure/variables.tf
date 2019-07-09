@@ -93,3 +93,7 @@ variable "feature_resp_solicitor_details" {
   type    = "string"
   default = "false"
 }
+
+variable "documentation_swagger_enabled" {
+  default = true
+}
