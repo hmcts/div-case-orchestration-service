@@ -58,6 +58,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDaCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
@@ -218,6 +219,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private BulkCaseUpdateDnPronounceDatesWorkflow bulkCaseUpdateDnPronounceDatesWorkflow;
+
+    @Mock
+    private UpdateDNPronouncedCasesWorkflow updateDNPronouncedCasesWorkflow;
 
     @Mock
     private CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
@@ -1163,8 +1167,8 @@ public class CaseOrchestrationServiceImplTest {
 
         Map<String, Object> expectedResult = new HashMap<>();
         expectedResult.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
-        expectedResult.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         expectedResult.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
+        expectedResult.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         expectedResult.putAll(requestPayload);
 
         assertThat(result, is(expectedResult));

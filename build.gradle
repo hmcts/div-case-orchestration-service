@@ -409,6 +409,7 @@ task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dep
     doFirst() {
         main = bootJar.mainClassName
         classpath = sourceSets.main.runtimeClasspath
+        systemProperties = System.properties
         systemProperty 'spring.profiles.active', 'aat'
     }
 }
