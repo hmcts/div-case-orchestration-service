@@ -40,7 +40,12 @@ withPipeline(type, product, component) {
     setVaultName('div')
 
     after('checkout') {
-       echo 'divorce-case-orchestration-service checked out'
+        echo 'divorce-case-orchestration-service checked out'
+    }
+
+    after('test') {
+        echo 'Starting WireMock Functional Tests'
+        sh './gradlew wiremockFunctional'
     }
 
     after('functionalTest:aat') {
