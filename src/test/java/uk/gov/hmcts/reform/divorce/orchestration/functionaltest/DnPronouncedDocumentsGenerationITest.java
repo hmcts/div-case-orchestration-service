@@ -49,6 +49,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_ENDCLAIM_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_OPTIONS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -244,6 +246,58 @@ public class DnPronouncedDocumentsGenerationITest {
                 .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
     }
 
+    @Test
+    public void happyPathWithoutCostsOrderWhenPetitionerEndsClaim() throws Exception {
+
+        Map<String, Object> caseData = ImmutableMap.of(
+                DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE,
+                DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE,
+                DN_COSTS_OPTIONS_CCD_FIELD, DN_COSTS_ENDCLAIM_VALUE,
+                BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID)
+        );
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+                .caseDetails(caseDetails)
+                .build();
+
+        final GenerateDocumentRequest dnDocumentGenerationRequest =
+                GenerateDocumentRequest.builder()
+                        .template(DECREE_NISI_TEMPLATE_ID)
+                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                        .build();
+
+        final GeneratedDocumentInfo dnDocumentGenerationResponse =
+                GeneratedDocumentInfo.builder()
+                        .documentType(DECREE_NISI_DOCUMENT_TYPE)
+                        .fileName(DECREE_NISI_FILENAME + TEST_CASE_ID)
+                        .build();
+
+        final DocumentUpdateRequest dnDocumentUpdateRequest =
+                DocumentUpdateRequest.builder()
+                        .documents(asList(dnDocumentGenerationResponse))
+                        .caseData(caseData)
+                        .build();
+
+        final Map<String, Object> emptyCaseData =  emptyMap();
+
+        stubDocumentGeneratorServerEndpoint(dnDocumentGenerationRequest, dnDocumentGenerationResponse);
+        stubFormatterServerEndpoint(dnDocumentUpdateRequest, emptyCaseData);
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        webClient.perform(post(API_URL)
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .content(convertObjectToJsonString(ccdCallbackRequest))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+    }
 
     private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest generateDocumentRequest,
                                                      GeneratedDocumentInfo response) {

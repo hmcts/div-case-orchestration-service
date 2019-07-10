@@ -63,7 +63,10 @@ public class OrchestrationConstants {
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
+    public static final String DN_COSTS_OPTIONS_CCD_FIELD = "DivorceCostsOptionDN";
+    public static final String DN_COSTS_ENDCLAIM_VALUE = "endClaim";
     public static final String DIVORCE_COSTS_CLAIM_CCD_FIELD = "D8DivorceCostsClaim";
+    public static final String DN_COSTS_CLAIM_CCD_FIELD = "DivorceCostsOptionDN";
     public static final String DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD = "CostsClaimGranted";
     public static final String DATETIME_OF_HEARING_CCD_FIELD = "DateAndTimeOfHearing";
     public static final String DECREE_NISI_GRANTED_CCD_FIELD = "DecreeNisiGranted";
@@ -125,6 +128,9 @@ public class OrchestrationConstants {
     public static final String DEFENDED = "DefendedDivorce";
     public static final String DN_AWAITING = "DNAwaiting";
     public static final String DN_PRONOUNCED = "DNPronounced";
+    public static final String AWAITING_DA = "AwaitingDecreeAbsolute";
+    public static final String DA_REQUESTED = "DARequested";
+    public static final String DIVROCE_GRANTED = "DivorceGranted";
 
     // CCD Co-Respondent Fields
     public static final String CO_RESP_LINKED_TO_CASE = "CoRespLinkedToCase";
@@ -286,6 +292,11 @@ public class OrchestrationConstants {
     public static final String PAYMENT_SITE_ID_KEY = "PaymentSiteId";
 
     public static final String SEARCH_PAGE_KEY = "SEARCH_PAGE";
+
+    // DA related
+    public static final String AWAITING_DA_PERIOD_KEY = "awaitingDAPeriod";
+    public static final String CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT = "casesEligibleForDAProcessedCount";
+
 
     // Validation
     public static final String ERROR_STATUS = "error";
