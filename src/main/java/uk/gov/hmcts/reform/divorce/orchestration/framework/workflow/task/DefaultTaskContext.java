@@ -1,11 +1,16 @@
 package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Data
+@Builder
+@AllArgsConstructor
 public class DefaultTaskContext implements TaskContext {
 
     private boolean taskFailed;
@@ -41,6 +46,11 @@ public class DefaultTaskContext implements TaskContext {
     @SuppressWarnings("unchecked")
     public <T> T getTransientObject(String key) {
         return (T) transientObjects.get(key);
+    }
+
+    @Override
+    public <T> Optional<T> getTransientObjectOptional(String key) {
+        return Optional.ofNullable(getTransientObject(key));
     }
 
     @Override

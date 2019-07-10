@@ -19,4 +19,5 @@ public abstract class AsyncTask<T> implements Task<T> {
 
         return payload;
     }
+
 }
