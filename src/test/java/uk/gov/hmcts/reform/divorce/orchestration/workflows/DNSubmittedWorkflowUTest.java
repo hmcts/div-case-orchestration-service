@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiAnswersGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DnSubmittedEmailNotificationTask;
 
 import java.util.Map;
@@ -27,6 +29,10 @@ public class DNSubmittedWorkflowUTest {
 
     @Mock
     private DnSubmittedEmailNotificationTask emailNotificationTask;
+    @Mock
+    private DecreeNisiAnswersGenerator decreeNisiAnswersGenerator;
+    @Mock
+    private CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @InjectMocks
     private DNSubmittedWorkflow classToTest;
@@ -45,6 +51,9 @@ public class DNSubmittedWorkflowUTest {
 
         when(emailNotificationTask.execute(any(),
                 eq(caseDetails.getCaseData()))).thenReturn(caseDetails.getCaseData());
+        when(decreeNisiAnswersGenerator.execute(any(), any())).thenReturn(caseDetails.getCaseData());
+        when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(caseDetails.getCaseData());
+
         Map<String, Object> response = classToTest.run(ccdCallbackRequest, TestConstants.TEST_TOKEN);
 
         assertEquals(caseDetails.getCaseData(), response);
