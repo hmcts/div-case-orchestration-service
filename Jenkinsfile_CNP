@@ -45,7 +45,11 @@ withPipeline(type, product, component) {
 
     after('test') {
         echo 'Starting WireMock Functional Tests'
-        sh './gradlew wiremockFunctional'
+        try {
+            sh './gradlew wiremockFunctional'
+        } finally {
+            steps.junit '**/test-results/**/*.xml'
+        }
     }
 
     after('functionalTest:aat') {
