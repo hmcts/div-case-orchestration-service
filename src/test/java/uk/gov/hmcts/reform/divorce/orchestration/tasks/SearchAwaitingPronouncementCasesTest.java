@@ -9,15 +9,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -67,6 +64,7 @@ public class SearchAwaitingPronouncementCasesTest {
             verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
                 jsonPathValueMatcher("$.from", is(expectedFrom))));
         }
+
         verify(caseMaintenanceClient, times(expectedIterations)).searchCases(eq(AUTH_TOKEN), argThat(
             jsonPathValueMatcher("$.query.bool.must[*].match.state.query", hasItem(AWAITING_PRONOUNCEMENT))));
         verify(caseMaintenanceClient, times(expectedIterations)).searchCases(eq(AUTH_TOKEN), argThat(
