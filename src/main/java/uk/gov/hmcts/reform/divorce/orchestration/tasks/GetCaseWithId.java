@@ -15,8 +15,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
-public class GetCaseWithId implements Task<UserDetails> {
-    private final CaseMaintenanceClient caseMaintenanceClient;
+public class GetCaseWithId<T> implements Task<T> {
+        private final CaseMaintenanceClient caseMaintenanceClient;
 
     private final AuthUtil authUtil;
 
@@ -27,7 +27,7 @@ public class GetCaseWithId implements Task<UserDetails> {
     }
 
     @Override
-    public UserDetails execute(TaskContext context, UserDetails payload) throws TaskException {
+    public T execute(TaskContext context, final T payload) throws TaskException {
         final String caseWorkerToken = authUtil.getCaseworkerToken();
         final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
 
@@ -44,6 +44,6 @@ public class GetCaseWithId implements Task<UserDetails> {
 
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        return null;
+        return payload;
     }
 }
