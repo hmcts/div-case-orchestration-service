@@ -357,28 +357,4 @@ public class OrchestrationController {
         return ResponseEntity.ok(orchestrationService.amendPetition(caseId, authorizationToken));
     }
 
-    @PostMapping(path = "/make-case-eligible-for-da/{caseId}",
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Makes a case eligible for Decree Absolute")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Case was updated in CCD",
-            response = CaseResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<Map<String, Object>> makeCaseEligibleForDecreeAbsolute(
-        @RequestHeader(value = "Authorization") String authorizationToken,
-        @PathVariable String caseId) {
-
-        ResponseEntity<Map<String, Object>> responseEntity;
-
-        try {
-            responseEntity = ResponseEntity.ok(orchestrationService.makeCaseEligibleForDA(authorizationToken, caseId));
-            log.info("Case id {} made eligible for DA.", caseId);
-        } catch (CaseOrchestrationServiceException e) {
-            responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            log.error("Error occurred making case id {} eligible for DA.", caseId);
-        }
-
-        return responseEntity;
-    }
-
 }
