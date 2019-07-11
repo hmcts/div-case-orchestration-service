@@ -398,6 +398,14 @@ dependencies {
     integrationTestCompile(sourceSets.test.output)
 }
 
+test {
+    exclude '**/functionaltest/**/*'
+}
+
+task wiremockFunctional(type: Test, description: 'Executes wiremock functional tests', group: 'Verification') {
+    include '**/functionaltest/**/*'
+}
+
 task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
     useJUnit {
         includeCategories 'uk.gov.hmcts.reform.divorce.orchestration.category.SmokeTest'
@@ -409,6 +417,7 @@ task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dep
     doFirst() {
         main = bootJar.mainClassName
         classpath = sourceSets.main.runtimeClasspath
+        systemProperties = System.properties
         systemProperty 'spring.profiles.active', 'aat'
     }
 }
