@@ -60,7 +60,7 @@ public class SearchAwaitingPronouncementCasesTest {
         int expectedIterations = 2;
 
         for (int i = 0; i < expectedIterations; i++) {
-            int expectedFrom = i*2;
+            int expectedFrom = i * 2;
             verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
                 jsonPathValueMatcher("$.from", is(expectedFrom))));
         }
