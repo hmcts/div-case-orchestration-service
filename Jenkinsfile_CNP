@@ -45,8 +45,11 @@ withPipeline(type, product, component) {
 
     after('test') {
         echo 'Starting WireMock Functional Tests'
-        sh './gradlew wiremockFunctional'
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/build/test-results/wiremockFunctional/**/*'
+        try {
+            sh './gradlew wiremockFunctional'
+        } finally {
+            steps.junit '**/test-results/**/*.xml'
+        }
     }
 
     after('functionalTest:aat') {
