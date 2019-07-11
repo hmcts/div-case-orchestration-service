@@ -31,6 +31,12 @@ public class TaskUtils {
                 .orElseThrow(() -> buildTaskExceptionForMandatoryProperty(key));
     }
 
+    public static String getOptionalPropertyValueAsString(Map<String, Object> propertiesMap, String key, String defaultValue) {
+        return Optional.ofNullable(propertiesMap.get(key))
+            .map(String.class::cast)
+            .orElse(defaultValue);
+    }
+
     public static String getCaseId(TaskContext context) throws TaskException {
         Object transientObject = context.getTransientObject(CASE_ID_JSON_KEY);
         if (!(transientObject instanceof String)) {

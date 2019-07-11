@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils;
 
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
 @Component
 public class ValidateDNDecisionTask implements Task<Map<String, Object>> {
@@ -23,8 +25,8 @@ public class ValidateDNDecisionTask implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
 
-        String dnGranted = payload.getOrDefault(DECREE_NISI_GRANTED_CCD_FIELD, EMPTY_STRING).toString();
-        String claimCostGranted = payload.getOrDefault(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, EMPTY_STRING).toString();
+        String dnGranted = getOptionalPropertyValueAsString(payload, DECREE_NISI_GRANTED_CCD_FIELD, EMPTY_STRING);
+        String claimCostGranted = getOptionalPropertyValueAsString(payload, DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, EMPTY_STRING);
 
         if (isClaimCostRequested(payload) && YES_VALUE.equalsIgnoreCase(dnGranted)) {
             if (StringUtils.isBlank(claimCostGranted)) {
@@ -38,7 +40,7 @@ public class ValidateDNDecisionTask implements Task<Map<String, Object>> {
     }
 
     private boolean isClaimCostRequested(Map<String, Object> payload) {
-        return YES_VALUE.equalsIgnoreCase(payload.getOrDefault(DIVORCE_COSTS_CLAIM_CCD_FIELD, StringUtils.EMPTY).toString())
-            && !DN_COST_END_CLAIM.equalsIgnoreCase(payload.getOrDefault(DN_COSTS_CLAIM_CCD_FIELD, StringUtils.EMPTY).toString());
+        return YES_VALUE.equalsIgnoreCase(getOptionalPropertyValueAsString(payload, DIVORCE_COSTS_CLAIM_CCD_FIELD, EMPTY_STRING))
+            && !DN_COST_END_CLAIM.equalsIgnoreCase(getOptionalPropertyValueAsString(payload, DN_COSTS_CLAIM_CCD_FIELD, EMPTY_STRING));
     }
 }
