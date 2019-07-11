@@ -403,6 +403,7 @@ test {
 }
 
 task wiremockFunctional(type: Test, description: 'Executes wiremock functional tests', group: 'Verification') {
+    test.outputs.upToDateWhen {false}
     include '**/functionaltest/**/*'
 }
 
