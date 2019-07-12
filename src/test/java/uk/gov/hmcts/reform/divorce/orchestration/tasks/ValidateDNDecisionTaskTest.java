@@ -57,6 +57,8 @@ public class ValidateDNDecisionTaskTest {
     @Parameterized.Parameters(name = "{index}: claimCost: {0}, claimCostDN:{1}, dnGranted:{2}, claimCostGranted:{3}, exception:{4}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
+            {null, null, null, null, NO_ERROR},
+            {CLAIM_COST_YES, null, DN_GRANTED_YES, CLAIM_COST_GRANTED_YES, NO_ERROR},
             { ANY, ANY, DN_GRANTED_NO, CLAIM_COST_DN_EMPTY, NO_ERROR},
             { CLAIM_COST_YES, CLAIM_COST_DN_YES, DN_GRANTED_YES, CLAIM_COST_DN_EMPTY, COST_DECISION_EXPECTED},
             { CLAIM_COST_YES, CLAIM_COST_DN_YES, DN_GRANTED_YES, CLAIM_COST_GRANTED_YES, NO_ERROR},
