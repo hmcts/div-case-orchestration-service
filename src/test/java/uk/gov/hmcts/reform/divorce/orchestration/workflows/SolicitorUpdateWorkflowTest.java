@@ -11,14 +11,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCourtDetails;
 
 import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -26,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SolicitorCreateWorkflowTest {
+public class SolicitorUpdateWorkflowTest {
 
     @Mock
     AddMiniPetitionDraftTask addMiniPetitionDraftTask;
@@ -34,11 +31,8 @@ public class SolicitorCreateWorkflowTest {
     @Mock
     CaseFormatterAddDocuments caseFormatterAddDocuments;
 
-    @Mock
-    SetCourtDetails setCourtDetails;
-
     @InjectMocks
-    SolicitorCreateWorkflow solicitorCreateWorkflow;
+    SolicitorUpdateWorkflow solicitorUpdateWorkflow;
 
     @Test
     public void runShouldExecuteTasksAndReturnPayload() throws Exception {
@@ -50,14 +44,12 @@ public class SolicitorCreateWorkflowTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        when(setCourtDetails.execute(any(), eq(payload))).thenReturn(payload);
-        when(addMiniPetitionDraftTask.execute(any(), eq(payload))).thenReturn(payload);
+        when(addMiniPetitionDraftTask.execute(context, payload)).thenReturn(payload);
 
-        assertEquals(payload, solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN));
+        assertEquals(payload, solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN));
 
-        InOrder inOrder = inOrder(setCourtDetails, addMiniPetitionDraftTask, caseFormatterAddDocuments);
+        InOrder inOrder = inOrder(addMiniPetitionDraftTask, caseFormatterAddDocuments);
 
-        inOrder.verify(setCourtDetails).execute(context, payload);
         inOrder.verify(addMiniPetitionDraftTask).execute(context, payload);
         inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
     }

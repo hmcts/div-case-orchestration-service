@@ -33,7 +33,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCallbackWorkflow;
@@ -50,6 +49,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorUpdateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDaCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
@@ -105,8 +106,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RetrieveAosCaseWorkflow retrieveAosCaseWorkflow;
     private final LinkRespondentWorkflow linkRespondentWorkflow;
     private final SetOrderSummaryWorkflow setOrderSummaryWorkflow;
-    private final ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
+    private final SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
+    private final SolicitorUpdateWorkflow solicitorUpdateWorkflow;
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
     private final SendPetitionerEmailNotificationWorkflow sendPetitionerEmailNotificationWorkflow;
     private final SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
@@ -389,11 +391,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> processPbaPayment(CcdCallbackRequest ccdCallbackRequest,
-                                                 String authToken) throws WorkflowException {
-        Map<String, Object> payLoad = processPbaPaymentWorkflow.run(ccdCallbackRequest, authToken);
+    public Map<String, Object> solicitorSubmission(CcdCallbackRequest ccdCallbackRequest,
+                                                   String authToken) throws WorkflowException {
+        Map<String, Object> payLoad = solicitorSubmissionWorkflow.run(ccdCallbackRequest, authToken);
 
-        if (processPbaPaymentWorkflow.errors().isEmpty()) {
+        if (solicitorSubmissionWorkflow.errors().isEmpty()) {
             log.info("Callback pay by account for solicitor with CASE ID: {} successfully completed",
                 ccdCallbackRequest.getCaseDetails().getCaseId());
             return payLoad;
@@ -402,19 +404,25 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 ccdCallbackRequest
                     .getCaseDetails()
                     .getCaseId());
-            return processPbaPaymentWorkflow.errors();
+            return solicitorSubmissionWorkflow.errors();
         }
     }
 
     @Override
-    public Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return solicitorCreateWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+    public Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+            throws WorkflowException {
+        return solicitorCreateWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
     }
 
     @Override
-    public Map<String, Object> submitRespondentAosCase(Map<String, Object> divorceSession, String authorizationToken,
-                                                       String caseId)
-        throws WorkflowException {
+    public Map<String, Object> solicitorUpdate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+            throws WorkflowException {
+        return solicitorUpdateWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
+    }
+
+    @Override
+    public Map<String, Object> submitRespondentAosCase(
+            Map<String, Object> divorceSession, String authorizationToken, String caseId) throws WorkflowException {
         Map<String, Object> payload = submitRespondentAosCaseWorkflow.run(divorceSession, authorizationToken, caseId);
 
         log.info("Updated respondent AOS with CASE ID: {}", payload.get(ID));

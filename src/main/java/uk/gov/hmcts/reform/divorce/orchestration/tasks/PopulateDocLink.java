@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Optional.ofNullable;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_DOCUMENT_LINK_FIELD;
 
 @Component
 public class PopulateDocLink implements Task<Map<String, Object>>  {
 
-    private static final String D8DOCUMENTS_GENERATED = "D8DocumentsGenerated";
     private static final String VALUE = "value";
     private static final String DOCUMENT_TYPE_KEY = "DocumentType";
     private static final String DOCUMENT_LINK_KEY = "DocumentLink";
