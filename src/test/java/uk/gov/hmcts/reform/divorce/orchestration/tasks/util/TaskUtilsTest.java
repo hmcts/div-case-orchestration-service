@@ -6,6 +6,8 @@ import org.junit.rules.ExpectedException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +30,18 @@ public class TaskUtilsTest {
         String value = TaskUtils.getMandatoryPropertyValueAsString(caseDataPayload, "testKey");
 
         assertThat(value, equalTo("testValue"));
+    }
+
+    @Test
+    public void getMandatoryPropertyValueAsLocalDate() throws TaskException {
+        Map<String, Object> caseDataPayload = new HashMap<>();
+        caseDataPayload.put("testKey", "2019-05-13");
+
+        LocalDate localDate = TaskUtils.getMandatoryPropertyValueAsLocalDateFromCCD(caseDataPayload, "testKey");
+
+        assertThat(localDate.getDayOfMonth(), equalTo(13));
+        assertThat(localDate.getMonth(), equalTo(Month.MAY));
+        assertThat(localDate.getYear(), equalTo(2019));
     }
 
     @Test
@@ -110,6 +124,17 @@ public class TaskUtilsTest {
         context.setTransientObject(CASE_ID_JSON_KEY, 123);
 
         TaskUtils.getCaseId(context);
+    }
+
+    @Test
+    public void shouldThrowTaskExceptionWhenDateIsBadlyFormatted() throws TaskException {
+        expectedException.expect(TaskException.class);
+        expectedException.expectMessage("Could not format date from \"testKey\" field.");
+
+        Map<String, Object> caseDataPayload = new HashMap<>();
+        caseDataPayload.put("testKey", "20190513");
+
+        TaskUtils.getMandatoryPropertyValueAsLocalDateFromCCD(caseDataPayload, "testKey");
     }
 
 }
