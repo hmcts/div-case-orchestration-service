@@ -16,6 +16,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEP_DATE;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -29,7 +30,7 @@ public class SeparationFieldsWorkflowTest {
 
     private Map<String, Object> testData;
     private TaskContext context;
-    
+
     private static final String FIXED_DATE = "2019-05-11";
 
     @Before
@@ -40,10 +41,7 @@ public class SeparationFieldsWorkflowTest {
 
     @Test
     public void runShouldExecuteTasksAndReturnPayload() throws Exception {
-        Map<String, Object> resultData = Collections.singletonMap(
-            D_8_REASON_FOR_DIVORCE_SEP_DATE, FIXED_DATE
-        );
-
+        Map<String, Object> resultData = Collections.singletonMap(D_8_REASON_FOR_DIVORCE_SEP_DATE, FIXED_DATE);
         when(setSeparationFields.execute(context, testData)).thenReturn(resultData);
 
         assertEquals(resultData, separationFieldsWorkflow.run(testData));
