@@ -132,6 +132,23 @@
       "D8RespondentCorrespondenceAddress": {
         "PostCode": "SW9 9PE"
       },
+      "D8DocumentsGenerated": [
+        {
+          "id": "7b22bf15-d055-41f8-9d77-224fed546841",
+          "value": {
+            "DocumentLink": {
+              "document_url": "https://localhost:8080/documents/1234",
+              "document_filename": "d8minipetitiondraft1513951627081724.pdf",
+              "document_binary_url": "https://localhost:8080/documents/1234/binary"
+            },
+            "DocumentType": "petition",
+            "DocumentComment": null,
+            "DocumentFileName": "DraftMiniPetition.pdf",
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        }
+      ],
       "D8InferredPetitionerGender": "female",
       "D8JurisdictionHabituallyResLast6Months": "NO",
       "solApplicationFeeOrderSummary": {
