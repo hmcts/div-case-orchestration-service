@@ -34,6 +34,10 @@ public class CcdUtil {
             .format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN));
     }
 
+    public static String mapDivorceDateTimeToCCDDateTime(LocalDateTime dateTime) {
+        return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+    }
+
     public String getCurrentDateWithCustomerFacingFormat() {
         return DateUtils.formatDateWithCustomerFacingFormat(java.time.LocalDate.now(clock));
     }

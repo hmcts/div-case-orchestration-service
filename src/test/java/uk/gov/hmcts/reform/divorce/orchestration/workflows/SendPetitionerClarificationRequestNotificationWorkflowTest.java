@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerClarificationRequestEmail;
 
 import java.util.Map;
@@ -33,7 +34,7 @@ public class SendPetitionerClarificationRequestNotificationWorkflowTest {
     private SendPetitionerClarificationRequestNotificationWorkflow classUnderTest;
 
     @Test
-    public void willAlwaysExecuteTheEmailTask() throws WorkflowException {
+    public void willAlwaysExecuteTheEmailTask() throws WorkflowException, TaskException {
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(emptyMap()).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();

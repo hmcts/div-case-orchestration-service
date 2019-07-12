@@ -31,14 +31,22 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -66,28 +74,49 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         final String relationship = getRespondentRelationship(caseDetails);
 
+        String petSolicitorEmail = getFieldAsStringOrNull(caseDetails, PET_SOL_EMAIL);
         String petitionerEmail = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_EMAIL);
+        String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
+
+        String petitionerFirstName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_FIRST_NAME);
+        String petitionerLastName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_LAST_NAME);
 
         EmailTemplateNames template = null;
-        // only send an email to pet. if respondent is not defending
-        if (!respondentIsDefending(caseDetails) && StringUtils.isNotEmpty(petitionerEmail)) {
-            tasks.add(emailNotificationTask);
-            template = findTemplateNameToBeSentToPet(caseDetails);
+        String emailToBeSentTo = null;
+
+
+        Map<String, String> notificationTemplateVars = new HashMap<>();
+
+        // only send an email to pet / solicitor. if respondent is not defending
+        if (!respondentIsDefending(caseDetails)) {
+            if (StringUtils.isNotEmpty(petSolicitorEmail)) {
+                String respFirstName = getFieldAsStringOrNull(caseDetails, RESP_FIRST_NAME_CCD_FIELD);
+                String respLastName = getFieldAsStringOrNull(caseDetails, RESP_LAST_NAME_CCD_FIELD);
+                String solicitorName = getFieldAsStringOrNull(caseDetails, PET_SOL_NAME);
+
+                notificationTemplateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
+                notificationTemplateVars.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
+                notificationTemplateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
+                notificationTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
+                notificationTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, ref);
+
+                tasks.add(emailNotificationTask);
+                template = findTemplateNameToBeSent(caseDetails, true);
+                emailToBeSentTo = petSolicitorEmail;
+            } else if (StringUtils.isNotEmpty(petitionerEmail)) {
+                notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
+                notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
+                notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
+                notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, ref);
+
+                tasks.add(emailNotificationTask);
+                template = findTemplateNameToBeSent(caseDetails, false);
+                emailToBeSentTo = petitionerEmail;
+            }
         }
 
         tasks.add(respondentAnswersGenerator);
         tasks.add(caseFormatterAddDocuments);
-
-        String firstName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_FIRST_NAME);
-        String lastName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_LAST_NAME);
-
-
-        Map<String, String> notificationTemplateVars = new HashMap<>();
-        String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
-        notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, firstName);
-        notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, lastName);
-        notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
-        notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, ref);
 
         Task[] taskArr = new Task[tasks.size()];
 
@@ -95,7 +124,7 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
             tasks.toArray(taskArr),
             ccdCallbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(NOTIFICATION_EMAIL, petitionerEmail),
+            ImmutablePair.of(NOTIFICATION_EMAIL, emailToBeSentTo),
             ImmutablePair.of(NOTIFICATION_TEMPLATE_VARS, notificationTemplateVars),
             ImmutablePair.of(NOTIFICATION_TEMPLATE, template),
             ImmutablePair.of(ID, caseDetails.getCaseId())
@@ -120,9 +149,11 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         return fieldValue.toString();
     }
 
-    private EmailTemplateNames findTemplateNameToBeSentToPet(CaseDetails caseDetails) {
+    private EmailTemplateNames findTemplateNameToBeSent(CaseDetails caseDetails, boolean isSolicitor) {
         EmailTemplateNames template = EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT;
-        if (isAdulteryAndNoConsent(caseDetails)) {
+        if (isSolicitor) {
+            template = EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED;
+        } else if (isAdulteryAndNoConsent(caseDetails)) {
             if (isCoRespNamedAndNotReplied(caseDetails)) {
                 template = EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED;
             } else {

@@ -67,6 +67,14 @@ public interface CosApiClient {
     );
 
     @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/da-about-to-be-granted"
+    )
+    Map<String, Object> daAboutToBeGranted(@RequestHeader(AUTHORIZATION) String authorisation,
+                                           @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
+
+    @RequestMapping(
         method = RequestMethod.GET,
         value = "/draftsapi/version/1",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
@@ -111,7 +119,6 @@ public interface CosApiClient {
     )
     Map<String, Object> bulkPronouncement(@RequestHeader(AUTHORIZATION) String authorisation,
                                           @RequestBody CcdCallbackRequest ccdCallbackRequest);
-
 
     @RequestMapping(
         method = RequestMethod.POST,
