@@ -351,7 +351,7 @@ public class RespondentSubmittedCallbackWorkflowUTest {
             expectedTemplateVars.put(NOTIFICATION_PET_NAME, TestConstants.TEST_PETITIONER_FIRST_NAME + " " + TestConstants.TEST_PETITIONER_LAST_NAME);
             expectedTemplateVars.put(NOTIFICATION_RESP_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME);
             expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, TestConstants.TEST_SOLICITOR_NAME);
-            expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID);
+            expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, TestConstants.TEST_CASE_ID);
 
             expectedContext.setTransientObjects(ImmutableMap
                 .of(NOTIFICATION_EMAIL, TestConstants.TEST_USER_EMAIL,

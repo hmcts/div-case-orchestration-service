@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCED_WHO;
@@ -82,14 +83,15 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
         String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
 
         Map<String, String> templateVars = new HashMap<>();
-        templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, ccdReference);
 
         if (StringUtils.isNotBlank(petSolicitorEmail)) {
 
             String respFirstName = getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD);
             String respLastName = getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD);
             String solicitorName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
+            String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
 
+            templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseId);
             templateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
             templateVars.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
             templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
@@ -102,6 +104,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
             templateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
+            templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, ccdReference);
 
             sendPetitionerEmail(caseData, petitionerEmail, eventId, templateVars);
         }
