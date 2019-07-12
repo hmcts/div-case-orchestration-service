@@ -14,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
+import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -45,6 +46,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -91,13 +94,15 @@ public class CoRespondentSubmittedITest {
 
     @Test
     public void givenCaseData_whenPerformCoRespReceived_thenReturnCaseData() throws Exception {
-        Map<String, Object> caseDetailMap = ImmutableMap.of(
-            D_8_CASE_REFERENCE, D8_ID,
-            D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, CO_RESP_FIRST_NAME,
-            D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, CO_RESP_LAST_NAME,
-            CO_RESP_EMAIL_ADDRESS, TEST_EMAIL,
-            CO_RESPONDENT_DEFENDS_DIVORCE, NO_VALUE
-        );
+        Map<String, Object> caseDetailMap = new HashMap<>();
+        caseDetailMap.put(D_8_CASE_REFERENCE, D8_ID);
+        caseDetailMap.put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, CO_RESP_FIRST_NAME);
+        caseDetailMap.put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, CO_RESP_LAST_NAME);
+        caseDetailMap.put(CO_RESP_EMAIL_ADDRESS, TEST_EMAIL);
+        caseDetailMap.put(CO_RESPONDENT_DEFENDS_DIVORCE, NO_VALUE);
+        caseDetailMap.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
+        caseDetailMap.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
+
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(CASE_ID)
                 .caseDetails(CaseDetails.builder()
                         .caseData(caseDetailMap)
@@ -129,6 +134,8 @@ public class CoRespondentSubmittedITest {
         caseDetailMap.put(CO_RESPONDENT_DEFENDS_DIVORCE, YES_VALUE);
         caseDetailMap.put(CO_RESPONDENT_DUE_DATE, TEST_EXPECTED_DUE_DATE);
         caseDetailMap.put(D_8_DIVORCE_UNIT, TEST_COURT);
+        caseDetailMap.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
+        caseDetailMap.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
 
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(EVENT_ID)

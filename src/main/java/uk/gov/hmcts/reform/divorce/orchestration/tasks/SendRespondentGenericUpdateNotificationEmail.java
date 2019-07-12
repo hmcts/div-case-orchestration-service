@@ -16,6 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
@@ -45,7 +46,7 @@ public class SendRespondentGenericUpdateNotificationEmail implements Task<Map<St
             String respLastName = getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD);
             String caseNumber = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
 
-            templateVars.put("email address", respEmail);
+            templateVars.put(NOTIFICATION_EMAIL, respEmail);
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, respFirstName);
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, respLastName);
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseNumber);
