@@ -577,7 +577,42 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void whenGenerateDaPronouncedDocuments_thenExecuteService() throws WorkflowException {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(payload)
+                .build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDnDocuments(AUTH_TOKEN, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+    }
+
+    @Test
     public void givenWorkflowException_whenGenerateDnPronouncedDocuments_thenReturnErrors() throws WorkflowException {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(payload)
+                .build())
+            .build();
+
+        String errorString = "foo";
+
+        when(caseOrchestrationService
+            .handleGrantDACallback(incomingRequest, AUTH_TOKEN))
+            .thenThrow(new WorkflowException(errorString));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.daAboutToBeGranted(AUTH_TOKEN, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getErrors(), contains(errorString));
+    }
+
+    @Test
+    public void givenWorkflowException_whenGenerateDaPronouncedDocuments_thenReturnErrors() throws WorkflowException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
