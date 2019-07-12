@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
@@ -28,9 +29,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils.formatDateWithCustomerFacingFormat;
@@ -40,7 +50,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils.formatDat
 public class SendPetitionerCertificateOfEntitlementNotificationEmail implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESCRIPTION = "Petitioner Notification - Certificate of Entitlement";
-    private static final String PETITIONER_EMAIL_ADDRESS = "email address";
 
     @Autowired
     private TaskCommons taskCommons;
@@ -50,8 +59,13 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
         log.info("Executing task to notify petitioner about certificate of entitlement. Case id: {}",
             (String) context.getTransientObject(CASE_ID_JSON_KEY));
 
-        String petitionerEmail = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_EMAIL);
+        String petSolicitorEmail = (String) payload.get(PET_SOL_EMAIL);
+        String petitionerEmail = (String) payload.get(D_8_PETITIONER_EMAIL);
         String familyManCaseId = getMandatoryPropertyValueAsString(payload, D_8_CASE_REFERENCE);
+        String petitionerFirstName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME);
+        String petitionerLastName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_LAST_NAME);
+        EmailTemplateNames template = null;
+        String emailToBeSentTo = null;
 
         LocalDate dateOfHearing = CaseDataUtils.getLatestCourtHearingDateFromCaseData(payload);
 
@@ -59,12 +73,26 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
 
         Map<String, String> templateParameters = new HashMap<>();
 
-        templateParameters.put(PETITIONER_EMAIL_ADDRESS, petitionerEmail);
-        templateParameters.put(NOTIFICATION_CASE_NUMBER_KEY, familyManCaseId);
-        templateParameters.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY,
-                getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME));
-        templateParameters.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY,
-                getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_LAST_NAME));
+        if (StringUtils.isNotBlank(petSolicitorEmail)) {
+            String respFirstName = getMandatoryPropertyValueAsString(payload, RESP_FIRST_NAME_CCD_FIELD);
+            String respLastName = getMandatoryPropertyValueAsString(payload, RESP_LAST_NAME_CCD_FIELD);
+            String solicitorName = getMandatoryPropertyValueAsString(payload, PET_SOL_NAME);
+
+            templateParameters.put(NOTIFICATION_CCD_REFERENCE_KEY, familyManCaseId);
+            templateParameters.put(NOTIFICATION_EMAIL, petSolicitorEmail);
+            templateParameters.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
+            templateParameters.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
+            templateParameters.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
+            template = EmailTemplateNames.SOL_APPLICANT_COE_NOTIFICATION;
+            emailToBeSentTo = petSolicitorEmail;
+        } else {
+            templateParameters.put(NOTIFICATION_EMAIL, petitionerEmail);
+            templateParameters.put(NOTIFICATION_CASE_NUMBER_KEY, familyManCaseId);
+            templateParameters.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
+            templateParameters.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
+            template = EmailTemplateNames.PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION;
+            emailToBeSentTo = petitionerEmail;
+        }
         templateParameters.put(DATE_OF_HEARING, formatDateWithCustomerFacingFormat(dateOfHearing));
         templateParameters.put(LIMIT_DATE_TO_CONTACT_COURT,
             formatDateWithCustomerFacingFormat(limitDateToContactCourt));
@@ -83,9 +111,9 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
         }
 
         try {
-            taskCommons.sendEmail(EmailTemplateNames.PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION,
+            taskCommons.sendEmail(template,
                 EMAIL_DESCRIPTION,
-                petitionerEmail,
+                emailToBeSentTo,
                 templateParameters);
             log.info("Petitioner notification sent for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));
         } catch (TaskException exception) {

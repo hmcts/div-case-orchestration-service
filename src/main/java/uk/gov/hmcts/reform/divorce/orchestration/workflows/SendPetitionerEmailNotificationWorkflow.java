@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerUpdateNotif
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
@@ -30,6 +31,7 @@ public class SendPetitionerEmailNotificationWorkflow extends DefaultWorkflow<Map
                     sendPetitionerUpdateNotificationsEmail,
                 },
                 ccdCallbackRequest.getCaseDetails().getCaseData(),
+                ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, ccdCallbackRequest.getEventId()),
                 ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId())
         );
     }
