@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
@@ -52,8 +53,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmiss
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorUpdateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDaCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
@@ -156,13 +155,10 @@ public class CaseOrchestrationServiceImplTest {
     private SetOrderSummaryWorkflow setOrderSummaryWorkflow;
 
     @Mock
-    private SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
+    private ProcessPbaPaymentWorkflow processPbaPaymentWorkflow;
 
     @Mock
     private SolicitorCreateWorkflow solicitorCreateWorkflow;
-
-    @Mock
-    private SolicitorUpdateWorkflow solicitorUpdateWorkflow;
 
     @Mock
     private SubmitRespondentAosCaseWorkflow submitRespondentAosCaseWorkflow;
@@ -666,69 +662,50 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenCaseData_whenProcessPbaPayment_thenReturnPayload() throws Exception {
         // given
-        when(solicitorSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
+        when(processPbaPaymentWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
             .thenReturn(requestPayload);
 
         // when
-        Map<String, Object> actual = classUnderTest.solicitorSubmission(ccdCallbackRequest, AUTH_TOKEN);
+        Map<String, Object> actual = classUnderTest.processPbaPayment(ccdCallbackRequest, AUTH_TOKEN);
 
         // then
         assertEquals(requestPayload, actual);
 
-        verify(solicitorSubmissionWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
+        verify(processPbaPaymentWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
     }
 
 
     @Test
     public void givenCaseDataInvalid_whenProcessPbaPayment_thenReturnListOfErrors() throws Exception {
         // given
-        when(solicitorSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
+        when(processPbaPaymentWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
             .thenReturn(requestPayload);
         Map<String, Object> errors = Collections.singletonMap("new_Error", "An Error");
-        when(solicitorSubmissionWorkflow.errors()).thenReturn(errors);
+        when(processPbaPaymentWorkflow.errors()).thenReturn(errors);
 
         // when
-        Map<String, Object> actual = classUnderTest.solicitorSubmission(ccdCallbackRequest, AUTH_TOKEN);
+        Map<String, Object> actual = classUnderTest.processPbaPayment(ccdCallbackRequest, AUTH_TOKEN);
 
         // then
         assertEquals(errors, actual);
 
-        verify(solicitorSubmissionWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
-        verify(solicitorSubmissionWorkflow, times(2)).errors();
+        verify(processPbaPaymentWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
+        verify(processPbaPaymentWorkflow, times(2)).errors();
     }
 
     @Test
     public void givenCaseData_whenSolicitorCreate_thenReturnPayload() throws Exception {
         // given
-        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-
-        when(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN))
+        when(solicitorCreateWorkflow.run(requestPayload))
             .thenReturn(requestPayload);
 
         // when
-        Map<String, Object> actual = classUnderTest.solicitorCreate(ccdCallbackRequest, AUTH_TOKEN);
+        Map<String, Object> actual = classUnderTest.solicitorCreate(ccdCallbackRequest);
 
         // then
-        assertEquals(caseDetails.getCaseData(), actual);
+        assertEquals(requestPayload, actual);
 
-        verify(solicitorCreateWorkflow).run(caseDetails, AUTH_TOKEN);
-    }
-
-    @Test
-    public void givenCaseData_whenSolicitorUpdate_thenReturnPayload() throws Exception {
-        // given
-        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-
-        when(solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN))
-                .thenReturn(requestPayload);
-
-        // when
-        Map<String, Object> actual = classUnderTest.solicitorUpdate(ccdCallbackRequest, AUTH_TOKEN);
-
-        // then
-        assertEquals(caseDetails.getCaseData(), actual);
-
-        verify(solicitorUpdateWorkflow).run(caseDetails, AUTH_TOKEN);
+        verify(solicitorCreateWorkflow).run(requestPayload);
     }
 
     @Test
@@ -1069,7 +1046,8 @@ public class CaseOrchestrationServiceImplTest {
         when(separationFieldsWorkflow.run(eq(ccdCallbackRequest.getCaseDetails().getCaseData())))
             .thenReturn(requestPayload);
 
-        assertThat(classUnderTest.processSeparationFields(ccdCallbackRequest), is(equalTo(requestPayload)));
+        assertThat(classUnderTest.processSeparationFields(ccdCallbackRequest),
+            is(equalTo(requestPayload)));
     }
 
     @Test(expected = WorkflowException.class)

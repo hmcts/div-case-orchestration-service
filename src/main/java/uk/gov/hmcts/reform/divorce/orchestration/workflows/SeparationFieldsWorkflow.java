@@ -20,6 +20,7 @@ public class SeparationFieldsWorkflow extends DefaultWorkflow<Map<String, Object
     }
 
     public Map<String, Object> run(Map<String, Object> payload) throws WorkflowException {
+
         return this.execute(new Task[] {
             setSeparationFields,
         }, payload);

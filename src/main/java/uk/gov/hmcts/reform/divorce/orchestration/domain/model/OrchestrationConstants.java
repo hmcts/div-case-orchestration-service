@@ -222,7 +222,6 @@ public class OrchestrationConstants {
     public static final String RESPONDENT_INVITATION_FILE_NAME_FORMAT = "aosinvitation%s";
     public static final String MINI_PETITION_FILE_NAME_FORMAT = "d8petition%s";
     public static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
-    public static final String DRAFT_MINI_PETITION_TEMPLATE_NAME = "divorcedraftminipetition";
     public static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
     public static final String DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS = "coRespondentAnswers";
     public static final String DOCUMENT_TYPE_CO_RESPONDENT_INVITATION = "aoscr";
@@ -265,7 +264,6 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_STATEMENT_OF_TRUTH = "solSignStatementofTruth";
     public static final String D8_RESPONDENT_SOLICITOR_EMAIL = "D8RespondentSolicitorEmail";
     public static final String D8_RESPONDENT_SOLICITOR_NAME = "D8RespondentSolicitorName";
-    public static final String D8DOCUMENTS_GENERATED = "D8DocumentsGenerated";
 
     // Payment
     public static final String PAYMENT = "payment";

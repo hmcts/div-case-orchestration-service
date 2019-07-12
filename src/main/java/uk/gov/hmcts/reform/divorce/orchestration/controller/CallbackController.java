@@ -109,7 +109,7 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> processPbaPayment(
         @RequestHeader(value = "Authorization") String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        Map<String, Object> response = caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, authorizationToken);
+        Map<String, Object> response = caseOrchestrationService.processPbaPayment(ccdCallbackRequest, authorizationToken);
 
         if (response != null && response.containsKey(SOLICITOR_VALIDATION_ERROR_KEY)) {
             return ResponseEntity.ok(
@@ -129,29 +129,9 @@ public class CallbackController {
             + "creating solicitor cases.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> solicitorCreate(
-        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseOrchestrationService.solicitorCreate(ccdCallbackRequest, authorizationToken))
-            .build());
-    }
-
-    @PostMapping(
-        path = "/solicitor-update",
-        consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Solicitor updated a case callback")
-    @ApiResponses(value = {
-        @ApiResponse(
-            code = 200,
-            message = "Callback to populate missing requirement fields when creating solicitor cases.",
-            response = CcdCallbackResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> solicitorUpdate(
-        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseOrchestrationService.solicitorUpdate(ccdCallbackRequest, authorizationToken))
+            .data(caseOrchestrationService.solicitorCreate(ccdCallbackRequest))
             .build());
     }
 
@@ -544,7 +524,7 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/calculate-separation-fields",
-            consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Callback to calculate ccd separation fields based on provided separation dates.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
