@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.io.IOException;
@@ -26,8 +27,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
@@ -36,8 +46,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
 
     private static final String genericPetDataJsonFilePath = "/jsonExamples/payloads/genericPetitionerData.json";
+    private static final String genericPetSolicitorDataJsonFilePath = "/jsonExamples/payloads/genericPetitionerSolicitorData.json";
     private static final String coRespRespondedWhenAosUndefended = "co-respondent responded when aos is undefended";
     private static final String coRespRespondedButRespHasNot = "co-respondent responded but respondent has not";
+    private static final String coRespRespondedSolicitorEmail = "co-respondent responded - notification to solicitor";
 
     @Mock
     private EmailService emailService;
@@ -47,8 +59,42 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void testSolicitorEmailIsSent_WhenCoRespondentSubmits()
+        throws IOException, TaskException {
+        CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
+            genericPetSolicitorDataJsonFilePath, CcdCallbackRequest.class);
+        Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
+
+        Map<String, String> expectedTemplateVars = new HashMap<>();
+        expectedTemplateVars.put(NOTIFICATION_EMAIL, (String) caseData.get(PET_SOL_EMAIL));
+        expectedTemplateVars.put(NOTIFICATION_PET_NAME, caseData.get(D_8_PETITIONER_FIRST_NAME) + " " + caseData.get(D_8_PETITIONER_LAST_NAME));
+        expectedTemplateVars.put(NOTIFICATION_RESP_NAME, caseData.get(RESP_FIRST_NAME_CCD_FIELD) + " " + caseData.get(RESP_LAST_NAME_CCD_FIELD));
+        expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, (String) caseData.get(PET_SOL_NAME));
+        expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, (String) caseData.get(D_8_CASE_REFERENCE));
+
+
+        String petSolEmail = (String) caseData.get(PET_SOL_EMAIL);
+        when(emailService.sendEmail(petSolEmail,
+            EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
+            expectedTemplateVars,
+            coRespRespondedSolicitorEmail)
+        ).thenReturn(null);
+
+        DefaultTaskContext context = new DefaultTaskContext();
+
+        Map<String, Object> returnedPayload = sendPetitionerCoRespondentRespondedNotificationEmail.execute(context, caseData);
+
+        assertThat(caseData, is(sameInstance(returnedPayload)));
+        verify(emailService).sendEmail(petSolEmail,
+            EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
+            expectedTemplateVars,
+            coRespRespondedSolicitorEmail);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasNot()
-            throws IOException {
+        throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
                 genericPetDataJsonFilePath, CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
@@ -79,7 +125,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasNotDefended()
-            throws IOException {
+        throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
                 genericPetDataJsonFilePath, CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
@@ -111,7 +157,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasIsDefending()
-            throws IOException {
+        throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
                 genericPetDataJsonFilePath, CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());

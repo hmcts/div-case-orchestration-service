@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -68,6 +69,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
 
     @Test
     public void genericEmailTaskShouldExecuteAndReturnPayload() throws Exception {
+        context.setTransientObject(CASE_EVENT_ID_JSON_KEY, TEST_EVENT_ID);
         when(sendPetitionerUpdateNotificationsEmail.execute(context, testData)).thenReturn(testData);
 
         assertEquals(testData, sendPetitionerEmailNotificationWorkflow.run(ccdCallbackRequestRequest));
