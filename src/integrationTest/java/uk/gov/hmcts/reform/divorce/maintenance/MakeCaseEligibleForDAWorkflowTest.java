@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.entity.ContentType;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -24,10 +23,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DA;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_PRONOUNCED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 
 @Slf4j
-@Ignore("Raised a Jira ticket for an improvement to make this test more determinable Div-5238")
 public class MakeCaseEligibleForDAWorkflowTest extends RetrieveCaseSupport {
 
     private static final String TEST_DN_PRONOUNCED = "testDNPronounced";
@@ -44,34 +43,38 @@ public class MakeCaseEligibleForDAWorkflowTest extends RetrieveCaseSupport {
 
     @Test
     public void givenCaseIsInDNPronounced_WhenMakeCaseEligibleForDAIsCalled_CaseStateIsAwaitingDecreeAbsolute() {
-        UserDetails citizenUser = createCitizenUser();
+        final UserDetails citizenUser = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, citizenUser,
             Pair.of(D_8_PETITIONER_EMAIL, citizenUser.getEmailAddress()));
 
-        String caseId = String.valueOf(caseDetails.getId());
+        final String caseId = String.valueOf(caseDetails.getId());
         log.debug("Case " + caseId + " created.");
 
-        updateCase(String.valueOf(caseDetails.getId()),
-            null,
-            NO_STATE_CHANGE_EVENT_ID,
+        updateCase(caseId, null, NO_STATE_CHANGE_EVENT_ID,
             ImmutablePair.of(DECREE_NISI_GRANTED_DATE_KEY, DECREE_NISI_GRANTED_DATE));
-
-        log.debug(String.format("%s=%s set in the case [%s]", DECREE_NISI_GRANTED_DATE_KEY, DECREE_NISI_GRANTED_DATE, caseId));
+        log.debug("{}={} updated in the case {}",  DECREE_NISI_GRANTED_DATE_KEY, DECREE_NISI_GRANTED_DATE, caseId);
 
         updateCaseForCitizen(caseId, null, TEST_DN_PRONOUNCED, citizenUser);
-        log.debug("Case " + caseId + " moved to DNPronounced.");
+        log.debug("Case {} moved to DNPronounced.", caseId);
 
-        UserDetails caseWorkerUser = createCaseWorkerUser();
+        assertCaseStateIsAsExpected(DN_PRONOUNCED, citizenUser.getAuthToken());
+
+        final UserDetails caseWorkerUser = createCaseWorkerUser();
         makeCasesEligibleForDa(caseWorkerUser.getAuthToken());
 
+        assertCaseStateIsAsExpected(AWAITING_DA, citizenUser.getAuthToken());
+    }
+
+
+    private void assertCaseStateIsAsExpected(final String expectedState, final String authToken) {
         await().pollInterval(3, SECONDS).atMost(20, SECONDS).untilAsserted(() -> {
-            final Response retrievedCase = retrieveCase(citizenUser.getAuthToken());
-            log.debug("found case id: " + retrievedCase.path("caseId"));
-            assertThat(retrievedCase.path(STATE_KEY), equalTo(AWAITING_DA));
+            final Response retrievedCase = retrieveCase(authToken);
+            log.debug("Retrieved case " + retrievedCase.path("caseId") + "with state " + retrievedCase.path("state"));
+            assertThat(retrievedCase.path(STATE_KEY), equalTo(expectedState));
         });
     }
 
-    private void makeCasesEligibleForDa(String userToken) {
+    private void makeCasesEligibleForDa(final String userToken) {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 
