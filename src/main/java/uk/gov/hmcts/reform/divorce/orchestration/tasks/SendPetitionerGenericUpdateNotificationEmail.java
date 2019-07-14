@@ -61,7 +61,7 @@ public class SendPetitionerGenericUpdateNotificationEmail implements Task<Map<St
             String respFirstName = getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD);
             String respLastName = getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD);
             String solicitorName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
-            String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
+            String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
 
             templateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
             templateVars.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);

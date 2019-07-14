@@ -89,7 +89,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
                 String petitionerFirstName = getMandatoryPropertyValueAsString(caseDataPayload, D_8_PETITIONER_FIRST_NAME);
                 String petitionerLastName = getMandatoryPropertyValueAsString(caseDataPayload, D_8_PETITIONER_LAST_NAME);
                 String solicitorName = (String) caseDataPayload.get(D8_RESPONDENT_SOLICITOR_NAME);
-                String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
+                String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
 
                 templateParameters.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
                 templateParameters.put(NOTIFICATION_RESP_NAME, respondentFirstName + " " + respondentLastName);

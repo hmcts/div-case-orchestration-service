@@ -53,7 +53,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
         String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
         String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
-        String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
+        String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
 
         Map<String, String> templateVars = new HashMap<>();
 

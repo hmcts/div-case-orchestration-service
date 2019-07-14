@@ -56,7 +56,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
-        String caseId =  (String) context.getTransientObject(CASE_ID_JSON_KEY);
+        String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
         log.info("Executing task to notify petitioner about certificate of entitlement. Case id: {}",
             caseId);
 

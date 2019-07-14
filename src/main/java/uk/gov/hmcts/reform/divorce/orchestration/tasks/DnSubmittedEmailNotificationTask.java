@@ -54,7 +54,7 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
         String petitionerFirstName = Objects.toString(data.get(D_8_PETITIONER_FIRST_NAME), null);
         String petitionerLastName = Objects.toString(data.get(D_8_PETITIONER_LAST_NAME), null);
         String petitionerEmail = Objects.toString(data.get(D_8_PETITIONER_EMAIL), null);
-        String caseId = (String) context.getTransientObject(CASE_ID_JSON_KEY);
+        String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
 
         Map<String, String> notificationTemplateVars = new HashMap<>();
         String template = null;
