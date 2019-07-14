@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
+import feign.FeignException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -39,7 +41,7 @@ public class DecreeNisiAnswersGeneratorTest {
     private DecreeNisiAnswersGenerator decreeNisiAnswersGenerator;
 
     @Test
-    public void callsDocumentGeneratorAndStoresGeneratedDocument() {
+    public void callsDocumentGeneratorAndStoresGeneratedDocument() throws TaskException {
 
         final Map<String, Object> payload = new HashMap<>();
 
@@ -74,5 +76,29 @@ public class DecreeNisiAnswersGeneratorTest {
         assertThat(documentCollection, is(newLinkedHashSet(expectedDNAnswers)));
 
         verify(documentGeneratorClient).generatePDF(generateDocumentRequest, AUTH_TOKEN);
+    }
+
+    @Test(expected = TaskException.class)
+    public void throwsTaskExceptionWhenDocumentGenerationFails() throws TaskException {
+
+        final Map<String, Object> payload = new HashMap<>();
+
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(payload)
+            .build();
+
+        final TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+
+        final GenerateDocumentRequest generateDocumentRequest =
+            GenerateDocumentRequest.builder()
+                .template(DN_ANSWERS_TEMPLATE_ID)
+                .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                .build();
+
+        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
+            .thenThrow(FeignException.class);
+
+        decreeNisiAnswersGenerator.execute(context, payload);
     }
 }

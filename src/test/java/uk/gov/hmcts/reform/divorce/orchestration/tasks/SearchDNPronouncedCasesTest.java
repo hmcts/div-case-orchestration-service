@@ -51,6 +51,10 @@ public class SearchDNPronouncedCasesTest {
 
     private int pageSize;
     private int start;
+
+    private static final String TWO_MINUTES = "2m";
+    private String timeSinceDNWasPronounced = TWO_MINUTES;
+
     private DefaultTaskContext contextBeingModified;
 
     @Before
@@ -62,13 +66,11 @@ public class SearchDNPronouncedCasesTest {
                 put("PAGE_SIZE", pageSize);
                 put("FROM", start);
                 put(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-                put(AWAITING_DA_PERIOD_KEY, "2m");
+                put(AWAITING_DA_PERIOD_KEY, timeSinceDNWasPronounced);
             }};
 
-        contextBeingModified =
-            DefaultTaskContext.builder()
-                .transientObjects(searchSettings)
-                .build();
+        contextBeingModified = new DefaultTaskContext();
+        contextBeingModified.setTransientObjects(searchSettings);
     }
 
     @Test
