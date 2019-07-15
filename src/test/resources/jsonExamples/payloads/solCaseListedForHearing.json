@@ -1,0 +1,29 @@
+{
+  "case_details": {
+    "id": "0123456789012345",
+    "case_data": {
+      "PetitionerSolicitorEmail": "solicitor@justice.uk",
+      "D8caseReference": "HR290831",
+      "D8PetitionerFirstName": "James",
+      "D8PetitionerLastName": "Johnson",
+      "D8RespondentFirstName": "Resp First Name",
+      "D8RespondentLastName": "Resp Last Name",
+      "PetitionerSolicitorName": "Petitioner Solicitor name",
+      "D8DivorceCostsClaim": "YES",
+      "D8InferredPetitionerGender": "male",
+      "CostsClaimGranted": "YES",
+      "DateAndTimeOfHearing": [
+        {
+          "id": "a5961401-e669-4637-97b9-b9ea2ddbb2bd",
+          "value": {
+            "DateOfHearing": "2019-04-21",
+            "TimeOfHearing": "15:00"
+          }
+        }
+      ],
+      "RespEmailAddress": "respondent@justice.uk",
+      "D8RespondentSolicitorName": "Respondent Solicitor name",
+      "D8RespondentSolicitorEmail": "respsolicitor@justice.uk"
+    }
+  }
+}

@@ -84,12 +84,33 @@ variable "scheduler_enabled" {
   default = "true"
 }
 
+variable "scheduler_make_cases_eligible_da_enabled" {
+  default = "false"
+}
+
+
 variable "scheudler_schedules_create_bulk_cases_cron" {
   type    = "string"
   default = "0 0 4 ? * * *"
 }
 
+variable "scheduler_make_cases_eligible_da_cron" {
+  type    = "string"
+  default = "0 0 */3 ? * * *"
+  description = "The scheduler job runs every 3 hours"
+}
+
+variable "awaiting_da_period" {
+    type = "string"
+    default = "43d"
+    description = "The awaiting period for applicant to be eligible for Decree Absolute.Other time units are also supported, e.g. 'm'(i.e. minute),'s'(i.e. second)"
+}
+
 variable "feature_resp_solicitor_details" {
   type    = "string"
   default = "false"
+}
+
+variable "documentation_swagger_enabled" {
+  default = true
 }

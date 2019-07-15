@@ -77,6 +77,7 @@ public class ProcessPbaPaymentITest {
     private static final String API_URL = "/process-pba-payment";
     private static final String PAYMENTS_CREDIT_ACCOUNT_CONTEXT_PATH = "/credit-account-payments";
     private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
+    private static final String FORMAT_REMOVE_PETITION_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/remove-all-petition-documents";
     private static final String YES_VALUE = "YES";
     private static final String NO_VALUE = "NO";
 
@@ -88,6 +89,9 @@ public class ProcessPbaPaymentITest {
 
     @ClassRule
     public static WireMockClassRule serviceAuthProviderServer = new WireMockClassRule(4504);
+
+    @ClassRule
+    public static WireMockClassRule formatterServiceServer = new WireMockClassRule(4011);
 
     private Map<String, Object> caseData;
     private CaseDetails caseDetails;
@@ -155,12 +159,13 @@ public class ProcessPbaPaymentITest {
                         .caseDetails(caseDetails)
                         .build();
 
-        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+        final CcdCallbackResponse expected = CcdCallbackResponse.builder()
                 .data(caseData)
                 .build();
 
         stubCreditAccountPayment(HttpStatus.OK, new CreditAccountPaymentResponse());
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubFormatterServerEndpoint(caseData);
 
         webClient.perform(post(API_URL)
                 .content(convertObjectToJsonString(ccdCallbackRequest))
@@ -217,5 +222,14 @@ public class ProcessPbaPaymentITest {
                 .willReturn(aResponse()
                         .withStatus(status.value())
                         .withBody(response)));
+    }
+
+    private void stubFormatterServerEndpoint(Map<String , Object> data) {
+        formatterServiceServer.stubFor(WireMock.post(FORMAT_REMOVE_PETITION_DOCUMENTS_CONTEXT_PATH)
+            .withRequestBody(equalToJson(convertObjectToJsonString(data)))
+            .willReturn(aResponse()
+                    .withStatus(HttpStatus.OK.value())
+                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                    .withBody(convertObjectToJsonString(data))));
     }
 }

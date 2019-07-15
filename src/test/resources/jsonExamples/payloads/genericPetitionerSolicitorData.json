@@ -1,0 +1,14 @@
+{
+    "case_details": {
+      "id": "0123456789012345",
+      "case_data": {
+        "D8caseReference": "LV80D85000",
+        "PetitionerSolicitorEmail": "solicitor@justice.uk",
+        "D8PetitionerFirstName": "James",
+        "D8PetitionerLastName": "Johnson",
+        "D8RespondentFirstName": "Resp First Name",
+        "D8RespondentLastName": "Resp Last Name",
+        "PetitionerSolicitorName": "Petitioner Solicitor name"
+      }
+    }
+  }

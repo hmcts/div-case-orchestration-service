@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Data
 public class DefaultTaskContext implements TaskContext {
@@ -41,6 +42,11 @@ public class DefaultTaskContext implements TaskContext {
     @SuppressWarnings("unchecked")
     public <T> T getTransientObject(String key) {
         return (T) transientObjects.get(key);
+    }
+
+    @Override
+    public <T> Optional<T> getTransientObjectOptional(String key) {
+        return Optional.ofNullable(getTransientObject(key));
     }
 
     @Override
