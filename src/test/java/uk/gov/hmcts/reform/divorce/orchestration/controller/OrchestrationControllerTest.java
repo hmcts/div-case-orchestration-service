@@ -348,22 +348,4 @@ public class OrchestrationControllerTest {
         assertEquals(expectedResponse, response.getBody());
     }
 
-    @Test
-    public void testServiceIsCalledAccordingly_ForMakeCaseEligibleForDA() throws CaseOrchestrationServiceException {
-        ResponseEntity<Map<String, Object>> response = classUnderTest.makeCaseEligibleForDecreeAbsolute("testAuthToken", "testCaseId");
-
-        verify(caseOrchestrationService).makeCaseEligibleForDA("testAuthToken", "testCaseId");
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
-    }
-
-    @Test
-    public void testFailure_WhenExceptionIsThrown_ForMakeCaseEligibleForDA() throws CaseOrchestrationServiceException {
-        when(caseOrchestrationService.makeCaseEligibleForDA("testAuthToken", "testCaseId")).thenThrow(CaseOrchestrationServiceException.class);
-
-        ResponseEntity<Map<String, Object>> response = classUnderTest.makeCaseEligibleForDecreeAbsolute("testAuthToken", "testCaseId");
-
-        verify(caseOrchestrationService).makeCaseEligibleForDA("testAuthToken", "testCaseId");
-        assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR));
-    }
-
 }
