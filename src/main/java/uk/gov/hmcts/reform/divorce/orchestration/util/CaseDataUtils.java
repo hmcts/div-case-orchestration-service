@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -12,6 +13,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
@@ -63,5 +67,25 @@ public class CaseDataUtils {
 
         return LocalDate.parse(getMandatoryPropertyValueAsString(hearingDateTime.getValue(), DATE_OF_HEARING_CCD_FIELD),
                 ofPattern(CCD_DATE_FORMAT));
+    }
+
+    public static String getCaseLinkValue(Map<String, Object> caseData, String fieldName ) {
+        return (String) getFieldAsStringObjectMap(caseData,fieldName).get(CASE_REFERENCE_FIELD);
+    }
+
+    public static Map<String, Object> getCaseDataFromCaseDetails(Map<String, Object> caseDetails) {
+        return getFieldAsStringObjectMap(caseDetails, CCD_CASE_DATA_FIELD);
+    }
+
+    public static Map<String, Object> getFieldAsStringObjectMap(Map<String, Object> caseData, String fieldName ) {
+        return (Map<String, Object>) caseData.get(fieldName);
+    }
+
+    public static Map<String, Object> createCaseLinkField(String fieldName, String linkId) {
+        return ImmutableMap.of(fieldName, ImmutableMap.of(CASE_REFERENCE_FIELD, linkId));
+    }
+
+    public static Map<String, Object> getElementFromCollection(Map<String, Object> collectionEntry) {
+        return getFieldAsStringObjectMap(collectionEntry, VALUE_KEY);
     }
 }

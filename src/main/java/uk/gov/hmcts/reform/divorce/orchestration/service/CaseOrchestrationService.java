@@ -116,4 +116,9 @@ public interface CaseOrchestrationService {
     Map<String, Object> makeCaseEligibleForDA(String authorisationToken, String caseId) throws CaseOrchestrationServiceException;
 
     Map<String, Object> processApplicantDecreeAbsoluteEligibility(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
+
+    Map<String, Object> removeBulkLink(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    Map<String, Object> updateBulkCaseAcceptedCases(CaseDetails caseDetails, String authToken) throws WorkflowException;
+
 }

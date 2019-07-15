@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseRemoveCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
@@ -34,6 +35,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessPbaPaymentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCallbackWorkflow;
@@ -140,6 +142,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
     private final MakeCaseEligibleForDecreeAbsoluteWorkflow makeCaseEligibleForDecreeAbsoluteWorkflow;
     private final ApplicantDecreeAbsoluteEligibilityWorkflow applicantDecreeAbsoluteEligibilityWorkflow;
+    private final RemoveLinkWorkflow removeLinkWorkflow;
+    private final BulkCaseRemoveCasesWorkflow bulkCaseRemoveCasesWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -608,6 +612,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
+    public Map<String, Object> updateBulkCaseAcceptedCases(CaseDetails caseDetails, String authToken) throws WorkflowException {
+        return bulkCaseRemoveCasesWorkflow.run(caseDetails, authToken);
+    }
+
+
+    @Override
     public Map<String, Object> cleanStateCallback(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException {
         return cleanStatusCallbackWorkflow.run(callbackRequest, authToken);
     }
@@ -640,6 +650,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             throw new CaseOrchestrationServiceException(exception);
         }
     }
+
+    @Override
+    public Map<String, Object> removeBulkLink(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        return removeLinkWorkflow.run(caseDetails.getCaseData());
+    }
+
 
     private boolean isPetitionerClaimingCosts(Map<String, Object> caseData) {
         return YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)))
