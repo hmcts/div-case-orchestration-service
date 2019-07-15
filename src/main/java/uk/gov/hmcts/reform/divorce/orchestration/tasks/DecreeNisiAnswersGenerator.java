@@ -49,7 +49,7 @@ public class DecreeNisiAnswersGenerator implements Task<Map<String, Object>> {
                 context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
             documentCollection.add(dnAnswers);
         } catch (Exception e) {
-            throw new TaskException("Unable to generate or store Co-Respondent answers.", e);
+            throw new TaskException("Unable to generate or store Decreenisi answers.", e);
         }
 
         return payload;
