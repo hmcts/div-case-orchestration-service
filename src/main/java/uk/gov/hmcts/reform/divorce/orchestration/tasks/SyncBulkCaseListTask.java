@@ -43,8 +43,6 @@ public class SyncBulkCaseListTask implements Task<Map<String, Object>> {
             .filter(caseReference -> !acceptedCaseIdList.contains(caseReference))
             .collect(Collectors.toList());
 
-        log.error(Arrays.toString(finalCases.toArray()));
-        log.error(Arrays.toString(removedCases.toArray()));
         context.setTransientObject(REMOVED_CASE_LIST, removedCases);
         bulkCaseData.put(CASE_LIST_KEY, finalCases);
         return bulkCaseData;

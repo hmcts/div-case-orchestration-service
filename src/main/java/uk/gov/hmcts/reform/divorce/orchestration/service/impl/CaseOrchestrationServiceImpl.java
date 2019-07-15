@@ -616,7 +616,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         return bulkCaseRemoveCasesWorkflow.run(caseDetails, authToken);
     }
 
-
     @Override
     public Map<String, Object> cleanStateCallback(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException {
         return cleanStatusCallbackWorkflow.run(callbackRequest, authToken);
