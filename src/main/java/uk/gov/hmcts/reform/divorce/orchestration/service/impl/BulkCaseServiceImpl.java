@@ -122,7 +122,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
             try {
                 removeBulkCaseLinkWorkflow.run(caseResponse.getCaseData(), caseId, bulkCaseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
             } catch (WorkflowException e) {
-                e.printStackTrace();
+                log.error("Error removing bulk case link with bulkCaseId: {} and caseId {}", bulkCaseId, caseId);
             }
         }
 
