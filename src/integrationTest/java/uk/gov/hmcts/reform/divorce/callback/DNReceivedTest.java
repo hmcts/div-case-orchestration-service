@@ -6,13 +6,14 @@ import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
-import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_DN_ANSWERS;
+import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class DNReceivedTest extends IntegrationTest {
 
@@ -24,25 +25,32 @@ public class DNReceivedTest extends IntegrationTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void givenCase_whenDNSubmitted_thenReturnDNData() {
-        Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
-        Map<String, Object> response = cosApiClient.dnSubmitted(createCaseWorkerUser().getAuthToken(), aosCase);
-        assertNotNull(response.get(DATA));
-        assertEquals(((Map<String, Object>)aosCase.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
+    public void givenCase_whenDNSubmitted_thenReturnDNDataPlusAnswerDoc() {
+        Map<String, Object> dnCase = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
+        Map<String, Object> response = cosApiClient.dnSubmitted(createCaseWorkerUser().getAuthToken(), dnCase);
+        Map<String, Object> resData = (Map<String, Object>) response.get(DATA);
+        String jsonResponse = objectToJson(response);
+        assertNotNull(resData);
+        assertThat(jsonResponse, hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName",
+            is(DOCUMENT_TYPE_DN_ANSWERS)));
+        assertThat(jsonResponse, hasJsonPath("$.data.D8caseReference",
+            is("LV17D80100")));
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void givenCaseWithoutEmail_whenDNSubmitted_thenReturnNotificationError() {
-
-        Map<String, Object> aosCaseWithoutEmailAddress = ResourceLoader
+    public void givenCaseWithoutEmail_whenDNSubmitted_thenReturnDNDataPlusAnswerDoc() {
+        Map<String, Object> dnCaseWithoutEmailAddress = ResourceLoader
                 .loadJsonToObject(ERROR_CASE_RESPONSE, Map.class);
         Map<String, Object> response = cosApiClient
-                .dnSubmitted(createCaseWorkerUser().getAuthToken(), aosCaseWithoutEmailAddress);
-
-        assertNull(response.get(DATA));
-        List<String> error = (List<String>) response.get(ERRORS);
-        assertEquals(1,error.size());
-        assertTrue(error.get(0).contains("email_address is a required property"));
+                .dnSubmitted(createCaseWorkerUser().getAuthToken(), dnCaseWithoutEmailAddress);
+        Map<String, Object> resData = (Map<String, Object>) response.get(DATA);
+        String jsonResponse = objectToJson(response);
+        
+        assertNotNull(resData);
+        assertThat(jsonResponse, hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName",
+            is(DOCUMENT_TYPE_DN_ANSWERS)));
+        assertThat(jsonResponse, hasJsonPath("$.data.D8caseReference",
+            is("LV17D80100")));
     }
 }
