@@ -23,7 +23,10 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.UNFORMATTED_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -33,6 +36,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 
 @RunWith(SpringRunner.class)
 public class SendPetitionerGenericUpdateNotificationEmailTest {
@@ -52,12 +63,13 @@ public class SendPetitionerGenericUpdateNotificationEmailTest {
         context.setTransientObject(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
 
         testData = new HashMap<>();
+        testData.put(D_8_CASE_REFERENCE, D8_CASE_ID);
+        testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
+        testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
+
         expectedTemplateVars = new HashMap<>();
 
-        expectedTemplateVars.put("email address", TEST_USER_EMAIL);
-        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME);
-        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME);
-        expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, D8_CASE_ID);
+        expectedTemplateVars.put(NOTIFICATION_EMAIL, TEST_USER_EMAIL);
     }
 
     @Test
@@ -68,12 +80,13 @@ public class SendPetitionerGenericUpdateNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallEmailServiceForGenericUpdate() throws TaskException {
-        testData.put(D_8_CASE_REFERENCE, D8_CASE_ID);
-        testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
+    public void shouldCallPetEmailServiceForGenericUpdate() throws TaskException {
         testData.put(D_8_PETITIONER_EMAIL, TEST_USER_EMAIL);
-        testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
-        testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
+        testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
+
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME);
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME);
+        expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, D8_CASE_ID);
 
         Map returnPayload = sendPetitionerGenericUpdateNotificationEmail.execute(context, testData);
 
@@ -85,5 +98,30 @@ public class SendPetitionerGenericUpdateNotificationEmailTest {
                         eq(EmailTemplateNames.GENERIC_UPDATE.name()),
                         eq(expectedTemplateVars),
                         any());
+    }
+
+    @Test
+    public void shouldCallSolEmailServiceForGenericUpdate() throws TaskException {
+        testData.put(PET_SOL_EMAIL, TEST_USER_EMAIL);
+        testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
+        testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_USER_FIRST_NAME);
+        testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_USER_LAST_NAME);
+        testData.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
+
+
+        expectedTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME);
+        expectedTemplateVars.put(NOTIFICATION_RESP_NAME, TEST_USER_FIRST_NAME + " " + TEST_USER_LAST_NAME);
+        expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+
+        Map returnPayload = sendPetitionerGenericUpdateNotificationEmail.execute(context, testData);
+
+        assertEquals(testData, returnPayload);
+
+        verify(emailService)
+            .sendEmail(
+                eq(TEST_USER_EMAIL),
+                eq(EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name()),
+                eq(expectedTemplateVars),
+                any());
     }
 }

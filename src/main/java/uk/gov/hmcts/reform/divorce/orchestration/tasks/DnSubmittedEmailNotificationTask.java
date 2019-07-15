@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
@@ -21,7 +22,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 
 @Component
 @Slf4j
@@ -37,20 +47,41 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> data) {
 
-        String caseId = Objects.toString(data.get(D_8_CASE_REFERENCE), null);
-        String firstName = Objects.toString(data.get(D_8_PETITIONER_FIRST_NAME), null);
-        String lastName = Objects.toString(data.get(D_8_PETITIONER_LAST_NAME), null);
-        String emailAddress = Objects.toString(data.get(D_8_PETITIONER_EMAIL), null);
+        String petSolicitorEmail = (String) data.get(PET_SOL_EMAIL);
+
+        String ccdReference = Objects.toString(data.get(D_8_CASE_REFERENCE), null);
+        String petitionerFirstName = Objects.toString(data.get(D_8_PETITIONER_FIRST_NAME), null);
+        String petitionerLastName = Objects.toString(data.get(D_8_PETITIONER_LAST_NAME), null);
+        String petitionerEmail = Objects.toString(data.get(D_8_PETITIONER_EMAIL), null);
 
         Map<String, String> notificationTemplateVars = new HashMap<>();
-        notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, firstName);
-        notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, lastName);
-        notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, caseId);
+        String template = null;
+        String emailToBeSentTo = null;
+
+        if (StringUtils.isNotBlank(petSolicitorEmail)) {
+            String respFirstName = Objects.toString(data.get(RESP_FIRST_NAME_CCD_FIELD), null);
+            String respLastName = Objects.toString(data.get(RESP_LAST_NAME_CCD_FIELD), null);
+            String solicitorName = Objects.toString(data.get(PET_SOL_NAME), null);
+
+            notificationTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, ccdReference);
+            notificationTemplateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
+            notificationTemplateVars.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
+            notificationTemplateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
+            notificationTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
+            template = EmailTemplateNames.SOL_APPLICANT_DN_SUBMITTED.name();
+            emailToBeSentTo = petSolicitorEmail;
+        } else {
+            notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
+            notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
+            notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, ccdReference);
+            template = EmailTemplateNames.DN_SUBMISSION.name();
+            emailToBeSentTo = petitionerEmail;
+        }
         try {
-            emailService.sendEmailAndReturnExceptionIfFails(emailAddress,
-                EmailTemplateNames.DN_SUBMISSION.name(), notificationTemplateVars, "DN Submission");
+            emailService.sendEmailAndReturnExceptionIfFails(emailToBeSentTo,
+                template, notificationTemplateVars, "DN Submission");
         } catch (NotificationClientException e) {
-            log.warn("Error sending email on DN submitted for case {}", caseId, e);
+            log.warn("Error sending email on DN submitted for case {}", ccdReference, e);
             context.setTransientObject(OrchestrationConstants.EMAIL_ERROR_KEY, e.getMessage());
             return Collections.emptyMap();
         }

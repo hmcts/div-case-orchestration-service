@@ -41,7 +41,7 @@ public class CaseListedForHearingCallbackTest extends IntegrationTest {
         assertNull(response.get(DATA));
         List<String> error = (List<String>) response.get(ERRORS);
         assertEquals(1, error.size());
-        assertTrue(error.get(0).contains("Could not evaluate value of mandatory property \"D8PetitionerEmail\""));
+        assertTrue(error.get(0).contains("Failed to send e-mail"));
     }
 
 }

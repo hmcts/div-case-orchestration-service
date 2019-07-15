@@ -95,9 +95,9 @@ public class CallbackControllerTest {
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
 
-        when(caseOrchestrationService.solicitorCreate(ccdCallbackRequest)).thenReturn(caseData);
+        when(caseOrchestrationService.solicitorCreate(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorCreate(ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorCreate(AUTH_TOKEN, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
@@ -115,7 +115,7 @@ public class CallbackControllerTest {
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
 
-        when(caseOrchestrationService.processPbaPayment(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
+        when(caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
@@ -139,7 +139,7 @@ public class CallbackControllerTest {
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
 
-        when(caseOrchestrationService.processPbaPayment(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(invalidResponse);
+        when(caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(invalidResponse);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
@@ -577,7 +577,42 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void whenGenerateDaPronouncedDocuments_thenExecuteService() throws WorkflowException {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(payload)
+                .build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDnDocuments(AUTH_TOKEN, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+    }
+
+    @Test
     public void givenWorkflowException_whenGenerateDnPronouncedDocuments_thenReturnErrors() throws WorkflowException {
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(payload)
+                .build())
+            .build();
+
+        String errorString = "foo";
+
+        when(caseOrchestrationService
+            .handleGrantDACallback(incomingRequest, AUTH_TOKEN))
+            .thenThrow(new WorkflowException(errorString));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.daAboutToBeGranted(AUTH_TOKEN, incomingRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getErrors(), contains(errorString));
+    }
+
+    @Test
+    public void givenWorkflowException_whenGenerateDaPronouncedDocuments_thenReturnErrors() throws WorkflowException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()

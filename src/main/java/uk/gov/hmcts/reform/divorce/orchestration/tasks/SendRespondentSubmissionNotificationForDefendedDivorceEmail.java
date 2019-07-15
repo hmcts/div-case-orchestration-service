@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_COURT_ADDRESS_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
@@ -57,7 +58,7 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         String caseId = getMandatoryPropertyValueAsString(caseDataPayload, D_8_CASE_REFERENCE);
         templateFields.put(NOTIFICATION_CASE_NUMBER_KEY, caseId);
 
-        templateFields.put("email address", respondentEmailAddress);
+        templateFields.put(NOTIFICATION_EMAIL, respondentEmailAddress);
         templateFields.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, respondentFirstName);
         templateFields.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, respondentLastName);
         templateFields.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);

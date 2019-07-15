@@ -43,6 +43,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_COURT_ADDRESS_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
@@ -107,7 +108,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
         Map<String, String> templateParameters = templateParametersCaptor.getValue();
         assertThat(templateParameters, hasEntry(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID));
         assertThat(templateParameters, allOf(
-            hasEntry("email address", "respondent@divorce.co.uk"),
+            hasEntry(NOTIFICATION_EMAIL, "respondent@divorce.co.uk"),
             hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Ted"),
             hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones"),
             hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "wife"),
@@ -174,7 +175,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
         Map<String, String> templateParameters = templateParametersCaptor.getValue();
         assertThat(templateParameters, hasEntry(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID));
         assertThat(templateParameters, allOf(
-            hasEntry("email address", "respondent@divorce.co.uk"),
+            hasEntry(NOTIFICATION_EMAIL, "respondent@divorce.co.uk"),
             hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Sarah"),
             hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones"),
             hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "husband"),

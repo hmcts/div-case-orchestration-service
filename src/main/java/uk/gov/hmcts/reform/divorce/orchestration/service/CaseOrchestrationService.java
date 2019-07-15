@@ -39,17 +39,17 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> getDraft(String authToken) throws WorkflowException;
 
-    Map<String,Object> saveDraft(Map<String, Object> payLoad,
-                                 String authorizationToken,
-                                 String sendEmail) throws WorkflowException;
+    Map<String, Object> saveDraft(Map<String, Object> payLoad,
+                                  String authorizationToken,
+                                  String sendEmail) throws WorkflowException;
 
-    Map<String,Object> deleteDraft(String authorizationToken) throws WorkflowException;
+    Map<String, Object> deleteDraft(String authorizationToken) throws WorkflowException;
 
     Map<String, Object> sendPetitionerSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
-            throws WorkflowException;
+        throws WorkflowException;
 
     Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
-            throws WorkflowException;
+        throws WorkflowException;
 
     Map<String, Object> sendRespondentSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
@@ -57,9 +57,13 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> setOrderSummary(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
-    Map<String, Object> processPbaPayment(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
+    Map<String, Object> solicitorSubmission(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
-    Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+    Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+        throws WorkflowException;
+
+    Map<String, Object> solicitorUpdate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+        throws WorkflowException;
 
     Map<String, Object> submitRespondentAosCase(Map<String, Object> payload, String authorizationToken, String caseId)
         throws WorkflowException;
@@ -70,7 +74,7 @@ public interface CaseOrchestrationService {
     CcdCallbackResponse dnSubmitted(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> submitDnCase(Map<String, Object> divorceSession, String authorizationToken, String caseId)
-            throws WorkflowException;
+        throws WorkflowException;
 
     Map<String, Object> submitDaCase(Map<String, Object> divorceSession, String authorizationToken, String caseId)
             throws WorkflowException;
@@ -114,6 +118,8 @@ public interface CaseOrchestrationService {
     Map<String, Object> cleanStateCallback(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> makeCaseEligibleForDA(String authorisationToken, String caseId) throws CaseOrchestrationServiceException;
+
+    Map<String, Object> handleGrantDACallback(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> processApplicantDecreeAbsoluteEligibility(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 

@@ -4,6 +4,7 @@ import lombok.Setter;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_DECISION_DATE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
 
 @Component
@@ -30,6 +32,8 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
     private static final String HEARING_DATE = String.format("data.%s", DATETIME_OF_HEARING_CCD_FIELD);
     private static final String BULK_LISTING_CASE_ID = String.format("data.%s",BULK_LISTING_CASE_ID_FIELD);
     private static final String IS_DN_OUTCOME_CASE = String.format("data.%s", DN_OUTCOME_FLAG_CCD_FIELD);
+    private static final String DN_DECISION_DATE_DATA_FIELD = String.format("data.%s", DN_DECISION_DATE_FIELD);
+
     @Value("${bulk-action.page-size:50}")
     @Setter
     private int pageSize;
@@ -62,6 +66,7 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
 
             SearchSourceBuilder sourceBuilder =  SearchSourceBuilder
                 .searchSource()
+                .sort(DN_DECISION_DATE_DATA_FIELD, SortOrder.ASC)
                 .query(query)
                 .from(from)
                 .size(pageSize);
