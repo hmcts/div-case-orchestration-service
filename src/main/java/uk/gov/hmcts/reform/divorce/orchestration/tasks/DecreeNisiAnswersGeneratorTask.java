@@ -21,11 +21,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_DN_ANSWERS;
 
 @Component
-public class DecreeNisiAnswersGenerator implements Task<Map<String, Object>> {
+public class DecreeNisiAnswersGeneratorTask implements Task<Map<String, Object>> {
     private final DocumentGeneratorClient documentGeneratorClient;
 
     @Autowired
-    public DecreeNisiAnswersGenerator(DocumentGeneratorClient documentGeneratorClient) {
+    public DecreeNisiAnswersGeneratorTask(DocumentGeneratorClient documentGeneratorClient) {
         this.documentGeneratorClient = documentGeneratorClient;
     }
 

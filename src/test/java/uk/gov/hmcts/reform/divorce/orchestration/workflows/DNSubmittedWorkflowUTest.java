@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiAnswersGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiAnswersGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DnSubmittedEmailNotificationTask;
 
 import java.util.Map;
@@ -31,7 +31,7 @@ public class DNSubmittedWorkflowUTest {
     @Mock
     private DnSubmittedEmailNotificationTask emailNotificationTask;
     @Mock
-    private DecreeNisiAnswersGenerator decreeNisiAnswersGenerator;
+    private DecreeNisiAnswersGeneratorTask decreeNisiAnswersGenerator;
     @Mock
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
 

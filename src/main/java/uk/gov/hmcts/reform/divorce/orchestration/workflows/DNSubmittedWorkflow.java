@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiAnswersGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiAnswersGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DnSubmittedEmailNotificationTask;
 
 import java.util.ArrayList;
@@ -23,13 +23,13 @@ public class DNSubmittedWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
     private DnSubmittedEmailNotificationTask emailNotificationTask;
-    private final DecreeNisiAnswersGenerator decreeNisiAnswersGenerator;
+    private final DecreeNisiAnswersGeneratorTask decreeNisiAnswersGenerator;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Autowired
     public DNSubmittedWorkflow(DnSubmittedEmailNotificationTask emailNotificationTask,
-                                               DecreeNisiAnswersGenerator decreeNisiAnswersGenerator,
-                                               CaseFormatterAddDocuments caseFormatterAddDocuments) {
+                               DecreeNisiAnswersGeneratorTask decreeNisiAnswersGenerator,
+                               CaseFormatterAddDocuments caseFormatterAddDocuments) {
         this.emailNotificationTask = emailNotificationTask;
         this.decreeNisiAnswersGenerator = decreeNisiAnswersGenerator;
         this.caseFormatterAddDocuments = caseFormatterAddDocuments;

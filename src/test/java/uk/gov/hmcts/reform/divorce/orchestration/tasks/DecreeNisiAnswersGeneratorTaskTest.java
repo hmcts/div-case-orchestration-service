@@ -33,12 +33,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class DecreeNisiAnswersGeneratorTest {
+public class DecreeNisiAnswersGeneratorTaskTest {
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
 
     @InjectMocks
-    private DecreeNisiAnswersGenerator decreeNisiAnswersGenerator;
+    private DecreeNisiAnswersGeneratorTask decreeNisiAnswersGenerator;
 
     @Test
     public void callsDocumentGeneratorAndStoresGeneratedDocument() throws TaskException {
