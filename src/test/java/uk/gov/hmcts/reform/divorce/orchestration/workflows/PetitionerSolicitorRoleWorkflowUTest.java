@@ -24,13 +24,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SolicitorCreatedWorkflowUTest {
+public class PetitionerSolicitorRoleWorkflowUTest {
 
     @Mock
     private AddPetitionerSolicitorRole addPetitionerSolicitorRole;
 
     @InjectMocks
-    private SolicitorCreatedWorkflow classToTest;
+    private PetitionerSolicitorRoleWorkflow classToTest;
 
     @Test
     public void givenCaseSubmitted_whenRunWorkflow_thenCorrectTasksAreCalled() throws TaskException, WorkflowException {

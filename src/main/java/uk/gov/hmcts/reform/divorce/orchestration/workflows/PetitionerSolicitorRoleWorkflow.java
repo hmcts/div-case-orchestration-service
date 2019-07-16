@@ -15,13 +15,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
-public class SolicitorCreatedWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class PetitionerSolicitorRoleWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
 
     private AddPetitionerSolicitorRole addPetitionerSolicitorRole;
 
     @Autowired
-    public SolicitorCreatedWorkflow(AddPetitionerSolicitorRole addPetitionerSolicitorRole) {
+    public PetitionerSolicitorRoleWorkflow(AddPetitionerSolicitorRole addPetitionerSolicitorRole) {
         this.addPetitionerSolicitorRole = addPetitionerSolicitorRole;
     }
 

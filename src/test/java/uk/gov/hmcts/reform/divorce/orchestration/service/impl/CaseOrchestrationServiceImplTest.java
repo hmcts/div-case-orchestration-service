@@ -53,7 +53,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmiss
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreatedWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDaCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
@@ -228,7 +228,7 @@ public class CaseOrchestrationServiceImplTest {
     private ApplicantDecreeAbsoluteEligibilityWorkflow applicantDecreeAbsoluteEligibilityWorkflow;
 
     @Mock
-    private SolicitorCreatedWorkflow solicitorCreatedWorkflow;
+    private PetitionerSolicitorRoleWorkflow petitionerSolicitorRoleWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -647,7 +647,7 @@ public class CaseOrchestrationServiceImplTest {
         // given
         when(setOrderSummaryWorkflow.run(requestPayload))
             .thenReturn(requestPayload);
-        when(solicitorCreatedWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
+        when(petitionerSolicitorRoleWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
             .thenReturn(requestPayload);
 
         // when

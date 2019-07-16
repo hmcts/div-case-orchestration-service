@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -51,7 +49,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmiss
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreatedWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDaCaseWorkflow;
@@ -63,7 +61,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,7 +137,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
     private final MakeCaseEligibleForDecreeAbsoluteWorkflow makeCaseEligibleForDecreeAbsoluteWorkflow;
     private final ApplicantDecreeAbsoluteEligibilityWorkflow applicantDecreeAbsoluteEligibilityWorkflow;
-    private final SolicitorCreatedWorkflow solicitorCreatedWorkflow;
+    private final PetitionerSolicitorRoleWorkflow petitionerSolicitorRoleWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -389,16 +386,16 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         Map<String, Object> updatedCase = setOrderSummaryWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
         ccdCallbackRequest.getCaseDetails().setCaseData(updatedCase);
-        Map<String, Object> solicitorPayload = solicitorCreatedWorkflow.run(ccdCallbackRequest, authToken);
+        Map<String, Object> solicitorPayload = petitionerSolicitorRoleWorkflow.run(ccdCallbackRequest, authToken);
 
-        if (solicitorCreatedWorkflow.errors().isEmpty()) {
+        if (petitionerSolicitorRoleWorkflow.errors().isEmpty()) {
             log.info("Callback to assign [PETSOLICITOR] role with CASE ID: {} successfully completed", caseId);
             return CcdCallbackResponse.builder()
                 .data(solicitorPayload)
                 .build();
         } else {
             log.error("Callback to assign [PETSOLICITOR] role with CASE ID: {} failed. ", caseId);
-            List<String> errors = solicitorCreatedWorkflow.errors().values().stream()
+            List<String> errors = petitionerSolicitorRoleWorkflow.errors().values().stream()
                 .map(x -> (String) x)
                 .collect(Collectors.toList());
             return CcdCallbackResponse.builder()
