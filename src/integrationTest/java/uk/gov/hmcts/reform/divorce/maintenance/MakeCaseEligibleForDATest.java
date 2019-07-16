@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
@@ -16,9 +17,13 @@ import uk.gov.hmcts.reform.divorce.util.RestUtil;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DECREE_ABSOLUTE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DA;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_PRONOUNCED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 
 @Slf4j
@@ -28,30 +33,48 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
     private static final String STATE_KEY = "state";
 
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";
+    private static final String NO_STATE_CHANGE_EVENT_ID = "paymentReferenceGenerated";
 
-    @Value("${case.orchestration.make-case-eligible-for-da.context-path}")
-    private String makeCaseEligibleContextPath;
+    private static final String DECREE_NISI_GRANTED_DATE_KEY = "DecreeNisiGrantedDate";
+    private static final String DECREE_NISI_GRANTED_DATE = "2019-03-31";
+
+    @Value("${case.orchestration.jobScheduler.make-case-eligible-for-da.context-path}")
+    private String jobSchedulerContextPath;
 
     @Test
     public void givenCaseIsInDNPronounced_WhenMakeCaseEligibleForDAIsCalled_CaseStateIsAwaitingDecreeAbsolute() {
-        UserDetails citizenUser = createCitizenUser();
+        final UserDetails citizenUser = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, citizenUser,
             Pair.of(D_8_PETITIONER_EMAIL, citizenUser.getEmailAddress()));
 
-        String caseId = String.valueOf(caseDetails.getId());
-        log.info("Case " + caseId + " created.");
+        final String caseId = String.valueOf(caseDetails.getId());
+        log.debug("Case " + caseId + " created.");
+
+        updateCase(caseId, null, NO_STATE_CHANGE_EVENT_ID,
+            ImmutablePair.of(DECREE_NISI_GRANTED_DATE_KEY, DECREE_NISI_GRANTED_DATE));
+        log.debug("{}={} updated in the case {}",  DECREE_NISI_GRANTED_DATE_KEY, DECREE_NISI_GRANTED_DATE, caseId);
 
         updateCaseForCitizen(caseId, null, TEST_DN_PRONOUNCED, citizenUser);
-        log.info("Case " + caseId + " moved to DNPronounced.");
+        log.debug("Case {} moved to DNPronounced.", caseId);
 
-        UserDetails caseWorkerUser = createCaseWorkerUser();
-        makeCaseEligibleForDa(caseWorkerUser.getAuthToken(), caseId);
+        assertCaseStateIsAsExpected(DN_PRONOUNCED, citizenUser.getAuthToken());
 
-        final Response retrievedCase = retrieveCase(citizenUser.getAuthToken());
-        assertThat(retrievedCase.path(STATE_KEY), is(AWAITING_DECREE_ABSOLUTE));
+        final UserDetails caseWorkerUser = createCaseWorkerUser();
+        makeCasesEligibleForDa(caseWorkerUser.getAuthToken());
+
+        assertCaseStateIsAsExpected(AWAITING_DA, citizenUser.getAuthToken());
     }
 
-    private void makeCaseEligibleForDa(String userToken, String caseId) {
+
+    private void assertCaseStateIsAsExpected(final String expectedState, final String authToken) {
+        await().pollInterval(3, SECONDS).atMost(20, SECONDS).untilAsserted(() -> {
+            final Response retrievedCase = retrieveCase(authToken);
+            log.debug("Retrieved case " + retrievedCase.path("caseId") + "with state " + retrievedCase.path("state"));
+            assertThat(retrievedCase.path(STATE_KEY), equalTo(expectedState));
+        });
+    }
+
+    private void makeCasesEligibleForDa(final String userToken) {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 
@@ -60,7 +83,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
         }
 
         Response response = RestUtil.postToRestService(
-            serverUrl + makeCaseEligibleContextPath + "/" + caseId,
+            serverUrl + jobSchedulerContextPath,
             headers,
             null,
             new HashMap<>()
@@ -68,5 +91,4 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
     }
-
 }
