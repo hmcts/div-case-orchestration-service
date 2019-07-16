@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.SEARCH_RESULT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -49,6 +50,8 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
 
         List<SearchResult> searchResultList = new ArrayList<>();
+        List<String> processedCaseIds = new ArrayList<>();
+
         int from = 0;
         int totalSearch;
         do {
@@ -78,11 +81,19 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
 
             from  += result.getCases().size();
             totalSearch = result.getTotal();
+
+            result.setCases(result.getCases().stream()
+                .filter(caseDetails -> !processedCaseIds.contains(caseDetails.getCaseId()))
+                .collect(Collectors.toList()));
+
+            result.getCases().stream()
+                    .forEach(caseDetails -> processedCaseIds.add(caseDetails.getCaseId()));
+
             if (!result.getCases().isEmpty()) {
                 searchResultList.add(result);
             }
         }
-        while (from < totalSearch);
+        while (from < totalSearch && from != 0);
         context.setTransientObject(SEARCH_RESULT_KEY, searchResultList);
 
         return payload;
