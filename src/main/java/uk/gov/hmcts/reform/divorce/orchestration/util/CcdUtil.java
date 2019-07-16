@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_DATE_PATTERN;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
@@ -34,6 +35,10 @@ public class CcdUtil {
             .format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN));
     }
 
+    public static String mapDivorceDateTimeToCCDDateTime(LocalDateTime dateTime) {
+        return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+    }
+
     public String getCurrentDateWithCustomerFacingFormat() {
         return DateUtils.formatDateWithCustomerFacingFormat(java.time.LocalDate.now(clock));
     }
@@ -50,7 +55,16 @@ public class CcdUtil {
 
     public String parseDecreeAbsoluteEligibleDate(LocalDate grantedDate) {
         return DateUtils.formatDateFromLocalDate(
-                grantedDate.plusWeeks(6).plusDays(1)
+            grantedDate.plusWeeks(6).plusDays(1)
         );
     }
+
+    public static LocalDate parseDateUsingCcdFormat(String date) {
+        return LocalDate.parse(date, ofPattern(CCD_DATE_FORMAT));
+    }
+
+    public static String formatDateForCCD(LocalDate plus) {
+        return plus.format(ofPattern(CCD_DATE_FORMAT));
+    }
+
 }

@@ -93,7 +93,10 @@ public class OrchestrationConstants {
     public static final String WHO_PAYS_CCD_CODE_FOR_RESPONDENT = "respondent";
     public static final String DECREE_NISI_GRANTED_DATE_CCD_FIELD = "DecreeNisiGrantedDate";
     public static final String DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD = "DAEligibleFromDate";
+    public static final String DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD = "DecreeAbsoluteGrantedDate";
     public static final String PRONOUNCEMENT_JUDGE_CCD_FIELD = "PronouncementJudge";
+    public static final String DATE_RESPONDENT_ELIGIBLE_FOR_DA_CCD_FIELD = "DateRespondentEligibleForDA";
+    public static final String DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA_CCD_FIELD = "DateCaseNoLongerEligibleForDA";
 
     public static final String PET_SOL_EMAIL = "PetitionerSolicitorEmail";
     public static final String PET_SOL_NAME = "PetitionerSolicitorName";
@@ -190,6 +193,7 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_TEMPLATE_VARS = "notification_template_vars";
     public static final String NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY = "first name";
     public static final String NOTIFICATION_ADDRESSEE_LAST_NAME_KEY = "last name";
+    public static final String NOTIFICATION_EMAIL_ADDRESS_KEY = "email address";
     public static final String NOTIFICATION_HUSBAND_OR_WIFE = "husband or wife";
     public static final String NOTIFICATION_RELATIONSHIP_KEY = "relationship";
     public static final String NOTIFICATION_CCD_REFERENCE_KEY = "CCD reference";
@@ -202,6 +206,7 @@ public class OrchestrationConstants {
     public static final String STATEMENT_OF_TRUTH = "D8StatementOfTruth";
     public static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
     public static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
+    public static final String NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE = "limit date to download certificate";
     public static final String NOTIFICATION_PET_NAME = "petitioner name";
     public static final String NOTIFICATION_RESP_NAME = "respondent name";
     public static final String NOTIFICATION_SOLICITOR_NAME = "solicitor name";
@@ -247,6 +252,9 @@ public class OrchestrationConstants {
     public static final String DECREE_NISI_DOCUMENT_TYPE = "dnGranted";
     public static final String DECREE_NISI_FILENAME = "decreeNisi";
     public static final String DECREE_NISI_TEMPLATE_ID = "FL-DIV-GNO-ENG-00021.docx";
+    public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
+    public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
+    public static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
 
 
     public static final String SOL_DOCUMENT_LINK_FIELD = "solDocumentLinkFieldName";

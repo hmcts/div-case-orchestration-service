@@ -9,5 +9,3 @@ instance_size = "I3"
 health_check_ttl = 30000
 
 scheduler_enabled = "true"
-
-scheudler_schedules_create_bulk_cases_cron = "0 0/30 * ? * * *"
