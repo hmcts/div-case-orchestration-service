@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
 import feign.FeignException;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -14,6 +15,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 
 public class SubmitDaCaseTest extends CcdSubmissionSupport {
 
@@ -43,7 +45,8 @@ public class SubmitDaCaseTest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, UPDATE_TO_DN_PRONOUNCED_EVENT_ID, userDetails);
-        updateCase(String.valueOf(caseDetails.getId()), null, UPDATE_TO_AWAITING_DA_EVENT_ID);
+        updateCase(String.valueOf(caseDetails.getId()), null, UPDATE_TO_AWAITING_DA_EVENT_ID,
+                ImmutablePair.of(DECREE_NISI_GRANTED_DATE_CCD_FIELD, "2000-01-01"));
 
         Map<String, Object> cosResponse = cosApiClient
                 .submitDaCase(userDetails.getAuthToken(), Collections.emptyMap(), String.valueOf(caseDetails.getId()));
