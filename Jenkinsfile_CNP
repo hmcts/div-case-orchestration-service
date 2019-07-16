@@ -66,6 +66,10 @@ withPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
+    onPreview {
+        enableSlackNotifications()
+    }
+
     onMaster {
         enableSlackNotifications('#div-dev')
     }
