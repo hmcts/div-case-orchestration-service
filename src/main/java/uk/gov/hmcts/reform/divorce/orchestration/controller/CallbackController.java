@@ -98,6 +98,22 @@ public class CallbackController {
             .build());
     }
 
+    @PostMapping(path = "/petition-issue-fees",
+        consumes = MediaType.APPLICATION_JSON,
+        produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Return a order summary for petition issue")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Petition issue fee amount is send to CCD as callback response",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> getPetitionIssueFees(
+        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        final CcdCallbackResponse response = caseOrchestrationService.setOrderSummaryAssignRole(ccdCallbackRequest, authorizationToken);
+
+        return ResponseEntity.ok(response);
+    }
+
     @SuppressWarnings("unchecked")
     @PostMapping(path = "/process-pba-payment", consumes = MediaType.APPLICATION_JSON,
         produces = MediaType.APPLICATION_JSON)
@@ -132,21 +148,6 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(caseOrchestrationService.solicitorCreate(ccdCallbackRequest))
-            .build());
-    }
-
-    @PostMapping(path = "/solicitor-created")
-    @ApiOperation(value = "Case has been created by solicitor, then this post-create callback is fired")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Notification sent successful"),
-        @ApiResponse(code = 401, message = "User Not Authenticated"),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> solicitorCreated(
-        @RequestHeader("Authorization")
-        @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseOrchestrationService.solicitorCreatedCallback(ccdCallbackRequest, authorizationToken))
             .build());
     }
 

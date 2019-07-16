@@ -55,7 +55,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> sendPetitionerClarificationRequestNotification(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
-    Map<String, Object> setOrderSummary(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+    CcdCallbackResponse setOrderSummaryAssignRole(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> processPbaPayment(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
@@ -116,6 +116,4 @@ public interface CaseOrchestrationService {
     Map<String, Object> makeCaseEligibleForDA(String authorisationToken, String caseId) throws CaseOrchestrationServiceException;
 
     Map<String, Object> processApplicantDecreeAbsoluteEligibility(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
-
-    Map<String, Object> solicitorCreatedCallback(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 }

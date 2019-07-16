@@ -111,6 +111,7 @@ public class OrchestrationConstants {
     public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID = "MakeEligibleForDA_Petitioner";
     public static final String AWAITING_DECREE_ABSOLUTE = "AwaitingDecreeAbsolute";
     public static final String SOLICITOR_CREATE_EVENT = "solicitorCreate";
+    public static final String SOLICITOR_SUBMIT_EVENT = "solicitorStatementOfTruthPaySubmit";
 
     // CCD Case States
     public static final String AOS_AWAITING = "AosAwaiting";

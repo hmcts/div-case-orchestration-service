@@ -647,12 +647,14 @@ public class CaseOrchestrationServiceImplTest {
         // given
         when(setOrderSummaryWorkflow.run(requestPayload))
             .thenReturn(requestPayload);
+        when(solicitorCreatedWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(requestPayload);
 
         // when
-        Map<String, Object> actual = classUnderTest.setOrderSummary(ccdCallbackRequest);
+        CcdCallbackResponse actual = classUnderTest.setOrderSummaryAssignRole(ccdCallbackRequest, AUTH_TOKEN);
 
         // then
-        assertEquals(requestPayload, actual);
+        assertEquals(requestPayload, actual.getData());
 
         verify(setOrderSummaryWorkflow).run(requestPayload);
     }
@@ -1189,16 +1191,6 @@ public class CaseOrchestrationServiceImplTest {
         expectedException.expectCause(equalTo(testFailureCause));
 
         classUnderTest.processApplicantDecreeAbsoluteEligibility(ccdCallbackRequest);
-    }
-
-    @Test
-    public void givenSolicitorCreatedCase_whenCallbackFired_thenWorkflowIsCalled() throws WorkflowException {
-        when(solicitorCreatedWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
-                .thenReturn(singletonMap("returnedKey", "returnedValue"));
-
-        Map<String, Object> returnedPayload = classUnderTest.solicitorCreatedCallback(ccdCallbackRequest, AUTH_TOKEN);
-
-        assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
     }
 
     @After

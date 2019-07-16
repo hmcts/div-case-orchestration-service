@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -23,7 +24,7 @@ public class AddPetitionerSolicitorRoleUTest {
     private AddPetitionerSolicitorRole classUnderTest;
 
     @Test
-    public void givenCaseExists_whenAddingPetSolicitorRole_thenReturnExpectedOutput() {
+    public void givenCaseExists_whenAddingPetSolicitorRole_thenReturnExpectedOutput() throws TaskException {
         final DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);

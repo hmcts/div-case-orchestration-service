@@ -233,22 +233,6 @@ public class OrchestrationController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @PostMapping(path = "/petition-issue-fees",
-        consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Return a order summary for petition issue")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Petition issue fee amount is send to CCD as callback response",
-            response = CcdCallbackResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> getPetitionIssueFees(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(orchestrationService.setOrderSummary(ccdCallbackRequest))
-            .build()
-        );
-    }
-
     @PostMapping(path = "/aos-received")
     @ApiOperation(value = "Respondent confirmation notification ")
     @ApiResponses(value = {

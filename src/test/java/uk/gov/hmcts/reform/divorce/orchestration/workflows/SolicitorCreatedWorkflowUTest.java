@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddPetitionerSolicitorRole;
 
 import java.util.Map;
@@ -32,7 +33,7 @@ public class SolicitorCreatedWorkflowUTest {
     private SolicitorCreatedWorkflow classToTest;
 
     @Test
-    public void givenCaseSubmitted_whenRunWorkflow_thenCorrectTasksAreCalled() throws WorkflowException {
+    public void givenCaseSubmitted_whenRunWorkflow_thenCorrectTasksAreCalled() throws TaskException, WorkflowException {
 
         CaseDetails caseDetails = CaseDetails.builder()
                 .caseId(TestConstants.TEST_CASE_ID)

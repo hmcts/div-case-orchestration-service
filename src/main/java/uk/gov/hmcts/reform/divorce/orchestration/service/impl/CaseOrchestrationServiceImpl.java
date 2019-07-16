@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -61,6 +63,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -382,8 +385,26 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> setOrderSummary(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return setOrderSummaryWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+    public CcdCallbackResponse setOrderSummaryAssignRole(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        Map<String, Object> updatedCase = setOrderSummaryWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+        ccdCallbackRequest.getCaseDetails().setCaseData(updatedCase);
+        Map<String, Object> solicitorPayload = solicitorCreatedWorkflow.run(ccdCallbackRequest, authToken);
+
+        if (solicitorCreatedWorkflow.errors().isEmpty()) {
+            log.info("Callback to assign [PETSOLICITOR] role with CASE ID: {} successfully completed", caseId);
+            return CcdCallbackResponse.builder()
+                .data(solicitorPayload)
+                .build();
+        } else {
+            log.error("Callback to assign [PETSOLICITOR] role with CASE ID: {} failed. ", caseId);
+            List<String> errors = solicitorCreatedWorkflow.errors().values().stream()
+                .map(x -> (String) x)
+                .collect(Collectors.toList());
+            return CcdCallbackResponse.builder()
+                .errors(errors)
+                .build();
+        }
     }
 
     @Override
@@ -643,10 +664,5 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private boolean isDivorceCostClaimedAndGranted(Map<String, Object> caseData) {
         return YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)))
             && Objects.nonNull(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
-    }
-
-    @Override
-    public Map<String, Object> solicitorCreatedCallback(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
-        return solicitorCreatedWorkflow.run(ccdCallbackRequest, authToken);
     }
 }

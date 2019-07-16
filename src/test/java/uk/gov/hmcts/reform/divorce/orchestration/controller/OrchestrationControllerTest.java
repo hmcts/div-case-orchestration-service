@@ -240,26 +240,6 @@ public class OrchestrationControllerTest {
     }
 
     @Test
-    public void whenGetPetitionIssueFees_thenReturnCcdResponse() throws Exception {
-        final Map<String, Object> caseData = Collections.emptyMap();
-        final CaseDetails caseDetails = CaseDetails.builder()
-            .caseData(caseData)
-            .build();
-
-        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
-        ccdCallbackRequest.setCaseDetails(caseDetails);
-
-        when(caseOrchestrationService.setOrderSummary(ccdCallbackRequest)).thenReturn(caseData);
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.getPetitionIssueFees(ccdCallbackRequest);
-
-        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedResponse, response.getBody());
-    }
-
-    @Test
     public void whenSubmitRespondentAos_thenProceedAsExpected() throws WorkflowException {
         final Map<String, Object> caseData = Collections.emptyMap();
 

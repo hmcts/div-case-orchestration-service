@@ -808,22 +808,25 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void givenSolicitorCreatedCallbackFired_whenExecute_thenReturnCaseData() throws WorkflowException {
-        Map<String, Object> incomingPayload = singletonMap("testKey", "testValue");
-        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseData(incomingPayload)
-                .build())
+    public void whenGetPetitionIssueFees_thenReturnCcdResponse() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
             .build();
 
-        when(caseOrchestrationService.solicitorCreatedCallback(incomingRequest, AUTH_TOKEN))
-            .thenReturn(singletonMap("newKey", "newValue"));
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorCreated(AUTH_TOKEN, incomingRequest);
+        final CcdCallbackResponse ccdCallbackResponse = new CcdCallbackResponse();
+        ccdCallbackResponse.setData(caseDetails.getCaseData());
 
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
-        assertThat(Objects.requireNonNull(response.getBody()).getData(), hasEntry("newKey", "newValue"));
-        assertThat(response.getBody().getErrors(), is(nullValue()));
-        verify(caseOrchestrationService).solicitorCreatedCallback(eq(incomingRequest), eq(AUTH_TOKEN));
+        when(caseOrchestrationService.setOrderSummaryAssignRole(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(ccdCallbackResponse);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.getPetitionIssueFees(AUTH_TOKEN, ccdCallbackRequest);
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
     }
 }
