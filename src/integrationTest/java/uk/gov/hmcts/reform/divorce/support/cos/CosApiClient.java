@@ -142,7 +142,7 @@ public interface CosApiClient {
         method = RequestMethod.POST,
         value = "/process-applicant-da-eligibility"
     )
-    CcdCallbackResponse flagCaseAsEligibleForDAForApplicant(@RequestBody CcdCallbackRequest ccdCallbackRequest);
+    CcdCallbackResponse processApplicantDAEligibility(@RequestBody CcdCallbackRequest ccdCallbackRequest);
 
     @RequestMapping(
         method = RequestMethod.POST,
