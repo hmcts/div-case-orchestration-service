@@ -81,7 +81,7 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
                 sourceBuilder.toString()
             );
 
-            from  += result.getCases().size();
+            from += pageSize;
             totalSearch = result.getTotal();
 
             result.setCases(result.getCases().stream()
@@ -95,7 +95,7 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
                 searchResultList.add(result);
             }
         }
-        while (from < totalSearch && from != 0);
+        while (from < totalSearch);
         context.setTransientObject(SEARCH_RESULT_KEY, searchResultList);
 
         return payload;

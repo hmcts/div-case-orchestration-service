@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -55,7 +51,7 @@ public class SearchAwaitingPronouncementCasesTest {
         classUnderTest.setPageSize(2);
         final SearchResult cmsSearchResponse =
                 SearchResult.builder()
-                        .total(3)
+                        .total(0)
                         .cases(Collections.emptyList())
                         .build();
 
@@ -128,13 +124,14 @@ public class SearchAwaitingPronouncementCasesTest {
     public void givenDuplicateCasesExists_whenSearchCases_thenReturnUniqueExpectedOutput() {
         final DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        classUnderTest.setPageSize(2);
+        classUnderTest.setPageSize(3);
 
         final SearchResult cmsSearchResponse =
                 SearchResult.builder()
                         .total(5)
                         .cases(Arrays.asList(
                                 CaseDetails.builder().caseId(TEST_CASE_ID_1).build(),
+                                CaseDetails.builder().caseId(TEST_CASE_ID_2).build(),
                                 CaseDetails.builder().caseId(TEST_CASE_ID_2).build()
                         )).build();
 
@@ -153,7 +150,7 @@ public class SearchAwaitingPronouncementCasesTest {
                 )).build();
 
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), contains("\"from\":0"))).thenReturn(cmsSearchResponse);
-        when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), contains("\"from\":2"))).thenReturn(cmsSearchResponseTwo);
+        when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), contains("\"from\":3"))).thenReturn(cmsSearchResponseTwo);
 
         classUnderTest.execute(context, null);
 
@@ -163,7 +160,7 @@ public class SearchAwaitingPronouncementCasesTest {
         int expectedIterations = 2;
 
         for (int i = 0; i < expectedIterations; i++) {
-            int expectedFrom = i * 2;
+            int expectedFrom = i * 3;
             verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
                     jsonPathValueMatcher("$.from", is(expectedFrom))));
         }
