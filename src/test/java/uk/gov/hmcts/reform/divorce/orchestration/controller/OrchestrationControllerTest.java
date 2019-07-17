@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpd
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
-import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,7 +30,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
@@ -326,24 +324,6 @@ public class OrchestrationControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
-    }
-
-    @Test
-    public void testServiceIsCalledAccordingly_ForMakeCaseEligibleForDA() throws CaseOrchestrationServiceException {
-        ResponseEntity<Map<String, Object>> response = classUnderTest.makeCaseEligibleForDecreeAbsolute("testAuthToken", "testCaseId");
-
-        verify(caseOrchestrationService).makeCaseEligibleForDA("testAuthToken", "testCaseId");
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
-    }
-
-    @Test
-    public void testFailure_WhenExceptionIsThrown_ForMakeCaseEligibleForDA() throws CaseOrchestrationServiceException {
-        when(caseOrchestrationService.makeCaseEligibleForDA("testAuthToken", "testCaseId")).thenThrow(CaseOrchestrationServiceException.class);
-
-        ResponseEntity<Map<String, Object>> response = classUnderTest.makeCaseEligibleForDecreeAbsolute("testAuthToken", "testCaseId");
-
-        verify(caseOrchestrationService).makeCaseEligibleForDA("testAuthToken", "testCaseId");
-        assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR));
     }
 
 }

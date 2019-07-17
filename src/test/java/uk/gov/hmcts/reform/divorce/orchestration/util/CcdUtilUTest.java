@@ -11,12 +11,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 
 import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -94,4 +96,23 @@ public class CcdUtilUTest {
 
         assertEquals(expectedDate, ccdUtil.parseDecreeAbsoluteEligibleDate(hearingDate));
     }
+
+    @Test
+    public void testParsingDateForCCD() {
+        LocalDate localDate = CcdUtil.parseDateUsingCcdFormat("2019-05-13");
+
+        assertThat(localDate.getDayOfMonth(), equalTo(13));
+        assertThat(localDate.getMonth(), equalTo(Month.MAY));
+        assertThat(localDate.getYear(), equalTo(2019));
+    }
+
+    @Test
+    public void testFormattingDateForCCD() {
+        LocalDate date = LocalDate.of(2019, Month.MAY, 13);
+
+        String formattedDate = CcdUtil.formatDateForCCD(date);
+
+        assertThat(formattedDate, equalTo("2019-05-13"));
+    }
+
 }

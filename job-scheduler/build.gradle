@@ -20,7 +20,7 @@ compileTestJava {
 
 def versions = [
   reformJavaLogging : '4.0.1',
-  jacksonDatabind   : '2.9.9',
+  jacksonDatabind   : '2.9.9.1',
   flyway            : '5.2.4',
   postgresql        : '42.2.5',
   lombok            : '1.16.16',

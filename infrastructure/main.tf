@@ -72,6 +72,11 @@ module "div-cos" {
     SCHEDULER_RE_CREATE                             = "${var.scheduler_re_create}"
     SCHEDULER_ENABLED                               = "${var.scheduler_enabled}"
     SCHEDULER_SCHEDULES_CREATE_BULK_CASES_CRON      = "${var.scheudler_schedules_create_bulk_cases_cron}"
+    SCHEDULER_MAKE_CASES_ELIGIBLE_DA_ENABLED        = "${var.scheduler_make_cases_eligible_da_enabled}"
+    SCHEDULER_MAKE_CASES_ELIGIBLE_DA_CRON           = "${var.scheduler_make_cases_eligible_da_cron}"
+    AWAITING_DA_PERIOD                              = "${var.awaiting_da_period}"
+
+    DOCUMENTATION_SWAGGER_ENABLED                   = "${var.documentation_swagger_enabled}"
 
     FEATURE_TOGGLE_SERVICE_API_BASEURL             = "${local.feature_toggle_baseurl}"
     SEND_LETTER_SERIVCE_BASEURL                    = "${local.send_letter_service_baseurl}"
@@ -100,6 +105,7 @@ module "div-scheduler-db" {
   sku_name           = "GP_Gen5_2"
   sku_tier           = "GeneralPurpose"
   common_tags        = "${var.common_tags}"
+  subscription       = "${var.subscription}"
 }
 
 resource "azurerm_key_vault_secret" "postgresql-user" {

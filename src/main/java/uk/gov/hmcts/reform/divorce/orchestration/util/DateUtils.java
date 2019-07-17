@@ -27,4 +27,5 @@ public class DateUtils {
     public static String formatTimeFromDateTime(LocalDateTime dateTime) {
         return dateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
     }
+
 }
