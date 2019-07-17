@@ -36,7 +36,7 @@ public class AddPetitionerSolicitorRole implements Task<Map<String, Object>> {
         } catch (final FeignException exception) {
             log.error("Problem setting the [PETSOLICITOR] role to the case: {}", caseId);
             context.setTaskFailed(true);
-            context.setTransientObject(this.getClass().getName() + "_Error",
+            context.setTransientObject("AddPetitionerSolicitorRole_Error",
                 "Problem setting the [PETSOLICITOR] role to the case");
         }
         return payload;
