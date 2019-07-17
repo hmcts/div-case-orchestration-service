@@ -29,7 +29,7 @@ public class ValidatedCaseLinkTask implements Task<Map<String, Object>> {
         Map<String, Object> caseData = caseDetails.getCaseData();
         String linkedBulkCaseId = getCaseLinkValue(caseData, BULK_LISTING_CASE_ID_FIELD);
 
-        if (!linkedBulkCaseId.equals(bulkCaseId)) {
+        if (!bulkCaseId.equals(linkedBulkCaseId)) {
             log.warn("Case data with caseId {} not linked with bulk with bulkCaseId {}", caseId, bulkCaseId);
             context.setTaskFailed(true);
         }

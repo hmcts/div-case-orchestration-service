@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
@@ -70,7 +71,10 @@ public class CaseDataUtils {
     }
 
     public static String getCaseLinkValue(Map<String, Object> caseData, String fieldName ) {
-        return (String) getFieldAsStringObjectMap(caseData,fieldName).get(CASE_REFERENCE_FIELD);
+        return Optional.ofNullable(getFieldAsStringObjectMap(caseData,fieldName))
+            .map(mapData -> mapData.get(CASE_REFERENCE_FIELD))
+            .map(String.class::cast)
+            .orElse(null);
     }
 
     public static Map<String, Object> getCaseDataFromCaseDetails(Map<String, Object> caseDetails) {
