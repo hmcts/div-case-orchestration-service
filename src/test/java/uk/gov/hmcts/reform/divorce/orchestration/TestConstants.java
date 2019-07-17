@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 
 public class TestConstants {
+    public static final String TEST_BULK_CASE_ID = "test.bulk.case.id";
     public static final String TEST_CASE_ID = "test.case.id";
     public static final String TEST_CASE_FAMILY_MAN_ID = "test.family.man.id";
     public static final String TEST_STATE = "test.state";
