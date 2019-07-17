@@ -16,7 +16,6 @@ import java.util.Optional;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
@@ -75,10 +74,6 @@ public class CaseDataUtils {
             .map(mapData -> mapData.get(CASE_REFERENCE_FIELD))
             .map(String.class::cast)
             .orElse(null);
-    }
-
-    public static Map<String, Object> getCaseDataFromCaseDetails(Map<String, Object> caseDetails) {
-        return getFieldAsStringObjectMap(caseDetails, CCD_CASE_DATA_FIELD);
     }
 
     public static Map<String, Object> getFieldAsStringObjectMap(Map<String, Object> caseData, String fieldName ) {
