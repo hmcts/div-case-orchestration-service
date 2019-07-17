@@ -111,7 +111,7 @@ uk:
       email:
         templateVars:
           SAVE_DRAFT:
-            divorceUrl: https://apply-divorce.service.gov.uk
+            divorceUrl: https://www.apply-divorce.service.gov.uk
         templates:
           AOS_RECEIVED_NO_ADMIT_ADULTERY: 015fb73a-3be2-49d8-8ed8-a4078025dae3
           AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: bc6ee2ec-f62b-4321-b19f-65e868f849eb
