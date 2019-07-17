@@ -25,11 +25,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdatePronouncementDa
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -224,10 +222,7 @@ public class BulkCaseServiceImplTest {
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_BULK_CASE_ID).caseData(new HashMap<>()).build();
         BulkCaseAcceptedCasesEvent event = new BulkCaseAcceptedCasesEvent(taskContext, caseDetails);
-        Map<String, Object> expectedCaseData = new HashMap<>();
-        when(removeBulkCaseLinkWorkflow
-            .run(caseDetails.getCaseData(), TEST_CASE_ID, TEST_CASE_ID,AUTH_TOKEN))
-            .thenReturn(expectedCaseData);
+
         classToTest.handleBulkCaseAcceptedCasesEvent(event);
 
         verify(removeBulkCaseLinkWorkflow, times(2)).run(caseDetails.getCaseData(), TEST_CASE_ID, TEST_BULK_CASE_ID,AUTH_TOKEN);
