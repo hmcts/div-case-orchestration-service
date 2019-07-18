@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithId;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidatedCaseLinkTask;
 
@@ -24,7 +24,7 @@ public class RemoveBulkCaseLinkWorkflow extends DefaultWorkflow<Map<String, Obje
     static final String UN_LINK_BULK_CASE_EVENT = "unlinkBulkCaseReference";
 
     private final UpdateCaseInCCD updateCaseInCCD;
-    private final GetCaseWithId getCaseWithId;
+    private final GetCaseWithIdTask getCaseWithId;
     private final ValidatedCaseLinkTask validateBulkCaseLinkTask;
 
     public Map<String, Object> run(Map<String, Object> bulkCaseData,

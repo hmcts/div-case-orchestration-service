@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @RequiredArgsConstructor
-public class GetCaseWithId<T> implements Task<T> {
+public class GetCaseWithIdTask<T> implements Task<T> {
 
     private final CaseMaintenanceClient caseMaintenanceClient;
 

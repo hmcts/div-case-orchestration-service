@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithId;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidatedCaseLinkTask;
 
@@ -31,7 +31,7 @@ public class RemoveBulkCaseLinkWorkflowTest {
     private UpdateCaseInCCD updateCaseInCCD;
 
     @Mock
-    private GetCaseWithId getCaseWithId;
+    private GetCaseWithIdTask getCaseWithId;
 
     @Mock
     private ValidatedCaseLinkTask validateBulkCaseLinkTask;
