@@ -2,8 +2,8 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
     <suppress>
         <notes><![CDATA[
-            This suppresses an issue in Guava which affects up to version >24.1.1 - however we currently
-            we require version 20.0 as checkstyle & spring fox swagger depend on it ]]>
+            This suppresses an issue in Guava which affects up to version >24.1.1 however
+            currently we require version 20.0 as spring fox swagger depends on it ]]>
         </notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2018-10237</cve>

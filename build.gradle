@@ -94,8 +94,7 @@ allprojects {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
         }
         dependencies {
-            // checkstyle needs a certain version and so does spring fox swagger, so can't use latest
-            // fun times...
+            // spring fox swagger needs a certain version
             dependencySet(group: 'com.google.guava', version: '20.0') {
                 entry 'guava'
             }
