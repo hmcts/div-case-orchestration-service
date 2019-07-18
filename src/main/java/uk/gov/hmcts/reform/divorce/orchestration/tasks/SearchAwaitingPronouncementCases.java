@@ -14,8 +14,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.SEARCH_RESULT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -49,6 +52,8 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
 
         List<SearchResult> searchResultList = new ArrayList<>();
+        Set<String> processedCaseIds = new HashSet<>();
+
         int from = 0;
         int totalSearch;
         do {
@@ -76,8 +81,16 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
                 sourceBuilder.toString()
             );
 
-            from  += result.getCases().size();
+            from += pageSize;
             totalSearch = result.getTotal();
+
+            result.setCases(result.getCases().stream()
+                .filter(caseDetails -> !processedCaseIds.contains(caseDetails.getCaseId()))
+                .collect(Collectors.toList()));
+
+            result.getCases().stream()
+                    .forEach(caseDetails -> processedCaseIds.add(caseDetails.getCaseId()));
+
             if (!result.getCases().isEmpty()) {
                 searchResultList.add(result);
             }
