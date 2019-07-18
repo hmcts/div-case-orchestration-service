@@ -34,9 +34,7 @@ public class UpdateDivorceCasesWithinBulkTaskUTest {
 
     @Test
     public void whenExecuteTask_theEventIsQueued() throws TaskException {
-
         DefaultTaskContext taskContext = new DefaultTaskContext();
-
 
         final BulkCaseAcceptedCasesEvent expectedEvent = new BulkCaseAcceptedCasesEvent(taskContext, CaseDetails.builder()
             .caseId(TEST_BULK_CASE_ID)
@@ -49,6 +47,5 @@ public class UpdateDivorceCasesWithinBulkTaskUTest {
         verify(applicationEventPublisher).publishEvent(eventCaptor.capture());
 
         assertThat(eventCaptor.getValue().getCaseDetails(), is(expectedEvent.getCaseDetails()));
-
     }
 }
