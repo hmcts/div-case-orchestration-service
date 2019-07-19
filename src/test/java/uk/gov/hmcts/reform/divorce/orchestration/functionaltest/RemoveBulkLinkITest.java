@@ -46,7 +46,8 @@ public class RemoveBulkLinkITest extends IdamTestSupport {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.BulkListingCaseId", nullValue()))
+
+                .andExpect(jsonPath("$.data.BulkListingCaseId").doesNotExist())
                 .andExpect(jsonPath("$.errors", nullValue()));
     }
 

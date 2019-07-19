@@ -15,7 +15,7 @@ public class RemoveLinkTask implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, final Map<String, Object> payload) throws TaskException {
         Map<String, Object> response = new HashMap<>(payload);
-        response.put(BULK_LISTING_CASE_ID_FIELD, null);
+        response.remove(BULK_LISTING_CASE_ID_FIELD);
         return response;
     }
 }

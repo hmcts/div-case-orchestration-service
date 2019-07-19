@@ -23,7 +23,6 @@ public class RemoveLinkTaskTest {
 
         Map<String, Object> expectedMap = new HashMap<>();
         expectedMap.put("anyKey", "anyData");
-        expectedMap.put(BULK_LISTING_CASE_ID_FIELD, null);
         assertThat(response, is(expectedMap));
     }
 }
