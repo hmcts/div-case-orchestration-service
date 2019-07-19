@@ -15,6 +15,7 @@ public class OrchestrationConstants {
     // Task context properties
     public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String DN_COURT_DETAILS = "dnCourtDetails";
+    public static final String BULK_LINK_CASE_ID =  "bulkLinkCaseId";
 
     // Authentication
     public static final String ACCESS_CODE = "access_code";

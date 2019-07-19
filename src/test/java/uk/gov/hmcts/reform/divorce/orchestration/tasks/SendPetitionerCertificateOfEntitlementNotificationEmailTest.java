@@ -83,7 +83,6 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
         DATETIME_OF_HEARING_CCD_FIELD);
 
     private List<String> solMandatoryFields = asList(
-        D_8_CASE_REFERENCE,
         D_8_PETITIONER_FIRST_NAME,
         D_8_PETITIONER_LAST_NAME,
         RESP_FIRST_NAME_CCD_FIELD,
@@ -290,7 +289,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
             argThat(new HamcrestArgumentMatcher<>(
                 allOf(
                     hasEntry(NOTIFICATION_EMAIL, "solicitor@justice.uk"),
-                    hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, "HR290831"),
+                    hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, "test.case.id"),
                     hasEntry(NOTIFICATION_PET_NAME, "James Johnson"),
                     hasEntry(NOTIFICATION_RESP_NAME, "Resp First Name Resp Last Name"),
                     hasEntry(NOTIFICATION_SOLICITOR_NAME, "Petitioner Solicitor name"),

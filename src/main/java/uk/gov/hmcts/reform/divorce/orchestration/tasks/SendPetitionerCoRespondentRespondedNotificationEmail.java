@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
@@ -52,6 +53,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
         String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
         String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
+        String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
 
         Map<String, String> templateVars = new HashMap<>();
 
@@ -60,7 +62,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
             String respLastName = getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD);
             String solicitorName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
 
-            templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, ccdReference);
+            templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseId);
             templateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
             templateVars.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
             templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
@@ -73,7 +75,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
 
         } else if (StringUtils.isNotBlank(petitionerEmail)) {
 
-            templateVars.put(NOTIFICATION_REFERENCE_KEY, (String) caseData.get(D_8_CASE_REFERENCE));
+            templateVars.put(NOTIFICATION_REFERENCE_KEY, ccdReference);
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_FIRST_NAME));
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));
 

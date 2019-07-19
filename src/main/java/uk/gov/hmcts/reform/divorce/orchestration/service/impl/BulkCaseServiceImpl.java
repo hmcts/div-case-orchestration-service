@@ -6,6 +6,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.BulkWorkflowExecutionResult;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseAcceptedCasesEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseCreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseUpdateCourtHearingEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseUpdatePronouncementDateEvent;
@@ -14,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkCaseService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkBulkCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveBulkCaseLinkWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateBulkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateCourtHearingDetailsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdatePronouncementDateWorkflow;
@@ -33,6 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CREATE_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.LISTED_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.PRONOUNCED_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.REMOVED_CASE_LIST;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
@@ -46,6 +50,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
     private final UpdateCourtHearingDetailsWorkflow updateCourtHearingDetailsWorkflow;
     private final UpdateBulkCaseWorkflow updateBulkCaseWorkflow;
     private final UpdatePronouncementDateWorkflow updatePronouncementDateWorkflow;
+    private final RemoveBulkCaseLinkWorkflow removeBulkCaseLinkWorkflow;
 
     @Override
     @EventListener
@@ -122,7 +127,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         updateBulkCaseWorkflow.run(Collections.emptyMap(), context.getTransientObject(AUTH_TOKEN_JSON_KEY), bulkCaseId, PRONOUNCED_EVENT);
         log.info("Completed bulk case id {} pronounced state update", bulkCaseId);
     }
-
+  
     private List<Map<String, Object>> filterBulkCases(Map<String, Object> bulkCaseDetails, Set<String> removableCaseIds) {
         Map<String, Object> bulkCaseData = (Map<String, Object>) bulkCaseDetails.getOrDefault(CCD_CASE_DATA_FIELD, Collections.emptyMap());
         List<Map<String, Object>> bulkCaseList =
@@ -144,5 +149,26 @@ public class BulkCaseServiceImpl implements BulkCaseService {
             Map<String, Object> caseLink = (Map<String, Object>) caseElem.get(VALUE_KEY);
             return !removableCaseIds.contains(String.valueOf(caseLink.get(CASE_REFERENCE_FIELD)));
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    @EventListener
+    public void handleBulkCaseAcceptedCasesEvent(BulkCaseAcceptedCasesEvent event) {
+        final long startTime = Instant.now().toEpochMilli();
+
+        TaskContext context = (TaskContext) event.getSource();
+        CaseDetails caseResponse = event.getCaseDetails();
+        List<String> casesToUnlink = context.getTransientObject(REMOVED_CASE_LIST);
+        final String bulkCaseId = caseResponse.getCaseId();
+        for (String caseId : casesToUnlink) {
+            try {
+                removeBulkCaseLinkWorkflow.run(caseResponse.getCaseData(), caseId, bulkCaseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
+            } catch (WorkflowException e) {
+                log.error("Error removing bulk case link with bulkCaseId: {} and caseId {}", bulkCaseId, caseId);
+            }
+        }
+
+        final long endTime = Instant.now().toEpochMilli();
+        log.info("Completed bulk case removed link from cases with bulk case Id:{} in:{} millis", bulkCaseId, endTime - startTime);
     }
 }

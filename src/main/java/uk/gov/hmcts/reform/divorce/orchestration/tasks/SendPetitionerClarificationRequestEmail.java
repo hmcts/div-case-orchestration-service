@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
@@ -64,9 +65,8 @@ public class SendPetitionerClarificationRequestEmail implements Task<Map<String,
             String respFirstName = getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD);
             String respLastName = getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD);
             String solicitorName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
-            String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
 
-            templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, ccdReference);
+            templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, (String) context.getTransientObject(CASE_ID_JSON_KEY));
             templateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
             templateVars.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
             templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
@@ -78,8 +78,9 @@ public class SendPetitionerClarificationRequestEmail implements Task<Map<String,
                 SOL_APPLICANT_MORE_INFO_REQUESTED_EMAIL_DESC);
 
         } else if (StringUtils.isNotBlank(petitionerEmail)) {
+            String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
 
-            templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, (String) caseData.get(D_8_CASE_REFERENCE));
+            templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, ccdReference);
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
             emailService.sendEmail(petitionerEmail,

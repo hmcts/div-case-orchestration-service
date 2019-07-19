@@ -1,6 +1,6 @@
 {
   "case_details": {
-    "id": "0123456789012345",
+    "id": "test.case.id",
     "case_data": {
       "PetitionerSolicitorEmail": "solicitor@justice.uk",
       "D8caseReference": "HR290831",

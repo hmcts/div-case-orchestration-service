@@ -99,4 +99,26 @@ public class BulkCaseController {
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
     }
+
+    @PostMapping(path = "/bulk/remove")
+    @ApiOperation(value = "Callback remove cases from the bulk")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Required pronouncement data has been set successfully"),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> removeCasesFromBulk(
+        @RequestHeader("Authorization")
+        @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            ccdCallbackResponseBuilder.data(orchestrationService
+                .updateBulkCaseAcceptedCases(ccdCallbackRequest.getCaseDetails(), authorizationToken));
+        } catch (WorkflowException exception) {
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
+    }
 }

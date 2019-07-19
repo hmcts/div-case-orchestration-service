@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
@@ -89,6 +90,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECREE_ABSOLUTE_GRANTED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
@@ -252,6 +254,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private DecreeAbsoluteAboutToBeGrantedWorkflow decreeAbsoluteAboutToBeGrantedWorkflow;
+
+    @Mock
+    private RemoveLinkWorkflow removeLinkWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1296,6 +1301,24 @@ public class CaseOrchestrationServiceImplTest {
         expectedException.expectCause(equalTo(testFailureCause));
 
         classUnderTest.processApplicantDecreeAbsoluteEligibility(ccdCallbackRequest);
+    }
+
+    @Test
+    public void shouldCallRightWorkflow_WhenRemoveBulkLink() throws WorkflowException {
+        Map<String, Object> caseData = DUMMY_CASE_DATA;
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails
+                .builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .build()).build();
+
+        when(removeLinkWorkflow.run(request.getCaseDetails().getCaseData())).thenReturn(caseData);
+        classUnderTest.removeBulkLink(request);
+
+
+        Map<String, Object> response = classUnderTest.removeBulkLink(request);
+        assertThat(response, is(caseData));
     }
 
     @After
