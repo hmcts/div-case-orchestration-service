@@ -242,6 +242,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID1), HttpStatus.UNPROCESSABLE_ENTITY, getCmsBulkCaseResponse(), POST);
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID2), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID3), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, CREATE_EVENT), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
 
         stubSignInForCaseworker();
 
