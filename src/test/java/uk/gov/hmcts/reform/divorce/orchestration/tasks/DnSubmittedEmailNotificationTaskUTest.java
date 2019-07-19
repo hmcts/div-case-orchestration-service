@@ -23,6 +23,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
@@ -94,8 +95,9 @@ public class DnSubmittedEmailNotificationTaskUTest {
         payload.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
 
         TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         Map<String, String> notificationTemplateVars = ImmutableMap.of(
-            NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_FAMILY_MAN_ID,
+            NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID,
             NOTIFICATION_EMAIL, TEST_USER_EMAIL,
             NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME,
             NOTIFICATION_RESP_NAME, TEST_USER_FIRST_NAME + " " + TEST_USER_LAST_NAME,

@@ -98,7 +98,7 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
                 notificationTemplateVars.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
                 notificationTemplateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
                 notificationTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
-                notificationTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, ref);
+                notificationTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseDetails.getCaseId());
 
                 tasks.add(emailNotificationTask);
                 template = findTemplateNameToBeSent(caseDetails, true);
