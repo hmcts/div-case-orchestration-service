@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -103,7 +104,7 @@ public class BulkCaseControllerTest {
     }
 
     @Test
-    public void whenpdateBulkCasePronouncementDateThrowsError_thenReturnExpectedResponse() throws WorkflowException {
+    public void whenUpdateBulkCasePronouncementDateThrowsError_thenReturnExpectedResponse() throws WorkflowException {
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(Collections.emptyMap()).build();
         CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
         String error = "error has occurred";
@@ -112,6 +113,36 @@ public class BulkCaseControllerTest {
                 .thenThrow(new WorkflowException(error));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.updateCaseDnPronounce(AUTH_TOKEN, request);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(CcdCallbackResponse.builder().errors(Collections.singletonList(error)).build()));
+    }
+
+
+    @Test
+    public void whenRemoveCasesFromBulk_thenReturnExpectedResponse() throws WorkflowException {
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(Collections.emptyMap()).build();
+        CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.updateBulkCaseAcceptedCases(caseDetails, AUTH_TOKEN))
+            .thenReturn(DUMMY_CASE_DATA);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.removeCasesFromBulk(AUTH_TOKEN, request);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(CcdCallbackResponse.builder().data(DUMMY_CASE_DATA).build()));
+    }
+
+    @Test
+    public void whenRemoveCasesFromBulkThrowsError_thenReturnExpectedResponse() throws WorkflowException {
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(Collections.emptyMap()).build();
+        CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        String error = "error has occurred";
+
+        when(caseOrchestrationService.updateBulkCaseAcceptedCases(caseDetails, AUTH_TOKEN))
+            .thenThrow(new WorkflowException(error));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.removeCasesFromBulk(AUTH_TOKEN, request);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody(), is(CcdCallbackResponse.builder().errors(Collections.singletonList(error)).build()));

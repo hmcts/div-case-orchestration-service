@@ -1,6 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration;
 
+import com.google.common.collect.ImmutableMap;
+
+import java.util.Map;
+
 public class TestConstants {
+    public static final String TEST_BULK_CASE_ID = "test.bulk.case.id";
     public static final String TEST_CASE_ID = "test.case.id";
     public static final String TEST_CASE_FAMILY_MAN_ID = "test.family.man.id";
     public static final String TEST_STATE = "test.state";
@@ -48,13 +53,14 @@ public class TestConstants {
     public static final String AWAITING_CONSIDERATION_GENERAL_APPLICATION = "AwaitingConsiderationGeneralApplication";
     public static final String D8_CASE_ID = "LV17D80101";
     public static final String UNFORMATTED_CASE_ID = "0123456789";
-    public static String TEST_TOKEN = "test.token";
-    public static String TEST_EVENT_ID = "test.event.id";
-    public static String AUTH_TOKEN = "test.auth.token";
-    public static String BEARER_AUTH_TOKEN = "Bearer test.auth.token";
-    public static String CASEWORKER_AUTH_TOKEN = "caseworker.auth.token";
-    public static String AUTH_TOKEN_1 = "test.auth.token1";
-    public static String TEST_EMAIL = "test.email";
-    public static String BEARER_AUTH_TOKEN_1 = "Bearer test.auth.token1";
-    public static String TEST_CODE = "test.code";
+    public static final String TEST_TOKEN = "test.token";
+    public static final String TEST_EVENT_ID = "test.event.id";
+    public static final String AUTH_TOKEN = "test.auth.token";
+    public static final String BEARER_AUTH_TOKEN = "Bearer test.auth.token";
+    public static final String CASEWORKER_AUTH_TOKEN = "caseworker.auth.token";
+    public static final String AUTH_TOKEN_1 = "test.auth.token1";
+    public static final String TEST_EMAIL = "test.email";
+    public static final String BEARER_AUTH_TOKEN_1 = "Bearer test.auth.token1";
+    public static final String TEST_CODE = "test.code";
+    public static final Map<String, Object>  DUMMY_CASE_DATA = ImmutableMap.of("someKey", "someValue");
 }

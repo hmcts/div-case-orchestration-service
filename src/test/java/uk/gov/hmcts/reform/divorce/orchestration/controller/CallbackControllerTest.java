@@ -39,6 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CallbackControllerTest {
@@ -839,5 +840,21 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getErrors(), hasItem(equalTo("This is a test error message.")));
         verify(caseOrchestrationService).processApplicantDecreeAbsoluteEligibility(eq(ccdCallbackRequest));
     }
+
+    @Test
+    public void testRemoveCaseLink_callServiceMethod() throws WorkflowException {
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails
+                .builder()
+                .caseId(TEST_CASE_ID)
+                .build()).build();
+        Map<String, Object> expectedResponse = singletonMap("returnedKey", "returnedValue");
+        when(caseOrchestrationService.removeBulkLink(request)).thenReturn(expectedResponse);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.removeBulkLinkFromCase(request);
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(CcdCallbackResponse.builder().data(expectedResponse).build()));
+    }
+
 
 }

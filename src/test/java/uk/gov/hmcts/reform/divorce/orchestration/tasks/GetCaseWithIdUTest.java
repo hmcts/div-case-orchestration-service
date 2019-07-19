@@ -38,7 +38,7 @@ public class GetCaseWithIdUTest {
     private AuthUtil authUtil;
 
     @InjectMocks
-    private GetCaseWithId classUnderTest;
+    private GetCaseWithIdTask classUnderTest;
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();

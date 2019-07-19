@@ -7,17 +7,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithId;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdTask;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
 public class GetCaseWithIdWorkflow extends DefaultWorkflow<CaseDetails> {
-    private final GetCaseWithId getCaseWithId;
+    private final GetCaseWithIdTask getCaseWithId;
 
     @Autowired
-    public GetCaseWithIdWorkflow(GetCaseWithId getCaseWithId) {
+    public GetCaseWithIdWorkflow(GetCaseWithIdTask getCaseWithId) {
         this.getCaseWithId = getCaseWithId;
     }
 
