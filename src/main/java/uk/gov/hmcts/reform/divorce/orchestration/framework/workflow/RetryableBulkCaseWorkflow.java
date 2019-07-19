@@ -44,7 +44,7 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
     public abstract Map<String, Object> run(Map<String, Object> bulkCaseData, String caseId, String authToken) throws WorkflowException;
 
     /**
-     *  Process accepted cases, CaseAcceptedList,  within the bulk case.
+     *  Process accepted cases, CaseAcceptedList, within the bulk case.
      *  If updating any case fails with 5xx error in CCD the process will retry the case.
      *  The process will not retry the case if CCD fails with 4xx error.
      *
@@ -60,7 +60,7 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
     }
 
     /**
-     *  Process accepted cases, CaseAcceptedList,  within the bulk case.
+     *  Process accepted cases, CaseAcceptedList, within the bulk case.
      *  If updating any case fails with 5xx error in CCD the process will retry the case.
      *  The process will not retry the case if CCD fails with 4xx error.
      *
@@ -72,12 +72,9 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
     public BulkWorkflowExecutionResult executeWithRetriesForCreate(Map<String, Object> bulkCaseResponse, String bulkCaseId, String authToken) {
         BulkWorkflowExecutionResult result = executeWithRetriesResult(bulkCaseResponse, bulkCaseId, authToken);
 
-        // If there are more failed cases than removable cases, that means there are some cases that failed for a reason other than 422
-        if (result.getFailedCases().size() > result.getRemovableCaseIds().size()) {
-            result.setSuccessStatus(false);
-        } else {
-            result.setSuccessStatus(true);
-        }
+        final boolean areThereCasesThatFailedForOtherReasonThan422 = result.getFailedCases().size() > result.getRemovableCaseIds().size();
+
+        result.setSuccessStatus(!areThereCasesThatFailedForOtherReasonThan422);
 
         return result;
     }
