@@ -84,7 +84,7 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
     private BulkWorkflowExecutionResult executeWithRetriesResult(Map<String, Object> bulkCaseResponse, String bulkCaseId, String authToken) {
         Map<String, Object> bulkCaseData = (Map<String, Object>) bulkCaseResponse.getOrDefault(CCD_CASE_DATA_FIELD, Collections.emptyMap());
         List<Map<String, Object>> acceptedDivorceCaseList =
-                (List<Map<String, Object>>) bulkCaseData.getOrDefault(BULK_CASE_ACCEPTED_LIST_KEY, Collections.emptyList());
+            (List<Map<String, Object>>) bulkCaseData.getOrDefault(BULK_CASE_ACCEPTED_LIST_KEY, Collections.emptyList());
 
         if (acceptedDivorceCaseList.isEmpty()) {
             throw new BulkUpdateException("Accepted case list is empty. Not updating bulk case");
@@ -136,7 +136,7 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
                     | RetryableException e) {
                 String errorMessage = e.content() == null ? e.getMessage() : e.contentUTF8();
                 log.error("Case update failed, added to retry list: for bulk case id {} and caseId {}. Cause {}",
-                        bulkCaseId, caseId, errorMessage, e);
+                    bulkCaseId, caseId, errorMessage, e);
                 casesToRetry.add(caseElem);
             } catch (FeignException.UnprocessableEntity e) {
                 log.error("Case update failed with 422 error : for bulk case id {}  and caseId {}", bulkCaseId, caseId, e);

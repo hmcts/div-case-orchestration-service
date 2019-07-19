@@ -50,12 +50,13 @@ public class BulkCaseServiceImpl implements BulkCaseService {
     @Override
     @EventListener
     public void handleBulkCaseCreateEvent(BulkCaseCreateEvent event) throws WorkflowException {
-        long startTime = Instant.now().toEpochMilli();
+        final long startTime = Instant.now().toEpochMilli();
         TaskContext context = (TaskContext) event.getSource();
         Map<String, Object> caseResponse = event.getCaseDetails();
         final String bulkCaseId = String.valueOf(caseResponse.get(OrchestrationConstants.ID));
 
-        BulkWorkflowExecutionResult result = linkBulkCaseWorkflow.executeWithRetriesForCreate(caseResponse, bulkCaseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
+        BulkWorkflowExecutionResult result =
+            linkBulkCaseWorkflow.executeWithRetriesForCreate(caseResponse, bulkCaseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
 
         if (!result.isSuccessStatus()) {
             throw new BulkUpdateException(String.format("Failed to updating bulk case link for some cases on bulk case id %s", bulkCaseId));
@@ -69,7 +70,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
             updatePayload.put(BULK_CASE_ACCEPTED_LIST_KEY, filterAcceptedCases(caseResponse, result.getRemovableCaseIds()));
         }
 
-        long endTime = Instant.now().toEpochMilli();
+        final long endTime = Instant.now().toEpochMilli();
         updateBulkCaseWorkflow.run(updatePayload, context.getTransientObject(AUTH_TOKEN_JSON_KEY), bulkCaseId, CREATE_EVENT);
         log.info("Completed bulk case process with bulk cased Id:{} in:{} millis", bulkCaseId, endTime - startTime);
     }
