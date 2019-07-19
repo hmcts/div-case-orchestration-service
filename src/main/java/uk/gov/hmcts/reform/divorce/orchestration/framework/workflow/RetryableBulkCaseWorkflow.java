@@ -72,10 +72,11 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
     public BulkWorkflowExecutionResult executeWithRetriesForCreate(Map<String, Object> bulkCaseResponse, String bulkCaseId, String authToken) {
         BulkWorkflowExecutionResult result = executeWithRetriesResult(bulkCaseResponse, bulkCaseId, authToken);
 
-        result.setSuccessStatus(true);
         // If there are more failed cases than removable cases, that means there are some cases that failed for a reason other than 422
         if (result.getFailedCases().size() > result.getRemovableCaseIds().size()) {
             result.setSuccessStatus(false);
+        } else {
+            result.setSuccessStatus(true);
         }
 
         return result;
@@ -139,7 +140,9 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
                     bulkCaseId, caseId, errorMessage, e);
                 casesToRetry.add(caseElem);
             } catch (FeignException.UnprocessableEntity e) {
-                log.error("Case update failed with 422 error : for bulk case id {}  and caseId {}", bulkCaseId, caseId, e);
+                String errorMessage = e.content() == null ? e.getMessage() : e.contentUTF8();
+                log.error("Case update failed with 422 error : for bulk case id {}  and caseId {}. Cause {}",
+                    bulkCaseId, caseId, errorMessage, e);
                 caseIdsToRemove.add(caseId);
                 nonRetryableCases.add(caseElem);
             } catch (Exception e) {
