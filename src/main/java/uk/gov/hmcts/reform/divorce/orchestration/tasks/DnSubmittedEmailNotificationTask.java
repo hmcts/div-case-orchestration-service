@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
@@ -53,6 +54,7 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
         String petitionerFirstName = Objects.toString(data.get(D_8_PETITIONER_FIRST_NAME), null);
         String petitionerLastName = Objects.toString(data.get(D_8_PETITIONER_LAST_NAME), null);
         String petitionerEmail = Objects.toString(data.get(D_8_PETITIONER_EMAIL), null);
+        String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
 
         Map<String, String> notificationTemplateVars = new HashMap<>();
         String template = null;
@@ -63,7 +65,7 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
             String respLastName = Objects.toString(data.get(RESP_LAST_NAME_CCD_FIELD), null);
             String solicitorName = Objects.toString(data.get(PET_SOL_NAME), null);
 
-            notificationTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, ccdReference);
+            notificationTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseId);
             notificationTemplateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
             notificationTemplateVars.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
             notificationTemplateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);

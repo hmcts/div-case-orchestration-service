@@ -21,6 +21,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
@@ -70,7 +72,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         expectedTemplateVars.put(NOTIFICATION_PET_NAME, caseData.get(D_8_PETITIONER_FIRST_NAME) + " " + caseData.get(D_8_PETITIONER_LAST_NAME));
         expectedTemplateVars.put(NOTIFICATION_RESP_NAME, caseData.get(RESP_FIRST_NAME_CCD_FIELD) + " " + caseData.get(RESP_LAST_NAME_CCD_FIELD));
         expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, (String) caseData.get(PET_SOL_NAME));
-        expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, (String) caseData.get(D_8_CASE_REFERENCE));
+        expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID);
 
 
         String petSolEmail = (String) caseData.get(PET_SOL_EMAIL);
@@ -81,6 +83,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         ).thenReturn(null);
 
         DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
 
         Map<String, Object> returnedPayload = sendPetitionerCoRespondentRespondedNotificationEmail.execute(context, caseData);
 
