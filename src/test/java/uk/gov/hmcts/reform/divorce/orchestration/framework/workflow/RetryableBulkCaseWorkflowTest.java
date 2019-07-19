@@ -242,6 +242,29 @@ public class RetryableBulkCaseWorkflowTest {
     }
 
     @Test
+    public void given404Exception_whenExecuteWithRetriesForCreate_thenReturnRemovableCases() throws WorkflowException {
+        Map<String, Object> caseData1 = ImmutableMap.of(VALUE_KEY, ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID_1));
+        Map<String, Object> caseData2 = ImmutableMap.of(VALUE_KEY, ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID_2));
+        Map<String, Object> bulkCaseData = ImmutableMap.of(BULK_CASE_ACCEPTED_LIST_KEY, asList(caseData1, caseData2));
+        Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
+                CCD_CASE_DATA_FIELD, bulkCaseData);
+
+        when(retryableBulkCaseWorkflow.run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN))
+                .thenThrow(new FeignException.NotFound("Error", "Error".getBytes()));
+
+        BulkWorkflowExecutionResult result =
+                retryableBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
+
+        assertThat(result.isSuccessStatus(), is(true));
+        assertThat(result.getRemovableCaseIds().size(), is(1));
+        assertThat(result.getFailedCases().size(), is(1));
+
+        verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
+        verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
+        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, asList(caseData1));
+    }
+
+    @Test
     public void givenException_whenExecuteWithRetriesForCreate_thenLogError() throws WorkflowException {
         Map<String, Object> caseData1 = ImmutableMap.of(VALUE_KEY, ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID_1));
         Map<String, Object> caseData2 = ImmutableMap.of(VALUE_KEY, ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID_2));

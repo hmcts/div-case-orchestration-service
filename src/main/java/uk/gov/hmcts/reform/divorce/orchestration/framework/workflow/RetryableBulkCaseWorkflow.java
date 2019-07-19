@@ -136,7 +136,8 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
                 log.error("Case update failed, added to retry list: for bulk case id {} and caseId {}. Cause {}",
                     bulkCaseId, caseId, errorMessage, e);
                 casesToRetry.add(caseElem);
-            } catch (FeignException.UnprocessableEntity e) {
+            } catch (FeignException.UnprocessableEntity
+                     | FeignException.NotFound e) {
                 String errorMessage = e.content() == null ? e.getMessage() : e.contentUTF8();
                 log.error("Case update failed with 422 error : for bulk case id {}  and caseId {}. Cause {}",
                     bulkCaseId, caseId, errorMessage, e);
