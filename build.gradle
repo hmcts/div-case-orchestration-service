@@ -402,6 +402,7 @@ test {
 }
 
 task wiremockFunctional(type: Test, description: 'Executes wiremock functional tests', group: 'Verification') {
+    onlyIf { project.file("./build/reports/tests/test/index.html").exists() }
     test.outputs.upToDateWhen {false}
     testLogging.showStandardStreams = true
     include '**/functionaltest/**/*'
