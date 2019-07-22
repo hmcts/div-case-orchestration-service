@@ -38,8 +38,6 @@ public class TestConstants {
     public static final String TEST_SERVICE_TOKEN = "testServiceToken";
     public static final String TEST_PETITIONER_FIRST_NAME = "First";
     public static final String TEST_PETITIONER_LAST_NAME = "Last";
-    public static final String TEST_FIRST_NAME = "First";
-    public static final String TEST_LAST_NAME = "Last";
     public static final String TEST_PETITIONER_EMAIL = "testPetitioner@email.com";
     public static final String TEST_PRONOUNCEMENT_JUDGE = "District Judge";
     public static final String TEST_USER_FIRST_NAME = "user first name";
