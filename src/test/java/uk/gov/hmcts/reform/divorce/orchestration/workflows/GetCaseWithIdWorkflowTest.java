@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithId;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdTask;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class GetCaseWithIdWorkflowTest {
     @Mock
-    private GetCaseWithId getCaseWithId;
+    private GetCaseWithIdTask getCaseWithId;
 
     @InjectMocks
     private GetCaseWithIdWorkflow classUnderTest;

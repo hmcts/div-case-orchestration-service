@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
+import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseAcceptedCasesEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseCreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseUpdateCourtHearingEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseUpdatePronouncementDateEvent;
@@ -12,4 +13,6 @@ public interface BulkCaseService {
     void handleBulkCaseUpdateCourtHearingEvent(BulkCaseUpdateCourtHearingEvent event) throws WorkflowException;
 
     void handleBulkCaseUpdatePronouncementDateEvent(BulkCaseUpdatePronouncementDateEvent event) throws WorkflowException;
+
+    void handleBulkCaseAcceptedCasesEvent(BulkCaseAcceptedCasesEvent event);
 }
