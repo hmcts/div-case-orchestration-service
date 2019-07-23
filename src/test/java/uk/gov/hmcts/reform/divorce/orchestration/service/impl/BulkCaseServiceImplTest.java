@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.BulkWorkflowExecutionResult;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseAcceptedCasesEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseCreateEvent;
@@ -53,6 +55,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class BulkCaseServiceImplTest {
 
     private static final String FAILED_CASE_ID = "failedCaseId";
+    private static final String TEST_CASE_ID_ONE = "caseId1";
+    private static final String TEST_CASE_ID_TWO = "caseId2";
 
     @Mock
     private LinkBulkCaseWorkflow linkBulkCaseWorkflow;
@@ -80,24 +84,26 @@ public class BulkCaseServiceImplTest {
         Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
             CCD_CASE_DATA_FIELD, ImmutableMap.of(CASE_LIST_KEY, Arrays.asList(caseData, caseData)));
 
-        when(linkBulkCaseWorkflow.executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN)).thenReturn(true);
+        BulkWorkflowExecutionResult result = BulkWorkflowExecutionResult.builder().successStatus(true).build();
+        when(linkBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN)).thenReturn(result);
         BulkCaseCreateEvent event = new BulkCaseCreateEvent(taskContext, caseDetail);
 
         classToTest.handleBulkCaseCreateEvent(event);
 
-        verify(linkBulkCaseWorkflow, times(1)).executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
+        verify(linkBulkCaseWorkflow, times(1)).executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
         verify(updateBulkCaseWorkflow, times(1)).run(Collections.emptyMap(), AUTH_TOKEN, TEST_CASE_ID, CREATE_EVENT);
     }
 
     @Test
-    public void givenFailuresClases_whenHandleBulkCase_thenBulkCaseIsNotUpdated() throws WorkflowException {
+    public void givenFailuresClasses_whenHandleBulkCase_thenBulkCaseIsNotUpdated() throws WorkflowException {
         TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         Map<String, Object> caseData = ImmutableMap.of("SomeKey", "SomeValue");
         Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
             CCD_CASE_DATA_FIELD, ImmutableMap.of(CASE_LIST_KEY, Arrays.asList(caseData, caseData)));
 
-        when(linkBulkCaseWorkflow.executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN)).thenReturn(false);
+        BulkWorkflowExecutionResult result = BulkWorkflowExecutionResult.builder().successStatus(false).build();
+        when(linkBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN)).thenReturn(result);
         BulkCaseCreateEvent event = new BulkCaseCreateEvent(taskContext, caseDetail);
 
         try {
@@ -108,7 +114,86 @@ public class BulkCaseServiceImplTest {
                 containsString(String.format("Failed to updating bulk case link for some cases on bulk case id %s", TEST_CASE_ID)));
 
         }
-        verify(linkBulkCaseWorkflow, times(1)).executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
+        verify(linkBulkCaseWorkflow, times(1)).executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
+        verify(updateBulkCaseWorkflow, never()).run(Collections.emptyMap(), AUTH_TOKEN, TEST_CASE_ID, CREATE_EVENT);
+    }
+
+    @Test
+    public void givenRemovableCases_whenHandleBulkCase_thenBulkCaseIsUpdated() throws WorkflowException {
+        TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        Map<String, Object> caseReferenceOne = Collections.singletonMap(CASE_REFERENCE_FIELD, TEST_CASE_ID_ONE);
+        Map<String, Object> caseReferenceTwo = Collections.singletonMap(CASE_REFERENCE_FIELD, TEST_CASE_ID_TWO);
+        Map<String, Object> caseDataOne = ImmutableMap.of(CASE_REFERENCE_FIELD, caseReferenceOne);
+        Map<String, Object> caseDataTwo = ImmutableMap.of(CASE_REFERENCE_FIELD, caseReferenceTwo);
+        Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
+                CCD_CASE_DATA_FIELD, ImmutableMap.of(
+                        CASE_LIST_KEY, Arrays.asList(
+                                Collections.singletonMap(VALUE_KEY, caseDataOne),
+                                Collections.singletonMap(VALUE_KEY, caseDataTwo)
+                        ),
+                        BULK_CASE_ACCEPTED_LIST_KEY, Arrays.asList(
+                                Collections.singletonMap(VALUE_KEY, caseReferenceOne),
+                                Collections.singletonMap(VALUE_KEY, caseReferenceTwo)
+                        )
+                ));
+
+        BulkWorkflowExecutionResult result = BulkWorkflowExecutionResult.builder()
+                .successStatus(true)
+                .failedCases(Arrays.asList(caseDataOne))
+                .removableCaseIds(ImmutableSet.of(TEST_CASE_ID_ONE))
+                .build();
+        when(linkBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN)).thenReturn(result);
+        BulkCaseCreateEvent event = new BulkCaseCreateEvent(taskContext, caseDetail);
+
+        classToTest.handleBulkCaseCreateEvent(event);
+
+        Map<String, Object> expectedUpdatePayload = ImmutableMap.of(
+                CASE_LIST_KEY, Arrays.asList(Collections.singletonMap(VALUE_KEY, caseDataTwo)),
+                BULK_CASE_ACCEPTED_LIST_KEY, Arrays.asList(Collections.singletonMap(VALUE_KEY, caseReferenceTwo))
+        );
+
+        verify(linkBulkCaseWorkflow, times(1)).executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
+        verify(updateBulkCaseWorkflow, times(1)).run(expectedUpdatePayload, AUTH_TOKEN, TEST_CASE_ID, CREATE_EVENT);
+    }
+
+    @Test
+    public void givenBothFailedAndRemovableCases_whenHandleBulkCase_thenBulkCaseIsNotUpdated() throws WorkflowException {
+        TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        Map<String, Object> caseReferenceOne = Collections.singletonMap(CASE_REFERENCE_FIELD, TEST_CASE_ID_ONE);
+        Map<String, Object> caseReferenceTwo = Collections.singletonMap(CASE_REFERENCE_FIELD, TEST_CASE_ID_TWO);
+        Map<String, Object> caseDataOne = ImmutableMap.of(CASE_REFERENCE_FIELD, caseReferenceOne);
+        Map<String, Object> caseDataTwo = ImmutableMap.of(CASE_REFERENCE_FIELD, caseReferenceTwo);
+        Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
+                CCD_CASE_DATA_FIELD, ImmutableMap.of(
+                        CASE_LIST_KEY, Arrays.asList(
+                                Collections.singletonMap(VALUE_KEY, caseDataOne),
+                                Collections.singletonMap(VALUE_KEY, caseDataTwo)
+                        ),
+                        BULK_CASE_ACCEPTED_LIST_KEY, Arrays.asList(
+                                Collections.singletonMap(VALUE_KEY, caseReferenceOne),
+                                Collections.singletonMap(VALUE_KEY, caseReferenceTwo)
+                        )
+                ));
+
+        BulkWorkflowExecutionResult result = BulkWorkflowExecutionResult.builder()
+                .successStatus(false)
+                .failedCases(Arrays.asList(caseDataOne, caseDataTwo))
+                .removableCaseIds(ImmutableSet.of(TEST_CASE_ID_ONE))
+                .build();
+        when(linkBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN)).thenReturn(result);
+        BulkCaseCreateEvent event = new BulkCaseCreateEvent(taskContext, caseDetail);
+
+        try {
+            classToTest.handleBulkCaseCreateEvent(event);
+            Assert.fail("Expected bulkUpdateException");
+        } catch (BulkUpdateException e) {
+            assertThat(e.getMessage(),
+                    containsString(String.format("Failed to updating bulk case link for some cases on bulk case id %s", TEST_CASE_ID)));
+
+        }
+        verify(linkBulkCaseWorkflow, times(1)).executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
         verify(updateBulkCaseWorkflow, never()).run(Collections.emptyMap(), AUTH_TOKEN, TEST_CASE_ID, CREATE_EVENT);
     }
 
