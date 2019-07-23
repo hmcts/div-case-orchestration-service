@@ -4,12 +4,15 @@ import feign.FeignException;
 import feign.RetryableException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.BulkWorkflowExecutionResult;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.BulkUpdateException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_ACCEPTED_LIST_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
@@ -41,7 +44,7 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
     public abstract Map<String, Object> run(Map<String, Object> bulkCaseData, String caseId, String authToken) throws WorkflowException;
 
     /**
-     *  Process accepted cases, CaseAcceptedList,  within the bulk case.
+     *  Process accepted cases, CaseAcceptedList, within the bulk case.
      *  If updating any case fails with 5xx error in CCD the process will retry the case.
      *  The process will not retry the case if CCD fails with 4xx error.
      *
@@ -51,6 +54,32 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
      * @return true if all the case have been updated successfully, false if any case failed.
      */
     public boolean executeWithRetries(Map<String, Object> bulkCaseResponse, String bulkCaseId, String authToken) {
+        BulkWorkflowExecutionResult result = executeWithRetriesResult(bulkCaseResponse, bulkCaseId, authToken);
+
+        return result.getFailedCases().isEmpty();
+    }
+
+    /**
+     *  Process accepted cases, CaseAcceptedList, within the bulk case.
+     *  If updating any case fails with 5xx error in CCD the process will retry the case.
+     *  The process will not retry the case if CCD fails with 4xx error.
+     *
+     * @param bulkCaseResponse Bulk case data in CCD format
+     * @param bulkCaseId Bulk case id
+     * @param authToken Caseworker auth token
+     * @return result of the execution with a true status if all cases have updated successfully, or has a 422 error, false otherwise.
+     */
+    public BulkWorkflowExecutionResult executeWithRetriesForCreate(Map<String, Object> bulkCaseResponse, String bulkCaseId, String authToken) {
+        BulkWorkflowExecutionResult result = executeWithRetriesResult(bulkCaseResponse, bulkCaseId, authToken);
+
+        final boolean areThereCasesThatFailedForOtherReasonThan422 = result.getFailedCases().size() > result.getRemovableCaseIds().size();
+
+        result.setSuccessStatus(!areThereCasesThatFailedForOtherReasonThan422);
+
+        return result;
+    }
+
+    private BulkWorkflowExecutionResult executeWithRetriesResult(Map<String, Object> bulkCaseResponse, String bulkCaseId, String authToken) {
         Map<String, Object> bulkCaseData = (Map<String, Object>) bulkCaseResponse.getOrDefault(CCD_CASE_DATA_FIELD, Collections.emptyMap());
         List<Map<String, Object>> acceptedDivorceCaseList =
             (List<Map<String, Object>>) bulkCaseData.getOrDefault(BULK_CASE_ACCEPTED_LIST_KEY, Collections.emptyList());
@@ -61,13 +90,14 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
 
         int retryCount = 0;
         List<Map<String, Object>> retryCases = acceptedDivorceCaseList;
+        final Set<String> caseIdsToRemove = new HashSet<>();
         final List<Map<String, Object>> failedCases = new ArrayList<>();
         try {
             while (!retryCases.isEmpty() && retryCount < maxRetries) {
                 if (retryCount > 0) {
                     exponentialWaitTime(retryCount);
                 }
-                retryCases = handleFailedCases(retryCases, bulkCaseId, authToken, failedCases, bulkCaseResponse);
+                retryCases = handleFailedCases(retryCases, bulkCaseId, authToken, caseIdsToRemove, failedCases, bulkCaseResponse);
                 retryCount ++;
             }
 
@@ -79,12 +109,14 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
                 this.notifyFailedCases(bulkCaseId, failedCases);
             }
         }
-        return failedCases.isEmpty();
+
+        return BulkWorkflowExecutionResult.builder().removableCaseIds(caseIdsToRemove).failedCases(failedCases).build();
     }
 
     private List<Map<String, Object>> handleFailedCases(List<Map<String, Object>> caseList,
                                                         String bulkCaseId,
                                                         String authToken,
+                                                        Set<String> caseIdsToRemove,
                                                         List<Map<String, Object>> nonRetryableCases,
                                                         Map<String, Object> bulkCaseData) {
         final List<Map<String, Object>> casesToRetry = new ArrayList<>();
@@ -96,14 +128,21 @@ public abstract class RetryableBulkCaseWorkflow extends DefaultWorkflow<Map<Stri
                 caseId = String.valueOf(caseLink.get(CASE_REFERENCE_FIELD));
                 this.run(bulkCaseData, caseId, authToken);
             } catch (FeignException.BadGateway
-                | FeignException.InternalServerError
-                | FeignException.GatewayTimeout
-                | FeignException.ServiceUnavailable
-                | RetryableException e) {
+                    | FeignException.InternalServerError
+                    | FeignException.GatewayTimeout
+                    | FeignException.ServiceUnavailable
+                    | RetryableException e) {
                 String errorMessage = e.content() == null ? e.getMessage() : e.contentUTF8();
                 log.error("Case update failed, added to retry list: for bulk case id {} and caseId {}. Cause {}",
                     bulkCaseId, caseId, errorMessage, e);
                 casesToRetry.add(caseElem);
+            } catch (FeignException.UnprocessableEntity
+                     | FeignException.NotFound e) {
+                String errorMessage = e.content() == null ? e.getMessage() : e.contentUTF8();
+                log.error("Case update failed with 422 error : for bulk case id {}  and caseId {}. Cause {}",
+                    bulkCaseId, caseId, errorMessage, e);
+                caseIdsToRemove.add(caseId);
+                nonRetryableCases.add(caseElem);
             } catch (Exception e) {
                 log.error("Case update failed : for bulk case id {}  and caseId {}", bulkCaseId, caseId, e);
                 nonRetryableCases.add(caseElem);
