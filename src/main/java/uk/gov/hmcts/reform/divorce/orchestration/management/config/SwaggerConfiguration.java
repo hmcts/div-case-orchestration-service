@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.management.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -15,10 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication
 
 @Configuration
 @EnableSwagger2
-public class SwaggerConfiguration implements WebMvcConfigurer {
-
-    @Value("${documentation.swagger.enabled}")
-    private boolean swaggerEnabled;
+@ConditionalOnProperty(value = "documentation.swagger.enabled", havingValue = "true")
+public class SwaggerConfiguration {
 
     @Bean
     public Docket api() {
@@ -36,16 +32,4 @@ public class SwaggerConfiguration implements WebMvcConfigurer {
                 .description("Given a case data this service will validate against the business rules ")
                 .build();
     }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        WebMvcConfigurer.super.addResourceHandlers(registry);
-        if (swaggerEnabled) {
-            registry.addResourceHandler("/swagger-ui.html**")
-                    .addResourceLocations("classpath:/META-INF/resources/swagger-ui.html");
-            registry.addResourceHandler("/webjars/**")
-                    .addResourceLocations("classpath:/META-INF/resources/webjars/");
-        }
-    }
-
 }
