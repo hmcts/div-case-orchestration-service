@@ -4,3 +4,6 @@ idam_strategic_enabled = "true"
 
 capacity = "2"
 documentation_swagger_enabled = "false"
+
+# Scheduler Jobs
+scheduler_make_cases_eligible_da_enabled = "true"
