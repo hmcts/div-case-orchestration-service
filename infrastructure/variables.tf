@@ -112,5 +112,5 @@ variable "feature_resp_solicitor_details" {
 }
 
 variable "documentation_swagger_enabled" {
-  default = true
+  default = "true"
 }
