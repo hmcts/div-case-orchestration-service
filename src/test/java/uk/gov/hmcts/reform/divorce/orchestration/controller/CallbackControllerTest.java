@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.AosPackOfflineService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
@@ -47,9 +48,11 @@ public class CallbackControllerTest {
     @Mock
     private CaseOrchestrationService caseOrchestrationService;
 
+    @Mock
+    private AosPackOfflineService aosPackOfflineService;
+
     @InjectMocks
     private CallbackController classUnderTest;
-
 
     @Test
     public void whenPetitionerClarificationRequestedCallback_thenReturnCcdResponse() throws Exception {
@@ -678,11 +681,10 @@ public class CallbackControllerTest {
                 .build())
             .build();
 
-        String token = "token";
-        when(caseOrchestrationService.processAosSolicitorLinkCase(incomingRequest, token))
+        when(caseOrchestrationService.processAosSolicitorLinkCase(incomingRequest, AUTH_TOKEN))
             .thenReturn(incomingPayload);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorLinkCase(token, incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorLinkCase(AUTH_TOKEN, incomingRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
@@ -698,11 +700,10 @@ public class CallbackControllerTest {
                 .build())
             .build();
 
-        String token = "token";
-        when(caseOrchestrationService.processAosSolicitorLinkCase(incomingRequest, "token"))
+        when(caseOrchestrationService.processAosSolicitorLinkCase(incomingRequest, AUTH_TOKEN))
             .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorLinkCase(token, incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorLinkCase(AUTH_TOKEN, incomingRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(nullValue()));
@@ -856,5 +857,32 @@ public class CallbackControllerTest {
         assertThat(response.getBody(), is(CcdCallbackResponse.builder().data(expectedResponse).build()));
     }
 
+    @Test
+    public void testIssueAosOffline_callsRightService() throws CaseOrchestrationServiceException {
+        when(aosPackOfflineService.issueAosPackOffline(any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.issueAosPackOffline(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+        verify(aosPackOfflineService).issueAosPackOffline(eq(AUTH_TOKEN), eq(caseDetails));
+    }
+
+    @Test
+    public void testIssueAosOffline_returnsErrors_whenServiceThrowsException() throws CaseOrchestrationServiceException {
+        when(aosPackOfflineService.issueAosPackOffline(any(), any()))
+            .thenThrow(new CaseOrchestrationServiceException(new RuntimeException("Error message")));
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.issueAosPackOffline(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), hasItem(equalTo("Error message")));
+        assertThat(response.getBody().getData(), is(nullValue()));
+    }
 
 }
