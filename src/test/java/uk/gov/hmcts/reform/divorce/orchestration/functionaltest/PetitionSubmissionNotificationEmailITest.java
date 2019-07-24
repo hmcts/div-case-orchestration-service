@@ -1,22 +1,14 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -42,25 +34,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = OrchestrationServiceApplication.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@PropertySource(value = "classpath:application.yml")
-@AutoConfigureMockMvc
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class PetitionSubmissionNotificationEmailITest {
+public class PetitionSubmissionNotificationEmailITest extends MockedFunctionalTest {
     private static final String API_URL = "/petition-submitted";
-    private static final String SUCCESS = "Success";
-
-    private static final String EMAIL_CONTEXT_PATH = "https://api.notifications.service.gov.uk";
 
     private Map<String, Object> caseData;
     private CcdCallbackRequest ccdCallbackRequest;
 
     @Autowired
     private MockMvc webClient;
-
-    @ClassRule
-    public static WireMockClassRule emailServiceServer = new WireMockClassRule(9999);
 
     @Before
     public void setup() {
@@ -87,21 +68,11 @@ public class PetitionSubmissionNotificationEmailITest {
                 .data(caseData)
                 .build();
 
-        stubEmailServerEndpoint();
-
         webClient.perform(post(API_URL)
                 .content(convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(convertObjectToJsonString(expected)));
-    }
-
-    private void stubEmailServerEndpoint() {
-        emailServiceServer.stubFor(WireMock.put(EMAIL_CONTEXT_PATH)
-                .willReturn(aResponse()
-                        .withStatus(HttpStatus.OK.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(SUCCESS)));
     }
 }

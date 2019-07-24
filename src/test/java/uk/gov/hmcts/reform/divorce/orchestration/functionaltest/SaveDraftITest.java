@@ -1,21 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,12 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = OrchestrationServiceApplication.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@PropertySource(value = "classpath:application.yml")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@AutoConfigureMockMvc
-public class SaveDraftITest {
+public class SaveDraftITest extends MockedFunctionalTest {
     private static final String API_URL = "/draftsapi/version/1";
     private static final String CMS_CONTEXT_PATH = "/casemaintenance/version/1/drafts?divorceFormat=true";
 
@@ -44,17 +31,9 @@ public class SaveDraftITest {
 
     private static final Map<String, String> CASE_DATA = new HashMap<>();
     private static final Map<String, Object> CASE_DETAILS = new HashMap<>();
-    private static final String EMAIL_CONTEXT_PATH = "https://api.notifications.service.gov.uk";
-
 
     @Autowired
     private MockMvc webClient;
-
-    @ClassRule
-    public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
-
-    @ClassRule
-    public static WireMockClassRule emailServiceServer = new WireMockClassRule(9999);
 
     @Test
     public void givenJWTTokenIsNull_whenSaveDraft_thenReturnBadRequest()
@@ -91,8 +70,6 @@ public class SaveDraftITest {
 
         stubCmsServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DETAILS));
 
-        stubEmailServerEndpoint(HttpStatus.OK, "Success");
-
         webClient.perform(put(API_URL)
                 .content(convertObjectToJsonString(CASE_DETAILS))
                 .header(AUTHORIZATION, USER_TOKEN)
@@ -102,20 +79,11 @@ public class SaveDraftITest {
     }
 
     private void stubCmsServerEndpoint(HttpStatus status, String body) {
-        cmsServiceServer.stubFor(WireMock.put(CMS_CONTEXT_PATH)
+        maintenanceServiceServer.stubFor(WireMock.put(CMS_CONTEXT_PATH)
                 .willReturn(aResponse()
                         .withStatus(status.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                         .withBody(body)));
     }
-
-    private void stubEmailServerEndpoint(HttpStatus status, String body) {
-        emailServiceServer.stubFor(WireMock.put(EMAIL_CONTEXT_PATH)
-                .willReturn(aResponse()
-                        .withStatus(status.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(body)));
-    }
-
 }
 

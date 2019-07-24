@@ -5,8 +5,6 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
@@ -40,9 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-public class DecreeNisiAboutToBeGrantedTest {
+public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/dn-about-to-be-granted";
     private static final String CCD_RESPONSE_DATA_FIELD = "data";
