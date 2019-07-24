@@ -7,8 +7,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiAnswersGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DnSubmittedEmailNotificationTask;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -18,20 +22,36 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class DNSubmittedWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
-    private DnSubmittedEmailNotificationTask genericEmailNotification;
+    private DnSubmittedEmailNotificationTask emailNotificationTask;
+    private final DecreeNisiAnswersGeneratorTask decreeNisiAnswersGenerator;
+    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
+
+    @Autowired
+    public DNSubmittedWorkflow(DnSubmittedEmailNotificationTask emailNotificationTask,
+                               DecreeNisiAnswersGeneratorTask decreeNisiAnswersGenerator,
+                               CaseFormatterAddDocuments caseFormatterAddDocuments) {
+        this.emailNotificationTask = emailNotificationTask;
+        this.decreeNisiAnswersGenerator = decreeNisiAnswersGenerator;
+        this.caseFormatterAddDocuments = caseFormatterAddDocuments;
+    }
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,
                                    String authToken) throws WorkflowException {
 
-        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        final List<Task> tasks = new ArrayList<>();
 
+        tasks.add(emailNotificationTask);
+        tasks.add(decreeNisiAnswersGenerator);
+        tasks.add(caseFormatterAddDocuments);
+
+        Task[] taskArr = new Task[tasks.size()];
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         return this.execute(
-                new Task[] {
-                    genericEmailNotification
-                },
-                ccdCallbackRequest.getCaseDetails().getCaseData(),
-                ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-                ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
+            tasks.toArray(taskArr),
+            ccdCallbackRequest.getCaseDetails().getCaseData(),
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
         );
     }
 
