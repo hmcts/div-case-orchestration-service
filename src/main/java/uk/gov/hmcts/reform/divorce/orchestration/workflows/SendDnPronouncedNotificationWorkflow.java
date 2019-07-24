@@ -34,8 +34,6 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
-        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-
         List<Task> tasks = new ArrayList<>();
 
         tasks.add(sendPetitionerGenericUpdateNotificationEmail);
@@ -44,6 +42,8 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         if (isCoRespondentLiableForCosts(ccdCallbackRequest.getCaseDetails().getCaseData())) {
             tasks.add(sendCoRespondentGenericUpdateNotificationEmail);
         }
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
         return this.execute(
             tasks.toArray(new Task[tasks.size()]),
