@@ -75,6 +75,14 @@ public interface CosApiClient {
     );
 
     @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/da-requested-by-applicant"
+    )
+    Map<String, Object> notifyRespondentOfDARequested(@RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
+
+    @RequestMapping(
         method = RequestMethod.GET,
         value = "/draftsapi/version/1",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE

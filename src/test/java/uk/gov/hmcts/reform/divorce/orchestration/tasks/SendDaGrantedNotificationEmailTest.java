@@ -21,7 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CUSTOMER_FACING_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECREE_ABSOLUTE_GRANTED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE;
@@ -31,10 +31,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.UNFORMATTED_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
@@ -64,14 +62,14 @@ public class SendDaGrantedNotificationEmailTest {
     @Before
     public void setup() {
         context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
+        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
 
         testData = new HashMap<>();
-        testData.put(D_8_CASE_REFERENCE, D8_CASE_ID);
+        testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         testData.put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE);
 
         expectedPetitionerTemplateVars = new HashMap<>();
-        expectedPetitionerTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID);
+        expectedPetitionerTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_ID);
         expectedPetitionerTemplateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, TEST_PETITIONER_EMAIL);
         expectedPetitionerTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME);
         expectedPetitionerTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME);
@@ -79,7 +77,7 @@ public class SendDaGrantedNotificationEmailTest {
             TEST_CUSTOMER_FACING_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE);
 
         expectedRespondentTemplateVars = new HashMap<>();
-        expectedRespondentTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID);
+        expectedRespondentTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_ID);
         expectedRespondentTemplateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, TEST_RESPONDENT_EMAIL);
         expectedRespondentTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_RESPONDENT_FIRST_NAME);
         expectedRespondentTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_RESPONDENT_LAST_NAME);
@@ -103,7 +101,7 @@ public class SendDaGrantedNotificationEmailTest {
 
     @Test
     public void shouldCallEmailServiceForDaNotificationIfEmailsOnlyOnceIfOnlyOneEmailIsPresent() throws TaskException {
-        testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
+        testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         testData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
@@ -128,7 +126,7 @@ public class SendDaGrantedNotificationEmailTest {
 
     @Test
     public void shouldCallEmailServiceForDaNotificationEmails() throws TaskException {
-        testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
+        testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         testData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
