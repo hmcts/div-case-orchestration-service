@@ -24,7 +24,7 @@ import javax.annotation.PostConstruct;
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
     private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER";
-    private static final String EMAIL_DOMAIN = "@notifications.service.gov.uk";
+    private static final String EMAIL_DOMAIN = "@mailinator.com";
     private static final String CASE_WORKER_PASSWORD = "genericPassword123";
     private static final String CITIZEN_ROLE = "citizen";
     private static final String CASEWORKER_DIVORCE_ROLE = "caseworker-divorce";
@@ -92,21 +92,21 @@ public abstract class IntegrationTest {
 
     protected UserDetails createCitizenUser() {
         return wrapInRetry(() -> {
-            final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
+            final String username = "simulate-delivered" + UUID.randomUUID() + EMAIL_DOMAIN;
             return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, CITIZEN_ROLE);
         });
     }
 
     protected UserDetails createCitizenUser(String role) {
         return wrapInRetry(() -> {
-            final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
+            final String username = "simulate-delivered" + UUID.randomUUID() + EMAIL_DOMAIN;
             return getUserDetails(username, PASSWORD, CITIZEN_USERGROUP, role);
         });
     }
 
     protected UserDetails createSolicitorUser() {
         return wrapInRetry(() -> {
-            final String username = "simulate-delivered" + UUID.randomUUID() + "@notifications.service.gov.uk";
+            final String username = "simulate-delivered" + UUID.randomUUID() + EMAIL_DOMAIN;
             return getUserDetails(username, PASSWORD, CASEWORKER_USERGROUP,
                     CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_SOLICITOR_ROLE
             );
