@@ -23,7 +23,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -322,6 +321,8 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
 
     @Test
     public void givenErrorUpdatingRespondentDetails_whenLinkRespondent_thenNoChangesAreDone() throws Exception {
+        stubSignInForCaseworker();
+        stubRetrieveCaseByIdFromCMS(OK, convertObjectToJsonString(CASE_DETAILS_NO_AOS));
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
         stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
@@ -336,7 +337,7 @@ public abstract class LinkRespondentIdamITest extends IdamTestSupport {
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE))
             .andExpect(status().is5xxServerError());
 
-        verify(deleteRequestedFor(urlEqualTo(UNLINK_USER_CONTEXT_PATH)));
+        maintenanceServiceServer.verify(deleteRequestedFor(urlEqualTo(UNLINK_USER_CONTEXT_PATH)));
     }
 
     private void stubMaintenanceServerEndpointForLinkRespondent(HttpStatus status) {
