@@ -46,7 +46,6 @@ public class SendRespondentSolicitorAosInvitationEmail implements Task<Map<Strin
 
         Map<String, String> templateVars = new HashMap<>();
 
-        String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
         templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, (String) payload.get(D_8_CASE_REFERENCE));
         String solicitorName = (String) payload.get(D8_RESPONDENT_SOLICITOR_NAME);
         if (Strings.isNullOrEmpty(solicitorName)) {
@@ -56,6 +55,7 @@ public class SendRespondentSolicitorAosInvitationEmail implements Task<Map<Strin
         templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, (String) payload.get(RESP_FIRST_NAME_CCD_FIELD));
         templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) payload.get(RESP_LAST_NAME_CCD_FIELD));
         templateVars.put(ACCESS_CODE, context.getTransientObject(RESPONDENT_PIN));
+        String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
         templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, formatCaseIdToReferenceNumber(caseId));
 
         try {
