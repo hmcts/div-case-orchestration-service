@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithId;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorLinkedField;
@@ -45,7 +45,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     private static final String RESPONDENT_SOLICITOR_PIN = "RespondentSolicitorPin";
 
     @Mock
-    private GetCaseWithId getCaseWithId;
+    private GetCaseWithIdTask getCaseWithId;
 
     @Mock
     private ValidateExistingSolicitorLink validateExistingSolicitorLink;

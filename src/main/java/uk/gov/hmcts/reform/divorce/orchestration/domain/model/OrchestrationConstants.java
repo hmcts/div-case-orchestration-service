@@ -15,6 +15,7 @@ public class OrchestrationConstants {
     // Task context properties
     public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String DN_COURT_DETAILS = "dnCourtDetails";
+    public static final String BULK_LINK_CASE_ID =  "bulkLinkCaseId";
 
     // Authentication
     public static final String ACCESS_CODE = "access_code";
@@ -254,6 +255,8 @@ public class OrchestrationConstants {
     public static final String DECREE_NISI_DOCUMENT_TYPE = "dnGranted";
     public static final String DECREE_NISI_FILENAME = "decreeNisi";
     public static final String DECREE_NISI_TEMPLATE_ID = "FL-DIV-GNO-ENG-00021.docx";
+    public static final String DOCUMENT_TYPE_DN_ANSWERS = "dnAnswers";
+    public static final String DN_ANSWERS_TEMPLATE_ID = "FL-DIV-GNO-ENG-00022.docx";
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
     public static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";

@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCED_WHO;
@@ -73,37 +74,35 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
         String eventId = context.getTransientObject(CASE_EVENT_ID_JSON_KEY);
-        String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
-        String petSolicitorEmail = (String) caseData.get(PET_SOL_EMAIL);
+        String petEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
+        String petSolEmail = (String) caseData.get(PET_SOL_EMAIL);
 
         String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
 
-        String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
-
         Map<String, String> templateVars = new HashMap<>();
-        templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, ccdReference);
 
-        if (StringUtils.isNotBlank(petSolicitorEmail)) {
-
+        if (StringUtils.isNotBlank(petSolEmail)) {
             String respFirstName = getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD);
             String respLastName = getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD);
             String solicitorName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
 
-            templateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
+            templateVars.put(NOTIFICATION_EMAIL, petSolEmail);
+            templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, context.getTransientObject(CASE_ID_JSON_KEY));
             templateVars.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
             templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
             templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
 
-            sendSolicitorEmail(petSolicitorEmail, eventId, templateVars);
-        } else if (StringUtils.isNotBlank(petitionerEmail)) {
+            sendSolicitorEmail(petSolEmail, eventId, templateVars);
+        } else if (StringUtils.isNotBlank(petEmail)) {
             String relationship = getMandatoryPropertyValueAsString(caseData, D_8_DIVORCED_WHO);
-            templateVars.put(NOTIFICATION_EMAIL, petitionerEmail);
+            templateVars.put(NOTIFICATION_EMAIL, petEmail);
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
             templateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
+            templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE));
 
-            sendPetitionerEmail(caseData, petitionerEmail, eventId, templateVars);
+            sendPetitionerEmail(caseData, petEmail, eventId, templateVars);
         }
         return caseData;
     }
