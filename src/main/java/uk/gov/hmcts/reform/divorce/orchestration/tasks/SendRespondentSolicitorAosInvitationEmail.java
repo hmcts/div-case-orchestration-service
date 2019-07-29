@@ -49,7 +49,7 @@ public class SendRespondentSolicitorAosInvitationEmail implements Task<Map<Strin
         String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
         templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, (String) payload.get(D_8_CASE_REFERENCE));
         String solicitorName = (String) payload.get(D8_RESPONDENT_SOLICITOR_NAME);
-        if(Strings.isNullOrEmpty(solicitorName)) {
+        if (Strings.isNullOrEmpty(solicitorName)) {
             solicitorName = sirMadam;
         }
         templateVars.put(SOLICITORS_NAME, solicitorName);
