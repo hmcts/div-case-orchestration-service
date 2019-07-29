@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,6 +32,7 @@ public class SendRespondentSolicitorAosInvitationEmail implements Task<Map<Strin
     private static final String ACCESS_CODE = "access code";
     private static final String SOLICITORS_NAME = "solicitors name";
     private static final String RESPONDENT_SOLICITOR_S_AOS_INVITATION = "Respondent solicitor's AOS invitation";
+    private static final String sirMadam = "Sir/Madam";
 
     private final TaskCommons taskCommons;
 
@@ -44,12 +46,16 @@ public class SendRespondentSolicitorAosInvitationEmail implements Task<Map<Strin
 
         Map<String, String> templateVars = new HashMap<>();
 
-        String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
         templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, (String) payload.get(D_8_CASE_REFERENCE));
-        templateVars.put(SOLICITORS_NAME, (String) payload.get(D8_RESPONDENT_SOLICITOR_NAME));
+        String solicitorName = (String) payload.get(D8_RESPONDENT_SOLICITOR_NAME);
+        if (Strings.isNullOrEmpty(solicitorName)) {
+            solicitorName = sirMadam;
+        }
+        templateVars.put(SOLICITORS_NAME, solicitorName);
         templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, (String) payload.get(RESP_FIRST_NAME_CCD_FIELD));
         templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) payload.get(RESP_LAST_NAME_CCD_FIELD));
         templateVars.put(ACCESS_CODE, context.getTransientObject(RESPONDENT_PIN));
+        String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
         templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, formatCaseIdToReferenceNumber(caseId));
 
         try {
