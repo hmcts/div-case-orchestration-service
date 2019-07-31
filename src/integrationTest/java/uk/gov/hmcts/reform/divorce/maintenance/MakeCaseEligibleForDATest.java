@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
-import io.restassured.internal.MapCreator;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -10,12 +9,13 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.support.cms.CmsClientSupport;
 import uk.gov.hmcts.reform.divorce.support.cos.RetrieveCaseSupport;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
@@ -57,6 +57,9 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
 
     @Value("${case_maintenance.api.url}")
     private String cmsBaseUrl;
+
+    @Autowired
+    private CmsClientSupport cmsClientSupport;
 
     @Test
     public void givenCaseIsInDNPronounced_WhenMakeCaseEligibleForDAIsCalled_CaseStateIsAwaitingDecreeAbsolute() {
@@ -100,23 +103,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
         SearchSourceBuilder searchSourceBuilder =
                             buildCMSBooleanSearchSource(0, 10, caseIdFilter, stateFilter);
 
-
-        Response resp = postToCMS(searchSourceBuilder.toString(), authToken);
-        SearchResult searchResult = resp.body().as(SearchResult.class);
-        return searchResult.getCases();
-    }
-
-    private Response postToCMS(String searchQuery, String authToken) {
-
-        final String searchUrl = cmsBaseUrl + CMS_URL_SEARCH;
-        log.debug("About to call {}, auth token [{}]", searchUrl, authToken);
-
-        return RestUtil.postToRestService(searchUrl,
-                buildCommonHeaders(HttpHeaders.AUTHORIZATION, authToken,
-                                    HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString()),
-                searchQuery,
-                emptyMap());
-
+        return cmsClientSupport.searchCases(searchSourceBuilder.toString(), authToken);
     }
 
     private void assertCaseStateIsAsExpected(final String expectedState, final String authToken) {
@@ -146,11 +133,5 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
         );
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
-    }
-
-    private Map<String, Object> buildCommonHeaders(String firstHeaderName, Object firstHeaderValue,
-                                                   Object ... headValuePairs) {
-        return MapCreator.createMapFromParams(MapCreator.CollisionStrategy.MERGE,
-                                                firstHeaderName, firstHeaderValue, headValuePairs);
     }
 }
