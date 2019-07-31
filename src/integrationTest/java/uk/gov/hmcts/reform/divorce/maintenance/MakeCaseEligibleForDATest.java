@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static java.util.Collections.emptyMap;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
@@ -31,10 +32,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DA;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_PRONOUNCED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ES_CASE_ID_KEY;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.SearchSourceFactory.buildCMSBooleanSearchSource;
 
@@ -93,7 +94,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
 
     private List<CaseDetails> searchCasesWithElasticSearch(final String caseId, final String authToken) {
 
-        QueryBuilder caseIdFilter = QueryBuilders.matchQuery(CASE_ID_JSON_KEY, caseId);
+        QueryBuilder caseIdFilter = QueryBuilders.matchQuery(ES_CASE_ID_KEY, caseId);
         QueryBuilder stateFilter = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, DN_PRONOUNCED);
 
         SearchSourceBuilder searchSourceBuilder =
@@ -119,11 +120,13 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
     }
 
     private void assertCaseStateIsAsExpected(final String expectedState, final String authToken) {
-        await().pollInterval(3, SECONDS).atMost(20, SECONDS).untilAsserted(() -> {
+        await().pollInterval(fibonacci(SECONDS)).atMost(55, SECONDS).untilAsserted(() -> {
             final Response retrievedCase = retrieveCase(authToken);
-            log.debug("Retrived case {} with state {}",
+            log.debug("Retrieved case {} with state {}",
                         retrievedCase.path("caseId"), retrievedCase.path("state"));
-            assertThat(retrievedCase.path(STATE_KEY), equalTo(expectedState));
+            String msgForFailedAssertion = format("Case %s was not in expected state %s",
+                                                            retrievedCase.path("caseId"), expectedState);
+            assertThat(msgForFailedAssertion, retrievedCase.path(STATE_KEY), equalTo(expectedState));
         });
     }
 
