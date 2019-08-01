@@ -327,4 +327,7 @@ public class OrchestrationConstants {
         = "uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkPrinter_Error";
     public static final String EMAIL_ERROR_KEY
         = "uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification_Error";
+
+    // Elastic Search
+    public static final String ES_CASE_ID_KEY = "reference";
 }
