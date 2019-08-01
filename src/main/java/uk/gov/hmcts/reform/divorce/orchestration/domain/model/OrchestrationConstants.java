@@ -104,6 +104,7 @@ public class OrchestrationConstants {
 
     //CCD DN fields
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
+    public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
@@ -136,6 +137,7 @@ public class OrchestrationConstants {
     public static final String DN_AWAITING = "DNAwaiting";
     public static final String DN_PRONOUNCED = "DNPronounced";
     public static final String AWAITING_DA = "AwaitingDecreeAbsolute";
+    public static final String DN_REFUSED = "DNisRefused";
     public static final String DA_REQUESTED = "DARequested";
     public static final String DIVROCE_GRANTED = "DivorceGranted";
 

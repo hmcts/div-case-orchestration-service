@@ -21,7 +21,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -33,8 +35,12 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PRONOUNCEMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeNisiAboutToBeGrantedWorkflow.DN_REFUSED_REJECT_OPTION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DecreeNisiAboutToBeGrantedWorkflowTest {
@@ -146,5 +152,26 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         verify(addDecreeNisiDecisionDateTask, never()).execute(any(), any());
         verify(addDnOutcomeFlagFieldTask, never()).execute(any(), any());
     }
+
+    @Test
+    public void givenDNRefused_thenReturnDNRejectedState() throws WorkflowException, TaskException {
+        inputPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
+        inputPayload.put(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
+
+        Map<String, Object> payloadReturnedByTask = new HashMap<>(inputPayload);
+        payloadReturnedByTask.put("addedKey", "addedValue");
+        when(validateDNDecisionTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
+        when(addDecreeNisiDecisionDateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(payloadReturnedByTask);
+
+        Map<String, Object> returnedPayload = workflow.run(CaseDetails.builder().caseData(inputPayload).build());
+
+        assertThat(returnedPayload, allOf(
+            hasEntry(equalTo("addedKey"), equalTo("addedValue")),
+            hasEntry(equalTo(DECREE_NISI_GRANTED_CCD_FIELD), equalTo(NO_VALUE)),
+            hasEntry(equalTo(STATE_CCD_FIELD), equalTo(DN_REFUSED)),
+            not(hasKey(WHO_PAYS_COSTS_CCD_FIELD))
+        ));
+    }
+
 
 }
