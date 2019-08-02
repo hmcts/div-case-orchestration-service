@@ -216,6 +216,8 @@ public class OrchestrationConstants {
     public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
+    public static final String RESPONDENT_EMAIL_CONSENT = "RespConsentToEmail";
+    public static final String SEND_VIA_EMAIL_POST = "SendViaEmailOrPost";
 
     // Court Data Keys
     public static final String DIVORCE_CENTRE_SITEID_JSON_KEY = "D8SelectedDivorceCentreSiteId";

@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -164,6 +166,23 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 ccdCallbackRequest.getCaseDetails().getCaseId());
             return issueEventWorkflow.errors();
         }
+    }
+
+    @Override
+    public Map<String, Object> ccdCallbackConfirmPersonalService(CcdCallbackRequest ccdCallbackRequest, String authToken)
+        throws WorkflowException {
+
+        Map<String, Object> payLoad = ccdCallbackRequest.getCaseDetails().getCaseData();
+        String sendViaEmailOrPost = (String)payLoad.get(OrchestrationConstants.SEND_VIA_EMAIL_POST);
+        if (StringUtils.equalsIgnoreCase(sendViaEmailOrPost, "Email")) {
+            String respEmailAddress = (String)payLoad.get(OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS);
+            String respConsentToFact = (String)payLoad.get(OrchestrationConstants.RESPONDENT_EMAIL_CONSENT);
+            payLoad.put(OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, respEmailAddress);
+            payLoad.put(OrchestrationConstants.RESPONDENT_EMAIL_CONSENT, respConsentToFact);
+        } else if (StringUtils.equalsIgnoreCase(sendViaEmailOrPost, "Post")) {
+            payLoad = ccdCallbackBulkPrintHandler(ccdCallbackRequest, authToken);
+        }
+        return payLoad;
     }
 
     @Override
