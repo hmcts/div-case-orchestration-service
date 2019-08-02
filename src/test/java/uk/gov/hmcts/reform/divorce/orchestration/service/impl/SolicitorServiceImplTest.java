@@ -5,9 +5,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssuePersonalServicePackWorkflow;
-
-import java.util.Collections;
 
 import static org.mockito.Mockito.verify;
 
@@ -21,10 +22,13 @@ public class SolicitorServiceImplTest {
     SolicitorServiceImpl solicitorService;
 
     @Test
-    public void testIssuePersonalServicePack() {
+    public void testIssuePersonalServicePack() throws WorkflowException {
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .build();
 
-        solicitorService.issuePersonalServicePack(Collections.emptyMap(), "token", "123");
+        solicitorService.issuePersonalServicePack(request, "token");
 
-        verify(issuePersonalServicePack).run();
+        verify(issuePersonalServicePack).run(request, "token");
     }
 }

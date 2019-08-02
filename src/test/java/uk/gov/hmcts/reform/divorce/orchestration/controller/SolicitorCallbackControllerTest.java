@@ -7,17 +7,20 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.SolicitorService;
 
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorCallbackControllerTest {
@@ -29,19 +32,20 @@ public class SolicitorCallbackControllerTest {
     SolicitorCallbackController classUnderTest;
 
     @Test
-    public void whenSubmitDa_thenProceedAsExpected() throws WorkflowException {
-        final Map<String, Object> divorceSession = Collections.emptyMap();
+    public void whenIssuePersonalServicePack_thenProceedAsExpected() throws WorkflowException {
+        final Map<String, Object> divorceSession = Collections.singletonMap("key", "value");
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder().caseData(divorceSession).build())
+                .build();
 
-        when(solicitorService.issuePersonalServicePack(divorceSession, AUTH_TOKEN, TEST_CASE_ID))
+        when(solicitorService.issuePersonalServicePack(request, AUTH_TOKEN))
                 .thenReturn(divorceSession);
 
-        ResponseEntity<Map<String, Object>> response = classUnderTest.issuePersonalServicePack(
-                AUTH_TOKEN, TEST_CASE_ID, divorceSession
-        );
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.issuePersonalServicePack(AUTH_TOKEN, request);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(divorceSession, response.getBody());
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(divorceSession));
 
-        verify(solicitorService).issuePersonalServicePack(divorceSession, AUTH_TOKEN, TEST_CASE_ID);
+        verify(solicitorService).issuePersonalServicePack(request, AUTH_TOKEN);
     }
 }
