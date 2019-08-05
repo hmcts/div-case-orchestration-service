@@ -173,13 +173,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         throws WorkflowException {
 
         Map<String, Object> payLoad = ccdCallbackRequest.getCaseDetails().getCaseData();
-        String sendViaEmailOrPost = (String)payLoad.get(OrchestrationConstants.SEND_VIA_EMAIL_POST);
-        if (StringUtils.equalsIgnoreCase(sendViaEmailOrPost, "Email")) {
-            String respEmailAddress = (String)payLoad.get(OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS);
-            String respConsentToFact = (String)payLoad.get(OrchestrationConstants.RESPONDENT_EMAIL_CONSENT);
-            payLoad.put(OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, respEmailAddress);
-            payLoad.put(OrchestrationConstants.RESPONDENT_EMAIL_CONSENT, respConsentToFact);
-        } else if (StringUtils.equalsIgnoreCase(sendViaEmailOrPost, "Post")) {
+        String sendViaEmailOrPost = (String)payLoad.get(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST);
+        if (StringUtils.equalsIgnoreCase(sendViaEmailOrPost, OrchestrationConstants.SEND_VIA_POST)) {
+            log.info("Confirm personal service callback for case with CASE ID: {} calling bulk print service",
+                ccdCallbackRequest.getCaseDetails().getCaseId());
             payLoad = ccdCallbackBulkPrintHandler(ccdCallbackRequest, authToken);
         }
         return payLoad;

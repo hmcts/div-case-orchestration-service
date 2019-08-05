@@ -217,7 +217,8 @@ public class OrchestrationConstants {
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
     public static final String RESPONDENT_EMAIL_CONSENT = "RespConsentToEmail";
-    public static final String SEND_VIA_EMAIL_POST = "SendViaEmailOrPost";
+    public static final String SEND_VIA_EMAIL_OR_POST = "SendViaEmailOrPost";
+    public static final String SEND_VIA_POST = "Post";
 
     // Court Data Keys
     public static final String DIVORCE_CENTRE_SITEID_JSON_KEY = "D8SelectedDivorceCentreSiteId";

@@ -256,6 +256,54 @@ public class CallbackControllerTest {
         assertEquals(expected, actual.getBody());
     }
 
+
+    @Test
+    public void givenNoErrors_whenConfirmServiceCalled_thenCallbackWorksAsExpected() throws WorkflowException {
+        final Map<String, Object> caseData = new HashMap<>();
+        Document document = new Document();
+        DocumentLink documentLink = new DocumentLink();
+        documentLink.setDocumentUrl("http://document.pdf");
+        documentLink.setDocumentFilename("document.pdf");
+        document.setDocumentLink(documentLink);
+        document.setDocumentType("IssuePetition");
+        CollectionMember<Document> issuePdf = new CollectionMember<>();
+        issuePdf.setValue(document);
+        List<CollectionMember<Document>> documents = new ArrayList<>();
+        caseData.put("DocumentGenerated", documents);
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+
+        CcdCallbackResponse expected =
+            CcdCallbackResponse.builder().errors(Collections.emptyList()).warnings(Collections.emptyList())
+                .data(Collections.emptyMap()).build();
+
+        when(caseOrchestrationService.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(Collections.emptyMap());
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.confirmPersonalService(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertEquals(OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldReturnOkResponse_WithErrors_whenConfirmServiceCalled_thenExceptionIsCaught() throws WorkflowException {
+        final Map<String, Object> incomingPayload = new HashMap<>();
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(incomingPayload)
+                .build())
+            .build();
+        String errorString = "Unable to bulk print the documents";
+        when(caseOrchestrationService.ccdCallbackConfirmPersonalService(incomingRequest, AUTH_TOKEN))
+            .thenThrow(new WorkflowException(errorString));
+
+        classUnderTest.confirmPersonalService(AUTH_TOKEN, incomingRequest);
+    }
+
     @Test
     public void givenNoErrors_whenBulkPrintIssued_thenCallbackWorksAsExpected() throws WorkflowException {
         final Map<String, Object> caseData = new HashMap<>();
