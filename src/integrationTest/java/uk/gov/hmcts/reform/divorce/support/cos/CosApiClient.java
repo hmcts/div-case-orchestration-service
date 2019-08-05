@@ -79,7 +79,7 @@ public interface CosApiClient {
         value = "/da-requested-by-applicant"
     )
     Map<String, Object> notifyRespondentOfDARequested(@RequestHeader(AUTHORIZATION) String authorisation,
-        @RequestBody CcdCallbackRequest ccdCallbackRequest
+                                                      @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
     @RequestMapping(
@@ -163,9 +163,10 @@ public interface CosApiClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/issue-aos-pack-offline/party/respondent"
+        value = "/issue-aos-pack-offline/party/{party}"
     )
-    Map<String, Object> issueAosPackOfflineForRespondent(@RequestHeader(AUTHORIZATION) String authorisation,
-                                                         @RequestBody CcdCallbackRequest ccdCallbackRequest);
+    Map<String, Object> issueAosPackOffline(@RequestHeader(AUTHORIZATION) String authorisation,
+                                            @PathVariable("party") String party,
+                                            @RequestBody CcdCallbackRequest ccdCallbackRequest);
 
 }

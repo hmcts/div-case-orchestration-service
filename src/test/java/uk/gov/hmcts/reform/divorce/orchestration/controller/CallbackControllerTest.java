@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosPackOfflineService;
@@ -858,27 +859,54 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void testIssueAosOffline_callsRightService() throws CaseOrchestrationServiceException {
-        when(aosPackOfflineService.issueAosPackOffline(any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+    public void testIssueAosOffline_ForRespondent_callsRightService() throws CaseOrchestrationServiceException {
+        when(aosPackOfflineService.issueAosPackOffline(any(), any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.issueAosPackOffline(AUTH_TOKEN, ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.issueAosPackOffline(AUTH_TOKEN, ccdCallbackRequest, "respondent");
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
-        verify(aosPackOfflineService).issueAosPackOffline(eq(AUTH_TOKEN), eq(caseDetails));
+        verify(aosPackOfflineService).issueAosPackOffline(eq(AUTH_TOKEN), eq(caseDetails), eq(DivorceParty.RESPONDENT));
+    }
+
+    @Test
+    public void testIssueAosOffline_ForCoRespondent_callsRightService() throws CaseOrchestrationServiceException {
+        when(aosPackOfflineService.issueAosPackOffline(any(), any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.issueAosPackOffline(AUTH_TOKEN, ccdCallbackRequest, "co-respondent");
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+        verify(aosPackOfflineService).issueAosPackOffline(eq(AUTH_TOKEN), eq(caseDetails), eq(DivorceParty.CO_RESPONDENT));
+    }
+
+    @Test
+    public void testIssueAosOffline_returnsErrors_whenDivorcePartyCannotBeFound() {
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        String party = "unrecognised party";
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.issueAosPackOffline(AUTH_TOKEN, ccdCallbackRequest, party);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), hasItem(equalTo("Could not find divorce party with the given description: " + party)));
+        assertThat(response.getBody().getData(), is(nullValue()));
     }
 
     @Test
     public void testIssueAosOffline_returnsErrors_whenServiceThrowsException() throws CaseOrchestrationServiceException {
-        when(aosPackOfflineService.issueAosPackOffline(any(), any()))
+        when(aosPackOfflineService.issueAosPackOffline(any(), any(), any()))
             .thenThrow(new CaseOrchestrationServiceException(new RuntimeException("Error message")));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.issueAosPackOffline(AUTH_TOKEN, ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.issueAosPackOffline(AUTH_TOKEN, ccdCallbackRequest, "respondent");
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getErrors(), hasItem(equalTo("Error message")));
