@@ -38,10 +38,11 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
         List<Task> tasksToRun = new ArrayList<>();
 
         Map<String, Object> caseData = caseDetails.getCaseData();
-        Object decreeNisiGranted = caseData.get(DECREE_NISI_GRANTED_CCD_FIELD);
         tasksToRun.add(setDNDecisionStateTask);
         tasksToRun.add(validateDNDecisionTask);
         tasksToRun.add(addDecreeNisiDecisionDateTask);
+        Object decreeNisiGranted = caseData.get(DECREE_NISI_GRANTED_CCD_FIELD);
+
         if (YES_VALUE.equals(decreeNisiGranted)) {
             tasksToRun.add(addDnOutcomeFlagFieldTask);
             Object costsClaimGranted = caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD);

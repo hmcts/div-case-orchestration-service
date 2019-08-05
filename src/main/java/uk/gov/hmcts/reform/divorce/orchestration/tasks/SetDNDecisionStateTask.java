@@ -47,7 +47,7 @@ public class SetDNDecisionStateTask implements Task<Map<String, Object>> {
     }
 
     private boolean isDnRejected(Map<String, Object> caseData) {
-       return DN_REFUSED_REJECT_OPTION.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD));
+        return DN_REFUSED_REJECT_OPTION.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD));
     }
 
     private boolean isDnGranted(Map<String, Object> caseData) {

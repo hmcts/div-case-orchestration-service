@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 
-import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import javax.validation.constraints.NotNull;
 
 @Service
 @ConfigurationProperties(prefix = "feature-toggle")
