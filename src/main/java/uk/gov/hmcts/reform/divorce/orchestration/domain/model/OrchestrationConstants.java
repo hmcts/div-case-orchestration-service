@@ -50,6 +50,7 @@ public class OrchestrationConstants {
     public static final String D_8_CO_RESPONDENT_NAMED = "D8ReasonForDivorceAdulteryWishToName";
     public static final String D_8_CO_RESPONDENT_NAMED_OLD = "D8ReasonForDivorceAdulteryIsNamed";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
+    public static final String CCD_CASE_ID = "id";
     public static final String NOT_RECEIVED_AOS_EVENT_ID = "aosNotReceived";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID = "co-RespAOSReceivedAwaiting";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_STARTED_EVENT_ID = "co-RespAOSReceivedStarted";
