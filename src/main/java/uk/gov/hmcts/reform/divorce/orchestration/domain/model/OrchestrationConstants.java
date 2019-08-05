@@ -260,6 +260,9 @@ public class OrchestrationConstants {
     public static final String AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-resp";
     public static final String AOS_INVITATION_LETTER_FILENAME = "aos-invitation-letter-offline-respondent";
     public static final String AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00070.docx";
+    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";
+    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
+    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "solicitorPersonalService";
 
     public static final String SOL_DOCUMENT_LINK_FIELD = "solDocumentLinkFieldName";
     public static final String MINI_PETITION_LINK = "minipetitionlink";

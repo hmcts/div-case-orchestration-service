@@ -152,4 +152,13 @@ public interface CosApiClient {
                                      @RequestBody Map<String, Object> caseData,
                                      @PathVariable("caseId") String caseId
     );
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/personal-service-pack"
+    )
+    CcdCallbackResponse processPersonalServicePack(
+            @RequestHeader(AUTHORIZATION) String authorisation,
+            @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
 }

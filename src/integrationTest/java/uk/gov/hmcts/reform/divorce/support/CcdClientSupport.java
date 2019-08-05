@@ -136,10 +136,6 @@ public class CcdClientSupport {
             caseDataContent);
     }
 
-    public CaseDetails update(String caseId, Object data, String eventId, UserDetails userDetails) {
-        return update(caseId, data, eventId, userDetails, false);
-    }
-
     CaseDetails update(String caseId, Object data, String eventId, UserDetails userDetails, boolean isBulkType) {
         final String serviceToken = authTokenGenerator.generate();
 
