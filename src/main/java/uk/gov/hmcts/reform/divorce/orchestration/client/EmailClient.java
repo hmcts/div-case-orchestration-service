@@ -9,7 +9,7 @@ import uk.gov.service.notify.NotificationClient;
 public class EmailClient extends NotificationClient {
 
     @Autowired
-    public EmailClient(@Value("${uk.gov.notify.api.key}") String apiKey) {
-        super(apiKey);
+    public EmailClient(@Value("${uk.gov.notify.api.key}") String apiKey, @Value("${uk.gov.notify.api.baseUrl}") final String baseUrl) {
+        super(apiKey, baseUrl);
     }
 }
