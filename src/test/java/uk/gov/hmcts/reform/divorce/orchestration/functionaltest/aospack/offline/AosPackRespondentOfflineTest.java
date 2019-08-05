@@ -18,17 +18,26 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
+import java.util.Map;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.AllOf.allOf;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_INVITATION_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_INVITATION_LETTER_FILENAME;
@@ -44,13 +53,18 @@ public class AosPackRespondentOfflineTest {
 
     private static final String API_URL = "/issue-aos-pack-offline/party/respondent";
     private static final String USER_TOKEN = "anytoken";
+
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
+    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
 
     @Autowired
     private MockMvc webClient;
 
     @ClassRule
     public static WireMockClassRule documentGeneratorServer = new WireMockClassRule(4007);
+
+    @ClassRule
+    public static WireMockClassRule formatterServiceServer = new WireMockClassRule(4011);
 
     @Test
     public void testEndpointReturnsAdequateResponse() throws Exception {
@@ -66,16 +80,26 @@ public class AosPackRespondentOfflineTest {
             .fileName(AOS_INVITATION_LETTER_FILENAME)
             .build();
         stubDocumentGeneratorServerEndpoint(documentRequest, documentInfo);
+        String filename = AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
+        stubFormatterServerEndpoint(filename);
 
         webClient.perform(post(API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .header(AUTHORIZATION, USER_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest)))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName", is(filename))
+            )));
 
-        verify(postRequestedFor(urlEqualTo(GENERATE_DOCUMENT_CONTEXT_PATH))
+        documentGeneratorServer.verify(postRequestedFor(urlEqualTo(GENERATE_DOCUMENT_CONTEXT_PATH))
             .withHeader(AUTHORIZATION, equalTo(USER_TOKEN))
             .withRequestBody(equalToJson(convertObjectToJsonString(documentRequest))));
+
+        formatterServiceServer.verify(postRequestedFor(urlEqualTo(ADD_DOCUMENTS_CONTEXT_PATH))
+            .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON))
+        );
     }
 
     private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest documentRequest, GeneratedDocumentInfo documentInfo) {
@@ -86,6 +110,20 @@ public class AosPackRespondentOfflineTest {
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(documentInfo))));
+    }
+
+    private void stubFormatterServerEndpoint(String filename) {
+        Map<String, Object> responseFromCFS = singletonMap("D8DocumentsGenerated", singletonList(singletonMap("value",
+            singletonMap("DocumentFileName", filename)
+        )));
+
+        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
+            .withRequestBody(matchingJsonPath("$.documents[0]", matchingJsonPath("documentType", equalTo(AOS_INVITATION_LETTER_DOCUMENT_TYPE))))
+            .withRequestBody(matchingJsonPath("$.documents[0]", matchingJsonPath("fileName", equalTo(filename))))
+            .willReturn(aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withBody(convertObjectToJsonString(responseFromCFS))));
     }
 
 }
