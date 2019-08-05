@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 
 import java.util.Map;
@@ -26,10 +27,14 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
     @Autowired
     private DocumentGenerationTask documentGenerationTask;
 
+    @Autowired
+    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+
     public Map<String, Object> run(String authToken, CaseDetails caseDetails) throws WorkflowException {
         return execute(
             new Task[] {
-                documentGenerationTask
+                documentGenerationTask,
+                caseFormatterAddDocuments
             },
             caseDetails.getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
@@ -38,7 +43,6 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
             ImmutablePair.of(DOCUMENT_TYPE, AOS_INVITATION_LETTER_DOCUMENT_TYPE),
             ImmutablePair.of(DOCUMENT_FILENAME, AOS_INVITATION_LETTER_FILENAME)
         );
-
     }
 
 }
