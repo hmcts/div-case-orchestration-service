@@ -96,6 +96,7 @@ feature-toggle:
   toggle:
     bulk-printer-toggle-name: "divorce_bulk_print"
     feature_resp_solicitor_details: ${FEATURE_RESP_SOLICITOR_DETAILS:false}
+    dn-refusal: ${FEATURE_DN_REFUSAL:false}
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}

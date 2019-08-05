@@ -3,15 +3,18 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDnOutcomeFlagFieldTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateDNDecisionTask;
 
 import java.util.HashMap;
@@ -21,33 +24,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PRONOUNCEMENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeNisiAboutToBeGrantedWorkflow.DN_REFUSED_REJECT_OPTION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DecreeNisiAboutToBeGrantedWorkflowTest {
 
     private static final String DECREE_NISI_GRANTED_CCD_FIELD = "DecreeNisiGranted";
     private static final String COSTS_CLAIM_GRANTED = "CostsClaimGranted";
-    private static final String STATE_CCD_FIELD = "state";
 
     @Mock
     private ValidateDNDecisionTask validateDNDecisionTask;
@@ -60,6 +53,9 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
 
     @Mock
     private  AddDnOutcomeFlagFieldTask addDnOutcomeFlagFieldTask;
+
+    @Mock
+    private SetDNDecisionStateTask setDNDecisionStateTask;
 
     @InjectMocks
     private DecreeNisiAboutToBeGrantedWorkflow workflow;
@@ -78,6 +74,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
 
         Map<String, Object> payloadReturnedByTask = new HashMap<>(inputPayload);
         payloadReturnedByTask.put("addedKey", "addedValue");
+        when(setDNDecisionStateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(validateDNDecisionTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(addDecreeNisiDecisionDateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(payloadReturnedByTask);
         when(defineWhoPaysCostsOrderTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
@@ -87,13 +84,22 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
 
         assertThat(returnedPayload, allOf(
             hasEntry(equalTo("addedKey"), equalTo("addedValue")),
-            hasEntry(equalTo(DECREE_NISI_GRANTED_CCD_FIELD), equalTo(YES_VALUE)),
-            hasEntry(equalTo(STATE_CCD_FIELD), equalTo(AWAITING_PRONOUNCEMENT))
+            hasEntry(equalTo(DECREE_NISI_GRANTED_CCD_FIELD), equalTo(YES_VALUE))
         ));
-        verify(addDecreeNisiDecisionDateTask).execute(isNotNull(), eq(inputPayload));
-        verify(defineWhoPaysCostsOrderTask).execute(isNotNull(), any());
-        verify(addDnOutcomeFlagFieldTask).execute(isNotNull(), any());
 
+        final InOrder inOrder = inOrder(
+            setDNDecisionStateTask,
+            validateDNDecisionTask,
+            addDecreeNisiDecisionDateTask,
+            defineWhoPaysCostsOrderTask,
+            addDnOutcomeFlagFieldTask
+        );
+
+        inOrder.verify(setDNDecisionStateTask).execute(any(TaskContext.class), eq(inputPayload));
+        inOrder.verify(validateDNDecisionTask).execute(any(TaskContext.class), eq(inputPayload));
+        inOrder.verify(addDecreeNisiDecisionDateTask).execute(any(TaskContext.class), eq(inputPayload));
+        inOrder.verify(addDnOutcomeFlagFieldTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
+        inOrder.verify(defineWhoPaysCostsOrderTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
     }
 
     @Test
@@ -103,6 +109,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
 
         Map<String, Object> payloadReturnedByTask = new HashMap<>(inputPayload);
         payloadReturnedByTask.put("addedKey", "addedValue");
+        when(setDNDecisionStateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(validateDNDecisionTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(addDecreeNisiDecisionDateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(payloadReturnedByTask);
         when(addDnOutcomeFlagFieldTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
@@ -111,35 +118,56 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
 
         assertThat(returnedPayload, allOf(
             hasEntry(equalTo("addedKey"), equalTo("addedValue")),
-            hasEntry(equalTo(DECREE_NISI_GRANTED_CCD_FIELD), equalTo(YES_VALUE)),
-            hasEntry(equalTo(STATE_CCD_FIELD), equalTo(AWAITING_PRONOUNCEMENT))
+            hasEntry(equalTo(DECREE_NISI_GRANTED_CCD_FIELD), equalTo(YES_VALUE))
         ));
-        verify(addDecreeNisiDecisionDateTask).execute(isNotNull(), eq(inputPayload));
-        verifyNoMoreInteractions(defineWhoPaysCostsOrderTask);
-        verify(addDnOutcomeFlagFieldTask).execute(isNotNull(), any());
+
+        final InOrder inOrder = inOrder(
+            setDNDecisionStateTask,
+            validateDNDecisionTask,
+            addDecreeNisiDecisionDateTask,
+            addDnOutcomeFlagFieldTask
+        );
+
+        inOrder.verify(setDNDecisionStateTask).execute(any(TaskContext.class), eq(inputPayload));
+        inOrder.verify(validateDNDecisionTask).execute(any(TaskContext.class), eq(inputPayload));
+        inOrder.verify(addDecreeNisiDecisionDateTask).execute(any(TaskContext.class), eq(inputPayload));
+        inOrder.verify(addDnOutcomeFlagFieldTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
+        verify(defineWhoPaysCostsOrderTask, never()).execute(any(), any());
     }
 
     @Test
     public void shouldCallTasksAccordingly_IfDecreeNisiIsNotGranted() throws WorkflowException, TaskException {
         inputPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
         Map<String, Object> payloadReturnedByTask = new HashMap<>(inputPayload);
+        when(setDNDecisionStateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(validateDNDecisionTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(addDecreeNisiDecisionDateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(payloadReturnedByTask);
 
         Map<String, Object> returnedPayload = workflow.run(CaseDetails.builder().caseData(inputPayload).build());
 
         assertThat(returnedPayload, allOf(
-            hasEntry(equalTo(DECREE_NISI_GRANTED_CCD_FIELD), equalTo(NO_VALUE)),
-            hasEntry(equalTo(STATE_CCD_FIELD), equalTo(AWAITING_CLARIFICATION))
+            hasEntry(equalTo(DECREE_NISI_GRANTED_CCD_FIELD), equalTo(NO_VALUE))
         ));
-        verify(addDecreeNisiDecisionDateTask, times(1)).execute(isNotNull(), eq(inputPayload));
+
+        final InOrder inOrder = inOrder(
+            setDNDecisionStateTask,
+            validateDNDecisionTask,
+            addDecreeNisiDecisionDateTask
+        );
+
+        inOrder.verify(setDNDecisionStateTask).execute(any(TaskContext.class), eq(inputPayload));
+        inOrder.verify(validateDNDecisionTask).execute(any(TaskContext.class), eq(inputPayload));
+        inOrder.verify(addDecreeNisiDecisionDateTask).execute(any(TaskContext.class), eq(inputPayload));
+
         verify(addDnOutcomeFlagFieldTask, never()).execute(any(), any());
+        verify(defineWhoPaysCostsOrderTask, never()).execute(any(), any());
     }
 
     @Test
     public void givenValidationException_whenDNAboutToBeGranted_thenReturnWorkflowException() throws TaskException {
         final String errorMessage = "TaskException";
         inputPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
+        when(setDNDecisionStateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(validateDNDecisionTask.execute(isNotNull(), eq(inputPayload))).thenThrow(new TaskException(errorMessage));
 
         try {
@@ -152,26 +180,4 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         verify(addDecreeNisiDecisionDateTask, never()).execute(any(), any());
         verify(addDnOutcomeFlagFieldTask, never()).execute(any(), any());
     }
-
-    @Test
-    public void givenDNRefused_thenReturnDNRejectedState() throws WorkflowException, TaskException {
-        inputPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
-        inputPayload.put(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
-
-        Map<String, Object> payloadReturnedByTask = new HashMap<>(inputPayload);
-        payloadReturnedByTask.put("addedKey", "addedValue");
-        when(validateDNDecisionTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
-        when(addDecreeNisiDecisionDateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(payloadReturnedByTask);
-
-        Map<String, Object> returnedPayload = workflow.run(CaseDetails.builder().caseData(inputPayload).build());
-
-        assertThat(returnedPayload, allOf(
-            hasEntry(equalTo("addedKey"), equalTo("addedValue")),
-            hasEntry(equalTo(DECREE_NISI_GRANTED_CCD_FIELD), equalTo(NO_VALUE)),
-            hasEntry(equalTo(STATE_CCD_FIELD), equalTo(DN_REFUSED)),
-            not(hasKey(WHO_PAYS_COSTS_CCD_FIELD))
-        ));
-    }
-
-
 }
