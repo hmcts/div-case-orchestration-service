@@ -50,6 +50,7 @@ public class OrchestrationConstants {
     public static final String D_8_CO_RESPONDENT_NAMED = "D8ReasonForDivorceAdulteryWishToName";
     public static final String D_8_CO_RESPONDENT_NAMED_OLD = "D8ReasonForDivorceAdulteryIsNamed";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
+    public static final String CCD_CASE_ID = "id";
     public static final String NOT_RECEIVED_AOS_EVENT_ID = "aosNotReceived";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID = "co-RespAOSReceivedAwaiting";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_STARTED_EVENT_ID = "co-RespAOSReceivedStarted";
@@ -259,7 +260,7 @@ public class OrchestrationConstants {
     public static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
     public static final String AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-resp";
     public static final String AOS_INVITATION_LETTER_FILENAME = "aos-invitation-letter-offline-respondent";
-    public static final String AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00070.docx";
+    public static final String AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00070.doc";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "solicitorPersonalService";

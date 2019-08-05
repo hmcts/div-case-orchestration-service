@@ -38,5 +38,6 @@ public class CaseFormatterAddDocuments implements Task<Map<String, Object>> {
         }
 
         return caseData;
+
     }
 }
