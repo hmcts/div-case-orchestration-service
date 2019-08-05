@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.SolicitorService;
 
 import java.util.Collections;
@@ -43,19 +42,18 @@ public class SolicitorCallbackController {
             @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> issuePersonalServicePack(
             @RequestHeader(value = "Authorization") String authorizationToken,
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest)
-            throws WorkflowException {
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         Map<String, Object> response;
 
         try {
             response = solicitorService.issuePersonalServicePack(ccdCallbackRequest, authorizationToken);
-        } catch (WorkflowException e) {
+        } catch (Exception e) {
             return ResponseEntity.ok(
                     CcdCallbackResponse.builder()
                             .data(ImmutableMap.of())
                             .warnings(ImmutableList.of())
-                            .errors(singletonList("Failed to issue solicitor personal service " + e.getMessage()))
+                            .errors(singletonList("Failed to issue solicitor personal service - " + e.getMessage()))
                             .build());
         }
         return ResponseEntity.ok(

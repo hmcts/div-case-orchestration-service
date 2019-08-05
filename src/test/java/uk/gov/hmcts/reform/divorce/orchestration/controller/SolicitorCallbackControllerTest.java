@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.SolicitorService;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -45,6 +46,26 @@ public class SolicitorCallbackControllerTest {
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody().getData(), is(divorceSession));
+        assertThat(response.getBody().getErrors().size(), is(0));
+
+        verify(solicitorService).issuePersonalServicePack(request, AUTH_TOKEN);
+    }
+
+    @Test
+    public void whenExceptionIsThrown_thenCatchAndProceedAsExpected() throws WorkflowException {
+        final Map<String, Object> divorceSession = Collections.singletonMap("key", "value");
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails.builder().caseData(divorceSession).build())
+                .build();
+
+        when(solicitorService.issuePersonalServicePack(request, AUTH_TOKEN))
+                .thenThrow(new RuntimeException("test"));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.issuePersonalServicePack(AUTH_TOKEN, request);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getErrors().size(), is(1));
+        assertThat(response.getBody().getErrors(), contains("Failed to issue solicitor personal service - test"));
 
         verify(solicitorService).issuePersonalServicePack(request, AUTH_TOKEN);
     }
