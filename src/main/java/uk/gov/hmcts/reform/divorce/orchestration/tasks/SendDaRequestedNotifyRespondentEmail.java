@@ -16,6 +16,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
@@ -25,7 +26,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
 
@@ -48,7 +48,7 @@ public class SendDaRequestedNotifyRespondentEmail implements Task<Map<String, Ob
         String emailAddress = (String) caseData.get(RESPONDENT_EMAIL_ADDRESS);
         String firstName = (String) caseData.get(RESP_FIRST_NAME_CCD_FIELD);
         String lastName = (String) caseData.get(RESP_LAST_NAME_CCD_FIELD);
-        String ccdReference = getCaseId(context);
+        String d8Reference = (String) caseData.get(D_8_CASE_REFERENCE);
         String petitionerInferredGender = getMandatoryPropertyValueAsString(caseData,
             D_8_INFERRED_PETITIONER_GENDER);
         String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
@@ -59,7 +59,7 @@ public class SendDaRequestedNotifyRespondentEmail implements Task<Map<String, Ob
             templateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, emailAddress);
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, firstName);
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, lastName);
-            templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, ccdReference);
+            templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, d8Reference);
             templateVars.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
 
             try {
@@ -73,7 +73,7 @@ public class SendDaRequestedNotifyRespondentEmail implements Task<Map<String, Ob
             }
 
         } else {
-            log.warn("no respondent email present for case reference, divorce may be using paper journey: {}", ccdReference);
+            log.warn("no respondent email present for case reference, divorce may be using paper journey: {}", d8Reference);
         }
 
         return caseData;
