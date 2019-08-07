@@ -14,6 +14,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
 
+@Deprecated // I'd be good to split those into well defined/reusable tasks instead of "common" methods
 @Component
 @Slf4j
 public class TaskCommons {
@@ -36,6 +37,10 @@ public class TaskCommons {
         return courtLookupService.getDnCourtByKey(courtId);
     }
 
+    /**
+     * Please use GenericEmailNotification as it's a self contained task, instead of this "Common" task
+     */
+    @Deprecated
     public void sendEmail(EmailTemplateNames emailTemplate,
                           String emailDescription,
                           String destinationEmailAddress,

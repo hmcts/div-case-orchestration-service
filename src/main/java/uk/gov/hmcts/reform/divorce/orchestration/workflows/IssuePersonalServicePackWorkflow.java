@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendEmailWithAttachmentsTask;
 
 import java.util.Map;
 
@@ -33,11 +34,15 @@ public class IssuePersonalServicePackWorkflow extends DefaultWorkflow<Map<String
     @Autowired
     CaseFormatterAddDocuments caseFormatterAddDocuments;
 
+    @Autowired
+    private SendEmailWithAttachmentsTask sendEmailWithAttachments;
+
     public Map<String, Object> run(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException {
         return this.execute(
             new Task[]{
                 documentGenerationTask,
-                caseFormatterAddDocuments
+                caseFormatterAddDocuments,
+                sendEmailWithAttachments
             },
             callbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),

@@ -24,6 +24,11 @@ public class EmailService {
     @Autowired
     private EmailTemplatesConfig emailTemplatesConfig;
 
+    /**
+     * At this level, we should throw an exception, not catch and return a response
+     * Use sendEmailAndReturnExceptionIfFails instead
+     */
+    @Deprecated
     public Map<String, Object> sendEmail(String destinationAddress,
                                          String templateName,
                                          Map<String, String> templateVars,
@@ -40,6 +45,21 @@ public class EmailService {
 
         EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
         sendEmailUsingClient(emailToSend, emailDescription);
+    }
+
+    public void sendEmailAndReturnExceptionIfFails(String destinationAddress,
+                                                   String templateName,
+                                                   Map<String, String> templateVars,
+                                                   String emailDescription,
+                                                   Map<String, byte[]> attachments) throws NotificationClientException {
+
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars, attachments);
+        sendEmailUsingClient(emailToSend, emailDescription);
+    }
+
+    private EmailToSend generateEmail(String destinationAddress, String templateName, Map<String, String> templateVars, Map<String, byte[]> attachments) {
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+        return emailToSend;
     }
 
     private EmailToSend generateEmail(String destinationAddress,

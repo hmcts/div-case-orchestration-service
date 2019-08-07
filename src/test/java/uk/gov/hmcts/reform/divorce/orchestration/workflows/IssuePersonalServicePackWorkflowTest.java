@@ -10,8 +10,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendEmailWithAttachmentsTask;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,11 +44,14 @@ public class IssuePersonalServicePackWorkflowTest {
     @Mock
     CaseFormatterAddDocuments caseFormatterAddDocuments;
 
+    @Mock
+    SendEmailWithAttachmentsTask sendEmailWithAttachmentsTask;
+
     @InjectMocks
     IssuePersonalServicePackWorkflow issuePersonalServicePackWorkflow;
 
     @Test
-    public void testRunExecutesExpectedTasksInOrder() throws WorkflowException {
+    public void testRunExecutesExpectedTasksInOrder() throws WorkflowException, TaskException {
         //given
         Map<String, Object> caseData = Collections.singletonMap("key", "value");
         CaseDetails caseDetails = CaseDetails.builder()
@@ -73,12 +78,14 @@ public class IssuePersonalServicePackWorkflowTest {
         //when
         when(documentGenerationTask.execute(context, caseData)).thenReturn(caseData);
         when(caseFormatterAddDocuments.execute(context, caseData)).thenReturn(caseData);
+        when(sendEmailWithAttachmentsTask.execute(context, caseData)).thenReturn(caseData);
         Map<String, Object> response = issuePersonalServicePackWorkflow.run(request, TEST_TOKEN);
 
         //then
-        InOrder inOrder = inOrder(documentGenerationTask, caseFormatterAddDocuments);
+        InOrder inOrder = inOrder(documentGenerationTask, caseFormatterAddDocuments, sendEmailWithAttachmentsTask);
         inOrder.verify(documentGenerationTask).execute(context, caseData);
         inOrder.verify(caseFormatterAddDocuments).execute(context, caseData);
+        inOrder.verify(sendEmailWithAttachmentsTask).execute (context, caseData);
         assertThat(response, is(caseData));
     }
 }
