@@ -7,6 +7,8 @@ properties([
 
 @Library("Infrastructure")
 
+import uk.gov.hmcts.contino.AppPipelineDsl
+
 def type = "java"
 def product = "div"
 def component = "cos"
@@ -30,6 +32,11 @@ List<LinkedHashMap<String, Object>> secrets = [
 ]
 
 withPipeline(type, product, component) {
+    enablePactAs([
+            AppPipelineDsl.PactRoles.CONSUMER,
+            AppPipelineDsl.PactRoles.PROVIDER
+    ])
+
     if (env.CHANGE_TITLE && !env.CHANGE_TITLE.startsWith('[PREVIEW]')) {
         enableDockerBuild()
         installCharts()
