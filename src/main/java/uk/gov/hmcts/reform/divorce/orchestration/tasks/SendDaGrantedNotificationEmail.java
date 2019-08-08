@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
@@ -28,6 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils.formatDateWithCustomerFacingFormat;
 
@@ -55,7 +55,8 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
             getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME),
             (String) caseData.get(D_8_PETITIONER_EMAIL),
             PETITIONER,
-            caseData
+            caseData,
+            getCaseId(context)
         );
         // Send Respondent notification email
         sendEmail(
@@ -63,15 +64,17 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
             getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD),
             (String) caseData.get(RESPONDENT_EMAIL_ADDRESS),
             RESPONDENT,
-            caseData
+            caseData,
+            getCaseId(context)
         );
 
         return caseData;
     }
 
-    public void sendEmail(String firstName, String lastName, String emailAddress, String user, Map<String, Object> caseData) throws TaskException {
+    public void sendEmail(String firstName, String lastName, String emailAddress,
+        String user, Map<String, Object> caseData, String caseId) throws TaskException {
 
-        String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        String ccdReference = caseId;
         LocalDate daGrantedDate = LocalDateTime.parse((String) caseData.get(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD)).toLocalDate();
         String daLimitDownloadDate = formatDateWithCustomerFacingFormat(daGrantedDate.plusYears(1));
 

@@ -77,6 +77,43 @@ public class SendRespondentSolicitorAosInvitationEmailTest {
         assertThat(context.hasTaskFailed(), is(false));
     }
 
+    @Test
+    public void testDefaultsSolicitorNameIfNoneIsProvided() throws TaskException {
+        // given
+        String respondentSolicitorEmail = "solicitor@localhost.local";
+
+        HashMap<String, Object> caseData = new HashMap<>();
+        caseData.put(D8_RESPONDENT_SOLICITOR_EMAIL, respondentSolicitorEmail);
+        caseData.put(RESP_FIRST_NAME_CCD_FIELD, "resp first");
+        caseData.put(RESP_LAST_NAME_CCD_FIELD, "resp last");
+        caseData.put(D_8_CASE_REFERENCE, "LV17D80100");
+
+        DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, "1111222233334444");
+        context.setTransientObject(RESPONDENT_PIN, "A1B2C3D4");
+
+        Map<String, String> expectedTemplateVars = new HashMap<>();
+        expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, "LV17D80100");
+        expectedTemplateVars.put("solicitors name", "Sir/Madam");
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "resp first");
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "resp last");
+        expectedTemplateVars.put("access code", "A1B2C3D4");
+        expectedTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, "1111-2222-3333-4444");
+
+        // when
+        Map<String, Object> returnedPayload = sendRespondentSolicitorAosInvitationEmail.execute(context, caseData);
+
+        //then
+        assertThat(caseData, is(sameInstance(returnedPayload)));
+        verify(taskCommons).sendEmail(
+                EmailTemplateNames.RESPONDENT_SOLICITOR_AOS_INVITATION,
+                "Respondent solicitor's AOS invitation",
+                respondentSolicitorEmail,
+                expectedTemplateVars
+        );
+        assertThat(context.hasTaskFailed(), is(false));
+    }
+
     @Test(expected = TaskException.class)
     public void testExecuteSendsEmailToRespondentSolicitorWithAccessCodeFailsTaskIfExceptionIsThrown() throws TaskException {
         // given
