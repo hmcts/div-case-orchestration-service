@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorcePartyNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosPackOfflineService;
@@ -732,18 +731,17 @@ public class CallbackController {
         @RequestHeader(name = "Authorization")
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) String authToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
-        @PathVariable("party") @ApiParam("Party in divorce") String party) {
+        @PathVariable("party") @ApiParam("Party in divorce (respondent or co-respondent") DivorceParty party) {
 
         CcdCallbackResponse response;
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
         try {
-            DivorceParty divorceParty = DivorceParty.getDivorcePartyByDescription(party);
             response = CcdCallbackResponse.builder()
-                .data(aosPackOfflineService.issueAosPackOffline(authToken, caseDetails, divorceParty))
+                .data(aosPackOfflineService.issueAosPackOffline(authToken, caseDetails, party))
                 .build();
             log.info("Issued AOS pack (offline) for case id [{}]", caseDetails.getCaseId());
-        } catch (CaseOrchestrationServiceException | DivorcePartyNotFoundException exception) {
+        } catch (CaseOrchestrationServiceException exception) {
             response = CcdCallbackResponse.builder()
                 .errors(singletonList(exception.getMessage()))
                 .build();

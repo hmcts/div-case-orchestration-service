@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.aospack.offline
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,6 +70,12 @@ public class AosPackRespondentOfflineTest {
 
     @ClassRule
     public static WireMockClassRule formatterServiceServer = new WireMockClassRule(4011);
+
+    @Before
+    public void setUp() {
+        documentGeneratorServer.resetAll();
+        formatterServiceServer.resetAll();
+    }
 
     @Test
     public void testEndpointReturnsAdequateResponse_ForRespondent() throws Exception {
@@ -140,6 +147,21 @@ public class AosPackRespondentOfflineTest {
         formatterServiceServer.verify(postRequestedFor(urlEqualTo(ADD_DOCUMENTS_CONTEXT_PATH))
             .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON))
         );
+    }
+
+    @Test
+    public void testEndpointReturnsErrorMessages_WhenDivorcePartyIsInvalid() throws Exception {
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+            "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
+
+        webClient.perform(post(format(API_URL, "invalid-divorce-party"))
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, USER_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isBadRequest());
+
+        documentGeneratorServer.verify(0, postRequestedFor(urlEqualTo(GENERATE_DOCUMENT_CONTEXT_PATH)));
+        formatterServiceServer.verify(0, postRequestedFor(urlEqualTo(ADD_DOCUMENTS_CONTEXT_PATH)));
     }
 
     private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest documentRequest, GeneratedDocumentInfo documentInfo) {
