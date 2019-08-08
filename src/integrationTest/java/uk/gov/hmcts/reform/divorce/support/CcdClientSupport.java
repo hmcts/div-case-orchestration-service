@@ -15,6 +15,7 @@ public class CcdClientSupport {
 
     private static final String DIVORCE_CASE_SUBMISSION_EVENT_SUMMARY = "Divorce case submission event";
     private static final String DIVORCE_CASE_SUBMISSION_EVENT_DESCRIPTION = "Submitting Divorce Case";
+    private static final String SOLICITOR_CREATE = "solicitorCreate";
 
     @Value("${ccd.jurisdictionid}")
     private String jurisdictionId;
@@ -68,6 +69,38 @@ public class CcdClientSupport {
             caseType,
             true,
             caseDataContent);
+    }
+
+    public CaseDetails submitSolicitorCase(Object data, UserDetails userDetails) {
+        final String serviceToken = authTokenGenerator.generate();
+
+        StartEventResponse startEventResponse = coreCaseDataApi.startForCaseworker(
+                userDetails.getAuthToken(),
+                serviceToken,
+                userDetails.getId(),
+                jurisdictionId,
+                caseType,
+                SOLICITOR_CREATE);
+
+        final CaseDataContent caseDataContent = CaseDataContent.builder()
+                .eventToken(startEventResponse.getToken())
+                .event(
+                        Event.builder()
+                                .id(startEventResponse.getEventId())
+                                .summary(DIVORCE_CASE_SUBMISSION_EVENT_SUMMARY)
+                                .description(DIVORCE_CASE_SUBMISSION_EVENT_DESCRIPTION)
+                                .build()
+                ).data(data)
+                .build();
+
+        return coreCaseDataApi.submitForCaseworker(
+                userDetails.getAuthToken(),
+                serviceToken,
+                userDetails.getId(),
+                jurisdictionId,
+                caseType,
+                true,
+                caseDataContent);
     }
 
     public CaseDetails submitBulkCase(Object data, UserDetails userDetails) {

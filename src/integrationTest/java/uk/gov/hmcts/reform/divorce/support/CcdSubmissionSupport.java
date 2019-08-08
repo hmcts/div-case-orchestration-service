@@ -81,6 +81,20 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         return submitCase(fileName, createCitizenUser());
     }
 
+    @SuppressWarnings("unchecked")
+    @SafeVarargs
+    protected final CaseDetails submitSolicitorCase(String fileName, UserDetails userDetails,
+                                                    Pair<String, String>... additionalCaseData) {
+
+        final Map caseData = loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class);
+
+        Arrays.stream(additionalCaseData).forEach(
+            caseField -> caseData.put(caseField.getKey(), caseField.getValue())
+        );
+
+        return ccdClientSupport.submitSolicitorCase(caseData, userDetails);
+    }
+
     protected CaseDetails submitBulkCase(String fileName, Pair<String, Object>... additionalCaseData) {
         final Map caseData = loadJsonToObject(BULK_PAYLOAD_CONTEXT_PATH + fileName, Map.class);
 
@@ -107,6 +121,24 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         );
 
         return ccdClientSupport.update(caseId, caseData, eventId, createCaseWorkerUser(), isBulkType);
+    }
+
+    protected CaseDetails updateCase(String caseId, String fileName, String eventId,
+                                     UserDetails userDetails, Pair<String, String>... additionalCaseData) {
+        return updateCase(caseId, fileName, eventId, userDetails, false, additionalCaseData);
+    }
+
+    protected CaseDetails updateCase(String caseId, String fileName, String eventId, UserDetails userDetails,
+                                     boolean isBulkType, Pair<String, String>... additionalCaseData) {
+        String payloadPath = isBulkType ? BULK_PAYLOAD_CONTEXT_PATH : PAYLOAD_CONTEXT_PATH;
+        final Map caseData =
+                fileName == null ? new HashMap() : loadJsonToObject(payloadPath + fileName, Map.class);
+
+        Arrays.stream(additionalCaseData).forEach(
+            caseField -> caseData.put(caseField.getKey(), caseField.getValue())
+        );
+
+        return ccdClientSupport.update(caseId, caseData, eventId, userDetails, isBulkType);
     }
 
     protected CaseDetails updateCaseForCitizen(String caseId, String fileName, String eventId,
