@@ -865,6 +865,7 @@ public class CallbackControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }
+
     @Test
     public void testRemoveCaseLink_callServiceMethod() throws WorkflowException {
         CcdCallbackRequest request = CcdCallbackRequest.builder()
