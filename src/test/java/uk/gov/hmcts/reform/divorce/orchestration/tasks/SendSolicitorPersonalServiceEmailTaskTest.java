@@ -88,7 +88,7 @@ public class SendSolicitorPersonalServiceEmailTaskTest {
         //then
         verify(emailService).sendEmailAndReturnExceptionIfFails(
                 eq(TEST_USER_EMAIL),
-                eq(EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name()),
+                eq(EmailTemplateNames.SOL_PERSONAL_SERVICE.name()),
                 eq(expectedTemplateVars),
                 eq("Solicitor Personal Service email")
         );

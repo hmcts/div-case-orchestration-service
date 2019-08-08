@@ -61,7 +61,7 @@ public class SendSolicitorPersonalServiceEmailTask implements Task<Map<String, O
         try {
             emailService.sendEmailAndReturnExceptionIfFails(
                     petSolicitorEmail,
-                    EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name(),
+                    EmailTemplateNames.SOL_PERSONAL_SERVICE.name(),
                     templateVars,
                     SOL_PERSONAL_SERVICE_EMAIL
             );
