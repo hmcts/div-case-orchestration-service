@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class SetFormattedDnCourtDetailsTest {
 
-    private static final String TEST_COURT_ID = "liverpool";
+    private static final String TEST_COURT_ID      = "testId";
     private static final String TEST_COURT_NAME    = "testCourt";
     private static final String TEST_COURT_ADDRESS = "testAddress\nLineTwo\nLineThree";
     private static final String TEST_COURT_EMAIL   = "testEmail@test.test";

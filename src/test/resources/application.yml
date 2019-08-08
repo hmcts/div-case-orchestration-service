@@ -281,6 +281,11 @@ dncourt:
       address: "London Road\nSouthampton\nSO15 2XQ"
       email: "divorcecase@justice.gov.uk"
       phone: "0300 303 0642"
+    nottinghamJustice:
+      name: "Nottingham Justice Centre"
+      address: "Carrington Street\nNottingham\nNG2 1EE"
+      email: "divorcecase@justice.gov.uk"
+      phone: "0300 303 0642"
 
 idam:
   api:
