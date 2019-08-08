@@ -38,7 +38,7 @@ public class TaskCommons {
     }
 
     /**
-     * Please use GenericEmailNotification as it's a self contained task, instead of this "Common" task
+     * Please use GenericEmailNotification as it's a self contained task, instead of this "Common" task.
      */
     @Deprecated
     public void sendEmail(EmailTemplateNames emailTemplate,

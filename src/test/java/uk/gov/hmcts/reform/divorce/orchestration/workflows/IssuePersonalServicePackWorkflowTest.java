@@ -82,10 +82,10 @@ public class IssuePersonalServicePackWorkflowTest {
         Map<String, Object> response = issuePersonalServicePackWorkflow.run(request, TEST_TOKEN);
 
         //then
+        assertThat(response, is(caseData));
         InOrder inOrder = inOrder(documentGenerationTask, caseFormatterAddDocuments, sendEmailWithAttachmentsTask);
         inOrder.verify(documentGenerationTask).execute(context, caseData);
         inOrder.verify(caseFormatterAddDocuments).execute(context, caseData);
-        inOrder.verify(sendEmailWithAttachmentsTask).execute (context, caseData);
-        assertThat(response, is(caseData));
+        inOrder.verify(sendEmailWithAttachmentsTask).execute(context, caseData);
     }
 }

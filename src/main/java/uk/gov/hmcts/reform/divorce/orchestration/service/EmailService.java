@@ -25,7 +25,7 @@ public class EmailService {
     private EmailTemplatesConfig emailTemplatesConfig;
 
     /**
-     * At this level, we should throw an exception, not catch and return a response
+     * At this level, we should throw an exception, not catch and return a response.
      * Use sendEmailAndReturnExceptionIfFails instead
      */
     @Deprecated
@@ -57,7 +57,10 @@ public class EmailService {
         sendEmailUsingClient(emailToSend, emailDescription);
     }
 
-    private EmailToSend generateEmail(String destinationAddress, String templateName, Map<String, String> templateVars, Map<String, byte[]> attachments) {
+    private EmailToSend generateEmail(String destinationAddress,
+                                      String templateName,
+                                      Map<String, String> templateVars, Map<String,
+            byte[]> attachments) {
         EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
         return emailToSend;
     }
