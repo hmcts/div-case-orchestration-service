@@ -11,6 +11,10 @@ import java.beans.PropertyEditorSupport;
 
 @ControllerAdvice
 @Slf4j
+/**
+ * This class is responsible for transforming "primitive" values into object before they ever get to our Spring-annotated methods
+ * (i.e. transforming a String into an Enum before it is received as a parameter by a controller)
+ */
 public class GlobalControllerFormatter {
 
     @InitBinder
