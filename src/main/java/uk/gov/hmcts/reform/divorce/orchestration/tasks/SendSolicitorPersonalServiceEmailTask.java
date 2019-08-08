@@ -31,9 +31,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class SendEmailWithAttachmentsTask implements Task<Map<String, Object>> {
+public class SendSolicitorPersonalServiceEmailTask implements Task<Map<String, Object>> {
 
-    private static final String EMAIL_ATTACHMENTS = "EMAIL_ATTACHMENTS";
     private static final String SOL_PERSONAL_SERVICE_EMAIL = "Solicitor Personal Service email";
 
     @Autowired
@@ -64,8 +63,7 @@ public class SendEmailWithAttachmentsTask implements Task<Map<String, Object>> {
                     petSolicitorEmail,
                     EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name(),
                     templateVars,
-                    SOL_PERSONAL_SERVICE_EMAIL,
-                    context.getTransientObject(EMAIL_ATTACHMENTS)
+                    SOL_PERSONAL_SERVICE_EMAIL
             );
             return caseData;
         } catch (NotificationClientException e) {

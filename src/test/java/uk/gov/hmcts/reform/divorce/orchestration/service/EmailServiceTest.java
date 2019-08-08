@@ -11,8 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.Collections;
-
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -82,22 +80,6 @@ public class EmailServiceTest {
                 EmailTemplateNames.APPLIC_SUBMISSION.name(),
                 null,
                 "submission notification");
-
-        verify(mockClient).sendEmail(
-                eq(emailTemplatesConfig.getTemplates().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
-                eq(EMAIL_ADDRESS),
-                eq(emailTemplatesConfig.getTemplateVars().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
-                anyString());
-    }
-
-    @Test
-    public void sendEmailAndReturnExceptionShouldCallTheEmailClientToSendAnEmailWithAttachements()
-            throws NotificationClientException {
-        emailService.sendEmailAndReturnExceptionIfFails(EMAIL_ADDRESS,
-                EmailTemplateNames.APPLIC_SUBMISSION.name(),
-                null,
-                "submission notification",
-                Collections.singletonMap("test", new byte[0]));
 
         verify(mockClient).sendEmail(
                 eq(emailTemplatesConfig.getTemplates().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),

@@ -24,11 +24,6 @@ public class EmailService {
     @Autowired
     private EmailTemplatesConfig emailTemplatesConfig;
 
-    /**
-     * At this level, we should throw an exception, not catch and return a response.
-     * Use sendEmailAndReturnExceptionIfFails instead
-     */
-    @Deprecated
     public Map<String, Object> sendEmail(String destinationAddress,
                                          String templateName,
                                          Map<String, String> templateVars,
@@ -39,30 +34,12 @@ public class EmailService {
     }
 
     public void sendEmailAndReturnExceptionIfFails(String destinationAddress,
-                          String templateName,
-                          Map<String, String> templateVars,
-                          String emailDescription) throws NotificationClientException {
-
-        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
-        sendEmailUsingClient(emailToSend, emailDescription);
-    }
-
-    public void sendEmailAndReturnExceptionIfFails(String destinationAddress,
                                                    String templateName,
                                                    Map<String, String> templateVars,
-                                                   String emailDescription,
-                                                   Map<String, byte[]> attachments) throws NotificationClientException {
+                                                   String emailDescription) throws NotificationClientException {
 
-        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars, attachments);
-        sendEmailUsingClient(emailToSend, emailDescription);
-    }
-
-    private EmailToSend generateEmail(String destinationAddress,
-                                      String templateName,
-                                      Map<String, String> templateVars, Map<String,
-            byte[]> attachments) {
         EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
-        return emailToSend;
+        sendEmailUsingClient(emailToSend, emailDescription);
     }
 
     private EmailToSend generateEmail(String destinationAddress,
@@ -71,7 +48,7 @@ public class EmailService {
         String referenceId = UUID.randomUUID().toString();
         String templateId = emailTemplatesConfig.getTemplates().get(templateName);
         Map<String, String> templateFields = (templateVars != null ? templateVars :
-            emailTemplatesConfig.getTemplateVars().get(templateName));
+                emailTemplatesConfig.getTemplateVars().get(templateName));
 
         return new EmailToSend(destinationAddress, templateId, templateFields, referenceId);
     }
@@ -82,7 +59,7 @@ public class EmailService {
             sendEmailUsingClient(emailToSend, emailDescription);
         } catch (NotificationClientException e) {
             log.warn("Failed to send email. Reference ID: {}. Reason: {}", emailToSend.getReferenceId(),
-                e.getMessage(), e);
+                    e.getMessage(), e);
             response.put(EMAIL_ERROR_KEY, e);
         }
 
@@ -92,10 +69,10 @@ public class EmailService {
     private void sendEmailUsingClient(EmailToSend emailToSend, String emailDescription) throws NotificationClientException {
         log.debug("Attempting to send {} email. Reference ID: {}", emailDescription, emailToSend.getReferenceId());
         emailClient.sendEmail(
-            emailToSend.getTemplateId(),
-            emailToSend.getDestinationEmailAddress(),
-            emailToSend.getTemplateFields(),
-            emailToSend.getReferenceId()
+                emailToSend.getTemplateId(),
+                emailToSend.getDestinationEmailAddress(),
+                emailToSend.getTemplateFields(),
+                emailToSend.getReferenceId()
         );
         log.info("Sending email success. Reference ID: {}", emailToSend.getReferenceId());
     }

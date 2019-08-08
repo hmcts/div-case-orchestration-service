@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,9 +41,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendEmailWithAttachmentsTaskTest {
+public class SendSolicitorPersonalServiceEmailTaskTest {
 
-    private static final String EMAIL_ATTACHMENTS = "EMAIL_ATTACHMENTS";
     private Map<String, Object> testData;
     private TaskContext context;
     private Map<String, String> expectedTemplateVars;
@@ -53,7 +51,7 @@ public class SendEmailWithAttachmentsTaskTest {
     EmailService emailService;
 
     @InjectMocks
-    SendEmailWithAttachmentsTask sendEmailWithAttachmentsTask;
+    SendSolicitorPersonalServiceEmailTask sendSolicitorPersonalServiceEmailTask;
 
     @Before
     public void setup() {
@@ -79,24 +77,20 @@ public class SendEmailWithAttachmentsTaskTest {
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_USER_LAST_NAME);
         testData.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
 
-        Map<String, byte[]> attachments = Collections.singletonMap("file_placeholder", new byte[0]);
-        context.setTransientObject(EMAIL_ATTACHMENTS, attachments);
-
         expectedTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME);
         expectedTemplateVars.put(NOTIFICATION_RESP_NAME, TEST_USER_FIRST_NAME + " " + TEST_USER_LAST_NAME);
         expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
 
         //when
-        sendEmailWithAttachmentsTask.execute(context, testData);
+        sendSolicitorPersonalServiceEmailTask.execute(context, testData);
 
         //then
         verify(emailService).sendEmailAndReturnExceptionIfFails(
                 eq(TEST_USER_EMAIL),
                 eq(EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name()),
                 eq(expectedTemplateVars),
-                eq("Solicitor Personal Service email"),
-                eq(attachments)
+                eq("Solicitor Personal Service email")
         );
     }
 }

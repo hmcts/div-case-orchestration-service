@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendEmailWithAttachmentsTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSolicitorPersonalServiceEmailTask;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,7 +45,7 @@ public class IssuePersonalServicePackWorkflowTest {
     CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Mock
-    SendEmailWithAttachmentsTask sendEmailWithAttachmentsTask;
+    SendSolicitorPersonalServiceEmailTask sendSolicitorPersonalServiceEmailTask;
 
     @InjectMocks
     IssuePersonalServicePackWorkflow issuePersonalServicePackWorkflow;
@@ -78,14 +78,14 @@ public class IssuePersonalServicePackWorkflowTest {
         //when
         when(documentGenerationTask.execute(context, caseData)).thenReturn(caseData);
         when(caseFormatterAddDocuments.execute(context, caseData)).thenReturn(caseData);
-        when(sendEmailWithAttachmentsTask.execute(context, caseData)).thenReturn(caseData);
+        when(sendSolicitorPersonalServiceEmailTask.execute(context, caseData)).thenReturn(caseData);
         Map<String, Object> response = issuePersonalServicePackWorkflow.run(request, TEST_TOKEN);
 
         //then
         assertThat(response, is(caseData));
-        InOrder inOrder = inOrder(documentGenerationTask, caseFormatterAddDocuments, sendEmailWithAttachmentsTask);
+        InOrder inOrder = inOrder(documentGenerationTask, caseFormatterAddDocuments, sendSolicitorPersonalServiceEmailTask);
         inOrder.verify(documentGenerationTask).execute(context, caseData);
         inOrder.verify(caseFormatterAddDocuments).execute(context, caseData);
-        inOrder.verify(sendEmailWithAttachmentsTask).execute(context, caseData);
+        inOrder.verify(sendSolicitorPersonalServiceEmailTask).execute(context, caseData);
     }
 }
