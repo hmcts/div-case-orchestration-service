@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.quartz.Job;
 
 @Data
 @Builder
@@ -17,7 +18,7 @@ public class Schedule {
 
     private String description;
 
-    private Class jobClass;
+    private Class<? extends Job> jobClass;
 
     private String cronGroup;
 
