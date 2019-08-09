@@ -33,6 +33,8 @@ import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -101,7 +103,10 @@ public class AosPackRespondentOfflineTest {
             .andExpect(status().isOk())
             .andExpect(content().string(allOf(
                 isJson(),
-                hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName", is(filename))
+                hasJsonPath("$.data.D8DocumentsGenerated", hasSize(1)),
+                hasJsonPath("$.data.D8DocumentsGenerated", hasItem(
+                    hasJsonPath("value.DocumentFileName", is(filename))
+                ))
             )));
 
         documentGeneratorServer.verify(postRequestedFor(urlEqualTo(GENERATE_DOCUMENT_CONTEXT_PATH))

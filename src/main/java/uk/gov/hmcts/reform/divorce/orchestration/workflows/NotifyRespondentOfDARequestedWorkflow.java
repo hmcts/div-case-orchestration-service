@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaRequestedNotifyResp
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
 public class NotifyRespondentOfDARequestedWorkflow extends DefaultWorkflow<Map<String, Object>> {
@@ -29,8 +28,7 @@ public class NotifyRespondentOfDARequestedWorkflow extends DefaultWorkflow<Map<S
         return this.execute(
             new Task[] {sendDaRequestedNotifyRespondentEmail},
             ccdCallbackRequest.getCaseDetails().getCaseData(),
-            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
-            ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId())
+            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails)
         );
     }
 }

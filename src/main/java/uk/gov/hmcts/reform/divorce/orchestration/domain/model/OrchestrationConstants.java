@@ -246,6 +246,7 @@ public class OrchestrationConstants {
     public static final String DOCUMENT_TYPE = "documentType";
     public static final String DOCUMENT_TEMPLATE_ID = "documentTemplateId";
     public static final String DOCUMENT_FILENAME = "documentFilename";
+    public static final String DOCUMENT_GENERATION_REQUESTS_KEY = "documentGenerationRequests";
     public static final String DOCUMENT_FILENAME_FMT = "%s%s";
     public static final String DOCUMENTS_GENERATED = "DocumentsGenerated";
     public static final String COSTS_ORDER_DOCUMENT_TYPE = "costsOrder";
