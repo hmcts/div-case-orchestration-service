@@ -15,10 +15,10 @@ import static org.junit.Assert.assertThat;
 
 public class SolicitorPersonalServiceCallbackTest extends CcdSubmissionSupport {
 
-    private static final String ISSUED_SOLICITOR_PETITION_JSON = "issued-solicitor-petition.json";
+    private static final String ISSUED_SOLICITOR_PETITION_JSON = "solicitor-petition.json";
     private static final String SOLICITOR_SUBMIT_PERSONAL_SERVICE = "solicitor-submit-personal-service.json";
     private static final String ISSUE_EVENT_ID = "issueFromSubmitted";
-    private static final String DOC_TYPE_PERSONAL_SERVICE = "solicitorPersonalService";
+    private static final String DOC_TYPE_PERSONAL_SERVICE = "personalService";
     private static final String PERSONAL_SERVICE_FILE_NAME_FORMAT = "solicitor-personal-service-%s.pdf";
     private static final String SOLICITOR_STATEMENT_OF_TRUTH_PAY_SUBMIT = "solicitorStatementOfTruthPaySubmit";
     private static final String PAYMENT_MADE_FROM_AWAITING_PAY_DECISION = "paymentMadeFromSolicitorAwaitingPayConfirm";
