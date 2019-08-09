@@ -82,7 +82,7 @@ public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
 
     private static final String TEST_AUTH_TOKEN = "testAuthToken";
     private static final String UPDATED_STATUS = "statusUpdated";
-    
+
     private static final String DOCUMENT_TYPE = "caseListForPronouncement";
     private static final String FILE_NAME = "caseListForPronouncement";
 
@@ -130,9 +130,9 @@ public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
         String retrieveCaseTwoPath = String.format(CMS_RETRIEVE_CASE_PATH, CASE_ID_SECOND);
 
 
-        Map<String, Object> caseData = singletonMap(DATETIME_OF_HEARING_CCD_FIELD, courtHearings);
+        final  Map<String, Object> caseData = singletonMap(DATETIME_OF_HEARING_CCD_FIELD, courtHearings);
         stubCmsServerEndpoint(retrieveCaseTwoPath, HttpStatus.OK,
-                caseDataToCaseDetailsJson(Collections.singletonMap(DATETIME_OF_HEARING_CCD_FIELD, courtHearings)), GET);
+                caseDataToCaseDetailsJson(caseData), GET);
 
         String updateCaseOnePath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_FIRST, UPDATE_COURT_HEARING_DETAILS_EVENT);
         String updateCaseTwoPath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_SECOND, UPDATE_COURT_HEARING_DETAILS_EVENT);
@@ -222,12 +222,12 @@ public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
         ));
         List<CollectionMember> courtHearings = Collections.singletonList(existingCourtHearing);
 
-        Map<String, Object> caseData = singletonMap(DATETIME_OF_HEARING_CCD_FIELD, courtHearings);
+        final Map<String, Object> caseData = singletonMap(DATETIME_OF_HEARING_CCD_FIELD, courtHearings);
 
         String retrieveCaseTwoPath = String.format(CMS_RETRIEVE_CASE_PATH, CASE_ID_SECOND);
 
         stubCmsServerEndpoint(retrieveCaseTwoPath, HttpStatus.OK,
-            caseDataToCaseDetailsJson(singletonMap(DATETIME_OF_HEARING_CCD_FIELD, courtHearings)), GET);
+            caseDataToCaseDetailsJson(caseData), GET);
 
         String updateCaseOnePath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_FIRST, UPDATE_COURT_HEARING_DETAILS_EVENT);
         stubCmsServerEndpoint(updateCaseOnePath, HttpStatus.OK, "{}", POST);
