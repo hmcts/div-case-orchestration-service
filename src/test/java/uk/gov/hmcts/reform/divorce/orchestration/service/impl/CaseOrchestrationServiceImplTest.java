@@ -1372,7 +1372,21 @@ public class CaseOrchestrationServiceImplTest {
     public void shouldNotCallBulkPrint_IfNotSendViaPost_WhenProcessingccdCallbackConfirmPersonalService()
         throws WorkflowException {
 
-        classUnderTest.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN);
+        requestPayload = singletonMap(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST, OrchestrationConstants.SEND_VIA_EMAIL_OR_POST);
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(
+                CaseDetails.builder()
+                    .caseData(requestPayload)
+                    .caseId(TEST_CASE_ID)
+                    .state(TEST_STATE)
+                    .build())
+            .eventId(TEST_EVENT_ID)
+            .token(TEST_TOKEN)
+            .build();
+
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN);
+
+        assertThat(returnedPayload, equalTo(requestPayload));
         verifyZeroInteractions(ccdCallbackBulkPrintWorkflow);
     }
 
