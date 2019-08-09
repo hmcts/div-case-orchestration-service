@@ -43,6 +43,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class SendSolicitorPersonalServiceEmailTaskTest {
 
+    private static final String SOLICITOR_PERSONAL_SERVICE_EMAIL = "Solicitor Personal Service email";
     private Map<String, Object> testData;
     private TaskContext context;
     private Map<String, String> expectedTemplateVars;
@@ -90,7 +91,7 @@ public class SendSolicitorPersonalServiceEmailTaskTest {
                 eq(TEST_USER_EMAIL),
                 eq(EmailTemplateNames.SOL_PERSONAL_SERVICE.name()),
                 eq(expectedTemplateVars),
-                eq("Solicitor Personal Service email")
+                eq(SOLICITOR_PERSONAL_SERVICE_EMAIL)
         );
     }
 }

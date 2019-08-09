@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssuePersonalServicePackWorkflow;
 
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorServiceImplTest {
@@ -27,8 +28,8 @@ public class SolicitorServiceImplTest {
                 .caseDetails(CaseDetails.builder().build())
                 .build();
 
-        solicitorService.issuePersonalServicePack(request, "token");
+        solicitorService.issuePersonalServicePack(request, TEST_TOKEN);
 
-        verify(issuePersonalServicePack).run(request, "token");
+        verify(issuePersonalServicePack).run(request, TEST_TOKEN);
     }
 }
