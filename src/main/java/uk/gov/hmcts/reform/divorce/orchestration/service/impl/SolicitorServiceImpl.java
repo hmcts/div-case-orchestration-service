@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -14,8 +13,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SolicitorServiceImpl implements SolicitorService {
 
-    @Autowired
-    public IssuePersonalServicePackWorkflow issuePersonalServicePackWorkflow;
+    private final IssuePersonalServicePackWorkflow issuePersonalServicePackWorkflow;
 
     @Override
     public Map<String, Object> issuePersonalServicePack(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException {

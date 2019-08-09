@@ -6,9 +6,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,18 +18,16 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.service.SolicitorService;
 
-import java.util.Collections;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import static java.util.Collections.singletonList;
 
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 public class SolicitorCallbackController {
 
-    @Autowired
     private final SolicitorService solicitorService;
 
     @PostMapping(path = "/personal-service-pack",
@@ -59,8 +56,6 @@ public class SolicitorCallbackController {
         return ResponseEntity.ok(
                 CcdCallbackResponse.builder()
                         .data(response)
-                        .errors(Collections.emptyList())
-                        .warnings(Collections.emptyList())
                         .build());
     }
 }

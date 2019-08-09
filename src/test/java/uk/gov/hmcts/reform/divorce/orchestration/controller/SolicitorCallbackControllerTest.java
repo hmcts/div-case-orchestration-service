@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,7 +47,7 @@ public class SolicitorCallbackControllerTest {
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody().getData(), is(divorceSession));
-        assertThat(response.getBody().getErrors().size(), is(0));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
 
         verify(solicitorService).issuePersonalServicePack(request, AUTH_TOKEN);
     }

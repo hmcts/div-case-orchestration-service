@@ -81,17 +81,9 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         return submitCase(fileName, createCitizenUser());
     }
 
-    @SuppressWarnings("unchecked")
-    @SafeVarargs
-    protected final CaseDetails submitSolicitorCase(String fileName, UserDetails userDetails,
-                                                    Pair<String, String>... additionalCaseData) {
+    protected final CaseDetails submitSolicitorCase(String fileName, UserDetails userDetails) {
 
         final Map caseData = loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class);
-
-        Arrays.stream(additionalCaseData).forEach(
-            caseField -> caseData.put(caseField.getKey(), caseField.getValue())
-        );
-
         return ccdClientSupport.submitSolicitorCase(caseData, userDetails);
     }
 

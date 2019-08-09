@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
@@ -28,14 +27,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class IssuePersonalServicePackWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    @Autowired
-    DocumentGenerationTask documentGenerationTask;
+    private final DocumentGenerationTask documentGenerationTask;
 
-    @Autowired
-    CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
-    @Autowired
-    private SendSolicitorPersonalServiceEmailTask sendSolicitorPersonalServiceEmailTask;
+    private final SendSolicitorPersonalServiceEmailTask sendSolicitorPersonalServiceEmailTask;
 
     public Map<String, Object> run(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException {
         return this.execute(
