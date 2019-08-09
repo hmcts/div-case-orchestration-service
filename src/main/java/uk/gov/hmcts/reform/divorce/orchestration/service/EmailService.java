@@ -59,7 +59,7 @@ public class EmailService {
             sendEmailUsingClient(emailToSend, emailDescription);
         } catch (NotificationClientException e) {
             log.warn("Failed to send email. Reference ID: {}. Reason: {}", emailToSend.getReferenceId(),
-            e.getMessage(), e);
+                    e.getMessage(), e);
             response.put(EMAIL_ERROR_KEY, e);
         }
 
