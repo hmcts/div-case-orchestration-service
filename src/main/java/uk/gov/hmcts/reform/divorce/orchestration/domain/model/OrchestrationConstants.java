@@ -258,9 +258,12 @@ public class OrchestrationConstants {
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
     public static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
-    public static final String AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-resp";
-    public static final String AOS_INVITATION_LETTER_FILENAME = "aos-invitation-letter-offline-respondent";
-    public static final String AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00070.doc";
+    public static final String RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-resp";
+    public static final String RESPONDENT_AOS_INVITATION_LETTER_FILENAME = "aos-invitation-letter-offline-respondent";
+    public static final String RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00070.doc";
+    public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-co-resp";
+    public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME = "aos-invitation-letter-offline-co-respondent";
+    public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00076.doc";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
