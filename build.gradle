@@ -457,10 +457,13 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 }
 
 task runAndPublishConsumerPactTests(type: Test, description: 'Run contract tests', group: 'Verification') {
+    test.outputs.upToDateWhen {false}
+    testLogging.showStandardStreams = true
+    
     useJUnitPlatform()
 
-    testClassesDirs = sourceSets.contractTest.output.classesDirs
-    classpath = sourceSets.contractTest.runtimeClasspath
+    setTestClassesDirs(sourceSets.contractTest.output.classesDirs)
+    setClasspath(sourceSets.contractTest.runtimeClasspath)
 }
 
 pitest {
