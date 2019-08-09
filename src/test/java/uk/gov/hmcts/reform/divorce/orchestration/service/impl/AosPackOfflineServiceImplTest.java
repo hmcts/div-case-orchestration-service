@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow;
@@ -41,22 +42,22 @@ public class AosPackOfflineServiceImplTest {
         String testAuthToken = "testAuthToken";
         CaseDetails caseDetails = CaseDetails.builder().build();
         Map<String, Object> returnValue = singletonMap("returnedKey", "returnedValue");
-        when(workflow.run(any(), any())).thenReturn(returnValue);
+        when(workflow.run(any(), any(), any())).thenReturn(returnValue);
 
-        Map<String, Object> result = aosPackOfflineService.issueAosPackOffline(testAuthToken, caseDetails);
+        Map<String, Object> result = aosPackOfflineService.issueAosPackOffline(testAuthToken, caseDetails, DivorceParty.CO_RESPONDENT);
 
-        verify(workflow).run(eq(testAuthToken), eq(caseDetails));
+        verify(workflow).run(eq(testAuthToken), eq(caseDetails), eq(DivorceParty.CO_RESPONDENT));
         assertThat(result, equalTo(returnValue));
     }
 
     @Test
     public void shouldThrowServiceException() throws WorkflowException, CaseOrchestrationServiceException {
-        when(workflow.run(any(), any())).thenThrow(WorkflowException.class);
+        when(workflow.run(any(), any(), any())).thenThrow(WorkflowException.class);
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectCause(instanceOf(WorkflowException.class));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId("123456789").build();
-        aosPackOfflineService.issueAosPackOffline(null, caseDetails);
+        aosPackOfflineService.issueAosPackOffline(null, caseDetails, DivorceParty.RESPONDENT);
     }
 
 }

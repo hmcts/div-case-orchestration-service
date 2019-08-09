@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.controller.helper;
+package uk.gov.hmcts.reform.divorce.orchestration.controller.advice;
 
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +66,7 @@ class GlobalExceptionHandler {
             return ResponseEntity.status(exception.status()).body(null);
         }
         return ResponseEntity.status(exception.status()).body(
-                String.format("%s - %s", exception.getMessage(), exception.contentUTF8())
+            String.format("%s - %s", exception.getMessage(), exception.contentUTF8())
         );
     }
 }

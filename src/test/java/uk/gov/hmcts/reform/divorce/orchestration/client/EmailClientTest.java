@@ -16,12 +16,16 @@ public class EmailClientTest {
     @Value("${uk.gov.notify.api.key}")
     private String apiKey;
 
+    @Value("${uk.gov.notify.api.baseUrl}")
+    private String baseUrl;
+
     @Autowired
     private EmailClient emailClient;
 
     @Test
-    public void shouldHaveTheCorrectAPIKey() {
-        assertEquals(apiKey, emailClient.getApiKey());
-    }
+    public void shouldHaveTheCorrectProperties() {
 
+        assertEquals(apiKey, emailClient.getApiKey());
+        assertEquals(baseUrl, emailClient.getBaseUrl());
+    }
 }

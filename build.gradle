@@ -216,7 +216,7 @@ def versions = [
         ccdStoreClient                  : '4.6.2',
         javaxWsRs                       : '2.1.1',
         jsonPathAssert                  : '2.2.0',
-        jacksonDatabind                 : '2.9.9.1',
+        jacksonDatabind                 : '2.9.9.3',
         guava                           : '27.1-jre',
         bcpkixJdk15on                   : '1.60',
         springSecurityRsa               : '1.0.8.RELEASE',
@@ -402,6 +402,7 @@ test {
 }
 
 task wiremockFunctional(type: Test, description: 'Executes wiremock functional tests', group: 'Verification') {
+    onlyIf { project.file("./build/reports/tests/test/index.html").exists() }
     test.outputs.upToDateWhen {false}
     testLogging.showStandardStreams = true
     include '**/functionaltest/**/*'

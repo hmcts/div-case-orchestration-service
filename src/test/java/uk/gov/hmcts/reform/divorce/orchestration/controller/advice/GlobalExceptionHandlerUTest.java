@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.controller.helper;
+package uk.gov.hmcts.reform.divorce.orchestration.controller.advice;
 
 import feign.FeignException;
 import org.junit.Test;

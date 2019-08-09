@@ -1,0 +1,21 @@
+{
+  "token":"none",
+  "event_id":"eventId",
+  "case_details": {
+    "id": "1517833758870511",
+    "jurisdiction": "DIVORCE",
+    "state": "AwaitingDecreeAbsolute",
+    "case_type_id": "DIVORCE",
+    "case_data": {
+      "D8DivorceCostsClaim": "YES",
+      "D8StatementOfTruth": "YES",
+      "CourtName": "Name of Court",
+      "PronouncementJudge": "District Judge",
+      "D8PetitionerFirstName": "PetFirst",
+      "D8PetitionerLastName": "PetLast",
+      "D8RespondentFirstName": "RespFirst",
+      "D8RespondentLastName": "RespLast",
+      "D8caseReference": "EZ80D81234"
+    }
+  }
+}
