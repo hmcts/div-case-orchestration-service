@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -51,7 +51,7 @@ public class SolicitorPersonalServiceCallbackTest extends CcdSubmissionSupport {
         );
 
         //then
-        assertThat(callbackResponse.getErrors(), is(notNullValue()));
+        assertThat(callbackResponse.getErrors(), is(empty()));
         CaseDetails responseCaseDetails = CaseDetails.builder()
                 .id(Long.valueOf(caseId))
                 .data(callbackResponse.getData())
