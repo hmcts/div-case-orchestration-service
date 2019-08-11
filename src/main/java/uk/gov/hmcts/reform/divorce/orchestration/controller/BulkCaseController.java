@@ -106,7 +106,6 @@ public class BulkCaseController {
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
     }
 
-
     @PostMapping(path = "/bulk/pronounce/submit")
     @ApiOperation(value = "Callback to set required data on case when DN Pronounced")
     @ApiResponses(value = {
