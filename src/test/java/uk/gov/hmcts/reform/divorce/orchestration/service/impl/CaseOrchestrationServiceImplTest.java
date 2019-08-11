@@ -1349,7 +1349,7 @@ public class CaseOrchestrationServiceImplTest {
 
         when(validateBulkCaseListingWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData())).thenReturn(expectedPayload);
         when((documentGenerationWorkflow).run(ccdCallbackRequest,AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME))
-        .thenReturn(expectedPayload);
+            .thenReturn(expectedPayload);
 
         Map<String, Object> returnedPayload = classUnderTest
             .editBulkCaseListingData(ccdCallbackRequest, FILE_NAME, TEMPLATE_ID, DOCUMENT_TYPE, AUTH_TOKEN);
