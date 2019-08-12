@@ -12,12 +12,12 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.PERSONAL_SERVICE_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.SOL_SERVICE_METHOD_CCD_FIELD;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceMethodValidationTaskTest {
 
-    private static final String SOL_SERVICE_METHOD = "SolServiceMethod";
-    private static final String PERSONAL_SERVICE = "personalService";
     private DefaultTaskContext taskContext;
     private ServiceMethodValidationTask serviceMethodValidationTask;
 
@@ -34,14 +34,18 @@ public class ServiceMethodValidationTaskTest {
 
     @Test
     public void testExecuteValidatesServiceMethodDoesntThrowsExceptionIfServiceMethodIsNotPersonalService() throws TaskException {
-        Map<String, Object> payload = Collections.singletonMap(SOL_SERVICE_METHOD, "test");
+        Map<String, Object> payload = Collections.singletonMap(
+                SOL_SERVICE_METHOD_CCD_FIELD, "test"
+        );
         Map<String, Object> execute = serviceMethodValidationTask.execute(taskContext, payload);
         assertThat(execute, is(payload));
     }
 
     @Test(expected = TaskException.class)
     public void testExecuteValidatesServiceMethodDoesntThrowExceptionIfServiceMethodIsNotPresent() throws TaskException {
-        Map<String, Object> payload = Collections.singletonMap(SOL_SERVICE_METHOD, PERSONAL_SERVICE);
+        Map<String, Object> payload = Collections.singletonMap(
+                SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
+        );
         serviceMethodValidationTask.execute(taskContext, payload);
     }
 }

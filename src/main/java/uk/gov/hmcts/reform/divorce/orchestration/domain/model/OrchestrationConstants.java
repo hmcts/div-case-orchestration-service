@@ -99,6 +99,8 @@ public class OrchestrationConstants {
     public static final String PRONOUNCEMENT_JUDGE_CCD_FIELD = "PronouncementJudge";
     public static final String DATE_RESPONDENT_ELIGIBLE_FOR_DA_CCD_FIELD = "DateRespondentEligibleForDA";
     public static final String DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA_CCD_FIELD = "DateCaseNoLongerEligibleForDA";
+    public static final String SOL_SERVICE_METHOD_CCD_FIELD = "SolServiceMethod";
+    public static final String PERSONAL_SERVICE_VALUE = "personalService";
 
     public static final String PET_SOL_EMAIL = "PetitionerSolicitorEmail";
     public static final String PET_SOL_NAME = "PetitionerSolicitorName";

@@ -29,6 +29,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.PERSONAL_SERVICE_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.SOL_SERVICE_METHOD_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
@@ -76,7 +78,9 @@ public class SolicitorPersonalServiceTest {
     @Test
     public void givenServiceMethodIsNotPersonalService_thenResponseContainsErrors() throws Exception {
 
-        final Map<String, Object> caseData = Collections.singletonMap("SolServiceMethod", "test");
+        final Map<String, Object> caseData = Collections.singletonMap(
+                SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
+        );
 
         final CaseDetails caseDetails = CaseDetails.builder()
                 .caseData(caseData)

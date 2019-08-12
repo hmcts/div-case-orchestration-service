@@ -68,6 +68,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.PERSONAL_SERVICE_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.SOL_SERVICE_METHOD_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
@@ -336,7 +338,9 @@ public class BulkPrintTest extends IdamTestSupport {
     @Test
     public void givenServiceMethodIsPersonalService_thenResponseContainsErrors() throws Exception {
 
-        final Map<String, Object> caseData = Collections.singletonMap("SolServiceMethod", "personalService");
+        final Map<String, Object> caseData = Collections.singletonMap(
+                SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
+        );
 
         final CaseDetails caseDetails = CaseDetails.builder()
                 .caseData(caseData)

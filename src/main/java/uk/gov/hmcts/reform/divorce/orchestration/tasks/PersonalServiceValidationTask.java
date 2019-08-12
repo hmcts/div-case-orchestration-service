@@ -9,19 +9,18 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PERSONAL_SERVICE_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_SERVICE_METHOD_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @Slf4j
 @Component
 public class PersonalServiceValidationTask implements Task<Map<String, Object>> {
 
-    private static final String SOL_SERVICE_METHOD = "SolServiceMethod";
-    private static final String PERSONAL_SERVICE = "personalService";
-
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
-        String solServiceMethod = getMandatoryPropertyValueAsString(payload, SOL_SERVICE_METHOD);
-        if (!PERSONAL_SERVICE.equals(solServiceMethod)) {
+        String solServiceMethod = getMandatoryPropertyValueAsString(payload, SOL_SERVICE_METHOD_CCD_FIELD);
+        if (!PERSONAL_SERVICE_VALUE.equals(solServiceMethod)) {
             final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
             log.error(
                     "Unexpected service method for Personal Service event {} - Case ID: {}", solServiceMethod, caseId

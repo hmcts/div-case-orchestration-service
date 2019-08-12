@@ -12,12 +12,12 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.PERSONAL_SERVICE_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.SOL_SERVICE_METHOD_CCD_FIELD;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PersonalServiceValidationTaskTest {
 
-    private static final String SOL_SERVICE_METHOD = "SolServiceMethod";
-    private static final String PERSONAL_SERVICE = "personalService";
     private PersonalServiceValidationTask personalServiceValidationTask;
     private DefaultTaskContext taskContext;
 
@@ -29,7 +29,9 @@ public class PersonalServiceValidationTaskTest {
 
     @Test
     public void testExecuteValidatesServiceMethodHappyCase() throws TaskException {
-        Map<String, Object> payload = Collections.singletonMap(SOL_SERVICE_METHOD, PERSONAL_SERVICE);
+        Map<String, Object> payload = Collections.singletonMap(
+                SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
+        );
 
         Map<String, Object> execute = personalServiceValidationTask.execute(taskContext, payload);
 
@@ -43,7 +45,9 @@ public class PersonalServiceValidationTaskTest {
 
     @Test(expected = TaskException.class)
     public void testExecuteValidatesServiceMethodThrowsExceptionIfServiceMethodIsNotExpected() throws TaskException {
-        Map<String, Object> payload = Collections.singletonMap(SOL_SERVICE_METHOD, "test");
+        Map<String, Object> payload = Collections.singletonMap(
+                SOL_SERVICE_METHOD_CCD_FIELD, "test"
+        );
         Map<String, Object> execute = personalServiceValidationTask.execute(taskContext, payload);
         assertThat(execute, is(payload));
     }
