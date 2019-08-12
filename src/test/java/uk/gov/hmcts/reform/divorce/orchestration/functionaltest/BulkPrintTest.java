@@ -103,7 +103,7 @@ public class BulkPrintTest extends IdamTestSupport {
     public static WireMockClassRule sendLetterService = new WireMockClassRule(4021);
 
     @ClassRule
-    public static WireMockClassRule featureToggleService = new WireMockClassRule(4028);
+    public static WireMockClassRule featureToggleServiceMock = new WireMockClassRule(4028);
 
     @Autowired
     private MockMvc webClient;
@@ -131,7 +131,7 @@ public class BulkPrintTest extends IdamTestSupport {
         featureToggle.setUid("divorce_bulk_print");
         featureToggle.setDescription("some description");
 
-        featureToggleService.stubFor(WireMock.get("/api/ff4j/store/features/" + bulkPrintFeatureToggleName)
+        featureToggleServiceMock.stubFor(WireMock.get("/api/ff4j/store/features/" + bulkPrintFeatureToggleName)
             .withHeader("Content-Type", new EqualToPattern(APPLICATION_JSON_VALUE))
             .willReturn(aResponse()
                 .withHeader("Content-Type", APPLICATION_JSON_VALUE)
