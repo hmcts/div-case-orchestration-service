@@ -111,6 +111,11 @@ variable "feature_resp_solicitor_details" {
   default = "false"
 }
 
+variable "feature_dn_refusal" {
+  type    = "string"
+  default = "false"
+}
+
 variable "documentation_swagger_enabled" {
   default = "true"
 }
