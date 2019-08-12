@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.BulkWorkflowExecutionResult;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseAcceptedCasesEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseCreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseUpdateCourtHearingEvent;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkCaseService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkBulkCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ListForPronouncementDocGenerationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveBulkCaseLinkWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateBulkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateCourtHearingDetailsWorkflow;
@@ -51,6 +53,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
     private final UpdateBulkCaseWorkflow updateBulkCaseWorkflow;
     private final UpdatePronouncementDateWorkflow updatePronouncementDateWorkflow;
     private final RemoveBulkCaseLinkWorkflow removeBulkCaseLinkWorkflow;
+    private final ListForPronouncementDocGenerationWorkflow listForPronouncementDocGenerationWorkflow;
 
     @Override
     @EventListener
@@ -171,4 +174,9 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         final long endTime = Instant.now().toEpochMilli();
         log.info("Completed bulk case removed link from cases with bulk case Id:{} in:{} millis", bulkCaseId, endTime - startTime);
     }
+
+    public Map<String, Object>  removeFromBulkListed(CcdCallbackRequest callbackRequest, String auth) throws WorkflowException {
+        return listForPronouncementDocGenerationWorkflow.run(callbackRequest, auth);
+    }
+
 }
