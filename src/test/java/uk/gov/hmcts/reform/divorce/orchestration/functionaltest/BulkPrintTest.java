@@ -51,7 +51,6 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -268,8 +267,14 @@ public class BulkPrintTest extends IdamTestSupport {
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isInternalServerError())
-            .andExpect(content().string("Failed to send e-mail"));
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                    isJson(),
+                    hasJsonPath("$.data", is(Collections.emptyMap())),
+                    hasJsonPath("$.errors",
+                            hasItem("Failed to bulk print documents - Failed to send e-mail")
+                    )
+            )));
     }
 
     @Test
@@ -358,7 +363,7 @@ public class BulkPrintTest extends IdamTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(content().string(allOf(
                         isJson(),
-                        hasJsonPath("$.data", is(emptyArray())),
+                        hasJsonPath("$.data", is(Collections.emptyMap())),
                         hasJsonPath("$.errors",
                                 hasItem("Failed to bulk print documents - This event cannot be used when the service"
                                         + " method is Personal Service. Please use the Personal Service event instead")

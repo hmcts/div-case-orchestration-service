@@ -21,7 +21,6 @@ import java.util.Map;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -29,7 +28,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.PERSONAL_SERVICE_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.SOL_SERVICE_METHOD_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -67,7 +65,7 @@ public class SolicitorPersonalServiceTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(allOf(
                         isJson(),
-                        hasJsonPath("$.data", is(emptyArray())),
+                        hasJsonPath("$.data", is(Collections.emptyMap())),
                         hasJsonPath("$.errors",
                                 hasItem("Failed to issue solicitor personal service - "
                                         + "Could not evaluate value of mandatory property \"SolServiceMethod\"")
@@ -79,7 +77,7 @@ public class SolicitorPersonalServiceTest {
     public void givenServiceMethodIsNotPersonalService_thenResponseContainsErrors() throws Exception {
 
         final Map<String, Object> caseData = Collections.singletonMap(
-                SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
+                SOL_SERVICE_METHOD_CCD_FIELD, "test"
         );
 
         final CaseDetails caseDetails = CaseDetails.builder()
@@ -98,7 +96,7 @@ public class SolicitorPersonalServiceTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(allOf(
                         isJson(),
-                        hasJsonPath("$.data", is(emptyArray())),
+                        hasJsonPath("$.data", is(Collections.emptyMap())),
                         hasJsonPath("$.errors",
                                 hasItem("Failed to issue solicitor personal service - This event can only be used "
                                         + "with for a case with Personal Service as the service method")
