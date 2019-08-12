@@ -238,25 +238,34 @@ public class CallbackController {
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> bulkPrint(
         @RequestHeader(value = "Authorization") String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
-        Map<String, Object> response = caseOrchestrationService.ccdCallbackBulkPrintHandler(ccdCallbackRequest,
-            authorizationToken);
+        try {
+            Map<String, Object> response = caseOrchestrationService.ccdCallbackBulkPrintHandler(ccdCallbackRequest,
+                    authorizationToken);
 
-        if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
+            if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
+                return ResponseEntity.ok(
+                        CcdCallbackResponse.builder()
+                                .data(ImmutableMap.of())
+                                .warnings(ImmutableList.of())
+                                .errors(singletonList("Failed to bulk print documents"))
+                                .build());
+            }
             return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
-                    .data(ImmutableMap.of())
-                    .warnings(ImmutableList.of())
-                    .errors(singletonList("Failed to bulk print documents"))
-                    .build());
+                    CcdCallbackResponse.builder()
+                            .data(response)
+                            .errors(Collections.emptyList())
+                            .warnings(Collections.emptyList())
+                            .build());
+        } catch (WorkflowException e) {
+            return ResponseEntity.ok(
+                    CcdCallbackResponse.builder()
+                            .data(ImmutableMap.of())
+                            .warnings(ImmutableList.of())
+                            .errors(singletonList("Failed to bulk print documents - " + e.getMessage()))
+                            .build());
         }
-        return ResponseEntity.ok(
-            CcdCallbackResponse.builder()
-                .data(response)
-                .errors(Collections.emptyList())
-                .warnings(Collections.emptyList())
-                .build());
     }
 
     @PostMapping(path = "/petition-issued",

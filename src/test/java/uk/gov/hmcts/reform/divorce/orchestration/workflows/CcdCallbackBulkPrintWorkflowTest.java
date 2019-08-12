@@ -112,6 +112,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
         assertThat(response, is(payload));
 
         final InOrder inOrder = inOrder(
+                serviceMethodValidationTask,
                 fetchPrintDocsFromDmStore,
                 respondentAosPackPrinter,
                 coRespondentAosPackPrinter,
@@ -145,6 +146,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
         assertThat(response, is(payload));
 
         final InOrder inOrder = inOrder(
+            serviceMethodValidationTask,
             fetchPrintDocsFromDmStore,
             respondentAosPackPrinter,
             coRespondentAosPackPrinter,
@@ -179,6 +181,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
         assertThat(response, is(payload));
 
         final InOrder inOrder = inOrder(
+            serviceMethodValidationTask,
             fetchPrintDocsFromDmStore,
             respondentPinGenerator,
             respondentSolicitorAosEmailSender,

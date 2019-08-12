@@ -47,7 +47,13 @@ import java.util.UUID;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.emptyMap;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.emptyArray;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -182,7 +188,7 @@ public class BulkPrintTest extends IdamTestSupport {
     public void givenCaseDataWithRespondentSolicitor_whenCalledBulkPrint_thenEmailIsSent() throws Exception {
         stubFeatureToggleService(true);
         stubSendLetterService(HttpStatus.OK);
-        
+
         ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", true);
 
         final String petitionerFirstName = "petitioner first name";
@@ -268,7 +274,7 @@ public class BulkPrintTest extends IdamTestSupport {
     public void givenValidCaseDataWithSendLetterApiDown_whenCalledBulkPrint_thenExpectErrorInCCDResponse() throws Exception {
         stubFeatureToggleService(true);
         stubSendLetterService(HttpStatus.INTERNAL_SERVER_ERROR);
-        
+
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .data(emptyMap())
             .errors(Collections.singletonList("Failed to bulk print documents"))
@@ -325,6 +331,35 @@ public class BulkPrintTest extends IdamTestSupport {
 
         sendLetterService.verify(0, postRequestedFor(urlEqualTo("/letters")));
 
+    }
+
+    @Test
+    public void givenServiceMethodIsPersonalService_thenResponseContainsErrors() throws Exception {
+
+        final Map<String, Object> caseData = Collections.singletonMap("SolServiceMethod", "personalService");
+
+        final CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .build();
+
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+                .caseDetails(caseDetails)
+                .build();
+
+        webClient.perform(post(API_URL)
+                .content(convertObjectToJsonString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, AUTH_TOKEN))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        isJson(),
+                        hasJsonPath("$.data", is(emptyArray())),
+                        hasJsonPath("$.errors",
+                                hasItem("Failed to bulk print documents - This event cannot be used when the service"
+                                        + " method is Personal Service. Please use the Personal Service event instead")
+                        )
+                )));
     }
 
     private CollectionMember<Document> newDocument(String url, String name, String type) {
