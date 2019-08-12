@@ -10,38 +10,38 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import java.util.Collections;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ValidateServiceMethodTaskTest {
+public class ServiceMethodValidationTaskTest {
 
     private static final String SOL_SERVICE_METHOD = "SolServiceMethod";
     private static final String PERSONAL_SERVICE = "personalService";
-    private ValidateServiceMethodTask validateServiceMethodTask;
     private DefaultTaskContext taskContext;
+    private ServiceMethodValidationTask serviceMethodValidationTask;
 
     @Before
     public void setup() {
-        validateServiceMethodTask = new ValidateServiceMethodTask();
+        serviceMethodValidationTask = new ServiceMethodValidationTask();
         taskContext = new DefaultTaskContext();
     }
 
     @Test
     public void testExecuteThrowsExceptionIfServiceMethodIsPersonalService() throws TaskException {
-        validateServiceMethodTask.execute(taskContext, Collections.emptyMap());
+        serviceMethodValidationTask.execute(taskContext, Collections.emptyMap());
     }
 
     @Test
     public void testExecuteValidatesServiceMethodDoesntThrowsExceptionIfServiceMethodIsNotPersonalService() throws TaskException {
         Map<String, Object> payload = Collections.singletonMap(SOL_SERVICE_METHOD, "test");
-        Map<String, Object> execute = validateServiceMethodTask.execute(taskContext, payload);
+        Map<String, Object> execute = serviceMethodValidationTask.execute(taskContext, payload);
         assertThat(execute, is(payload));
     }
 
     @Test(expected = TaskException.class)
     public void testExecuteValidatesServiceMethodDoesntThrowExceptionIfServiceMethodIsNotPresent() throws TaskException {
         Map<String, Object> payload = Collections.singletonMap(SOL_SERVICE_METHOD, PERSONAL_SERVICE);
-        validateServiceMethodTask.execute(taskContext, payload);
+        serviceMethodValidationTask.execute(taskContext, payload);
     }
 }

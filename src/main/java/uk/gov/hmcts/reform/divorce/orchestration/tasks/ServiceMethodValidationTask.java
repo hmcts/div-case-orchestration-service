@@ -9,11 +9,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
 @Slf4j
 @Component
-public class ValidateServiceMethodTask implements Task<Map<String, Object>> {
+public class ServiceMethodValidationTask implements Task<Map<String, Object>> {
 
     private static final String SOL_SERVICE_METHOD = "SolServiceMethod";
     private static final String PERSONAL_SERVICE = "personalService";
@@ -21,13 +22,13 @@ public class ValidateServiceMethodTask implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         String solServiceMethod = getOptionalPropertyValueAsString(payload, SOL_SERVICE_METHOD, null);
-        if(!Strings.isNullOrEmpty(solServiceMethod)) {
-            if(PERSONAL_SERVICE.equals(solServiceMethod)) {
-                throw new TaskException(
-                        "This event cannot be used when the service method is Personal Service. " +
-                                "Please use the Personal Service event instead"
-                );
-            }
+        if (!Strings.isNullOrEmpty(solServiceMethod) && PERSONAL_SERVICE.equals(solServiceMethod)) {
+            final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
+            log.error("Unexpected service method {} - Case ID: {}", solServiceMethod, caseId);
+            throw new TaskException(
+                    "This event cannot be used when the service method is Personal Service. "
+                            + "Please use the Personal Service event instead"
+            );
         }
         return payload;
     }

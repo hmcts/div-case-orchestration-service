@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSolicitorPersonalServiceEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PersonalServiceValidationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSolicitorPersonalServiceEmailTask;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -88,7 +88,12 @@ public class IssuePersonalServicePackWorkflowTest {
 
         //then
         assertThat(response, is(caseData));
-        InOrder inOrder = inOrder(personalServiceValidationTask, documentGenerationTask, caseFormatterAddDocuments, sendSolicitorPersonalServiceEmailTask);
+        InOrder inOrder = inOrder(
+                personalServiceValidationTask,
+                documentGenerationTask,
+                caseFormatterAddDocuments,
+                sendSolicitorPersonalServiceEmailTask
+        );
         inOrder.verify(personalServiceValidationTask).execute(context, caseData);
         inOrder.verify(documentGenerationTask).execute(context, caseData);
         inOrder.verify(caseFormatterAddDocuments).execute(context, caseData);

@@ -21,10 +21,11 @@ public class PersonalServiceValidationTask implements Task<Map<String, Object>> 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         String solServiceMethod = getMandatoryPropertyValueAsString(payload, SOL_SERVICE_METHOD);
-        if(!PERSONAL_SERVICE.equals(solServiceMethod)) {
-            final String caseId = ;
-
-            log.error("Unexpected service method for Personal Service event {}", context.getTransientObject(CASE_ID_JSON_KEY));
+        if (!PERSONAL_SERVICE.equals(solServiceMethod)) {
+            final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
+            log.error(
+                    "Unexpected service method for Personal Service event {} - Case ID: {}", solServiceMethod, caseId
+            );
             throw new TaskException(
                     "This event can only be used with for a case with Personal Service as the service method"
             );
