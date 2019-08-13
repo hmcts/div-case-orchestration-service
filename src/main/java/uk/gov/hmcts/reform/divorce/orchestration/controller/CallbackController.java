@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
@@ -750,6 +752,20 @@ public class CallbackController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping(path = "/listing/remove-bulk-link")
+    @ApiOperation(value = "Callback to unlink case from bulk case listed")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed")})
+    public ResponseEntity<CcdCallbackResponse> removeBulkLinkFromCaseListed(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws JsonProcessingException {
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+        //Revert when functionality is completed
+        ObjectMapper objectMapper = new ObjectMapper();
+        log.info(objectMapper.writeValueAsString(ccdCallbackRequest));
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
 
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);

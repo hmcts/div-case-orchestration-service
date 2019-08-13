@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -901,4 +902,12 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(nullValue()));
     }
 
+    @Test
+    public void testRemoveFromCallbackListed_ForCoRespondent_callsRightService() throws JsonProcessingException {
+        //DUMMY test
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classUnderTest.removeBulkLinkFromCaseListed(ccdCallbackRequest);
+    }
 }
