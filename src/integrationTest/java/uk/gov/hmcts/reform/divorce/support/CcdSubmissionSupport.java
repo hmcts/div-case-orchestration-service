@@ -95,10 +95,14 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
     }
 
     protected CaseDetails updateCaseForCitizen(String caseId, String fileName, String eventId,
-                                               UserDetails userDetails) {
-        return ccdClientSupport.updateForCitizen(caseId,
-                fileName == null ? null : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class),
-                eventId, userDetails);
+                                               UserDetails userDetails, Pair<String, String>... additionalCaseData) {
+        final Map caseData = fileName == null
+                ? new HashMap() : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class);
+
+        Arrays.stream(additionalCaseData).forEach(
+            caseField -> caseData.put(caseField.getKey(), caseField.getValue())
+        );
+        return ccdClientSupport.updateForCitizen(caseId, caseData, eventId, userDetails);
     }
 
     public Response submitRespondentAosCase(String userToken, Long caseId, String requestBody) {
