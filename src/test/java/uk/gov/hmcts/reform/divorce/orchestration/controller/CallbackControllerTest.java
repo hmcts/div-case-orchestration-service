@@ -261,20 +261,9 @@ public class CallbackControllerTest {
         assertEquals(expected, actual.getBody());
     }
 
-
     @Test
     public void givenNoErrors_whenConfirmServiceCalled_thenCallbackWorksAsExpected() throws WorkflowException {
         final Map<String, Object> caseData = new HashMap<>();
-        Document document = new Document();
-        DocumentLink documentLink = new DocumentLink();
-        documentLink.setDocumentUrl("http://document.pdf");
-        documentLink.setDocumentFilename("document.pdf");
-        document.setDocumentLink(documentLink);
-        document.setDocumentType("IssuePetition");
-        CollectionMember<Document> issuePdf = new CollectionMember<>();
-        issuePdf.setValue(document);
-        List<CollectionMember<Document>> documents = new ArrayList<>();
-        caseData.put("DocumentGenerated", documents);
         final CaseDetails caseDetails = CaseDetails.builder()
             .caseData(caseData)
             .build();
@@ -296,7 +285,6 @@ public class CallbackControllerTest {
 
     @Test
     public void givenErrors_whenConfirmServiceCalled_thenReturnErrorResponse() throws WorkflowException {
-        final List<String> expectedError = singletonList("Some error");
         final Map<String, Object> caseData =
             Collections.singletonMap(OrchestrationConstants.BULK_PRINT_ERROR_KEY, "Some error");
         final CaseDetails caseDetails = CaseDetails.builder()
