@@ -64,4 +64,7 @@ public class TestConstants {
     public static final String BEARER_AUTH_TOKEN_1 = "Bearer test.auth.token1";
     public static final String TEST_CODE = "test.code";
     public static final Map<String, Object>  DUMMY_CASE_DATA = ImmutableMap.of("someKey", "someValue");
+    public static final String TEMPLATE_ID = "testTemplateId";
+    public static final String DOCUMENT_TYPE = "testDocumentType";
+    public static final String FILE_NAME = "testFileName";
 }

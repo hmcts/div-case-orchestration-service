@@ -90,7 +90,10 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.FILE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECREE_ABSOLUTE_GRANTED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
@@ -1320,6 +1323,42 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> response = classUnderTest.removeBulkLink(request);
         assertThat(response, is(caseData));
     }
+
+    @Test
+    public void givenBulkCaseWithoutJudge_whenEditBulkCase_thenReturnCaseWithoutDocument() throws Exception {
+        when(validateBulkCaseListingWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData())).thenReturn(expectedPayload);
+        Map<String, Object> returnedPayload = classUnderTest.editBulkCaseListingData(ccdCallbackRequest, FILE_NAME,
+            TEMPLATE_ID, DOCUMENT_TYPE, AUTH_TOKEN);
+
+        assertThat(returnedPayload, equalTo(expectedPayload));
+        verify(documentGenerationWorkflow, never()).run(any(),any(), any(), any(), any());
+    }
+
+    @Test
+    public void givenBulkCaseWithJudge_whenEditBulkCase_thenReturnGenerateDocumentCalled() throws Exception {
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(
+                CaseDetails.builder()
+                    .caseData(ImmutableMap.of(PRONOUNCEMENT_JUDGE_CCD_FIELD, "Judge"))
+                    .caseId(TEST_CASE_ID)
+                    .state(TEST_STATE)
+                    .build())
+            .eventId(TEST_EVENT_ID)
+            .token(TEST_TOKEN)
+            .build();
+
+        when(validateBulkCaseListingWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData())).thenReturn(expectedPayload);
+        when((documentGenerationWorkflow).run(ccdCallbackRequest,AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME))
+            .thenReturn(expectedPayload);
+
+        Map<String, Object> returnedPayload = classUnderTest
+            .editBulkCaseListingData(ccdCallbackRequest, FILE_NAME, TEMPLATE_ID, DOCUMENT_TYPE, AUTH_TOKEN);
+
+        assertThat(returnedPayload, equalTo(expectedPayload));
+        verify(documentGenerationWorkflow, times(1))
+            .run(ccdCallbackRequest,AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME);
+    }
+
 
     @After
     public void tearDown() {
