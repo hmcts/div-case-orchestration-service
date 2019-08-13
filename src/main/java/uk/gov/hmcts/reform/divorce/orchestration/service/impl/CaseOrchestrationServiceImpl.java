@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDe
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkFromListedWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDnOutcomeCaseFlagWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
@@ -152,6 +153,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final BulkCaseRemoveCasesWorkflow bulkCaseRemoveCasesWorkflow;
     private final PetitionerSolicitorRoleWorkflow petitionerSolicitorRoleWorkflow;
     private final RemoveLinkFromListedWorkflow removeLinkFromListedWorkflow;
+    private final RemoveDnOutcomeCaseFlagWorkflow removeDnOutcomeCaseFlagWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -711,6 +713,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> removeBulkListed(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         return removeLinkFromListedWorkflow.run(caseDetails.getCaseData());
+    }
+
+    @Override
+    public Map<String, Object> removeDnOutcomeCaseFlag(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return removeDnOutcomeCaseFlagWorkflow.run(ccdCallbackRequest);
     }
 
     private boolean isPetitionerClaimingCosts(Map<String, Object> caseData) {

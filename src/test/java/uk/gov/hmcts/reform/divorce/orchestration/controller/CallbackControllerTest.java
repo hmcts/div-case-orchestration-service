@@ -37,12 +37,16 @@ import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 
@@ -937,5 +941,35 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+    }
+
+    @Test
+    public void testRemoveCaseOnDigitalDecreeNisi_returnsPayload_whenExecuted() throws WorkflowException {
+        Map<String, Object> caseData = Collections.singletonMap(DN_OUTCOME_FLAG_CCD_FIELD, YES_VALUE);
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.removeDnOutcomeCaseFlag(ccdCallbackRequest)).thenReturn(Collections.emptyMap());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.removeDnOutcomeCaseFlag(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), is(Collections.emptyMap()));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
+
+    @Test
+    public void testRemoveCaseOnDigitalDecreeNisi_returnsPayloadWithErrors_whenWorkflowExceptionIsThrown() throws WorkflowException {
+        Map<String, Object> caseData = Collections.singletonMap(DN_OUTCOME_FLAG_CCD_FIELD, YES_VALUE);
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.removeDnOutcomeCaseFlag(ccdCallbackRequest)).thenThrow(new WorkflowException(TEST_ERROR));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.removeDnOutcomeCaseFlag(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), is(nullValue()));
+        assertThat(response.getBody().getErrors(), hasItem(equalTo("Unable to remove Decree Nisi Outcome flag")));
     }
 }
