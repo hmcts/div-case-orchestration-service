@@ -1327,7 +1327,7 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldCallRightWorkflow_WhenccdCallbackConfirmPersonalServiceCalled()
+    public void shouldCallRightWorkflow_WhenCcdCallbackConfirmPersonalServiceCalled()
         throws WorkflowException {
         requestPayload = singletonMap(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST, OrchestrationConstants.SEND_VIA_POST);
         ccdCallbackRequest = CcdCallbackRequest.builder()
@@ -1350,7 +1350,7 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test(expected = WorkflowException.class)
-    public void shouldThrowException_IfExceptionIsThrown_WhenProcessingccdCallbackConfirmPersonalService()
+    public void shouldThrowException_IfExceptionIsThrown_WhenProcessingCcdCallbackConfirmPersonalService()
         throws WorkflowException {
         requestPayload = singletonMap(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST, OrchestrationConstants.SEND_VIA_POST);
         ccdCallbackRequest = CcdCallbackRequest.builder()
@@ -1369,7 +1369,7 @@ public class CaseOrchestrationServiceImplTest {
         classUnderTest.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN);
     }
 
-    public void shouldNotCallBulkPrint_IfNotSendViaPost_WhenProcessingccdCallbackConfirmPersonalService()
+    public void shouldNotCallBulkPrint_IfNotSendViaPost_WhenProcessingCcdCallbackConfirmPersonalService()
         throws WorkflowException {
 
         requestPayload = singletonMap(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST, OrchestrationConstants.SEND_VIA_EMAIL_OR_POST);
