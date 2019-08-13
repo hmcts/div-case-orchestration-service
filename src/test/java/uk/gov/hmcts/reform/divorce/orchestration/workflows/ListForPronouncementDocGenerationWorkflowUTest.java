@@ -22,6 +22,9 @@ import java.util.Map;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -34,6 +37,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListForPronouncementDocGenerationWorkflowUTest {
+
+    private static final String PRONOUNCEMENT_JUDGE_CCD_FIELD = "PronouncementJudge";
 
     @InjectMocks
     private ListForPronouncementDocGenerationWorkflow classToTest;
@@ -52,20 +57,15 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
 
     @Test
     public void callsTheRequiredTasksInOrder() throws WorkflowException {
-        final TaskContext context = new DefaultTaskContext();
         final Map<String, Object> payload = new HashMap<>();
+        payload.put(PRONOUNCEMENT_JUDGE_CCD_FIELD, "Mr Judge");
 
         final CaseDetails caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .state(TEST_STATE)
             .caseData(payload)
             .build();
-
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(DOCUMENT_TEMPLATE_ID, "FL-DIV-GNO-ENG-00059.docx");
-        context.setTransientObject(DOCUMENT_TYPE, "caseListForPronouncement");
-        context.setTransientObject(DOCUMENT_FILENAME, "caseListForPronouncement");
+        final TaskContext context = getTaskContext(caseDetails);
 
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
@@ -85,5 +85,39 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
         inOrder.verify(documentGenerationTask).execute(context, payload);
         inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
     }
+    
+    @Test
+    public void givenCaseWithoutJudge_notCallDocumentGenerator() throws WorkflowException {
+        final Map<String, Object> payload = new HashMap<>();
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .caseData(payload)
+            .build();
 
+        final TaskContext context = getTaskContext(caseDetails);
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(syncBulkCaseListTask.execute(context, payload)).thenReturn(payload);
+
+        final Map<String, Object> result = classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        assertThat(result, is(payload));
+
+        verify(syncBulkCaseListTask, times(1)).execute(context, payload);
+        verify(setFormattedDnCourtDetails, never()).execute(context, payload);
+        verify(documentGenerationTask, never()).execute(context, payload);
+        verify(caseFormatterAddDocuments, never()).execute(context, payload);
+    }
+
+    private TaskContext getTaskContext(final CaseDetails caseDetails) {
+        final TaskContext context = new DefaultTaskContext();
+
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(DOCUMENT_TEMPLATE_ID, "FL-DIV-GNO-ENG-00059.docx");
+        context.setTransientObject(DOCUMENT_TYPE, "caseListForPronouncement");
+        context.setTransientObject(DOCUMENT_FILENAME, "caseListForPronouncement");
+        return context;
+    }
 }
