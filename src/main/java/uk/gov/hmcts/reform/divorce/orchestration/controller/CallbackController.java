@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.AosPackOfflineService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -749,6 +750,29 @@ public class CallbackController {
         }
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(path = "/remove-dn-outcome-case-flag")
+    @ApiOperation(value = "Callback to remove the DnOutcomeCase flag")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed")})
+    public ResponseEntity<CcdCallbackResponse> removeDnOutcomeCaseFlag(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        try {
+            return ResponseEntity.ok(
+                CcdCallbackResponse.builder()
+                    .data(caseOrchestrationService.removeDnOutcomeCaseFlag(ccdCallbackRequest))
+                    .build()
+            );
+        } catch (WorkflowException e) {
+            log.error("Error removing DnOutcomeCase field for case {}", ccdCallbackRequest.getCaseDetails().getCaseId());
+            return ResponseEntity.ok(
+                CcdCallbackResponse.builder()
+                    .errors(Arrays.asList("Unable to remove Decree Nisi Outcome flag"))
+                    .build()
+            );
+        }
     }
 
     private List<String> getErrors(Map<String, Object> response) {
