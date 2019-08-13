@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.support;
 
+import feign.FeignException;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -77,21 +78,32 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
     }
 
     protected CaseDetails updateCase(String caseId, String fileName, String eventId,
-                                     Pair<String, String>... additionalCaseData) {
+                                     Pair<String, Object>... additionalCaseData) {
         return updateCase(caseId, fileName, eventId, false, additionalCaseData);
     }
 
+    protected CaseDetails updateCase(String caseId, String eventId, boolean isBulkType, Pair<String, Object>... additionalCaseData) {
+        return updateCase(caseId, null, eventId, isBulkType, additionalCaseData);
+    }
+
     protected CaseDetails updateCase(String caseId, String fileName, String eventId, boolean isBulkType,
-                                     Pair<String, String>... additionalCaseData) {
+                                     Pair<String, Object>... additionalCaseData) {
+
         String payloadPath = isBulkType ? BULK_PAYLOAD_CONTEXT_PATH : PAYLOAD_CONTEXT_PATH;
         final Map caseData =
-                fileName == null ? new HashMap() : loadJsonToObject(payloadPath + fileName, Map.class);
+            fileName == null ? new HashMap() : loadJsonToObject(payloadPath + fileName, Map.class);
 
         Arrays.stream(additionalCaseData).forEach(
             caseField -> caseData.put(caseField.getKey(), caseField.getValue())
         );
 
-        return ccdClientSupport.update(caseId, caseData, eventId, createCaseWorkerUser(), isBulkType);
+        try {
+            return ccdClientSupport.update(caseId, caseData, eventId, createCaseWorkerUser(), isBulkType);
+        } catch (FeignException e) {
+            String errorMessage = e.content() == null ? e.getMessage() : e.contentUTF8();
+            log.error("Failed calling to CCD {}", errorMessage);
+            throw  e;
+        }
     }
 
     protected CaseDetails updateCaseForCitizen(String caseId, String fileName, String eventId,
