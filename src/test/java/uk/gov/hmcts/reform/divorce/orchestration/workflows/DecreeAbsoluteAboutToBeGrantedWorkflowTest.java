@@ -27,7 +27,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_TEMPLATE_ID;
@@ -68,7 +67,6 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflowTest {
         final Map<String, Object> result = decreeAbsoluteAboutToBeGrantedWorkflow.run(ccdCallbackRequest, "auth");
 
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, "auth");
         context.setTransientObject(DOCUMENT_TEMPLATE_ID, DECREE_ABSOLUTE_TEMPLATE_ID);
         context.setTransientObject(DOCUMENT_TYPE, DECREE_ABSOLUTE_DOCUMENT_TYPE);

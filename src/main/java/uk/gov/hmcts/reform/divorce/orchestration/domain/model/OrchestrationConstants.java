@@ -105,6 +105,7 @@ public class OrchestrationConstants {
 
     //CCD DN fields
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
+    public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
@@ -136,6 +137,7 @@ public class OrchestrationConstants {
     public static final String DEFENDED = "DefendedDivorce";
     public static final String DN_PRONOUNCED = "DNPronounced";
     public static final String AWAITING_DA = "AwaitingDecreeAbsolute";
+    public static final String DN_REFUSED = "DNisRefused";
     public static final String DA_REQUESTED = "DARequested";
     public static final String DIVROCE_GRANTED = "DivorceGranted";
 
@@ -249,6 +251,7 @@ public class OrchestrationConstants {
     public static final String DOCUMENT_TYPE = "documentType";
     public static final String DOCUMENT_TEMPLATE_ID = "documentTemplateId";
     public static final String DOCUMENT_FILENAME = "documentFilename";
+    public static final String DOCUMENT_GENERATION_REQUESTS_KEY = "documentGenerationRequests";
     public static final String DOCUMENT_FILENAME_FMT = "%s%s";
     public static final String DOCUMENTS_GENERATED = "DocumentsGenerated";
     public static final String COSTS_ORDER_DOCUMENT_TYPE = "costsOrder";

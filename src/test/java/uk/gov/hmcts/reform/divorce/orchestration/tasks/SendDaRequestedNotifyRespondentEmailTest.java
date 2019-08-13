@@ -34,6 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
@@ -62,10 +63,9 @@ public class SendDaRequestedNotifyRespondentEmailTest {
     @Before
     public void setup() {
         context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
 
         testData = new HashMap<>();
-        testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        testData.put(D_8_CASE_REFERENCE, TEST_CASE_ID);
         testData.put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE);
 
         expectedTemplateVars = new HashMap<>();
