@@ -692,7 +692,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         return removeLinkFromListedWorkflow.run(caseDetails.getCaseData());
     }
-    
+
     private boolean isPetitionerClaimingCosts(Map<String, Object> caseData) {
         return YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)))
             && !DN_COSTS_ENDCLAIM_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DN_COSTS_OPTIONS_CCD_FIELD)))
