@@ -40,6 +40,7 @@ public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<M
 
     private final SyncBulkCaseListTask syncBulkCaseListTask;
 
+    //TODO add task to trigger removeFromBulkCaseListed event on individual cases on cases with REMOVED_CASE_LIST on task context
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
 
         String judgeName = (String) ccdCallbackRequest.getCaseDetails().getCaseData().get(PRONOUNCEMENT_JUDGE_CCD_FIELD);

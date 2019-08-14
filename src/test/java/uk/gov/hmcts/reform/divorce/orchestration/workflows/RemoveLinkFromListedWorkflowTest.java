@@ -11,7 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveCertificateOfEntitlementDocumentsTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveLinkTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveListingDataTask;
 
 import java.util.Collections;
 import java.util.Map;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 public class RemoveLinkFromListedWorkflowTest {
 
     @Mock
-    private RemoveLinkTask removeLinkTask;
+    private RemoveListingDataTask removeListingDataTask;
     @Mock
     private RemoveCertificateOfEntitlementDocumentsTask removeCertificateOfEntitlementDocumentsTask;
 
@@ -42,17 +42,17 @@ public class RemoveLinkFromListedWorkflowTest {
 
     @Test
     public void runShouldExecuteTasksAndReturnPayload() throws Exception {
-        when(removeLinkTask.execute(context, testData)).thenReturn(testData);
+        when(removeListingDataTask.execute(context, testData)).thenReturn(testData);
         when(removeCertificateOfEntitlementDocumentsTask.execute(context, testData)).thenReturn(testData);
 
         assertThat(classToTest.run(testData), Is.is(testData));
 
         final InOrder inOrder = inOrder(
-            removeLinkTask,
+            removeListingDataTask,
             removeCertificateOfEntitlementDocumentsTask
         );
 
-        inOrder.verify(removeLinkTask).execute(context, testData);
+        inOrder.verify(removeListingDataTask).execute(context, testData);
         inOrder.verify(removeCertificateOfEntitlementDocumentsTask).execute(context, testData);
     }
 }

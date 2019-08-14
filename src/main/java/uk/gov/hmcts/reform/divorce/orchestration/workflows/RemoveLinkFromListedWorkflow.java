@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveCertificateOfEntitlementDocumentsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveLinkTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveListingDataTask;
 
 import java.util.Map;
 
@@ -14,14 +15,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RemoveLinkFromListedWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final RemoveLinkTask removeLinkTask;
+    private final RemoveListingDataTask removeListingDataTask;
     private final RemoveCertificateOfEntitlementDocumentsTask removeCertificateOfEntitlementDocumentsTask;
 
     public Map<String, Object> run(Map<String, Object> caseData) throws WorkflowException {
 
         return this.execute(
             new Task[] {
-                removeLinkTask,
+                removeListingDataTask,
                 removeCertificateOfEntitlementDocumentsTask
             },
             caseData

@@ -18,7 +18,7 @@ public class RemoveListingDataTask implements Task<Map<String, Object>> {
         Map<String, Object> response = new HashMap<>(payload);
         response.remove(BULK_LISTING_CASE_ID_FIELD);
         response.remove(COURT_NAME_CCD_FIELD);
-        //Pop last hearing date
+        //TODO Pop last hearing date
         return response;
     }
 }
