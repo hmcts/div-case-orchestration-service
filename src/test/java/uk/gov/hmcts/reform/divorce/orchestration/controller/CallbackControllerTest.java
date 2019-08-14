@@ -903,11 +903,16 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void testRemoveFromCallbackListed_ForCoRespondent_callsRightService() throws JsonProcessingException {
+    public void testRemoveFromCallbackListed_ForCoRespondent_callsRightService() throws WorkflowException, JsonProcessingException {
         //DUMMY test
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        Map<String, Object> expectedResponse = singletonMap("returnedKey", "returnedValue");
+        when(caseOrchestrationService.removeBulkListed(ccdCallbackRequest)).thenReturn(expectedResponse);
 
-        classUnderTest.removeBulkLinkFromCaseListed(ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.removeBulkLinkFromCaseListed(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
     }
 }
