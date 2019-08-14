@@ -171,6 +171,7 @@ public class OrchestrationConstants {
     public static final String SUCCESS_STATUS = "success";
 
     // Hearing
+    public static final String COURT_NAME_TEMPLATE_ID = "court name";
     public static final String COSTS_CLAIM_GRANTED = "costs claim granted";
     public static final String COSTS_CLAIM_NOT_GRANTED = "costs claim not granted";
     public static final String DATE_OF_HEARING = "date of hearing";
