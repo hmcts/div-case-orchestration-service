@@ -758,11 +758,17 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed")})
     public ResponseEntity<CcdCallbackResponse> removeBulkLinkFromCaseListed(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws JsonProcessingException {
-        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException, JsonProcessingException {
         //Revert when functionality is completed
         ObjectMapper objectMapper = new ObjectMapper();
         log.info(objectMapper.writeValueAsString(ccdCallbackRequest));
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        callbackResponseBuilder.data(caseOrchestrationService.removeBulkListed(ccdCallbackRequest));
+        log.info("Remove bulk listed for case ID: {}", caseId);
+
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 

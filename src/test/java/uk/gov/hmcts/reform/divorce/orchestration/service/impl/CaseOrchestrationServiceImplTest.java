@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkFromListedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
@@ -260,6 +261,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private RemoveLinkWorkflow removeLinkWorkflow;
+
+    @Mock
+    private RemoveLinkFromListedWorkflow removeLinkFromListedWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1359,6 +1363,23 @@ public class CaseOrchestrationServiceImplTest {
             .run(ccdCallbackRequest,AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME);
     }
 
+    @Test
+    public void shouldCallRightWorkflow_WhenRemoveBulkListed() throws WorkflowException {
+        Map<String, Object> caseData = DUMMY_CASE_DATA;
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails
+                .builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .build()).build();
+
+        when(removeLinkFromListedWorkflow.run(request.getCaseDetails().getCaseData())).thenReturn(caseData);
+        classUnderTest.removeBulkLink(request);
+
+
+        Map<String, Object> response = classUnderTest.removeBulkListed(request);
+        assertThat(response, is(caseData));
+    }
 
     @After
     public void tearDown() {

@@ -274,6 +274,8 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
 
+    public static final String DOCUMENT_TYPE_COE = "coe";
+
     public static final String SOL_DOCUMENT_LINK_FIELD = "solDocumentLinkFieldName";
     public static final String MINI_PETITION_LINK = "minipetitionlink";
     public static final String RESP_ANSWERS_LINK = "respondentanswerslink";
