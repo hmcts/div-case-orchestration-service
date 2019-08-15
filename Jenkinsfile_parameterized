@@ -20,7 +20,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
         ]
 }
 
-List<LinkedHashMap<String, Object>> secrets = [
+def secrets = [
         'div-${env}': [
             secret("ccd-submission-s2s-auth-secret", "AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY"),
             secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
