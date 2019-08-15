@@ -757,22 +757,13 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed")})
     public ResponseEntity<CcdCallbackResponse> removeDnOutcomeCaseFlag(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
-        try {
-            return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
-                    .data(caseOrchestrationService.removeDnOutcomeCaseFlag(ccdCallbackRequest))
-                    .build()
-            );
-        } catch (WorkflowException e) {
-            log.error("Error removing DnOutcomeCase field for case {}", ccdCallbackRequest.getCaseDetails().getCaseId());
-            return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
-                    .errors(Arrays.asList("Unable to remove Decree Nisi Outcome flag"))
-                    .build()
-            );
-        }
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.removeDnOutcomeCaseFlag(ccdCallbackRequest))
+                .build()
+        );
     }
 
     private List<String> getErrors(Map<String, Object> response) {
