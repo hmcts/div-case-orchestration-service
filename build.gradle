@@ -227,7 +227,7 @@ def versions = [
         postgresql                      : '42.2.5',
         hibernateTypes                  : '2.4.0',
         flyway                          : '5.2.4',
-        elasticsearch                   : '7.1.1'
+        elasticsearch                   : '7.2.1'
 ]
 
 dependencies {
