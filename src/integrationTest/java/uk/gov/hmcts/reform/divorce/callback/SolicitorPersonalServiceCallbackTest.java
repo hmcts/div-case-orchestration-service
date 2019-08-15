@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -27,6 +28,7 @@ public class SolicitorPersonalServiceCallbackTest extends CcdSubmissionSupport {
     private CosApiClient cosApiClient;
 
     @Test
+    @Ignore //until div-ccd-definitions PR-210 is in master/AAT
     public void testSolicitorPersonalServiceCallbackGeneratesPersonalServicePack() {
         //given
         final UserDetails solicitorUser = createSolicitorUser();
