@@ -3,23 +3,15 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.Maps;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader;
 
@@ -44,12 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = OrchestrationServiceApplication.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@PropertySource(value = "classpath:application.yml")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@AutoConfigureMockMvc
-public class RetrieveDraftITest {
+public class RetrieveDraftITest extends MockedFunctionalTest {
     private static final String API_URL = "/draftsapi/version/1";
     private static final String CMS_CONTEXT_PATH = "/casemaintenance/version/1/retrieveCase";
     private static final String CMS_UPDATE_CASE_PATH =
@@ -70,18 +57,6 @@ public class RetrieveDraftITest {
 
     @Autowired
     private MockMvc webClient;
-
-    @ClassRule
-    public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
-
-    @ClassRule
-    public static WireMockClassRule cfsServiceServer = new WireMockClassRule(4011);
-
-    @ClassRule
-    public static WireMockClassRule paymentServiceServer = new WireMockClassRule(9190);
-
-    @ClassRule
-    public static WireMockClassRule authServiceServer = new WireMockClassRule(4504);
 
     @Test
     public void givenJWTTokenIsNull_whenRetrieveDraft_thenReturnBadRequest()
@@ -184,13 +159,13 @@ public class RetrieveDraftITest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
-        cmsServiceServer.verify(2, getRequestedFor(urlEqualTo(CMS_CONTEXT_PATH)));
-        cmsServiceServer.verify(1, postRequestedFor(urlEqualTo(CMS_UPDATE_CASE_PATH)));
+        maintenanceServiceServer.verify(2, getRequestedFor(urlEqualTo(CMS_CONTEXT_PATH)));
+        maintenanceServiceServer.verify(1, postRequestedFor(urlEqualTo(CMS_UPDATE_CASE_PATH)));
 
     }
 
     private void stubCmsServerEndpoint(String path, HttpStatus status, String body, HttpMethod method) {
-        cmsServiceServer.stubFor(WireMock.request(method.name(), urlEqualTo(path))
+        maintenanceServiceServer.stubFor(WireMock.request(method.name(), urlEqualTo(path))
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
@@ -198,7 +173,7 @@ public class RetrieveDraftITest {
     }
 
     private void stubCfsServerEndpoint(String body) {
-        cfsServiceServer.stubFor(WireMock.post(CFS_CONTEXT_PATH)
+        formatterServiceServer.stubFor(WireMock.post(CFS_CONTEXT_PATH)
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
@@ -206,7 +181,7 @@ public class RetrieveDraftITest {
     }
 
     private void stubCfsToCCDServerEndpoint(String body) {
-        cfsServiceServer.stubFor(WireMock.post(CFS_TO_CCD_CONTEXT_PATH)
+        formatterServiceServer.stubFor(WireMock.post(CFS_TO_CCD_CONTEXT_PATH)
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
@@ -218,7 +193,7 @@ public class RetrieveDraftITest {
         Algorithm algorithm = mock(Algorithm.class);
         String body = JWT.create()
             .withExpiresAt(Date.from(ZonedDateTime.now().plusHours(1).toInstant())).sign(algorithm);
-        authServiceServer.stubFor(WireMock.post(AUTH_SERVICE_PATH)
+        serviceAuthProviderServer.stubFor(WireMock.post(AUTH_SERVICE_PATH)
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
