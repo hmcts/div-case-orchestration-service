@@ -11,10 +11,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SyncBulkCaseListTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDivorceCaseRemovePronouncementDetailsWithinBulkTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,8 +57,11 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
     @Mock
     private SyncBulkCaseListTask syncBulkCaseListTask;
 
+    @Mock
+    private UpdateDivorceCaseRemovePronouncementDetailsWithinBulkTask removePronouncementDetailsTask;
+
     @Test
-    public void callsTheRequiredTasksInOrder() throws WorkflowException {
+    public void callsTheRequiredTasksInOrder() throws TaskException, WorkflowException {
         final Map<String, Object> payload = new HashMap<>();
         payload.put(PRONOUNCEMENT_JUDGE_CCD_FIELD, "Mr Judge");
 
@@ -73,21 +78,29 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
         when(setFormattedDnCourtDetails.execute(context, payload)).thenReturn(payload);
         when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(removePronouncementDetailsTask.execute(context, payload)).thenReturn(payload);
 
         final Map<String, Object> result = classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
 
         assertThat(result, is(payload));
 
-        final InOrder inOrder = inOrder(syncBulkCaseListTask, setFormattedDnCourtDetails, documentGenerationTask, caseFormatterAddDocuments);
+        final InOrder inOrder = inOrder(
+                syncBulkCaseListTask,
+                setFormattedDnCourtDetails,
+                documentGenerationTask,
+                caseFormatterAddDocuments,
+                removePronouncementDetailsTask
+        );
 
         inOrder.verify(syncBulkCaseListTask).execute(context, payload);
         inOrder.verify(setFormattedDnCourtDetails).execute(context, payload);
         inOrder.verify(documentGenerationTask).execute(context, payload);
         inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
+        inOrder.verify(removePronouncementDetailsTask).execute(context, payload);
     }
     
     @Test
-    public void givenCaseWithoutJudge_notCallDocumentGenerator() throws WorkflowException {
+    public void givenCaseWithoutJudge_notCallDocumentGenerator() throws TaskException, WorkflowException {
         final Map<String, Object> payload = new HashMap<>();
         final CaseDetails caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
@@ -99,6 +112,7 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         when(syncBulkCaseListTask.execute(context, payload)).thenReturn(payload);
+        when(removePronouncementDetailsTask.execute(context, payload)).thenReturn(payload);
 
         final Map<String, Object> result = classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
 
@@ -108,6 +122,7 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
         verify(setFormattedDnCourtDetails, never()).execute(context, payload);
         verify(documentGenerationTask, never()).execute(context, payload);
         verify(caseFormatterAddDocuments, never()).execute(context, payload);
+        verify(removePronouncementDetailsTask, times(1)).execute(context, payload);
     }
 
     private TaskContext getTaskContext(final CaseDetails caseDetails) {

@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SyncBulkCaseListTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDivorceCaseRemovePronouncementDetailsWithinBulkTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,8 @@ public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<M
 
     private final SyncBulkCaseListTask syncBulkCaseListTask;
 
-    //TODO add task to trigger removeFromBulkCaseListed event on individual cases on cases with REMOVED_CASE_LIST on task context
+    private final UpdateDivorceCaseRemovePronouncementDetailsWithinBulkTask removePronouncementDetailsTask;
+
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
 
         String judgeName = (String) ccdCallbackRequest.getCaseDetails().getCaseData().get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
@@ -51,6 +53,7 @@ public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<M
             taskList.add(documentGenerationTask);
             taskList.add(caseFormatterAddDocuments);
         }
+        taskList.add(removePronouncementDetailsTask);
 
         Task[] taskArr = new Task[taskList.size()];
         return this.execute(

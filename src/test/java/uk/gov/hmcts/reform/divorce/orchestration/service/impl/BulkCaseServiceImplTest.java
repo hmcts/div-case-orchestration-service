@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.BulkWorkflowE
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseAcceptedCasesEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseCreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseRemovePronouncementDetailsEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseUpdateCourtHearingEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseUpdatePronouncementDateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.BulkUpdateException;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkBulkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveBulkCaseLinkWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateBulkCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateCourtHearingDetailsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdatePronouncementDateWorkflow;
 
@@ -50,6 +52,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REMOVE_FROM_BULK_CASE_LISTED_EVENT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkCaseServiceImplTest {
@@ -72,6 +75,9 @@ public class BulkCaseServiceImplTest {
 
     @Mock
     private RemoveBulkCaseLinkWorkflow removeBulkCaseLinkWorkflow;
+
+    @Mock
+    private UpdateCaseWorkflow updateCaseWorkflow;
 
     @InjectMocks
     private BulkCaseServiceImpl classToTest;
@@ -332,5 +338,40 @@ public class BulkCaseServiceImplTest {
 
         verify(removeBulkCaseLinkWorkflow, times(2)).run(caseDetails.getCaseData(), TEST_CASE_ID, TEST_BULK_CASE_ID,AUTH_TOKEN);
         verify(removeBulkCaseLinkWorkflow, times(1)).run(caseDetails.getCaseData(), FAILED_CASE_ID, TEST_BULK_CASE_ID,AUTH_TOKEN);
+    }
+
+    @Test
+    public void whenRemoveBulkPronouncementDetails_thenProcessAllCases() throws WorkflowException {
+        TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        taskContext.setTransientObject(REMOVED_CASE_LIST, Arrays.asList(TEST_CASE_ID, TEST_CASE_ID));
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_BULK_CASE_ID).caseData(new HashMap<>()).build();
+        BulkCaseRemovePronouncementDetailsEvent event = new BulkCaseRemovePronouncementDetailsEvent(taskContext, caseDetails);
+
+        classToTest.handleBulkCaseRemovePronouncementDetailsEvent(event);
+
+        verify(updateCaseWorkflow, times(2)).run(Collections.emptyMap(), AUTH_TOKEN, TEST_CASE_ID, REMOVE_FROM_BULK_CASE_LISTED_EVENT);
+    }
+
+    @Test
+    public void givenError_whenBulkPronouncementDetails_thenProcessOtherCases() throws WorkflowException {
+        TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        taskContext.setTransientObject(REMOVED_CASE_LIST, Arrays.asList(TEST_CASE_ID, FAILED_CASE_ID, TEST_CASE_ID));
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_BULK_CASE_ID).caseData(new HashMap<>()).build();
+        BulkCaseRemovePronouncementDetailsEvent event = new BulkCaseRemovePronouncementDetailsEvent(taskContext, caseDetails);
+        Map<String, Object> expectedCaseData = new HashMap<>();
+        when(updateCaseWorkflow
+                .run(Collections.emptyMap(), AUTH_TOKEN, TEST_CASE_ID, REMOVE_FROM_BULK_CASE_LISTED_EVENT))
+                .thenReturn(expectedCaseData);
+        when(updateCaseWorkflow
+                .run(Collections.emptyMap(), AUTH_TOKEN, FAILED_CASE_ID, REMOVE_FROM_BULK_CASE_LISTED_EVENT))
+                .thenThrow(new WorkflowException("Test error"));
+        classToTest.handleBulkCaseRemovePronouncementDetailsEvent(event);
+
+        verify(updateCaseWorkflow, times(2)).run(Collections.emptyMap(), AUTH_TOKEN, TEST_CASE_ID, REMOVE_FROM_BULK_CASE_LISTED_EVENT);
+        verify(updateCaseWorkflow, times(1)).run(Collections.emptyMap(), AUTH_TOKEN, FAILED_CASE_ID, REMOVE_FROM_BULK_CASE_LISTED_EVENT);
     }
 }

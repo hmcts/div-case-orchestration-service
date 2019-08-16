@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.callback;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.tuple.Pair;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
@@ -15,9 +16,13 @@ import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_JUDGE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
@@ -34,8 +39,11 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
     private static final String BULK_LISTED_EVENT = "listed";
     private static final String REMOVE_FROM_BULK_LISTED_EVENT = "removeFromListed";
 
+    private static final int  MAX_WAITING_TIME_IN_SECONDS = 30;
+    private static final int  POOL_INTERVAL_IN_MILLIS = 500;
+
     @Test
-    public void whenScheduleBulkCaseForListing_thenIndividualCasesShouldBeUpdated() throws Exception {
+    public void whenScheduleBulkCaseForRemoval_thenIndividualCasesShouldBeUpdated() throws Exception {
 
         //Given
         final UserDetails user1 = createCitizenUser();
@@ -77,6 +85,7 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
             hasJsonPath("$.case_data.CaseList.length()", is(1)
         ));
 
+        validateCaseWithAwaitingTime(createCaseWorkerUser(), caseId2);
     }
 
     private void moveBulkCaseListed(String bulkCaseId) {
@@ -92,5 +101,12 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
         CollectionMember<Map<String,Object>> caseLink = new CollectionMember<>();
         caseLink.setValue(ImmutableMap.of(CASE_REFERENCE_FIELD, new CaseLink(caseReference)));
         return caseLink;
+    }
+
+    private void validateCaseWithAwaitingTime(UserDetails user, String caseId) {
+        await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS)
+                .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
+                .untilAsserted(() -> Assertions.assertThat(
+                        retrieveCaseForCaseworker(user, caseId).getData().get(BULK_LISTING_CASE_ID_FIELD)).isNull());
     }
 }

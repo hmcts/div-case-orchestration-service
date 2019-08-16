@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveCertificateOfEntitlementDocumentsTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveLinkTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveListingDataTask;
 
 import java.util.Map;

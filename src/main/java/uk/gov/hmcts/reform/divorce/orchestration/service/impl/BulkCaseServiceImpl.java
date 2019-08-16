@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseAcceptedCasesEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseCreateEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseRemovePronouncementDetailsEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseUpdateCourtHearingEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseUpdatePronouncementDateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.BulkUpdateException;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkBulkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ListForPronouncementDocGenerationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveBulkCaseLinkWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateBulkCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateCourtHearingDetailsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdatePronouncementDateWorkflow;
 
@@ -42,6 +44,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REMOVE_FROM_BULK_CASE_LISTED_EVENT;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +57,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
     private final UpdatePronouncementDateWorkflow updatePronouncementDateWorkflow;
     private final RemoveBulkCaseLinkWorkflow removeBulkCaseLinkWorkflow;
     private final ListForPronouncementDocGenerationWorkflow listForPronouncementDocGenerationWorkflow;
+    private final UpdateCaseWorkflow updateCaseWorkflow;
 
     @Override
     @EventListener
@@ -175,7 +179,35 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         log.info("Completed bulk case removed link from cases with bulk case Id:{} in:{} millis", bulkCaseId, endTime - startTime);
     }
 
-    public Map<String, Object>  removeFromBulkListed(CcdCallbackRequest callbackRequest, String auth) throws WorkflowException {
+    @Override
+    @EventListener
+    public void handleBulkCaseRemovePronouncementDetailsEvent(BulkCaseRemovePronouncementDetailsEvent event) {
+        final long startTime = Instant.now().toEpochMilli();
+
+        TaskContext context = (TaskContext) event.getSource();
+        CaseDetails caseResponse = event.getCaseDetails();
+        List<String> casesToUnlink = context.getTransientObject(REMOVED_CASE_LIST);
+        final String bulkCaseId = caseResponse.getCaseId();
+
+        for (String caseId : casesToUnlink) {
+            try {
+                // Triggering event does not require payload
+                updateCaseWorkflow.run(
+                        Collections.emptyMap(),
+                        context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+                        caseId,
+                        REMOVE_FROM_BULK_CASE_LISTED_EVENT
+                );
+            } catch (WorkflowException e) {
+                log.error("Error removing bulk case pronouncement details with bulkCaseId: {} and caseId {}", bulkCaseId, caseId);
+            }
+        }
+
+        final long endTime = Instant.now().toEpochMilli();
+        log.info("Completed bulk case remove pronouncement details from cases with bulk case Id:{} in:{} millis", bulkCaseId, endTime - startTime);
+    }
+
+    public Map<String, Object> removeFromBulkListed(CcdCallbackRequest callbackRequest, String auth) throws WorkflowException {
         return listForPronouncementDocGenerationWorkflow.run(callbackRequest, auth);
     }
 

@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
@@ -758,11 +756,7 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed")})
     public ResponseEntity<CcdCallbackResponse> removeBulkLinkFromCaseListed(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException, JsonProcessingException {
-        //Revert when functionality is completed
-        ObjectMapper objectMapper = new ObjectMapper();
-        log.info(objectMapper.writeValueAsString(ccdCallbackRequest));
-
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
