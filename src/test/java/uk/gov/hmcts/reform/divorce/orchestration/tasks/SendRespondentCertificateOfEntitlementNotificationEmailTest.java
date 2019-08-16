@@ -9,6 +9,8 @@ import org.mockito.Mock;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
@@ -27,14 +29,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_NAME_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -78,19 +84,25 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
         RESP_FIRST_NAME_CCD_FIELD,
         RESP_LAST_NAME_CCD_FIELD,
         D_8_INFERRED_PETITIONER_GENDER,
-        DATETIME_OF_HEARING_CCD_FIELD);
+        DATETIME_OF_HEARING_CCD_FIELD,
+        COURT_NAME_CCD_FIELD);
 
     private List<String> solMandatoryFields = asList(
         D_8_PETITIONER_FIRST_NAME,
         D_8_PETITIONER_LAST_NAME,
         RESP_FIRST_NAME_CCD_FIELD,
         RESP_LAST_NAME_CCD_FIELD,
-        DATETIME_OF_HEARING_CCD_FIELD);
+        DATETIME_OF_HEARING_CCD_FIELD,
+        COURT_NAME_CCD_FIELD);
 
     @Before
-    public void setUp() {
+    public void setUp() throws CourtDetailsNotFound {
         testContext = new DefaultTaskContext();
         testContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+
+        DnCourt dnCourt = new DnCourt();
+        dnCourt.setName("Court Name");
+        when(taskCommons.getDnCourt(anyString())).thenReturn(dnCourt);
     }
 
     @Test
@@ -212,7 +224,8 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
                     optionalTextParametersMatcher,
                     hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "husband"),
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
-                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019")
+                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019"),
+                    hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
             )));
     }
@@ -230,7 +243,8 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
                     hasEntry(NOTIFICATION_SOLICITOR_NAME, "Respondent Solicitor name"),
                     optionalTextParametersMatcher,
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
-                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019")
+                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019"),
+                    hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
             )));
     }

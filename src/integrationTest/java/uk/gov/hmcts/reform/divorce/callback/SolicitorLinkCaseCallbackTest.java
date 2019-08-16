@@ -61,7 +61,7 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
 
         String caseId = String.valueOf(caseDetails.getId());
         updateCaseForCitizen(caseId, null, TEST_AOS_STARTED_EVENT_ID, petitionerUserDetails);
-        updateCase(caseId, null, AOS_NOMINATE_SOL_EVENT_ID,
+        updateCaseForCitizen(caseId, null, AOS_NOMINATE_SOL_EVENT_ID, petitionerUserDetails,
                 ImmutablePair.of(D8_RESPONDENT_SOLICITOR_NAME, TEST_SOLICITOR_NAME),
                 ImmutablePair.of(D8_RESPONDENT_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL)
         );

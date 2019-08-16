@@ -93,6 +93,8 @@ public class OrchestrationConstants {
     public static final String UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT = "dnPronouncedBulk";
     public static final String WHO_PAYS_COSTS_CCD_FIELD = "WhoPaysCosts";
     public static final String WHO_PAYS_CCD_CODE_FOR_RESPONDENT = "respondent";
+    public static final String WHO_PAYS_CCD_CODE_FOR_CORESPONDENT = "coRespondent";
+    public static final String WHO_PAYS_CCD_CODE_FOR_BOTH = "respondentAndCoRespondent";
     public static final String DECREE_NISI_GRANTED_DATE_CCD_FIELD = "DecreeNisiGrantedDate";
     public static final String DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD = "DAEligibleFromDate";
     public static final String DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD = "DecreeAbsoluteGrantedDate";
@@ -173,6 +175,7 @@ public class OrchestrationConstants {
     public static final String SUCCESS_STATUS = "success";
 
     // Hearing
+    public static final String COURT_NAME_TEMPLATE_ID = "court name";
     public static final String COSTS_CLAIM_GRANTED = "costs claim granted";
     public static final String COSTS_CLAIM_NOT_GRANTED = "costs claim not granted";
     public static final String DATE_OF_HEARING = "date of hearing";

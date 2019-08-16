@@ -10,4 +10,9 @@
     <root level="WARN">
         <appender-ref ref="STDOUT" />
     </root>
+
+    <!-- for wiremock fast clean thread errors -->
+    <logger name="org.eclipse.jetty.util.thread.QueuedThreadPool" level="ERROR" />
+    <logger name="wiremock.org.eclipse.jetty.util.thread.QueuedThreadPool" level="ERROR" />
+    <logger name="org.apache.catalina.loader.WebappClassLoaderBase" level="ERROR" />
 </configuration>
