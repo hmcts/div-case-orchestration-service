@@ -20,15 +20,16 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
         ]
 }
 
-List<LinkedHashMap<String, Object>> secrets = [
-        secret("ccd-submission-s2s-auth-secret", "AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY"),
-        secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
-        secret("idam-secret", "AUTH2_CLIENT_SECRET")
+def secrets = [
+        'div-${env}': [
+            secret("ccd-submission-s2s-auth-secret", "AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY"),
+            secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
+            secret("idam-secret", "AUTH2_CLIENT_SECRET")
+        ]
 ]
 
 withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.COMPONENT, params.ENVIRONMENT, params.SUBSCRIPTION) {
         loadVaultSecrets(secrets)
-        setVaultName('div')
 
         after('functionalTest:saat') {
                 steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
