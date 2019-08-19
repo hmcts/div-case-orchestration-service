@@ -84,7 +84,7 @@ public interface CaseFormatterClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/remove/documents/{documentType}",
+        value = "/caseformatter/version/1/remove/documents/{documentType}",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     Map<String, Object> removeAllDocumentsByType(

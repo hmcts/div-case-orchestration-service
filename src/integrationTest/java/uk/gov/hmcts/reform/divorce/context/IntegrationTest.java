@@ -30,6 +30,7 @@ public abstract class IntegrationTest {
     private static final String CASEWORKER_DIVORCE_ROLE = "caseworker-divorce";
     private static final String CASEWORKER_DIVORCE_COURTADMIN_ROLE = "caseworker-divorce-courtadmin";
     private static final String CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE = "caseworker-divorce-courtadmin_beta";
+    private static final String CASEWORKER_DIVORCE_SUPERUSER_ROLE = "caseworker-divorce-superuser";
     private static final String CASEWORKER_DIVORCE_SOLICITOR_ROLE = "caseworker-divorce-solicitor";
     private static final String CASEWORKER_ROLE = "caseworker";
     private static final String PASSWORD = "genericPassword123";
@@ -83,7 +84,8 @@ public abstract class IntegrationTest {
                     CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN, CASE_WORKER_PASSWORD,
                     CASEWORKER_USERGROUP,
                     CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
-                    CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
+                    CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE,
+                    CASEWORKER_DIVORCE_SUPERUSER_ROLE
                 ));
             }
             return caseWorkerUser;
