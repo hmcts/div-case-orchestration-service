@@ -904,7 +904,6 @@ public class CallbackControllerTest {
 
     @Test
     public void testRemoveFromCallbackListed_ForCoRespondent_callsRightService() throws WorkflowException, JsonProcessingException {
-        //DUMMY test
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
         Map<String, Object> expectedResponse = singletonMap("returnedKey", "returnedValue");
