@@ -4,16 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -56,14 +50,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = OrchestrationServiceApplication.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@PropertySource(value = "classpath:application.yml")
-@AutoConfigureMockMvc
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class DnPronouncedNotificationTest {
+public class DnPronouncedNotificationTest extends MockedFunctionalTest {
     private static final String API_URL = "/dn-pronounced";
     private static final String GENERIC_UPDATE_TEMPLATE_ID = "6ee6ec29-5e88-4516-99cb-2edc30256575";
+    private static final String GENERIC_UPDATE_RESPONDENT_TEMPLATE_ID = "dc47109d-95f0-4a55-a11f-de41a5201cbc";
 
     private Map<String, Object> caseData;
     private CcdCallbackRequest ccdCallbackRequest;
@@ -119,7 +109,7 @@ public class DnPronouncedNotificationTest {
         verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
                 eq(TEST_PETITIONER_EMAIL),
                 any(), any());
-        verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
+        verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_RESPONDENT_TEMPLATE_ID),
                 eq(TEST_RESPONDENT_EMAIL),
                 any(), any());
         verify(emailClient, never()).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
@@ -146,7 +136,7 @@ public class DnPronouncedNotificationTest {
         verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
                 eq(TEST_PETITIONER_EMAIL),
                 any(), any());
-        verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
+        verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_RESPONDENT_TEMPLATE_ID),
                 eq(TEST_RESPONDENT_EMAIL),
                 any(), any());
         verify(emailClient, never()).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
@@ -173,7 +163,7 @@ public class DnPronouncedNotificationTest {
         verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
                 eq(TEST_PETITIONER_EMAIL),
                 any(), any());
-        verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
+        verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_RESPONDENT_TEMPLATE_ID),
                 eq(TEST_RESPONDENT_EMAIL),
                 any(), any());
         verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
@@ -200,7 +190,7 @@ public class DnPronouncedNotificationTest {
         verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
                 eq(TEST_PETITIONER_EMAIL),
                 any(), any());
-        verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
+        verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_RESPONDENT_TEMPLATE_ID),
                 eq(TEST_RESPONDENT_EMAIL),
                 any(), any());
         verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
