@@ -130,6 +130,16 @@ public interface CosApiClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
+        value = "/bulk/edit/listing"
+    )
+    Map<String, Object> editBulkListing(@RequestHeader(AUTHORIZATION) String authorisation,
+                                        @RequestBody CcdCallbackRequest ccdCallbackRequest,
+                                        @RequestParam(name = "templateId") String templateId,
+                                        @RequestParam(name = "documentType") String documentType,
+                                        @RequestParam(name = "filename") String filename);
+
+    @RequestMapping(
+        method = RequestMethod.POST,
         value = "/generate-document"
     )
     Map<String, Object> generateDocument(@RequestHeader(AUTHORIZATION) String authorisation,
@@ -169,4 +179,13 @@ public interface CosApiClient {
                                             @PathVariable("party") String party,
                                             @RequestBody CcdCallbackRequest ccdCallbackRequest);
 
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/personal-service-pack"
+    )
+    CcdCallbackResponse processPersonalServicePack(
+            @RequestHeader(AUTHORIZATION) String authorisation,
+            @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
 }

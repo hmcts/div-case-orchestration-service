@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.service.notify.NotificationClientException;
 
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -46,7 +45,6 @@ public class EmailServiceTest {
             anyString());
     }
 
-
     @Test
     public void useConfigTemplateVarsWhenAvailable()
         throws NotificationClientException {
@@ -67,13 +65,38 @@ public class EmailServiceTest {
         throws NotificationClientException {
         doThrow(new NotificationClientException(new Exception("Exception inception")))
             .when(mockClient).sendEmail(anyString(), anyString(), eq(null), anyString());
-        try {
-            emailService.sendEmail(EMAIL_ADDRESS,
+
+        //no exception thrown
+        emailService.sendEmail(EMAIL_ADDRESS,
                 EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
                 null,
                 "resp does not consent to 2 year separation update notification");
-        } catch (Exception e) {
-            fail();
-        }
+    }
+
+    @Test
+    public void sendEmailAndReturnExceptionShouldCallTheEmailClientToSendAnEmail()
+            throws NotificationClientException {
+        emailService.sendEmailAndReturnExceptionIfFails(EMAIL_ADDRESS,
+                EmailTemplateNames.APPLIC_SUBMISSION.name(),
+                null,
+                "submission notification");
+
+        verify(mockClient).sendEmail(
+                eq(emailTemplatesConfig.getTemplates().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+                eq(EMAIL_ADDRESS),
+                eq(emailTemplatesConfig.getTemplateVars().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+                anyString());
+    }
+
+    @Test(expected = NotificationClientException.class)
+    public void sendEmailShouldAndReturnExceptionPropagateNotificationClientException()
+            throws NotificationClientException {
+        doThrow(new NotificationClientException(new Exception("Exception inception")))
+                .when(mockClient).sendEmail(anyString(), anyString(), eq(null), anyString());
+
+        emailService.sendEmailAndReturnExceptionIfFails(EMAIL_ADDRESS,
+                EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
+                null,
+                "resp does not consent to 2 year separation update notification");
     }
 }
