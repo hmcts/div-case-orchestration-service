@@ -34,9 +34,9 @@ public class EmailService {
     }
 
     public void sendEmailAndReturnExceptionIfFails(String destinationAddress,
-                          String templateName,
-                          Map<String, String> templateVars,
-                          String emailDescription) throws NotificationClientException {
+                           String templateName,
+                           Map<String, String> templateVars,
+                           String emailDescription) throws NotificationClientException {
 
         EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
         sendEmailUsingClient(emailToSend, emailDescription);
@@ -59,7 +59,7 @@ public class EmailService {
             sendEmailUsingClient(emailToSend, emailDescription);
         } catch (NotificationClientException e) {
             log.warn("Failed to send email. Reference ID: {}. Reason: {}", emailToSend.getReferenceId(),
-                e.getMessage(), e);
+                    e.getMessage(), e);
             response.put(EMAIL_ERROR_KEY, e);
         }
 

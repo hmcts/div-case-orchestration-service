@@ -78,7 +78,7 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
 
         Map<String, Object> caseToIssue = ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "issued-case.json", Map.class);
         caseToIssue.put(D_8_PETITIONER_EMAIL, citizenUser.getEmailAddress());
-        CaseDetails issuedCase = ccdClientSupport.submitCaseForCitizen(
+        CaseDetails issuedCase = ccdClientSupport.submitCase(
             caseToIssue,
             citizenUser
         );

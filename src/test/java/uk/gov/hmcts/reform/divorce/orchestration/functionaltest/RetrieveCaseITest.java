@@ -1,21 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 
@@ -41,12 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = OrchestrationServiceApplication.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@PropertySource(value = "classpath:application.yml")
-@AutoConfigureMockMvc
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class RetrieveCaseITest {
+public class RetrieveCaseITest extends MockedFunctionalTest {
     private static final String API_URL = "/retrieve-case";
     private static final String GET_CASE_CONTEXT_PATH = "/casemaintenance/version/1/case";
     private static final String FORMAT_TO_DIVORCE_CONTEXT_PATH = "/caseformatter/version/1/to-divorce-format";
@@ -61,12 +48,6 @@ public class RetrieveCaseITest {
 
     @Autowired
     private MockMvc webClient;
-
-    @ClassRule
-    public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(4010);
-
-    @ClassRule
-    public static WireMockClassRule formatterServiceServer = new WireMockClassRule(4011);
 
     @Test
     public void givenNoAuthToken_whenRetrieveCase_thenReturnBadRequest() throws Exception {

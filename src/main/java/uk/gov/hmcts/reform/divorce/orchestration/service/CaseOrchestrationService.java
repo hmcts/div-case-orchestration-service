@@ -127,4 +127,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> updateBulkCaseAcceptedCases(CaseDetails caseDetails, String authToken) throws WorkflowException;
 
+    Map<String, Object> editBulkCaseListingData(CcdCallbackRequest ccdCallbackRequest, String fileName,
+                                                String templateId, String documentType, String authToken) throws WorkflowException;
+
 }

@@ -33,7 +33,7 @@ public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
     public void givenDivorceSession_whenUpdateIsCalled_caseIdIsReturned() throws Exception {
         UserDetails citizenUser = createCitizenUser();
 
-        String caseId = ccdClientSupport.submitCaseForCitizen(
+        String caseId = ccdClientSupport.submitCase(
                 ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "submit-case-data.json", Map.class),
                 citizenUser
         ).getId().toString();
