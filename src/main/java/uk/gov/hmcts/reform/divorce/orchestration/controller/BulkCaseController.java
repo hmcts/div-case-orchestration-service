@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -72,6 +73,33 @@ public class BulkCaseController {
         try {
             orchestrationService.validateBulkCaseListingData(ccdCallbackRequest.getCaseDetails().getCaseData());
         } catch (WorkflowException exception) {
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/bulk/edit/listing")
+    @ApiOperation(value = "Callback to validate bulk case data for listing")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Bulk case processing has been initiated"),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> editBulkCaseListingData(
+        @RequestHeader("Authorization")
+        @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
+        @RequestParam(value = "templateId") @ApiParam("templateId") String templateId,
+        @RequestParam(value = "documentType") @ApiParam("documentType") String documentType,
+        @RequestParam(value = "filename") @ApiParam("filename") String filename,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            Map<String, Object> response = orchestrationService.editBulkCaseListingData(ccdCallbackRequest,
+                filename, templateId, documentType, authorizationToken);
+            ccdCallbackResponseBuilder.data(response);
+        } catch (WorkflowException exception) {
+            log.error("Error validating bulk case with BulkCaseId : {}", ccdCallbackRequest.getCaseDetails().getCaseId(), exception);
             ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 

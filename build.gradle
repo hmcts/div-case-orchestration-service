@@ -227,7 +227,7 @@ def versions = [
         postgresql                      : '42.2.5',
         hibernateTypes                  : '2.4.0',
         flyway                          : '5.2.4',
-        elasticsearch                   : '7.1.1'
+        elasticsearch                   : '7.2.1'
 ]
 
 dependencies {
@@ -403,6 +403,12 @@ test {
 
 task wiremockFunctional(type: Test, description: 'Executes wiremock functional tests', group: 'Verification') {
     onlyIf { project.file("./build/reports/tests/test/index.html").exists() }
+
+    printf ("Available processors:::::::::: " + Runtime.runtime.availableProcessors().intdiv(2).toString())
+
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    forkEvery = 10
+    
     test.outputs.upToDateWhen {false}
     testLogging.showStandardStreams = true
     include '**/functionaltest/**/*'

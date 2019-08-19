@@ -248,30 +248,6 @@ public class OrchestrationController {
         );
     }
 
-    @PostMapping(path = "/aos-received")
-    @ApiOperation(value = "Respondent confirmation notification ")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Notification sent successful"),
-        @ApiResponse(code = 401, message = "User Not Authenticated"),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> aosReceived(
-        @RequestHeader("Authorization")
-        @ApiParam(value = "JWT authorisation token issued by IDAM",
-            required = true) final String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return ResponseEntity.ok(orchestrationService.aosReceived(ccdCallbackRequest, authorizationToken));
-    }
-
-    @PostMapping(path = "/co-respondent-received")
-    @ApiOperation(value = "Co-Respondent confirmation notification ")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Notification sent successful"),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> corespReceived(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return ResponseEntity.ok(orchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest));
-    }
-
     @PostMapping(path = "/submit-aos/{caseId}",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles respondent AOS submission")
