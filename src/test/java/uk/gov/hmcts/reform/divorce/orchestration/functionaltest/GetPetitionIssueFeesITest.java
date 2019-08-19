@@ -60,10 +60,6 @@ public class GetPetitionIssueFeesITest extends MockedFunctionalTest {
     @Autowired
     private MockMvc webClient;
 
-    @ClassRule
-    public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(4010);
-
-
     @Test
     public void givenCaseData_whenGetPetitionIssueFee_thenReturnUpdatedResponseWithFees() throws Exception {
         FeeResponse feeResponse = FeeResponse.builder()
