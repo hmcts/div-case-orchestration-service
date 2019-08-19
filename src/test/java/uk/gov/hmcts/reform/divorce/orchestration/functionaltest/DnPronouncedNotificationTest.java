@@ -112,7 +112,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
         verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_RESPONDENT_TEMPLATE_ID),
                 eq(TEST_RESPONDENT_EMAIL),
                 any(), any());
-        verify(emailClient, never()).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
+        verify(emailClient, never()).sendEmail(eq(GENERIC_UPDATE_RESPONDENT_TEMPLATE_ID),
                 eq(TEST_USER_EMAIL),
                 any(), any());
     }
@@ -139,7 +139,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
         verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_RESPONDENT_TEMPLATE_ID),
                 eq(TEST_RESPONDENT_EMAIL),
                 any(), any());
-        verify(emailClient, never()).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
+        verify(emailClient, never()).sendEmail(eq(GENERIC_UPDATE_RESPONDENT_TEMPLATE_ID),
                 eq(TEST_USER_EMAIL),
                 any(), any());
     }
@@ -166,7 +166,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
         verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_RESPONDENT_TEMPLATE_ID),
                 eq(TEST_RESPONDENT_EMAIL),
                 any(), any());
-        verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
+        verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_RESPONDENT_TEMPLATE_ID),
                 eq(TEST_USER_EMAIL),
                 any(), any());
     }
@@ -193,7 +193,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
         verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_RESPONDENT_TEMPLATE_ID),
                 eq(TEST_RESPONDENT_EMAIL),
                 any(), any());
-        verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_TEMPLATE_ID),
+        verify(emailClient, times(1)).sendEmail(eq(GENERIC_UPDATE_RESPONDENT_TEMPLATE_ID),
                 eq(TEST_USER_EMAIL),
                 any(), any());
     }
