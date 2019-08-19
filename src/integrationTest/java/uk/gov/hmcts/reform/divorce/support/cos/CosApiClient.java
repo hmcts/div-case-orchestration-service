@@ -179,4 +179,13 @@ public interface CosApiClient {
                                             @PathVariable("party") String party,
                                             @RequestBody CcdCallbackRequest ccdCallbackRequest);
 
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/personal-service-pack"
+    )
+    CcdCallbackResponse processPersonalServicePack(
+            @RequestHeader(AUTHORIZATION) String authorisation,
+            @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
 }
