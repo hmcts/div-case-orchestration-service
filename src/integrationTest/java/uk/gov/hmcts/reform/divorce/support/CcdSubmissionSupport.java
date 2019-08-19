@@ -103,6 +103,11 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         return updateCase(caseId, fileName, eventId, createCaseWorkerUser(), false, additionalCaseData);
     }
 
+    protected CaseDetails updateCase(String caseId, String fileName, String eventId, boolean isBulkType,
+                                     Pair<String, Object>... additionalCaseData) {
+        return updateCase(caseId, fileName, eventId, createCaseWorkerUser(), isBulkType, additionalCaseData);
+    }
+
     protected CaseDetails updateCase(String caseId, String eventId, boolean isBulkType,
                                      Pair<String, Object>... additionalCaseData) {
         return updateCase(caseId, null, eventId, createCaseWorkerUser(), isBulkType, additionalCaseData);
