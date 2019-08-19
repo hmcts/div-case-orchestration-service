@@ -48,6 +48,7 @@ public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<M
         String judgeName = (String) ccdCallbackRequest.getCaseDetails().getCaseData().get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
         List<Task> taskList = new ArrayList<>();
         taskList.add(syncBulkCaseListTask);
+        // Existing Judge name means Pronouncement List has already been generated and should be regenerated.
         if (StringUtils.isNotBlank(judgeName)) {
             taskList.add(setFormattedDnCourtDetails);
             taskList.add(documentGenerationTask);
