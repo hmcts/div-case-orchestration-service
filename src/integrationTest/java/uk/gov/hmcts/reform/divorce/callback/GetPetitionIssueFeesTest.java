@@ -43,7 +43,8 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
     public void givenCallbackRequest_whenGetPetitionIssueFees_thenReturnUpdatedData() {
         final Map<String, Object> caseData = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
         final UserDetails solicitorUser = createSolicitorUser();
-        uk.gov.hmcts.reform.ccd.client.model.CaseDetails caseDetails = ccdClientSupport.submitCase(caseData, solicitorUser);
+        uk.gov.hmcts.reform.ccd.client.model.CaseDetails caseDetails =
+            ccdClientSupport.submitSolicitorCase(caseData, solicitorUser);
 
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
@@ -75,7 +76,7 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
     public void givenUnauthorizedRequest_whenGetPetitionIssueFees_thenReturnErrorData() {
         final Map<String, Object> caseData = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
         final UserDetails solicitorUser = createSolicitorUser();
-        uk.gov.hmcts.reform.ccd.client.model.CaseDetails caseDetails = ccdClientSupport.submitCase(caseData, solicitorUser);
+        uk.gov.hmcts.reform.ccd.client.model.CaseDetails caseDetails = ccdClientSupport.submitSolicitorCase(caseData, solicitorUser);
 
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
