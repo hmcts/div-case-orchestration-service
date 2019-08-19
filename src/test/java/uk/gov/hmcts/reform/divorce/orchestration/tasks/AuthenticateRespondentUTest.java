@@ -7,11 +7,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,21 +45,22 @@ public class AuthenticateRespondentUTest {
 
     @Test
     public void givenUserDetailsIsNull_whenExecute_thenReturnFalse() {
-        Mockito.when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(null);
+        Mockito.when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(null);
 
         assertFalse(classUnderTest.execute(context, PAYLOAD));
     }
 
     @Test
     public void givenRolesIsNull_whenExecute_thenReturnFalse() {
-        Mockito.when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(UserDetails.builder().build());
+
+        Mockito.when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(UserDetails.builder().build());
 
         assertFalse(classUnderTest.execute(context, PAYLOAD));
     }
 
     @Test
     public void givenRolesIsEmpty_whenExecute_thenReturnFalse() {
-        Mockito.when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN))
+        Mockito.when(idamClient.getUserDetails(BEARER_AUTH_TOKEN))
             .thenReturn(
                 UserDetails.builder()
                     .roles(Collections.emptyList())
@@ -70,7 +71,7 @@ public class AuthenticateRespondentUTest {
 
     @Test
     public void givenRolesDoesNotContainLetterHolderRole_whenExecute_thenReturnFalse() {
-        Mockito.when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN))
+        Mockito.when(idamClient.getUserDetails(BEARER_AUTH_TOKEN))
             .thenReturn(
                 UserDetails.builder()
                     .roles(Arrays.asList(
@@ -83,7 +84,7 @@ public class AuthenticateRespondentUTest {
 
     @Test
     public void givenRolesAreEmptyOrBlank_whenExecute_thenReturnFalse() {
-        Mockito.when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN))
+        Mockito.when(idamClient.getUserDetails(BEARER_AUTH_TOKEN))
             .thenReturn(
                 UserDetails.builder()
                     .roles(Arrays.asList(
@@ -97,7 +98,7 @@ public class AuthenticateRespondentUTest {
 
     @Test
     public void givenRolesContainsLetterHolderRole_whenExecute_thenReturnTrue() {
-        Mockito.when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN))
+        Mockito.when(idamClient.getUserDetails(BEARER_AUTH_TOKEN))
             .thenReturn(
                 UserDetails.builder()
                     .roles(Arrays.asList(

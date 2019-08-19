@@ -5,12 +5,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.client.StrategicIdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Collections;
 
@@ -27,7 +27,7 @@ public class ValidateExistingSolicitorLinkTest {
     private static final String TOKEN = "token";
 
     @Mock
-    private StrategicIdamClient idamClient;
+    private IdamClient idamClient;
 
     @InjectMocks
     private ValidateExistingSolicitorLink validateCaseData;
@@ -40,7 +40,7 @@ public class ValidateExistingSolicitorLinkTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, TOKEN);
 
         UserDetails userDetails = UserDetails.builder().email("test@sol.local").build();
-        when(idamClient.retrieveUserDetails(TOKEN)).thenReturn(userDetails);
+        when(idamClient.getUserDetails(TOKEN)).thenReturn(userDetails);
 
         UserDetails returnedUserDetails = validateCaseData.execute(context, userDetails);
         assertThat(returnedUserDetails, is(userDetails));
@@ -56,7 +56,7 @@ public class ValidateExistingSolicitorLinkTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, TOKEN);
 
         UserDetails userDetails = UserDetails.builder().email("test1@sol.local").build();
-        when(idamClient.retrieveUserDetails(TOKEN)).thenReturn(userDetails);
+        when(idamClient.getUserDetails(TOKEN)).thenReturn(userDetails);
 
         validateCaseData.execute(context, userDetails);
     }

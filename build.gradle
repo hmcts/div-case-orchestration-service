@@ -227,7 +227,8 @@ def versions = [
         postgresql                      : '42.2.5',
         hibernateTypes                  : '2.4.0',
         flyway                          : '5.2.4',
-        elasticsearch                   : '7.1.1'
+        elasticsearch                   : '7.1.1',
+        idamClient                      : '1.1.1'
 ]
 
 dependencies {
@@ -286,6 +287,7 @@ dependencies {
     compile group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
     compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: versions.reformsJavaLogging

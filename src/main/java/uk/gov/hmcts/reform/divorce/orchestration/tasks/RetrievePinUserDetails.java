@@ -3,10 +3,11 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.ExchangeCodeRequest;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -14,7 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GRANT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
@@ -36,6 +37,9 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
     @Autowired
     private AuthUtil authUtil;
 
+    @Autowired
+    private IdamClient idamClient;
+
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) throws TaskException {
         String pinCode = authenticatePinUser(
@@ -43,17 +47,14 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
             authClientId,
             authRedirectUrl);
 
+        ExchangeCodeRequest exchangeCodeRequest =
+            new ExchangeCodeRequest(pinCode, GRANT_TYPE, authRedirectUrl, authClientId, authClientSecret);
+
         String pinAuthToken = authUtil.getBearToken(
-            getIdamClient().exchangeCode(
-                pinCode,
-                AUTHORIZATION_CODE,
-                authRedirectUrl,
-                authClientId,
-                authClientSecret
-            ).getAccessToken()
+            idamClient.exchangeCode(exchangeCodeRequest).getAccessToken()
         );
 
-        UserDetails pinUserDetails = getIdamClient().retrieveUserDetails(pinAuthToken);
+        UserDetails pinUserDetails = idamClient.getUserDetails(pinAuthToken);
 
         if (pinUserDetails == null) {
             throw new TaskException(new AuthenticationError("Invalid pin"));
@@ -90,5 +91,4 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
     protected abstract String authenticatePinUser(String pin, String authClientId, String authRedirectUrl)
         throws TaskException;
 
-    protected abstract IdamClient getIdamClient();
 }
