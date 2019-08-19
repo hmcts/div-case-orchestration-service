@@ -45,7 +45,7 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
     @Test
     public void whenScheduleBulkCaseForRemoval_thenIndividualCasesShouldBeUpdated() throws Exception {
 
-        //Given
+        // given
         final UserDetails user1 = createCitizenUser();
         final UserDetails user2 = createCitizenUser();
 
@@ -57,8 +57,7 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
         CollectionMember<CaseLink> caseLink2 = new CollectionMember<>();
         caseLink2.setValue(new CaseLink(caseId2));
 
-        List<CollectionMember<CaseLink>> acceptedCases = //Arrays.asList(caseLink1);
-            asList(caseLink1, caseLink2);
+        List<CollectionMember<CaseLink>> acceptedCases = asList(caseLink1, caseLink2);
 
         List<CollectionMember<Map<String, Object>>> caseList = asList(getCaseInfo(caseId1), getCaseInfo(caseId2));
         String bulkCaseId = submitBulkCase(BULK_CREATE_JSON_FILE, Pair.of(BULK_CASE_ACCEPTED_LIST_KEY, acceptedCases),
@@ -69,14 +68,14 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
 
         waitForIndividualCasesToUpdate(createCaseWorkerUser(), caseId2);
 
-        //when
+        // when
         updateCase(bulkCaseId, REMOVE_FROM_BULK_LISTED_EVENT, true, Pair.of(BULK_CASE_ACCEPTED_LIST_KEY, asList(caseLink1)));
 
         CaseDetails bulkCase = retrieveCaseForCaseworker(createCaseWorkerUser(), bulkCaseId);
 
         String jsonResponse = objectToJson(bulkCase);
 
-        //then
+        // then
         assertThat(
             jsonResponse,
             hasJsonPath("$.case_data.D8DocumentsGenerated[0].value.DocumentFileName", is("caseListForPronouncement" + bulkCaseId))
