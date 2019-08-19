@@ -20,13 +20,15 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     ]
 }
 
-List<LinkedHashMap<String, Object>> secrets = [
-        secret("ccd-submission-s2s-auth-secret", "AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY"),
-        secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
-        secret("frontend-secret", "SERVICE_AUTH_SECRET"),
-        secret("idam-secret", "AUTH2_CLIENT_SECRET"),
-        secret("idam-citizen-password", "IDAM_CITIZEN_PASSWORD"),
-        secret("idam-caseworker-password", "IDAM_CASEWORKER_PASSWORD")
+def secrets = [
+        'div-${env}': [
+                secret("ccd-submission-s2s-auth-secret", "AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY"),
+                secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
+                secret("frontend-secret", "SERVICE_AUTH_SECRET"),
+                secret("idam-secret", "AUTH2_CLIENT_SECRET"),
+                secret("idam-citizen-password", "IDAM_CITIZEN_PASSWORD"),
+                secret("idam-caseworker-password", "IDAM_CASEWORKER_PASSWORD")
+        ]
 ]
 
 withPipeline(type, product, component) {
@@ -37,7 +39,6 @@ withPipeline(type, product, component) {
     }
 
     loadVaultSecrets(secrets)
-    setVaultName('div')
 
     after('checkout') {
         echo 'divorce-case-orchestration-service checked out'
@@ -64,9 +65,5 @@ withPipeline(type, product, component) {
 
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-    }
-
-    onMaster {
-        enableSlackNotifications('#div-dev')
     }
 }

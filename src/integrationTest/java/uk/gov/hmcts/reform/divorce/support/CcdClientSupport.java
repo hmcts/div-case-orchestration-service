@@ -28,6 +28,9 @@ public class CcdClientSupport {
     @Value("${ccd.eventid.create}")
     private String ccdCallbackRequestId;
 
+    @Value("${ccd.eventid.solicitorCreate}")
+    private String solicitorCreateEvent;
+
     @Value("${ccd.bulk.eventid.create}")
     private String bulkCreateEvent;
 
@@ -70,7 +73,15 @@ public class CcdClientSupport {
             caseDataContent);
     }
 
-    public CaseDetails submitBulkCase(Object data, UserDetails userDetails) {
+    CaseDetails submitSolicitorCase(Object data, UserDetails userDetails) {
+        return submitCaseworkerCase(data, userDetails, caseType, solicitorCreateEvent);
+    }
+
+    CaseDetails submitBulkCase(Object data, UserDetails userDetails) {
+        return submitCaseworkerCase(data, userDetails, bulkCaseType, bulkCreateEvent);
+    }
+
+    private CaseDetails submitCaseworkerCase(Object data, UserDetails userDetails, String caseType, String eventId) {
         final String serviceToken = authTokenGenerator.generate();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startForCaseworker(
@@ -78,8 +89,8 @@ public class CcdClientSupport {
                 serviceToken,
                 userDetails.getId(),
                 jurisdictionId,
-                bulkCaseType,
-                bulkCreateEvent);
+                caseType,
+                eventId);
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
                 .eventToken(startEventResponse.getToken())
@@ -97,7 +108,7 @@ public class CcdClientSupport {
                 serviceToken,
                 userDetails.getId(),
                 jurisdictionId,
-                bulkCaseType,
+                caseType,
                 true,
                 caseDataContent);
     }
@@ -134,10 +145,6 @@ public class CcdClientSupport {
             caseId,
             true,
             caseDataContent);
-    }
-
-    public CaseDetails update(String caseId, Object data, String eventId, UserDetails userDetails) {
-        return update(caseId, data, eventId, userDetails, false);
     }
 
     CaseDetails update(String caseId, Object data, String eventId, UserDetails userDetails, boolean isBulkType) {

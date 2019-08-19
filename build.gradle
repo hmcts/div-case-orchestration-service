@@ -227,7 +227,7 @@ def versions = [
         postgresql                      : '42.2.5',
         hibernateTypes                  : '2.4.0',
         flyway                          : '5.2.4',
-        elasticsearch                   : '7.2.1'
+        elasticsearch                   : '7.3.0'
 ]
 
 dependencies {
@@ -408,7 +408,6 @@ task wiremockFunctional(type: Test, description: 'Executes wiremock functional t
 
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     forkEvery = 10
-    
     test.outputs.upToDateWhen {false}
     testLogging.showStandardStreams = true
     include '**/functionaltest/**/*'
