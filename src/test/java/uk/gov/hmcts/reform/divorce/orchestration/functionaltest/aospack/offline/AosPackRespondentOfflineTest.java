@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.aospack.offline;
 
+import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -19,7 +22,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -30,10 +35,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.lang.String.format;
-import static java.util.Collections.singletonList;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.AllOf.allOf;
@@ -50,6 +56,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TWO_YEAR_SEPARATION_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TWO_YEAR_SEPARATION_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TWO_YEAR_SEPARATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -119,6 +128,69 @@ public class AosPackRespondentOfflineTest {
     }
 
     @Test
+    public void testEndpointReturnsAdequateResponse_ForRespondent_ForTwoYearsSeparation() throws Exception {
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+            "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        caseDetails.getCaseData().put("D8ReasonForDivorce", "separation-2-years");
+
+        //Stubbing DGS mock for invitation letter
+        GenerateDocumentRequest invitationLetterDocumentRequest = GenerateDocumentRequest.builder()
+            .template(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID)
+            .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+            .build();
+        GeneratedDocumentInfo invitationLetterDocumentInfo = GeneratedDocumentInfo.builder()
+            .documentType(RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE)
+            .fileName(RESPONDENT_AOS_INVITATION_LETTER_FILENAME)
+            .build();
+        stubDocumentGeneratorServerEndpoint(invitationLetterDocumentRequest, invitationLetterDocumentInfo);
+        String invitationLetterFilename = RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
+
+        //Stubbing DGS mock for form
+        GenerateDocumentRequest formDocumentRequest = GenerateDocumentRequest.builder()
+            .template(TWO_YEAR_SEPARATION_TEMPLATE_ID)
+            .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+            .build();
+        GeneratedDocumentInfo formDocumentInfo = GeneratedDocumentInfo.builder()
+            .documentType(TWO_YEAR_SEPARATION_DOCUMENT_TYPE)
+            .fileName(TWO_YEAR_SEPARATION_FILENAME)
+            .build();
+        stubDocumentGeneratorServerEndpoint(formDocumentRequest, formDocumentInfo);
+        String formFilename = TWO_YEAR_SEPARATION_FILENAME + caseDetails.getCaseId();
+
+        //Stubbing CFS
+        stubFormatterServerEndpoint(asList(
+            ImmutablePair.of(invitationLetterFilename, RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE),
+            ImmutablePair.of(formFilename, TWO_YEAR_SEPARATION_DOCUMENT_TYPE)
+        ));
+
+        webClient.perform(post(format(API_URL, "respondent"))
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, USER_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.data.D8DocumentsGenerated", hasSize(2)),
+                hasJsonPath("$.data.D8DocumentsGenerated", hasItems(
+                    hasJsonPath("value.DocumentFileName", is(invitationLetterFilename)),
+                    hasJsonPath("value.DocumentFileName", is(formFilename))
+                ))
+            )));
+
+        documentGeneratorServer.verify(postRequestedFor(urlEqualTo(GENERATE_DOCUMENT_CONTEXT_PATH))
+            .withHeader(AUTHORIZATION, equalTo(USER_TOKEN))
+            .withRequestBody(equalToJson(convertObjectToJsonString(invitationLetterDocumentRequest))));
+        documentGeneratorServer.verify(postRequestedFor(urlEqualTo(GENERATE_DOCUMENT_CONTEXT_PATH))
+            .withHeader(AUTHORIZATION, equalTo(USER_TOKEN))
+            .withRequestBody(equalToJson(convertObjectToJsonString(formDocumentRequest))));
+
+        formatterServiceServer.verify(postRequestedFor(urlEqualTo(ADD_DOCUMENTS_CONTEXT_PATH))
+            .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON))
+        );
+    }
+
+    @Test
     public void testEndpointReturnsAdequateResponse_ForCoRespondent() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
             "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
@@ -180,17 +252,26 @@ public class AosPackRespondentOfflineTest {
     }
 
     private void stubFormatterServerEndpoint(String filename, String documentType) {
-        Map<String, Object> responseFromCFS = singletonMap("D8DocumentsGenerated", singletonList(singletonMap("value",
-            singletonMap("DocumentFileName", filename)
-        )));
+        stubFormatterServerEndpoint(asList(ImmutablePair.of(filename, documentType)));
+    }
 
-        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-            .withRequestBody(matchingJsonPath("$.documents[0]", matchingJsonPath("documentType", equalTo(documentType))))
-            .withRequestBody(matchingJsonPath("$.documents[0]", matchingJsonPath("fileName", equalTo(filename))))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(responseFromCFS))));
+    private void stubFormatterServerEndpoint(List<Pair<String, String>> documentsToStub) {
+        Map<String, Object> responseFromCFS = singletonMap("D8DocumentsGenerated", documentsToStub.stream()
+            .map(d -> singletonMap("value", singletonMap("DocumentFileName", d.getKey())))
+            .collect(Collectors.toList()));
+
+        MappingBuilder mappingBuilder = WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH);
+        for (int i = 0; i < documentsToStub.size(); i++) {
+            Pair<String, String> documentToStub = documentsToStub.get(i);
+            String documentJsonPath = "$.documents[" + i + "]";
+            mappingBuilder.withRequestBody(matchingJsonPath(documentJsonPath, matchingJsonPath("documentType", equalTo(documentToStub.getValue()))));
+            mappingBuilder.withRequestBody(matchingJsonPath(documentJsonPath, matchingJsonPath("fileName", equalTo(documentToStub.getKey()))));
+        }
+
+        formatterServiceServer.stubFor(mappingBuilder.willReturn(aResponse()
+            .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+            .withStatus(HttpStatus.OK.value())
+            .withBody(convertObjectToJsonString(responseFromCFS))));
     }
 
 }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.callback;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
@@ -16,7 +17,10 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TWO_YEAR_SEPARATION_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class IssueAosPackOfflineTest extends IntegrationTest {
@@ -41,6 +45,27 @@ public class IssueAosPackOfflineTest extends IntegrationTest {
             hasJsonPath("$.data.D8DocumentsGenerated", allOf(
                 hasSize(1),
                 hasJsonPath("[0].value.DocumentFileName", is(RESPONDENT_AOS_INVITATION_LETTER_FILENAME + testCaseId))
+            )));
+    }
+
+    @Test
+    public void givenCase_whenIssuingAosPackOfflineForRespondent_thenReturnCallbackResponseWithRightDocuments_ForTwoYearsSeparation() {
+        CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(CCD_CALLBACK_REQUEST, CcdCallbackRequest.class);
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        String testCaseId = caseDetails.getCaseId();
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+
+        Map<String, Object> response = cosApiClient.issueAosPackOffline(createCaseWorkerUser().getAuthToken(),
+            DivorceParty.RESPONDENT.getDescription(),
+            ccdCallbackRequest);
+        String jsonResponse = objectToJson(response);
+
+        assertThat(
+            jsonResponse,
+            hasJsonPath("$.data.D8DocumentsGenerated", allOf(
+                hasSize(2),
+                hasJsonPath("[0].value.DocumentFileName", is(RESPONDENT_AOS_INVITATION_LETTER_FILENAME + testCaseId)),
+                hasJsonPath("[1].value.DocumentFileName", is(TWO_YEAR_SEPARATION_FILENAME + testCaseId))
             )));
     }
 

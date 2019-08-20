@@ -15,7 +15,7 @@ public class OrchestrationConstants {
     // Task context properties
     public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String DN_COURT_DETAILS = "dnCourtDetails";
-    public static final String BULK_LINK_CASE_ID =  "bulkLinkCaseId";
+    public static final String BULK_LINK_CASE_ID = "bulkLinkCaseId";
 
     // Authentication
     public static final String ACCESS_CODE = "access_code";
@@ -269,15 +269,19 @@ public class OrchestrationConstants {
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
     public static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
+    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";
+    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
+    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
+
     public static final String RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-resp";
     public static final String RESPONDENT_AOS_INVITATION_LETTER_FILENAME = "aos-invitation-letter-offline-respondent";
     public static final String RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00075.doc";
     public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-co-resp";
     public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME = "aos-invitation-letter-offline-co-respondent";
     public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00076.doc";
-    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";
-    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
-    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
+    public static final String TWO_YEAR_SEPARATION_DOCUMENT_TYPE = "two-year-separation-aos-form";
+    public static final String TWO_YEAR_SEPARATION_FILENAME = "two-year-separation-aos-form-resp";
+    public static final String TWO_YEAR_SEPARATION_TEMPLATE_ID = "FL-DIV-APP-ENG-00080.doc";
 
     public static final String DOCUMENT_TYPE_COE = "coe";
 
