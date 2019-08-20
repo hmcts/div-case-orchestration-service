@@ -8,6 +8,11 @@
       "D8PetitionerEmail": "simulate-delivered@notifications.service.gov.uk",
       "D8PetitionerFirstName": "Ted",
       "D8PetitionerLastName": "Jones",
+      "DecreeNisiGranted": "Yes",
+      "CostsClaimGranted": "Yes",
+      "WhoPaysCosts": "respondent",
+      "TypeCostsDecision": "additionalInformation",
+      "CostsOrderAdditionalInfo": "Additional Information Is Here.",
       "DnOutcomeCase": "Yes",
       "BulkListingCaseId": "0123456789098765"
     }

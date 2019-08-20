@@ -95,6 +95,8 @@ public class OrchestrationConstants {
     public static final String WHO_PAYS_CCD_CODE_FOR_RESPONDENT = "respondent";
     public static final String WHO_PAYS_CCD_CODE_FOR_CORESPONDENT = "coRespondent";
     public static final String WHO_PAYS_CCD_CODE_FOR_BOTH = "respondentAndCoRespondent";
+    public static final String TYPE_COSTS_DECISION_CCD_FIELD = "TypeCostsDecision";
+    public static final String COSTS_ORDER_ADDITIONAL_INFO_CCD_FIELD = "CostsOrderAdditionalInfo";
     public static final String DECREE_NISI_GRANTED_DATE_CCD_FIELD = "DecreeNisiGrantedDate";
     public static final String DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD = "DAEligibleFromDate";
     public static final String DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD = "DecreeAbsoluteGrantedDate";
