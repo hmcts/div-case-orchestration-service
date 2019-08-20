@@ -31,13 +31,21 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     private static final String AOS_DEFEND_CONSENT_JSON = "aos-defend-consent.json";
     private static final String AOS_DEFEND_NO_CONSENT_JSON = "aos-defend-no-consent.json";
     private static final String AOS_NO_DEFEND_CONSENT_JSON = "aos-no-defend-consent.json";
-    private static final String AOS_NO_DEFEND_NO_CONSENT_JSON = "aos-no-defend-no-consent.json";
+    private static final String AOS_NO_DEFEND_NO_CONSENT_JSON;
+
+    static {
+        try {
+            AOS_NO_DEFEND_NO_CONSENT_JSON = loadJson(PAYLOAD_CONTEXT_PATH + "aos-no-defend-no-consent.json");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static final String AOS_SOLICITOR_REPRESENTATION_JSON = "aos-solicitor-representation.json";
 
     private static final String SUBMIT_COMPLETE_CASE_JSON = "submit-unlinked-case.json";
     private static final String SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON = "submit-complete-case-reason-adultery.json";
     private static final String SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON = "submit-complete-case-reason-2yearSep.json";
-
 
     @Test
     public void givenUserTokenIsNull_whenSubmitAos_thenReturnBadRequest() throws Exception {
@@ -132,7 +140,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
             userDetails);
 
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-            loadJson(PAYLOAD_CONTEXT_PATH + AOS_NO_DEFEND_NO_CONSENT_JSON));
+            AOS_NO_DEFEND_NO_CONSENT_JSON);
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path(ID));
@@ -153,7 +161,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
             petitioner);
 
         Response cosResponse = submitRespondentAosCase(petitioner.getAuthToken(), caseDetails.getId(),
-            loadJson(PAYLOAD_CONTEXT_PATH + AOS_NO_DEFEND_NO_CONSENT_JSON));
+                AOS_NO_DEFEND_NO_CONSENT_JSON);
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path(ID));
@@ -175,7 +183,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
             userDetails);
 
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-            loadJson(PAYLOAD_CONTEXT_PATH + AOS_NO_DEFEND_NO_CONSENT_JSON));
+            AOS_NO_DEFEND_NO_CONSENT_JSON);
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path(ID));

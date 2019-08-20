@@ -53,7 +53,7 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
         Response response = RestUtil.putToRestService(
                 serverUrl + contextPath,
                 Collections.singletonMap(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString()),
-                ResourceLoader.objectToJson(paymentUpdate)
+                paymentUpdate
         );
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());

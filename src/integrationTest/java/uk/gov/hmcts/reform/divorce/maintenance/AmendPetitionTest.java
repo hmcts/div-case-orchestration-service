@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.entity.ContentType;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.support.CcdClientSupport;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
-import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
@@ -33,7 +31,6 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.REASON_FOR_DIVORCE_KEY;
-import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class AmendPetitionTest extends CcdSubmissionSupport {
 
@@ -65,9 +62,6 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
 
     @Autowired
     private CosApiClient cosApiClient;
-
-    @Autowired
-    private DraftsSubmissionSupport draftsSubmissionSupport;
 
     @Value("${case.orchestration.amend-petition.context-path}")
     private String amendPetitionContextPath;
@@ -112,8 +106,7 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         newDraftDocument.put(CONFIRM_PRAYER, YES_VALUE);
 
         //Submit amended case
-        JsonNode draftResource = ResourceLoader.jsonToObject(objectToJson(newDraftDocument), JsonNode.class);
-        Map<String, Object> submittedCase = cosApiClient.submitCase(citizenUser.getAuthToken(), draftResource);
+        Map<String, Object> submittedCase = cosApiClient.submitCase(citizenUser.getAuthToken(), newDraftDocument);
         assertThat(submittedCase.get(CASE_ID_KEY), is(notNullValue()));
     }
 

@@ -90,10 +90,7 @@ public abstract class IntegrationTest {
     }
 
     protected UserDetails createCitizenUser() {
-        return wrapInRetry(() -> {
-            final String username = "simulate-delivered" + UUID.randomUUID() + EMAIL_DOMAIN;
-            return getUserDetails(username, CITIZEN_USERGROUP, CITIZEN_ROLE);
-        });
+        return createCitizenUser(CITIZEN_ROLE);
     }
 
     protected UserDetails createCitizenUser(String role) {
