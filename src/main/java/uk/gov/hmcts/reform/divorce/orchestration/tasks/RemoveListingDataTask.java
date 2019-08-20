@@ -3,14 +3,11 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
@@ -30,11 +27,7 @@ public class RemoveListingDataTask implements Task<Map<String, Object>> {
         response.remove(BULK_LISTING_CASE_ID_FIELD);
         response.remove(COURT_NAME_CCD_FIELD);
         response.remove(PRONOUNCEMENT_JUDGE_CCD_FIELD);
-
-        List<CollectionMember<Map<String, Object>>> listOfCourtHearings =
-                mapper.convertValue(payload.get(DATETIME_OF_HEARING_CCD_FIELD), ArrayList.class);
-        listOfCourtHearings.remove(listOfCourtHearings.size() - 1);
-        response.put(DATETIME_OF_HEARING_CCD_FIELD, listOfCourtHearings);
+        response.remove(DATETIME_OF_HEARING_CCD_FIELD);
 
         return response;
     }

@@ -40,14 +40,9 @@ public class RemoveListingDataTaskUTest {
 
         List<CollectionMember<Map<String, Object>>> courtHearingDates = new ArrayList<>();
         courtHearingDates.add(hearingDate);
-        courtHearingDates.add(hearingDate);
 
         Map<String, Object> expectedMap = new HashMap<>();
         expectedMap.put("anyKey", "anyData");
-
-        List<CollectionMember<Map<String, Object>>> expectedCourtHearingDates = new ArrayList<>();
-        expectedCourtHearingDates.add(hearingDate);
-        expectedMap.put(DATETIME_OF_HEARING_CCD_FIELD, expectedCourtHearingDates);
 
         Map<String, Object> caseData = ImmutableMap.of("anyKey", "anyData",
                 COURT_NAME_CCD_FIELD, "Court",
