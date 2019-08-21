@@ -74,13 +74,11 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
 
         if (divorceParty.equals(RESPONDENT)) {
             documentGenerationRequestList.add(RESPONDENT_AOS_INVITATION_LETTER);
-            if (StringUtils.isNotEmpty(reasonForDivorce)) {
-                log.debug("reasonForDivorce is {}", reasonForDivorce);
-                if (SEPARATION_TWO_YEARS.equals(reasonForDivorce)) {
-                    documentGenerationRequestList.add(new DocumentGenerationRequest(TWO_YEAR_SEPARATION_TEMPLATE_ID,
-                        TWO_YEAR_SEPARATION_DOCUMENT_TYPE,
-                        TWO_YEAR_SEPARATION_FILENAME));
-                }
+            log.debug("reasonForDivorce is {}", reasonForDivorce);
+            if (SEPARATION_TWO_YEARS.equals(reasonForDivorce)) {
+                documentGenerationRequestList.add(new DocumentGenerationRequest(TWO_YEAR_SEPARATION_TEMPLATE_ID,
+                    TWO_YEAR_SEPARATION_DOCUMENT_TYPE,
+                    TWO_YEAR_SEPARATION_FILENAME));
             }
         } else if (divorceParty.equals(CO_RESPONDENT)) {
             documentGenerationRequestList.add(CO_RESPONDENT_AOS_INVITATION_LETTER);
