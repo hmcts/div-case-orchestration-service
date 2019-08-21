@@ -51,42 +51,6 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     }
 
     @Test
-    public void givenNotAuthenticated_whenGetDraft_thenNotAuthenticatedError() {
-        try {
-            draftsSubmissionSupport.getUserDraft(UserDetails.builder()
-                .authToken(NO_VALID_TOKEN)
-                .build());
-            fail("Not authenticated error expected");
-        } catch (FeignException error) {
-            assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
-        }
-    }
-
-    @Test
-    public void givenNotAuthenticated_whenSafeDraft_thenNotAuthenticatedError() {
-        try {
-            draftsSubmissionSupport.saveDraft(UserDetails.builder()
-                .authToken(NO_VALID_TOKEN)
-                .build(), SAVE_DRAFT_FILE);
-            fail("Not authenticated error expected");
-        } catch (FeignException error) {
-            assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
-        }
-    }
-
-    @Test
-    public void givenNotAuthenticated_whenDeleteDraft_thenNotAuthenticatedError() {
-        try {
-            draftsSubmissionSupport.deleteDraft(UserDetails.builder()
-                .authToken(NO_VALID_TOKEN)
-                .build());
-            fail("Not authenticated error expected");
-        } catch (FeignException error) {
-            assertEquals(HttpStatus.UNAUTHORIZED.value(), error.status());
-        }
-    }
-
-    @Test
     public void givenUserWithoutDraft_whenRetrieveDraft_thenReturn404Status() {
         user = createCitizenUser();
         try {

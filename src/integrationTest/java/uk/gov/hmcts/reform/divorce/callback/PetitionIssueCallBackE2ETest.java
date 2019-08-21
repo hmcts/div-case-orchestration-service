@@ -60,20 +60,6 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     private String linkRespondentContextPath;
 
     @Test
-    public void givenRegionalDivorceCaseSubmitted_whenIssueEventFiredOnCCD_thenDocumentsAreGenerated() {
-        final UserDetails petitionerUserDetails = createCitizenUser();
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_RDC_CASE, petitionerUserDetails);
-
-        // make payment
-        updateCase(caseDetails.getId().toString(), PAYMENT_MADE, PAYMENT_EVENT_ID);
-
-        final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
-
-        assertGeneratedDocumentsExists(issuedCase, false, false);
-
-    }
-
-    @Test
     public void givenServiceCentreCaseSubmitted_whenIssueEventFiredOnCCD_thenDocumentsAreGenerated() {
         final UserDetails petitionerUserDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CASE, petitionerUserDetails);

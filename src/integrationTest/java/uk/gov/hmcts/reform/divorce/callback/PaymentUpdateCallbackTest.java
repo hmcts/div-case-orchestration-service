@@ -58,5 +58,4 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
     }
-
 }

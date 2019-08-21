@@ -43,7 +43,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.SearchSourceFact
 public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
 
     private static final String TEST_DN_PRONOUNCED = "testDNPronounced";
-    private static final String CMS_URL_SEARCH = "/casemaintenance/version/1/search";
     private static final String STATE_KEY = "state";
 
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";

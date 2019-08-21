@@ -11,7 +11,6 @@ import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_SUBMITTED_AWAITING_ANSWER;
@@ -46,27 +45,6 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     private static final String SUBMIT_COMPLETE_CASE_JSON = "submit-unlinked-case.json";
     private static final String SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON = "submit-complete-case-reason-adultery.json";
     private static final String SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON = "submit-complete-case-reason-2yearSep.json";
-
-    @Test
-    public void givenUserTokenIsNull_whenSubmitAos_thenReturnBadRequest() throws Exception {
-        Response cosResponse = submitRespondentAosCase(
-            null,
-            1L,
-            loadJson(PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON));
-
-        assertEquals(BAD_REQUEST.value(), cosResponse.getStatusCode());
-    }
-
-    @Test
-    public void givenNoCaseData_whenSubmitAos_thenReturnBadRequest() {
-        final UserDetails userDetails = createCitizenUser();
-
-        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(),
-            1L,
-            null);
-
-        assertEquals(BAD_REQUEST.value(), cosResponse.getStatusCode());
-    }
 
     @Test
     public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {

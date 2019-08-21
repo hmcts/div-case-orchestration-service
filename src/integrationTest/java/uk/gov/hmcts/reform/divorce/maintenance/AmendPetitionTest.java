@@ -110,16 +110,6 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         assertThat(submittedCase.get(CASE_ID_KEY), is(notNullValue()));
     }
 
-    @Test
-    public void givenNoCaseForUser_whenAmendPetition_thenReturn404() {
-        UserDetails citizenUser = createCitizenUser();
-
-        String caseId = "111111";
-
-        Response cosResponse = amendPetition(citizenUser.getAuthToken(), caseId);
-        assertThat(cosResponse.getStatusCode(), is(HttpStatus.NOT_FOUND.value()));
-    }
-
     private Response amendPetition(String userToken, String caseId) {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());

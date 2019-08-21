@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
 import java.time.LocalDate;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
@@ -58,25 +57,6 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Test
-    public void givenUserTokenIsNull_whenSubmitCoRespondentAos_thenReturnBadRequest() throws Exception {
-        final UserDetails user = UserDetails.builder()
-            .emailAddress(CO_RESP_EMAIL_ADDRESS)
-            .build();
-        Response cosResponse = submitCoRespondentAosCase(user, CO_RESPONDENT_ANSWERS_JSON);
-
-        assertEquals(BAD_REQUEST.value(), cosResponse.getStatusCode());
-    }
-
-    @Test
-    public void givenNoCaseData_whenSubmitAos_thenReturnBadRequest() {
-        final UserDetails userDetails = createCitizenUser();
-
-        Response coRespondentSubmissionResponse = submitCoRespondentAosCase(userDetails, null);
-
-        assertThat(coRespondentSubmissionResponse.getStatusCode(), is(BAD_REQUEST.value()));
-    }
 
     @Test
     public void givenCaseIsDisallowedState_whenSubmittingCoRespondentAnswers_thenReturnBadRequest() throws Exception {

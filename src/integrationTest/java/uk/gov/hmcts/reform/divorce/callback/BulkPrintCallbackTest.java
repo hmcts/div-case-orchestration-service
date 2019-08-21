@@ -38,7 +38,6 @@ public class BulkPrintCallbackTest extends IntegrationTest {
 
     private Map<String, Object> caseworkerHeaders;
 
-
     @Before
     public void setup() {
         final UserDetails citizenUser = createCitizenUser();
