@@ -6,8 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
@@ -15,11 +17,20 @@ import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static java.util.stream.Collectors.toList;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.support.EvidenceManagementUtil.readDataFromEvidenceManagement;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 
@@ -48,6 +59,10 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
     @Value("${case.orchestration.maintenance.submit-dn.context-path}")
     private String submitDnContextPath;
 
+    @Autowired
+    @Qualifier("documentGeneratorTokenGenerator")
+    private AuthTokenGenerator divDocAuthTokenGenerator;
+
     @SuppressWarnings("unchecked")
     @SafeVarargs
     protected final CaseDetails submitCase(String fileName, UserDetails userDetails,
@@ -66,6 +81,12 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         return submitCase(fileName, createCitizenUser());
     }
 
+    protected final CaseDetails submitSolicitorCase(String fileName, UserDetails userDetails) {
+
+        final Map caseData = loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class);
+        return ccdClientSupport.submitSolicitorCase(caseData, userDetails);
+    }
+
     protected CaseDetails submitBulkCase(String fileName, Pair<String, Object>... additionalCaseData) {
         final Map caseData = loadJsonToObject(BULK_PAYLOAD_CONTEXT_PATH + fileName, Map.class);
 
@@ -78,11 +99,16 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
 
     protected CaseDetails updateCase(String caseId, String fileName, String eventId,
                                      Pair<String, String>... additionalCaseData) {
-        return updateCase(caseId, fileName, eventId, false, additionalCaseData);
+        return updateCase(caseId, fileName, eventId, createCaseWorkerUser(), false, additionalCaseData);
     }
 
-    protected CaseDetails updateCase(String caseId, String fileName, String eventId, boolean isBulkType,
-                                     Pair<String, String>... additionalCaseData) {
+    protected CaseDetails updateCase(String caseId, String fileName, String eventId,
+                                     UserDetails userDetails, Pair<String, String>... additionalCaseData) {
+        return updateCase(caseId, fileName, eventId, userDetails, false, additionalCaseData);
+    }
+
+    protected CaseDetails updateCase(String caseId, String fileName, String eventId, UserDetails userDetails,
+                                     boolean isBulkType, Pair<String, String>... additionalCaseData) {
         String payloadPath = isBulkType ? BULK_PAYLOAD_CONTEXT_PATH : PAYLOAD_CONTEXT_PATH;
         final Map caseData =
                 fileName == null ? new HashMap() : loadJsonToObject(payloadPath + fileName, Map.class);
@@ -91,14 +117,18 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
             caseField -> caseData.put(caseField.getKey(), caseField.getValue())
         );
 
-        return ccdClientSupport.update(caseId, caseData, eventId, createCaseWorkerUser(), isBulkType);
+        return ccdClientSupport.update(caseId, caseData, eventId, userDetails, isBulkType);
     }
 
     protected CaseDetails updateCaseForCitizen(String caseId, String fileName, String eventId,
-                                               UserDetails userDetails) {
-        return ccdClientSupport.updateForCitizen(caseId,
-                fileName == null ? null : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class),
-                eventId, userDetails);
+                                               UserDetails userDetails, Pair<String, String>... additionalCaseData) {
+        final Map caseData = fileName == null
+                ? new HashMap() : loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class);
+
+        Arrays.stream(additionalCaseData).forEach(
+            caseField -> caseData.put(caseField.getKey(), caseField.getValue())
+        );
+        return ccdClientSupport.updateForCitizen(caseId, caseData, eventId, userDetails);
     }
 
     public Response submitRespondentAosCase(String userToken, Long caseId, String requestBody) {
@@ -172,5 +202,54 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
                 headers,
                 filePath == null ? null : loadJson(SUBMIT_DN_PAYLOAD_CONTEXT_PATH + filePath)
         );
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> getDocumentsGenerated(CaseDetails caseDetails) {
+        List<Map<String, Object>> d8DocumentsGenerated = (List<Map<String, Object>>) caseDetails.getData().get("D8DocumentsGenerated");
+        return d8DocumentsGenerated.stream().map(m -> (Map<String, Object>) m.get("value")).collect(toList());
+    }
+
+    public void assertGeneratedDocumentsExists(final CaseDetails caseDetails, String documentType, String fileNameFormat) {
+        final List<Map<String, Object>> documentsCollection = getDocumentsGenerated(caseDetails);
+
+        Map<String, Object> miniPetition = documentsCollection.stream()
+                .filter(m -> m.get("DocumentType").equals(documentType))
+                .findAny()
+                .orElseThrow(() -> new AssertionError(
+                        String.format("Document with type %s not found in %s", documentType, documentsCollection)
+                ));
+
+        assertDocumentWasGenerated(miniPetition, documentType, String.format(fileNameFormat, caseDetails.getId()));
+    }
+
+    public void assertDocumentWasGenerated(final Map<String, Object> documentData, final String expectedDocumentType,
+                                            final String expectedFilename) {
+        assertThat(documentData.get("DocumentType"), is(expectedDocumentType));
+
+        final Map<String, String> documentLinkObject = getDocumentLinkObject(documentData);
+
+        assertThat(documentLinkObject, allOf(
+                hasEntry(equalTo("document_binary_url"), is(notNullValue())),
+                hasEntry(equalTo("document_url"), is(notNullValue())),
+                hasEntry(equalTo("document_filename"), is(expectedFilename))
+        ));
+
+        checkEvidenceManagement(documentLinkObject);
+    }
+
+    private void checkEvidenceManagement(final Map<String, String> documentLinkObject) {
+        final String divDocAuthToken = divDocAuthTokenGenerator.generate();
+        final String caseworkerAuthToken = createCaseWorkerUser().getAuthToken();
+
+        final String document_binary_url = documentLinkObject.get("document_binary_url");
+        final Response response = readDataFromEvidenceManagement(document_binary_url, divDocAuthToken, caseworkerAuthToken);
+
+        assertThat("Unable to find " + document_binary_url + " in evidence management" , response.statusCode(), is(OK.value()));
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, String> getDocumentLinkObject(Map<String, Object> documentGenerated) {
+        return (Map<String, String>)documentGenerated.get("DocumentLink");
     }
 }

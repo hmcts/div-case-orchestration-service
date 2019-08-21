@@ -4,11 +4,8 @@ import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
@@ -18,14 +15,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertThat;
-import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE_DATE;
@@ -34,7 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.support.EvidenceManagementUtil.readDataFromEvidenceManagement;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
 @Slf4j
@@ -46,15 +39,12 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     private static final String CO_RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/co-respondent/";
     private static final String AOS_DEFEND_CONSENT_JSON = "aos-defend-consent.json";
 
-
     private static final String PAYMENT_MADE = "payment-made.json";
     private static final String PAYMENT_EVENT_ID = "paymentMade";
     private static final String ISSUE_EVENT_ID = "issueFromSubmitted";
     private static final String ISSUE_AOS_EVENT_ID = "issueAos";
     private static final String REJECTED_EVENT_ID = "rejected";
     private static final String ISSUE_FROM_REJECTED_EVENT_ID = "issueFromRejected";
-    private static final String PAYMENT_REFERENCE_EVENT = "paymentReferenceGenerated";
-    private static final String AOS_STARTED = "startAos";
 
     private static final String DOC_TYPE_MINI_PETITION = "petition";
     private static final String DOC_TYPE_AOS_INVITATION = "aos";
@@ -63,14 +53,8 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     private static final String D8_AOS_INVITATION_FILE_NAME_FORMAT = "aosinvitation%s.pdf";
     private static final String D8_CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT = "co-respondentaosinvitation%s.pdf";
 
-    private static final String PIN_USER_FIRST_NAME = "pinuserfirstname";
-    private static final String PIN_USER_LAST_NAME = "pinuserfirstname";
     private static final String AOS_LETTER_HOLDER_ID = "AosLetterHolderId";
     private static final String CO_RESPONDENT_LETTER_HOLDER_ID = "CoRespLetterHolderId";
-
-    @Autowired
-    @Qualifier("documentGeneratorTokenGenerator")
-    private AuthTokenGenerator divDocAuthTokenGenerator;
 
     @Value("${case.orchestration.maintenance.link-respondent.context-path}")
     private String linkRespondentContextPath;
@@ -216,42 +200,6 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
 
     private CaseDetails fireEvent(final String caseId, final String eventId) {
         return updateCase(caseId, null, eventId);
-    }
-
-    private void assertDocumentWasGenerated(final Map<String, Object> documentData, final String expectedDocumentType,
-                                            final String expectedFilename) {
-        assertThat(documentData.get("DocumentType"), is(expectedDocumentType));
-
-        final Map<String, String> documentLinkObject = getDocumentLinkObject(documentData);
-
-        assertThat(documentLinkObject, allOf(hasEntry(equalTo("document_binary_url"), is(notNullValue())),
-                                             hasEntry(equalTo("document_url"), is(notNullValue())),
-                                             hasEntry(equalTo("document_filename"), is(expectedFilename))
-        ));
-
-
-        checkEvidenceManagement(documentLinkObject);
-    }
-
-    private void checkEvidenceManagement(final Map<String, String> documentLinkObject) {
-        final String divDocAuthToken = divDocAuthTokenGenerator.generate();
-        final String caseworkerAuthToken = createCaseWorkerUser().getAuthToken();
-
-        final String document_binary_url = documentLinkObject.get("document_binary_url");
-        final Response response = readDataFromEvidenceManagement(document_binary_url, divDocAuthToken, caseworkerAuthToken);
-
-        assertThat("Unable to find " + document_binary_url + " in evidence management" , response.statusCode(), is(OK.value()));
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<Map<String, Object>> getDocumentsGenerated(CaseDetails caseDetails) {
-        List<Map<String, Object>> d8DocumentsGenerated = (List<Map<String, Object>>) caseDetails.getData().get("D8DocumentsGenerated");
-        return d8DocumentsGenerated.stream().map(m -> (Map<String, Object>) m.get("value")).collect(toList());
-    }
-
-    @SuppressWarnings("unchecked")
-    private Map<String, String> getDocumentLinkObject(Map<String, Object> documentGenerated) {
-        return (Map<String, String>)documentGenerated.get("DocumentLink");
     }
 
     private Response linkRespondent(String userToken, Long caseId, String pin) {
