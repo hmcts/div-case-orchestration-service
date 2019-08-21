@@ -51,6 +51,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkfl
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerAOSOverdueNotificationWorkflowTest;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
@@ -159,6 +160,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private LinkRespondentWorkflow linkRespondentWorkflow;
+
+    @Mock
+    private SendPetitionerAOSOverdueNotificationWorkflowTest sendPetitionerAOSOverdueNotificationWorkflow;
 
     @Mock
     private SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
@@ -639,6 +643,18 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(userDetails, classUnderTest.linkRespondent(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN));
 
         verify(linkRespondentWorkflow).run(AUTH_TOKEN, TEST_CASE_ID, TEST_PIN);
+    }
+
+    @Test
+    public void givenCaseData_whenSendPetitionerAOSOverdueNotification_thenReturnPayload() throws Exception {
+        when(sendPetitionerAOSOverdueNotificationWorkflow.run(ccdCallbackRequest))
+                .thenReturn(requestPayload);
+
+        Map<String, Object> actual = classUnderTest.sendPetitionerAOSOverdueNotificationEmail(ccdCallbackRequest);
+
+        assertEquals(requestPayload, actual);
+
+        verify(sendPetitionerAOSOverdueNotificationWorkflow).run(ccdCallbackRequest);
     }
 
     @Test

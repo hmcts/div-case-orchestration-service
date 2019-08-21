@@ -178,6 +178,35 @@ public class CallbackController {
             .build());
     }
 
+    @PostMapping(path = "/aos-overdue",
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Generate/dispatch a notification email to the petitioner when their case is moved to AOS overdue")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
+                    response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> petitionerAOSOverdue(
+            @RequestHeader(value = "Authorization", required = false) String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.info("/aos-overdue endpoint called for caseId {}", caseId);
+        Map<String, Object> returnedCaseData;
+
+        try {
+            returnedCaseData = caseOrchestrationService.sendPetitionerAOSOverdueNotificationEmail(ccdCallbackRequest);
+        } catch (WorkflowException e) {
+            log.error("Failed to call service for caseId {}", caseId, e);
+            return ResponseEntity.ok(CcdCallbackResponse.builder()
+                    .errors(singletonList(e.getMessage()))
+                    .build());
+        }
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .data(returnedCaseData)
+                .build());
+    }
+
     @PostMapping(path = "/aos-submitted",
         consumes = MediaType.APPLICATION_JSON,
         produces = MediaType.APPLICATION_JSON)
