@@ -25,6 +25,7 @@ public class RetrieveAosTest extends RetrieveAosCaseSupport {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Test
     public void givenNoCase_whenRetrieveAosCase_thenReturnEmptyResponse() {
         Response cosResponse = retrieveAosCase(createCitizenUser().getAuthToken());
 
