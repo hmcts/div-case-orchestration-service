@@ -1,0 +1,12 @@
+{
+  "token": "token",
+  "event_id": "eventId",
+  "case_details": {
+    "id": "0123456789012345",
+    "state": "state",
+    "case_data": {
+      "DecreeNisiGranted": "No",
+      "RefusalDecision": "moreInfo"
+    }
+  }
+}

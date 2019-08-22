@@ -114,7 +114,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> processAosSolicitorLinkCase(CcdCallbackRequest request, String authToken) throws CaseOrchestrationServiceException;
 
-    Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
+    Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest, String authToken) throws CaseOrchestrationServiceException;
 
     Map<String, Object> updateBulkCaseDnPronounce(CaseDetails caseDetails, String authToken) throws WorkflowException;
 
