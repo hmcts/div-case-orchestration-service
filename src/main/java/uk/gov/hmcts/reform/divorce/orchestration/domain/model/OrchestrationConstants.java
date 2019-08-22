@@ -124,6 +124,8 @@ public class OrchestrationConstants {
     public static final String PAYMENT_MADE_EVENT = "paymentMade";
     public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID = "MakeEligibleForDA_Petitioner";
     public static final String AWAITING_DECREE_ABSOLUTE = "AwaitingDecreeAbsolute";
+    public static final String SOLICITOR_CREATE_EVENT = "solicitorCreate";
+    public static final String SOLICITOR_SUBMIT_EVENT = "solicitorStatementOfTruthPaySubmit";
 
     // CCD Case States
     public static final String AOS_AWAITING = "AosAwaiting";
@@ -297,6 +299,7 @@ public class OrchestrationConstants {
     public static final String D8_RESPONDENT_SOLICITOR_EMAIL = "D8RespondentSolicitorEmail";
     public static final String D8_RESPONDENT_SOLICITOR_NAME = "D8RespondentSolicitorName";
     public static final String D8DOCUMENTS_GENERATED = "D8DocumentsGenerated";
+    public static final String PETITIONER_SOLICITOR_EMAIL = "PetitionerSolicitorEmail";
 
     // Payment
     public static final String PAYMENT = "payment";
