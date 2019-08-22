@@ -188,4 +188,13 @@ public interface CosApiClient {
             @RequestHeader(AUTHORIZATION) String authorisation,
             @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/dn-about-to-be-granted"
+    )
+    CcdCallbackResponse processDnAboutToBeGranted(
+            @RequestHeader(AUTHORIZATION) String authorisation,
+            @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
 }

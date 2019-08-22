@@ -616,6 +616,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> dnAboutToBeGranted(
+        @RequestHeader(value = "Authorization") String authToken,
         @RequestBody @ApiParam("CaseData")
             CcdCallbackRequest ccdCallbackRequest) {
 
@@ -623,7 +624,7 @@ public class CallbackController {
 
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
         try {
-            callbackResponseBuilder.data(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest));
+            callbackResponseBuilder.data(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest, authToken));
             log.info("Processed case successfully. Case id: {}", caseId);
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
