@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
@@ -148,6 +149,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final ApplicantDecreeAbsoluteEligibilityWorkflow applicantDecreeAbsoluteEligibilityWorkflow;
     private final RemoveLinkWorkflow removeLinkWorkflow;
     private final BulkCaseRemoveCasesWorkflow bulkCaseRemoveCasesWorkflow;
+    private final PetitionerSolicitorRoleWorkflow petitionerSolicitorRoleWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -392,8 +394,26 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> setOrderSummary(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return setOrderSummaryWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+    public CcdCallbackResponse setOrderSummaryAssignRole(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        Map<String, Object> updatedCase = setOrderSummaryWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+        ccdCallbackRequest.getCaseDetails().setCaseData(updatedCase);
+        Map<String, Object> solicitorPayload = petitionerSolicitorRoleWorkflow.run(ccdCallbackRequest, authToken);
+
+        if (petitionerSolicitorRoleWorkflow.errors().isEmpty()) {
+            log.info("Callback to assign [PETSOLICITOR] role with CASE ID: {} successfully completed", caseId);
+            return CcdCallbackResponse.builder()
+                .data(solicitorPayload)
+                .build();
+        } else {
+            log.error("Callback to assign [PETSOLICITOR] role with CASE ID: {} failed. ", caseId);
+            List<String> errors = petitionerSolicitorRoleWorkflow.errors().values().stream()
+                .map(x -> (String) x)
+                .collect(Collectors.toList());
+            return CcdCallbackResponse.builder()
+                .errors(errors)
+                .build();
+        }
     }
 
     @Override
