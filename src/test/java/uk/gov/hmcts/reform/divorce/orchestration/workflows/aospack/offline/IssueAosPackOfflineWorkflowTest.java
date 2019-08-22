@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class IssueAosPackOfflineWorkflowTest {
 
-    private static final String RESPONDENT_AOS_INVITATION_LETTER = "FL-DIV-LET-ENG-00070.doc";
+    private static final String RESPONDENT_AOS_INVITATION_LETTER = "FL-DIV-LET-ENG-00075.doc";
     private static final String RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-resp";
     private static final String RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_FILENAME = "aos-invitation-letter-offline-respondent";
 

@@ -107,7 +107,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
     }
 
     private void assertCaseStateIsAsExpected(final String expectedState, final String authToken) {
-        await().pollInterval(fibonacci(SECONDS)).atMost(55, SECONDS).untilAsserted(() -> {
+        await().pollInterval(fibonacci(SECONDS)).atMost(75, SECONDS).untilAsserted(() -> {
             final Response retrievedCase = retrieveCase(authToken);
             log.debug("Retrieved case {} with state {}",
                         retrievedCase.path("caseId"), retrievedCase.path("state"));

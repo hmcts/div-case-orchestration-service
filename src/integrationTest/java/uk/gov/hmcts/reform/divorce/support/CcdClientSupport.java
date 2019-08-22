@@ -73,7 +73,7 @@ public class CcdClientSupport {
             caseDataContent);
     }
 
-    CaseDetails submitSolicitorCase(Object data, UserDetails userDetails) {
+    public CaseDetails submitSolicitorCase(Object data, UserDetails userDetails) {
         return submitCaseworkerCase(data, userDetails, caseType, solicitorCreateEvent);
     }
 
