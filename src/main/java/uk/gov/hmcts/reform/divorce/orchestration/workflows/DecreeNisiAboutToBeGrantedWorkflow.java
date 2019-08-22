@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDnOutcomeFlagFieldTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features.DN_REFUSAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
@@ -43,6 +45,8 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
 
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
+    private final FeatureToggleService featureToggleService;
+
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         List<Task> tasksToRun = new ArrayList<>();
 
@@ -60,8 +64,10 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
             }
         }
 
-        tasksToRun.add(decreeNisiRefusalDocumentGeneratorTask);
-        tasksToRun.add(caseFormatterAddDocuments);
+        if (featureToggleService.isFeatureEnabled(DN_REFUSAL)) {
+            tasksToRun.add(decreeNisiRefusalDocumentGeneratorTask);
+            tasksToRun.add(caseFormatterAddDocuments);
+        }
 
         Map<String, Object> payloadToReturn = this.execute(
             tasksToRun.stream().toArray(Task[]::new),

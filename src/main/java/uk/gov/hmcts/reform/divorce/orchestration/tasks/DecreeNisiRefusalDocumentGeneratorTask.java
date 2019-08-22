@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -9,14 +8,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonMap;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features.DN_REFUSAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME;
@@ -33,7 +30,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, Object>> {
 
     private final DocumentGeneratorClient documentGeneratorClient;
-    private final FeatureToggleService featureToggleService;
 
     @Override
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
@@ -42,9 +38,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION,
             new LinkedHashSet<>());
 
-        if (String.valueOf(caseData.get(REFUSAL_DECISION_CCD_FIELD)).equalsIgnoreCase(REFUSAL_DECISION_MORE_INFO_VALUE)
-            && featureToggleService.isFeatureEnabled(DN_REFUSAL)) {
-
+        if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {
             GeneratedDocumentInfo generatedDocumentInfo = generatePdfDocument(
                 DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
                 DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE,
