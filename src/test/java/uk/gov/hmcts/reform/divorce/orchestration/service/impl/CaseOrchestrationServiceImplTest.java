@@ -51,7 +51,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkfl
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerAOSOverdueNotificationWorkflowTest;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerAOSOverdueNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
@@ -162,7 +162,7 @@ public class CaseOrchestrationServiceImplTest {
     private LinkRespondentWorkflow linkRespondentWorkflow;
 
     @Mock
-    private SendPetitionerAOSOverdueNotificationWorkflowTest sendPetitionerAOSOverdueNotificationWorkflow;
+    private SendPetitionerAOSOverdueNotificationWorkflow sendPetitionerAOSOverdueNotificationWorkflow;
 
     @Mock
     private SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
@@ -655,6 +655,15 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(requestPayload, actual);
 
         verify(sendPetitionerAOSOverdueNotificationWorkflow).run(ccdCallbackRequest);
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldThrowException_ForSendPetitionerAOSOverdueNotification_WhenWorkflowThrowsWorkflowException()
+            throws WorkflowException {
+        when(sendPetitionerAOSOverdueNotificationWorkflow.run(ccdCallbackRequest))
+                .thenThrow(new WorkflowException("This operation threw an exception"));
+
+        classUnderTest.sendPetitionerAOSOverdueNotificationEmail(ccdCallbackRequest);
     }
 
     @Test

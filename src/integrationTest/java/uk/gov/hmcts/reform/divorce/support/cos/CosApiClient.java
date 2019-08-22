@@ -26,24 +26,27 @@ public interface CosApiClient {
         value = "/co-respondent-received"
     )
     Map<String, Object> coRespReceived(@RequestHeader(AUTHORIZATION) String authorisation,
-                                       @RequestBody Map<String, Object> caseDataContent
-    );
+                                       @RequestBody Map<String, Object> caseDataContent);
 
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/co-respondent-answered"
     )
     Map<String, Object> coRespAnswerReceived(@RequestHeader(AUTHORIZATION) String authorisation,
-                                             @RequestBody CcdCallbackRequest caseDataContent
-    );
+                                             @RequestBody CcdCallbackRequest caseDataContent);
 
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/aos-received"
     )
     Map<String, Object> aosReceived(@RequestHeader(AUTHORIZATION) String authorisation,
-                                    @RequestBody Map<String, Object> caseDataContent
-    );
+                                    @RequestBody Map<String, Object> caseDataContent);
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/aos-overdue"
+    )
+    Map<String, Object> notifyPetitionerOfAOSOverdue(@RequestBody CcdCallbackRequest ccdCallbackRequest);
 
     @RequestMapping(
         method = RequestMethod.POST,
@@ -62,24 +65,21 @@ public interface CosApiClient {
         value = "/dn-submitted"
     )
     Map<String, Object> dnSubmitted(@RequestHeader(AUTHORIZATION) String authorisation,
-                                    @RequestBody Map<String, Object> caseDataContent
-    );
+                                    @RequestBody Map<String, Object> caseDataContent);
 
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/da-about-to-be-granted"
     )
     Map<String, Object> daAboutToBeGranted(@RequestHeader(AUTHORIZATION) String authorisation,
-                                           @RequestBody CcdCallbackRequest ccdCallbackRequest
-    );
+                                           @RequestBody CcdCallbackRequest ccdCallbackRequest);
 
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/da-requested-by-applicant"
     )
     Map<String, Object> notifyRespondentOfDARequested(@RequestHeader(AUTHORIZATION) String authorisation,
-                                                      @RequestBody CcdCallbackRequest ccdCallbackRequest
-    );
+                                                      @RequestBody CcdCallbackRequest ccdCallbackRequest);
 
     @RequestMapping(
         method = RequestMethod.GET,
@@ -167,8 +167,7 @@ public interface CosApiClient {
     )
     Map<String, Object> submitDaCase(@RequestHeader(AUTHORIZATION) String authorisation,
                                      @RequestBody Map<String, Object> caseData,
-                                     @PathVariable("caseId") String caseId
-    );
+                                     @PathVariable("caseId") String caseId);
 
     @RequestMapping(
         method = RequestMethod.POST,

@@ -73,7 +73,7 @@ public class CallbackControllerTest {
 
         when(caseOrchestrationService.sendPetitionerAOSOverdueNotificationEmail(ccdCallbackRequest)).thenReturn(caseData);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionerAOSOverdue(null, ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.notifyPetitionerOfAOSOverdue(ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
@@ -95,7 +95,7 @@ public class CallbackControllerTest {
         when(caseOrchestrationService.sendPetitionerAOSOverdueNotificationEmail(ccdCallbackRequest))
                 .thenThrow(new WorkflowException(testErrorMessage));
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionerAOSOverdue(null, ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.notifyPetitionerOfAOSOverdue(ccdCallbackRequest);
 
         assertEquals(OK, response.getStatusCode());
         assertThat(response.getBody().getErrors(), hasItem(testErrorMessage));
