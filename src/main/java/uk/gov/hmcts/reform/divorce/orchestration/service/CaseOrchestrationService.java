@@ -55,7 +55,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> sendPetitionerClarificationRequestNotification(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
-    Map<String, Object> setOrderSummary(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+    CcdCallbackResponse setOrderSummaryAssignRole(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> solicitorSubmission(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
