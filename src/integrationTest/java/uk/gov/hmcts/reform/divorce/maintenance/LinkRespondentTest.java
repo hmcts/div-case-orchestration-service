@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.entity.ContentType;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -30,6 +31,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.util.DateConstants.CCD_DATE_FORMAT;
 
+@Ignore //for now until further investigation as to why it takes long
 public class LinkRespondentTest extends RetrieveAosCaseSupport {
     private static final String PIN_USER_FIRST_NAME = "pinuserfirstname";
     private static final String PIN_USER_LAST_NAME = "pinuserfirstname";
