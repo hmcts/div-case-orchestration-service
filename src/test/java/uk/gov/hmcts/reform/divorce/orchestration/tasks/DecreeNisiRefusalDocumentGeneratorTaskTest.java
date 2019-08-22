@@ -19,9 +19,9 @@ import java.util.Map;
 
 import static org.assertj.core.util.Sets.newLinkedHashSet;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -100,17 +100,13 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        //given
-        when(featureToggleService.isFeatureEnabled(eq(Features.DN_REFUSAL))).thenReturn(true);
-
         //when
         decreeNisiRefusalDocumentGeneratorTask.execute(context, payload);
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
-        assertThat(documentCollection, isNull());
-
-        verify(featureToggleService).isFeatureEnabled(eq(Features.DN_REFUSAL));
+        assertThat(documentCollection.size(), is(0));
+;
         verify(documentGeneratorClient, never())
                 .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN));
     }
@@ -137,7 +133,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
-        assertThat(documentCollection, isNull());
+        assertThat(documentCollection.size(), is(0));
 
         verify(featureToggleService).isFeatureEnabled(eq(Features.DN_REFUSAL));
         verify(documentGeneratorClient, never())
