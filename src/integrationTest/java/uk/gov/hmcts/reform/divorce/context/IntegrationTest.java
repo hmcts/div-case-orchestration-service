@@ -144,12 +144,6 @@ public abstract class IntegrationTest {
         }
     }
 
-
-    private void deleteUser(UserDetails userDetails) {
-        System.out.println("Deleting user " + userDetails.getEmailAddress());
-        idamTestSupportUtil.deleteUser(userDetails);
-    }
-
     private UserDetails wrapInRetry(Supplier<UserDetails> supplier) {
         //tactical solution as sometimes the newly created user is somehow corrupted and won't generate a code..
         int count = 0;
