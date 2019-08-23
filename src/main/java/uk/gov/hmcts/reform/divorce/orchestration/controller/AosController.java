@@ -15,8 +15,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 
-import javax.ws.rs.core.MediaType;
 import java.util.Map;
+import javax.ws.rs.core.MediaType;
 
 import static java.util.Collections.singletonList;
 

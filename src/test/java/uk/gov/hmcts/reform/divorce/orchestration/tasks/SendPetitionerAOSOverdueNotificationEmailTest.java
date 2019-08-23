@@ -24,10 +24,12 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCED_WHO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
@@ -35,6 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
 
 
@@ -59,6 +62,7 @@ public class SendPetitionerAOSOverdueNotificationEmailTest {
 
         expectedTemplateVars = new HashMap<>();
         expectedTemplateVars.put(NOTIFICATION_EMAIL, TEST_PETITIONER_EMAIL);
+        expectedTemplateVars.put(NOTIFICATION_REFERENCE_KEY, TEST_CASE_FAMILY_MAN_ID);
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_RESPONDENT_FIRST_NAME);
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_RESPONDENT_LAST_NAME);
         expectedTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, TEST_RELATIONSHIP);
@@ -67,6 +71,7 @@ public class SendPetitionerAOSOverdueNotificationEmailTest {
     @Test
     public void shouldNotCallEmailServiceForAOSOverdueNotificationIfEmailDoesNotExist() throws TaskException {
         testData.put(D_8_PETITIONER_EMAIL, "");
+        testData.put(D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
         testData.put(D_8_DIVORCED_WHO, TEST_RELATIONSHIP);
@@ -78,6 +83,7 @@ public class SendPetitionerAOSOverdueNotificationEmailTest {
     @Test
     public void shouldCallEmailServiceForAOSOverdueNotifyPetitionerEmail() throws TaskException {
         testData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
+        testData.put(D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
         testData.put(D_8_DIVORCED_WHO, TEST_RELATIONSHIP);
@@ -102,6 +108,7 @@ public class SendPetitionerAOSOverdueNotificationEmailTest {
     @Test
     public void shouldThrowExceptionWhenMandatoryFieldIsMissing() {
         testData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
+        testData.put(D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
 
