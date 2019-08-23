@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DuplicateCaseValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCaseToCCD;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
 
     @Autowired
-    private ValidateCaseData validateCaseData;
+    private ValidateCaseDataTask validateCaseDataTask;
 
     @Autowired
     private SubmitCaseToCCD submitCaseToCCD;
@@ -52,7 +52,7 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
                 duplicateCaseValidationTask,
                 courtAllocationTask,
                 formatDivorceSessionToCaseData,
-                validateCaseData,
+                validateCaseDataTask,
                 submitCaseToCCD,
                 deleteDraft
             },
@@ -69,5 +69,4 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
         return response;
     }
-
 }
