@@ -1,6 +1,5 @@
 java:
     environment:
-        APPINSIGHTS_INSTRUMENTATIONKEY: "019ed56f-e01d-4651-895d-bc6334f3d1b1"
         IDAM_API_URL: "https://idam-api.aat.platform.hmcts.net"
         UK_GOV_NOTIFY_API_KEY: "divorce_preprod_live_key-b86e6469-4927-4f50-a029-6ddb523330cf-2409ba37-b5e6-4f03-b052-7d0f0986888d"
         CASE_MAINTENANCE_SERVICE_API_BASEURL: "http://div-cms-aat.service.core-compute-aat.internal"
