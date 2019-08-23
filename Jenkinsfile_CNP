@@ -50,6 +50,7 @@ withPipeline(type, product, component) {
             sh './gradlew wiremockFunctional'
         } finally {
             steps.junit '**/test-results/**/*.xml'
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
         }
     }
 
