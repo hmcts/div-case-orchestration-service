@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-public class IdamTestSupport extends MockedFunctionalTest {
+public abstract class IdamTestSupport extends MockedFunctionalTest {
     private static final String IDAM_PIN_DETAILS_CONTEXT_PATH = "/pin";
     private static final String IDAM_AUTHORIZE_CONTEXT_PATH = "/oauth2/authorize";
     private static final String IDAM_EXCHANGE_CODE_CONTEXT_PATH = "/oauth2/token";
