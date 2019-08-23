@@ -646,27 +646,6 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenCaseData_whenSendPetitionerAOSOverdueNotification_thenReturnPayload() throws Exception {
-        when(sendPetitionerAOSOverdueNotificationWorkflow.run(ccdCallbackRequest))
-                .thenReturn(requestPayload);
-
-        Map<String, Object> actual = classUnderTest.sendPetitionerAOSOverdueNotificationEmail(ccdCallbackRequest);
-
-        assertEquals(requestPayload, actual);
-
-        verify(sendPetitionerAOSOverdueNotificationWorkflow).run(ccdCallbackRequest);
-    }
-
-    @Test(expected = WorkflowException.class)
-    public void shouldThrowException_ForSendPetitionerAOSOverdueNotification_WhenWorkflowThrowsWorkflowException()
-            throws WorkflowException {
-        when(sendPetitionerAOSOverdueNotificationWorkflow.run(ccdCallbackRequest))
-                .thenThrow(new WorkflowException("This operation threw an exception"));
-
-        classUnderTest.sendPetitionerAOSOverdueNotificationEmail(ccdCallbackRequest);
-    }
-
-    @Test
     public void givenCaseData_whenSendPetitionerSubmissionNotification_thenReturnPayload() throws Exception {
         // given
         when(sendPetitionerSubmissionNotificationWorkflow.run(ccdCallbackRequest))

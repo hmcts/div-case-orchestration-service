@@ -62,46 +62,6 @@ public class CallbackControllerTest {
     private CallbackController classUnderTest;
 
     @Test
-    public void whenAOSOverdueCallback_thenReturnCcdResponse() throws Exception {
-        final Map<String, Object> caseData = Collections.emptyMap();
-        final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
-
-        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
-        ccdCallbackRequest.setCaseDetails(caseDetails);
-
-        when(caseOrchestrationService.sendPetitionerAOSOverdueNotificationEmail(ccdCallbackRequest)).thenReturn(caseData);
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.notifyPetitionerOfAOSOverdue(ccdCallbackRequest);
-
-        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
-
-        assertEquals(OK, response.getStatusCode());
-        assertEquals(expectedResponse, response.getBody());
-    }
-
-    @Test
-    public void whenAOSOverdueCallback_exceptionOccured_thenReturnErrorResponse() throws Exception {
-        final Map<String, Object> caseData = Collections.emptyMap();
-        final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
-
-        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
-        ccdCallbackRequest.setCaseDetails(caseDetails);
-
-        final String testErrorMessage = "Test error message";
-        when(caseOrchestrationService.sendPetitionerAOSOverdueNotificationEmail(ccdCallbackRequest))
-                .thenThrow(new WorkflowException(testErrorMessage));
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.notifyPetitionerOfAOSOverdue(ccdCallbackRequest);
-
-        assertEquals(OK, response.getStatusCode());
-        assertThat(response.getBody().getErrors(), hasItem(testErrorMessage));
-    }
-
-    @Test
     public void whenPetitionerClarificationRequestedCallback_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
