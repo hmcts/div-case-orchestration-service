@@ -1,8 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import feign.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
@@ -17,13 +22,16 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LOCATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 @Slf4j
-public abstract class RetrievePinUserDetails implements Task<UserDetails> {
+@Component
+public class RetrievePinUserDetails implements Task<UserDetails> {
     @Value("${auth2.client.id}")
     private String authClientId;
 
@@ -35,6 +43,9 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
 
     @Autowired
     private AuthUtil authUtil;
+
+    @Autowired
+    private IdamClient idamClient;
 
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) throws TaskException {
@@ -87,8 +98,26 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
         return pinUserDetails;
     }
 
-    protected abstract String authenticatePinUser(String pin, String authClientId, String authRedirectUrl)
-        throws TaskException;
+    protected String authenticatePinUser(String pin, String authClientId, String authRedirectUrl) throws TaskException {
+        Response authenticateResponse = getIdamClient().authenticatePinUser(pin, authClientId, authRedirectUrl);
 
-    protected abstract IdamClient getIdamClient();
+        if (authenticateResponse.status() == HttpStatus.OK.value()
+            || authenticateResponse.status() == HttpStatus.FOUND.value()) {
+            return getCodeFromRedirect(authenticateResponse);
+        }
+
+        throw new TaskException(new AuthenticationError(String.format("Error authenticating RESPONDENT_PIN [%s]", pin)));
+    }
+
+    private String getCodeFromRedirect(Response response) {
+        String location = response.headers().get(LOCATION_HEADER).stream().findFirst()
+            .orElseThrow(IllegalArgumentException::new);
+
+        UriComponents build = UriComponentsBuilder.fromUriString(location).build();
+        return build.getQueryParams().getFirst(CODE);
+    }
+
+    protected IdamClient getIdamClient() {
+        return idamClient;
+    };
 }
