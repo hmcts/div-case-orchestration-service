@@ -6,11 +6,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseValidationClient;
+import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.validation.service.ValidationService;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class ValidateCaseDataTest {
     private ValidateCaseData validateCaseData;
 
     @Mock
-    private CaseValidationClient caseValidationClient;
+    private ValidationService validationService;
     private ValidationResponse validationResponse;
     private ValidationResponse invalidationResponse;
     private Map<String, Object> payload;
@@ -42,7 +42,7 @@ public class ValidateCaseDataTest {
 
     @Before
     public void setUp() {
-        validateCaseData = new ValidateCaseData(caseValidationClient);
+        validateCaseData = new ValidateCaseData(validationService);
         validationResponse =
                 ValidationResponse.builder()
                         .validationStatus("Pass")
@@ -72,7 +72,7 @@ public class ValidateCaseDataTest {
     @Test
     public void executeShouldReturnUpdatedPayloadForValidCase() {
         //given
-        when(caseValidationClient.validate(any())).thenReturn(validationResponse);
+        when(validationService.validate(any())).thenReturn(validationResponse);
 
         //when
         Map<String, Object> response = validateCaseData.execute(context, payload);
@@ -86,7 +86,7 @@ public class ValidateCaseDataTest {
     @Test
     public void executeShouldReturnUpdatedContextForInValidCase() {
         //given
-        when(caseValidationClient.validate(any())).thenReturn(invalidationResponse);
+        when(validationService.validate(any())).thenReturn(invalidationResponse);
 
         //when
         Map<String, Object> response = validateCaseData.execute(context, payload);

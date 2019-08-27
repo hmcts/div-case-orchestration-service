@@ -21,8 +21,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.models.request.ValidationRequest;
+import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

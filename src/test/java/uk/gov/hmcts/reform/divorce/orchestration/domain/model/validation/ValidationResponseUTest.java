@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
 
 import java.util.Arrays;
 import java.util.Collection;

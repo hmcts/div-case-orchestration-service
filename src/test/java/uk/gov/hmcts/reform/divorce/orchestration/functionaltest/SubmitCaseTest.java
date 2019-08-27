@@ -13,8 +13,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.models.request.ValidationRequest;
+import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
 
 import java.util.Collections;

@@ -2,11 +2,11 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseValidationClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.models.request.ValidationRequest;
+import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.validation.service.ValidationService;
 
 import java.util.Map;
 
@@ -14,17 +14,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class ValidateCaseData implements Task<Map<String, Object>> {
-    private final CaseValidationClient caseValidationClient;
+    private final ValidationService validationService;
 
     @Autowired
-    public ValidateCaseData(CaseValidationClient caseValidationClient) {
-        this.caseValidationClient = caseValidationClient;
+    public ValidateCaseData(ValidationService validationService) {
+        this.validationService = validationService;
     }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         ValidationResponse validationResponse =
-                caseValidationClient.validate(
+                validationService.validate(
                         ValidationRequest.builder()
                                 .data(caseData)
                                 .formId(FORM_ID)
