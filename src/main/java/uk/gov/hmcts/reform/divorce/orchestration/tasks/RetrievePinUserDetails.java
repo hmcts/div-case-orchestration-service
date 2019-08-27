@@ -119,5 +119,5 @@ public class RetrievePinUserDetails implements Task<UserDetails> {
 
     protected IdamClient getIdamClient() {
         return idamClient;
-    };
+    }
 }
