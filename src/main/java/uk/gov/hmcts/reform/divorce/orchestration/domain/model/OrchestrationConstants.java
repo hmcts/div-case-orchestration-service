@@ -101,6 +101,7 @@ public class OrchestrationConstants {
     public static final String PRONOUNCEMENT_JUDGE_CCD_FIELD = "PronouncementJudge";
     public static final String DATE_RESPONDENT_ELIGIBLE_FOR_DA_CCD_FIELD = "DateRespondentEligibleForDA";
     public static final String DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA_CCD_FIELD = "DateCaseNoLongerEligibleForDA";
+    public static final String REMOVE_FROM_BULK_CASE_LISTED_EVENT = "removeFromBulkCaseListed";
 
     public static final String PET_SOL_EMAIL = "PetitionerSolicitorEmail";
     public static final String PET_SOL_NAME = "PetitionerSolicitorName";
@@ -275,6 +276,8 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
+
+    public static final String DOCUMENT_TYPE_COE = "coe";
 
     public static final String SOL_DOCUMENT_LINK_FIELD = "solDocumentLinkFieldName";
     public static final String MINI_PETITION_LINK = "minipetitionlink";
