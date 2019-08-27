@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.BulkCaseService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
 import java.util.Map;
@@ -27,6 +28,8 @@ import static java.util.Arrays.asList;
 public class BulkCaseController {
     
     private final CaseOrchestrationService orchestrationService;
+
+    private final BulkCaseService bulkCaseService;
 
     @PostMapping(path = "/bulk/case")
     @ApiOperation(value = "Create bulk case ready for listing")
@@ -131,7 +134,7 @@ public class BulkCaseController {
     @PostMapping(path = "/bulk/remove")
     @ApiOperation(value = "Callback remove cases from the bulk")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Required pronouncement data has been set successfully"),
+        @ApiResponse(code = 200, message = "Cases has been removed successfully"),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> removeCasesFromBulk(
         @RequestHeader("Authorization")
@@ -143,6 +146,27 @@ public class BulkCaseController {
         try {
             ccdCallbackResponseBuilder.data(orchestrationService
                 .updateBulkCaseAcceptedCases(ccdCallbackRequest.getCaseDetails(), authorizationToken));
+        } catch (WorkflowException exception) {
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/bulk/remove/listing")
+    @ApiOperation(value = "Callback remove cases from the bulk listing")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Cases has been removed successfully from listed bulk case"),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> removeCasesFromBulkListed(
+        @RequestHeader("Authorization")
+        @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            ccdCallbackResponseBuilder.data(bulkCaseService.removeFromBulkListed(ccdCallbackRequest, authorizationToken));
         } catch (WorkflowException exception) {
             ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
         }
