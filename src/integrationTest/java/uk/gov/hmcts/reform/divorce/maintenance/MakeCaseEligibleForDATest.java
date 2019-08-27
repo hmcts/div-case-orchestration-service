@@ -88,7 +88,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
     }
 
     private void ensureCaseIsSearchable(final String caseId, final String authToken) {
-        await().pollInterval(fibonacci(SECONDS)).atMost(40, SECONDS).untilAsserted(() -> {
+        await().pollInterval(fibonacci(SECONDS)).atMost(55, SECONDS).untilAsserted(() -> {
             List<CaseDetails> foundCases = searchCasesWithElasticSearch(caseId, authToken);
             assertThat("The number of cases found by ElasticSearch was not expected",
                         foundCases.size(), is(1));
@@ -107,7 +107,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
     }
 
     private void assertCaseStateIsAsExpected(final String expectedState, final String authToken) {
-        await().pollInterval(fibonacci(SECONDS)).atMost(90, SECONDS).untilAsserted(() -> {
+        await().pollInterval(fibonacci(SECONDS)).atMost(144, SECONDS).untilAsserted(() -> {
             final Response retrievedCase = retrieveCase(authToken);
             log.debug("Retrieved case {} with state {}",
                         retrievedCase.path("caseId"), retrievedCase.path("state"));
