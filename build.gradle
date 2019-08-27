@@ -228,7 +228,7 @@ def versions = [
         hibernateTypes                  : '2.4.0',
         flyway                          : '5.2.4',
         elasticsearch                   : '7.3.0',
-        divCommonLib                    : '1.0.0'
+        divCommonLib                    : '1.0.1'
 ]
 
 dependencies {
@@ -290,7 +290,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: versions.reformsJavaLogging
-    compile group: 'uk.gov.hmcts.reform', name: 'div-common-lib', version: '1.0.1'
+    compile group: 'uk.gov.hmcts.reform', name: 'div-common-lib', version: versions.divCommonLib
     compile (group: 'uk.gov.hmcts.reform', name:'service-auth-provider-client', version: versions.serviceTokenGenerator)
         {
             exclude group: 'io.reactivex', module: 'io.reactivex'
