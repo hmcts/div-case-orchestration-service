@@ -33,8 +33,7 @@ def secrets = [
 
 withPipeline(type, product, component) {
     if (env.CHANGE_TITLE && !env.CHANGE_TITLE.startsWith('[PREVIEW]')) {
-
-        enableDbMigration()
+        enableDbMigration('div')
     }
     enableDockerBuild()
     installCharts()
