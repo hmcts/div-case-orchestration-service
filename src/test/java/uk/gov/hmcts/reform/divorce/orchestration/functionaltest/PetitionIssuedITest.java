@@ -445,7 +445,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
     }
 
     private List<String> getListOfErrors() {
-        return Arrays.asList(new String[]{
+        return Arrays.asList(
             "D8InferredPetitionerGender can not be null or empty. Actual data is: null",
             "D8InferredRespondentGender can not be null or empty. Actual data is: null",
             "D8MarriageDate can not be null or empty. Actual data is: null",
@@ -460,7 +460,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
             "D8DivorceCostsClaim can not be null or empty. Actual data is: null",
             "D8JurisdictionConnection can not be null or empty. Actual data is: null",
             "D8StatementOfTruth must be 'YES'. Actual data is: null"
-        });
+        );
     }
 
 }
