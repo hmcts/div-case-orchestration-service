@@ -62,10 +62,6 @@ variable "aos_responded_awaiting_answer_days_to_respond" {
   default = 21
 }
 
-variable "idam_strategic_enabled" {
-  default = "true"
-}
-
 variable "health_check_ttl" {
   type = "string"
   default = "4000"

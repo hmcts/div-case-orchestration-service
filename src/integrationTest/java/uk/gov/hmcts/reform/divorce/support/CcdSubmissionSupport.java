@@ -78,10 +78,6 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         return ccdClientSupport.submitCase(caseData, userDetails);
     }
 
-    protected CaseDetails submitCase(String fileName) {
-        return submitCase(fileName, createCitizenUser());
-    }
-
     protected final CaseDetails submitSolicitorCase(String fileName, UserDetails userDetails) {
 
         final Map caseData = loadJsonToObject(PAYLOAD_CONTEXT_PATH + fileName, Map.class);

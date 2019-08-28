@@ -12,7 +12,6 @@ java:
         CASE_FORMATTER_SERVICE_API_BASEURL: "http://div-cfs-aat.service.core-compute-aat.internal"
         SERVICE_AUTH_PROVIDER_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
         CASE_VALIDATION_SERVICE_API_BASEURL: "http://div-vs-aat.service.core-compute-aat.internal"
-        IDAM_STRATEGIC_ENABLED: "true"
         DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-aat.service.core-compute-aat.internal"
         FEES_AND_PAYMENTS_SERVICE_API_BASEURL: "http://div-fps-aat.service.core-compute-aat.internal"
         MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE: "30000"
