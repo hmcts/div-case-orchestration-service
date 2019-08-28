@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.support.cos;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -95,7 +94,7 @@ public interface CosApiClient {
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     void saveDraft(@RequestHeader(AUTHORIZATION) String authorisation,
-                   @RequestBody JsonNode caseDataContent,
+                   @RequestBody Map<String, Object> caseDataContent,
                    @RequestParam(name = "sendEmail") String sendEmail
     );
 
@@ -111,7 +110,7 @@ public interface CosApiClient {
         value = "/submit"
     )
     Map<String, Object> submitCase(@RequestHeader(AUTHORIZATION) String authorisation,
-                                   @RequestBody JsonNode caseDataContent
+                                   @RequestBody Map<String, Object> caseDataContent
     );
 
     @RequestMapping(

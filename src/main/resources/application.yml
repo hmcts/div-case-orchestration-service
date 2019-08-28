@@ -284,8 +284,6 @@ idam:
   caseworker:
     username: ${IDAM_CASEWORKER_USERNAME:dummyuser}
     password: ${IDAM_CASEWORKER_PASSWORD:dummypassword}
-  strategic:
-    enabled: ${IDAM_STRATEGIC_ENABLED:true}
   s2s-auth:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}

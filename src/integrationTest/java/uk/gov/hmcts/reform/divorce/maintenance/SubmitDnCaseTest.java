@@ -21,15 +21,6 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
     }
 
     @Test
-    public void givenNoCaseData_whenSubmitDn_thenReturnBadRequest() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
-
-        Response cosResponse = submitDnCase(userDetails.getAuthToken(), 1L, null);
-
-        assertEquals(BAD_REQUEST.value(), cosResponse.getStatusCode());
-    }
-
-    @Test
     public void whenSubmitDn_thenProceedAsExpected() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 

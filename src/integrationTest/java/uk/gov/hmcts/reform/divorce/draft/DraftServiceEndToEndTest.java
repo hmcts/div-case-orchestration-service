@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.draft;
 
 import feign.FeignException;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,8 +32,6 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     private static final String NO_VALID_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib"
         + "mFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
-    private static final String CREATED_DATE = "createdDate";
-
     private static final String CMS_DATA_KEY = "data";
 
     @Autowired
@@ -45,55 +42,17 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
     private UserDetails user;
 
-    @Before
-    public void setUp() {
-        user = createCitizenUser();
-    }
-
     @After
     public void tearDown() {
-        draftsSubmissionSupport.deleteDraft(user);
+        if (user != null) {
+            draftsSubmissionSupport.deleteDraft(user);
+        }
         user = null;
     }
 
     @Test
-    public void givenNotAuthenticated_whenGetDraft_thenNotAuthenticatedError() {
-        try {
-            draftsSubmissionSupport.getUserDraft(UserDetails.builder()
-                .authToken(NO_VALID_TOKEN)
-                .build());
-            fail("Not authenticated error expected");
-        } catch (FeignException error) {
-            assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
-        }
-    }
-
-    @Test
-    public void givenNotAuthenticated_whenSafeDraft_thenNotAuthenticatedError() {
-        try {
-            draftsSubmissionSupport.saveDraft(UserDetails.builder()
-                .authToken(NO_VALID_TOKEN)
-                .build(), SAVE_DRAFT_FILE);
-            fail("Not authenticated error expected");
-        } catch (FeignException error) {
-            assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
-        }
-    }
-
-    @Test
-    public void givenNotAuthenticated_whenDeleteDraft_thenNotAuthenticatedError() {
-        try {
-            draftsSubmissionSupport.deleteDraft(UserDetails.builder()
-                .authToken(NO_VALID_TOKEN)
-                .build());
-            fail("Not authenticated error expected");
-        } catch (FeignException error) {
-            assertEquals(HttpStatus.UNAUTHORIZED.value(), error.status());
-        }
-    }
-
-    @Test
     public void givenUserWithoutDraft_whenRetrieveDraft_thenReturn404Status() {
+        user = createCitizenUser();
         try {
             draftsSubmissionSupport.getUserDraft(user);
             fail("Resource not found error expected");
@@ -104,6 +63,8 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
     @Test
     public void givenUser_whenSaveDraft_thenCaseIsSavedInDraftStore() {
+        user = createCitizenUser();
+
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
         assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
@@ -111,6 +72,8 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
     @Test
     public void givenUserWithDraft_whenDeleteDraft_thenDraftIsDeleted() {
+        user = createCitizenUser();
+
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
         assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
@@ -127,6 +90,8 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
     @Test
     public void givenUserWithDraft_whenSubmitCase_thenDraftIsDeleted() {
+        user = createCitizenUser();
+
         draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
 
         assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
@@ -140,6 +105,8 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
     @Test
     public void givenUserWithDraft_whenUpdateDraft_thenDraftIsUpdated() {
+        user = createCitizenUser();
+
         draftsSubmissionSupport.saveDraft(user, DRAFT_PART_1_FILE);
         assertUserDraft(DRAFT_PART_1_RESPONSE_FILE, user);
 
