@@ -93,6 +93,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
         .caseDetails(CASE_DETAILS)
         .build();
 
+    private static final ValidationResponse VALIDATION_RESPONSE = ValidationResponse.builder().build();
+
     @Autowired
     private MockMvc webClient;
 
@@ -177,6 +179,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
+        when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -212,6 +215,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
+        when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -258,6 +262,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
+        when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -324,6 +329,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
         stubDocumentGeneratorServerEndpoint(generateAosInvitationRequest, generatedAosInvitationResponse);
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
+        when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -400,6 +406,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
         stubDocumentGeneratorServerEndpoint(generateAosInvitationRequest, generatedAosInvitationResponse);
+        when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         FeeResponse feeResponse = FeeResponse.builder().amount(550.00).build();
 
@@ -455,7 +462,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
     }
 
     private List<String> getListOfErrors() {
-        return Arrays.asList(new String[]{
+        return Arrays.asList(
             "D8InferredPetitionerGender can not be null or empty. Actual data is: null",
             "D8InferredRespondentGender can not be null or empty. Actual data is: null",
             "D8MarriageDate can not be null or empty. Actual data is: null",
@@ -470,7 +477,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
             "D8DivorceCostsClaim can not be null or empty. Actual data is: null",
             "D8JurisdictionConnection can not be null or empty. Actual data is: null",
             "D8StatementOfTruth must be 'YES'. Actual data is: null"
-        });
+        );
     }
 
 }
