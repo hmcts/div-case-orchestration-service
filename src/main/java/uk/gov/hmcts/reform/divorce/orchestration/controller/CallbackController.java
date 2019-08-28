@@ -782,6 +782,31 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    @PostMapping(path = "/remove-dn-outcome-case-flag")
+    @ApiOperation(value = "Callback to remove the DnOutcomeCase flag.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> removeDnOutcomeCaseFlag(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.removeDnOutcomeCaseFlag(ccdCallbackRequest))
+            .build());
+    }
+
+    @PostMapping(path = "/remove-la-make-decision-fields")
+    @ApiOperation(value = "Callback to remove the fields set by the legal advsior when they make a decision.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> removeLegalAdvisorMakeDecisionFields(
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.removeLegalAdvisorMakeDecisionFields(ccdCallbackRequest))
+            .build());
+    }
 
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
