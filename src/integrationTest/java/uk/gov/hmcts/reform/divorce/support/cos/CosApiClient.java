@@ -179,7 +179,6 @@ public interface CosApiClient {
                                             @PathVariable("party") String party,
                                             @RequestBody CcdCallbackRequest ccdCallbackRequest);
 
-
     @RequestMapping(
             method = RequestMethod.POST,
             value = "/personal-service-pack"
@@ -188,4 +187,16 @@ public interface CosApiClient {
             @RequestHeader(AUTHORIZATION) String authorisation,
             @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/remove-dn-outcome-case-flag"
+    )
+    Map<String, Object> removeDnOutcomeCaseFlag(@RequestBody CcdCallbackRequest ccdCallbackRequest);
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/remove-la-make-decision-fields"
+    )
+    Map<String, Object> removeLegalAdvisorMakeDecisionFields(@RequestBody CcdCallbackRequest ccdCallbackRequest);
 }
