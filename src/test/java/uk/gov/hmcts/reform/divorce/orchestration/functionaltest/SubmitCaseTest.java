@@ -7,15 +7,16 @@ import com.jayway.jsonpath.JsonPath;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.reform.divorce.models.request.ValidationRequest;
 import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
+import uk.gov.hmcts.reform.divorce.validation.service.ValidationService;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +35,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -54,7 +57,6 @@ public class SubmitCaseTest extends MockedFunctionalTest {
     private static final String API_URL = "/submit";
 
     private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
-    private static final String VALIDATION_CONTEXT_PATH = "/version/1/validate";
     private static final String SUBMISSION_CONTEXT_PATH = "/casemaintenance/version/1/submit";
     private static final String DELETE_DRAFT_CONTEXT_PATH = "/casemaintenance/version/1/drafts";
     private static final String RETRIEVE_CASE_CONTEXT_PATH = "/casemaintenance/version/1/case";
@@ -63,14 +65,7 @@ public class SubmitCaseTest extends MockedFunctionalTest {
 
     private static final String AUTH_TOKEN = "authToken";
 
-    private static final String FORM_ID = "case-progression";
-
     private static final Map<String, Object> CASE_DATA = Collections.emptyMap();
-
-    private static final ValidationRequest validationRequest = ValidationRequest.builder()
-        .data(CASE_DATA)
-        .formId(FORM_ID)
-        .build();
 
     private static final ValidationResponse validationResponse = ValidationResponse.builder().build();
 
@@ -80,13 +75,16 @@ public class SubmitCaseTest extends MockedFunctionalTest {
     @Autowired
     private MockMvc webClient;
 
+    @MockBean
+    private ValidationService validationService;
+
     @Test
     public void givenCaseDataAndAuth_whenCaseDataIsSubmitted_thenReturnSuccess() throws Exception {
         stubMaintenanceServerEndpointForRetrieve(HttpStatus.NOT_FOUND, null);
         stubFormatterServerEndpoint();
-        stubValidationServerEndpoint();
         stubMaintenanceServerEndpointForSubmit(Collections.singletonMap(ID, TEST_CASE_ID));
         stubMaintenanceServerEndpointForDeleteDraft(HttpStatus.OK);
+        when(validationService.validate(any())).thenReturn(validationResponse);
 
         MvcResult result = webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -178,7 +176,6 @@ public class SubmitCaseTest extends MockedFunctionalTest {
         validationResponse.setErrors(validationErrors);
 
         stubFormatterServerEndpoint();
-        stubValidationServerEndpoint();
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -195,15 +192,6 @@ public class SubmitCaseTest extends MockedFunctionalTest {
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withBody(convertObjectToJsonString(CASE_DATA))));
-    }
-
-    private void stubValidationServerEndpoint() {
-        validationServiceServer.stubFor(WireMock.post(VALIDATION_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(validationRequest)))
-            .willReturn(aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withBody(convertObjectToJsonString(validationResponse))));
     }
 
     private void stubMaintenanceServerEndpointForSubmit(Map<String, Object> response) {
@@ -230,5 +218,4 @@ public class SubmitCaseTest extends MockedFunctionalTest {
             .willReturn(aResponse()
                 .withStatus(status.value())));
     }
-
 }
