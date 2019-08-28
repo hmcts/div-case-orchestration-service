@@ -33,8 +33,7 @@ def secrets = [
 
 withPipeline(type, product, component) {
     if (env.CHANGE_TITLE && !env.CHANGE_TITLE.startsWith('[PREVIEW]')) {
-
-        enableDbMigration()
+        enableDbMigration('div')
     }
     enableDockerBuild()
     installCharts()
@@ -50,11 +49,13 @@ withPipeline(type, product, component) {
             sh './gradlew wiremockFunctional'
         } finally {
             steps.junit '**/test-results/**/*.xml'
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
         }
     }
 
     after('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
     }
 
     // Kubernetes does not retrieve variables from the output terraform
@@ -65,5 +66,6 @@ withPipeline(type, product, component) {
 
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
     }
 }

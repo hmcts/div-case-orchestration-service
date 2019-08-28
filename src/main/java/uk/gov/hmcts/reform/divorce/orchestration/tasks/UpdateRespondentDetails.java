@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
@@ -42,7 +41,6 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
     private CaseMaintenanceClient caseMaintenanceClient;
 
     @Autowired
-    @Qualifier("idamClient")
     private IdamClient idamClient;
 
     @Autowired

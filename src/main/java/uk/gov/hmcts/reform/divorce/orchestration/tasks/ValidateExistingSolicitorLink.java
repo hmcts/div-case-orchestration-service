@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.client.StrategicIdamClient;
+import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class ValidateExistingSolicitorLink implements Task<UserDetails> {
 
-    private final StrategicIdamClient idamClient;
+    private final IdamClient idamClient;
 
     @Override
     public UserDetails execute(TaskContext context, UserDetails payload) throws TaskException {

@@ -72,32 +72,6 @@ public class PetitionIssueTest extends IntegrationTest {
     private String contextPath;
 
     @Test
-    public void givenUserTokenIsNull_whenRetrievePetition_thenReturnBadRequest() throws Exception {
-        Response cosResponse = issuePetition(null, "ccd-callback-petition-issued.json", null);
-
-        assertEquals(HttpStatus.BAD_REQUEST.value(), cosResponse.getStatusCode());
-    }
-
-    @Test
-    public void givenInvalidCaseData_whenRetrievePetition_thenReturnValidationError() throws Exception {
-        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
-            "invalid-ccd-callback-petition-issued.json", null);
-
-        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertEquals(EXPECTED_ERROR, cosResponse.path(ERRORS));
-    }
-
-    @Test
-    public void givenGenerateAosNull_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
-        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
-            "ccd-callback-aos-invitation.json", null);
-
-        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertGeneratedDocumentsExists(cosResponse, false, false);
-        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
-    }
-
-    @Test
     public void givenGenerateAosFalse_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
         Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
             "ccd-callback-aos-invitation.json", false);
@@ -124,17 +98,6 @@ public class PetitionIssueTest extends IntegrationTest {
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertGeneratedDocumentsExists(cosResponse, true, false);
-        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
-    }
-
-
-    @Test
-    public void givenGenerateAosTrueAndEastMidlandsRdc_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
-        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
-            "ccd-callback-aos-invitation-east-midlands.json", true);
-
-        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertGeneratedDocumentsExists(cosResponse, true, true);
         assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
 
