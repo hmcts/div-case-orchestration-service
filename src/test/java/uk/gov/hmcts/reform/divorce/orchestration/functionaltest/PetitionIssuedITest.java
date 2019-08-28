@@ -7,10 +7,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -21,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
+import uk.gov.hmcts.reform.divorce.validation.service.ValidationService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -35,6 +38,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -94,6 +99,9 @@ public class PetitionIssuedITest extends IdamTestSupport {
     @Autowired
     private MockMvc webClient;
 
+    @MockBean
+    private ValidationService validationService;
+
     @BeforeClass
     public static void beforeClass() {
         CASE_DATA.put(D_8_PETITIONER_FIRST_NAME, TEST_USER_FIRST_NAME);
@@ -127,6 +135,11 @@ public class PetitionIssuedITest extends IdamTestSupport {
     public void givenValidationFailed_whenPetitionIssued_thenReturnCaseWithValidationErrors()
         throws Exception {
         final List<String> errors = getListOfErrors();
+        final ValidationResponse validationResponseFail = ValidationResponse.builder()
+            .errors(errors)
+            .warnings(Collections.singletonList("Warning!"))
+            .build();
+        when(validationService.validate(any())).thenReturn(validationResponseFail);
 
         final CcdCallbackResponse ccdCallbackResponse =
             CcdCallbackResponse.builder()
@@ -445,7 +458,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
     }
 
     private List<String> getListOfErrors() {
-        return Arrays.asList(
+        return Arrays.asList(new String[]{
             "D8InferredPetitionerGender can not be null or empty. Actual data is: null",
             "D8InferredRespondentGender can not be null or empty. Actual data is: null",
             "D8MarriageDate can not be null or empty. Actual data is: null",
@@ -460,7 +473,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
             "D8DivorceCostsClaim can not be null or empty. Actual data is: null",
             "D8JurisdictionConnection can not be null or empty. Actual data is: null",
             "D8StatementOfTruth must be 'YES'. Actual data is: null"
-        );
+        });
     }
 
 }

@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonpath.JsonPath;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -67,7 +69,11 @@ public class SubmitCaseTest extends MockedFunctionalTest {
 
     private static final Map<String, Object> CASE_DATA = Collections.emptyMap();
 
-    private static final ValidationResponse validationResponse = ValidationResponse.builder().build();
+    private static final ValidationResponse validationResponseOk = ValidationResponse.builder().build();
+    private static final ValidationResponse validationResponseFail = ValidationResponse.builder()
+        .errors(Collections.singletonList("An error has occurred"))
+        .warnings(Collections.singletonList("Warning!"))
+        .build();
 
     @Autowired
     private CourtLookupService courtLookupService;
@@ -84,7 +90,7 @@ public class SubmitCaseTest extends MockedFunctionalTest {
         stubFormatterServerEndpoint();
         stubMaintenanceServerEndpointForSubmit(Collections.singletonMap(ID, TEST_CASE_ID));
         stubMaintenanceServerEndpointForDeleteDraft(HttpStatus.OK);
-        when(validationService.validate(any())).thenReturn(validationResponse);
+        when(validationService.validate(any())).thenReturn(validationResponseOk);
 
         MvcResult result = webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -172,9 +178,7 @@ public class SubmitCaseTest extends MockedFunctionalTest {
 
     @Test
     public void givenInvalidCaseDataAndAuth_whenCaseDataIsSubmitted_thenReturnBadRequest() throws Exception {
-        List<String> validationErrors = Collections.singletonList("An error has occurred");
-        validationResponse.setErrors(validationErrors);
-
+        when(validationService.validate(any())).thenReturn(validationResponseFail);
         stubFormatterServerEndpoint();
 
         webClient.perform(post(API_URL)

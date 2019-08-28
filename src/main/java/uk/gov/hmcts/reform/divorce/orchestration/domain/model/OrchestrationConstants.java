@@ -344,7 +344,7 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_VALIDATION_ERROR_KEY
         = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData_Error";
     public static final String VALIDATION_ERROR_KEY
-        = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData_Error";
+        = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask_Error";
     public static final String BULK_PRINT_ERROR_KEY
         = "uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkPrinter_Error";
     public static final String EMAIL_ERROR_KEY
