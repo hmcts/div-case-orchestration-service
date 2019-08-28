@@ -13,22 +13,22 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FORM_ID;
 
 @Component
-public class ValidateCaseData implements Task<Map<String, Object>> {
+public class ValidateCaseDataTask implements Task<Map<String, Object>> {
     private final ValidationService validationService;
 
     @Autowired
-    public ValidateCaseData(ValidationService validationService) {
+    public ValidateCaseDataTask(ValidationService validationService) {
         this.validationService = validationService;
     }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         ValidationResponse validationResponse =
-                validationService.validate(
-                        ValidationRequest.builder()
-                                .data(caseData)
-                                .formId(FORM_ID)
-                                .build());
+            validationService.validate(
+                ValidationRequest.builder()
+                    .data(caseData)
+                    .formId(FORM_ID)
+                    .build());
 
         if (!validationResponse.isValid()) {
             context.setTaskFailed(true);

@@ -30,8 +30,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ValidateCaseDataTest {
-    private ValidateCaseData validateCaseData;
+public class ValidateCaseDataTaskTest {
+    private ValidateCaseDataTask validateCaseDataTask;
 
     @Mock
     private ValidationService validationService;
@@ -42,21 +42,21 @@ public class ValidateCaseDataTest {
 
     @Before
     public void setUp() {
-        validateCaseData = new ValidateCaseData(validationService);
+        validateCaseDataTask = new ValidateCaseDataTask(validationService);
         validationResponse =
-                ValidationResponse.builder()
-                        .validationStatus("Pass")
-                        .build();
+            ValidationResponse.builder()
+                .validationStatus("Pass")
+                .build();
 
         invalidationResponse =
-                ValidationResponse.builder()
-                        .validationStatus("Pass")
-                        .errors(Collections.singletonList("Invalid input"))
-                        .build();
+            ValidationResponse.builder()
+                .validationStatus("Pass")
+                .errors(Collections.singletonList("Invalid input"))
+                .build();
 
         payload = new HashMap<>();
         payload.put("D8ScreenHasMarriageBroken", "YES");
-        payload.put(RESPONDENT_PIN,TEST_PIN );
+        payload.put(RESPONDENT_PIN, TEST_PIN);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
@@ -75,7 +75,7 @@ public class ValidateCaseDataTest {
         when(validationService.validate(any())).thenReturn(validationResponse);
 
         //when
-        Map<String, Object> response = validateCaseData.execute(context, payload);
+        Map<String, Object> response = validateCaseDataTask.execute(context, payload);
 
         //then
         assertNotNull(response);
@@ -89,7 +89,7 @@ public class ValidateCaseDataTest {
         when(validationService.validate(any())).thenReturn(invalidationResponse);
 
         //when
-        Map<String, Object> response = validateCaseData.execute(context, payload);
+        Map<String, Object> response = validateCaseDataTask.execute(context, payload);
 
         //then
         assertNotNull(response);
@@ -98,6 +98,6 @@ public class ValidateCaseDataTest {
 
     @After
     public void tearDown() {
-        validateCaseData = null;
+        validateCaseDataTask = null;
     }
 }
