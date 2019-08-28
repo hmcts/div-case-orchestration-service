@@ -46,7 +46,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils.formatDateWithCustomerFacingFormat;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @Component
 @Slf4j
@@ -119,7 +119,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
 
             templateParameters.put(COURT_NAME_TEMPLATE_ID, taskCommons.getDnCourt(courtName).getName());
 
-            taskCommons.sendEmail(template, EMAIL_DESCRIPTION,  emailToBeSentTo, templateParameters);
+            taskCommons.sendEmail(template, EMAIL_DESCRIPTION, emailToBeSentTo, templateParameters);
             log.info("Respondent notification sent for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));
         } catch (TaskException exception) {
             log.error("Failed to send Respondent notification for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));
