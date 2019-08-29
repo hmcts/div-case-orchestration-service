@@ -228,7 +228,7 @@ def versions = [
         hibernateTypes                  : '2.4.0',
         flyway                          : '5.2.4',
         elasticsearch                   : '7.3.0',
-        divCommonLib                    : '1.0.3'
+        divCommonLib                    : '1.0.5'
 ]
 
 dependencies {
