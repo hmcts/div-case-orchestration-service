@@ -19,7 +19,7 @@ public class SendPetitionerAOSOverdueNotificationWorkflow extends DefaultWorkflo
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return this.execute(
             new Task[] {
-                sendPetitionerAOSOverdueNotificationEmail,
+                sendPetitionerAOSOverdueNotificationEmail
             },
             ccdCallbackRequest.getCaseDetails().getCaseData()
         );

@@ -29,6 +29,7 @@ public class AosOverdueNotifyPetitionerTest extends IntegrationTest {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, CcdCallbackRequest.class);
         Map<String, Object> response = cosApiClient.notifyPetitionerOfAOSOverdue(ccdCallbackRequest);
         assertNotNull(response.get(DATA));
+        assertEquals(ccdCallbackRequest.getCaseDetails().getCaseData(), response.get(DATA));
     }
 
     @SuppressWarnings("unchecked")

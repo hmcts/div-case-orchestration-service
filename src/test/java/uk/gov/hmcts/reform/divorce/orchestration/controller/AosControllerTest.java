@@ -51,7 +51,7 @@ public class AosControllerTest {
     }
 
     @Test
-    public void whenAOSOverdueCallback_exceptionOccured_thenReturnErrorResponse() throws Exception {
+    public void whenAOSOverdueCallback_exceptionOccured_thenReturnResponseWithErrorMessages() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
                 .caseData(caseData)

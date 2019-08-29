@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @Component
+@Slf4j
 public class SendPetitionerAOSOverdueNotificationEmail implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESC = "AOS Overdue Notification - Petitioner";
@@ -57,6 +59,7 @@ public class SendPetitionerAOSOverdueNotificationEmail implements Task<Map<Strin
                 emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
                         EmailTemplateNames.APPLICANT_AOS_OVERDUE_NOTIFICATION.name(), templateVars, EMAIL_DESC);
             } catch (NotificationClientException e) {
+                log.error("Error sending AOS overdue notification email to petitioner", e);
                 throw  new TaskException(e.getMessage(), e);
             }
         }

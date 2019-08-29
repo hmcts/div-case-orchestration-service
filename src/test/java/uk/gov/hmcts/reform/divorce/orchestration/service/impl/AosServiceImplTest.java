@@ -19,6 +19,7 @@ import java.util.Map;
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.rules.ExpectedException.none;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -67,7 +68,7 @@ public class AosServiceImplTest {
 
         assertEquals(requestPayload, actual);
 
-        verify(sendPetitionerAOSOverdueNotificationWorkflow).run(ccdCallbackRequest);
+        verify(sendPetitionerAOSOverdueNotificationWorkflow, times(1     )).run(ccdCallbackRequest);
     }
 
     @Test(expected = WorkflowException.class)

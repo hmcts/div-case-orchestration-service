@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,7 +44,7 @@ public class SendPetitionerAOSOverdueNotificationWorkflowTest {
 
         assertThat(result, is(payload));
 
-        verify(sendPetitionerAOSOverdueNotificationEmail).execute(context, payload);
+        verify(sendPetitionerAOSOverdueNotificationEmail, times(1)).execute(context, payload);
     }
 
 }
