@@ -51,7 +51,7 @@ public class IssueAosPackOfflineWorkflowTest {
     private static final String CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-co-resp";
     private static final String CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_FILENAME = "aos-invitation-letter-offline-co-respondent";
 
-    private static final String RESPONDENT_TWO_YEAR_SEPARATION_AOS_OFFLINE_FORM = "FL-DIV-APP-ENG-00080.doc";
+    private static final String RESPONDENT_TWO_YEAR_SEPARATION_AOS_OFFLINE_FORM = "FL-DIV-APP-ENG-00080.docx";
     private static final String RESPONDENT_TWO_YEAR_SEPARATION_AOS_OFFLINE_FORM_DOCUMENT_TYPE = "two-year-separation-aos-form";
     private static final String RESPONDENT_TWO_YEAR_SEPARATION_AOS_OFFLINE_FORM_FILENAME = "two-year-separation-aos-form-resp";
 
