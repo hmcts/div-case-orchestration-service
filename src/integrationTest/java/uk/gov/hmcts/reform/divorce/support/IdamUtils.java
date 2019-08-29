@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.model.GeneratePinRequest;
 import uk.gov.hmcts.reform.divorce.model.PinResponse;
 import uk.gov.hmcts.reform.divorce.model.RegisterUserRequest;
 import uk.gov.hmcts.reform.divorce.model.UserGroup;
-import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -38,7 +37,7 @@ public class IdamUtils {
         Response pinResponse =  SerenityRest.given()
             .header(HttpHeaders.AUTHORIZATION, authToken)
             .header(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString())
-            .body(ResourceLoader.objectToJson(generatePinRequest))
+            .body(generatePinRequest)
             .post(idamUserBaseUrl + "/pin")
             .andReturn();
 
@@ -66,7 +65,7 @@ public class IdamUtils {
         SerenityRest.given()
             .header("Content-Type", "application/json")
             .relaxedHTTPSValidation()
-            .body(ResourceLoader.objectToJson(registerUserRequest))
+            .body(registerUserRequest)
             .post(idamCreateUrl());
     }
 

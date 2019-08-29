@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
     private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER";
+    private static final String SOLICITOR_USER_NAME = "TEST_SOLICITOR";
     private static final String EMAIL_DOMAIN = "@mailinator.com";
     private static final String CITIZEN_ROLE = "citizen";
     private static final String CASEWORKER_DIVORCE_ROLE = "caseworker-divorce";
@@ -80,11 +81,8 @@ public abstract class IntegrationTest {
     protected UserDetails createCaseWorkerUser() {
         synchronized (this) {
             if (caseWorkerUser == null) {
-                caseWorkerUser = wrapInRetry(() -> getUserDetails(
-                    CASE_WORKER_USERNAME + UUID.randomUUID() + EMAIL_DOMAIN,
-                    CASEWORKER_USERGROUP,
-                    CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE,
-                    CASEWORKER_DIVORCE_COURTADMIN_ROLE, CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE
+                caseWorkerUser = wrapInRetry(() -> getCreatedUserDetails(
+                    CASE_WORKER_USERNAME +  EMAIL_DOMAIN
                 ));
             }
             return caseWorkerUser;
@@ -92,10 +90,7 @@ public abstract class IntegrationTest {
     }
 
     protected UserDetails createCitizenUser() {
-        return wrapInRetry(() -> {
-            final String username = "simulate-delivered" + UUID.randomUUID() + EMAIL_DOMAIN;
-            return getUserDetails(username, CITIZEN_USERGROUP, CITIZEN_ROLE);
-        });
+        return createCitizenUser(CITIZEN_ROLE);
     }
 
     protected UserDetails createCitizenUser(String role) {
@@ -107,10 +102,8 @@ public abstract class IntegrationTest {
 
     protected UserDetails createSolicitorUser() {
         return wrapInRetry(() -> {
-            final String username = "simulate-delivered" + UUID.randomUUID() + EMAIL_DOMAIN;
-            return getUserDetails(username, CASEWORKER_USERGROUP,
-                CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_SOLICITOR_ROLE
-            );
+            final String username = SOLICITOR_USER_NAME + EMAIL_DOMAIN;
+            return getCreatedUserDetails(username);
         });
     }
 
@@ -121,14 +114,30 @@ public abstract class IntegrationTest {
             final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, PASSWORD);
 
             final String userId = idamTestSupportUtil.getUserId(authToken);
-
-            return UserDetails.builder()
+            UserDetails userDetails = UserDetails.builder()
                 .username(username)
                 .emailAddress(username)
                 .password(PASSWORD)
                 .authToken(authToken)
                 .id(userId)
                 .build();
+            return userDetails;
+        }
+    }
+
+    private UserDetails getCreatedUserDetails(String username) {
+        synchronized (this) {
+            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, PASSWORD);
+
+            final String userId = idamTestSupportUtil.getUserId(authToken);
+            UserDetails userDetails = UserDetails.builder()
+                .username(username)
+                .emailAddress(username)
+                .password(PASSWORD)
+                .authToken(authToken)
+                .id(userId)
+                .build();
+            return userDetails;
         }
     }
 

@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.reform.divorce.orchestration.client.StrategicIdamClient;
+import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.TokenExchangeResponse;
@@ -43,20 +43,20 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RetrievePinUserDetailsFromStrategicIdamUTest {
+public class RetrievePinUserDetailsUTest {
     private static final String AUTH_CLIENT_ID = "authClientId";
     private static final String AUTH_CLIENT_SECRET = "authClientSecret";
     private static final String AUTH_REDIRECT_URL = "authRedirectUrl";
     private static final String AUTH_URL_WITH_REDIRECT = "http://www.redirect.url?code=" + TEST_PIN_CODE;
 
     @Mock
-    private StrategicIdamClient idamClient;
+    private IdamClient idamClient;
 
     @Mock
     private AuthUtil authUtil;
 
     @InjectMocks
-    private RetrievePinUserDetailsFromStrategicIdam classUnderTest;
+    private RetrievePinUserDetails classUnderTest;
 
     @Before
     public void setup() {

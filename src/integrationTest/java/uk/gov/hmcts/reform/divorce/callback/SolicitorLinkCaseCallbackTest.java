@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.model.PinResponse;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
-import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
 import java.util.HashMap;
@@ -114,6 +113,6 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
         HashMap<String, Object> payload = new HashMap<>();
         payload.put(CASE_DETAILS, caseDetails);
 
-        return RestUtil.postToRestService(serverUrl + contextPath, headers, ResourceLoader.objectToJson(payload));
+        return RestUtil.postToRestService(serverUrl + contextPath, headers, payload);
     }
 }

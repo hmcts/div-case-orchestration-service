@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.support.cos;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -95,7 +94,7 @@ public interface CosApiClient {
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     void saveDraft(@RequestHeader(AUTHORIZATION) String authorisation,
-                   @RequestBody JsonNode caseDataContent,
+                   @RequestBody Map<String, Object> caseDataContent,
                    @RequestParam(name = "sendEmail") String sendEmail
     );
 
@@ -111,7 +110,7 @@ public interface CosApiClient {
         value = "/submit"
     )
     Map<String, Object> submitCase(@RequestHeader(AUTHORIZATION) String authorisation,
-                                   @RequestBody JsonNode caseDataContent
+                                   @RequestBody Map<String, Object> caseDataContent
     );
 
     @RequestMapping(
@@ -179,7 +178,6 @@ public interface CosApiClient {
                                             @PathVariable("party") String party,
                                             @RequestBody CcdCallbackRequest ccdCallbackRequest);
 
-
     @RequestMapping(
             method = RequestMethod.POST,
             value = "/personal-service-pack"
@@ -188,4 +186,16 @@ public interface CosApiClient {
             @RequestHeader(AUTHORIZATION) String authorisation,
             @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/remove-dn-outcome-case-flag"
+    )
+    Map<String, Object> removeDnOutcomeCaseFlag(@RequestBody CcdCallbackRequest ccdCallbackRequest);
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/remove-la-make-decision-fields"
+    )
+    Map<String, Object> removeLegalAdvisorMakeDecisionFields(@RequestBody CcdCallbackRequest ccdCallbackRequest);
 }

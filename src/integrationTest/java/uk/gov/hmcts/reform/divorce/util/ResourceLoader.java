@@ -13,6 +13,14 @@ public class ResourceLoader {
         return new String(loadResource(filePath), Charset.forName("utf-8"));
     }
 
+    public static <T> T loadJsonToObject(String filePath, Class<T> type) {
+        try {
+            return jsonToObject(loadResource(filePath), type);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static byte[] loadResource(final String filePath) throws Exception {
         URL url = ResourceLoader.class.getClassLoader().getResource(filePath);
 
@@ -23,14 +31,6 @@ public class ResourceLoader {
         return Files.readAllBytes(Paths.get(url.toURI()));
     }
 
-    public static <T> T loadJsonToObject(String filePath, Class<T> type) {
-        try {
-            return jsonToObject(loadJson(filePath), type);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static <T> String objectToJson(T object) {
         try {
             return new ObjectMapper().writeValueAsString(object);
@@ -39,12 +39,11 @@ public class ResourceLoader {
         }
     }
 
-    public static <T> T jsonToObject(String json, Class<T> type) {
+    private static <T> T jsonToObject(byte[] json, Class<T> type) {
         try {
             return new ObjectMapper().readValue(json, type);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
 }

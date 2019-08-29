@@ -43,5 +43,4 @@ public class PetitionerClarificationNotificationTest extends IntegrationTest {
 
         assertThat(responseData, is(notNullValue()));
     }
-
 }
