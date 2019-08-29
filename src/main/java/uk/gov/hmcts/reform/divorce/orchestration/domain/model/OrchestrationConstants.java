@@ -279,9 +279,9 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-co-resp";
     public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME = "aos-invitation-letter-offline-co-respondent";
     public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00076.doc";
-    public static final String TWO_YEAR_SEPARATION_DOCUMENT_TYPE = "two-year-separation-aos-form";
-    public static final String TWO_YEAR_SEPARATION_FILENAME = "two-year-separation-aos-form-resp";
-    public static final String TWO_YEAR_SEPARATION_TEMPLATE_ID = "FL-DIV-APP-ENG-00080.doc";
+    public static final String AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE = "two-year-separation-aos-form";
+    public static final String AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME = "two-year-separation-aos-form-resp";
+    public static final String AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID = "FL-DIV-APP-ENG-00080.doc";
 
     public static final String DOCUMENT_TYPE_COE = "coe";
 

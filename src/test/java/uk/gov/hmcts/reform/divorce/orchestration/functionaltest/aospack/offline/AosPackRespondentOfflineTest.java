@@ -49,6 +49,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID;
@@ -56,9 +59,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TWO_YEAR_SEPARATION_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TWO_YEAR_SEPARATION_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TWO_YEAR_SEPARATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -148,20 +148,20 @@ public class AosPackRespondentOfflineTest {
 
         //Stubbing DGS mock for form
         GenerateDocumentRequest formDocumentRequest = GenerateDocumentRequest.builder()
-            .template(TWO_YEAR_SEPARATION_TEMPLATE_ID)
+            .template(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID)
             .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
             .build();
         GeneratedDocumentInfo formDocumentInfo = GeneratedDocumentInfo.builder()
-            .documentType(TWO_YEAR_SEPARATION_DOCUMENT_TYPE)
-            .fileName(TWO_YEAR_SEPARATION_FILENAME)
+            .documentType(AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE)
+            .fileName(AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME)
             .build();
         stubDocumentGeneratorServerEndpoint(formDocumentRequest, formDocumentInfo);
-        String formFilename = TWO_YEAR_SEPARATION_FILENAME + caseDetails.getCaseId();
+        String formFilename = AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME + caseDetails.getCaseId();
 
         //Stubbing CFS
         stubFormatterServerEndpoint(asList(
             ImmutablePair.of(invitationLetterFilename, RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE),
-            ImmutablePair.of(formFilename, TWO_YEAR_SEPARATION_DOCUMENT_TYPE)
+            ImmutablePair.of(formFilename, AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE)
         ));
 
         webClient.perform(post(format(API_URL, "respondent"))

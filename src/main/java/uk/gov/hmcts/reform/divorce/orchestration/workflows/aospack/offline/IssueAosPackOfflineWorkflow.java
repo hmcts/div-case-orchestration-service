@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
@@ -28,9 +31,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TWO_YEAR_SEPARATION_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TWO_YEAR_SEPARATION_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TWO_YEAR_SEPARATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
@@ -75,9 +75,9 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
             documentGenerationRequestList.add(RESPONDENT_AOS_INVITATION_LETTER);
             log.debug("reasonForDivorce is {}", reasonForDivorce);
             if (SEPARATION_TWO_YEARS.equals(reasonForDivorce)) {
-                documentGenerationRequestList.add(new DocumentGenerationRequest(TWO_YEAR_SEPARATION_TEMPLATE_ID,
-                    TWO_YEAR_SEPARATION_DOCUMENT_TYPE,
-                    TWO_YEAR_SEPARATION_FILENAME));
+                documentGenerationRequestList.add(new DocumentGenerationRequest(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
+                    AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE,
+                    AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME));
             }
         } else if (divorceParty.equals(CO_RESPONDENT)) {
             documentGenerationRequestList.add(CO_RESPONDENT_AOS_INVITATION_LETTER);

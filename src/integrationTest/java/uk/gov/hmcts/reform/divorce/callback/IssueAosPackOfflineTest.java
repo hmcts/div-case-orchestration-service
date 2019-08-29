@@ -16,10 +16,10 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TWO_YEAR_SEPARATION_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
@@ -65,7 +65,7 @@ public class IssueAosPackOfflineTest extends IntegrationTest {
             hasJsonPath("$.data.D8DocumentsGenerated", allOf(
                 hasSize(2),
                 hasJsonPath("[0].value.DocumentFileName", is(RESPONDENT_AOS_INVITATION_LETTER_FILENAME + testCaseId)),
-                hasJsonPath("[1].value.DocumentFileName", is(TWO_YEAR_SEPARATION_FILENAME + testCaseId))
+                hasJsonPath("[1].value.DocumentFileName", is(AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME + testCaseId))
             )));
     }
 
