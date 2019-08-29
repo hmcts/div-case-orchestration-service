@@ -43,40 +43,6 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     private String contextPath;
 
     @Test
-    public void givenUserTokenIsNull_whenLinkRespondent_thenReturnBadRequest() {
-        Response cosResponse = linkRespondent(null, 1L, "somepin");
-
-        assertEquals(HttpStatus.BAD_REQUEST.value(), cosResponse.getStatusCode());
-    }
-
-    @Test
-    public void givenInvalidPin_whenLinkRespondent_thenReturnUnAuthorised() {
-        final UserDetails petitionerUserDetails = createCitizenUser();
-        final CaseDetails caseDetails = submitCase(
-            SUBMIT_COMPLETE_CASE_JSON_FILE_PATH,
-            petitionerUserDetails
-        );
-
-        Response cosResponse = linkRespondent(petitionerUserDetails.getAuthToken(),
-            caseDetails.getId(), "abcd1234");
-
-        assertEquals(HttpStatus.UNAUTHORIZED.value(), cosResponse.getStatusCode());
-    }
-
-    @Test
-    public void givenCaseIdIsNotPresent_whenLinkRespondent_thenReturnUnauthorised() {
-        final UserDetails petitionerUserDetails = createCitizenUser();
-
-        final PinResponse pinResponse =
-            idamTestSupportUtil.generatePin(PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME,
-                petitionerUserDetails.getAuthToken());
-
-        Response cosResponse = linkRespondent(petitionerUserDetails.getAuthToken(), 1L, pinResponse.getPin());
-
-        assertEquals(HttpStatus.UNAUTHORIZED.value(), cosResponse.getStatusCode());
-    }
-
-    @Test
     public void givenPinIdNotMatching_whenLinkRespondent_thenReturnUnauthorized() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 

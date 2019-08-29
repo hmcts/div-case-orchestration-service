@@ -105,6 +105,22 @@ public class CallbackController {
             .build());
     }
 
+    @PostMapping(path = "/petition-issue-fees",
+        consumes = MediaType.APPLICATION_JSON,
+        produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Return a order summary for petition issue")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Petition issue fee amount is send to CCD as callback response",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> getPetitionIssueFees(
+        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        final CcdCallbackResponse response = caseOrchestrationService.setOrderSummaryAssignRole(ccdCallbackRequest, authorizationToken);
+
+        return ResponseEntity.ok(response);
+    }
+
     @SuppressWarnings("unchecked")
     @PostMapping(path = "/process-pba-payment", consumes = MediaType.APPLICATION_JSON,
         produces = MediaType.APPLICATION_JSON)
@@ -270,25 +286,34 @@ public class CallbackController {
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> bulkPrint(
         @RequestHeader(value = "Authorization") String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
-        Map<String, Object> response = caseOrchestrationService.ccdCallbackBulkPrintHandler(ccdCallbackRequest,
-            authorizationToken);
+        try {
+            Map<String, Object> response = caseOrchestrationService.ccdCallbackBulkPrintHandler(ccdCallbackRequest,
+                    authorizationToken);
 
-        if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
+            if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
+                return ResponseEntity.ok(
+                        CcdCallbackResponse.builder()
+                                .data(ImmutableMap.of())
+                                .warnings(ImmutableList.of())
+                                .errors(singletonList("Failed to bulk print documents"))
+                                .build());
+            }
             return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
-                    .data(ImmutableMap.of())
-                    .warnings(ImmutableList.of())
-                    .errors(singletonList("Failed to bulk print documents"))
-                    .build());
+                    CcdCallbackResponse.builder()
+                            .data(response)
+                            .errors(Collections.emptyList())
+                            .warnings(Collections.emptyList())
+                            .build());
+        } catch (WorkflowException e) {
+            return ResponseEntity.ok(
+                    CcdCallbackResponse.builder()
+                            .data(ImmutableMap.of())
+                            .warnings(ImmutableList.of())
+                            .errors(singletonList("Failed to bulk print documents - " + e.getMessage()))
+                            .build());
         }
-        return ResponseEntity.ok(
-            CcdCallbackResponse.builder()
-                .data(response)
-                .errors(Collections.emptyList())
-                .warnings(Collections.emptyList())
-                .build());
     }
 
     @PostMapping(path = "/petition-issued",
@@ -781,6 +806,47 @@ public class CallbackController {
         }
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(path = "/listing/remove-bulk-link")
+    @ApiOperation(value = "Callback to unlink case from bulk case listed")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed")})
+    public ResponseEntity<CcdCallbackResponse> removeBulkLinkFromCaseListed(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        callbackResponseBuilder.data(caseOrchestrationService.removeBulkListed(ccdCallbackRequest));
+        log.info("Remove bulk listed for case ID: {}", caseId);
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/remove-dn-outcome-case-flag")
+    @ApiOperation(value = "Callback to remove the DnOutcomeCase flag.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> removeDnOutcomeCaseFlag(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.removeDnOutcomeCaseFlag(ccdCallbackRequest))
+            .build());
+    }
+
+    @PostMapping(path = "/remove-la-make-decision-fields")
+    @ApiOperation(value = "Callback to remove the fields set by the legal advsior when they make a decision.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> removeLegalAdvisorMakeDecisionFields(
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.removeLegalAdvisorMakeDecisionFields(ccdCallbackRequest))
+            .build());
     }
 
     private List<String> getErrors(Map<String, Object> response) {

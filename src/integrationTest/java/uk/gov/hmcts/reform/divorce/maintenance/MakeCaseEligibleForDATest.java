@@ -43,7 +43,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.SearchSourceFact
 public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
 
     private static final String TEST_DN_PRONOUNCED = "testDNPronounced";
-    private static final String CMS_URL_SEARCH = "/casemaintenance/version/1/search";
     private static final String STATE_KEY = "state";
 
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";
@@ -88,7 +87,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
     }
 
     private void ensureCaseIsSearchable(final String caseId, final String authToken) {
-        await().pollInterval(fibonacci(SECONDS)).atMost(40, SECONDS).untilAsserted(() -> {
+        await().pollInterval(fibonacci(SECONDS)).atMost(60, SECONDS).untilAsserted(() -> {
             List<CaseDetails> foundCases = searchCasesWithElasticSearch(caseId, authToken);
             assertThat("The number of cases found by ElasticSearch was not expected",
                         foundCases.size(), is(1));
@@ -107,7 +106,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
     }
 
     private void assertCaseStateIsAsExpected(final String expectedState, final String authToken) {
-        await().pollInterval(fibonacci(SECONDS)).atMost(55, SECONDS).untilAsserted(() -> {
+        await().pollInterval(fibonacci(SECONDS)).atMost(150, SECONDS).untilAsserted(() -> {
             final Response retrievedCase = retrieveCase(authToken);
             log.debug("Retrieved case {} with state {}",
                         retrievedCase.path("caseId"), retrievedCase.path("state"));

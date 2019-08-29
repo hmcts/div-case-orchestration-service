@@ -31,8 +31,8 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
 
     private static final String  BULK_CASE_PATH = "/bulk/case";
 
-    private static final int  MAX_WAITING_TIME_IN_SECONDS = 30;
-    private static final int  POOL_INTERVAL_IN_MILLIS = 500;
+    private static final int  MAX_WAITING_TIME_IN_SECONDS = 60;
+    private static final int  POOL_INTERVAL_IN_MILLIS = 1000;
 
     @Test
     //QA asked to disable this test, to able to test scheduler

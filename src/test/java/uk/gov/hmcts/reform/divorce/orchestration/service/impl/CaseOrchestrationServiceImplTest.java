@@ -41,7 +41,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDnOutcomeCaseFlagWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLegalAdvisorMakeDecisionFieldsWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkFromListedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
@@ -258,10 +262,22 @@ public class CaseOrchestrationServiceImplTest {
     private ApplicantDecreeAbsoluteEligibilityWorkflow applicantDecreeAbsoluteEligibilityWorkflow;
 
     @Mock
+    private PetitionerSolicitorRoleWorkflow petitionerSolicitorRoleWorkflow;
+
+    @Mock
     private DecreeAbsoluteAboutToBeGrantedWorkflow decreeAbsoluteAboutToBeGrantedWorkflow;
 
     @Mock
     private RemoveLinkWorkflow removeLinkWorkflow;
+
+    @Mock
+    private RemoveLinkFromListedWorkflow removeLinkFromListedWorkflow;
+
+    @Mock
+    private RemoveDnOutcomeCaseFlagWorkflow removeDnOutcomeCaseFlagWorkflow;
+
+    @Mock
+    private RemoveLegalAdvisorMakeDecisionFieldsWorkflow removeLegalAdvisorMakeDecisionFieldsWorkflow;
 
     @Mock
     private CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
@@ -683,12 +699,14 @@ public class CaseOrchestrationServiceImplTest {
         // given
         when(setOrderSummaryWorkflow.run(requestPayload))
             .thenReturn(requestPayload);
+        when(petitionerSolicitorRoleWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(requestPayload);
 
         // when
-        Map<String, Object> actual = classUnderTest.setOrderSummary(ccdCallbackRequest);
+        CcdCallbackResponse actual = classUnderTest.setOrderSummaryAssignRole(ccdCallbackRequest, AUTH_TOKEN);
 
         // then
-        assertEquals(requestPayload, actual);
+        assertEquals(requestPayload, actual.getData());
 
         verify(setOrderSummaryWorkflow).run(requestPayload);
     }
@@ -1364,6 +1382,55 @@ public class CaseOrchestrationServiceImplTest {
             .run(ccdCallbackRequest,AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME);
     }
 
+    @Test
+    public void shouldCallRightWorkflow_WhenRemoveBulkListed() throws WorkflowException {
+        Map<String, Object> caseData = DUMMY_CASE_DATA;
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails
+                .builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .build()).build();
+
+        when(removeLinkFromListedWorkflow.run(request.getCaseDetails().getCaseData())).thenReturn(caseData);
+        classUnderTest.removeBulkLink(request);
+
+
+        Map<String, Object> response = classUnderTest.removeBulkListed(request);
+        assertThat(response, is(caseData));
+    }
+
+    @Test
+    public void shouldCallRightWorkflow_WhenRemoveDnOutcomeCase() throws WorkflowException {
+        Map<String, Object> caseData = DUMMY_CASE_DATA;
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails
+                        .builder()
+                        .caseData(caseData)
+                        .caseId(TEST_CASE_ID)
+                        .build()).build();
+
+        when(removeDnOutcomeCaseFlagWorkflow.run(request)).thenReturn(caseData);
+
+        Map<String, Object> response = classUnderTest.removeDnOutcomeCaseFlag(request);
+        assertThat(response, is(caseData));
+    }
+
+    @Test
+    public void shouldCallRightWorkflow_WhenRemoveLegalAdvisorMakeDecisionFields() throws WorkflowException {
+        Map<String, Object> caseData = DUMMY_CASE_DATA;
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails
+                        .builder()
+                        .caseData(caseData)
+                        .caseId(TEST_CASE_ID)
+                        .build()).build();
+
+        when(removeLegalAdvisorMakeDecisionFieldsWorkflow.run(request)).thenReturn(caseData);
+
+        Map<String, Object> response = classUnderTest.removeLegalAdvisorMakeDecisionFields(request);
+        assertThat(response, is(caseData));
+    }
 
     @Test
     public void shouldCallRightWorkflow_WhenCcdCallbackConfirmPersonalServiceCalled()

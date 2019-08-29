@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
@@ -25,7 +24,7 @@ public class CoRespondentPinGenerator implements Task<Map<String, Object>> {
     private final AuthUtil authUtil;
 
     @Autowired
-    public CoRespondentPinGenerator(@Qualifier("idamClient") IdamClient idamClient, AuthUtil authUtil) {
+    public CoRespondentPinGenerator(IdamClient idamClient, AuthUtil authUtil) {
         this.idamClient = idamClient;
         this.authUtil = authUtil;
     }

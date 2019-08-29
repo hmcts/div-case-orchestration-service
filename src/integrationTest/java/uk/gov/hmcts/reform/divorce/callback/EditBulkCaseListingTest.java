@@ -32,7 +32,6 @@ public class EditBulkCaseListingTest extends IntegrationTest {
     @SuppressWarnings("unchecked")
     @Test
     public void whenEditBulkListingWithJudge_thenReturnUpdatedBulkData() {
-
         String futureDateTime = LocalDateTime.now().plusWeeks(1).format(DateTimeFormatter.ISO_DATE_TIME);
         CaseDetails caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
@@ -50,5 +49,4 @@ public class EditBulkCaseListingTest extends IntegrationTest {
             hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName", is(FILE_NAME + TEST_CASE_ID))
         );
     }
-
 }

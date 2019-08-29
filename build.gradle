@@ -197,7 +197,7 @@ def versions = [
         springfoxSwagger                : '2.9.2',
         lombok                          : '1.16.16',
         puppyCrawl                      : '8.21',
-        reformsJavaLogging              : '4.0.1',
+        reformsJavaLogging              : '5.0.1',
         reformHealth                    : '0.0.3',
         reformPropertiesVolume          : '0.0.4',
         serviceTokenGenerator           : '3.0.0',
@@ -302,6 +302,7 @@ dependencies {
     compile group: 'com.jayway.jsonpath', name:'json-path-assert', version: versions.jsonPathAssert
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
+        exclude(module: 'android-json')
     }
     testCompile group: 'com.github.tomakehurst', name:'wiremock', version: versions.wiremockVersion
 
@@ -410,7 +411,6 @@ task wiremockFunctional(type: Test, description: 'Executes wiremock functional t
     forkEvery = 10
 
     test.outputs.upToDateWhen {false}
-    testLogging.showStandardStreams = true
     include '**/functionaltest/**/*'
 }
 
@@ -435,6 +435,7 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     forkEvery = 10
+
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
 

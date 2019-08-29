@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAosPackPrinter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSolicitorAosInvitationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +43,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 public class CcdCallbackBulkPrintWorkflowTest {
+
+    @Mock
+    private ServiceMethodValidationTask serviceMethodValidationTask;
 
     @Mock
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
@@ -96,8 +100,9 @@ public class CcdCallbackBulkPrintWorkflowTest {
     }
 
     @Test
-    public void whenNoSolicitorRepresentingRespondent() throws WorkflowException {
+    public void whenNoSolicitorRepresentingRespondent() throws WorkflowException, TaskException {
 
+        when(serviceMethodValidationTask.execute(context, payload)).thenReturn(payload);
         when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
         when(modifyDueDate.execute(context, payload)).thenReturn(payload);
         when(respondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
@@ -107,12 +112,14 @@ public class CcdCallbackBulkPrintWorkflowTest {
         assertThat(response, is(payload));
 
         final InOrder inOrder = inOrder(
+                serviceMethodValidationTask,
                 fetchPrintDocsFromDmStore,
                 respondentAosPackPrinter,
                 coRespondentAosPackPrinter,
                 modifyDueDate
         );
 
+        inOrder.verify(serviceMethodValidationTask).execute(context, payload);
         inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);
         inOrder.verify(respondentAosPackPrinter).execute(context, payload);
         inOrder.verify(coRespondentAosPackPrinter).execute(context, payload);
@@ -129,6 +136,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
 
         payload.put(D8_RESPONDENT_SOLICITOR_EMAIL, "foo@bar.com");
 
+        when(serviceMethodValidationTask.execute(context, payload)).thenReturn(payload);
         when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
         when(modifyDueDate.execute(context, payload)).thenReturn(payload);
         when(respondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
@@ -138,12 +146,14 @@ public class CcdCallbackBulkPrintWorkflowTest {
         assertThat(response, is(payload));
 
         final InOrder inOrder = inOrder(
+            serviceMethodValidationTask,
             fetchPrintDocsFromDmStore,
             respondentAosPackPrinter,
             coRespondentAosPackPrinter,
             modifyDueDate
         );
 
+        inOrder.verify(serviceMethodValidationTask).execute(context, payload);
         inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);
         inOrder.verify(respondentAosPackPrinter).execute(context, payload);
         inOrder.verify(coRespondentAosPackPrinter).execute(context, payload);
@@ -160,6 +170,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
 
         payload.put(D8_RESPONDENT_SOLICITOR_EMAIL, "foo@bar.com");
 
+        when(serviceMethodValidationTask.execute(context, payload)).thenReturn(payload);
         when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
         when(modifyDueDate.execute(context, payload)).thenReturn(payload);
         when(coRespondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
@@ -170,6 +181,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
         assertThat(response, is(payload));
 
         final InOrder inOrder = inOrder(
+            serviceMethodValidationTask,
             fetchPrintDocsFromDmStore,
             respondentPinGenerator,
             respondentSolicitorAosEmailSender,
@@ -177,6 +189,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
             modifyDueDate
         );
 
+        inOrder.verify(serviceMethodValidationTask).execute(context, payload);
         inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);
         inOrder.verify(respondentPinGenerator).execute(context, payload);
         inOrder.verify(respondentSolicitorAosEmailSender).execute(context, payload);

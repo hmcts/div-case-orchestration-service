@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.junit.ClassRule;
+import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContextInitializer;
@@ -9,6 +10,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 
@@ -18,9 +20,10 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
         initializers = MockedFunctionalTest.RandomPortInitializer.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @PropertySource(value = "classpath:application.yml")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @AutoConfigureMockMvc
-public class MockedFunctionalTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+public abstract class MockedFunctionalTest {
 
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(wireMockConfig().dynamicPort());
