@@ -70,4 +70,6 @@ public class TestConstants {
     public static final String TEMPLATE_ID = "testTemplateId";
     public static final String DOCUMENT_TYPE = "testDocumentType";
     public static final String FILE_NAME = "testFileName";
+    public static final String SOL_SERVICE_METHOD_CCD_FIELD = "SolServiceMethod";
+    public static final String PERSONAL_SERVICE_VALUE = "personalService";
 }

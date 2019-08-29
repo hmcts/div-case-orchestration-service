@@ -296,6 +296,20 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void givenErrors_whenBulkPrintIssued_thenRespondWithOkAndReturnErrors() throws WorkflowException {
+        when(caseOrchestrationService.ccdCallbackBulkPrintHandler(any(), any()))
+                .thenThrow(new WorkflowException("Error message"));
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.bulkPrint(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), hasItem(equalTo("Failed to bulk print documents - Error message")));
+        assertThat(response.getBody().getData(), is(Collections.emptyMap()));
+    }
+
+    @Test
     public void givenNoErrors_whenPetitionIssued_thenCallbackWorksAsExpected() throws WorkflowException {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
