@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
