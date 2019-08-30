@@ -179,6 +179,19 @@ tasks.withType(Checkstyle).each { checkstyleTask ->
     }
 }
 
+sourceSets {
+    integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir('src/integrationTest/java')
+        }
+        resources {
+            srcDir('src/integrationTest/resources')
+        }
+    }
+}
+
 configurations {
     integrationTestCompile.extendsFrom testCompile
     integrationTestRuntime.extendsFrom testRuntime
@@ -297,6 +310,7 @@ dependencies {
             exclude group: 'io.reactivex', module: 'rxnetty-servo'
         }
 
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
     compile group: 'com.jayway.jsonpath', name:'json-path-assert', version: versions.jsonPathAssert
@@ -340,9 +354,11 @@ dependencies {
         force = true
     }
 
+    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     testCompile 'org.awaitility:awaitility:3.1.6'
 
     //integration test
+    integrationTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     integrationTestCompile group: 'com.mashape.unirest', name: 'unirest-java', version: versions.unirest
     integrationTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
     integrationTestCompile group: 'junit', name: 'junit', version: versions.junit
@@ -381,18 +397,7 @@ dependencies {
     integrationTestCompile group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
 }
 
-sourceSets {
-    integrationTest {
-        java {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir('src/integrationTest/java')
-        }
-        resources {
-            srcDir('src/integrationTest/resources')
-        }
-    }
-}
+
 
 dependencies {
     integrationTestCompile(sourceSets.test.output)
