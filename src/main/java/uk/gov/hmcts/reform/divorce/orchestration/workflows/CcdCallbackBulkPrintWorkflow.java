@@ -10,10 +10,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentAosPackPrinter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAosPackPrinter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSolicitorAosInvitationEmail;
 
@@ -34,16 +36,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
-
     private final RespondentAosPackPrinter respondentAosPackPrinter;
-
     private final CoRespondentAosPackPrinter coRespondentAosPackPrinter;
-
     private final RespondentPinGenerator respondentPinGenerator;
-
     private final SendRespondentSolicitorAosInvitationEmail respondentSolicitorAosEmailSender;
-
     private final ModifyDueDate modifyDueDate;
+    private final RespondentLetterGenerator respondentLetterGenerator;
+    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     private final boolean featureToggleRespSolicitor;
 
@@ -54,6 +53,8 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
                                         final RespondentPinGenerator respondentPinGenerator,
                                         final SendRespondentSolicitorAosInvitationEmail respondentSolicitorAosEmailSender,
                                         final ModifyDueDate modifyDueDate,
+                                        final RespondentLetterGenerator respondentLetterGenerator,
+                                        final CaseFormatterAddDocuments caseFormatterAddDocuments,
                                         @Value("${feature-toggle.toggle.feature_resp_solicitor_details}") String featureToggleRespSolicitor) {
         this.fetchPrintDocsFromDmStore = fetchPrintDocsFromDmStore;
         this.respondentAosPackPrinter = respondentAosPackPrinter;
@@ -61,6 +62,8 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
         this.respondentPinGenerator = respondentPinGenerator;
         this.respondentSolicitorAosEmailSender = respondentSolicitorAosEmailSender;
         this.modifyDueDate = modifyDueDate;
+        this.respondentLetterGenerator = respondentLetterGenerator;
+        this.caseFormatterAddDocuments = caseFormatterAddDocuments;
         this.featureToggleRespSolicitor = Boolean.valueOf(featureToggleRespSolicitor);
     }
 
@@ -86,7 +89,11 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
         if (featureToggleRespSolicitor) {
             final String solicitorEmail = (String) caseData.get(D8_RESPONDENT_SOLICITOR_EMAIL);
             if (isNotEmpty(solicitorEmail)) {
-                return asList(respondentPinGenerator, respondentSolicitorAosEmailSender);
+                return asList(
+                    respondentPinGenerator,
+                    respondentLetterGenerator, // re-generate the AoS letter with the new PIN
+                    caseFormatterAddDocuments,
+                    respondentSolicitorAosEmailSender);
             }
         }
         return singletonList(respondentAosPackPrinter);
