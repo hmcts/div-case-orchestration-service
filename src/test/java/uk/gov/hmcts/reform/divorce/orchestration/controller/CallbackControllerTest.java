@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -144,7 +147,7 @@ public class CallbackControllerTest {
             .build();
         final Map<String, Object> invalidResponse = Collections.singletonMap(
             OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY,
-            Collections.singletonList(OrchestrationConstants.ERROR_STATUS)
+            singletonList(OrchestrationConstants.ERROR_STATUS)
         );
 
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
@@ -155,7 +158,7 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-            .errors(Collections.singletonList(OrchestrationConstants.ERROR_STATUS))
+            .errors(singletonList(OrchestrationConstants.ERROR_STATUS))
             .build();
 
         assertEquals(OK, response.getStatusCode());
@@ -235,7 +238,7 @@ public class CallbackControllerTest {
 
     @Test
     public void givenErrors_whenPetitionIssued_thenReturnErrorResponse() throws WorkflowException {
-        final List<String> expectedError = Collections.singletonList("Some error");
+        final List<String> expectedError = singletonList("Some error");
         final Map<String, Object> caseData =
             Collections.singletonMap(
                 OrchestrationConstants.VALIDATION_ERROR_KEY,
@@ -261,6 +264,69 @@ public class CallbackControllerTest {
 
         assertEquals(OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
+    }
+
+    @Test
+    public void givenNoErrors_whenConfirmServiceCalled_thenCallbackWorksAsExpected() throws WorkflowException {
+        final Map<String, Object> caseData = new HashMap<>();
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+
+        CcdCallbackResponse expected =
+            CcdCallbackResponse.builder().errors(Collections.emptyList()).warnings(Collections.emptyList())
+                .data(Collections.emptyMap()).build();
+
+        when(caseOrchestrationService.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(Collections.emptyMap());
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.confirmPersonalService(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertEquals(OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test
+    public void givenErrors_whenConfirmServiceCalled_thenReturnErrorResponse() throws WorkflowException {
+        final Map<String, Object> caseData =
+            Collections.singletonMap(OrchestrationConstants.BULK_PRINT_ERROR_KEY, "Some error");
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .data(ImmutableMap.of())
+            .warnings(ImmutableList.of())
+            .errors(singletonList("Failed to bulk print documents"))
+            .build();
+
+        when(caseOrchestrationService.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(caseData);
+
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.confirmPersonalService(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertEquals(OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldReturnOkResponse_WithErrors_whenConfirmServiceCalled_thenExceptionIsCaught() throws WorkflowException {
+        final Map<String, Object> incomingPayload = new HashMap<>();
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(incomingPayload)
+                .build())
+            .build();
+        String errorString = "Unable to bulk print the documents";
+        when(caseOrchestrationService.ccdCallbackConfirmPersonalService(incomingRequest, AUTH_TOKEN))
+            .thenThrow(new WorkflowException(errorString));
+
+        classUnderTest.confirmPersonalService(AUTH_TOKEN, incomingRequest);
     }
 
     @Test
@@ -754,7 +820,7 @@ public class CallbackControllerTest {
 
     @Test
     public void givenErrors_whenCalculateSeparationFields_thenReturnErrorResponse() throws WorkflowException {
-        final List<String> expectedError = Collections.singletonList("Some error");
+        final List<String> expectedError = singletonList("Some error");
         final Map<String, Object> caseData =
             Collections.singletonMap(OrchestrationConstants.VALIDATION_ERROR_KEY, "Some error");
         final CaseDetails caseDetails = CaseDetails.builder()
