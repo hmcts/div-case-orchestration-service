@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAnswersGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
@@ -45,47 +48,79 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_2_YR_CONSENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
 
 @Component
 public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
+    private final CaseMaintenanceClient caseMaintenanceClient;
     private final GenericEmailNotification emailNotificationTask;
     private final RespondentAnswersGenerator respondentAnswersGenerator;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private final CcdUtil ccdUtil;
+    private final List<Task> tasks = new ArrayList<>();
+
+    private Map<String, String> notificationTemplateVars = new HashMap<>();
+
+    private String eventId;
+    private EmailTemplateNames template = null;
+    private String emailToBeSentTo = null;
 
     @Autowired
-    public RespondentSubmittedCallbackWorkflow(GenericEmailNotification emailNotificationTask,
+    public RespondentSubmittedCallbackWorkflow(CaseMaintenanceClient caseMaintenanceClient,
+                                               GenericEmailNotification emailNotificationTask,
                                                RespondentAnswersGenerator respondentAnswersGenerator,
-                                               CaseFormatterAddDocuments caseFormatterAddDocuments) {
+                                               CaseFormatterAddDocuments caseFormatterAddDocuments,
+                                               CcdUtil ccdUtil) {
+        this.caseMaintenanceClient = caseMaintenanceClient;
         this.emailNotificationTask = emailNotificationTask;
         this.respondentAnswersGenerator = respondentAnswersGenerator;
         this.caseFormatterAddDocuments = caseFormatterAddDocuments;
+        this.ccdUtil = ccdUtil;
     }
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
-        final List<Task> tasks = new ArrayList<>();
-
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        final String relationship = getRespondentRelationship(caseDetails);
 
+        sendNotificationEmail(caseDetails);
+
+        if (isSolicitorRepresentingRespondent(caseDetails)) {
+            mapSolicitorRespAosValues(caseDetails);
+            setEventIdForSolicitor(authToken, caseDetails);
+        }
+
+        tasks.add(respondentAnswersGenerator);
+        tasks.add(caseFormatterAddDocuments);
+
+        Task[] taskArr = new Task[tasks.size()];
+
+        return this.execute(
+                tasks.toArray(taskArr),
+                caseDetails.getCaseData(),
+                ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+                ImmutablePair.of(NOTIFICATION_EMAIL, emailToBeSentTo),
+                ImmutablePair.of(NOTIFICATION_TEMPLATE_VARS, notificationTemplateVars),
+                ImmutablePair.of(NOTIFICATION_TEMPLATE, template),
+                ImmutablePair.of(ID, caseDetails.getCaseId())
+        );
+    }
+
+    private void sendNotificationEmail(CaseDetails caseDetails) {
         String petSolicitorEmail = getFieldAsStringOrNull(caseDetails, PET_SOL_EMAIL);
         String petitionerEmail = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_EMAIL);
-        String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
-
         String petitionerFirstName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_LAST_NAME);
-
-        EmailTemplateNames template = null;
-        String emailToBeSentTo = null;
-
-
-        Map<String, String> notificationTemplateVars = new HashMap<>();
 
         // only send an email to pet / solicitor. if respondent is not defending
         if (!respondentIsDefending(caseDetails)) {
@@ -104,9 +139,11 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
                 template = findTemplateNameToBeSent(caseDetails, true);
                 emailToBeSentTo = petSolicitorEmail;
             } else if (StringUtils.isNotEmpty(petitionerEmail)) {
+                String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
+
                 notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
                 notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
-                notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
+                notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, getRespondentRelationship(caseDetails));
                 notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, ref);
 
                 tasks.add(emailNotificationTask);
@@ -114,21 +151,56 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
                 emailToBeSentTo = petitionerEmail;
             }
         }
+    }
 
-        tasks.add(respondentAnswersGenerator);
-        tasks.add(caseFormatterAddDocuments);
+    private void setEventIdForSolicitor(String authToken, CaseDetails caseDetails) {
 
-        Task[] taskArr = new Task[tasks.size()];
+        if (respondentIsDefending(caseDetails)) {
+            if (respAdmitsOrConsentsToFact(caseDetails)) {
+                eventId = SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
+            } else {
+                eventId = SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
+            }
+        } else {
+            if (respAdmitsOrConsentsToFact(caseDetails)) {
+                eventId = SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
+            } else {
+                eventId = SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
+            }
+        }
 
-        return this.execute(
-            tasks.toArray(taskArr),
-            ccdCallbackRequest.getCaseDetails().getCaseData(),
-            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(NOTIFICATION_EMAIL, emailToBeSentTo),
-            ImmutablePair.of(NOTIFICATION_TEMPLATE_VARS, notificationTemplateVars),
-            ImmutablePair.of(NOTIFICATION_TEMPLATE, template),
-            ImmutablePair.of(ID, caseDetails.getCaseId())
+        Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
+                authToken,
+                caseDetails.getCaseId(),
+                eventId,
+                caseDetails.getCaseData()
         );
+
+        if (updateCase != null) {
+            updateCase.remove(CCD_CASE_DATA_FIELD);
+        }
+    }
+
+    private void mapSolicitorRespAosValues(CaseDetails caseDetails) {
+        // Maps CCD values of RespAOS2yrConsent & RespAOSAdultery -> RespAdmitOrConsentToFact & RespWillDefendDivorce fields in Case Data
+
+        final String reasonForDivorce = getReasonForDivorce(caseDetails);
+        final String respAos2yrConsent = (String)caseDetails.getCaseData().get(RESP_AOS_2_YR_CONSENT);
+        final String respAosAdultery = (String)caseDetails.getCaseData().get(RESP_AOS_ADULTERY);
+
+        if ((SEPARATION_2YRS.equalsIgnoreCase(reasonForDivorce) && YES_VALUE.equalsIgnoreCase(respAos2yrConsent))
+                || (ADULTERY.equalsIgnoreCase(reasonForDivorce) && YES_VALUE.equalsIgnoreCase(respAosAdultery))) {
+
+            Map<String, Object> caseInfo = caseDetails.getCaseData();
+
+            caseInfo.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+            caseInfo.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+        }
+    }
+
+    private String getReasonForDivorce(CaseDetails caseDetails) {
+        final String reasonForDivorce = (String)caseDetails.getCaseData().get(D_8_REASON_FOR_DIVORCE);
+        return reasonForDivorce;
     }
 
     private boolean respondentIsDefending(CaseDetails caseDetails) {
@@ -136,9 +208,19 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
     }
 
+    private boolean respAdmitsOrConsentsToFact(CaseDetails caseDetails) {
+        final String respAdmitOrConsentsToFact = (String)caseDetails.getCaseData().get(RESP_ADMIT_OR_CONSENT_TO_FACT);
+        return YES_VALUE.equalsIgnoreCase(respAdmitOrConsentsToFact);
+    }
+
     private String getRespondentRelationship(CaseDetails caseDetails) {
         String gender = getFieldAsStringOrNull(caseDetails, D_8_INFERRED_RESPONDENT_GENDER);
         return getRelationshipTermByGender(gender);
+    }
+
+    private boolean isSolicitorRepresentingRespondent(CaseDetails caseDetails) {
+        final String respondentSolicitorRepresented = (String)caseDetails.getCaseData().get(RESP_SOL_REPRESENTED);
+        return YES_VALUE.equalsIgnoreCase(respondentSolicitorRepresented);
     }
 
     private String getFieldAsStringOrNull(final CaseDetails caseDetails, String fieldKey) {

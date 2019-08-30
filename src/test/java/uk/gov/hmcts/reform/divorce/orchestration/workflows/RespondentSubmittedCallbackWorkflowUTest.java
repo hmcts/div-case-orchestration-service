@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
+import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
@@ -31,6 +32,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -57,10 +60,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_2_YR_CONSENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -72,9 +81,13 @@ public class RespondentSubmittedCallbackWorkflowUTest {
     private RespondentAnswersGenerator respondentAnswersGenerator;
     @Mock
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
+    @Mock
+    private CaseMaintenanceClient caseMaintenanceClient;
 
     @InjectMocks
     private RespondentSubmittedCallbackWorkflow classToTest;
+
+    private final Map<String, Object> expectedData = new HashMap<>();
 
     @Test
     public void givenCaseNotDefended_whenRunWorkflow_thenEmailNotificationTaskCalled() throws WorkflowException {
@@ -84,10 +97,10 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
         caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
-        caseData.put(RESP_WILL_DEFEND_DIVORCE, "No");
+        caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder()
-                .caseId(TestConstants.TEST_CASE_ID)
+                .caseId(TEST_CASE_ID)
                 .caseData(caseData)
                 .build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
@@ -97,15 +110,15 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(caseDetails.getCaseData());
 
         Map<String, String> vars = ImmutableMap.of(
-            NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME,
-            NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TestConstants.TEST_USER_LAST_NAME,
-            NOTIFICATION_RELATIONSHIP_KEY, "husband",
-            NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID
+                NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME,
+                NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TestConstants.TEST_USER_LAST_NAME,
+                NOTIFICATION_RELATIONSHIP_KEY, "husband",
+                NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID
         );
         Map<String, Object> response = classToTest.run(ccdCallbackRequest, TestConstants.TEST_TOKEN);
         verify(emailNotificationTask, times(1))
                 .execute(argThat(argument ->
-                        argument.getTransientObject(ID).equals(TestConstants.TEST_CASE_ID)
+                        argument.getTransientObject(ID).equals(TEST_CASE_ID)
                                 && argument.getTransientObject(NOTIFICATION_TEMPLATE_VARS).equals(vars)), any());
         assertEquals(caseDetails.getCaseData(), response);
     }
@@ -116,9 +129,9 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
-            .caseData(caseData)
-            .build();
+                .caseId(TEST_CASE_ID)
+                .caseData(caseData)
+                .build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         when(respondentAnswersGenerator.execute(any(), any())).thenReturn(caseDetails.getCaseData());
@@ -140,9 +153,9 @@ public class RespondentSubmittedCallbackWorkflowUTest {
 
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
-            .caseData(caseData)
-            .build();
+                .caseId(TEST_CASE_ID)
+                .caseData(caseData)
+                .build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         when(respondentAnswersGenerator.execute(any(), any())).thenReturn(caseDetails.getCaseData());
@@ -166,24 +179,23 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         caseData.put(RECEIVED_AOS_FROM_CO_RESP, NO_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
-            .caseData(caseData)
-            .build();
+                .caseId(TEST_CASE_ID)
+                .caseData(caseData)
+                .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        classToTest.run(ccdCallbackRequest, TestConstants.AUTH_TOKEN);
+        classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
 
         ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
         verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
         TaskContext capturedTask = argument.getValue();
 
-        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED, false);
+        DefaultTaskContext expectedContext = createExpectedContext(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED, false);
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
-
 
     @Test
     public void givenAdulteryCoRespNotRepliedRespNoAdmitUndefended_whenSendEmail_thenSendRespNoAdmitUndefendedCoRespNoReplyTemplate() throws Exception {
@@ -200,21 +212,21 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
-            .caseData(caseData)
-            .build();
+                .caseId(TEST_CASE_ID)
+                .caseData(caseData)
+                .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        classToTest.run(ccdCallbackRequest, TestConstants.AUTH_TOKEN);
+        classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
 
         ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
         verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
         TaskContext capturedTask = argument.getValue();
 
-        DefaultTaskContext expectedContext = createdExpectedContext(
-            EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED, false);
+        DefaultTaskContext expectedContext = createExpectedContext(
+                EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED, false);
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
@@ -232,20 +244,20 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
-            .caseData(caseData)
-            .build();
+                .caseId(TEST_CASE_ID)
+                .caseData(caseData)
+                .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        classToTest.run(ccdCallbackRequest, TestConstants.AUTH_TOKEN);
+        classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
 
         ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
         verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
         TaskContext capturedTask = argument.getValue();
 
-        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY, false);
+        DefaultTaskContext expectedContext = createExpectedContext(EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY, false);
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
@@ -263,20 +275,20 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
-            .caseData(caseData)
-            .build();
+                .caseId(TEST_CASE_ID)
+                .caseData(caseData)
+                .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        classToTest.run(ccdCallbackRequest, TestConstants.AUTH_TOKEN);
+        classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
 
         ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
         verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
         TaskContext capturedTask = argument.getValue();
 
-        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS, false);
+        DefaultTaskContext expectedContext = createExpectedContext(EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS, false);
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
@@ -294,20 +306,20 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         caseData.put(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
-            .caseData(caseData)
-            .build();
+                .caseId(TEST_CASE_ID)
+                .caseData(caseData)
+                .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        classToTest.run(ccdCallbackRequest, TestConstants.AUTH_TOKEN);
+        classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
 
         ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
         verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
         TaskContext capturedTask = argument.getValue();
 
-        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT, false);
+        DefaultTaskContext expectedContext = createExpectedContext(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT, false);
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
@@ -324,25 +336,153 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         caseData.put(PET_SOL_NAME, TestConstants.TEST_SOLICITOR_NAME);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
-            .caseData(caseData)
-            .build();
+                .caseId(TEST_CASE_ID)
+                .caseData(caseData)
+                .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        classToTest.run(ccdCallbackRequest, TestConstants.AUTH_TOKEN);
+        classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
 
         ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
         verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
         TaskContext capturedTask = argument.getValue();
 
-        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED, true);
+        DefaultTaskContext expectedContext = createExpectedContext(EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED, true);
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
 
-    private DefaultTaskContext createdExpectedContext(EmailTemplateNames template, boolean isSolicitor) {
+    @Test
+    public void correctlyMapFieldsInCaseData_When_2yearSepAndRespAos2yrConsentIsYes() throws WorkflowException {
+        // When Fact = 2 year separation and RespAOS2yrConsent = Yes - set RespAdmitOrConsentToFact = "Yes" and RespWillDefendDivorce = "No"
+
+        expectedData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        expectedData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_2YRS);
+        expectedData.put(RESP_AOS_2_YR_CONSENT, YES_VALUE);
+        expectedData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+        expectedData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+
+        Map<String, Object> caseData = buildSolicitorResponse(SEPARATION_2YRS, true);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
+                .caseData(caseData)
+                .build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(respondentAnswersGenerator.execute(any(), any())).thenReturn(caseDetails.getCaseData());
+        when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(caseDetails.getCaseData());
+
+        Map<String, Object> response = classToTest.run(ccdCallbackRequest, TestConstants.TEST_TOKEN);
+
+        assertEquals(expectedData, response);
+    }
+
+    @Test
+    public void correctlyMapFieldsInCaseData_When_AdulteryAndRespAosAdulteryIsYes() throws WorkflowException {
+        // When Fact = adultery and RespAOSAdultery = Yes - set RespAdmitOrConsentToFact = "Yes" and RespWillDefendDivorce = "No"
+
+        expectedData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        expectedData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        expectedData.put(RESP_AOS_ADULTERY, YES_VALUE);
+        expectedData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+        expectedData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+
+        Map<String, Object> caseData = buildSolicitorResponse(ADULTERY, true);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
+                .caseData(caseData)
+                .build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(respondentAnswersGenerator.execute(any(), any())).thenReturn(caseDetails.getCaseData());
+        when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(caseDetails.getCaseData());
+
+        Map<String, Object> response = classToTest.run(ccdCallbackRequest, TestConstants.TEST_TOKEN);
+
+        assertEquals(expectedData, response);
+    }
+
+    @Test
+    public void givenSolicitorIsRepresenting_ConsentAndDefended_then_eventTriggeredIs_SolAosSubmittedDefended() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+        caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
+                .caseData(caseData)
+                .build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID, caseData);
+    }
+
+    @Test
+    public void givenSolicitorIsRepresenting_ConsentAndNotDefended_then_eventTriggeredIs_SolAosSubmittedUndefended() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+        caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
+                .caseData(caseData)
+                .build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID, caseData);
+    }
+
+    @Test
+    public void givenSolicitorIsRepresenting_NoConsentAndDefended_then_eventTriggeredIs_SolAosReceivedNoAdConStarted() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+        caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
+                .caseData(caseData)
+                .build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID, caseData);
+    }
+
+    @Test
+    public void givenSolicitorIsRepresenting_NoConsentAndNotDefended_then_eventTriggeredIs_solAosSubmittedUndefended() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+        caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
+                .caseData(caseData)
+                .build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID, caseData);
+    }
+
+    private DefaultTaskContext createExpectedContext(EmailTemplateNames template, boolean isSolicitor) {
 
         Map<String, Object> expectedTemplateVars = new HashMap<>();
         DefaultTaskContext expectedContext = new DefaultTaskContext();
@@ -351,15 +491,15 @@ public class RespondentSubmittedCallbackWorkflowUTest {
             expectedTemplateVars.put(NOTIFICATION_PET_NAME, TestConstants.TEST_PETITIONER_FIRST_NAME + " " + TestConstants.TEST_PETITIONER_LAST_NAME);
             expectedTemplateVars.put(NOTIFICATION_RESP_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME);
             expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, TestConstants.TEST_SOLICITOR_NAME);
-            expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, TestConstants.TEST_CASE_ID);
+            expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID);
 
             expectedContext.setTransientObjects(ImmutableMap
-                .of(NOTIFICATION_EMAIL, TestConstants.TEST_USER_EMAIL,
-                    AUTH_TOKEN_JSON_KEY, TestConstants.AUTH_TOKEN,
-                    NOTIFICATION_TEMPLATE_VARS, expectedTemplateVars,
-                    NOTIFICATION_TEMPLATE, template,
-                    ID, TestConstants.TEST_CASE_ID
-                ));
+                    .of(NOTIFICATION_EMAIL, TestConstants.TEST_USER_EMAIL,
+                            AUTH_TOKEN_JSON_KEY, AUTH_TOKEN,
+                            NOTIFICATION_TEMPLATE_VARS, expectedTemplateVars,
+                            NOTIFICATION_TEMPLATE, template,
+                            ID, TEST_CASE_ID
+                    ));
         } else {
             expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME);
             expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TestConstants.TEST_USER_LAST_NAME);
@@ -367,13 +507,28 @@ public class RespondentSubmittedCallbackWorkflowUTest {
             expectedTemplateVars.put(NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID);
 
             expectedContext.setTransientObjects(ImmutableMap
-                .of(NOTIFICATION_EMAIL, TestConstants.TEST_USER_EMAIL,
-                    AUTH_TOKEN_JSON_KEY, TestConstants.AUTH_TOKEN,
-                    NOTIFICATION_TEMPLATE_VARS, expectedTemplateVars,
-                    NOTIFICATION_TEMPLATE, template,
-                    ID, TestConstants.TEST_CASE_ID
-                ));
+                    .of(NOTIFICATION_EMAIL, TestConstants.TEST_USER_EMAIL,
+                            AUTH_TOKEN_JSON_KEY, AUTH_TOKEN,
+                            NOTIFICATION_TEMPLATE_VARS, expectedTemplateVars,
+                            NOTIFICATION_TEMPLATE, template,
+                            ID, TEST_CASE_ID
+                    ));
         }
         return expectedContext;
+    }
+
+    private Map<String, Object> buildSolicitorResponse(String reasonForDivorce, boolean consented) {
+        Map<String, Object> caseData = new HashMap<>();
+
+        caseData.put(D_8_REASON_FOR_DIVORCE, reasonForDivorce);
+        caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+
+        if ((reasonForDivorce.equalsIgnoreCase(SEPARATION_2YRS)) && consented) {
+            caseData.put(RESP_AOS_2_YR_CONSENT, YES_VALUE);
+        } else if ((reasonForDivorce.equalsIgnoreCase(ADULTERY)) && consented) {
+            caseData.put(RESP_AOS_ADULTERY, YES_VALUE);
+        }
+
+        return caseData;
     }
 }

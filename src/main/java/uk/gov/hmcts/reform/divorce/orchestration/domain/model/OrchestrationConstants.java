@@ -61,6 +61,8 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_SUBMISSION_AWAITING_DN_EVENT_ID = "co-RespAwaitingDN";
     public static final String CO_RESPONDENT_SUBMISSION_AWAITING_LA_EVENT_ID = "co-RespAwaitingLAReferral";
     public static final String DECREE_ABSOLUTE_REQUESTED_EVENT_ID = "RequestDA";
+    public static final String RESP_AOS_2_YR_CONSENT = "RespAOS2yrConsent";
+    public static final String RESP_AOS_ADULTERY = "RespAOSAdultery";
     public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "RespAdmitOrConsentToFact";
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
@@ -124,6 +126,9 @@ public class OrchestrationConstants {
     public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";
     public static final String COMPLETED_AOS_EVENT_ID = "aosReceivedNoAdConStarted";
     public static final String AOS_NOMINATE_SOLICITOR = "aosNominateSol";
+    public static final String SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID = "solAosSubmittedDefended";
+    public static final String SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID = "solAosSubmittedUndefended";
+    public static final String SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID = "solAosReceivedNoAdConStarted";
     public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
     public static final String START_AOS_EVENT_ID = "startAos";
     public static final String PAYMENT_MADE_EVENT = "paymentMade";
@@ -305,7 +310,11 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_FIRM_JSON_KEY = "PetitionerSolicitorFirm";
     public static final String SOLICITOR_REFERENCE_JSON_KEY = "D8SolicitorReference";
     public static final String SOLICITOR_STATEMENT_OF_TRUTH = "solSignStatementofTruth";
+    public static final String RESP_SOL_REPRESENTED = "respondentSolicitorRepresented";
     public static final String D8_RESPONDENT_SOLICITOR_EMAIL = "D8RespondentSolicitorEmail";
+    public static final String D8_RESPONDENT_SOLICITOR_COMPANY = "D8RespondentSolicitorCompany";
+    public static final String D8_RESPONDENT_SOLICITOR_PHONE = "D8RespondentSolicitorPhone";
+    public static final String D8_RESPONDENT_SOLICITOR_REFERENCE = "respondentSolicitorReference";
     public static final String D8_RESPONDENT_SOLICITOR_NAME = "D8RespondentSolicitorName";
     public static final String D8DOCUMENTS_GENERATED = "D8DocumentsGenerated";
     public static final String PETITIONER_SOLICITOR_EMAIL = "PetitionerSolicitorEmail";
