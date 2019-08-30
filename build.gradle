@@ -407,7 +407,7 @@ test {
 }
 
 task wiremockFunctional(type: Test, description: 'Executes wiremock functional tests', group: 'Verification') {
-    onlyIf { project.file("./build/reports/tests/test/index.html").exists() }
+//    onlyIf { project.file("./build/reports/tests/test/index.html").exists() }
 
     printf ("Available processors:::::::::: " + Runtime.runtime.availableProcessors().intdiv(2).toString())
 

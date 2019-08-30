@@ -7,8 +7,10 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
@@ -31,6 +33,9 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -38,7 +43,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
@@ -53,6 +62,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
@@ -80,6 +93,9 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
     @Autowired
     private FeatureToggleServiceImpl featureToggleService;
+
+    @MockBean
+    private EmailClient mockEmailClient;
 
     @Before
     public void setup() {
@@ -155,11 +171,26 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     }
 
     @Test
-    public void shouldReturnCaseDataPlusClarificationDocument_AndState_WhenDN_NotGranted_AndDnReusedForMoreInfo() throws Exception {
-        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(ImmutableMap.of(
+    public void shouldReturnCaseDataPlusClarificationDocument_AndState_WhenDN_NotGranted_AndDnRefusedForMoreInfo() throws Exception {
+        when(mockEmailClient.sendEmail(anyString(), anyString(), any(), anyString())).thenReturn(null);
+
+        Map<String, Object> caseData = new HashMap<>();
+
+        // Notification Fields
+        caseData.putAll(ImmutableMap.of(
+            D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID,
+            D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME,
+            D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME,
+            D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL
+        ));
+
+        // DN Refusal Clarification Fields
+        caseData.putAll(ImmutableMap.of(
             DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
             REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE
-        )).build();
+        ));
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
 
         final GenerateDocumentRequest documentGenerationRequest =
             GenerateDocumentRequest.builder()
@@ -173,12 +204,13 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
                 .build();
 
-        Map<String, Object> expectedDocumentUpdateRequestData = ImmutableMap.of(
-            DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
-            REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE,
+        Map<String, Object> expectedDocumentUpdateRequestData = new HashMap<>();
+        expectedDocumentUpdateRequestData.putAll(caseData);
+        // Additional fields
+        expectedDocumentUpdateRequestData.putAll(ImmutableMap.of(
             STATE_CCD_FIELD, AWAITING_CLARIFICATION,
             DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
-        );
+        ));
 
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
@@ -192,10 +224,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             ImmutableMap.of(
                 ID, TEST_CASE_ID,
-                CCD_CASE_DATA_FIELD, ImmutableMap.of(
-                    DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
-                    REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE
-                )
+                CCD_CASE_DATA_FIELD, caseData
             )
         ));
 
