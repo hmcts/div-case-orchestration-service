@@ -33,13 +33,13 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
 
-postgresql:
-  enabled: true
-  postgresqlUsername: div_scheduler_user
-  postgresqlPassword: div_scheduler_passwd
-  postgresqlDatabase: div_scheduler
-  service:
-    port: 5432
-  persistence:
-    enabled: false
+  postgresql:
+    enabled: true
+    postgresqlUsername: div_scheduler_user
+    postgresqlPassword: div_scheduler_passwd
+    postgresqlDatabase: div_scheduler
+    service:
+      port: 5432
+    persistence:
+      enabled: false
 
