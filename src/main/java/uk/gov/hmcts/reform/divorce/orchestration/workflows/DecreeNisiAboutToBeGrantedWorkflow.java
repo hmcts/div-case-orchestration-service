@@ -11,10 +11,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDnOutcomeFlagFieldTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiRefusalDocumentGeneratorTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiRefusalClarificationDocumentGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateDNDecisionTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.NotifyPetitionerForRefusalOrderClarificationTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
@@ -41,9 +44,11 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
 
     private final SetDNDecisionStateTask setDNDecisionStateTask;
 
-    private final DecreeNisiRefusalDocumentGeneratorTask decreeNisiRefusalDocumentGeneratorTask;
+    private final DecreeNisiRefusalClarificationDocumentGeneratorTask decreeNisiRefusalClarificationDocumentGeneratorTask;
 
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
+
+    private final NotifyPetitionerForRefusalOrderClarificationTask notifyPetitionerForRefusalOrderClarificationTask;
 
     private final FeatureToggleService featureToggleService;
 
@@ -64,9 +69,12 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
             }
         }
 
-        if (featureToggleService.isFeatureEnabled(DN_REFUSAL)) {
-            tasksToRun.add(decreeNisiRefusalDocumentGeneratorTask);
+        if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))
+                && featureToggleService.isFeatureEnabled(DN_REFUSAL)) {
+
+            tasksToRun.add(decreeNisiRefusalClarificationDocumentGeneratorTask);
             tasksToRun.add(caseFormatterAddDocuments);
+            tasksToRun.add(notifyPetitionerForRefusalOrderClarificationTask);
         }
 
         Map<String, Object> payloadToReturn = this.execute(
