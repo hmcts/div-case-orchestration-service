@@ -10,8 +10,9 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-            This suppresses an issue in Guava which affects up to version >24.1.1 however
-            currently we require version 20.0 as spring fox swagger depends on it ]]>
+            The HTTP client in the Build tool in Gradle before 5.6 sends authentication credentials originally
+            destined for the configured host. If that host returns a 30x redirect, Gradle also sends those
+            credentials to all subsequent hosts that the request redirects to. ]]>
         </notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2019-15052</cve>
