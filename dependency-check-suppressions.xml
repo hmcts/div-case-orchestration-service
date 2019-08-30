@@ -15,5 +15,6 @@
         </notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2018-1258</cve>
+        <cve>CVE-2019-15052</cve>
     </suppress>
 </suppressions>
