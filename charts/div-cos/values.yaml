@@ -5,6 +5,14 @@ java:
         REFORM_TEAM: "div"
         SLOT: "PRODUCTION"
         SERVICE_AUTH_MICROSERVICE : "divorce_frontend"
+        DIV_SCHEDULER_DB_HOST : "{{ .Release.Name }}-postgresql"
+        DIV_SCHEDULER_DB_PORT : "5432"
+        DIV_SCHEDULER_DB_NAME : "{{ .Values.postgresql.postgresqlDatabase}}"
+        DIV_SCHEDULER_DB_USER_NAME : "{{ .Values.postgresql.postgresqlUsername}}"
+        DIV_SCHEDULER_DB_PASSWORD  : "{{ .Values.postgresql.postgresqlPassword}}"
+        FLYWAY_URL : "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
+        FLYWAY_USER : "{{ .Values.postgresql.postgresqlUsername}}"
+        FLYWAY_PASSWORD : "{{ .Values.postgresql.postgresqlPassword}}"
 
     keyVaults:
         "div":
@@ -16,3 +24,11 @@ java:
                 - frontend-secret
                 - idam-citizen-password
                 - idam-caseworker-password
+postgresql:
+    postgresqlUsername: div_scheduler_user
+    postgresqlPassword: div_scheduler_passwd
+    postgresqlDatabase: div_scheduler
+    service:
+        port: 5432
+    persistence:
+        enabled: false
