@@ -399,21 +399,9 @@ dependencies {
 }
 
 test {
-    exclude '**/functionaltest/**/*'
-}
-
-task wiremockFunctional(type: Test, description: 'Executes wiremock functional tests', group: 'Verification') {
-    onlyIf { project.file("./build/reports/tests/test/index.html").exists() }
-
-    printf ("Available processors:::::::::: " + Runtime.runtime.availableProcessors().intdiv(2).toString())
-
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     forkEvery = 10
-
-    test.outputs.upToDateWhen {false}
-    include '**/functionaltest/**/*'
 }
-
 task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
     useJUnit {
         includeCategories 'uk.gov.hmcts.reform.divorce.orchestration.category.SmokeTest'
