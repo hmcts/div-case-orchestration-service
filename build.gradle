@@ -204,7 +204,7 @@ def versions = [
         hmctsNotify                     : '3.14.1-RELEASE',
         feignHttpClient                 : '10.2.0',
         reformSpringBootAutoConfigure   : '1.1.0',
-        wiremockVersion                 : '2.22.0',
+        springCloudDependencies         : '2.1.2.RELEASE',
         restAssured                     : '3.0.3',
         serenity                        : '2.0.41',
         serenityCucumber                : '1.9.31',
@@ -304,7 +304,7 @@ dependencies {
         exclude(module: 'commons-logging')
         exclude(module: 'android-json')
     }
-    testCompile group: 'com.github.tomakehurst', name:'wiremock', version: versions.wiremockVersion
+    testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: versions.springCloudDependencies
 
     runtime('org.springframework.boot:spring-boot-devtools')
 
@@ -398,10 +398,6 @@ dependencies {
     integrationTestCompile(sourceSets.test.output)
 }
 
-test {
-    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-    forkEvery = 10
-}
 task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
     useJUnit {
         includeCategories 'uk.gov.hmcts.reform.divorce.orchestration.category.SmokeTest'
