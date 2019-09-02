@@ -25,6 +25,18 @@ spring:
     static-locations:
   flyway:
     enabled: false
+  mail:
+    host: localhost
+    port: 32773
+    test:
+      connection: false
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          ssl:
+            trust: localhost
 
 quartzProperties:
   org.quartz:
@@ -336,6 +348,12 @@ health:
 documentation:
   swagger:
     enabled: true
+
+dataMigration:
+  emailFrom: noreply@reform.hmcts.net
+  migrationStatus:
+    DA:
+      emailTo: da-migration@divorce.gov.uk
 
 # GENERAL SPRING BOOT ACTUATOR CONFIG
 # Context path for Spring Boot Actuator endpoints
