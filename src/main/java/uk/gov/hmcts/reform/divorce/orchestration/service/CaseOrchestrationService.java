@@ -15,6 +15,9 @@ public interface CaseOrchestrationService {
     Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest, String authToken,
                                                  boolean generateAosInvitation) throws WorkflowException;
 
+    Map<String, Object> ccdCallbackConfirmPersonalService(CcdCallbackRequest ccdCallbackRequest, String authToken)
+        throws WorkflowException;
+
     Map<String, Object> ccdCallbackBulkPrintHandler(CcdCallbackRequest ccdCallbackRequest, String authToken)
         throws WorkflowException;
 

@@ -15,7 +15,7 @@ public class OrchestrationConstants {
     // Task context properties
     public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String DN_COURT_DETAILS = "dnCourtDetails";
-    public static final String BULK_LINK_CASE_ID =  "bulkLinkCaseId";
+    public static final String BULK_LINK_CASE_ID = "bulkLinkCaseId";
 
     // Authentication
     public static final String ACCESS_CODE = "access_code";
@@ -104,6 +104,8 @@ public class OrchestrationConstants {
     public static final String DATE_RESPONDENT_ELIGIBLE_FOR_DA_CCD_FIELD = "DateRespondentEligibleForDA";
     public static final String DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA_CCD_FIELD = "DateCaseNoLongerEligibleForDA";
     public static final String REMOVE_FROM_BULK_CASE_LISTED_EVENT = "removeFromBulkCaseListed";
+    public static final String SOL_SERVICE_METHOD_CCD_FIELD = "SolServiceMethod";
+    public static final String PERSONAL_SERVICE_VALUE = "personalService";
 
     public static final String PET_SOL_EMAIL = "PetitionerSolicitorEmail";
     public static final String PET_SOL_NAME = "PetitionerSolicitorName";
@@ -126,7 +128,6 @@ public class OrchestrationConstants {
     public static final String START_AOS_EVENT_ID = "startAos";
     public static final String PAYMENT_MADE_EVENT = "paymentMade";
     public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID = "MakeEligibleForDA_Petitioner";
-    public static final String AWAITING_DECREE_ABSOLUTE = "AwaitingDecreeAbsolute";
     public static final String SOLICITOR_CREATE_EVENT = "solicitorCreate";
     public static final String SOLICITOR_SUBMIT_EVENT = "solicitorStatementOfTruthPaySubmit";
 
@@ -145,8 +146,6 @@ public class OrchestrationConstants {
     public static final String DN_PRONOUNCED = "DNPronounced";
     public static final String AWAITING_DA = "AwaitingDecreeAbsolute";
     public static final String DN_REFUSED = "DNisRefused";
-    public static final String DA_REQUESTED = "DARequested";
-    public static final String DIVROCE_GRANTED = "DivorceGranted";
 
     // CCD Co-Respondent Fields
     public static final String CO_RESP_LINKED_TO_CASE = "CoRespLinkedToCase";
@@ -227,11 +226,12 @@ public class OrchestrationConstants {
     public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
+    public static final String SEND_VIA_EMAIL_OR_POST = "SendViaEmailOrPost";
+    public static final String SEND_VIA_POST = "Post";
 
     // Court Data Keys
     public static final String DIVORCE_CENTRE_SITEID_JSON_KEY = "D8SelectedDivorceCentreSiteId";
     public static final String DIVORCE_UNIT_JSON_KEY = "D8DivorceUnit";
-    public static final String DIVORCE_UNIT_SERVICE_CENTRE = "serviceCentre";
     public static final String COURT_CONTACT_JSON_KEY = "CourtContactDetails";
     public static final String EMAIL_LABEL = "Email:";
     public static final String PHONE_LABEL = "Phone:";
@@ -269,15 +269,19 @@ public class OrchestrationConstants {
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
     public static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
+    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";
+    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
+    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
+
     public static final String RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-resp";
     public static final String RESPONDENT_AOS_INVITATION_LETTER_FILENAME = "aos-invitation-letter-offline-respondent";
     public static final String RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00075.doc";
     public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-co-resp";
     public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME = "aos-invitation-letter-offline-co-respondent";
     public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00076.doc";
-    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";
-    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
-    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
+    public static final String AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE = "two-year-separation-aos-form";
+    public static final String AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME = "two-year-separation-aos-form-resp";
+    public static final String AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID = "FL-DIV-APP-ENG-00080.docx";
 
     public static final String DOCUMENT_TYPE_COE = "coe";
 

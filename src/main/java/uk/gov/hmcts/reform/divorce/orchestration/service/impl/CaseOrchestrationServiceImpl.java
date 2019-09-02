@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -172,6 +173,20 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 ccdCallbackRequest.getCaseDetails().getCaseId());
             return issueEventWorkflow.errors();
         }
+    }
+
+    @Override
+    public Map<String, Object> ccdCallbackConfirmPersonalService(CcdCallbackRequest ccdCallbackRequest, String authToken)
+        throws WorkflowException {
+
+        Map<String, Object> payLoad = ccdCallbackRequest.getCaseDetails().getCaseData();
+        String sendViaEmailOrPost = (String)payLoad.get(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST);
+        if (StringUtils.equalsIgnoreCase(sendViaEmailOrPost, OrchestrationConstants.SEND_VIA_POST)) {
+            log.info("Confirm personal service callback for case with CASE ID: {} calling bulk print service",
+                ccdCallbackRequest.getCaseDetails().getCaseId());
+            payLoad = ccdCallbackBulkPrintHandler(ccdCallbackRequest, authToken);
+        }
+        return payLoad;
     }
 
     @Override

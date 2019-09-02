@@ -243,20 +243,20 @@ public class CallbackController {
             .build());
     }
 
-    @PostMapping(path = "/bulk-print",
+    @PostMapping(path = "/confirm-service",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles bulk print callback from CCD")
+    @ApiOperation(value = "Caseworker confirm personal service from CCD")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Callback was processed "
         + "successfully or in case of an error message is "
         + "attached to the case",
         response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
-    public ResponseEntity<CcdCallbackResponse> bulkPrint(
+    public ResponseEntity<CcdCallbackResponse> confirmPersonalService(
         @RequestHeader(value = "Authorization") String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
-        Map<String, Object> response = caseOrchestrationService.ccdCallbackBulkPrintHandler(ccdCallbackRequest,
+        Map<String, Object> response = caseOrchestrationService.ccdCallbackConfirmPersonalService(ccdCallbackRequest,
             authorizationToken);
 
         if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
@@ -273,6 +273,47 @@ public class CallbackController {
                 .errors(Collections.emptyList())
                 .warnings(Collections.emptyList())
                 .build());
+    }
+
+    @PostMapping(path = "/bulk-print",
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Handles bulk print callback from CCD")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Callback was processed "
+        + "successfully or in case of an error message is "
+        + "attached to the case",
+        response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> bulkPrint(
+        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        try {
+            Map<String, Object> response = caseOrchestrationService.ccdCallbackBulkPrintHandler(ccdCallbackRequest,
+                    authorizationToken);
+
+            if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
+                return ResponseEntity.ok(
+                        CcdCallbackResponse.builder()
+                                .data(ImmutableMap.of())
+                                .warnings(ImmutableList.of())
+                                .errors(singletonList("Failed to bulk print documents"))
+                                .build());
+            }
+            return ResponseEntity.ok(
+                    CcdCallbackResponse.builder()
+                            .data(response)
+                            .errors(Collections.emptyList())
+                            .warnings(Collections.emptyList())
+                            .build());
+        } catch (WorkflowException e) {
+            return ResponseEntity.ok(
+                    CcdCallbackResponse.builder()
+                            .data(ImmutableMap.of())
+                            .warnings(ImmutableList.of())
+                            .errors(singletonList("Failed to bulk print documents - " + e.getMessage()))
+                            .build());
+        }
     }
 
     @PostMapping(path = "/petition-issued",
