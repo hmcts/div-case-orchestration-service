@@ -64,63 +64,46 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRe
 @Component
 public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final CaseMaintenanceClient caseMaintenanceClient;
     private final GenericEmailNotification emailNotificationTask;
     private final RespondentAnswersGenerator respondentAnswersGenerator;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private final CaseMaintenanceClient caseMaintenanceClient;
     private final CcdUtil ccdUtil;
     private final List<Task> tasks = new ArrayList<>();
 
     private Map<String, String> notificationTemplateVars = new HashMap<>();
-
     private String eventId;
-    private EmailTemplateNames template = null;
-    private String emailToBeSentTo = null;
 
     @Autowired
-    public RespondentSubmittedCallbackWorkflow(CaseMaintenanceClient caseMaintenanceClient,
-                                               GenericEmailNotification emailNotificationTask,
+    public RespondentSubmittedCallbackWorkflow(GenericEmailNotification emailNotificationTask,
                                                RespondentAnswersGenerator respondentAnswersGenerator,
                                                CaseFormatterAddDocuments caseFormatterAddDocuments,
+                                               CaseMaintenanceClient caseMaintenanceClient,
                                                CcdUtil ccdUtil) {
-        this.caseMaintenanceClient = caseMaintenanceClient;
         this.emailNotificationTask = emailNotificationTask;
         this.respondentAnswersGenerator = respondentAnswersGenerator;
         this.caseFormatterAddDocuments = caseFormatterAddDocuments;
+        this.caseMaintenanceClient = caseMaintenanceClient;
         this.ccdUtil = ccdUtil;
     }
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        final List<Task> tasks = new ArrayList<>();
+
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        final String relationship = getRespondentRelationship(caseDetails);
 
-        sendNotificationEmail(caseDetails);
-
-        if (isSolicitorRepresentingRespondent(caseDetails)) {
-            mapSolicitorRespAosValues(caseDetails);
-            setEventIdForSolicitor(authToken, caseDetails);
-        }
-
-        tasks.add(respondentAnswersGenerator);
-        tasks.add(caseFormatterAddDocuments);
-
-        Task[] taskArr = new Task[tasks.size()];
-
-        return this.execute(
-                tasks.toArray(taskArr),
-                caseDetails.getCaseData(),
-                ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-                ImmutablePair.of(NOTIFICATION_EMAIL, emailToBeSentTo),
-                ImmutablePair.of(NOTIFICATION_TEMPLATE_VARS, notificationTemplateVars),
-                ImmutablePair.of(NOTIFICATION_TEMPLATE, template),
-                ImmutablePair.of(ID, caseDetails.getCaseId())
-        );
-    }
-
-    private void sendNotificationEmail(CaseDetails caseDetails) {
         String petSolicitorEmail = getFieldAsStringOrNull(caseDetails, PET_SOL_EMAIL);
         String petitionerEmail = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_EMAIL);
+        String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
+
         String petitionerFirstName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_LAST_NAME);
+
+        EmailTemplateNames template = null;
+        String emailToBeSentTo = null;
+
+        Map<String, String> notificationTemplateVars = new HashMap<>();
 
         // only send an email to pet / solicitor. if respondent is not defending
         if (!respondentIsDefending(caseDetails)) {
@@ -139,11 +122,9 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
                 template = findTemplateNameToBeSent(caseDetails, true);
                 emailToBeSentTo = petSolicitorEmail;
             } else if (StringUtils.isNotEmpty(petitionerEmail)) {
-                String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
-
                 notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
                 notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
-                notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, getRespondentRelationship(caseDetails));
+                notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
                 notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, ref);
 
                 tasks.add(emailNotificationTask);
@@ -151,6 +132,26 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
                 emailToBeSentTo = petitionerEmail;
             }
         }
+
+        if (isSolicitorRepresentingRespondent(caseDetails)) {
+            mapSolicitorRespAosValues(caseDetails);
+            setEventIdForSolicitor(authToken, caseDetails);
+        }
+
+        tasks.add(respondentAnswersGenerator);
+        tasks.add(caseFormatterAddDocuments);
+
+        Task[] taskArr = new Task[tasks.size()];
+
+        return this.execute(
+            tasks.toArray(taskArr),
+            ccdCallbackRequest.getCaseDetails().getCaseData(),
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+            ImmutablePair.of(NOTIFICATION_EMAIL, emailToBeSentTo),
+            ImmutablePair.of(NOTIFICATION_TEMPLATE_VARS, notificationTemplateVars),
+            ImmutablePair.of(NOTIFICATION_TEMPLATE, template),
+            ImmutablePair.of(ID, caseDetails.getCaseId())
+        );
     }
 
     private void setEventIdForSolicitor(String authToken, CaseDetails caseDetails) {
@@ -203,24 +204,24 @@ public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<Str
         return reasonForDivorce;
     }
 
-    private boolean respondentIsDefending(CaseDetails caseDetails) {
-        final String respWillDefendDivorce = (String)caseDetails.getCaseData().get(RESP_WILL_DEFEND_DIVORCE);
-        return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
-    }
-
     private boolean respAdmitsOrConsentsToFact(CaseDetails caseDetails) {
         final String respAdmitOrConsentsToFact = (String)caseDetails.getCaseData().get(RESP_ADMIT_OR_CONSENT_TO_FACT);
         return YES_VALUE.equalsIgnoreCase(respAdmitOrConsentsToFact);
     }
 
-    private String getRespondentRelationship(CaseDetails caseDetails) {
-        String gender = getFieldAsStringOrNull(caseDetails, D_8_INFERRED_RESPONDENT_GENDER);
-        return getRelationshipTermByGender(gender);
-    }
-
     private boolean isSolicitorRepresentingRespondent(CaseDetails caseDetails) {
         final String respondentSolicitorRepresented = (String)caseDetails.getCaseData().get(RESP_SOL_REPRESENTED);
         return YES_VALUE.equalsIgnoreCase(respondentSolicitorRepresented);
+    }
+
+    private boolean respondentIsDefending(CaseDetails caseDetails) {
+        final String respWillDefendDivorce = (String)caseDetails.getCaseData().get(RESP_WILL_DEFEND_DIVORCE);
+        return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
+    }
+
+    private String getRespondentRelationship(CaseDetails caseDetails) {
+        String gender = getFieldAsStringOrNull(caseDetails, D_8_INFERRED_RESPONDENT_GENDER);
+        return getRelationshipTermByGender(gender);
     }
 
     private String getFieldAsStringOrNull(final CaseDetails caseDetails, String fieldKey) {
