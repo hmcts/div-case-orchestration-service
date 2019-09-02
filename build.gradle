@@ -119,7 +119,7 @@ allprojects {
                 entry 'jackson-module-parameter-names'
             }
 
-            dependency group: 'commons.beanutils', name: 'commons.beanutils', version: '1.9.4'
+            dependency group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
         }
     }
 }
@@ -207,6 +207,7 @@ dependencyCheck {
 }
 
 def versions = [
+        commonsBeanUtils                : '1.9.4',
         commonsIo                       : '2.5',
         commonsLang3                    : '3.7',
         springfoxSwagger                : '2.9.2',
@@ -337,6 +338,10 @@ dependencies {
     }
 
     compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-el', version: versions.tomcat) {
+        force = true
+    }
+
+    compile (group: 'commons-beanutils', name: 'commons-beanutils', version: versions.commonsBeanUtils) {
         force = true
     }
 
