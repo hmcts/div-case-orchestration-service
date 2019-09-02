@@ -86,8 +86,6 @@ module "div-cos" {
     DIV_SCHEDULER_DB_PASSWORD                      = "${module.div-scheduler-db.postgresql_password}"
     DIV_SCHEDULER_DB_NAME                          = "${module.div-scheduler-db.postgresql_database}"
     FLYWAY_URL                                     = "jdbc:postgresql://${module.div-scheduler-db.host_name}:${module.div-scheduler-db.postgresql_listen_port}/${module.div-scheduler-db.postgresql_database}${local.db_connection_options}"
-    FLYWAY_USER                                    = "${module.div-scheduler-db.user_name}"
-    FLYWAY_PASSWORD                                = "${module.div-scheduler-db.postgresql_password}"
     FLYWAY_NOOP_STRATEGY                           = "true"
 
     FEATURE_RESP_SOLICITOR_DETAILS                 = "${var.feature_resp_solicitor_details}"
