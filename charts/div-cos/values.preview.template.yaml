@@ -26,4 +26,7 @@ java:
   ingressHost: ${SERVICE_FQDN}
 
 postgresql:
+  postgresqlUsername: div_scheduler_user
+  postgresqlPassword: div_scheduler_passwd
+  postgresqlDatabase: div_scheduler
   enabled: true
