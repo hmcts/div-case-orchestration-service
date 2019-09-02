@@ -115,3 +115,22 @@ variable "feature_dn_refusal" {
 variable "documentation_swagger_enabled" {
   default = "true"
 }
+
+variable "spring_mail_host" {
+  type = "string"
+  default = "mta.reform.hmcts.net"
+}
+
+variable "spring_mail_port" {
+  default = 25
+}
+
+variable "spring_mail_properties_mail_smtp_ssl_trust" {
+  type = "string"
+  default = "mta.reform.hmcts.net"
+}
+
+variable "datamigration_migrationstatus_da_email_to" {
+  type = "string"
+  default = "da_data_migration@mailinator.com"
+}
