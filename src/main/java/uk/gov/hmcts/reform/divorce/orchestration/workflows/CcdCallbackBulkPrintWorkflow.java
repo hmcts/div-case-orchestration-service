@@ -91,9 +91,9 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
             if (isNotEmpty(solicitorEmail)) {
                 return asList(
                     respondentPinGenerator,
+                    respondentSolicitorAosEmailSender,
                     respondentLetterGenerator, // re-generate the AoS letter with the new PIN
-                    caseFormatterAddDocuments,
-                    respondentSolicitorAosEmailSender);
+                    caseFormatterAddDocuments);
             }
         }
         return singletonList(respondentAosPackPrinter);
