@@ -118,6 +118,8 @@ allprojects {
             ) {
                 entry 'jackson-module-parameter-names'
             }
+
+            dependency group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
         }
     }
 }
@@ -205,6 +207,7 @@ dependencyCheck {
 }
 
 def versions = [
+        commonsBeanUtils                : '1.9.4',
         commonsIo                       : '2.5',
         commonsLang3                    : '3.7',
         springfoxSwagger                : '2.9.2',
@@ -245,6 +248,7 @@ def versions = [
 
 dependencies {
     compile project(':job-scheduler')
+
     compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: versions.sendLetterClient
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
     compile group: 'org.springframework.retry', name: 'spring-retry'
@@ -283,19 +287,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: versions.reformSpringBootAutoConfigure
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: versions.reformHealth
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: versions.reformPropertiesVolume
-    compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
-        force = true
-    }
 
-    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-core', version: versions.tomcat) {
-        force = true
-    }
-    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-websocket', version: versions.tomcat) {
-        force = true
-    }
-    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-el', version: versions.tomcat) {
-        force = true
-    }
     compile group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
     compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
@@ -309,38 +301,33 @@ dependencies {
             exclude group: 'io.reactivex', module: 'rxnetty-contexts'
             exclude group: 'io.reactivex', module: 'rxnetty-servo'
         }
+    compile group: 'com.jayway.jsonpath', name:'json-path-assert', version: versions.jsonPathAssert
+    compile group: 'org.pitest', name: 'pitest', version: versions.pitest
+    compile group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
+    compile group: 'org.codehaus.sonar-plugins', name:'sonar-pitest-plugin', version: versions.sonarPitest
 
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
-    compile group: 'com.jayway.jsonpath', name:'json-path-assert', version: versions.jsonPathAssert
-    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
-        exclude(module: 'commons-logging')
-        exclude(module: 'android-json')
+    compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
+        force = true
     }
-    testCompile group: 'com.github.tomakehurst', name:'wiremock', version: versions.wiremockVersion
-
-    runtime('org.springframework.boot:spring-boot-devtools')
-
-    compile group: 'org.pitest', name: 'pitest', version: versions.pitest
-    compile group:'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
-    compile group:'org.codehaus.sonar-plugins', name:'sonar-pitest-plugin', version: versions.sonarPitest
 
     compile (group: 'com.google.guava', name:'guava', version: versions.guava) {
-	        force = true
-	}
+        force = true
+    }
 
     compile (group: 'org.bouncycastle', name:'bcpkix-jdk15on', version: versions.bcpkixJdk15on) {
-	        force = true
-	}
+        force = true
+    }
 
     compile (group: 'org.springframework.security', name:'spring-security-rsa', version: versions.springSecurityRsa) {
-	        force = true
-	}
+        force = true
+    }
 
     compile (group: 'org.springframework.security', name:'spring-security-crypto', version: versions.springSecurityCrypto) {
-	        force = true
-	}
+        force = true
+    }
 
     compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-core', version: versions.tomcat) {
         force = true
@@ -353,6 +340,18 @@ dependencies {
     compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-el', version: versions.tomcat) {
         force = true
     }
+
+    compile (group: 'commons-beanutils', name: 'commons-beanutils', version: versions.commonsBeanUtils) {
+        force = true
+    }
+
+    runtime('org.springframework.boot:spring-boot-devtools')
+
+    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
+        exclude(module: 'commons-logging')
+        exclude(module: 'android-json')
+    }
+    testCompile group: 'com.github.tomakehurst', name:'wiremock', version: versions.wiremockVersion
 
     testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     testCompile 'org.awaitility:awaitility:3.1.6'
