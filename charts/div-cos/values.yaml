@@ -22,3 +22,4 @@ java:
                 - frontend-secret
                 - idam-citizen-password
                 - idam-caseworker-password
+                - cos-postgresql-password
