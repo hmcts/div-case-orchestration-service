@@ -249,6 +249,11 @@ def versions = [
 dependencies {
     compile project(':job-scheduler')
 
+    compileOnly("org.projectlombok:lombok:${versions.lombok}")
+    testCompileOnly("org.projectlombok:lombok:${versions.lombok}")
+    annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
+    testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
+
     compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: versions.sendLetterClient
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
     compile group: 'org.springframework.retry', name: 'spring-retry'
@@ -295,19 +300,16 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: versions.reformsJavaLogging
     compile (group: 'uk.gov.hmcts.reform', name:'service-auth-provider-client', version: versions.serviceTokenGenerator)
-        {
-            exclude group: 'io.reactivex', module: 'io.reactivex'
-            exclude group: 'io.reactivex', module: 'rxnetty'
-            exclude group: 'io.reactivex', module: 'rxnetty-contexts'
-            exclude group: 'io.reactivex', module: 'rxnetty-servo'
-        }
+            {
+                exclude group: 'io.reactivex', module: 'io.reactivex'
+                exclude group: 'io.reactivex', module: 'rxnetty'
+                exclude group: 'io.reactivex', module: 'rxnetty-contexts'
+                exclude group: 'io.reactivex', module: 'rxnetty-servo'
+            }
     compile group: 'com.jayway.jsonpath', name:'json-path-assert', version: versions.jsonPathAssert
     compile group: 'org.pitest', name: 'pitest', version: versions.pitest
     compile group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
     compile group: 'org.codehaus.sonar-plugins', name:'sonar-pitest-plugin', version: versions.sonarPitest
-
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
     compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
         force = true
@@ -353,7 +355,6 @@ dependencies {
     }
     testCompile group: 'com.github.tomakehurst', name:'wiremock', version: versions.wiremockVersion
 
-    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     testCompile 'org.awaitility:awaitility:3.1.6'
 
     //integration test
