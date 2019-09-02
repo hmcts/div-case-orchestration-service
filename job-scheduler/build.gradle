@@ -40,9 +40,10 @@ dependencies {
 
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
 
+  compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
+    force = true
+  }
+
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.assertj', name: 'assertj-core', version: versions.assertj
-  compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
-     force = true
-  }
 }
