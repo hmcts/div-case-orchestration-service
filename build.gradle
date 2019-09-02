@@ -205,6 +205,7 @@ dependencyCheck {
 }
 
 def versions = [
+        commonsBeanUtils                : '1.9.4',
         commonsIo                       : '2.5',
         commonsLang3                    : '3.7',
         springfoxSwagger                : '2.9.2',
@@ -277,7 +278,9 @@ dependencies {
                 exclude group: 'io.reactivex', module: 'rxnetty-contexts'
                 exclude group: 'io.reactivex', module: 'rxnetty-servo'
             }
-
+    compile (group: 'commons-beanutils', name: 'commons-beanutils', version: versions.commonsBeanUtils) {
+        force = true
+    }
     compile group: 'org.elasticsearch', name: 'elasticsearch', version: versions.elasticsearch
     compile group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
     compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: versions.reformSpringBootAutoConfigure

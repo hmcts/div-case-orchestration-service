@@ -19,6 +19,7 @@ compileTestJava {
 }
 
 def versions = [
+  commonsBeanUtils  : '1.9.4',
   reformJavaLogging : '5.0.1',
   jacksonDatabind   : '2.9.9.3',
   flyway            : '5.2.4',
@@ -44,5 +45,8 @@ dependencies {
   testCompile group: 'org.assertj', name: 'assertj-core', version: versions.assertj
   compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
      force = true
+  }
+  compile (group: 'commons-beanutils', name: 'commons-beanutils', version: versions.commonsBeanUtils) {
+    force = true
   }
 }
