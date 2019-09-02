@@ -101,6 +101,7 @@ public class OrchestrationConstants {
     public static final String COSTS_ORDER_ADDITIONAL_INFO_CCD_FIELD = "CostsOrderAdditionalInfo";
     public static final String DECREE_NISI_GRANTED_DATE_CCD_FIELD = "DecreeNisiGrantedDate";
     public static final String DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD = "DAEligibleFromDate";
+    public static final String DECREE_ABSOLUTE_REQUESTED_DATE_CCD_FIELD = "DecreeAbsoluteApplicationDate";
     public static final String DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD = "DecreeAbsoluteGrantedDate";
     public static final String PRONOUNCEMENT_JUDGE_CCD_FIELD = "PronouncementJudge";
     public static final String DATE_RESPONDENT_ELIGIBLE_FOR_DA_CCD_FIELD = "DateRespondentEligibleForDA";
