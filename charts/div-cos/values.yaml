@@ -22,9 +22,3 @@ java:
                 - frontend-secret
                 - idam-citizen-password
                 - idam-caseworker-password
-                - cos-postgresql-password
-postgresql:
-    service:
-        port: 5432
-    persistence:
-        enabled: false

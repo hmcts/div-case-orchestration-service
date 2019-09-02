@@ -27,6 +27,18 @@ java:
         SCHEDULER_ENABLED: true
         FEATURE_RESP_SOLICITOR_DETAILS: "true"
 
+    keyVaults:
+        "div":
+            resourceGroup: div
+            secrets:
+                - ccd-submission-s2s-auth-secret
+                - div-doc-s2s-auth-secret
+                - idam-secret
+                - frontend-secret
+                - idam-citizen-password
+                - idam-caseworker-password
+                - cos-postgresql-password
+
     # Don't modify below here
     image: ${IMAGE_NAME}
     ingressHost: ${SERVICE_FQDN}
