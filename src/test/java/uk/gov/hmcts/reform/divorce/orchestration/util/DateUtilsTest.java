@@ -9,7 +9,7 @@ public class DateUtilsTest {
 
     @Test
     public void shouldConvertDateFromCCDFormat() {
-        String formattedDate = DateUtils.formatFromCCDFormatToHumanReadableFormat("2017-08-15");
+        String formattedDate = CcdUtil.formatFromCCDFormatToHumanReadableFormat("2017-08-15");
         assertThat(formattedDate, is("15/08/2017"));
     }
 

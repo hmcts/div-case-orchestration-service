@@ -67,7 +67,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
                 + "  \"cases\": [{"
                 + "    \"case_data\": {"
                 + "      \"D8caseReference\": \"CR12345\","
-                + "      \"DecreeAbsoluteApplicationDate\": \"2017-03-06\","
+                + "      \"DecreeAbsoluteApplicationDate\": \"2017-03-06T16:49:00.015\","
                 + "      \"DecreeNisiGrantedDate\": \"2017-07-06\""
                 + "    }"
                 + "  }]"

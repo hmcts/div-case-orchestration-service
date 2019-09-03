@@ -62,11 +62,11 @@ public class DataExtractionFileCreatorTest {
     public void shouldAddFileToContext() throws TaskException, IOException {
         Map<String, Object> firstCaseData = new HashMap<>();
         firstCaseData.put("D8caseReference", "TEST1");
-        firstCaseData.put("DecreeAbsoluteApplicationDate", "2018-06-12");
+        firstCaseData.put("DecreeAbsoluteApplicationDate", "2018-06-12T16:49:00.015");
         firstCaseData.put("DecreeNisiGrantedDate", "2017-08-17");
         Map<String, Object> secondCaseData = new HashMap<>();
         secondCaseData.put("D8caseReference", "TEST2");
-        secondCaseData.put("DecreeAbsoluteApplicationDate", "2018-06-24");
+        secondCaseData.put("DecreeAbsoluteApplicationDate", "2018-06-24T16:49:00.015");
         secondCaseData.put("DecreeNisiGrantedDate", "2017-08-26");
 
         SearchResult searchResult = SearchResult.builder().cases(newArrayList(
@@ -124,7 +124,7 @@ public class DataExtractionFileCreatorTest {
         expectedException.expect(TaskException.class);
 
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put("DecreeAbsoluteApplicationDate", "2018-06-24");
+        caseData.put("DecreeAbsoluteApplicationDate", "2018-06-24T16:49:00.015");
         caseData.put("DecreeNisiGrantedDate", "2017-08-26");
         SearchResult searchResult = SearchResult.builder().cases(newArrayList(
             CaseDetails.builder().caseData(caseData).build()
