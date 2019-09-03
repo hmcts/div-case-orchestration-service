@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.datamigration;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,19 +12,19 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Component
-public class DataMigrationEmailClient {
+public class DataExtractionEmailClient {
 
-    private static final String SUBJECT = "Divorce data migration";
-    private static final String EMAIL_TEXT = "Data migration file";
+    private static final String SUBJECT = "Divorce data extraction";
+    private static final String EMAIL_TEXT = "Data extraction file";
 
     private final String emailFrom;
     private final String destinationEmailAddress;
 
     private final JavaMailSenderImpl mailSender;
 
-    public DataMigrationEmailClient(@Value("${dataMigration.emailFrom}")String emailFrom,
-                                    @Value("${dataMigration.migrationStatus.DA.emailTo}") String destinationEmailAddress,
-                                    @Autowired JavaMailSenderImpl mailSender) {
+    public DataExtractionEmailClient(@Value("${dataExtraction.emailFrom}") String emailFrom,
+                                     @Value("${dataExtraction.status.DA.emailTo}") String destinationEmailAddress,
+                                     @Autowired JavaMailSenderImpl mailSender) {
         this.emailFrom = emailFrom;
         this.destinationEmailAddress = destinationEmailAddress;
         this.mailSender = mailSender;

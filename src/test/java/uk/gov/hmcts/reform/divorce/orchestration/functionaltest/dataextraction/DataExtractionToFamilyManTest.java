@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.datamigration;
+package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.dataextraction;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.hamcrest.Matchers;
@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.orchestration.datamigration.DataMigrationEmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction.DataExtractionEmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.io.File;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-public class FamilyManDataMigrationTest extends MockedFunctionalTest {
+public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
 
     private static final DateTimeFormatter FILE_NAME_DATE_FORMAT = ofPattern("ddMMyyyy000000");
     private static final String TEST_AUTH_TOKEN = "testAuthToken";
@@ -45,7 +45,7 @@ public class FamilyManDataMigrationTest extends MockedFunctionalTest {
     private MockMvc webClient;
 
     @MockBean
-    private DataMigrationEmailClient mockEmailClient;
+    private DataExtractionEmailClient mockEmailClient;
 
     @MockBean
     private AuthUtil authUtil;
@@ -74,7 +74,7 @@ public class FamilyManDataMigrationTest extends MockedFunctionalTest {
                 + "}"))
         );
 
-        webClient.perform(post("/cases/data-migration/family-man"))
+        webClient.perform(post("/cases/data-extraction/family-man"))
             .andExpect(status().isOk());
 
         String expectedAttachmentName = String.format("DA_%s.csv", LocalDate.now().minusDays(1).format(FILE_NAME_DATE_FORMAT));

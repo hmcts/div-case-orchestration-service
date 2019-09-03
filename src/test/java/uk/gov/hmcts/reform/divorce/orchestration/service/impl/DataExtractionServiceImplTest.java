@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.datamigration.FamilyManDataMigrationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow;
 
 import java.time.LocalDate;
 
@@ -19,10 +19,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataMigrationRequest.Status.DA;
+import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DA;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DataMigrationServiceImplTest {
+public class DataExtractionServiceImplTest {
 
     private static final String TEST_AUTH_TOKEN = "testAuthToken";
 
@@ -30,14 +30,14 @@ public class DataMigrationServiceImplTest {
     public ExpectedException expectedException = none();
 
     @Mock
-    private FamilyManDataMigrationWorkflow mockWorkflow;
+    private FamilyManDataExtractionWorkflow mockWorkflow;
 
     @InjectMocks
-    private DataMigrationServiceImpl classUnderTest;
+    private DataExtractionServiceImpl classUnderTest;
 
     @Test
     public void shouldCallWorkflowWithRightParameters() throws WorkflowException, CaseOrchestrationServiceException {
-        classUnderTest.migrateCasesToFamilyMan(DA, LocalDate.now(), TEST_AUTH_TOKEN);
+        classUnderTest.extractCasesToFamilyMan(DA, LocalDate.now(), TEST_AUTH_TOKEN);
 
         verify(mockWorkflow).run(eq(DA), eq(LocalDate.now()), eq(TEST_AUTH_TOKEN));
     }
@@ -48,7 +48,7 @@ public class DataMigrationServiceImplTest {
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectCause(instanceOf(WorkflowException.class));
 
-        classUnderTest.migrateCasesToFamilyMan(DA, LocalDate.now(), TEST_AUTH_TOKEN);
+        classUnderTest.extractCasesToFamilyMan(DA, LocalDate.now(), TEST_AUTH_TOKEN);
     }
 
 }

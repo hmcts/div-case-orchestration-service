@@ -5,14 +5,14 @@ import org.springframework.context.ApplicationEvent;
 import java.time.LocalDate;
 
 /**
- * This event symbolises a request for a data migration process to start.
+ * This event symbolises a request for a data extraction process to start.
  */
-public class DataMigrationRequest extends ApplicationEvent {
+public class DataExtractionRequest extends ApplicationEvent {
 
     private final Status status;
     private final LocalDate date;
 
-    public DataMigrationRequest(Object source, Status status, LocalDate date) {
+    public DataExtractionRequest(Object source, Status status, LocalDate date) {
         super(source);
         this.status = status;
         this.date = date;

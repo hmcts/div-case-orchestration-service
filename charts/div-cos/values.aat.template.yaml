@@ -31,7 +31,7 @@ java:
         SPRING_MAIL_PORT: 25
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: "mta.reform.hmcts.net"
 
-        DATAMIGRATION_MIGRATIONSTATUS_DA_EMAILTO: "da_data_migration@mailinator.com"
+        DATAEXTRACTION_STATUS_DA_EMAILTO: "da_data_extraction@mailinator.com"
 
     keyVaults:
         "div":

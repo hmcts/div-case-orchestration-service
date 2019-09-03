@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks.datamigration;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -19,22 +19,22 @@ import java.util.List;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_REQUESTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_GRANTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.datamigration.FamilyManDataMigrationWorkflow.DATE_TO_MIGRATE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.datamigration.FamilyManDataMigrationWorkflow.FILE_TO_PUBLISH;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.DATE_TO_EXTRACT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
 
 @Component
-public class DataMigrationFileCreator implements Task<Void> {
+public class DataExtractionFileCreator implements Task<Void> {
 
     private final CMSHelper cmsHelper;
 
     @Autowired
-    public DataMigrationFileCreator(CaseMaintenanceClient caseMaintenanceClient, DecreeAbsoluteDataExtractor caseDetailsMapper) {
+    public DataExtractionFileCreator(CaseMaintenanceClient caseMaintenanceClient, DecreeAbsoluteDataExtractor caseDetailsMapper) {
         cmsHelper = new CMSHelper(caseMaintenanceClient, caseDetailsMapper);
     }
 
     @Override
     public Void execute(TaskContext context, Void payload) throws TaskException {
-        LocalDate lastModifiedDate = context.getTransientObject(DATE_TO_MIGRATE_KEY);
+        LocalDate lastModifiedDate = context.getTransientObject(DATE_TO_EXTRACT_KEY);
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
 
         QueryBuilder[] queryBuilders = {
@@ -57,7 +57,7 @@ public class DataMigrationFileCreator implements Task<Void> {
         File csvFile;
 
         try {
-            csvFile = Files.createTempFile("DA_family_man_data_migration", ".csv").toFile();
+            csvFile = Files.createTempFile("DA_family_man_data_extraction", ".csv").toFile();
             Files.write(csvFile.toPath(), csvFileContent.getBytes());
             csvFile.deleteOnExit();
         } catch (IOException e) {

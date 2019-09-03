@@ -7,4 +7,4 @@ documentation_swagger_enabled = "false"
 # Scheduler Jobs
 scheduler_make_cases_eligible_da_enabled = "true"
 
-datamigration_migrationstatus_da_email_to = "StokeCTSC4.Auto@justice.gov.uk"
+dataextraction_status_da_email_to = "StokeCTSC4.Auto@justice.gov.uk"

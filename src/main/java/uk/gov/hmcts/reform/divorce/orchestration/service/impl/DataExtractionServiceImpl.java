@@ -2,22 +2,22 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataMigrationRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DataMigrationService;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.datamigration.FamilyManDataMigrationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DataExtractionService;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow;
 
 import java.time.LocalDate;
 
 @Service
-public class DataMigrationServiceImpl implements DataMigrationService {
+public class DataExtractionServiceImpl implements DataExtractionService {
 
     @Autowired
-    private FamilyManDataMigrationWorkflow workflow;
+    private FamilyManDataExtractionWorkflow workflow;
 
     @Override
-    public void migrateCasesToFamilyMan(DataMigrationRequest.Status status, LocalDate date, String authToken)
+    public void extractCasesToFamilyMan(DataExtractionRequest.Status status, LocalDate date, String authToken)
         throws CaseOrchestrationServiceException {
 
         try {

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.datamigration;
+package uk.gov.hmcts.reform.divorce.dataextraction;
 
 import io.restassured.response.Response;
 import org.apache.http.entity.ContentType;
@@ -18,13 +18,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * This is going to be used to assert that the listener side of the data migration job is called and runs successfully.
+ * This is going to be used to assert that the listener side of the data extraction job is called and runs successfully.
  * Ideally, we'd be testing that the e-mail was sent as expected, but as of now, we have no way of asserting that.
  */
-public class FamilyManDataMigrationIT extends RetrieveCaseSupport {
+public class FamilyManDataExtractionIT extends RetrieveCaseSupport {
 
-    @Value("${case.orchestration.jobScheduler.migrate-data-to-family-man.context-path}")
-    private String testDataMigrationEndPoint;
+    @Value("${case.orchestration.jobScheduler.extract-data-to-family-man.context-path}")
+    private String testDataExtractionEndPoint;
 
     @Test
     public void shouldEmailCsvFileWithCase_ForDecreeAbsoluteIssued() {
@@ -41,7 +41,7 @@ public class FamilyManDataMigrationIT extends RetrieveCaseSupport {
         headers.put(HttpHeaders.AUTHORIZATION, userToken);
 
         return RestUtil.postToRestService(
-            serverUrl + testDataMigrationEndPoint,
+            serverUrl + testDataExtractionEndPoint,
             headers,
             null,
             emptyMap()

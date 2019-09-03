@@ -7,9 +7,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataMigrationRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DataMigrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DataExtractionService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.time.LocalDate;
@@ -21,10 +21,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataMigrationRequest.Status.DA;
+import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DA;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DataMigrationRequestListenerTest {
+public class DataExtractionRequestListenerTest {
 
     private static final String TEST_AUTH_TOKEN = "testAuthToken";
 
@@ -32,32 +32,32 @@ public class DataMigrationRequestListenerTest {
     public ExpectedException expectedException = none();
 
     @Mock
-    private DataMigrationService mockService;
+    private DataExtractionService mockService;
 
     @Mock
     private AuthUtil authUtil;
 
     @InjectMocks
-    private DataMigrationRequestListener classUnderTest;
+    private DataExtractionRequestListener classUnderTest;
 
     @Test
     public void shouldCallServiceInterface_ForDAStatus() throws CaseOrchestrationServiceException {
         when(authUtil.getCaseworkerToken()).thenReturn(TEST_AUTH_TOKEN);
 
-        classUnderTest.onApplicationEvent(new DataMigrationRequest(this, DA, LocalDate.now()));
+        classUnderTest.onApplicationEvent(new DataExtractionRequest(this, DA, LocalDate.now()));
 
-        verify(mockService).migrateCasesToFamilyMan(eq(DA), eq(LocalDate.now()), eq(TEST_AUTH_TOKEN));
+        verify(mockService).extractCasesToFamilyMan(eq(DA), eq(LocalDate.now()), eq(TEST_AUTH_TOKEN));
     }
 
     @Test
     public void shouldRethrowExceptionIfServiceThrowsException() throws CaseOrchestrationServiceException {
-        doThrow(CaseOrchestrationServiceException.class).when(mockService).migrateCasesToFamilyMan(any(), any(), any());
+        doThrow(CaseOrchestrationServiceException.class).when(mockService).extractCasesToFamilyMan(any(), any(), any());
 
         expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Error migrating data to Family man");
+        expectedException.expectMessage("Error extracting data to Family man");
         expectedException.expectCause(instanceOf(CaseOrchestrationServiceException.class));
 
-        classUnderTest.onApplicationEvent(new DataMigrationRequest(this, DA, LocalDate.now()));
+        classUnderTest.onApplicationEvent(new DataExtractionRequest(this, DA, LocalDate.now()));
     }
 
 }

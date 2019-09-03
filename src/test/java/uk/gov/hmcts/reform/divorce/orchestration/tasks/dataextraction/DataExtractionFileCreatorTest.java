@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks.datamigration;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Before;
@@ -33,13 +33,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_REQUESTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.SearchSourceFactory.buildCMSBooleanSearchSource;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.datamigration.FamilyManDataMigrationWorkflow.FILE_TO_PUBLISH;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DataMigrationFileCreatorTest {
+public class DataExtractionFileCreatorTest {
 
     private static final String TEST_AUTHORISATION_TOKEN = "testToken";
-    private static final String DATE_TO_MIGRATE_KEY = "dateToMigrate";
+    private static final String DATE_TO_EXTRACT_KEY = "dateToExtract";
 
     private final String testLastModifiedDate = "2019-04-12";
 
@@ -51,11 +51,11 @@ public class DataMigrationFileCreatorTest {
 
     private final DecreeAbsoluteDataExtractor caseDetailsMapper = new DecreeAbsoluteDataExtractor();
 
-    private DataMigrationFileCreator classUnderTest;
+    private DataExtractionFileCreator classUnderTest;
 
     @Before
     public void setUp() {
-        classUnderTest = new DataMigrationFileCreator(caseMaintenanceClient, caseDetailsMapper);
+        classUnderTest = new DataExtractionFileCreator(caseMaintenanceClient, caseDetailsMapper);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class DataMigrationFileCreatorTest {
 
         DefaultTaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, TEST_AUTHORISATION_TOKEN);
-        taskContext.setTransientObject(DATE_TO_MIGRATE_KEY, LocalDate.parse(testLastModifiedDate));
+        taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, LocalDate.parse(testLastModifiedDate));
         classUnderTest.execute(taskContext, null);
 
         File createdFile = taskContext.getTransientObject(FILE_TO_PUBLISH);
@@ -109,7 +109,7 @@ public class DataMigrationFileCreatorTest {
 
         DefaultTaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, TEST_AUTHORISATION_TOKEN);
-        taskContext.setTransientObject(DATE_TO_MIGRATE_KEY, LocalDate.parse(testLastModifiedDate));
+        taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, LocalDate.parse(testLastModifiedDate));
         classUnderTest.execute(taskContext, null);
 
         File createdFile = taskContext.getTransientObject(FILE_TO_PUBLISH);
@@ -137,7 +137,7 @@ public class DataMigrationFileCreatorTest {
 
         DefaultTaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, TEST_AUTHORISATION_TOKEN);
-        taskContext.setTransientObject(DATE_TO_MIGRATE_KEY, LocalDate.parse(testLastModifiedDate));
+        taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, LocalDate.parse(testLastModifiedDate));
         classUnderTest.execute(taskContext, null);
     }
 

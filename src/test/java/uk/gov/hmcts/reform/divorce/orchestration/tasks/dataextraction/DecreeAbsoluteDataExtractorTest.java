@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks.datamigration;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import org.junit.Before;
 import org.junit.Rule;

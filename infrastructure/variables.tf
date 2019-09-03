@@ -130,7 +130,7 @@ variable "spring_mail_properties_mail_smtp_ssl_trust" {
   default = "mta.reform.hmcts.net"
 }
 
-variable "datamigration_migrationstatus_da_email_to" {
+variable "dataextraction_status_da_email_to" {
   type = "string"
-  default = "da_data_migration@mailinator.com"
+  default = "da_data_extraction@mailinator.com"
 }

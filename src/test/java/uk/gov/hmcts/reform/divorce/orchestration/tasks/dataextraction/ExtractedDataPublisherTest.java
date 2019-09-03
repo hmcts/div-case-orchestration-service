@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks.datamigration;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -8,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.datamigration.DataMigrationEmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
@@ -25,20 +24,20 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.datamigration.FamilyManDataMigrationWorkflow.DATE_TO_MIGRATE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.datamigration.FamilyManDataMigrationWorkflow.FILE_TO_PUBLISH;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.DATE_TO_EXTRACT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MigrationDataPublisherTest {
+public class ExtractedDataPublisherTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Mock
-    private DataMigrationEmailClient emailClient;
+    private DataExtractionEmailClient emailClient;
 
     @InjectMocks
-    private MigrationDataPublisher classUnderTest;
+    private ExtractedDataPublisher classUnderTest;
 
     private DefaultTaskContext taskContext;
 
@@ -46,7 +45,7 @@ public class MigrationDataPublisherTest {
     public void setUp() {
         taskContext = new DefaultTaskContext();
         LocalDate testDateToProcess = LocalDate.of(2019, Month.JULY, 15);
-        taskContext.setTransientObject(DATE_TO_MIGRATE_KEY, testDateToProcess);
+        taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, testDateToProcess);
     }
 
     @Test

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.datamigration;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction.DataExtractionEmailClient;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -20,12 +21,12 @@ import javax.mail.MessagingException;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DataMigrationEmailClientTest {
+public class DataExtractionEmailClientTest {
 
     private File file;
 
     @Autowired
-    private DataMigrationEmailClient dataMigrationEmailClient;
+    private DataExtractionEmailClient dataExtractionEmailClient;
 
     @Before
     public void setUp() throws Exception {
@@ -38,7 +39,7 @@ public class DataMigrationEmailClientTest {
     @Test
     @Ignore
     public void sendEmailWithAttachment() throws MessagingException {
-        dataMigrationEmailClient.sendEmailWithAttachment("myFileName.csv", file);
+        dataExtractionEmailClient.sendEmailWithAttachment("myFileName.csv", file);
         //Now go to MailHog and check that your e-mail has been sent as expected
     }
 

@@ -329,11 +329,11 @@ documentation:
   swagger:
     enabled: true
 
-dataMigration:
+dataExtraction:
   emailFrom: noreply@reform.hmcts.net
-  migrationStatus:
+  status:
     DA:
-      emailTo: da-migration@divorce.gov.uk
+      emailTo: da-extraction@divorce.gov.uk
 
 bulk-action:
   page-size: 50

@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataMigrationRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DataMigrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DataExtractionService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import static java.lang.String.format;
@@ -15,20 +15,20 @@ import static java.lang.String.format;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class DataMigrationRequestListener implements ApplicationListener<DataMigrationRequest> {
+public class DataExtractionRequestListener implements ApplicationListener<DataExtractionRequest> {
 
     @Autowired
-    private final DataMigrationService dataMigrationService;
+    private final DataExtractionService dataExtractionService;
 
     @Autowired
     private final AuthUtil authUtil;
 
     @Override
-    public void onApplicationEvent(DataMigrationRequest event) {
+    public void onApplicationEvent(DataExtractionRequest event) {
         try {
-            dataMigrationService.migrateCasesToFamilyMan(event.getStatus(), event.getDate(), authUtil.getCaseworkerToken());
+            dataExtractionService.extractCasesToFamilyMan(event.getStatus(), event.getDate(), authUtil.getCaseworkerToken());
         } catch (CaseOrchestrationServiceException exception) {
-            String errorMessage = format("Error migrating data to Family man for %s", event.getDate().toString());
+            String errorMessage = format("Error extracting data to Family man for %s", event.getDate().toString());
             log.error(errorMessage, exception);
             throw new RuntimeException(errorMessage, exception);
         }

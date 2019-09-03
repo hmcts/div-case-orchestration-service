@@ -96,7 +96,7 @@ module "div-cos" {
     SPRING_MAIL_PORT                               = "${var.spring_mail_port}"
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST     = "${var.spring_mail_properties_mail_smtp_ssl_trust}"
 
-    DATAMIGRATION_MIGRATIONSTATUS_DA_EMAILTO       = "${var.datamigration_migrationstatus_da_email_to}"
+    DATAEXTRACTION_STATUS_DA_EMAILTO       = "${var.dataextraction_status_da_email_to}"
   }
 }
 
