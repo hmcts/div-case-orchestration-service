@@ -228,10 +228,10 @@ public class CMSHelperTest {
     private List<CaseDetails> buildCases(int startId, int caseCount) {
         final List<CaseDetails> cases = new ArrayList<>();
 
-        for (int i = 0; i < caseCount; i++) {
-            cases.add(buildCase(startId + 1));
-            startId++;
+        for (int i = 1; i <= caseCount; i++) {
+            cases.add(buildCase(startId + i));
         }
+
         return cases;
     }
 

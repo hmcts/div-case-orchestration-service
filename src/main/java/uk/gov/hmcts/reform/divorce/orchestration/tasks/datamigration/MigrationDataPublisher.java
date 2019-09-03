@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.datamigration.
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.datamigration.FamilyManDataMigrationWorkflow.FILE_TO_PUBLISH;
 
 @Component
-public class MigrationDataPublisher implements Task {
+public class MigrationDataPublisher implements Task<Void> {
 
     private static final DateTimeFormatter DATA_MIGRATION_DATE_FORMAT_FOR_FILE_NAME = DateTimeFormatter.ofPattern("ddMMyyyy000000");
 
@@ -24,7 +24,7 @@ public class MigrationDataPublisher implements Task {
     private DataMigrationEmailClient emailClient;
 
     @Override
-    public Object execute(TaskContext context, Object payload) throws TaskException {
+    public Void execute(TaskContext context, Void payload) throws TaskException {
 
         LocalDate dateToMigrate = context.getTransientObject(DATE_TO_MIGRATE_KEY);
         String attachmentFileName = String.format("DA_%s.csv", dateToMigrate.format(DATA_MIGRATION_DATE_FORMAT_FOR_FILE_NAME));
@@ -35,7 +35,7 @@ public class MigrationDataPublisher implements Task {
             throw new TaskException("Error sending e-mail with data migration file.", e);
         }
 
-        return null;
+        return payload;
     }
 
 }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.event.listener;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -13,13 +14,14 @@ import static java.lang.String.format;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class DataMigrationRequestListener implements ApplicationListener<DataMigrationRequest> {
 
     @Autowired
-    private DataMigrationService dataMigrationService;
+    private final DataMigrationService dataMigrationService;
 
     @Autowired
-    private AuthUtil authUtil;
+    private final AuthUtil authUtil;
 
     @Override
     public void onApplicationEvent(DataMigrationRequest event) {

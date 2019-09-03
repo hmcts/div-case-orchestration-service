@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.datamigration.
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.datamigration.FamilyManDataMigrationWorkflow.FILE_TO_PUBLISH;
 
 @Component
-public class DataMigrationFileCreator implements Task {
+public class DataMigrationFileCreator implements Task<Void> {
 
     private final CMSHelper cmsHelper;
 
@@ -33,7 +33,7 @@ public class DataMigrationFileCreator implements Task {
     }
 
     @Override
-    public Object execute(TaskContext context, Object payload) throws TaskException {
+    public Void execute(TaskContext context, Void payload) throws TaskException {
         LocalDate lastModifiedDate = context.getTransientObject(DATE_TO_MIGRATE_KEY);
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
 
@@ -50,7 +50,7 @@ public class DataMigrationFileCreator implements Task {
         File csvFile = createFile(csvFileContent.toString());
         context.setTransientObject(FILE_TO_PUBLISH, csvFile);
 
-        return null;
+        return payload;
     }
 
     private File createFile(String csvFileContent) throws TaskException {

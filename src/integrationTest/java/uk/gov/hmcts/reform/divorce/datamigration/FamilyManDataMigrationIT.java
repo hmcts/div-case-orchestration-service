@@ -38,10 +38,7 @@ public class FamilyManDataMigrationIT extends RetrieveCaseSupport {
     private Response callTestEndpoint(String userToken) {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
-
-        if (userToken != null) {
-            headers.put(HttpHeaders.AUTHORIZATION, userToken);
-        }
+        headers.put(HttpHeaders.AUTHORIZATION, userToken);
 
         return RestUtil.postToRestService(
             serverUrl + testDataMigrationEndPoint,

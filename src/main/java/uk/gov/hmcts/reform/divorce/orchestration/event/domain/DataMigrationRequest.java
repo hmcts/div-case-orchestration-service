@@ -9,8 +9,8 @@ import java.time.LocalDate;
  */
 public class DataMigrationRequest extends ApplicationEvent {
 
-    private Status status;
-    private LocalDate date;
+    private final Status status;
+    private final LocalDate date;
 
     public DataMigrationRequest(Object source, Status status, LocalDate date) {
         super(source);

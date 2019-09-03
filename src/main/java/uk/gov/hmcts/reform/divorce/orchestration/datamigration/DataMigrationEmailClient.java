@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.datamigration;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -12,19 +13,20 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Component
+@RequiredArgsConstructor
 public class DataMigrationEmailClient {
 
     private static final String SUBJECT = "Divorce data migration";
     private static final String EMAIL_TEXT = "Data migration file";
 
     @Value("${dataMigration.emailFrom}")
-    private String emailFrom;
+    private final String emailFrom;
 
     @Value("${dataMigration.migrationStatus.DA.emailTo}")
-    private String destinationEmailAddress;
+    private final String destinationEmailAddress;
 
     @Autowired
-    private JavaMailSenderImpl mailSender;
+    private final JavaMailSenderImpl mailSender;
 
     public void sendEmailWithAttachment(String attachmentFileName, File attachment) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.controller.internal;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,10 +18,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataMigrati
  * This class provides endpoint so trigger the data migration process on demand (meant to be used for tests).
  */
 @RestController
+@RequiredArgsConstructor
 public class DataMigrationInternalController {
 
     @Autowired
-    private DataMigrationRequestListener listener;
+    private final DataMigrationRequestListener listener;
 
     @PostMapping(path = "/cases/data-migration/family-man")
     @ApiOperation(value = "Starts data migration for family man for the present day. This is meant to only be used as a testing tool.")
