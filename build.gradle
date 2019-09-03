@@ -220,7 +220,7 @@ def versions = [
         hmctsNotify                     : '3.14.1-RELEASE',
         feignHttpClient                 : '10.2.0',
         reformSpringBootAutoConfigure   : '1.1.0',
-        wiremockVersion                 : '2.22.0',
+        springCloudDependencies         : '2.1.2.RELEASE',
         restAssured                     : '3.0.3',
         serenity                        : '2.0.41',
         serenityCucumber                : '1.9.31',
@@ -351,7 +351,7 @@ dependencies {
         exclude(module: 'commons-logging')
         exclude(module: 'android-json')
     }
-    testCompile group: 'com.github.tomakehurst', name:'wiremock', version: versions.wiremockVersion
+    testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: versions.springCloudDependencies
 
     testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     testCompile 'org.awaitility:awaitility:3.1.6'
@@ -400,22 +400,6 @@ dependencies {
 
 dependencies {
     integrationTestCompile(sourceSets.test.output)
-}
-
-test {
-    exclude '**/functionaltest/**/*'
-}
-
-task wiremockFunctional(type: Test, description: 'Executes wiremock functional tests', group: 'Verification') {
-    onlyIf { project.file("./build/reports/tests/test/index.html").exists() }
-
-    printf ("Available processors:::::::::: " + Runtime.runtime.availableProcessors().intdiv(2).toString())
-
-    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-    forkEvery = 10
-
-    test.outputs.upToDateWhen {false}
-    include '**/functionaltest/**/*'
 }
 
 task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
@@ -516,8 +500,8 @@ run {
 
 flyway {
     url = System.getenv('FLYWAY_URL')
-    user = System.getenv('FLYWAY_USER')
-    password = System.getenv('FLYWAY_PASSWORD')
+    user = System.getenv('DIV_SCHEDULER_DB_USER_NAME')
+    password = System.getenv('DIV_SCHEDULER_DB_PASSWORD')
     baselineOnMigrate = true
     baselineVersion = '000'
 }
