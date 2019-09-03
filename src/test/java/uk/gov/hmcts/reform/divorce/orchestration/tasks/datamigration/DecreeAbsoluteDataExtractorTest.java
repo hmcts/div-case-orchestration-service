@@ -35,18 +35,6 @@ public class DecreeAbsoluteDataExtractorTest {
     }
 
     @Test
-    public void shouldThrowTaskExceptionWhenMandatoryField_DecreeAbsoluteApplicationDate_IsNotFound() throws TaskException {
-        expectedException.expect(TaskException.class);
-
-        HashMap<String, Object> caseData = new HashMap<>();
-        caseData.put("D8caseReference", "TEST2");
-        caseData.put("DecreeNisiGrantedDate", "2017-08-26");
-        caseData.put("WhoAppliedForDA", "respondent");
-
-        classUnderTest.mapCaseData(CaseDetails.builder().caseData(caseData).build());
-    }
-
-    @Test
     public void shouldThrowTaskExceptionWhenMandatoryField_DecreeNisiGrantedDate_IsNotFound() throws TaskException {
         expectedException.expect(TaskException.class);
 

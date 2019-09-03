@@ -12,13 +12,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.datamigration.DataMigrati
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.datamigration.MigrationDataPublisher;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
 @Component
-public class FamilyManDataMigrationWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class FamilyManDataMigrationWorkflow extends DefaultWorkflow<Void> {
 
     public static final String FILE_TO_PUBLISH = "fileToPublish";
     public static final String DATE_TO_MIGRATE_KEY = "dateToMigrate";
@@ -36,7 +34,7 @@ public class FamilyManDataMigrationWorkflow extends DefaultWorkflow<Map<String, 
                 publisherTask
             },
             new DefaultTaskContext(),
-            new HashMap<>(),
+            null,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(DATE_TO_MIGRATE_KEY, dateToMigrate)
         );

@@ -93,6 +93,33 @@ public class DataMigrationFileCreatorTest {
     }
 
     @Test
+    public void shouldUseDecreeNisiGrantedDate_WhenDecreeAbsoluteApplicationDate_IsNotProvided() throws TaskException, IOException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put("D8caseReference", "TEST1");
+        caseData.put("DecreeNisiGrantedDate", "2017-08-17");
+
+        SearchResult searchResult = SearchResult.builder().cases(newArrayList(
+            CaseDetails.builder().caseData(caseData).build()
+        )).build();
+        when(caseMaintenanceClient.searchCases(eq(TEST_AUTHORISATION_TOKEN), eq(
+            buildCMSBooleanSearchSource(0, 50,
+                QueryBuilders.termQuery("last_modified", testLastModifiedDate),
+                QueryBuilders.termsQuery("state", DA_REQUESTED.toLowerCase(), DIVORCE_GRANTED.toLowerCase()))
+        ))).thenReturn(searchResult);
+
+        DefaultTaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, TEST_AUTHORISATION_TOKEN);
+        taskContext.setTransientObject(DATE_TO_MIGRATE_KEY, LocalDate.parse(testLastModifiedDate));
+        classUnderTest.execute(taskContext, null);
+
+        File createdFile = taskContext.getTransientObject(FILE_TO_PUBLISH);
+        assertThat(createdFile, is(notNullValue()));
+        List<String> fileLines = Files.readAllLines(createdFile.toPath());
+        assertThat(fileLines.get(0), is("CaseReferenceNumber,DAApplicationDate,DNPronouncementDate,PartyApplyingForDA"));
+        assertThat(fileLines.get(1), is("TEST1,17/08/2017,17/08/2017,petitioner"));
+    }
+
+    @Test
     public void shouldThrowTaskExceptionWhenMandatoryFieldIsNotFound() throws TaskException {
         expectedException.expect(TaskException.class);
 

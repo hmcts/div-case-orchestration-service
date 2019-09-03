@@ -29,11 +29,11 @@ public class DecreeAbsoluteDataExtractor implements CaseDetailsMapper {
         csvLine.append(getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE));
         csvLine.append(COMMA);
 
-        String decreeAbsoluteApplicationDate = getMandatoryPropertyValueAsString(caseData, DECREE_ABSOLUTE_REQUESTED_DATE_CCD_FIELD);
+        String decreeNisiGrantedDate = getMandatoryPropertyValueAsString(caseData, DECREE_NISI_GRANTED_DATE_CCD_FIELD);
+        String decreeAbsoluteApplicationDate = (String) caseData.getOrDefault(DECREE_ABSOLUTE_REQUESTED_DATE_CCD_FIELD, decreeNisiGrantedDate);
         csvLine.append(formatFromCCDFormatToHumanReadableFormat(decreeAbsoluteApplicationDate));
         csvLine.append(COMMA);
 
-        String decreeNisiGrantedDate = getMandatoryPropertyValueAsString(caseData, DECREE_NISI_GRANTED_DATE_CCD_FIELD);
         csvLine.append(formatFromCCDFormatToHumanReadableFormat(decreeNisiGrantedDate));
         csvLine.append(COMMA);
 
