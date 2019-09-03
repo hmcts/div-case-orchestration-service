@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAosPackPrinter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSolicitorAosInvitationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
+    private final ServiceMethodValidationTask serviceMethodValidationTask;
+
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
 
     private final RespondentAosPackPrinter respondentAosPackPrinter;
@@ -48,13 +51,15 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
     private final boolean featureToggleRespSolicitor;
 
     @Autowired
-    public CcdCallbackBulkPrintWorkflow(final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore,
+    public CcdCallbackBulkPrintWorkflow(final ServiceMethodValidationTask serviceMethodValidationTask,
+                                        final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore,
                                         final RespondentAosPackPrinter respondentAosPackPrinter,
                                         final CoRespondentAosPackPrinter coRespondentAosPackPrinter,
                                         final RespondentPinGenerator respondentPinGenerator,
                                         final SendRespondentSolicitorAosInvitationEmail respondentSolicitorAosEmailSender,
                                         final ModifyDueDate modifyDueDate,
                                         @Value("${feature-toggle.toggle.feature_resp_solicitor_details}") String featureToggleRespSolicitor) {
+        this.serviceMethodValidationTask = serviceMethodValidationTask;
         this.fetchPrintDocsFromDmStore = fetchPrintDocsFromDmStore;
         this.respondentAosPackPrinter = respondentAosPackPrinter;
         this.coRespondentAosPackPrinter = coRespondentAosPackPrinter;
@@ -69,6 +74,7 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
 
         final List<Task> tasks = new ArrayList<>();
 
+        tasks.add(serviceMethodValidationTask);
         tasks.add(fetchPrintDocsFromDmStore);
         tasks.addAll(getRespondentAosCommunicationTasks(caseDetails.getCaseData()));
         tasks.add(coRespondentAosPackPrinter);

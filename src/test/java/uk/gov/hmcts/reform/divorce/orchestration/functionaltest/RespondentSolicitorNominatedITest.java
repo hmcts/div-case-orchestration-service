@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
@@ -35,7 +33,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_C
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
-@RunWith(SpringRunner.class)
 public class RespondentSolicitorNominatedITest extends IdamTestSupport {
 
     private static final String API_URL = "/aos-solicitor-nominated";

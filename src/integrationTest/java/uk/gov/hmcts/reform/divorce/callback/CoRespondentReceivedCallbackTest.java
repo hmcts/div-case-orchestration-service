@@ -42,7 +42,5 @@ public class CoRespondentReceivedCallbackTest extends IntegrationTest {
         assertNull(response.get(ERRORS));
         assertEquals(YES_VALUE,  ((Map<String, Object>) response.get(DATA)).get(CO_RESPONDENT_ANSWER_RECEIVED));
         assertEquals(LocalDate.now().format(CCD_DATE_FORMATTER),  ((Map<String, Object>) response.get(DATA)).get(CO_RESPONDENT_ANSWER_RECEIVED_DATE));
-
     }
-
 }

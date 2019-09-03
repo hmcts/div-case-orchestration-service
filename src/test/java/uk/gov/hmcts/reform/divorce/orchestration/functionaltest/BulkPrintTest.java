@@ -6,13 +6,11 @@ import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
@@ -41,7 +39,12 @@ import java.util.UUID;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.emptyMap;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -56,6 +59,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.PERSONAL_SERVICE_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.SOL_SERVICE_METHOD_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
@@ -67,7 +72,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-@RunWith(SpringRunner.class)
 public class BulkPrintTest extends IdamTestSupport {
 
     private static final String API_URL = "/bulk-print";
@@ -162,7 +166,7 @@ public class BulkPrintTest extends IdamTestSupport {
     public void givenCaseDataWithRespondentSolicitor_whenCalledBulkPrint_thenEmailIsSent() throws Exception {
         stubFeatureToggleService(true);
         stubSendLetterService(HttpStatus.OK);
-        
+
         ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", true);
 
         final String petitionerFirstName = "petitioner first name";
@@ -240,15 +244,21 @@ public class BulkPrintTest extends IdamTestSupport {
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isInternalServerError())
-            .andExpect(content().string("Failed to send e-mail"));
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                    isJson(),
+                    hasJsonPath("$.data", is(Collections.emptyMap())),
+                    hasJsonPath("$.errors",
+                            hasItem("Failed to bulk print documents - Failed to send e-mail")
+                    )
+            )));
     }
 
     @Test
     public void givenValidCaseDataWithSendLetterApiDown_whenCalledBulkPrint_thenExpectErrorInCCDResponse() throws Exception {
         stubFeatureToggleService(true);
         stubSendLetterService(HttpStatus.INTERNAL_SERVER_ERROR);
-        
+
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .data(emptyMap())
             .errors(Collections.singletonList("Failed to bulk print documents"))
@@ -305,6 +315,37 @@ public class BulkPrintTest extends IdamTestSupport {
 
         sendLetterService.verify(0, postRequestedFor(urlEqualTo("/letters")));
 
+    }
+
+    @Test
+    public void givenServiceMethodIsPersonalService_thenResponseContainsErrors() throws Exception {
+
+        final Map<String, Object> caseData = Collections.singletonMap(
+                SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
+        );
+
+        final CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .build();
+
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+                .caseDetails(caseDetails)
+                .build();
+
+        webClient.perform(post(API_URL)
+                .content(convertObjectToJsonString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(AUTHORIZATION, AUTH_TOKEN))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        isJson(),
+                        hasJsonPath("$.data", is(Collections.emptyMap())),
+                        hasJsonPath("$.errors",
+                                hasItem("Failed to bulk print documents - This event cannot be used when the service"
+                                        + " method is Personal Service. Please use the Personal Service event instead")
+                        )
+                )));
     }
 
     private CollectionMember<Document> newDocument(String url, String name, String type) {

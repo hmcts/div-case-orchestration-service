@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -42,6 +46,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 
@@ -140,7 +147,7 @@ public class CallbackControllerTest {
             .build();
         final Map<String, Object> invalidResponse = Collections.singletonMap(
             OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY,
-            Collections.singletonList(OrchestrationConstants.ERROR_STATUS)
+            singletonList(OrchestrationConstants.ERROR_STATUS)
         );
 
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
@@ -151,7 +158,7 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-            .errors(Collections.singletonList(OrchestrationConstants.ERROR_STATUS))
+            .errors(singletonList(OrchestrationConstants.ERROR_STATUS))
             .build();
 
         assertEquals(OK, response.getStatusCode());
@@ -231,7 +238,7 @@ public class CallbackControllerTest {
 
     @Test
     public void givenErrors_whenPetitionIssued_thenReturnErrorResponse() throws WorkflowException {
-        final List<String> expectedError = Collections.singletonList("Some error");
+        final List<String> expectedError = singletonList("Some error");
         final Map<String, Object> caseData =
             Collections.singletonMap(
                 OrchestrationConstants.VALIDATION_ERROR_KEY,
@@ -257,6 +264,69 @@ public class CallbackControllerTest {
 
         assertEquals(OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
+    }
+
+    @Test
+    public void givenNoErrors_whenConfirmServiceCalled_thenCallbackWorksAsExpected() throws WorkflowException {
+        final Map<String, Object> caseData = new HashMap<>();
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+
+        CcdCallbackResponse expected =
+            CcdCallbackResponse.builder().errors(Collections.emptyList()).warnings(Collections.emptyList())
+                .data(Collections.emptyMap()).build();
+
+        when(caseOrchestrationService.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(Collections.emptyMap());
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.confirmPersonalService(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertEquals(OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test
+    public void givenErrors_whenConfirmServiceCalled_thenReturnErrorResponse() throws WorkflowException {
+        final Map<String, Object> caseData =
+            Collections.singletonMap(OrchestrationConstants.BULK_PRINT_ERROR_KEY, "Some error");
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .data(ImmutableMap.of())
+            .warnings(ImmutableList.of())
+            .errors(singletonList("Failed to bulk print documents"))
+            .build();
+
+        when(caseOrchestrationService.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(caseData);
+
+        ResponseEntity<CcdCallbackResponse> actual = classUnderTest.confirmPersonalService(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertEquals(OK, actual.getStatusCode());
+        assertEquals(expected, actual.getBody());
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldReturnOkResponse_WithErrors_whenConfirmServiceCalled_thenExceptionIsCaught() throws WorkflowException {
+        final Map<String, Object> incomingPayload = new HashMap<>();
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(incomingPayload)
+                .build())
+            .build();
+        String errorString = "Unable to bulk print the documents";
+        when(caseOrchestrationService.ccdCallbackConfirmPersonalService(incomingRequest, AUTH_TOKEN))
+            .thenThrow(new WorkflowException(errorString));
+
+        classUnderTest.confirmPersonalService(AUTH_TOKEN, incomingRequest);
     }
 
     @Test
@@ -289,6 +359,20 @@ public class CallbackControllerTest {
 
         assertEquals(OK, actual.getStatusCode());
         assertEquals(expected, actual.getBody());
+    }
+
+    @Test
+    public void givenErrors_whenBulkPrintIssued_thenRespondWithOkAndReturnErrors() throws WorkflowException {
+        when(caseOrchestrationService.ccdCallbackBulkPrintHandler(any(), any()))
+                .thenThrow(new WorkflowException("Error message"));
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.bulkPrint(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), hasItem(equalTo("Failed to bulk print documents - Error message")));
+        assertThat(response.getBody().getData(), is(Collections.emptyMap()));
     }
 
     @Test
@@ -736,7 +820,7 @@ public class CallbackControllerTest {
 
     @Test
     public void givenErrors_whenCalculateSeparationFields_thenReturnErrorResponse() throws WorkflowException {
-        final List<String> expectedError = Collections.singletonList("Some error");
+        final List<String> expectedError = singletonList("Some error");
         final Map<String, Object> caseData =
             Collections.singletonMap(OrchestrationConstants.VALIDATION_ERROR_KEY, "Some error");
         final CaseDetails caseDetails = CaseDetails.builder()
@@ -925,4 +1009,46 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(nullValue()));
     }
 
+    @Test
+    public void testRemoveFromCallbackListed_ForCoRespondent_callsRightService() throws WorkflowException, JsonProcessingException {
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        Map<String, Object> expectedResponse = singletonMap("returnedKey", "returnedValue");
+        when(caseOrchestrationService.removeBulkListed(ccdCallbackRequest)).thenReturn(expectedResponse);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.removeBulkLinkFromCaseListed(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+    }
+
+    @Test
+    public void testRemoveCaseOnDigitalDecreeNisi_returnsPayload_whenExecuted() throws WorkflowException {
+        Map<String, Object> caseData = Collections.singletonMap(DN_OUTCOME_FLAG_CCD_FIELD, YES_VALUE);
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.removeDnOutcomeCaseFlag(ccdCallbackRequest)).thenReturn(Collections.emptyMap());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.removeDnOutcomeCaseFlag(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), is(Collections.emptyMap()));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
+
+    @Test
+    public void testRemoveLegalAdvisorMakeDecisionFields_returnsPayload_whenExecuted() throws WorkflowException {
+        Map<String, Object> caseData = Collections.singletonMap(DECREE_NISI_GRANTED_CCD_FIELD, YES_VALUE);
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.removeDnOutcomeCaseFlag(ccdCallbackRequest)).thenReturn(Collections.emptyMap());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.removeDnOutcomeCaseFlag(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), is(Collections.emptyMap()));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
 }

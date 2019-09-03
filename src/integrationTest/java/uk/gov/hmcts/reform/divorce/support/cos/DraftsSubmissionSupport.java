@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.support.cos;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,7 @@ public class DraftsSubmissionSupport {
     }
 
     public void saveDraft(UserDetails userDetails, String fileName) {
-        JsonNode draftResource = ResourceLoader.loadJsonToObject(fileName, JsonNode.class);
+        Map<String, Object> draftResource = ResourceLoader.loadJsonToObject(fileName, Map.class);
         cosApiClient.saveDraft(userDetails.getAuthToken(), draftResource, Boolean.TRUE.toString());
     }
 
@@ -31,7 +30,7 @@ public class DraftsSubmissionSupport {
 
 
     public Map<String, Object> submitCase(UserDetails userDetails, String fileName) {
-        JsonNode draftResource = ResourceLoader.loadJsonToObject(fileName, JsonNode.class);
+        Map<String, Object> draftResource = ResourceLoader.loadJsonToObject(fileName, Map.class);
         return cosApiClient.submitCase(userDetails.getAuthToken(), draftResource);
     }
 }

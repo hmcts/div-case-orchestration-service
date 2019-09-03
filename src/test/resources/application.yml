@@ -303,8 +303,6 @@ idam:
   caseworker:
     username: dummy
     password: dummy
-  strategic:
-    enabled: false
   s2s-auth:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
@@ -352,7 +350,7 @@ management:
     health:
       show-details: "ALWAYS"
       cache:
-        time-to-live: 4000
+        time-to-live: 0
   endpoints:
     web:
       base-path: /

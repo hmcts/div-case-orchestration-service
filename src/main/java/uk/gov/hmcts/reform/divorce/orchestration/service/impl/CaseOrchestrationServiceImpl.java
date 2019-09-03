@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -37,6 +38,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDnOutcomeCaseFlagWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLegalAdvisorMakeDecisionFieldsWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkFromListedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
@@ -150,6 +154,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RemoveLinkWorkflow removeLinkWorkflow;
     private final BulkCaseRemoveCasesWorkflow bulkCaseRemoveCasesWorkflow;
     private final PetitionerSolicitorRoleWorkflow petitionerSolicitorRoleWorkflow;
+    private final RemoveLinkFromListedWorkflow removeLinkFromListedWorkflow;
+    private final RemoveDnOutcomeCaseFlagWorkflow removeDnOutcomeCaseFlagWorkflow;
+    private final RemoveLegalAdvisorMakeDecisionFieldsWorkflow removeLegalAdvisorMakeDecisionFieldsWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -166,6 +173,20 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 ccdCallbackRequest.getCaseDetails().getCaseId());
             return issueEventWorkflow.errors();
         }
+    }
+
+    @Override
+    public Map<String, Object> ccdCallbackConfirmPersonalService(CcdCallbackRequest ccdCallbackRequest, String authToken)
+        throws WorkflowException {
+
+        Map<String, Object> payLoad = ccdCallbackRequest.getCaseDetails().getCaseData();
+        String sendViaEmailOrPost = (String)payLoad.get(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST);
+        if (StringUtils.equalsIgnoreCase(sendViaEmailOrPost, OrchestrationConstants.SEND_VIA_POST)) {
+            log.info("Confirm personal service callback for case with CASE ID: {} calling bulk print service",
+                ccdCallbackRequest.getCaseDetails().getCaseId());
+            payLoad = ccdCallbackBulkPrintHandler(ccdCallbackRequest, authToken);
+        }
+        return payLoad;
     }
 
     @Override
@@ -705,6 +726,21 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         return removeLinkWorkflow.run(caseDetails.getCaseData());
     }
 
+    @Override
+    public Map<String, Object> removeBulkListed(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        return removeLinkFromListedWorkflow.run(caseDetails.getCaseData());
+    }
+
+    @Override
+    public Map<String, Object> removeDnOutcomeCaseFlag(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return removeDnOutcomeCaseFlagWorkflow.run(ccdCallbackRequest);
+    }
+
+    @Override
+    public Map<String, Object> removeLegalAdvisorMakeDecisionFields(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return removeLegalAdvisorMakeDecisionFieldsWorkflow.run(ccdCallbackRequest);
+    }
 
     private boolean isPetitionerClaimingCosts(Map<String, Object> caseData) {
         return YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)))

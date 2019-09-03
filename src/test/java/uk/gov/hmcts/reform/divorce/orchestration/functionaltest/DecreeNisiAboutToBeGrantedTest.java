@@ -4,9 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.FeatureToggleServiceImpl;
@@ -43,7 +41,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask.DN_REFUSED_REJECT_OPTION;
 
-@RunWith(SpringRunner.class)
 public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/dn-about-to-be-granted";
