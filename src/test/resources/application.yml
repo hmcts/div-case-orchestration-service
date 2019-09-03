@@ -350,7 +350,7 @@ management:
     health:
       show-details: "ALWAYS"
       cache:
-        time-to-live: 4000
+        time-to-live: 0
   endpoints:
     web:
       base-path: /

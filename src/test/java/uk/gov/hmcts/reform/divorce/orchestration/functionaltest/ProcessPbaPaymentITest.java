@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -119,6 +120,7 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
         request.setFees(Collections.singletonList(paymentItem));
     }
 
+    @DirtiesContext
     @Test
     public void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
