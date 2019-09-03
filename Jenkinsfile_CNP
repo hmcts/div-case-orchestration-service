@@ -38,19 +38,19 @@ withPipeline(type, product, component) {
     enableDockerBuild()
     installCharts()
     loadVaultSecrets(secrets)
+    enableAksStagingDeployment()
 
     after('checkout') {
         echo 'divorce-case-orchestration-service checked out'
     }
 
     after('test') {
-        echo 'Starting WireMock Functional Tests'
-        try {
-            sh './gradlew wiremockFunctional'
-        } finally {
-            steps.junit '**/test-results/**/*.xml'
-            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-        }
+        steps.junit '**/test-results/**/*.xml'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+    }
+
+    before('functionalTest:aat') {
+        env.test_environment = 'aat'
     }
 
     after('functionalTest:aat') {

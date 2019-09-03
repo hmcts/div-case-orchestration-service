@@ -9,6 +9,7 @@ import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
@@ -22,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -215,7 +215,7 @@ public class SearchDNPronouncedCasesTest {
         try {
             actualResult = classUnderTest.execute(contextBeingModified, null);
         } catch (FeignException fException) {
-            assertThat(fException.status(), CoreMatchers.is(BAD_REQUEST_400));
+            assertThat(fException.status(), CoreMatchers.is(HttpStatus.BAD_REQUEST.value()));
             assertThat(fException.getMessage(), CoreMatchers.is("Bad test request"));
         }
 

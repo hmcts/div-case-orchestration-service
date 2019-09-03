@@ -17,14 +17,6 @@ java:
     MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE: "30000"
     FEATURE_DN_REFUSAL: "true"
 
-    DIV_SCHEDULER_DB_HOST : ${SERVICE_NAME}-postgresql
-    DIV_SCHEDULER_DB_PORT : "5432"
-    DIV_SCHEDULER_DB_NAME : div_scheduler
-    DIV_SCHEDULER_DB_USER_NAME : div_scheduler_user
-    DIV_SCHEDULER_DB_PASSWORD  : div_scheduler_passwd
-    FLYWAY_URL : "jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/div_scheduler"
-    FLYWAY_USER : div_scheduler_user
-    FLYWAY_PASSWORD : div_scheduler_passwd
     SCHEDULER_SCHEDULES_CREATE_BULK_CASES_ENABLED: false
     SCHEDULER_ENABLED: true
     FEATURE_RESP_SOLICITOR_DETAILS: "true"
@@ -34,11 +26,8 @@ java:
   ingressHost: ${SERVICE_FQDN}
 
 postgresql:
-  postgresqlUsername: div_scheduler_user
-  postgresqlPassword: div_scheduler_passwd
-  postgresqlDatabase: div_scheduler
+  enabled: true
   service:
     port: 5432
   persistence:
     enabled: false
-
