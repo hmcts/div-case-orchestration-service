@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +34,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_EMAIL;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final ServiceMethodValidationTask serviceMethodValidationTask;
-
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
     private final RespondentAosPackPrinter respondentAosPackPrinter;
     private final CoRespondentAosPackPrinter coRespondentAosPackPrinter;
@@ -47,30 +48,8 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
     private final RespondentLetterGenerator respondentLetterGenerator;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
+    @Value("${feature-toggle.toggle.feature_resp_solicitor_details}")
     private final boolean featureToggleRespSolicitor;
-
-    @Autowired
-    public CcdCallbackBulkPrintWorkflow(final ServiceMethodValidationTask serviceMethodValidationTask,
-                                        final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore,
-                                        final RespondentAosPackPrinter respondentAosPackPrinter,
-                                        final CoRespondentAosPackPrinter coRespondentAosPackPrinter,
-                                        final RespondentPinGenerator respondentPinGenerator,
-                                        final SendRespondentSolicitorAosInvitationEmail respondentSolicitorAosEmailSender,
-                                        final ModifyDueDate modifyDueDate,
-                                        final RespondentLetterGenerator respondentLetterGenerator,
-                                        final CaseFormatterAddDocuments caseFormatterAddDocuments,
-                                        @Value("${feature-toggle.toggle.feature_resp_solicitor_details}") String featureToggleRespSolicitor) {
-        this.serviceMethodValidationTask = serviceMethodValidationTask;
-        this.fetchPrintDocsFromDmStore = fetchPrintDocsFromDmStore;
-        this.respondentAosPackPrinter = respondentAosPackPrinter;
-        this.coRespondentAosPackPrinter = coRespondentAosPackPrinter;
-        this.respondentPinGenerator = respondentPinGenerator;
-        this.respondentSolicitorAosEmailSender = respondentSolicitorAosEmailSender;
-        this.modifyDueDate = modifyDueDate;
-        this.respondentLetterGenerator = respondentLetterGenerator;
-        this.caseFormatterAddDocuments = caseFormatterAddDocuments;
-        this.featureToggleRespSolicitor = Boolean.valueOf(featureToggleRespSolicitor);
-    }
 
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
