@@ -6,7 +6,11 @@
     "state": "state",
     "case_data": {
       "DecreeNisiGranted": "No",
-      "RefusalDecision": "moreInfo"
+      "RefusalDecision": "moreInfo",
+      "D8caseReference": "LV88D85000",
+      "D8PetitionerFirstName": "John",
+      "D8PetitionerLastName": "Smith",
+      "D8PetitionerEmail": "simulate-delivered@notifications.service.gov.uk"
     }
   }
 }
