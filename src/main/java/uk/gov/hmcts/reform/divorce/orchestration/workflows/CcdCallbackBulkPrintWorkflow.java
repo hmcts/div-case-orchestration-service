@@ -48,7 +48,7 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Value("${feature-toggle.toggle.feature_resp_solicitor_details}")
-    private final boolean featureToggleRespSolicitor;
+    private boolean featureToggleRespSolicitor;
 
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
