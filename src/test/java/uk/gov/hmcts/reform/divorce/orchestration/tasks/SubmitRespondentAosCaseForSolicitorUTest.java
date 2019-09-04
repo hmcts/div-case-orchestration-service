@@ -22,15 +22,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_2_YR_CONSENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
@@ -64,22 +69,74 @@ public class SubmitRespondentAosCaseForSolicitorUTest {
     }
 
     @Test
-    public void correctlyMapFieldsInCaseData_When_2yearSepAndRespAos2yrConsentIsYes() throws WorkflowException {
-        // When Fact = 2 year separation and RespAOS2yrConsent = Yes - set RespAdmitOrConsentToFact = "Yes" and RespWillDefendDivorce = "No"
+    public void givenSolicitorIsRepresenting_ValuesForReceivedAosFromResp_AreAddedToCaseData() {
 
+        final Map<String, Object> divorceSession = buildSolicitorResponse(false, false);
+
+        Map<String, Object> expectedData = new HashMap<>(divorceSession);
+        expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
+
+        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
+
+        verify(caseMaintenanceClient).updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID), eq(expectedData));
+    }
+
+    @Test
+    public void correctlyMapFieldsInCaseData_When_2yearSepAndRespAos2yrConsentIsYes() throws WorkflowException {
+        // When Fact = 2 year separation and RespAOS2yrConsent = Yes
+        // Set RespAdmitOrConsentToFact = "Yes" and RespWillDefendDivorce = "No"
+
+        Map<String, Object> divorceSession = new HashMap<>();
+        divorceSession.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        divorceSession.put(D_8_REASON_FOR_DIVORCE, SEPARATION_2YRS);
+        divorceSession.put(RESP_AOS_2_YR_CONSENT, YES_VALUE);
+
+        Map<String, Object> expectedData = new HashMap<>();
+        expectedData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
+        expectedData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_2YRS);
+        expectedData.put(RESP_AOS_2_YR_CONSENT, YES_VALUE);
+        expectedData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+        expectedData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+
+        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
+
+        verify(caseMaintenanceClient)
+                .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
     }
 
     @Test
     public void correctlyMapFieldsInCaseData_When_AdulteryAndRespAosAdulteryIsYes() throws WorkflowException {
-        // When Fact = adultery and RespAOSAdultery = Yes - set RespAdmitOrConsentToFact = "Yes" and RespWillDefendDivorce = "No"
+        // When Fact = adultery and RespAOSAdultery = Yes
+        // Set RespAdmitOrConsentToFact = "Yes" and RespWillDefendDivorce = "No"
 
+        Map<String, Object> divorceSession = new HashMap<>();
+        divorceSession.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        divorceSession.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        divorceSession.put(RESP_AOS_ADULTERY, YES_VALUE);
+
+        Map<String, Object> expectedData = new HashMap<>();
+        expectedData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
+        expectedData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        expectedData.put(RESP_AOS_ADULTERY, YES_VALUE);
+        expectedData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+        expectedData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+
+        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
+
+        verify(caseMaintenanceClient)
+                .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
     }
 
     @Test
     public void givenSolicitorIsRepresenting_ConsentAndDefended_then_eventTriggeredIs_SolAosSubmittedDefended() throws WorkflowException {
         final Map<String, Object> divorceSession = buildSolicitorResponse(true, true);
 
-        Map<String, Object> expectedData = new HashMap<>(divorceSession);
+        Map<String, Object> expectedData = divorceSession;
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
 
@@ -94,7 +151,7 @@ public class SubmitRespondentAosCaseForSolicitorUTest {
 
         final Map<String, Object> divorceSession = buildSolicitorResponse(true, false);
 
-        Map<String, Object> expectedData = new HashMap<>(divorceSession);
+        Map<String, Object> expectedData = divorceSession;
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
 
@@ -108,7 +165,7 @@ public class SubmitRespondentAosCaseForSolicitorUTest {
     public void givenSolicitorIsRepresenting_NoConsentAndDefended_then_eventTriggeredIs_SolAosReceivedNoAdConStarted() throws WorkflowException {
         final Map<String, Object> divorceSession = buildSolicitorResponse(false, true);
 
-        Map<String, Object> expectedData = new HashMap<>(divorceSession);
+        Map<String, Object> expectedData = divorceSession;
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
 
@@ -123,7 +180,7 @@ public class SubmitRespondentAosCaseForSolicitorUTest {
 
         final Map<String, Object> divorceSession = buildSolicitorResponse(false, false);
 
-        Map<String, Object> expectedData = new HashMap<>(divorceSession);
+        Map<String, Object> expectedData = divorceSession;
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
 
@@ -131,20 +188,6 @@ public class SubmitRespondentAosCaseForSolicitorUTest {
 
         verify(caseMaintenanceClient)
                 .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID), eq(expectedData));
-    }
-
-    @Test
-    public void givenSolicitorIsRepresenting_ValuesForReceivedAosFromResp_AreAddedToCaseData() {
-
-        final Map<String, Object> divorceSession = buildSolicitorResponse(false, false);
-
-        Map<String, Object> expectedData = new HashMap<>(divorceSession);
-        expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
-
-        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
-
-        verify(caseMaintenanceClient).updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID), eq(expectedData));
     }
 
     private Map<String, Object> buildSolicitorResponse(boolean consented, boolean defended) {
