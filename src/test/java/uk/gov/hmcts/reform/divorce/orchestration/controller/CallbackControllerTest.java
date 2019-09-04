@@ -879,6 +879,25 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void testClearStateCallRightServiceMethod() throws WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(singletonMap("testKey", "testValue"))
+                .build())
+            .build();
+
+        when(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(singletonMap("newKey", "newValue"));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.clearStateCallback(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), hasEntry("newKey", "newValue"));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+        verify(caseOrchestrationService).cleanStateCallback(eq(ccdCallbackRequest), eq(AUTH_TOKEN));
+    }
+
+    @Test
     public void testDnDecisionMadeCallsRightServiceMethodToNotifyAndClearState() throws WorkflowException {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()

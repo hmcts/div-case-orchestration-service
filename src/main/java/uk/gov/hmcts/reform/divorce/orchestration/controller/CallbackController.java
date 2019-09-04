@@ -724,6 +724,27 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    @Deprecated // Replaced by below dn-decision-made endpoint. This must remain in code until production ccd config is updated.
+    @PostMapping(path = "/clean-state")
+    @ApiOperation(value = "Clear state from case data")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed"),
+        @ApiResponse(code = 401, message = "Not authorised"),
+        @ApiResponse(code = 404, message = "Case not found")})
+    public ResponseEntity<CcdCallbackResponse> clearStateCallback(
+        @RequestHeader("Authorization")
+        @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        callbackResponseBuilder.data(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, authorizationToken));
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.debug("Cleared case state. Case ID: {}", caseId);
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
     @PostMapping(path = "/dn-decision-made")
     @ApiOperation(value = "Perform post Decree Nisi make decision event actions")
     @ApiResponses(value = {
