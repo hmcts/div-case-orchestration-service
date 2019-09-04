@@ -125,6 +125,14 @@ variable "spring_mail_port" {
   default = 25
 }
 
+variable "spring_mail_test_connection" {
+  default = false
+}
+
+variable "spring_mail_properties_mail_smtp_starttls_enable" {
+  default = true
+}
+
 variable "spring_mail_properties_mail_smtp_ssl_trust" {
   type = "string"
   default = "mta.reform.hmcts.net"
