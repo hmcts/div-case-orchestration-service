@@ -12,11 +12,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_DRAFT_KEY;
 
 @Component
-public class CaseDataDraftToDivorceFormatter implements Task<Map<String, Object>> {
+public class CaseDataDraftToDivorceFormatterTask implements Task<Map<String, Object>> {
     private final CaseFormatterClient caseFormatterClient;
 
     @Autowired
-    public CaseDataDraftToDivorceFormatter(CaseFormatterClient caseFormatterClient) {
+    public CaseDataDraftToDivorceFormatterTask(CaseFormatterClient caseFormatterClient) {
         this.caseFormatterClient = caseFormatterClient;
     }
 
