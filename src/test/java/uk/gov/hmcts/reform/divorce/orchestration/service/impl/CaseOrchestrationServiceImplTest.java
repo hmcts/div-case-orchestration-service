@@ -68,6 +68,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDataWhenSolicitorSubmitsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
@@ -182,6 +183,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
+
+    @Mock
+    private UpdateDataWhenSolicitorSubmitsWorkflow updateDataWhenSolicitorSubmitsWorkflow;
 
     @Mock
     private SolicitorCreateWorkflow solicitorCreateWorkflow;
@@ -746,12 +750,12 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenCaseData_whenSolicitorCreate_thenReturnPayload() throws Exception {
+    public void givenCaseData_whenUpdateDataWhenSolicitorSubmits_thenReturnPayload() throws Exception {
         // given
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
         when(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN))
-            .thenReturn(requestPayload);
+                .thenReturn(requestPayload);
 
         // when
         Map<String, Object> actual = classUnderTest.solicitorCreate(ccdCallbackRequest, AUTH_TOKEN);
@@ -760,6 +764,23 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(caseDetails.getCaseData(), actual);
 
         verify(solicitorCreateWorkflow).run(caseDetails, AUTH_TOKEN);
+    }
+
+    @Test
+    public void givenCaseData_whenSolicitorCreate_thenReturnPayload() throws Exception {
+        // given
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+
+        when(updateDataWhenSolicitorSubmitsWorkflow.run(caseDetails, AUTH_TOKEN))
+            .thenReturn(requestPayload);
+
+        // when
+        Map<String, Object> actual = classUnderTest.updateDataWhenSolicitorSubmits(ccdCallbackRequest, AUTH_TOKEN);
+
+        // then
+        assertEquals(caseDetails.getCaseData(), actual);
+
+        verify(updateDataWhenSolicitorSubmitsWorkflow).run(caseDetails, AUTH_TOKEN);
     }
 
     @Test
