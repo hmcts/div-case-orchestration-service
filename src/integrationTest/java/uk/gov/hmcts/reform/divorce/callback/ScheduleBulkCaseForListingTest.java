@@ -27,7 +27,7 @@ public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
     private static final String COURT_NAME_FIELD_KEY = "CourtName";
     private static final String BULK_LISTED_STATE = "Listed";
 
-    private static final int  MAX_WAITING_TIME_IN_SECONDS = 60;
+    private static final int  MAX_WAITING_TIME_IN_SECONDS = 90;
     private static final int  POOL_INTERVAL_IN_MILLIS = 1000;
 
     @Test
