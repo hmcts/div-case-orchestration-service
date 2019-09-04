@@ -16,9 +16,8 @@ public class NotifyForRefusalOrderWorkflow extends DefaultWorkflow<Map<String, O
     private NotifyForRefusalOrderTask notifyForRefusalOrderTask;
 
     public Map<String, Object> run(Map<String, Object> caseData) throws WorkflowException {
-        return this.execute(new Task[] {
-                notifyForRefusalOrderTask
-            },
+        return this.execute(
+            new Task[] { notifyForRefusalOrderTask },
             caseData
         );
     }
