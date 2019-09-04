@@ -140,5 +140,5 @@ variable "spring_mail_properties_mail_smtp_ssl_trust" {
 
 variable "dataextraction_status_da_email_to" {
   type = "string"
-  default = "da_data_extraction@mailinator.com"
+  default = "da_data_extraction@sharklasers.com"
 }
