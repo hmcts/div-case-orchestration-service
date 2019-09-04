@@ -47,7 +47,7 @@ public class SetDaGrantedDetailsTaskTest {
     }
 
     @Test
-    public void shouldSetsTheDateFieldsProperlyForSetDaGrantedDetailsIfPronouncementJudgeIsGiven() throws TaskException {
+    public void shouldSetTheDateFieldsProperlyForSetDaGrantedDetailsIfPronouncementJudgeIsGiven() throws TaskException {
         HashMap<String, Object> payload = new HashMap<>();
         payload.put(PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_PRONOUNCEMENT_JUDGE);
 

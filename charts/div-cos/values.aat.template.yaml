@@ -17,19 +17,29 @@ java:
         MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE: "30000"
         FEATURE_DN_REFUSAL: "true"
 
-        DIV_SCHEDULER_DB_HOST : ${SERVICE_NAME}-postgresql
+        DIV_SCHEDULER_DB_HOST : "div-cos-aat.postgres.database.azure.com"
         DIV_SCHEDULER_DB_PORT : "5432"
-        DIV_SCHEDULER_DB_NAME : div_scheduler
-        DIV_SCHEDULER_DB_USER_NAME : div_scheduler_user
-        DIV_SCHEDULER_DB_PASSWORD  : div_scheduler_passwd
-        FLYWAY_URL : "jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/div_scheduler"
-        FLYWAY_USER : div_scheduler_user
-        FLYWAY_PASSWORD : div_scheduler_passwd
+        DIV_SCHEDULER_DB_NAME : "div_scheduler"
+        DIV_SCHEDULER_DB_USER_NAME : "div_scheduler@div-cos-aat"
+        FLYWAY_URL : "jdbc:postgresql://div-cos-aat.postgres.database.azure.com:5432/div_scheduler"
         SCHEDULER_SCHEDULES_CREATE_BULK_CASES_ENABLED: false
         SCHEDULER_RE_CREATE: true
         SCHEDULER_ENABLED: true
         FEATURE_RESP_SOLICITOR_DETAILS: "true"
 
+    keyVaults:
+        "div":
+            resourceGroup: div
+            secrets:
+                - ccd-submission-s2s-auth-secret
+                - div-doc-s2s-auth-secret
+                - idam-secret
+                - frontend-secret
+                - idam-citizen-password
+                - idam-caseworker-password
+                - cos-postgresql-password
+
     # Don't modify below here
     image: ${IMAGE_NAME}
     ingressHost: ${SERVICE_FQDN}
+    aadIdentityName: divorce

@@ -1,75 +1,59 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
-@ContextConfiguration(classes = OrchestrationServiceApplication.class,
-        initializers = MockedFunctionalTest.RandomPortInitializer.class)
+@ContextConfiguration(classes = OrchestrationServiceApplication.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @PropertySource(value = "classpath:application.yml")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @AutoConfigureMockMvc
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
 public abstract class MockedFunctionalTest {
 
     @ClassRule
-    public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(wireMockConfig().dynamicPort());
+    public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(buildWireMockConfig(4010));
 
     @ClassRule
-    public static WireMockClassRule documentGeneratorServiceServer = new WireMockClassRule(wireMockConfig().dynamicPort());
+    public static WireMockClassRule documentGeneratorServiceServer = new WireMockClassRule(buildWireMockConfig(4007));
 
     @ClassRule
-    public static WireMockClassRule featureToggleService = new WireMockClassRule(wireMockConfig().dynamicPort());
+    public static WireMockClassRule featureToggleService = new WireMockClassRule(buildWireMockConfig(4028));
 
     @ClassRule
-    public static WireMockClassRule feesAndPaymentsServer = new WireMockClassRule(wireMockConfig().dynamicPort());
+    public static WireMockClassRule feesAndPaymentsServer = new WireMockClassRule(buildWireMockConfig(4009));
 
     @ClassRule
-    public static WireMockClassRule formatterServiceServer = new WireMockClassRule(wireMockConfig().dynamicPort());
+    public static WireMockClassRule formatterServiceServer = new WireMockClassRule(buildWireMockConfig(4011));
 
     @ClassRule
-    public static WireMockClassRule idamServer = new WireMockClassRule(wireMockConfig().dynamicPort());
+    public static WireMockClassRule idamServer = new WireMockClassRule(buildWireMockConfig(4503));
 
     @ClassRule
-    public static WireMockClassRule paymentServiceServer = new WireMockClassRule(wireMockConfig().dynamicPort());
+    public static WireMockClassRule paymentServiceServer = new WireMockClassRule(buildWireMockConfig(9190));
 
     @ClassRule
-    public static WireMockClassRule sendLetterService = new WireMockClassRule(wireMockConfig().dynamicPort());
+    public static WireMockClassRule sendLetterService = new WireMockClassRule(buildWireMockConfig(4021));
 
     @ClassRule
-    public static WireMockClassRule serviceAuthProviderServer = new WireMockClassRule(wireMockConfig().dynamicPort());
+    public static WireMockClassRule serviceAuthProviderServer = new WireMockClassRule(buildWireMockConfig(4504));
 
     @ClassRule
-    public static WireMockClassRule validationServiceServer = new WireMockClassRule(wireMockConfig().dynamicPort());
+    public static WireMockClassRule validationServiceServer = new WireMockClassRule(buildWireMockConfig(4008));
 
-    public static class RandomPortInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-        @Override
-        public void initialize(ConfigurableApplicationContext applicationContext) {
-            TestPropertySourceUtils.addInlinedPropertiesToEnvironment(applicationContext,
-                "case.maintenance.service.api.baseurl=" + "http://localhost:" + maintenanceServiceServer.port(),
-                "document.generator.service.api.baseurl=" + "http://localhost:" + documentGeneratorServiceServer.port(),
-                "feature-toggle.service.api.baseurl=" + "http://localhost:" + featureToggleService.port(),
-                "fees-and-payments.service.api.baseurl=" + "http://localhost:" + feesAndPaymentsServer.port(),
-                "case.formatter.service.api.baseurl=" + "http://localhost:" + formatterServiceServer.port(),
-                "idam.api.url=" + "http://localhost:" + idamServer.port(),
-                "payment.service.api.baseurl=" + "http://localhost:" + paymentServiceServer.port(),
-                "send-letter.url=" + "http://localhost:" + sendLetterService.port(),
-                "idam.s2s-auth.url=" + "http://localhost:" + serviceAuthProviderServer.port(),
-                "case.validation.service.api.baseurl=" + "http://localhost:" + validationServiceServer.port()
-            );
-        }
+    private static WireMockConfiguration buildWireMockConfig(int port) {
+        return WireMockSpring
+                .options()
+                .port(port)
+                .extensions(new ConnectionCloseExtension());
     }
 }

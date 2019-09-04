@@ -43,11 +43,10 @@ API documentation is provided with Swagger:
 
 **Unit tests**
 
-To run all unit tests and local functional tests respectively please execute following commands:
+To run all unit tests and local functional tests respectively please execute following command:
 
 ```bash
     ./gradlew test
-    ./gradlew wiremockFunctional
 ```
 
 **Coding style tests**

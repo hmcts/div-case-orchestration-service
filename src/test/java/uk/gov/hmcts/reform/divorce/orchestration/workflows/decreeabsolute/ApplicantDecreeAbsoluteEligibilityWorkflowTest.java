@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CalculateDecreeAbsoluteDates;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDaRequestedDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.NotifyApplicantCanFinaliseDivorceTask;
 
 import java.util.Map;
@@ -35,6 +36,9 @@ public class ApplicantDecreeAbsoluteEligibilityWorkflowTest {
     private CalculateDecreeAbsoluteDates calculateDecreeAbsoluteDates;
 
     @Mock
+    private SetDaRequestedDetailsTask setDaRequestedDetailsTask;
+
+    @Mock
     private NotifyApplicantCanFinaliseDivorceTask notifyApplicantCanFinaliseDivorceTask;
 
     @InjectMocks
@@ -51,15 +55,19 @@ public class ApplicantDecreeAbsoluteEligibilityWorkflowTest {
     @Test
     public void testTasksAreCalledAccordingly() throws TaskException, WorkflowException {
         Map<String, Object> outputMapFromFirstTask = singletonMap("outputKeyTask1", "outputValueTask1");
+        Map<String, Object> outputMapFromSecondTask = singletonMap("keyDaRequestedDate", "valueDaRequestedDate");
         when(calculateDecreeAbsoluteDates.execute(any(), eq(incomingPayload))).thenReturn(outputMapFromFirstTask);
-        when(notifyApplicantCanFinaliseDivorceTask.execute(any(), eq(outputMapFromFirstTask)))
+        when(setDaRequestedDetailsTask.execute(any(),eq(outputMapFromFirstTask)))
+                .thenReturn(outputMapFromSecondTask);
+        when(notifyApplicantCanFinaliseDivorceTask.execute(any(), eq(outputMapFromSecondTask)))
             .thenReturn(singletonMap("keyReturnedFromTask", "valueReturnedFromTask"));
 
         Map<String, Object> returnedPayload = workflow.run("testCaseId", incomingPayload);
 
         assertThat(returnedPayload, hasEntry("keyReturnedFromTask", "valueReturnedFromTask"));
         verify(calculateDecreeAbsoluteDates).execute(any(), eq(incomingPayload));
-        verify(notifyApplicantCanFinaliseDivorceTask).execute(taskContextArgumentCaptor.capture(), eq(outputMapFromFirstTask));
+        verify(setDaRequestedDetailsTask).execute(taskContextArgumentCaptor.capture(), eq(outputMapFromFirstTask));
+        verify(notifyApplicantCanFinaliseDivorceTask).execute(taskContextArgumentCaptor.capture(), eq(outputMapFromSecondTask));
         TaskContext taskContext = taskContextArgumentCaptor.getValue();
         assertThat(taskContext.getTransientObject(CASE_ID_JSON_KEY), equalTo("testCaseId"));
     }
