@@ -360,7 +360,6 @@ dependencies {
     testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: versions.springCloudDependencies
 
     testCompile 'org.awaitility:awaitility:3.1.6'
-    testCompile group: 'com.github.kirviq', name: 'dumbster', version: '1.7.1'
 
     //integration test
     integrationTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok

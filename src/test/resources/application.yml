@@ -26,17 +26,15 @@ spring:
   flyway:
     enabled: false
   mail:
-    host: localhost
-    port: 32773
-    test:
-      connection: false
     properties:
       mail:
         smtp:
           starttls:
             enable: true
-          ssl:
-            trust: localhost
+    host: localhost
+    port: 32773
+    default-encoding: UTF-8
+    test-connection: false
 
 quartzProperties:
   org.quartz:
@@ -362,6 +360,8 @@ dataExtraction:
 # Enable disk space health check
 management:
   health:
+    mail:
+      enabled: false
     elasticsearch:
       enabled: false
   endpoint:

@@ -24,10 +24,15 @@ spring:
   resources:
     static-locations:
   mail:
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
     host: localhost
     port: 32773
     default-encoding: UTF-8
-    test-connection: true
+    test-connection: false
 
 quartzProperties:
   org.quartz:
@@ -343,6 +348,8 @@ bulk-action:
 # Enable disk space health check
 management:
   health:
+    mail:
+      enabled: false
     elasticsearch:
       enabled: false
   endpoint:

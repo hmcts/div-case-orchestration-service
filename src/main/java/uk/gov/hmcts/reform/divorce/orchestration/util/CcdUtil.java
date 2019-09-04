@@ -21,6 +21,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 public class CcdUtil {
 
+    private static final String UK_HUMAN_READABLE_DATE_FORMAT = "dd/MM/yyyy";
+
     private final Clock clock;
 
     public String getCurrentDateCcdFormat() {
@@ -74,7 +76,7 @@ public class CcdUtil {
 
     public static String formatFromCCDFormatToHumanReadableFormat(String inputDate) {
         LocalDate localDate = parseDateUsingCcdFormat(inputDate);
-        return DateUtils.formatLocalDateToHumanReadableFormat(localDate);
+        return localDate.format(DateTimeFormatter.ofPattern(UK_HUMAN_READABLE_DATE_FORMAT));
     }
 
 }

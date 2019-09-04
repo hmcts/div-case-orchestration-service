@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
-import com.dumbster.smtp.SimpleSmtpServer;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.http.HttpResponse;
@@ -8,13 +7,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-
-import java.io.IOException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -26,8 +22,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 public class HealthCheckITest extends MockedFunctionalTest {
 
-    private static final int LOCAL_SMTP_PORT = 32773;
-
     private static final String HEALTH_UP_RESPONSE = "{ \"status\": \"UP\"}";
     private static final String HEALTH_DOWN_RESPONSE = "{ \"status\": \"DOWN\"}";
 
@@ -37,11 +31,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
     private String healthUrl;
     private final HttpClient httpClient = HttpClients.createMinimal();
 
-    /**
-     * This was put in the test so that the Spring Mail can connect to something when testing the health check.
-     */
-    private SimpleSmtpServer server;
-
     private HttpResponse getHealth() throws Exception {
         final HttpGet request = new HttpGet(healthUrl);
         request.addHeader("Accept", "application/json;charset=UTF-8");
@@ -50,14 +39,8 @@ public class HealthCheckITest extends MockedFunctionalTest {
     }
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         healthUrl = "http://localhost:" + port + "/health";
-        server = SimpleSmtpServer.start(LOCAL_SMTP_PORT);
-    }
-
-    @After
-    public void tearDown() {
-        server.stop();
     }
 
     @Test
