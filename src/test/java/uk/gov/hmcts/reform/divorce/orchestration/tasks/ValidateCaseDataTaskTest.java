@@ -6,11 +6,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseValidationClient;
+import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.validation.service.ValidationService;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,11 +30,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ValidateCaseDataTest {
-    private ValidateCaseData validateCaseData;
+public class ValidateCaseDataTaskTest {
+    private ValidateCaseDataTask validateCaseDataTask;
 
     @Mock
-    private CaseValidationClient caseValidationClient;
+    private ValidationService validationService;
     private ValidationResponse validationResponse;
     private ValidationResponse invalidationResponse;
     private Map<String, Object> payload;
@@ -42,21 +42,21 @@ public class ValidateCaseDataTest {
 
     @Before
     public void setUp() {
-        validateCaseData = new ValidateCaseData(caseValidationClient);
+        validateCaseDataTask = new ValidateCaseDataTask(validationService);
         validationResponse =
-                ValidationResponse.builder()
-                        .validationStatus("Pass")
-                        .build();
+            ValidationResponse.builder()
+                .validationStatus("Pass")
+                .build();
 
         invalidationResponse =
-                ValidationResponse.builder()
-                        .validationStatus("Pass")
-                        .errors(Collections.singletonList("Invalid input"))
-                        .build();
+            ValidationResponse.builder()
+                .validationStatus("Pass")
+                .errors(Collections.singletonList("Invalid input"))
+                .build();
 
         payload = new HashMap<>();
         payload.put("D8ScreenHasMarriageBroken", "YES");
-        payload.put(RESPONDENT_PIN,TEST_PIN );
+        payload.put(RESPONDENT_PIN, TEST_PIN);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
@@ -72,10 +72,10 @@ public class ValidateCaseDataTest {
     @Test
     public void executeShouldReturnUpdatedPayloadForValidCase() {
         //given
-        when(caseValidationClient.validate(any())).thenReturn(validationResponse);
+        when(validationService.validate(any())).thenReturn(validationResponse);
 
         //when
-        Map<String, Object> response = validateCaseData.execute(context, payload);
+        Map<String, Object> response = validateCaseDataTask.execute(context, payload);
 
         //then
         assertNotNull(response);
@@ -86,10 +86,10 @@ public class ValidateCaseDataTest {
     @Test
     public void executeShouldReturnUpdatedContextForInValidCase() {
         //given
-        when(caseValidationClient.validate(any())).thenReturn(invalidationResponse);
+        when(validationService.validate(any())).thenReturn(invalidationResponse);
 
         //when
-        Map<String, Object> response = validateCaseData.execute(context, payload);
+        Map<String, Object> response = validateCaseDataTask.execute(context, payload);
 
         //then
         assertNotNull(response);
@@ -98,6 +98,6 @@ public class ValidateCaseDataTest {
 
     @After
     public void tearDown() {
-        validateCaseData = null;
+        validateCaseDataTask = null;
     }
 }
