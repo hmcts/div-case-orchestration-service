@@ -11,13 +11,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitRespondentAosCaseForSolicitor;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateDataWhenSolicitorSubmitsWorkflowTest {
@@ -29,8 +33,24 @@ public class UpdateDataWhenSolicitorSubmitsWorkflowTest {
     UpdateDataWhenSolicitorSubmitsWorkflow updateDataWhenSolicitorSubmitsWorkflow;
 
     @Test
-    public void runShouldExecuteTasksAndReturnPayload() throws Exception {
+    public void whenSolicitorIsNotRepresentingResp_shouldNotExecuteTaskAndReturnPayload() throws Exception {
         Map<String, Object> payload = Collections.emptyMap();
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
+
+        TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+
+        updateDataWhenSolicitorSubmitsWorkflow.run(caseDetails, AUTH_TOKEN);
+
+        verifyZeroInteractions(submitRespondentAosCaseForSolicitor);
+    }
+
+    @Test
+    public void whenSolicitorIsRepresentingResp_shouldExecuteTaskAndReturnPayload() throws Exception {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put(RESP_SOL_REPRESENTED, YES_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
 

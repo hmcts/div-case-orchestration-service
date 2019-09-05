@@ -49,8 +49,6 @@ public class SubmitRespondentAosCaseForSolicitorUTest {
 
     private static final String FIXED_DATE = "2019-05-10";
 
-    private final Map<String, Object> expectedData = new HashMap<>();
-
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
 

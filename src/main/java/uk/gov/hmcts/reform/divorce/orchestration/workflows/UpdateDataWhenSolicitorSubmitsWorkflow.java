@@ -9,10 +9,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitRespondentAosCaseForSolicitor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
 public class UpdateDataWhenSolicitorSubmitsWorkflow extends DefaultWorkflow<Map<String, Object>> {
@@ -27,13 +31,23 @@ public class UpdateDataWhenSolicitorSubmitsWorkflow extends DefaultWorkflow<Map<
 
     public Map<String, Object> run(CaseDetails caseDetails, final String authToken) throws WorkflowException {
 
+        List<Task> tasks = new ArrayList<>();
+
+        if (isSolicitorRepresentingRespondent(caseDetails.getCaseData())) {
+            tasks.add(submitRespondentAosCaseForSolicitor);
+        }
+
         return this.execute(
-                new Task[]{
-                    submitRespondentAosCaseForSolicitor
-                },
+                tasks.toArray(new Task[tasks.size()]),
                 caseDetails.getCaseData(),
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
                 ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails)
         );
     }
+
+    private boolean isSolicitorRepresentingRespondent(Map<String, Object> caseData) {
+        final String respondentSolicitorRepresented = (String) caseData.get(RESP_SOL_REPRESENTED);
+        return YES_VALUE.equalsIgnoreCase(respondentSolicitorRepresented);
+    }
+
 }
