@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -44,6 +43,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.ProcessBulkCaseITest.buildCaseLink;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
@@ -54,7 +54,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
     private static final Map<String, Object> CASE_DATA = ImmutableMap.of(
         DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE,
         DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE,
-        BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID)
+        BULK_LISTING_CASE_ID_FIELD, buildCaseLink(TEST_CASE_ID)
     );
 
     private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
@@ -178,7 +178,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
     public void happyPathWithoutCostsOrder() throws Exception {
 
         Map<String, Object> caseData = ImmutableMap.of(
-            BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID)
+            BULK_LISTING_CASE_ID_FIELD, buildCaseLink(TEST_CASE_ID)
         );
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -231,7 +231,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
             DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE,
             DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE,
             DN_COSTS_OPTIONS_CCD_FIELD, DN_COSTS_ENDCLAIM_VALUE,
-            BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID)
+            BULK_LISTING_CASE_ID_FIELD, buildCaseLink(TEST_CASE_ID)
         );
 
         CaseDetails caseDetails = CaseDetails.builder()
