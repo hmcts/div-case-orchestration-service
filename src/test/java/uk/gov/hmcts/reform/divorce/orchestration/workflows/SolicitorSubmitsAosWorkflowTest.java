@@ -24,13 +24,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UpdateDataWhenSolicitorSubmitsWorkflowTest {
+public class SolicitorSubmitsAosWorkflowTest {
 
     @Mock
     SubmitRespondentAosCaseForSolicitor submitRespondentAosCaseForSolicitor;
 
     @InjectMocks
-    UpdateDataWhenSolicitorSubmitsWorkflow updateDataWhenSolicitorSubmitsWorkflow;
+    SolicitorSubmitsAosWorkflow solicitorSubmitsAosWorkflow;
 
     @Test
     public void whenSolicitorIsNotRepresentingResp_shouldNotExecuteTaskAndReturnPayload() throws Exception {
@@ -42,7 +42,7 @@ public class UpdateDataWhenSolicitorSubmitsWorkflowTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        updateDataWhenSolicitorSubmitsWorkflow.run(caseDetails, AUTH_TOKEN);
+        solicitorSubmitsAosWorkflow.run(caseDetails, AUTH_TOKEN);
 
         verifyZeroInteractions(submitRespondentAosCaseForSolicitor);
     }
@@ -60,6 +60,6 @@ public class UpdateDataWhenSolicitorSubmitsWorkflowTest {
 
         when(submitRespondentAosCaseForSolicitor.execute(context, payload)).thenReturn(payload);
 
-        assertEquals(payload, updateDataWhenSolicitorSubmitsWorkflow.run(caseDetails, AUTH_TOKEN));
+        assertEquals(payload, solicitorSubmitsAosWorkflow.run(caseDetails, AUTH_TOKEN));
     }
 }

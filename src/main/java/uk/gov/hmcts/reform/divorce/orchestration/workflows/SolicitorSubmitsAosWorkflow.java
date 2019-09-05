@@ -19,12 +19,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
-public class UpdateDataWhenSolicitorSubmitsWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class SolicitorSubmitsAosWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final SubmitRespondentAosCaseForSolicitor submitRespondentAosCaseForSolicitor;
 
     @Autowired
-    public UpdateDataWhenSolicitorSubmitsWorkflow(
+    public SolicitorSubmitsAosWorkflow(
             SubmitRespondentAosCaseForSolicitor submitRespondentAosCaseForSolicitor) {
         this.submitRespondentAosCaseForSolicitor = submitRespondentAosCaseForSolicitor;
     }

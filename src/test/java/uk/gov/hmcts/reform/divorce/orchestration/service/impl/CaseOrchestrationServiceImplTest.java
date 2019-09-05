@@ -61,6 +61,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmitsAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorUpdateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDaCaseWorkflow;
@@ -68,7 +69,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCasesWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDataWhenSolicitorSubmitsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
@@ -185,7 +185,7 @@ public class CaseOrchestrationServiceImplTest {
     private SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
 
     @Mock
-    private UpdateDataWhenSolicitorSubmitsWorkflow updateDataWhenSolicitorSubmitsWorkflow;
+    private SolicitorSubmitsAosWorkflow solicitorSubmitsAosWorkflow;
 
     @Mock
     private SolicitorCreateWorkflow solicitorCreateWorkflow;
@@ -771,16 +771,16 @@ public class CaseOrchestrationServiceImplTest {
         // given
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
-        when(updateDataWhenSolicitorSubmitsWorkflow.run(caseDetails, AUTH_TOKEN))
+        when(solicitorSubmitsAosWorkflow.run(caseDetails, AUTH_TOKEN))
             .thenReturn(requestPayload);
 
         // when
-        Map<String, Object> actual = classUnderTest.updateDataWhenSolicitorSubmits(ccdCallbackRequest, AUTH_TOKEN);
+        Map<String, Object> actual = classUnderTest.solicitorSubmitsAos(ccdCallbackRequest, AUTH_TOKEN);
 
         // then
         assertEquals(caseDetails.getCaseData(), actual);
 
-        verify(updateDataWhenSolicitorSubmitsWorkflow).run(caseDetails, AUTH_TOKEN);
+        verify(solicitorSubmitsAosWorkflow).run(caseDetails, AUTH_TOKEN);
     }
 
     @Test

@@ -59,13 +59,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkfl
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmitsAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorUpdateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDaCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDataWhenSolicitorSubmitsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
@@ -117,7 +117,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final LinkRespondentWorkflow linkRespondentWorkflow;
     private final SetOrderSummaryWorkflow setOrderSummaryWorkflow;
     private final SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
-    private final UpdateDataWhenSolicitorSubmitsWorkflow updateDataWhenSolicitorSubmitsWorkflow;
+    private final SolicitorSubmitsAosWorkflow solicitorSubmitsAosWorkflow;
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
     private final SolicitorUpdateWorkflow solicitorUpdateWorkflow;
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
@@ -458,9 +458,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> updateDataWhenSolicitorSubmits(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+    public Map<String, Object> solicitorSubmitsAos(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
             throws WorkflowException {
-        return updateDataWhenSolicitorSubmitsWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
+        return solicitorSubmitsAosWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
     }
 
     @Override
