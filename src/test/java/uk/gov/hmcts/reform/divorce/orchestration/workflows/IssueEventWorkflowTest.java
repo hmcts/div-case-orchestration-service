@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFie
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDate;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +54,7 @@ public class IssueEventWorkflowTest {
     private SetIssueDate setIssueDate;
 
     @Mock
-    private ValidateCaseData validateCaseData;
+    private ValidateCaseDataTask validateCaseDataTask;
 
     @Mock
     private PetitionGenerator petitionGenerator;
@@ -91,7 +91,7 @@ public class IssueEventWorkflowTest {
     public void setUp() {
         issueEventWorkflow =
                 new IssueEventWorkflow(
-                        validateCaseData,
+                    validateCaseDataTask,
                         setIssueDate,
                         petitionGenerator,
                         respondentPinGenerator,
@@ -131,7 +131,7 @@ public class IssueEventWorkflowTest {
         payload.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.SERVICE_CENTER.getId());
 
         //Given
-        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
@@ -156,7 +156,7 @@ public class IssueEventWorkflowTest {
         payload.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getId());
 
         //Given
-        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
@@ -183,7 +183,7 @@ public class IssueEventWorkflowTest {
         payload.put(D_8_CO_RESPONDENT_NAMED, "YES");
 
         //Given
-        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
@@ -209,7 +209,7 @@ public class IssueEventWorkflowTest {
         payload.put(D_8_CO_RESPONDENT_NAMED_OLD, "YES");
 
         //Given
-        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
@@ -234,7 +234,7 @@ public class IssueEventWorkflowTest {
         payload.put(D_8_REASON_FOR_DIVORCE, "foo");
 
         //Given
-        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
@@ -261,7 +261,7 @@ public class IssueEventWorkflowTest {
         payload.put(D_8_CO_RESPONDENT_NAMED, "No");
 
         //Given
-        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
@@ -285,7 +285,7 @@ public class IssueEventWorkflowTest {
     public void givenGenerateAosInvitationIsTrueAndIsNotServiceCentre_whenRun_thenProceedAsExpected() throws WorkflowException {
 
         //Given
-        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
@@ -307,7 +307,7 @@ public class IssueEventWorkflowTest {
     @Test
     public void givenGenerateAosInvitationIsFalse_whenRun_thenProceedAsExpected() throws WorkflowException {
         //Given
-        when(validateCaseData.execute(context, payload)).thenReturn(payload);
+        when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
