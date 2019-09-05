@@ -39,7 +39,7 @@ public class SubmitRespondentAosCaseForSolicitor implements Task<Map<String, Obj
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> submissionData) {
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
-        String caseIDJsonKey = context.getTransientObject(CASE_ID_JSON_KEY);
+        String caseID = context.getTransientObject(CASE_ID_JSON_KEY);
 
         if (isSolicitorRepresentingRespondent(submissionData)) {
             // Maps CCD values of RespAOS2yrConsent & RespAOSAdultery
@@ -77,7 +77,7 @@ public class SubmitRespondentAosCaseForSolicitor implements Task<Map<String, Obj
 
         Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
                 authToken,
-                caseIDJsonKey,
+                caseID,
                 eventId,
                 submissionData
         );
