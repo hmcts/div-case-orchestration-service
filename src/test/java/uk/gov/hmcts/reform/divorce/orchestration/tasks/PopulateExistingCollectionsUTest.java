@@ -5,9 +5,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
@@ -48,9 +48,9 @@ public class PopulateExistingCollectionsUTest {
         Map<String, Object> caseData = Collections.singletonMap(D_8_PAYMENTS, payments);
 
         when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID))
-                .thenReturn(CaseDetails.builder().caseData(caseData).build());
+            .thenReturn(CaseDetails.builder().caseData(caseData).build());
 
-        Map<String, Object> session  = new HashMap<>();
+        Map<String, Object> session = new HashMap<>();
         Map<String, Object> expectedSession = Collections.singletonMap(DIVORCE_SESSION_EXISTING_PAYMENTS, payments);
 
         assertEquals(expectedSession, target.execute(context, session));
@@ -63,9 +63,9 @@ public class PopulateExistingCollectionsUTest {
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
 
         when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID))
-                .thenReturn(CaseDetails.builder().caseId(TEST_CASE_ID).build());
+            .thenReturn(CaseDetails.builder().caseId(TEST_CASE_ID).build());
 
-        Map<String, Object> session  = new HashMap<>();
+        Map<String, Object> session = new HashMap<>();
 
         assertEquals(session, target.execute(context, session));
     }

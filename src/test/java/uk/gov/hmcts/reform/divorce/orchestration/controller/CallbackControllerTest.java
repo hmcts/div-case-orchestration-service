@@ -10,14 +10,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
+import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosPackOfflineService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
@@ -364,7 +364,7 @@ public class CallbackControllerTest {
     @Test
     public void givenErrors_whenBulkPrintIssued_thenRespondWithOkAndReturnErrors() throws WorkflowException {
         when(caseOrchestrationService.ccdCallbackBulkPrintHandler(any(), any()))
-                .thenThrow(new WorkflowException("Error message"));
+            .thenThrow(new WorkflowException("Error message"));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();

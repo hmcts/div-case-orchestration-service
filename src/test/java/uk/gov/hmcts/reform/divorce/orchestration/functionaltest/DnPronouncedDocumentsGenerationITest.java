@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
@@ -97,23 +97,23 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
         );
 
         CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .caseId(TEST_CASE_ID)
-                .build();
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-                .caseDetails(caseDetails)
-                .build();
+            .caseDetails(caseDetails)
+            .build();
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(ccdCallbackRequest))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
     }
 
     @Test
@@ -126,10 +126,10 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
                 .build();
 
         final GenerateDocumentRequest costsOrderDocumentGenerationRequest =
-                GenerateDocumentRequest.builder()
-                        .template(COSTS_ORDER_TEMPLATE_ID)
-                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
-                        .build();
+            GenerateDocumentRequest.builder()
+                .template(COSTS_ORDER_TEMPLATE_ID)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
+                .build();
 
         final GeneratedDocumentInfo dnDocumentGenerationResponse =
             GeneratedDocumentInfo.builder()
@@ -138,10 +138,10 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
                 .build();
 
         final GeneratedDocumentInfo costsOrderDocumentGenerationResponse =
-                GeneratedDocumentInfo.builder()
-                        .documentType(COSTS_ORDER_DOCUMENT_TYPE)
-                        .fileName(COSTS_ORDER_DOCUMENT_TYPE + TEST_CASE_ID)
-                        .build();
+            GeneratedDocumentInfo.builder()
+                .documentType(COSTS_ORDER_DOCUMENT_TYPE)
+                .fileName(COSTS_ORDER_DOCUMENT_TYPE + TEST_CASE_ID)
+                .build();
 
         final DocumentUpdateRequest dnDocumentUpdateRequest =
             DocumentUpdateRequest.builder()
@@ -150,12 +150,12 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
                 .build();
 
         final DocumentUpdateRequest costsOrderDocumentUpdateRequest =
-                DocumentUpdateRequest.builder()
-                        .documents(asList(costsOrderDocumentGenerationResponse))
-                        .caseData(CASE_DATA)
-                        .build();
+            DocumentUpdateRequest.builder()
+                .documents(asList(costsOrderDocumentGenerationResponse))
+                .caseData(CASE_DATA)
+                .build();
 
-        final Map<String, Object> emptyCaseData =  emptyMap();
+        final Map<String, Object> emptyCaseData = emptyMap();
 
         stubDocumentGeneratorServerEndpoint(dnDocumentGenerationRequest, dnDocumentGenerationResponse);
         stubFormatterServerEndpoint(dnDocumentUpdateRequest, emptyCaseData);
@@ -182,33 +182,33 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
         );
 
         CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .caseId(TEST_CASE_ID)
-                .build();
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-                .caseDetails(caseDetails)
-                .build();
+            .caseDetails(caseDetails)
+            .build();
 
         final GenerateDocumentRequest dnDocumentGenerationRequest =
-                GenerateDocumentRequest.builder()
-                        .template(DECREE_NISI_TEMPLATE_ID)
-                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
-                        .build();
+            GenerateDocumentRequest.builder()
+                .template(DECREE_NISI_TEMPLATE_ID)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                .build();
 
         final GeneratedDocumentInfo dnDocumentGenerationResponse =
-                GeneratedDocumentInfo.builder()
-                        .documentType(DECREE_NISI_DOCUMENT_TYPE)
-                        .fileName(DECREE_NISI_FILENAME + TEST_CASE_ID)
-                        .build();
+            GeneratedDocumentInfo.builder()
+                .documentType(DECREE_NISI_DOCUMENT_TYPE)
+                .fileName(DECREE_NISI_FILENAME + TEST_CASE_ID)
+                .build();
 
         final DocumentUpdateRequest dnDocumentUpdateRequest =
-                DocumentUpdateRequest.builder()
-                        .documents(asList(dnDocumentGenerationResponse))
-                        .caseData(caseData)
-                        .build();
+            DocumentUpdateRequest.builder()
+                .documents(asList(dnDocumentGenerationResponse))
+                .caseData(caseData)
+                .build();
 
-        final Map<String, Object> emptyCaseData =  emptyMap();
+        final Map<String, Object> emptyCaseData = emptyMap();
 
         stubDocumentGeneratorServerEndpoint(dnDocumentGenerationRequest, dnDocumentGenerationResponse);
         stubFormatterServerEndpoint(dnDocumentUpdateRequest, emptyCaseData);
@@ -216,52 +216,52 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(ccdCallbackRequest))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
     }
 
     @Test
     public void happyPathWithoutCostsOrderWhenPetitionerEndsClaim() throws Exception {
 
         Map<String, Object> caseData = ImmutableMap.of(
-                DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE,
-                DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE,
-                DN_COSTS_OPTIONS_CCD_FIELD, DN_COSTS_ENDCLAIM_VALUE,
-                BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID)
+            DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE,
+            DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE,
+            DN_COSTS_OPTIONS_CCD_FIELD, DN_COSTS_ENDCLAIM_VALUE,
+            BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID)
         );
 
         CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .caseId(TEST_CASE_ID)
-                .build();
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-                .caseDetails(caseDetails)
-                .build();
+            .caseDetails(caseDetails)
+            .build();
 
         final GenerateDocumentRequest dnDocumentGenerationRequest =
-                GenerateDocumentRequest.builder()
-                        .template(DECREE_NISI_TEMPLATE_ID)
-                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
-                        .build();
+            GenerateDocumentRequest.builder()
+                .template(DECREE_NISI_TEMPLATE_ID)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                .build();
 
         final GeneratedDocumentInfo dnDocumentGenerationResponse =
-                GeneratedDocumentInfo.builder()
-                        .documentType(DECREE_NISI_DOCUMENT_TYPE)
-                        .fileName(DECREE_NISI_FILENAME + TEST_CASE_ID)
-                        .build();
+            GeneratedDocumentInfo.builder()
+                .documentType(DECREE_NISI_DOCUMENT_TYPE)
+                .fileName(DECREE_NISI_FILENAME + TEST_CASE_ID)
+                .build();
 
         final DocumentUpdateRequest dnDocumentUpdateRequest =
-                DocumentUpdateRequest.builder()
-                        .documents(asList(dnDocumentGenerationResponse))
-                        .caseData(caseData)
-                        .build();
+            DocumentUpdateRequest.builder()
+                .documents(asList(dnDocumentGenerationResponse))
+                .caseData(caseData)
+                .build();
 
-        final Map<String, Object> emptyCaseData =  emptyMap();
+        final Map<String, Object> emptyCaseData = emptyMap();
 
         stubDocumentGeneratorServerEndpoint(dnDocumentGenerationRequest, dnDocumentGenerationResponse);
         stubFormatterServerEndpoint(dnDocumentUpdateRequest, emptyCaseData);
@@ -269,12 +269,12 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(ccdCallbackRequest))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
     }
 
     private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest generateDocumentRequest,

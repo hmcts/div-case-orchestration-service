@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.ArrayList;
@@ -45,10 +45,10 @@ public class RemoveListingDataTaskUTest {
         expectedMap.put("anyKey", "anyData");
 
         Map<String, Object> caseData = ImmutableMap.of("anyKey", "anyData",
-                COURT_NAME_CCD_FIELD, "Court",
-                BULK_LISTING_CASE_ID_FIELD,"caseLink",
-                PRONOUNCEMENT_JUDGE_CCD_FIELD, "Judge Name",
-                DATETIME_OF_HEARING_CCD_FIELD, courtHearingDates);
+            COURT_NAME_CCD_FIELD, "Court",
+            BULK_LISTING_CASE_ID_FIELD, "caseLink",
+            PRONOUNCEMENT_JUDGE_CCD_FIELD, "Judge Name",
+            DATETIME_OF_HEARING_CCD_FIELD, courtHearingDates);
 
         Map<String, Object> response = classToTest.execute(null, caseData);
         assertThat(response, is(expectedMap));

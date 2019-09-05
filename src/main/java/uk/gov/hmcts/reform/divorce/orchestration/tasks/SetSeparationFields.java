@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.Clock;
 import java.time.LocalDate;
