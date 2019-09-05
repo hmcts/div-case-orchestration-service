@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final RetrieveDraft retrieveDraft;
-    private final CaseDataDraftToDivorceFormatterTask caseDataToDivorceFormatter;
+    private final CaseDataDraftToDivorceFormatterTask caseDataDraftToDivorceFormatterTask;
     private final SetCaseIdAndStateOnSession setCaseIdAndStateOnSession;
 
     private final GetInconsistentPaymentInfo getPaymentOnSession;
@@ -44,10 +44,10 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
         boolean paymentDataUpdated = updatePaymentEvent(caseData);
         Task[] taskPending = paymentDataUpdated ? new Task[] {
             retrieveDraft,
-            caseDataToDivorceFormatter,
+            caseDataDraftToDivorceFormatterTask,
             setCaseIdAndStateOnSession
         } : new Task[] {
-            caseDataToDivorceFormatter,
+            caseDataDraftToDivorceFormatterTask,
             setCaseIdAndStateOnSession
         };
         return this.execute(
