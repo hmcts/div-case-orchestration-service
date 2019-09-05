@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitRespondentAosCaseForSolicitorTask;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendRespondentSubmissionNotificationWorkflowTest {
+public class AosSubmissionWorkflowTest {
 
     private static final String UNFORMATTED_CASE_ID = "0123456789012345";
 
@@ -51,11 +52,14 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
     @Mock
     private SendRespondentSubmissionNotificationForUndefendedDivorceEmail undefendedDivorceNotificationEmailTask;
 
+    @Mock
+    SubmitRespondentAosCaseForSolicitorTask submitRespondentAosCaseForSolicitorTask;
+
     @Captor
     private ArgumentCaptor<TaskContext> taskContextArgumentCaptor;
 
     @InjectMocks
-    private SendRespondentSubmissionNotificationWorkflow workflow;
+    private AosSubmissionWorkflow aosSubmissionWorkflow;
 
     @Before
     public void setUp() throws TaskException {
@@ -70,7 +74,7 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
                 "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayloadFromWorkflow = workflow.run(ccdCallbackRequest);
+        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest);
 
         verify(defendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
         verifyZeroInteractions(undefendedDivorceNotificationEmailTask);
@@ -87,7 +91,7 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
                 "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayloadFromWorkflow = workflow.run(callbackRequest);
+        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest);
 
         verify(undefendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
         verifyZeroInteractions(defendedDivorceNotificationEmailTask);
@@ -104,7 +108,7 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
                 "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingNotAdmittingDivorce.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayloadFromWorkflow = workflow.run(callbackRequest);
+        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest);
 
         verify(undefendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
         verifyZeroInteractions(defendedDivorceNotificationEmailTask);
@@ -125,8 +129,33 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
                 "/jsonExamples/payloads/unclearAcknowledgementOfService.json", CcdCallbackRequest.class);
         Map<String, Object> incomingCaseDate = ccdCallbackRequest.getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayloadFromWorkflow = workflow.run(ccdCallbackRequest);
+        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest);
 
         assertThat(returnedPayloadFromWorkflow.size(), is(incomingCaseDate.size() + 1));
+    }
+
+    @Test
+    public void testSolicitorTaskIsCalledWhenWorkflowIsRun_whenSolicitorIsRepresenting() throws WorkflowException, IOException, TaskException {
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/aosSolicitorNominated.json", CcdCallbackRequest.class);
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest);
+
+        verify(submitRespondentAosCaseForSolicitorTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
+        //assertThat(returnedPayloadFromWorkflow, is(sameInstance(returnedPayloadFromTask)));
+        TaskContext taskContextPassedToTask = taskContextArgumentCaptor.getValue();
+    }
+
+    @Test
+    public void testSolicitorTaskIsNotCalledWhenWorkflowIsRun_whenSolicitorIsNotRepresenting() throws IOException,
+            WorkflowException, TaskException {
+        CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CcdCallbackRequest.class);
+        Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
+
+        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest);
+
+        verifyZeroInteractions(submitRespondentAosCaseForSolicitorTask);
     }
 }

@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
@@ -56,12 +57,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmitsAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorUpdateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDaCaseWorkflow;
@@ -173,7 +172,7 @@ public class CaseOrchestrationServiceImplTest {
     private SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
 
     @Mock
-    private SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
+    private AosSubmissionWorkflow aosSubmissionWorkflow;
 
     @Mock
     private SendCoRespondSubmissionNotificationWorkflow sendCoRespondSubmissionNotificationWorkflow;
@@ -183,9 +182,6 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
-
-    @Mock
-    private SolicitorSubmitsAosWorkflow solicitorSubmitsAosWorkflow;
 
     @Mock
     private SolicitorCreateWorkflow solicitorCreateWorkflow;
@@ -689,13 +685,13 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void givenCaseData_whenSendRespondentSubmissionNotification_thenReturnPayload() throws Exception {
-        when(sendRespondentSubmissionNotificationWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
+        when(aosSubmissionWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
 
         Map<String, Object> returnedPayload = classUnderTest
-            .sendRespondentSubmissionNotificationEmail(ccdCallbackRequest);
+            .aosSubmission(ccdCallbackRequest);
 
         assertEquals(requestPayload, returnedPayload);
-        verify(sendRespondentSubmissionNotificationWorkflow).run(ccdCallbackRequest);
+        verify(aosSubmissionWorkflow).run(ccdCallbackRequest);
     }
 
     @Test
@@ -750,12 +746,12 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenCaseData_whenUpdateDataWhenSolicitorSubmits_thenReturnPayload() throws Exception {
+    public void givenCaseData_whenSolicitorCreate_thenReturnPayload() throws Exception {
         // given
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
         when(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN))
-                .thenReturn(requestPayload);
+            .thenReturn(requestPayload);
 
         // when
         Map<String, Object> actual = classUnderTest.solicitorCreate(ccdCallbackRequest, AUTH_TOKEN);
@@ -764,23 +760,6 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(caseDetails.getCaseData(), actual);
 
         verify(solicitorCreateWorkflow).run(caseDetails, AUTH_TOKEN);
-    }
-
-    @Test
-    public void givenCaseData_whenSolicitorCreate_thenReturnPayload() throws Exception {
-        // given
-        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-
-        when(solicitorSubmitsAosWorkflow.run(caseDetails, AUTH_TOKEN))
-            .thenReturn(requestPayload);
-
-        // when
-        Map<String, Object> actual = classUnderTest.solicitorSubmitsAos(ccdCallbackRequest, AUTH_TOKEN);
-
-        // then
-        assertEquals(caseDetails.getCaseData(), actual);
-
-        verify(solicitorSubmitsAosWorkflow).run(caseDetails, AUTH_TOKEN);
     }
 
     @Test

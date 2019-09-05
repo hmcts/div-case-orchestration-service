@@ -42,7 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SubmitRespondentAosCaseForSolicitorUTest {
+public class SubmitRespondentAosCaseForSolicitorTaskUTest {
     private static final Map<String, Object> EXPECTED_OUTPUT = emptyMap();
     private static final Map<String, Object> CASE_UPDATE_RESPONSE = new HashMap<>();
     private static final TaskContext TASK_CONTEXT = new DefaultTaskContext();
@@ -56,7 +56,7 @@ public class SubmitRespondentAosCaseForSolicitorUTest {
     private CcdUtil ccdUtil;
 
     @InjectMocks
-    private SubmitRespondentAosCaseForSolicitor classUnderTest;
+    private SubmitRespondentAosCaseForSolicitorTask classUnderTest;
 
     @Before
     public void before() {

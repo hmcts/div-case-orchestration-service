@@ -20,7 +20,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_2_YR_CONSENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
@@ -30,7 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @RequiredArgsConstructor
-public class SubmitRespondentAosCaseForSolicitor implements Task<Map<String, Object>> {
+public class SubmitRespondentAosCaseForSolicitorTask implements Task<Map<String, Object>> {
 
     private final CaseMaintenanceClient caseMaintenanceClient;
     private final CcdUtil ccdUtil;
@@ -38,42 +37,41 @@ public class SubmitRespondentAosCaseForSolicitor implements Task<Map<String, Obj
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> submissionData) {
+
+        // Maps CCD values of RespAOS2yrConsent & RespAOSAdultery
+        // -> RespAdmitOrConsentToFact & RespWillDefendDivorce fields in Case Data
+        final String reasonForDivorce = getReasonForDivorce(submissionData);
+        final String respAos2yrConsent = (String) submissionData.get(RESP_AOS_2_YR_CONSENT);
+        final String respAosAdultery = (String) submissionData.get(RESP_AOS_ADULTERY);
+
+        if ((SEPARATION_2YRS.equalsIgnoreCase(reasonForDivorce)
+                && YES_VALUE.equalsIgnoreCase(respAos2yrConsent))
+            || (ADULTERY.equalsIgnoreCase(reasonForDivorce)
+                && YES_VALUE.equalsIgnoreCase(respAosAdultery))) {
+
+            submissionData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+            submissionData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+        }
+
+        if (respondentIsDefending(submissionData)) {
+            if (respAdmitsOrConsentsToFact(submissionData)) {
+                eventId = SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
+            } else {
+                eventId = SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
+            }
+        } else {
+            if (respAdmitsOrConsentsToFact(submissionData)) {
+                eventId = SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
+            } else {
+                eventId = SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
+            }
+        }
+
+        submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
+
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
         String caseID = context.getTransientObject(CASE_ID_JSON_KEY);
-
-        if (isSolicitorRepresentingRespondent(submissionData)) {
-            // Maps CCD values of RespAOS2yrConsent & RespAOSAdultery
-            // -> RespAdmitOrConsentToFact & RespWillDefendDivorce fields in Case Data
-            final String reasonForDivorce = getReasonForDivorce(submissionData);
-            final String respAos2yrConsent = (String) submissionData.get(RESP_AOS_2_YR_CONSENT);
-            final String respAosAdultery = (String) submissionData.get(RESP_AOS_ADULTERY);
-
-            if ((SEPARATION_2YRS.equalsIgnoreCase(reasonForDivorce)
-                    && YES_VALUE.equalsIgnoreCase(respAos2yrConsent))
-                || (ADULTERY.equalsIgnoreCase(reasonForDivorce)
-                    && YES_VALUE.equalsIgnoreCase(respAosAdultery))) {
-
-                submissionData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
-                submissionData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
-            }
-
-            if (respondentIsDefending(submissionData)) {
-                if (respAdmitsOrConsentsToFact(submissionData)) {
-                    eventId = SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
-                } else {
-                    eventId = SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
-                }
-            } else {
-                if (respAdmitsOrConsentsToFact(submissionData)) {
-                    eventId = SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
-                } else {
-                    eventId = SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
-                }
-            }
-
-            submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-            submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
-        }
 
         Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
                 authToken,
@@ -87,11 +85,6 @@ public class SubmitRespondentAosCaseForSolicitor implements Task<Map<String, Obj
         }
 
         return updateCase;
-    }
-
-    private boolean isSolicitorRepresentingRespondent(Map<String, Object> submissionData) {
-        final String respondentSolicitorRepresented = (String) submissionData.get(RESP_SOL_REPRESENTED);
-        return YES_VALUE.equalsIgnoreCase(respondentSolicitorRepresented);
     }
 
     private String getReasonForDivorce(Map<String, Object> submissionData) {

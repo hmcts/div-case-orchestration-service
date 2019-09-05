@@ -194,8 +194,7 @@ public class CallbackController {
         Map<String, Object> returnedCaseData;
 
         try {
-            returnedCaseData = caseOrchestrationService.solicitorSubmitsAos(ccdCallbackRequest, authorizationToken);
-            caseOrchestrationService.sendRespondentSubmissionNotificationEmail(ccdCallbackRequest);
+            returnedCaseData = caseOrchestrationService.aosSubmission(ccdCallbackRequest);
         } catch (WorkflowException e) {
             log.error("Failed to call service for caseId {}", caseId, e);
             return ResponseEntity.ok(CcdCallbackResponse.builder()

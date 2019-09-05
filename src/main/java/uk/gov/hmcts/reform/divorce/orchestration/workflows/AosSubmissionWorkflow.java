@@ -10,17 +10,21 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitRespondentAosCaseForSolicitorTask;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
 @Slf4j
-public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private static final String NOT_DEFENDING_NOT_ADMITTING = "NoNoAdmission";
 
@@ -32,26 +36,41 @@ public class SendRespondentSubmissionNotificationWorkflow extends DefaultWorkflo
     private SendRespondentSubmissionNotificationForUndefendedDivorceEmail
         sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
 
+    @Autowired
+    private SubmitRespondentAosCaseForSolicitorTask
+            submitRespondentAosCaseForSolicitorTask;
+
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         String defended = (String) caseData.get(RESP_WILL_DEFEND_DIVORCE);
 
-        Task[] tasks;
+        List<Task> tasks = new ArrayList<>();
 
-        if (YES_VALUE.equalsIgnoreCase(defended)) {
-            tasks = new Task[] {sendRespondentSubmissionNotificationForDefendedDivorceEmailTask};
-        } else if (NO_VALUE.equalsIgnoreCase(defended) || NOT_DEFENDING_NOT_ADMITTING.equalsIgnoreCase(defended)) {
-            tasks = new Task[] {sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask};
+        if (isSolicitorRepresentingRespondent(caseData)) {
+            // submitRespondentAosCaseForSolicitorTask will add values for RESP_WILL_DEFEND_DIVORCE
+            tasks.add(submitRespondentAosCaseForSolicitorTask);
         } else {
-            String errorMessage = String.format("%s field doesn't contain a valid value: %s",
-                RESP_WILL_DEFEND_DIVORCE, defended);
-            log.error(String.format("%s. %n Case id: %s.", errorMessage, ccdCallbackRequest.getCaseDetails().getCaseId()));
-            throw new WorkflowException(errorMessage);
+            if  (YES_VALUE.equalsIgnoreCase(defended)) {
+                tasks.add(sendRespondentSubmissionNotificationForDefendedDivorceEmailTask);
+            } else if (NO_VALUE.equalsIgnoreCase(defended) || NOT_DEFENDING_NOT_ADMITTING.equalsIgnoreCase(defended)) {
+                tasks.add(sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask);
+            } else {
+                String errorMessage = String.format("%s field doesn't contain a valid value: %s",
+                        RESP_WILL_DEFEND_DIVORCE, defended);
+                log.error(String.format("%s. %n Case id: %s.", errorMessage, ccdCallbackRequest.getCaseDetails().getCaseId()));
+                throw new WorkflowException(errorMessage);
+            }
         }
 
-        return execute(tasks,
+        return execute(
+            tasks.toArray(new Task[tasks.size()]),
             caseData,
             ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId())
         );
+    }
+
+    private boolean isSolicitorRepresentingRespondent(Map<String, Object> caseData) {
+        final String respondentSolicitorRepresented = (String) caseData.get(RESP_SOL_REPRESENTED);
+        return YES_VALUE.equalsIgnoreCase(respondentSolicitorRepresented);
     }
 }

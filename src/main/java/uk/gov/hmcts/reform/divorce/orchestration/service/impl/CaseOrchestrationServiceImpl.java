@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseRemoveCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
@@ -53,13 +54,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendDnPronouncedNotif
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmitsAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorUpdateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitCoRespondentAosWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDaCaseWorkflow;
@@ -117,13 +116,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final LinkRespondentWorkflow linkRespondentWorkflow;
     private final SetOrderSummaryWorkflow setOrderSummaryWorkflow;
     private final SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
-    private final SolicitorSubmitsAosWorkflow solicitorSubmitsAosWorkflow;
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
     private final SolicitorUpdateWorkflow solicitorUpdateWorkflow;
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
     private final SendPetitionerEmailNotificationWorkflow sendPetitionerEmailNotificationWorkflow;
     private final SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
-    private final SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
+    private final AosSubmissionWorkflow aosSubmissionWorkflow;
     private final SendCoRespondSubmissionNotificationWorkflow sendCoRespondSubmissionNotificationWorkflow;
     private final RespondentSubmittedCallbackWorkflow aosRespondedWorkflow;
     private final SubmitRespondentAosCaseWorkflow submitRespondentAosCaseWorkflow;
@@ -382,9 +380,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> sendRespondentSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
+    public Map<String, Object> aosSubmission(CcdCallbackRequest ccdCallbackRequest)
             throws WorkflowException {
-        return sendRespondentSubmissionNotificationWorkflow.run(ccdCallbackRequest);
+        return aosSubmissionWorkflow.run(ccdCallbackRequest);
     }
 
     private List<String> getNotificationErrors(Map<String, Object> notificationErrors) {
@@ -455,12 +453,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                     .getCaseId());
             return solicitorSubmissionWorkflow.errors();
         }
-    }
-
-    @Override
-    public Map<String, Object> solicitorSubmitsAos(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
-            throws WorkflowException {
-        return solicitorSubmitsAosWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
     }
 
     @Override

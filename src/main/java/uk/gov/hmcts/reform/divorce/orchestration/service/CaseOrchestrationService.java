@@ -54,15 +54,13 @@ public interface CaseOrchestrationService {
     Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException;
 
-    Map<String, Object> sendRespondentSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+    Map<String, Object> aosSubmission(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> sendPetitionerClarificationRequestNotification(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     CcdCallbackResponse setOrderSummaryAssignRole(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> solicitorSubmission(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
-
-    Map<String, Object> solicitorSubmitsAos(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
         throws WorkflowException;
