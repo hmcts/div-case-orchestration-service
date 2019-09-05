@@ -33,10 +33,9 @@ public class SearchSourceFactoryTest {
             .from(start)
             .size(pageSize);
 
-        SearchSourceBuilder actualSearchSource = SearchSourceFactory
-            .buildCMSBooleanSearchSource(0, 10, firstQuery);
+        String actualSearchSource = SearchSourceFactory.buildCMSBooleanSearchSource(0, 10, firstQuery);
 
-        assertEquals(expectedSearchSource, actualSearchSource);
+        assertEquals(expectedSearchSource.toString(), actualSearchSource);
     }
 
     @Test
@@ -60,9 +59,9 @@ public class SearchSourceFactoryTest {
             .from(start)
             .size(pageSize);
 
-        SearchSourceBuilder actualSearchSource = SearchSourceFactory
-            .buildCMSBooleanSearchSource(0, 5, firstQuery, secondQuery, thirdQuery);
+        String actualSearchSource = SearchSourceFactory.buildCMSBooleanSearchSource(0, 5, firstQuery, secondQuery, thirdQuery);
 
-        assertEquals(expectedSearchSource, actualSearchSource);
+        assertEquals(expectedSearchSource.toString(), actualSearchSource);
     }
+
 }

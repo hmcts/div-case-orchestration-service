@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.controller;
+package uk.gov.hmcts.reform.divorce.orchestration.controller.internal;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;

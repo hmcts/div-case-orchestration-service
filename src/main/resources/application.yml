@@ -23,6 +23,16 @@ spring:
     name: div-cos
   resources:
     static-locations:
+  mail:
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+    host: localhost
+    port: 32773
+    default-encoding: UTF-8
+    test-connection: false
 
 quartzProperties:
   org.quartz:
@@ -317,6 +327,12 @@ documentation:
   swagger:
     enabled: true
 
+dataExtraction:
+  emailFrom: noreply@reform.hmcts.net
+  status:
+    DA:
+      emailTo: da-extraction@divorce.gov.uk
+
 bulk-action:
   page-size: 50
   retries:
@@ -332,6 +348,8 @@ bulk-action:
 # Enable disk space health check
 management:
   health:
+    mail:
+      enabled: false
     elasticsearch:
       enabled: false
   endpoint:

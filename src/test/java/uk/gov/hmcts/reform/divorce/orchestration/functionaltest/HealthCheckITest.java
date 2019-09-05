@@ -387,19 +387,19 @@ public class HealthCheckITest extends MockedFunctionalTest {
         assertThat(response.getStatusLine().getStatusCode(), equalTo(503));
         assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));
         assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
-                equalTo("UP"));
+            equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
-                equalTo("UP"));
+            equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.caseValidationServiceHealthCheck.status").toString(),
-                equalTo("UP"));
+            equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.documentGeneratorServiceHealthCheck.status").toString(),
-                equalTo("UP"));
+            equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.feesAndPaymentsServiceHealthCheck.status").toString(),
-                equalTo("UP"));
+            equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
-                equalTo("UP"));
+            equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
-                equalTo("DOWN"));
+            equalTo("DOWN"));
         assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
     }
 
@@ -440,9 +440,9 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
     private void mockEndpointAndResponse(WireMockClassRule mockServer, boolean serviceUp) {
         mockServer.stubFor(get(urlEqualTo("/health"))
-                .willReturn(aResponse()
-                        .withStatus(serviceUp ? HttpStatus.OK.value() : HttpStatus.SERVICE_UNAVAILABLE.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(serviceUp ? HEALTH_UP_RESPONSE : HEALTH_DOWN_RESPONSE)));
+            .willReturn(aResponse()
+                .withStatus(serviceUp ? HttpStatus.OK.value() : HttpStatus.SERVICE_UNAVAILABLE.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(serviceUp ? HEALTH_UP_RESPONSE : HEALTH_DOWN_RESPONSE)));
     }
 }

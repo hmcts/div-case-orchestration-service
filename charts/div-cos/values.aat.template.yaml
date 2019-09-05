@@ -27,6 +27,10 @@ java:
         SCHEDULER_ENABLED: true
         FEATURE_RESP_SOLICITOR_DETAILS: "true"
 
+        SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: false
+
+        DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
+
     keyVaults:
         "div":
             resourceGroup: div
