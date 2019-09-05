@@ -58,7 +58,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class LinkRespondentIdamITest extends IdamTestSupport {
     private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
     private static final String RETRIEVE_CASE_CONTEXT_PATH = "/casemaintenance/version/1/case/" + TEST_CASE_ID;
@@ -130,6 +129,8 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
 
     @Test
     public void givenPinAuthFails_whenLinkRespondent_thenReturnBadRequest() throws Exception {
+        stubSignInForCaseworker();
+        stubRetrieveCaseByIdFromCMS(OK, convertObjectToJsonString(CASE_DETAILS_NO_AOS));
         stubPinAuthoriseEndpoint(UNAUTHORIZED, TEST_ERROR);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -242,6 +243,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
             .andExpect(status().isOk());
     }
 
+    @DirtiesContext
     @Test
     public void givenAllGoesWell_whenLinkCoRespondent_thenProceedAsExpected() throws Exception {
         Map<String, Object> caseData = new HashMap<>();
@@ -301,6 +303,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
             .andExpect(status().isNotFound());
     }
 
+    @DirtiesContext
     @Test
     public void givenNonStandardLinking_whenLinkRespondent_thenProceedAsExpected() throws Exception {
         stubSignInForCaseworker();

@@ -6,9 +6,12 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -19,11 +22,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.validation.service.ValidationService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +37,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -43,7 +48,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
@@ -63,7 +67,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FORM_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERATE_AOS_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ISSUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_FILE_NAME_FORMAT;
@@ -74,9 +77,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class PetitionIssuedITest extends IdamTestSupport {
     private static final String API_URL = "/petition-issued";
-    private static final String VALIDATION_CONTEXT_PATH = "/version/1/validate";
     private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
     private static final String PETITION_ISSUE_FEE_CONTEXT_PATH = "/fees-and-payments/version/1/petition-issue-fee";
@@ -92,8 +95,13 @@ public class PetitionIssuedITest extends IdamTestSupport {
         .caseDetails(CASE_DETAILS)
         .build();
 
+    private static final ValidationResponse VALIDATION_RESPONSE = ValidationResponse.builder().build();
+
     @Autowired
     private MockMvc webClient;
+
+    @MockBean
+    private ValidationService validationService;
 
     @BeforeClass
     public static void beforeClass() {
@@ -125,39 +133,19 @@ public class PetitionIssuedITest extends IdamTestSupport {
     }
 
     @Test
-    public void givenThereIsAConnectionError_whenPetitionIssued_thenReturnBadGateway()
-        throws Exception {
-        final String errorMessage = "some error message";
-
-        stubValidationServerEndpoint(HttpStatus.BAD_GATEWAY,
-            ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(), errorMessage);
-
-        webClient.perform(post(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(CREATE_EVENT))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().is5xxServerError());
-    }
-
-    @Test
     public void givenValidationFailed_whenPetitionIssued_thenReturnCaseWithValidationErrors()
         throws Exception {
-        final List<String> errors = Collections.singletonList(TEST_ERROR);
-
-        final ValidationResponse validationResponse =
-            ValidationResponse.builder()
-                .errors(errors)
-                .build();
+        final List<String> errors = getListOfErrors();
+        final ValidationResponse validationResponseFail = ValidationResponse.builder()
+            .errors(errors)
+            .warnings(Collections.singletonList("Warning!"))
+            .build();
+        when(validationService.validate(any())).thenReturn(validationResponseFail);
 
         final CcdCallbackResponse ccdCallbackResponse =
             CcdCallbackResponse.builder()
                 .errors(errors)
                 .build();
-
-        stubValidationServerEndpoint(HttpStatus.OK,
-            ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
-            convertObjectToJsonString(validationResponse));
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -171,8 +159,6 @@ public class PetitionIssuedITest extends IdamTestSupport {
     @Test
     public void givenGenerateAOSInvitationIsNull_whenPetitionIssued_thenReturnCaseExpectedChanges()
         throws Exception {
-        final ValidationResponse validationResponse = ValidationResponse.builder().build();
-
         final GenerateDocumentRequest generateMiniPetitionRequest =
             GenerateDocumentRequest.builder()
                 .template(MINI_PETITION_TEMPLATE_NAME)
@@ -193,12 +179,9 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         final Map<String, Object> formattedCaseData = emptyMap();
 
-        stubValidationServerEndpoint(HttpStatus.OK,
-            ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
-            convertObjectToJsonString(validationResponse));
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
-
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
+        when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -212,8 +195,6 @@ public class PetitionIssuedITest extends IdamTestSupport {
     @Test
     public void givenGenerateAOSInvitationIsFalse_whenPetitionIssued_thenReturnCaseExpectedChanges()
         throws Exception {
-        final ValidationResponse validationResponse = ValidationResponse.builder().build();
-
         final GenerateDocumentRequest generateMiniPetitionRequest =
             GenerateDocumentRequest.builder()
                 .template(MINI_PETITION_TEMPLATE_NAME)
@@ -234,12 +215,9 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         final Map<String, Object> formattedCaseData = emptyMap();
 
-        stubValidationServerEndpoint(HttpStatus.OK,
-            ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
-            convertObjectToJsonString(validationResponse));
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
-
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
+        when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -254,8 +232,6 @@ public class PetitionIssuedITest extends IdamTestSupport {
     @Test
     public void givenGenerateInvitationIsTrue_whenPetitionIssued_thenReturnCaseExpectedChanges()
         throws Exception {
-        final ValidationResponse validationResponse = ValidationResponse.builder().build();
-
         final PinRequest pinRequest =
             PinRequest.builder()
                 .firstName(TEST_USER_FIRST_NAME)
@@ -286,12 +262,9 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-        stubValidationServerEndpoint(HttpStatus.OK,
-            ValidationRequest.builder().data(CASE_DATA).formId(FORM_ID).build(),
-            convertObjectToJsonString(validationResponse));
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
-
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
+        when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -306,12 +279,9 @@ public class PetitionIssuedITest extends IdamTestSupport {
     @Test
     public void givenGenerateInvitationIsTrueAndIsServiceCentre_whenPetitionIssued_thenReturnCaseExpectedChanges()
         throws Exception {
-
         CcdCallbackRequest ccdCallbackRequestWithServiceCentre = CREATE_EVENT;
         ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_DIVORCE_UNIT,
             CourtEnum.SERVICE_CENTER.getId());
-
-        final ValidationResponse validationResponse = ValidationResponse.builder().build();
 
         final PinRequest pinRequest =
             PinRequest.builder()
@@ -358,15 +328,10 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-        stubValidationServerEndpoint(HttpStatus.OK,
-            ValidationRequest.builder().data(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
-                .formId(FORM_ID).build(),
-            convertObjectToJsonString(validationResponse));
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
         stubDocumentGeneratorServerEndpoint(generateAosInvitationRequest, generatedAosInvitationResponse);
-
-
         stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
+        when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -381,14 +346,11 @@ public class PetitionIssuedITest extends IdamTestSupport {
     @Test
     public void givenGenerateInvitationIsTrueAndIsServiceCentreAndCoRespondentExists_whenPetitionIssued_thenReturnCaseExpectedChanges()
         throws Exception {
-
         CcdCallbackRequest ccdCallbackRequestWithServiceCentre = CREATE_EVENT;
         ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_DIVORCE_UNIT,
             CourtEnum.SERVICE_CENTER.getId());
         ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
         ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_CO_RESPONDENT_NAMED, "YES");
-
-        final ValidationResponse validationResponse = ValidationResponse.builder().build();
 
         final PinRequest pinRequest =
             PinRequest.builder()
@@ -444,12 +406,9 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-        stubValidationServerEndpoint(HttpStatus.OK,
-            ValidationRequest.builder().data(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
-                .formId(FORM_ID).build(),
-            convertObjectToJsonString(validationResponse));
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
         stubDocumentGeneratorServerEndpoint(generateAosInvitationRequest, generatedAosInvitationResponse);
+        when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         FeeResponse feeResponse = FeeResponse.builder().amount(550.00).build();
 
@@ -473,16 +432,6 @@ public class PetitionIssuedITest extends IdamTestSupport {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
-    }
-
-    private void stubValidationServerEndpoint(HttpStatus status,
-                                              ValidationRequest validationRequest, String body) {
-        validationServiceServer.stubFor(WireMock.post(VALIDATION_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(validationRequest)))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(status.value())
-                .withBody(body)));
     }
 
     private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest generateDocumentRequest,
@@ -513,4 +462,24 @@ public class PetitionIssuedITest extends IdamTestSupport {
                 .withStatus(status.value())
                 .withBody(convertObjectToJsonString(feeResponse))));
     }
+
+    private List<String> getListOfErrors() {
+        return Arrays.asList(
+            "D8InferredPetitionerGender can not be null or empty. Actual data is: null",
+            "D8InferredRespondentGender can not be null or empty. Actual data is: null",
+            "D8MarriageDate can not be null or empty. Actual data is: null",
+            "D8MarriagePetitionerName can not be null or empty. Actual data is: null",
+            "D8MarriageRespondentName can not be null or empty. Actual data is: null",
+            "D8PetitionerContactDetailsConfidential can not be null or empty. Actual data is: null",
+            "D8RespondentFirstName can not be null or empty. Actual data is: null",
+            "D8RespondentLastName can not be null or empty. Actual data is: null",
+            "D8LegalProceedings can not be null or empty. Actual data is: null",
+            "D8ReasonForDivorce can not be null or empty. Actual data is: null",
+            "D8FinancialOrder can not be null or empty. Actual data is: null",
+            "D8DivorceCostsClaim can not be null or empty. Actual data is: null",
+            "D8JurisdictionConnection can not be null or empty. Actual data is: null",
+            "D8StatementOfTruth must be 'YES'. Actual data is: null"
+        );
+    }
+
 }

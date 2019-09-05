@@ -8,7 +8,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
