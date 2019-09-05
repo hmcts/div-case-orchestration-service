@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
 import java.time.LocalDateTime;
@@ -15,6 +15,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.ProcessBulkCaseITest.buildCaseLink;
 
 public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
 
@@ -27,8 +28,8 @@ public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
     private static final String COURT_NAME_FIELD_KEY = "CourtName";
     private static final String BULK_LISTED_STATE = "Listed";
 
-    private static final int  MAX_WAITING_TIME_IN_SECONDS = 90;
-    private static final int  POOL_INTERVAL_IN_MILLIS = 1000;
+    private static final int MAX_WAITING_TIME_IN_SECONDS = 90;
+    private static final int POOL_INTERVAL_IN_MILLIS = 1000;
 
     @Test
     public void whenScheduleBulkCaseForListing_thenIndividualCasesShouldBeUpdated() throws Exception {
@@ -39,9 +40,9 @@ public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
         String caseId2 = createAwaitingPronouncementCase(user2).getId().toString();
 
         CollectionMember<CaseLink> caseLink1 = new CollectionMember<>();
-        caseLink1.setValue(new CaseLink(caseId1));
+        caseLink1.setValue(buildCaseLink(caseId1));
         CollectionMember<CaseLink> caseLink2 = new CollectionMember<>();
-        caseLink2.setValue(new CaseLink(caseId2));
+        caseLink2.setValue(buildCaseLink(caseId2));
 
         List<CollectionMember<CaseLink>> acceptedCases = ImmutableList.of(caseLink1, caseLink2);
 
@@ -61,13 +62,13 @@ public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
 
     private void validateCaseWithAwaitingTime(UserDetails user, String caseId) {
         await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS)
-                .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
-                .untilAsserted(() -> assertThat(retrieveCaseForCaseworker(user, caseId).getData().get(COURT_NAME_FIELD_KEY)).isNotNull());
+            .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
+            .untilAsserted(() -> assertThat(retrieveCaseForCaseworker(user, caseId).getData().get(COURT_NAME_FIELD_KEY)).isNotNull());
     }
 
     private void validateBulkCaseWithAwaitingTime(UserDetails user, String caseId) {
         await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS)
-                .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
-                .untilAsserted(() -> assertThat(retrieveCaseForCaseworker(user, caseId).getState()).isEqualTo(BULK_LISTED_STATE));
+            .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
+            .untilAsserted(() -> assertThat(retrieveCaseForCaseworker(user, caseId).getState()).isEqualTo(BULK_LISTED_STATE));
     }
 }

@@ -10,7 +10,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -769,7 +768,7 @@ public class CaseOrchestrationServiceImplTest {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
         when(solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN))
-                .thenReturn(requestPayload);
+            .thenReturn(requestPayload);
 
         // when
         Map<String, Object> actual = classUnderTest.solicitorUpdate(ccdCallbackRequest, AUTH_TOKEN);
@@ -986,16 +985,16 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-                CaseDetails.builder().caseData(caseData).build())
-                .build();
+            CaseDetails.builder().caseData(caseData).build())
+            .build();
 
         classUnderTest
-                .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+            .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-                DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
+            DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
         verify(documentGenerationWorkflow, never()).run(ccdCallbackRequest, AUTH_TOKEN,
-                COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
+            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
@@ -1008,16 +1007,16 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-                CaseDetails.builder().caseData(caseData).build())
-                .build();
+            CaseDetails.builder().caseData(caseData).build())
+            .build();
 
         classUnderTest
-                .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+            .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-                DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
+            DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-                COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
+            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
@@ -1355,7 +1354,7 @@ public class CaseOrchestrationServiceImplTest {
             TEMPLATE_ID, DOCUMENT_TYPE, AUTH_TOKEN);
 
         assertThat(returnedPayload, equalTo(expectedPayload));
-        verify(documentGenerationWorkflow, never()).run(any(),any(), any(), any(), any());
+        verify(documentGenerationWorkflow, never()).run(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -1372,7 +1371,7 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(validateBulkCaseListingWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData())).thenReturn(expectedPayload);
-        when((documentGenerationWorkflow).run(ccdCallbackRequest,AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME))
+        when((documentGenerationWorkflow).run(ccdCallbackRequest, AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME))
             .thenReturn(expectedPayload);
 
         Map<String, Object> returnedPayload = classUnderTest
@@ -1380,7 +1379,7 @@ public class CaseOrchestrationServiceImplTest {
 
         assertThat(returnedPayload, equalTo(expectedPayload));
         verify(documentGenerationWorkflow, times(1))
-            .run(ccdCallbackRequest,AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME);
+            .run(ccdCallbackRequest, AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME);
     }
 
     @Test
@@ -1405,11 +1404,11 @@ public class CaseOrchestrationServiceImplTest {
     public void shouldCallRightWorkflow_WhenRemoveDnOutcomeCase() throws WorkflowException {
         Map<String, Object> caseData = DUMMY_CASE_DATA;
         CcdCallbackRequest request = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails
-                        .builder()
-                        .caseData(caseData)
-                        .caseId(TEST_CASE_ID)
-                        .build()).build();
+            .caseDetails(CaseDetails
+                .builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .build()).build();
 
         when(removeDnOutcomeCaseFlagWorkflow.run(request)).thenReturn(caseData);
 
@@ -1421,11 +1420,11 @@ public class CaseOrchestrationServiceImplTest {
     public void shouldCallRightWorkflow_WhenRemoveLegalAdvisorMakeDecisionFields() throws WorkflowException {
         Map<String, Object> caseData = DUMMY_CASE_DATA;
         CcdCallbackRequest request = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails
-                        .builder()
-                        .caseData(caseData)
-                        .caseId(TEST_CASE_ID)
-                        .build()).build();
+            .caseDetails(CaseDetails
+                .builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .build()).build();
 
         when(removeLegalAdvisorMakeDecisionFieldsWorkflow.run(request)).thenReturn(caseData);
 

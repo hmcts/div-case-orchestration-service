@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
-//import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
 import java.time.LocalDateTime;
@@ -26,6 +25,7 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_JUDGE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.ProcessBulkCaseITest.buildCaseLink;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
@@ -56,9 +56,9 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
         String caseId2 = createAwaitingPronouncementCase(user2).getId().toString();
 
         CollectionMember<CaseLink> caseLink1 = new CollectionMember<>();
-        caseLink1.setValue(new CaseLink(caseId1));
+        caseLink1.setValue(buildCaseLink(caseId1));
         CollectionMember<CaseLink> caseLink2 = new CollectionMember<>();
-        caseLink2.setValue(new CaseLink(caseId2));
+        caseLink2.setValue(buildCaseLink(caseId2));
 
         List<CollectionMember<CaseLink>> acceptedCases = asList(caseLink1, caseLink2);
 
@@ -103,7 +103,7 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
 
     private CollectionMember<Map<String, Object>> getCaseInfo(String caseReference) {
         CollectionMember<Map<String, Object>> caseLink = new CollectionMember<>();
-        caseLink.setValue(ImmutableMap.of(CASE_REFERENCE_FIELD, new CaseLink(caseReference)));
+        caseLink.setValue(ImmutableMap.of(CASE_REFERENCE_FIELD, buildCaseLink(caseReference)));
         return caseLink;
     }
 

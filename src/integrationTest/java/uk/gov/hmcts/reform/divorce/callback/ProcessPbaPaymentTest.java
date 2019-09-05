@@ -4,8 +4,8 @@ import io.restassured.response.Response;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 
 import java.util.List;
 import java.util.Map;
@@ -28,16 +28,16 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
     @Test
     public void givenCallbackRequest_whenProcessPbaPayment_thenReturnDataWithNoErrors() throws Exception {
         Response response = postWithDataAndValidateResponse(
-                serverUrl + contextPath,
-                PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
-                createCaseWorkerUser().getAuthToken()
+            serverUrl + contextPath,
+            PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
+            createCaseWorkerUser().getAuthToken()
         );
 
         Map<String, Object> responseData = response.getBody().path(DATA_KEY);
 
         // There will be an error if PBA payment is unsuccessful
         assertNotNull(responseData.get(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY));
-        assertNoPetitionOnDocumentGeneratedList((List)responseData.get(D8DOCUMENTS_GENERATED));
+        assertNoPetitionOnDocumentGeneratedList((List) responseData.get(D8DOCUMENTS_GENERATED));
     }
 
     private static void assertNoPetitionOnDocumentGeneratedList(List<CollectionMember<Document>> documents) {
