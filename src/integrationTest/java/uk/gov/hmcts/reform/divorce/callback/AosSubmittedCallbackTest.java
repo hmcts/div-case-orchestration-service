@@ -44,5 +44,4 @@ public class AosSubmittedCallbackTest extends IntegrationTest {
         assertEquals(1, error.size());
         assertTrue(error.get(0).contains("Could not evaluate value of mandatory property \"RespEmailAddress\""));
     }
-
 }

@@ -40,6 +40,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class AosSubmissionWorkflowTest {
 
     private static final String UNFORMATTED_CASE_ID = "0123456789012345";
+    private static final String RESP_ACKNOWLEDGES_SERVICE_DEFENDING_DIVORCE_JSON =
+            "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json";
+    private static final String RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON =
+            "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json";
+    private static final String RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING__NOT_ADMITTING_DIVORCE_JSON =
+            "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingNotAdmittingDivorce.json";
+    private static final String UNCLEAR_ACKNOWLEDGEMENT_OF_SERVICE_JSON =
+            "/jsonExamples/payloads/unclearAcknowledgementOfService.json";
+    private static final String AOS_SOLICITOR_NOMINATED_JSON =
+            "/jsonExamples/payloads/aosSolicitorNominated.json";
+    private static final String AOS_SOLICITOR_NOMINATED_WITHOUT_FIELDS_SET_JSON =
+            "/jsonExamples/payloads/aosSolicitorNominatedWithoutFieldSet.json";
 
     private Map<String, Object> returnedPayloadFromTask;
 
@@ -71,7 +83,7 @@ public class AosSubmissionWorkflowTest {
     @Test
     public void testDefendedTaskIsCalledWhenWorkflowIsRun() throws WorkflowException, IOException, TaskException {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CcdCallbackRequest.class);
+                RESP_ACKNOWLEDGES_SERVICE_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest);
@@ -88,7 +100,7 @@ public class AosSubmissionWorkflowTest {
     public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorce() throws IOException,
             WorkflowException, TaskException {
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CcdCallbackRequest.class);
+                RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
 
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest);
@@ -102,10 +114,10 @@ public class AosSubmissionWorkflowTest {
     }
 
     @Test
-    public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorceButNotAdmitWhatIsSaid() throws IOException,
-            WorkflowException, TaskException {
+    public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorceButNotAdmitWhatIsSaid()
+            throws IOException, WorkflowException, TaskException {
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingNotAdmittingDivorce.json", CcdCallbackRequest.class);
+                RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING__NOT_ADMITTING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
 
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest);
@@ -126,7 +138,7 @@ public class AosSubmissionWorkflowTest {
             RESP_WILL_DEFEND_DIVORCE));
 
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/unclearAcknowledgementOfService.json", CcdCallbackRequest.class);
+                UNCLEAR_ACKNOWLEDGEMENT_OF_SERVICE_JSON, CcdCallbackRequest.class);
         Map<String, Object> incomingCaseDate = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest);
@@ -135,27 +147,38 @@ public class AosSubmissionWorkflowTest {
     }
 
     @Test
-    public void testSolicitorTaskIsCalledWhenWorkflowIsRun_whenSolicitorIsRepresenting() throws WorkflowException, IOException, TaskException {
+    public void testSolicitorTaskIsCalledWhenWorkflowIsRun_whenSolicitorIsRepresenting()
+            throws WorkflowException, IOException {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/aosSolicitorNominated.json", CcdCallbackRequest.class);
+                AOS_SOLICITOR_NOMINATED_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest);
+        aosSubmissionWorkflow.run(ccdCallbackRequest);
 
         verify(submitRespondentAosCaseForSolicitorTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
-        //assertThat(returnedPayloadFromWorkflow, is(sameInstance(returnedPayloadFromTask)));
-        TaskContext taskContextPassedToTask = taskContextArgumentCaptor.getValue();
     }
 
     @Test
-    public void testSolicitorTaskIsNotCalledWhenWorkflowIsRun_whenSolicitorIsNotRepresenting() throws IOException,
+    public void testSolicitorTaskIsNotCalledWhenSolicitorIsNotRepresenting() throws IOException,
             WorkflowException, TaskException {
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CcdCallbackRequest.class);
-        Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
+                RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
 
-        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest);
+        aosSubmissionWorkflow.run(callbackRequest);
 
         verifyZeroInteractions(submitRespondentAosCaseForSolicitorTask);
+    }
+
+    @Test
+    public void testSolicitorTaskIsCalled_whenSolicitorIsRepresentingIsEmpty_andRespSolValuesExist()
+            throws WorkflowException, IOException {
+
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                AOS_SOLICITOR_NOMINATED_WITHOUT_FIELDS_SET_JSON, CcdCallbackRequest.class);
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest);
+
+        verify(submitRespondentAosCaseForSolicitorTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
     }
 }
