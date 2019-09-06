@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.event;
+package uk.gov.hmcts.reform.divorce.orchestration.event.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;

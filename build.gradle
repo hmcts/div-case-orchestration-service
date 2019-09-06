@@ -207,44 +207,44 @@ dependencyCheck {
 }
 
 def versions = [
-        commonsBeanUtils                : '1.9.4',
-        commonsIo                       : '2.5',
-        commonsLang3                    : '3.7',
-        springfoxSwagger                : '2.9.2',
-        lombok                          : '1.16.16',
-        puppyCrawl                      : '8.21',
-        reformsJavaLogging              : '5.0.1',
-        reformHealth                    : '0.0.3',
-        reformPropertiesVolume          : '0.0.4',
-        serviceTokenGenerator           : '3.0.0',
-        hmctsNotify                     : '3.14.1-RELEASE',
-        feignHttpClient                 : '10.2.0',
-        reformSpringBootAutoConfigure   : '1.1.0',
-        springCloudDependencies         : '2.1.2.RELEASE',
-        restAssured                     : '3.0.3',
-        serenity                        : '2.0.41',
-        serenityCucumber                : '1.9.31',
-        unirest                         : '1.4.9',
-        jsonAssert                      : '1.2.3',
-        pitest                          : '1.3.2',
-        gradlePitest                    : '1.4.0',
-        sonarPitest                     : '0.5',
-        ccdStoreClient                  : '4.6.2',
-        javaxWsRs                       : '2.1.1',
-        jsonPathAssert                  : '2.2.0',
-        jacksonDatabind                 : '2.9.9.3',
-        guava                           : '27.1-jre',
-        bcpkixJdk15on                   : '1.60',
-        springSecurityRsa               : '1.0.8.RELEASE',
-        springSecurityCrypto            : '5.1.5.RELEASE',
-        tomcat                          : '9.0.22',
-        sendLetterClient                : '2.1.1',
-        commonsMath3                    : '3.6.1',
-        postgresql                      : '42.2.5',
-        hibernateTypes                  : '2.4.0',
-        flyway                          : '5.2.4',
-        elasticsearch                   : '7.3.0',
-        divCommonLib                    : '1.0.9'
+        commonsBeanUtils             : '1.9.4',
+        commonsIo                    : '2.5',
+        commonsLang3                 : '3.7',
+        springfoxSwagger             : '2.9.2',
+        lombok                       : '1.16.16',
+        puppyCrawl                   : '8.21',
+        reformsJavaLogging           : '5.0.1',
+        reformHealth                 : '0.0.3',
+        reformPropertiesVolume       : '0.0.4',
+        serviceTokenGenerator        : '3.0.0',
+        hmctsNotify                  : '3.14.1-RELEASE',
+        feignHttpClient              : '10.2.0',
+        reformSpringBootAutoConfigure: '1.1.0',
+        springCloudDependencies      : '2.1.2.RELEASE',
+        restAssured                  : '3.0.3',
+        serenity                     : '2.0.41',
+        serenityCucumber             : '1.9.31',
+        unirest                      : '1.4.9',
+        jsonAssert                   : '1.2.3',
+        pitest                       : '1.3.2',
+        gradlePitest                 : '1.4.0',
+        sonarPitest                  : '0.5',
+        ccdStoreClient               : '4.6.2',
+        javaxWsRs                    : '2.1.1',
+        jsonPathAssert               : '2.2.0',
+        jacksonDatabind              : '2.9.9.3',
+        guava                        : '27.1-jre',
+        bcpkixJdk15on                : '1.60',
+        springSecurityRsa            : '1.0.8.RELEASE',
+        springSecurityCrypto         : '5.1.5.RELEASE',
+        tomcat                       : '9.0.22',
+        sendLetterClient             : '2.1.1',
+        commonsMath3                 : '3.6.1',
+        postgresql                   : '42.2.5',
+        hibernateTypes               : '2.4.0',
+        flyway                       : '5.2.4',
+        elasticsearch                : '7.3.0',
+        divCommonLib                 : '1.0.9'
 ]
 
 dependencies {
@@ -266,13 +266,15 @@ dependencies {
 
     compile('org.elasticsearch.client:transport:7.1.1')
 
+    compile group: 'javax.mail', name: 'mail', version: '1.4'
+
     compile group: 'com.puppycrawl.tools', name: 'checkstyle', version: versions.puppyCrawl
     compile group: 'commons-io', name: 'commons-io', version: versions.commonsIo
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
     compile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
     compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: versions.javaxWsRs
-    compile group: 'com.vladmihalcea', name: 'hibernate-types-52', version:versions.hibernateTypes
+    compile group: 'com.vladmihalcea', name: 'hibernate-types-52', version: versions.hibernateTypes
     compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
@@ -280,7 +282,7 @@ dependencies {
     compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: versions.javaxWsRs
 
     compile group: 'org.springframework', name: 'spring-context-support'
-    compile (group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
+    compile(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
             {
                 exclude group: 'io.reactivex', module: 'io.reactivex'
                 exclude group: 'io.reactivex', module: 'rxnetty'
@@ -301,51 +303,51 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'div-common-lib', version: versions.divCommonLib
-    compile (group: 'uk.gov.hmcts.reform', name:'service-auth-provider-client', version: versions.serviceTokenGenerator)
+    compile(group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.serviceTokenGenerator)
             {
                 exclude group: 'io.reactivex', module: 'io.reactivex'
                 exclude group: 'io.reactivex', module: 'rxnetty'
                 exclude group: 'io.reactivex', module: 'rxnetty-contexts'
                 exclude group: 'io.reactivex', module: 'rxnetty-servo'
             }
-    compile group: 'com.jayway.jsonpath', name:'json-path-assert', version: versions.jsonPathAssert
+    compile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: versions.jsonPathAssert
     compile group: 'org.pitest', name: 'pitest', version: versions.pitest
     compile group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
-    compile group: 'org.codehaus.sonar-plugins', name:'sonar-pitest-plugin', version: versions.sonarPitest
+    compile group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
 
-    compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
+    compile(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jacksonDatabind) {
         force = true
     }
 
-    compile (group: 'com.google.guava', name:'guava', version: versions.guava) {
+    compile(group: 'com.google.guava', name: 'guava', version: versions.guava) {
         force = true
     }
 
-    compile (group: 'org.bouncycastle', name:'bcpkix-jdk15on', version: versions.bcpkixJdk15on) {
+    compile(group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: versions.bcpkixJdk15on) {
         force = true
     }
 
-    compile (group: 'org.springframework.security', name:'spring-security-rsa', version: versions.springSecurityRsa) {
+    compile(group: 'org.springframework.security', name: 'spring-security-rsa', version: versions.springSecurityRsa) {
         force = true
     }
 
-    compile (group: 'org.springframework.security', name:'spring-security-crypto', version: versions.springSecurityCrypto) {
+    compile(group: 'org.springframework.security', name: 'spring-security-crypto', version: versions.springSecurityCrypto) {
         force = true
     }
 
-    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-core', version: versions.tomcat) {
+    compile(group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: versions.tomcat) {
         force = true
     }
 
-    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-websocket', version: versions.tomcat) {
+    compile(group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: versions.tomcat) {
         force = true
     }
 
-    compile (group: 'org.apache.tomcat.embed', name:'tomcat-embed-el', version: versions.tomcat) {
+    compile(group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: versions.tomcat) {
         force = true
     }
 
-    compile (group: 'commons-beanutils', name: 'commons-beanutils', version: versions.commonsBeanUtils) {
+    compile(group: 'commons-beanutils', name: 'commons-beanutils', version: versions.commonsBeanUtils) {
         force = true
     }
 
@@ -370,17 +372,17 @@ dependencies {
     integrationTestCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
     integrationTestCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     integrationTestCompile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
-    integrationTestCompile group: 'org.skyscreamer', name:'jsonassert', version: versions.jsonAssert
+    integrationTestCompile group: 'org.skyscreamer', name: 'jsonassert', version: versions.jsonAssert
     integrationTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
     integrationTestCompile group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-    integrationTestCompile (group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: versions.ccdStoreClient)
+    integrationTestCompile(group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: versions.ccdStoreClient)
             {
                 exclude group: 'io.reactivex', module: 'io.reactivex'
                 exclude group: 'io.reactivex', module: 'rxnetty'
                 exclude group: 'io.reactivex', module: 'rxnetty-contexts'
                 exclude group: 'io.reactivex', module: 'rxnetty-servo'
             }
-    integrationTestCompile (group: 'uk.gov.hmcts.reform', name:'service-auth-provider-client', version: versions.serviceTokenGenerator)
+    integrationTestCompile(group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.serviceTokenGenerator)
             {
                 exclude group: 'io.reactivex', module: 'io.reactivex'
                 exclude group: 'io.reactivex', module: 'rxnetty'
@@ -388,7 +390,7 @@ dependencies {
                 exclude group: 'io.reactivex', module: 'rxnetty-servo'
             }
     integrationTestCompile group: 'org.springframework', name: 'spring-context-support'
-    integrationTestCompile (group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
+    integrationTestCompile(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
             {
                 exclude group: 'io.reactivex', module: 'io.reactivex'
                 exclude group: 'io.reactivex', module: 'rxnetty'
@@ -398,7 +400,6 @@ dependencies {
     integrationTestCompile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.4.0'
     integrationTestCompile group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
 }
-
 
 
 dependencies {
@@ -422,7 +423,7 @@ task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dep
 }
 
 task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
-    printf ("Available processors:::::::::: " + Runtime.runtime.availableProcessors().intdiv(2).toString())
+    printf("Available processors:::::::::: " + Runtime.runtime.availableProcessors().intdiv(2).toString())
 
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     forkEvery = 10

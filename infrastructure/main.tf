@@ -91,6 +91,14 @@ module "div-cos" {
     FLYWAY_NOOP_STRATEGY                           = "true"
 
     FEATURE_RESP_SOLICITOR_DETAILS                 = "${var.feature_resp_solicitor_details}"
+
+    SPRING_MAIL_HOST                                  = "${var.spring_mail_host}"
+    SPRING_MAIL_PORT                                  = "${var.spring_mail_port}"
+    SPRING_MAIL_TEST_CONNECTION                       = "${var.spring_mail_test_connection}"
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE  = "${var.spring_mail_properties_mail_smtp_starttls_enable}"
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST        = "${var.spring_mail_properties_mail_smtp_ssl_trust}"
+
+    DATAEXTRACTION_STATUS_DA_EMAILTO       = "${var.dataextraction_status_da_email_to}"
   }
 }
 

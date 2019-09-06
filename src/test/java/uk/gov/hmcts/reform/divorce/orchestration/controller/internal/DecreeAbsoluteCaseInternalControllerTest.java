@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.controller;
+package uk.gov.hmcts.reform.divorce.orchestration.controller.internal;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

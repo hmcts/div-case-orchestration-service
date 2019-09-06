@@ -115,4 +115,15 @@ public class CcdUtilUTest {
         assertThat(formattedDate, equalTo("2019-05-13"));
     }
 
+    @Test
+    public void shouldConvertCCDDateTimeToLocalDateTime() {
+        LocalDateTime localDateTime = CcdUtil.mapCCDDateTimeToLocalDateTime("2018-06-24T16:49:00.015");
+        assertThat(localDateTime.getDayOfMonth(), is(24));
+        assertThat(localDateTime.getMonth(), is(Month.JUNE));
+        assertThat(localDateTime.getYear(), is(2018));
+        assertThat(localDateTime.getHour(), is(16));
+        assertThat(localDateTime.getMinute(), is(49));
+        assertThat(localDateTime.getSecond(), is(0));
+    }
+
 }
