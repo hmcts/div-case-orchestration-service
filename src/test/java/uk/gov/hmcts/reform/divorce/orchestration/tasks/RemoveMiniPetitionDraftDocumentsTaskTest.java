@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
+import uk.gov.hmcts.reform.divorce.formatter.service.CaseFormatterService;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 
 import java.util.HashMap;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 public class RemoveMiniPetitionDraftDocumentsTaskTest {
 
     @Mock
-    private CaseFormatterClient caseFormatterClient;
+    private CaseFormatterService caseFormatterService;
 
     @InjectMocks
     private RemoveMiniPetitionDraftDocumentsTask removeMiniPetitionDraftDocumentsTask;
@@ -28,11 +28,11 @@ public class RemoveMiniPetitionDraftDocumentsTaskTest {
         final Map<String, Object> payload = new HashMap<>();
 
         //given
-        when(caseFormatterClient.removeAllPetitionDocuments(payload)).thenReturn(payload);
+        when(caseFormatterService.removeAllPetitionDocuments(payload)).thenReturn(payload);
 
         //when
         removeMiniPetitionDraftDocumentsTask.execute(new DefaultTaskContext(), payload);
 
-        verify(caseFormatterClient).removeAllPetitionDocuments(payload);
+        verify(caseFormatterService).removeAllPetitionDocuments(payload);
     }
 }
