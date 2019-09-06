@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
@@ -86,7 +87,7 @@ public class AosSubmissionWorkflowTest {
                 RESP_ACKNOWLEDGES_SERVICE_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest);
+        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(defendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
         verifyZeroInteractions(undefendedDivorceNotificationEmailTask);
@@ -103,7 +104,7 @@ public class AosSubmissionWorkflowTest {
                 RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest);
+        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
 
         verify(undefendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
         verifyZeroInteractions(defendedDivorceNotificationEmailTask);
@@ -120,7 +121,7 @@ public class AosSubmissionWorkflowTest {
                 RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING__NOT_ADMITTING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest);
+        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
 
         verify(undefendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
         verifyZeroInteractions(defendedDivorceNotificationEmailTask);
@@ -141,7 +142,7 @@ public class AosSubmissionWorkflowTest {
                 UNCLEAR_ACKNOWLEDGEMENT_OF_SERVICE_JSON, CcdCallbackRequest.class);
         Map<String, Object> incomingCaseDate = ccdCallbackRequest.getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest);
+        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
         assertThat(returnedPayloadFromWorkflow.size(), is(incomingCaseDate.size() + 1));
     }
@@ -153,7 +154,7 @@ public class AosSubmissionWorkflowTest {
                 AOS_SOLICITOR_NOMINATED_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
-        aosSubmissionWorkflow.run(ccdCallbackRequest);
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(submitRespondentAosCaseForSolicitorTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
     }
@@ -164,7 +165,7 @@ public class AosSubmissionWorkflowTest {
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
                 RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
 
-        aosSubmissionWorkflow.run(callbackRequest);
+        aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
 
         verifyZeroInteractions(submitRespondentAosCaseForSolicitorTask);
     }
@@ -177,7 +178,7 @@ public class AosSubmissionWorkflowTest {
                 AOS_SOLICITOR_NOMINATED_WITHOUT_FIELDS_SET_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
-        aosSubmissionWorkflow.run(ccdCallbackRequest);
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(submitRespondentAosCaseForSolicitorTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
     }

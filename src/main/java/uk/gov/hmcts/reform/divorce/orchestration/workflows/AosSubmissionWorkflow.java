@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_COMPANY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
@@ -40,9 +41,9 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
     @Autowired
     private SubmitRespondentAosCaseForSolicitorTask
-            submitRespondentAosCaseForSolicitorTask;
+        submitRespondentAosCaseForSolicitorTask;
 
-    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         String defended = (String) caseData.get(RESP_WILL_DEFEND_DIVORCE);
 
@@ -67,16 +68,13 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         return execute(
             tasks.toArray(new Task[tasks.size()]),
             caseData,
-            ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId())
+            ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId()),
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)
         );
     }
 
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> caseData) {
         final String respondentSolicitorRepresented = (String) caseData.get(RESP_SOL_REPRESENTED);
-
-        // temporary fix until we implement setting respondentSolicitorRepresented from CCD for RespSols
-        final String respondentSolicitorName = (String) caseData.get(D8_RESPONDENT_SOLICITOR_NAME);
-        final String respondentSolicitorCompany = (String) caseData.get(D8_RESPONDENT_SOLICITOR_COMPANY);
 
         return YES_VALUE.equalsIgnoreCase(respondentSolicitorRepresented);
     }

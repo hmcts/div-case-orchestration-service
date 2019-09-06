@@ -685,13 +685,13 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void givenCaseData_whenSendRespondentSubmissionNotification_thenReturnPayload() throws Exception {
-        when(aosSubmissionWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
+        when(aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(requestPayload);
 
         Map<String, Object> returnedPayload = classUnderTest
-            .aosSubmission(ccdCallbackRequest);
+            .aosSubmission(ccdCallbackRequest, AUTH_TOKEN);
 
         assertEquals(requestPayload, returnedPayload);
-        verify(aosSubmissionWorkflow).run(ccdCallbackRequest);
+        verify(aosSubmissionWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
     }
 
     @Test

@@ -380,9 +380,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> aosSubmission(CcdCallbackRequest ccdCallbackRequest)
+    public Map<String, Object> aosSubmission(CcdCallbackRequest ccdCallbackRequest, String authToken)
             throws WorkflowException {
-        return aosSubmissionWorkflow.run(ccdCallbackRequest);
+        return aosSubmissionWorkflow.run(ccdCallbackRequest, authToken);
     }
 
     private List<String> getNotificationErrors(Map<String, Object> notificationErrors) {

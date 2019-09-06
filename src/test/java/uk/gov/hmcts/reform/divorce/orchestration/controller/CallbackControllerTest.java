@@ -188,7 +188,6 @@ public class CallbackControllerTest {
             .build();
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
-        when(caseOrchestrationService.aosSubmission(ccdCallbackRequest)).thenReturn(caseData);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.respondentAOSSubmitted(null, ccdCallbackRequest);
 
