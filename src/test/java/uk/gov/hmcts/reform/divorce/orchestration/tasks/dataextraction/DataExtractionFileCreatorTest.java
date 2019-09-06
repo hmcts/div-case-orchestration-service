@@ -93,10 +93,11 @@ public class DataExtractionFileCreatorTest {
     }
 
     @Test
-    public void shouldUseDecreeNisiGrantedDate_WhenDecreeAbsoluteApplicationDate_IsNotProvided() throws TaskException, IOException {
+    public void shouldUseDecreeAbsoluteGrantedDate_WhenDecreeAbsoluteApplicationDate_IsNotProvided() throws TaskException, IOException {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put("D8caseReference", "TEST1");
-        caseData.put("DecreeNisiGrantedDate", "2017-08-17");
+        caseData.put("DecreeAbsoluteGrantedDate", "2017-08-17T16:49:00.015");
+        caseData.put("DecreeNisiGrantedDate", "2017-08-26");
 
         SearchResult searchResult = SearchResult.builder().cases(newArrayList(
             CaseDetails.builder().caseData(caseData).build()
@@ -116,7 +117,7 @@ public class DataExtractionFileCreatorTest {
         assertThat(createdFile, is(notNullValue()));
         List<String> fileLines = Files.readAllLines(createdFile.toPath());
         assertThat(fileLines.get(0), is("CaseReferenceNumber,DAApplicationDate,DNPronouncementDate,PartyApplyingForDA"));
-        assertThat(fileLines.get(1), is("TEST1,17/08/2017,17/08/2017,petitioner"));
+        assertThat(fileLines.get(1), is("TEST1,17/08/2017,26/08/2017,petitioner"));
     }
 
     @Test

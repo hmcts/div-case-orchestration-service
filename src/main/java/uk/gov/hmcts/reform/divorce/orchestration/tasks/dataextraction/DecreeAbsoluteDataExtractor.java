@@ -11,11 +11,13 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_REQUESTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.formatFromCCDFormatToHumanReadableFormat;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.mapCCDDateTimeToLocalDateTime;
 
 @Component
 public class DecreeAbsoluteDataExtractor implements CaseDetailsMapper {
@@ -34,14 +36,21 @@ public class DecreeAbsoluteDataExtractor implements CaseDetailsMapper {
         csvLine.append(COMMA);
 
         String decreeNisiGrantedDate = getMandatoryPropertyValueAsString(caseData, DECREE_NISI_GRANTED_DATE_CCD_FIELD);
-        String decreeAbsoluteApplicationDate = Optional.ofNullable(caseData.get(DECREE_ABSOLUTE_REQUESTED_DATE_CCD_FIELD))
+
+        Optional<String> decreeAbsoluteApplicationDateOptional = Optional.ofNullable(caseData.get(DECREE_ABSOLUTE_REQUESTED_DATE_CCD_FIELD))
             .map(String.class::cast)
             .map(CcdUtil::mapCCDDateTimeToLocalDateTime)
             .map(LocalDateTime::toLocalDate)
-            .map(LocalDate::toString)
-            .orElse(decreeNisiGrantedDate);
+            .map(LocalDate::toString);
 
-        csvLine.append(formatFromCCDFormatToHumanReadableFormat(decreeAbsoluteApplicationDate));
+        if (decreeAbsoluteApplicationDateOptional.isPresent()) {
+            csvLine.append(formatFromCCDFormatToHumanReadableFormat(decreeAbsoluteApplicationDateOptional.get()));
+        } else {
+            String decreeAbsoluteGrantedDate = getMandatoryPropertyValueAsString(caseData, DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD);
+            String formattedDecreeAbsoluteGrantedDate = mapCCDDateTimeToLocalDateTime(decreeAbsoluteGrantedDate).toLocalDate().toString();
+
+            csvLine.append(formatFromCCDFormatToHumanReadableFormat(formattedDecreeAbsoluteGrantedDate));
+        }
         csvLine.append(COMMA);
 
         csvLine.append(formatFromCCDFormatToHumanReadableFormat(decreeNisiGrantedDate));

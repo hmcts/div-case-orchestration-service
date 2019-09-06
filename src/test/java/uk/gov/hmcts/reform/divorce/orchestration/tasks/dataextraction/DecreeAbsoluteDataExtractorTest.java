@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.util.HashMap;
 
+import static java.lang.String.format;
 import static org.junit.rules.ExpectedException.none;
 
 public class DecreeAbsoluteDataExtractorTest {
@@ -41,6 +42,19 @@ public class DecreeAbsoluteDataExtractorTest {
         HashMap<String, Object> caseData = new HashMap<>();
         caseData.put("D8caseReference", "TEST2");
         caseData.put("DecreeAbsoluteApplicationDate", "2018-06-24");
+        caseData.put("WhoAppliedForDA", "respondent");
+
+        classUnderTest.mapCaseData(CaseDetails.builder().caseData(caseData).build());
+    }
+
+    @Test
+    public void shouldThrowTaskExceptionIfNeither_DecreeAbsoluteApplicationDate_Nor_DecreeAbsoluteGrantedDate_Exist() throws TaskException {
+        expectedException.expect(TaskException.class);
+        expectedException.expectMessage(format("Could not evaluate value of mandatory property \"%s\"", "DecreeAbsoluteGrantedDate"));
+
+        HashMap<String, Object> caseData = new HashMap<>();
+        caseData.put("D8caseReference", "TEST3");
+        caseData.put("DecreeNisiGrantedDate", "2017-08-26");
         caseData.put("WhoAppliedForDA", "respondent");
 
         classUnderTest.mapCaseData(CaseDetails.builder().caseData(caseData).build());
