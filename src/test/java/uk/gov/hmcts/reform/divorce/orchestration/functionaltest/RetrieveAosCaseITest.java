@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -33,7 +32,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class RetrieveAosCaseITest extends MockedFunctionalTest {
     private static final String API_URL = "/retrieve-aos-case";
     private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
-    private static final String FORMAT_TO_DIVORCE_CONTEXT_PATH = "/caseformatter/version/1/to-divorce-format";
 
     private static final Map<String, Object> CASE_DATA = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
     private static final CaseDetails CASE_DETAILS =
@@ -75,23 +73,8 @@ public class RetrieveAosCaseITest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenCFSThrowsException_whenRetrieveAosCase_thenPropagateException() throws Exception {
-        stubRetrieveAosCaseFromCMS(CASE_DETAILS);
-
-        stubFormatterServerEndpoint(HttpStatus.INTERNAL_SERVER_ERROR, TEST_ERROR);
-
-        webClient.perform(get(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .accept(APPLICATION_JSON))
-            .andExpect(status().isInternalServerError())
-            .andExpect(content().string(containsString(TEST_ERROR)));
-    }
-
-    @Test
     public void givenAllGoesWellProceedAsExpected() throws Exception {
         stubRetrieveAosCaseFromCMS(CASE_DETAILS);
-
-        stubFormatterServerEndpoint();
 
         CaseDataResponse expected = CaseDataResponse.builder()
             .data(CASE_DATA)
@@ -119,18 +102,4 @@ public class RetrieveAosCaseITest extends MockedFunctionalTest {
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withBody(message)));
     }
-
-    private void stubFormatterServerEndpoint() {
-        stubFormatterServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DATA));
-    }
-
-    private void stubFormatterServerEndpoint(HttpStatus status, String message) {
-        formatterServiceServer.stubFor(WireMock.post(FORMAT_TO_DIVORCE_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(CASE_DATA)))
-            .willReturn(aResponse()
-                .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withBody(message)));
-    }
-
 }
