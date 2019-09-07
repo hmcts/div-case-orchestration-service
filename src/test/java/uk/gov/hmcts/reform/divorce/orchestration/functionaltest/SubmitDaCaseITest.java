@@ -16,13 +16,11 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -35,7 +33,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 
 public class SubmitDaCaseITest extends MockedFunctionalTest {
     private static final String API_URL = String.format("/submit-da/%s", TEST_CASE_ID);
-    private static final String FORMAT_TO_DA_CASE_CONTEXT_PATH = "/caseformatter/version/1/to-da-submit-format";
     private static final String UPDATE_CONTEXT_PATH = "/casemaintenance/version/1/updateCase/" + TEST_CASE_ID + "/";
 
     @Autowired
@@ -59,22 +56,6 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
             .andExpect(status().isBadRequest());
     }
 
-
-    @Test
-    public void givenCaseFormatterFails_whenSubmitDn_thenPropagateTheException() throws Exception {
-        final Map<String, Object> caseData = getCaseData();
-
-        stubFormatterServerEndpoint(BAD_REQUEST, caseData, TEST_ERROR);
-
-        webClient.perform(MockMvcRequestBuilders.post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(caseData))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString(TEST_ERROR)));
-    }
-
     @Test
     public void givenCaseUpdateFails_whenSubmitDa_thenPropagateTheException() throws Exception {
         final Map<String, Object> caseData = new HashMap<>();
@@ -83,7 +64,6 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
         caseDetails.put(CASE_STATE_JSON_KEY, DN_PRONOUNCED);
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
-        stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
         stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, DECREE_ABSOLUTE_REQUESTED_EVENT_ID, caseData, TEST_ERROR);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -91,8 +71,7 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
             .content(convertObjectToJsonString(caseData))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andExpect(content().string(containsString(TEST_ERROR)));
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -104,7 +83,6 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
         caseDetails.put(CASE_STATE_JSON_KEY, DN_PRONOUNCED);
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
-        stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
         stubMaintenanceServerEndpointForUpdate(OK, DECREE_ABSOLUTE_REQUESTED_EVENT_ID, Collections.emptyMap(), caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -112,17 +90,7 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
             .content(convertObjectToJsonString(caseData))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(caseDataString));
-    }
-
-    private void stubFormatterServerEndpoint(HttpStatus status, Map<String, Object> caseData, String response) {
-        formatterServiceServer.stubFor(post(FORMAT_TO_DA_CASE_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
-                .willReturn(aResponse()
-                        .withStatus(status.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(response)));
+            .andExpect(status().isOk());
     }
 
     private void stubMaintenanceServerEndpointForUpdate(HttpStatus status, String caseEventId,
@@ -137,6 +105,6 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
     }
 
     private Map<String, Object> getCaseData() {
-        return ImmutableMap.of();
+        return ImmutableMap.of("ApplyForDecreeAbsolute", "a");
     }
 }
