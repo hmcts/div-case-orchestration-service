@@ -41,6 +41,7 @@ public class SolicitorServiceImplTest {
 
         verify(issuePersonalServicePack).run(request, TEST_TOKEN);
     }
+
     @Test
     public void shouldCallTheRightWorkflow_forSendSolicitorPersonalServiceEmail() throws WorkflowException {
         Map<String, Object> caseData = Collections.emptyMap();
