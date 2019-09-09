@@ -45,7 +45,7 @@ public class DataExtractionRequestListenerTest {
     private DataExtractionRequestListener classUnderTest;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         when(authUtil.getCaseworkerToken()).thenReturn(TEST_AUTH_TOKEN);
     }
 

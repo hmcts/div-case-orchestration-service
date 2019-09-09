@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DataExtractionService;
 
@@ -41,7 +40,7 @@ public class DataExtractionJobTest {
     public void execute_requestData_throwsJobExecutionException() throws JobExecutionException, CaseOrchestrationServiceException {
         expectedException.expect(JobExecutionException.class);
         expectedException.expectMessage("ExtractDataToRobotics service failed");
-        doThrow(WorkflowException.class).when(dataExtractionService).requestDataExtractionForPreviousDay();
+        doThrow(CaseOrchestrationServiceException.class).when(dataExtractionService).requestDataExtractionForPreviousDay();
         classUnderTest.execute(jobExecutionContext);
     }
 
