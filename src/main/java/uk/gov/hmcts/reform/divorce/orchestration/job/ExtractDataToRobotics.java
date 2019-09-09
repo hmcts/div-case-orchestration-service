@@ -18,7 +18,7 @@ public class ExtractDataToRobotics implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
             dataExtractionService.requestDataExtraction();
-            log.info("ExtractDataToRobotics executed");
+            log.info("Data extraction requested");
         } catch (WorkflowException e) {
             throw new JobExecutionException("ExtractDataToRobotics service failed", e);
         }
