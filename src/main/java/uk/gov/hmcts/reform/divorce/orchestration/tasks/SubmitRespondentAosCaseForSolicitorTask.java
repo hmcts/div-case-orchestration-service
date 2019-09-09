@@ -44,6 +44,16 @@ public class SubmitRespondentAosCaseForSolicitorTask implements Task<Map<String,
         final String respAos2yrConsent = (String) submissionData.get(RESP_AOS_2_YR_CONSENT);
         final String respAosAdultery = (String) submissionData.get(RESP_AOS_ADULTERY);
 
+        if (respondentIsDefending(submissionData)) {
+            eventId = SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
+        } else {
+            eventId = SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
+        }
+
+        if (NO_VALUE.equalsIgnoreCase(respAos2yrConsent) || NO_VALUE.equalsIgnoreCase(respAosAdultery)) {
+            eventId = SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
+        }
+
         if ((SEPARATION_2YRS.equalsIgnoreCase(reasonForDivorce)
                 && YES_VALUE.equalsIgnoreCase(respAos2yrConsent))
             || (ADULTERY.equalsIgnoreCase(reasonForDivorce)
@@ -51,20 +61,6 @@ public class SubmitRespondentAosCaseForSolicitorTask implements Task<Map<String,
 
             submissionData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
             submissionData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
-        }
-
-        if (respondentIsDefending(submissionData)) {
-            if (respAdmitsOrConsentsToFact(submissionData)) {
-                eventId = SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
-            } else {
-                eventId = SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
-            }
-        } else {
-            if (respAdmitsOrConsentsToFact(submissionData)) {
-                eventId = SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
-            } else {
-                eventId = SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
-            }
         }
 
         submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
@@ -90,11 +86,6 @@ public class SubmitRespondentAosCaseForSolicitorTask implements Task<Map<String,
     private String getReasonForDivorce(Map<String, Object> submissionData) {
         final String reasonForDivorce = (String)submissionData.get(D_8_REASON_FOR_DIVORCE);
         return reasonForDivorce;
-    }
-
-    private boolean respAdmitsOrConsentsToFact(Map<String, Object> submissionData) {
-        final String respAdmitOrConsentsToFact = (String)submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT);
-        return YES_VALUE.equalsIgnoreCase(respAdmitOrConsentsToFact);
     }
 
     private boolean respondentIsDefending(Map<String, Object> submissionData) {

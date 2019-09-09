@@ -26,6 +26,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_COMPANY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_PHONE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
@@ -69,7 +74,7 @@ public class SubmitRespondentAosCaseForSolicitorTaskUTest {
     @Test
     public void givenSolicitorIsRepresenting_ValuesForReceivedAosFromResp_AreAddedToCaseData() {
 
-        final Map<String, Object> divorceSession = buildSolicitorResponse(false, false);
+        final Map<String, Object> divorceSession = buildSolicitorResponse( false);
 
         Map<String, Object> expectedData = new HashMap<>(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
@@ -77,7 +82,7 @@ public class SubmitRespondentAosCaseForSolicitorTaskUTest {
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
-        verify(caseMaintenanceClient).updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID), eq(expectedData));
+        verify(caseMaintenanceClient).updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
     }
 
     @Test
@@ -131,8 +136,8 @@ public class SubmitRespondentAosCaseForSolicitorTaskUTest {
     }
 
     @Test
-    public void givenSolicitorIsRepresenting_ConsentAndDefended_then_eventTriggeredIs_SolAosSubmittedDefended() throws WorkflowException {
-        final Map<String, Object> divorceSession = buildSolicitorResponse(true, true);
+    public void givenSolicitorIsRepresenting_DefendedDivorce_then_eventTriggeredIs_SolAosSubmittedDefended() throws WorkflowException {
+        final Map<String, Object> divorceSession = buildSolicitorResponse(true);
 
         Map<String, Object> expectedData = divorceSession;
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
@@ -145,9 +150,9 @@ public class SubmitRespondentAosCaseForSolicitorTaskUTest {
     }
 
     @Test
-    public void givenSolicitorIsRepresenting_ConsentAndNotDefended_then_eventTriggeredIs_SolAosSubmittedUndefended() throws WorkflowException {
+    public void givenSolicitorIsRepresenting_NotDefended_then_eventTriggeredIs_SolAosSubmittedUndefended() throws WorkflowException {
 
-        final Map<String, Object> divorceSession = buildSolicitorResponse(true, false);
+        final Map<String, Object> divorceSession = buildSolicitorResponse(false);
 
         Map<String, Object> expectedData = divorceSession;
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
@@ -160,8 +165,10 @@ public class SubmitRespondentAosCaseForSolicitorTaskUTest {
     }
 
     @Test
-    public void givenSolicitorIsRepresenting_NoConsentAndDefended_then_eventTriggeredIs_SolAosReceivedNoAdConStarted() throws WorkflowException {
-        final Map<String, Object> divorceSession = buildSolicitorResponse(false, true);
+    public void givenSolicitorIsRepresenting_DoesNotConsentTo2YearSep_then_eventTriggeredIs_SolAosReceivedNoAdConStarted() throws WorkflowException {
+        final Map<String, Object> divorceSession = buildSolicitorResponse(true);
+
+        divorceSession.put(RESP_AOS_2_YR_CONSENT, NO_VALUE);
 
         Map<String, Object> expectedData = divorceSession;
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
@@ -174,9 +181,10 @@ public class SubmitRespondentAosCaseForSolicitorTaskUTest {
     }
 
     @Test
-    public void givenSolicitorIsRepresenting_NoConsentAndNotDefended_then_eventTriggeredIs_solAosSubmittedUndefended() {
+    public void givenSolicitorIsRepresenting_DoesNotAdmitAdultery_then_eventTriggeredIs_SolAosReceivedNoAdConStarted() throws WorkflowException {
+        final Map<String, Object> divorceSession = buildSolicitorResponse(true);
 
-        final Map<String, Object> divorceSession = buildSolicitorResponse(false, false);
+        divorceSession.put(RESP_AOS_ADULTERY, NO_VALUE);
 
         Map<String, Object> expectedData = divorceSession;
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
@@ -188,21 +196,15 @@ public class SubmitRespondentAosCaseForSolicitorTaskUTest {
                 .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID), eq(expectedData));
     }
 
-    private Map<String, Object> buildSolicitorResponse(boolean consented, boolean defended) {
+    private Map<String, Object> buildSolicitorResponse(boolean defended) {
         Map<String, Object> caseData = new HashMap<>();
-        // update remainder to use constants
-        caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
-        caseData.put("D8RespondentSolicitorName", "Some name");
-        caseData.put("D8RespondentSolicitorCompany", "Awesome Solicitors LLP");
-        caseData.put("D8RespondentSolicitorEmail", "solicitor@localhost.local");
-        caseData.put("D8RespondentSolicitorPhone", "2222222222");
-        caseData.put("respondentSolicitorReference", "2334234");
 
-        if (consented) {
-            caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
-        } else {
-            caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
-        }
+        caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        caseData.put(D8_RESPONDENT_SOLICITOR_NAME, "Some name");
+        caseData.put(D8_RESPONDENT_SOLICITOR_COMPANY, "Awesome Solicitors LLP");
+        caseData.put(D8_RESPONDENT_SOLICITOR_EMAIL, "solicitor@localhost.local");
+        caseData.put(D8_RESPONDENT_SOLICITOR_PHONE, "2222222222");
+        caseData.put(D8_RESPONDENT_SOLICITOR_REFERENCE, "2334234");
 
         if (defended) {
             caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
