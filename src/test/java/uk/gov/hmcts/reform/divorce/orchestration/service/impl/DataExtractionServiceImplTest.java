@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.DataExtractionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow;
 
 import java.time.LocalDate;
@@ -30,10 +31,19 @@ public class DataExtractionServiceImplTest {
     public ExpectedException expectedException = none();
 
     @Mock
+    private DataExtractionWorkflow dataExtractionWorkflow;
+
+    @Mock
     private FamilyManDataExtractionWorkflow mockWorkflow;
 
     @InjectMocks
     private DataExtractionServiceImpl classUnderTest;
+
+    @Test
+    public void shouldCallWorkflowWithCorrectParameters() throws WorkflowException {
+        classUnderTest.requestDataExtraction();
+        verify(dataExtractionWorkflow).run();
+    }
 
     @Test
     public void shouldCallWorkflowWithRightParameters() throws WorkflowException, CaseOrchestrationServiceException {

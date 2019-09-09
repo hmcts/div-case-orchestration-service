@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 
 import java.time.LocalDate;
 
@@ -9,6 +10,13 @@ import java.time.LocalDate;
  */
 public interface DataExtractionService {
 
+    /**
+     * Process case statuses along with yesterday's date.
+     *
+     * @throws WorkflowException if any exception occurs
+     */
+    void requestDataExtraction() throws WorkflowException;
+  
     /**
      * Extracts the data from cases moved to a given status with a given period to Family Man.
      *
