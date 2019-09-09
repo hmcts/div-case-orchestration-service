@@ -18,15 +18,19 @@ public class DataExtractionServiceImpl implements DataExtractionService {
 
     @Autowired
     private FamilyManDataExtractionWorkflow workflow;
-  
+
     @Autowired
     private DataExtractionWorkflow dataExtractionWorkflow;
-  
+
     @Override
-    public void requestDataExtractionForPreviousDay() throws WorkflowException {
-        log.info("Data Extraction: Sending case status and yesterday's date");
-        dataExtractionWorkflow.run();
-        log.info("Data Extraction: Completed sending case status and yesterday's date");
+    public void requestDataExtractionForPreviousDay() throws CaseOrchestrationServiceException {
+        try {
+            log.info("Data Extraction: Requesting data extraction");
+            dataExtractionWorkflow.run();
+            log.info("Data Extraction: Completed requesting data extraction");
+        } catch (WorkflowException e) {
+            throw new CaseOrchestrationServiceException(e);
+        }
     }
 
     @Override

@@ -40,13 +40,22 @@ public class DataExtractionServiceImplTest {
     private DataExtractionServiceImpl classUnderTest;
 
     @Test
-    public void shouldCallWorkflowWithCorrectParameters() throws WorkflowException {
+    public void shouldCallDataExtractionWorkflowWithCorrectParameters() throws WorkflowException, CaseOrchestrationServiceException {
         classUnderTest.requestDataExtractionForPreviousDay();
         verify(dataExtractionWorkflow).run();
     }
 
     @Test
-    public void shouldCallWorkflowWithRightParameters() throws WorkflowException, CaseOrchestrationServiceException {
+    public void shouldThrowNewExceptionWhenDataExtractionWorkflowFails() throws WorkflowException, CaseOrchestrationServiceException {
+        doThrow(WorkflowException.class).when(dataExtractionWorkflow).run();
+        expectedException.expect(CaseOrchestrationServiceException.class);
+        expectedException.expectCause(instanceOf(WorkflowException.class));
+
+        classUnderTest.requestDataExtractionForPreviousDay();
+    }
+
+    @Test
+    public void shouldCallFamilyManDataExtractionWorkflowWithCorrectParameters() throws WorkflowException, CaseOrchestrationServiceException {
         classUnderTest.extractCasesToFamilyMan(DA, LocalDate.now(), TEST_AUTH_TOKEN);
 
         verify(mockWorkflow).run(eq(DA), eq(LocalDate.now()), eq(TEST_AUTH_TOKEN));

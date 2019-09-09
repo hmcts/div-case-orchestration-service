@@ -66,8 +66,8 @@ scheduler:
     - name: 'DataExtractionToRobotics'
       enabled: ${SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_ENABLED:false}
       cronGroup: "NIGHTLY_CRON"
-      description: 'Cron job to send cases updated in the last 24 hours to Robotics'
-      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.ExtractDataToRobotics'
+      description: 'Cron job to extract and publish cases updated on the previous day'
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.DataExtractionJob'
       cron: ${SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_CRON:0 0 2 ? * * *} #Every day at 2:00
 
 server:

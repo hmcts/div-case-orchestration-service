@@ -13,10 +13,10 @@ public interface DataExtractionService {
     /**
      * Process case statuses along with yesterday's date.
      *
-     * @throws WorkflowException if any exception occurs
+     * @throws CaseOrchestrationServiceException if any exception occurs
      */
-    void requestDataExtractionForPreviousDay() throws WorkflowException;
-  
+    void requestDataExtractionForPreviousDay() throws CaseOrchestrationServiceException;
+
     /**
      * Extracts the data from cases moved to a given status with a given period to Family Man.
      *

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DataExtractionService;
 
 /**
@@ -25,7 +25,7 @@ public class DataExtractionInternalController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Data extraction process started"),
         @ApiResponse(code = 400, message = "Bad Request")})
-    public void startDataExtractionToFamilyMan() throws WorkflowException {
+    public void startDataExtractionToFamilyMan() throws CaseOrchestrationServiceException {
         dataExtractionService.requestDataExtractionForPreviousDay();
     }
 }
