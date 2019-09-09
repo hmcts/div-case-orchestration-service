@@ -35,7 +35,7 @@ public class DataExtractionRequestListener implements ApplicationListener<DataEx
             try {
                 dataExtractionService.extractCasesToFamilyMan(status, dateToExtract, authUtil.getCaseworkerToken());
             } catch (CaseOrchestrationServiceException exception) {
-                String errorMessage = format("Error extracting data to Family man for %s", dateToExtract.toString());
+                String errorMessage = format("Error extracting data to Family man for status %s and date %s", status, dateToExtract.toString());
                 log.error(errorMessage, exception);
                 throw new RuntimeException(errorMessage, exception);
             }
