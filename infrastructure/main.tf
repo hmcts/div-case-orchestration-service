@@ -29,7 +29,7 @@ locals {
 }
 
 module "div-cos" {
-  source                          = "git@github.com:hmcts/moj-module-webapp.git"
+  source                          = "git@github.com:hmcts/cnp-module-webapp.git"
   product                         = "${var.product}-${var.component}"
   location                        = "${var.location}"
   env                             = "${var.env}"
