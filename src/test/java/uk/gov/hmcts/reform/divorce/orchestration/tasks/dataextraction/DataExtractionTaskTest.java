@@ -34,7 +34,6 @@ public class DataExtractionTaskTest {
         assertEventIsAsExpected((DataExtractionRequest) events.get(0), yesterday, AOS);
         assertEventIsAsExpected((DataExtractionRequest) events.get(1), yesterday, DN);
         assertEventIsAsExpected((DataExtractionRequest) events.get(2), yesterday, DA);
-        //TODO - are there functional tests
     }
 
     private void assertEventIsAsExpected(DataExtractionRequest eventToAssert, LocalDate expectedDate, DataExtractionRequest.Status expectedStatus) {

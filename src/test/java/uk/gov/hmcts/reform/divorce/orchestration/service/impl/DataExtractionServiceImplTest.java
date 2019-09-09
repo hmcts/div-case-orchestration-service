@@ -41,7 +41,7 @@ public class DataExtractionServiceImplTest {
 
     @Test
     public void shouldCallWorkflowWithCorrectParameters() throws WorkflowException {
-        classUnderTest.requestDataExtraction();
+        classUnderTest.requestDataExtractionForPreviousDay();
         verify(dataExtractionWorkflow).run();
     }
 

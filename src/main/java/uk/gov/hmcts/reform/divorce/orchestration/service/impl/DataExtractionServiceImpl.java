@@ -23,7 +23,7 @@ public class DataExtractionServiceImpl implements DataExtractionService {
     private DataExtractionWorkflow dataExtractionWorkflow;
   
     @Override
-    public void requestDataExtraction() throws WorkflowException {
+    public void requestDataExtractionForPreviousDay() throws WorkflowException {
         log.info("Data Extraction: Sending case status and yesterday's date");
         dataExtractionWorkflow.run();
         log.info("Data Extraction: Completed sending case status and yesterday's date");

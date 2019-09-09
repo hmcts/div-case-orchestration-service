@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.DataExtractionService;
 
 @Slf4j
-public class ExtractDataToRobotics implements Job {
+public class DataExtractionJob implements Job {
 
     @Autowired
     private DataExtractionService dataExtractionService;
@@ -17,7 +17,7 @@ public class ExtractDataToRobotics implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
-            dataExtractionService.requestDataExtraction();
+            dataExtractionService.requestDataExtractionForPreviousDay();
             log.info("Data extraction requested");
         } catch (WorkflowException e) {
             throw new JobExecutionException("ExtractDataToRobotics service failed", e);

@@ -15,7 +15,7 @@ public interface DataExtractionService {
      *
      * @throws WorkflowException if any exception occurs
      */
-    void requestDataExtraction() throws WorkflowException;
+    void requestDataExtractionForPreviousDay() throws WorkflowException;
   
     /**
      * Extracts the data from cases moved to a given status with a given period to Family Man.

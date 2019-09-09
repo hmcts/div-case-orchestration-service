@@ -16,7 +16,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ExtractDataToRoboticsTest {
+public class DataExtractionJobTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -28,19 +28,19 @@ public class ExtractDataToRoboticsTest {
     private JobExecutionContext jobExecutionContext;
 
     @InjectMocks
-    private ExtractDataToRobotics classUnderTest;
+    private DataExtractionJob classUnderTest;
 
     @Test
     public void execute_requestData_callsService() throws JobExecutionException, WorkflowException {
         classUnderTest.execute(jobExecutionContext);
-        verify(dataExtractionService).requestDataExtraction();
+        verify(dataExtractionService).requestDataExtractionForPreviousDay();
     }
 
     @Test
     public void execute_requestData_throwsJobExecutionException() throws JobExecutionException, WorkflowException {
         expectedException.expect(JobExecutionException.class);
         expectedException.expectMessage("ExtractDataToRobotics service failed");
-        doThrow(WorkflowException.class).when(dataExtractionService).requestDataExtraction();
+        doThrow(WorkflowException.class).when(dataExtractionService).requestDataExtractionForPreviousDay();
         classUnderTest.execute(jobExecutionContext);
     }
 
