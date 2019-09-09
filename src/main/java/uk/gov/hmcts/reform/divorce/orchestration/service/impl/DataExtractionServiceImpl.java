@@ -33,6 +33,8 @@ public class DataExtractionServiceImpl implements DataExtractionService {
     public void extractCasesToFamilyMan(DataExtractionRequest.Status status, LocalDate date, String authToken)
         throws CaseOrchestrationServiceException {
 
+        log.info("Extracting data for status {} and date {}", status, date);
+
         try {
             workflow.run(status, date, authToken);
         } catch (WorkflowException e) {

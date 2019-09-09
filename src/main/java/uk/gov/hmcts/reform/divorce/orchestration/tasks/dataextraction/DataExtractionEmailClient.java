@@ -44,4 +44,8 @@ public class DataExtractionEmailClient {
         mailSender.send(mimeMessage);
     }
 
+    public String getDestinationEmailAddress() {
+        return destinationEmailAddress;
+    }
+
 }
