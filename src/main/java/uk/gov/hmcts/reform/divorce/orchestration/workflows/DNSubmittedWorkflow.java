@@ -21,16 +21,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class DNSubmittedWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    @Autowired
-    private DnSubmittedEmailNotificationTask emailNotificationTask;
     private final DecreeNisiAnswersGeneratorTask decreeNisiAnswersGenerator;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Autowired
-    public DNSubmittedWorkflow(DnSubmittedEmailNotificationTask emailNotificationTask,
-                               DecreeNisiAnswersGeneratorTask decreeNisiAnswersGenerator,
+    public DNSubmittedWorkflow(DecreeNisiAnswersGeneratorTask decreeNisiAnswersGenerator,
                                CaseFormatterAddDocuments caseFormatterAddDocuments) {
-        this.emailNotificationTask = emailNotificationTask;
         this.decreeNisiAnswersGenerator = decreeNisiAnswersGenerator;
         this.caseFormatterAddDocuments = caseFormatterAddDocuments;
     }
@@ -40,7 +36,6 @@ public class DNSubmittedWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
         final List<Task> tasks = new ArrayList<>();
 
-        tasks.add(emailNotificationTask);
         tasks.add(decreeNisiAnswersGenerator);
         tasks.add(caseFormatterAddDocuments);
 

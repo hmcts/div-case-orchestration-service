@@ -37,9 +37,6 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<
     @Autowired
     CaseFormatterAddDocuments caseFormatterAddDocuments;
 
-    @Autowired
-    SendDaGrantedNotificationEmail sendDaGrantedNotificationEmail;
-
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
@@ -47,8 +44,7 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<
             new Task[] {
                 setDaGrantedDetailsTask,
                 documentGenerationTask,
-                caseFormatterAddDocuments,
-                sendDaGrantedNotificationEmail
+                caseFormatterAddDocuments
             },
             caseDetails.getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),

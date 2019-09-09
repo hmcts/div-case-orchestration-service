@@ -88,6 +88,18 @@ public class CallbackController {
         return ResponseEntity.ok(caseOrchestrationService.dnSubmitted(ccdCallbackRequest, authorizationToken));
     }
 
+    @PostMapping(path = "/send-dn-submitted-notification")
+    @ApiOperation(value = "Callback to notify applicant when DN has been submitted")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed")})
+    public ResponseEntity<CcdCallbackResponse> sendDnSubmittedNotification(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(caseOrchestrationService.sendDnSubmittedEmailNotification(ccdCallbackRequest))
+            .build());
+    }
+
     @PostMapping(path = "/dn-pronounced",
         consumes = MediaType.APPLICATION_JSON,
         produces = MediaType.APPLICATION_JSON)
@@ -613,6 +625,18 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    @PostMapping(path = "/send-da-granted-notification")
+    @ApiOperation(value = "Callback to notify applicant when DA has been granted")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed")})
+    public ResponseEntity<CcdCallbackResponse> sendDaGrantedNotification(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(caseOrchestrationService.sendDaGrantedNotification(ccdCallbackRequest))
+            .build());
+    }
+
     @PostMapping(path = "/aos-received")
     @ApiOperation(value = "Respondent confirmation notification ")
     @ApiResponses(value = {
@@ -730,7 +754,6 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-
     @PostMapping(path = "/solicitor-link-case")
     @ApiOperation(value = "Authorize the solicitor's respondent to the case")
     @ApiResponses(value = {
@@ -822,6 +845,18 @@ public class CallbackController {
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/notify-applicant-can-finalise-divorce")
+    @ApiOperation(value = "Callback to notify applicant when DA is available for application")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed")})
+    public ResponseEntity<CcdCallbackResponse> notifyApplicantCanFinaliseDivorce(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(caseOrchestrationService.notifyApplicantCanFinaliseDivorce(ccdCallbackRequest))
+            .build());
     }
 
     @PostMapping(path = "/remove-bulk-link")
