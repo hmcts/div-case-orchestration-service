@@ -7,7 +7,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.entity.ContentType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +35,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_PRONOUNCED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ES_CASE_ID_KEY;
-
 import static uk.gov.hmcts.reform.divorce.orchestration.service.SearchSourceFactory.buildCMSBooleanSearchSource;
 
 @Slf4j
@@ -99,14 +97,13 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
         QueryBuilder caseIdFilter = QueryBuilders.matchQuery(ES_CASE_ID_KEY, caseId);
         QueryBuilder stateFilter = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, DN_PRONOUNCED);
 
-        SearchSourceBuilder searchSourceBuilder =
-                            buildCMSBooleanSearchSource(0, 10, caseIdFilter, stateFilter);
+        String searchSourceBuilder = buildCMSBooleanSearchSource(0, 10, caseIdFilter, stateFilter);
 
-        return cmsClientSupport.searchCases(searchSourceBuilder.toString(), authToken);
+        return cmsClientSupport.searchCases(searchSourceBuilder, authToken);
     }
 
     private void assertCaseStateIsAsExpected(final String expectedState, final String authToken) {
-        await().pollInterval(fibonacci(SECONDS)).atMost(150, SECONDS).untilAsserted(() -> {
+        await().pollInterval(fibonacci(SECONDS)).atMost(360, SECONDS).untilAsserted(() -> {
             final Response retrievedCase = retrieveCase(authToken);
             log.debug("Retrieved case {} with state {}",
                         retrievedCase.path("caseId"), retrievedCase.path("state"));

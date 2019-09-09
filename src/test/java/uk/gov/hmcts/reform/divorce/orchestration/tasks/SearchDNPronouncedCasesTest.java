@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.AdditionalAnswers;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.transformation.CaseIdMapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,7 +46,8 @@ public class SearchDNPronouncedCasesTest {
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
 
-    @InjectMocks
+    private CaseIdMapper caseDetailsMapper = new CaseIdMapper();
+
     private SearchDNPronouncedCases classUnderTest;
 
     private int pageSize;
@@ -59,15 +60,19 @@ public class SearchDNPronouncedCasesTest {
 
     @Before
     public void setupTaskContextWithSearchSettings() {
+        classUnderTest = new SearchDNPronouncedCases(caseMaintenanceClient, caseDetailsMapper);
+
         pageSize = 10;
         start = 0;
 
-        Map<String, Object> searchSettings = new HashMap<String, Object>() {{
+        Map<String, Object> searchSettings = new HashMap<String, Object>() {
+            {
                 put("PAGE_SIZE", pageSize);
                 put("FROM", start);
                 put(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
                 put(AWAITING_DA_PERIOD_KEY, timeSinceDNWasPronounced);
-            }};
+            }
+        };
 
         contextBeingModified = new DefaultTaskContext();
         contextBeingModified.setTransientObjects(searchSettings);
@@ -104,7 +109,7 @@ public class SearchDNPronouncedCasesTest {
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
             .thenReturn(SearchResult.builder()
                 .total(totalSearchResults)
-                .cases(buildCases(0,5))
+                .cases(buildCases(0, 5))
                 .build());
 
         final Map<String, Object> actualResult = classUnderTest.execute(contextBeingModified, null);
@@ -125,7 +130,7 @@ public class SearchDNPronouncedCasesTest {
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
             .thenReturn(SearchResult.builder()
                 .total(totalSearchResults)
-                .cases(buildCases(0,10))
+                .cases(buildCases(0, 10))
                 .build());
 
         final Map<String, Object> actualResult = classUnderTest.execute(contextBeingModified, null);
@@ -147,13 +152,13 @@ public class SearchDNPronouncedCasesTest {
         List<SearchResult> searchResultBatchList = Arrays.asList(
             SearchResult.builder()
                 .total(totalSearchResults)
-                .cases(buildCases(0,10))
+                .cases(buildCases(0, 10))
                 .build(),
             SearchResult.builder()
                 .total(totalSearchResults)
-                .cases(buildCases(10,10))
+                .cases(buildCases(10, 10))
                 .build()
-            );
+        );
 
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
             .thenAnswer(AdditionalAnswers.returnsElementsOf(searchResultBatchList));
@@ -177,15 +182,15 @@ public class SearchDNPronouncedCasesTest {
         List<SearchResult> searchResultBatchList = Arrays.asList(
             SearchResult.builder()
                 .total(totalSearchResults)
-                .cases(buildCases(0,10))
+                .cases(buildCases(0, 10))
                 .build(),
             SearchResult.builder()
                 .total(totalSearchResults)
-                .cases(buildCases(10,10))
+                .cases(buildCases(10, 10))
                 .build(),
             SearchResult.builder()
                 .total(totalSearchResults)
-                .cases(buildCases(20,10))
+                .cases(buildCases(20, 10))
                 .build()
         );
 
@@ -206,9 +211,9 @@ public class SearchDNPronouncedCasesTest {
 
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
             .thenReturn(SearchResult.builder()
-            .total(totalSearchResults)
-            .cases(buildCases(0,10))
-            .build())
+                .total(totalSearchResults)
+                .cases(buildCases(0, 10))
+                .build())
             .thenThrow(new FeignException.BadRequest("Bad test request", "".getBytes()));
 
         Map<String, Object> actualResult = null;
@@ -239,4 +244,5 @@ public class SearchDNPronouncedCasesTest {
             .caseId(String.valueOf(caseId))
             .build();
     }
+
 }

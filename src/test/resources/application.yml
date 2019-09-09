@@ -25,6 +25,16 @@ spring:
     static-locations:
   flyway:
     enabled: false
+  mail:
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+    host: localhost
+    port: 32773
+    default-encoding: UTF-8
+    test-connection: false
 
 quartzProperties:
   org.quartz:
@@ -101,7 +111,7 @@ feature-toggle:
       baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://localhost:4028}
   toggle:
     bulk-printer-toggle-name: "divorce_bulk_print"
-    feature_resp_solicitor_details: ${FEATURE_RESP_SOLICITOR_DETAILS:false}
+    feature_resp_solicitor_details: ${FEATURE_RESP_SOLICITOR_DETAILS:true}
     dn_refusal: ${FEATURE_DN_REFUSAL:false}
 
 send-letter:
@@ -180,11 +190,11 @@ court-distribution-config:
     separation-5-years:
       serviceCentre: 0.2
     adultery:
-        serviceCentre: 0.2
+      serviceCentre: 0.2
     separation-2-years:
-        serviceCentre: 0.2
+      serviceCentre: 0.2
     desertion:
-        serviceCentre: 0.2
+      serviceCentre: 0.2
   divorce-cases-ratio:
     unreasonable-behaviour: 0.30
     separation-5-years: 0.21
@@ -337,6 +347,12 @@ documentation:
   swagger:
     enabled: true
 
+dataExtraction:
+  emailFrom: noreply@reform.hmcts.net
+  status:
+    DA:
+      emailTo: da-extraction@divorce.gov.uk
+
 # GENERAL SPRING BOOT ACTUATOR CONFIG
 # Context path for Spring Boot Actuator endpoints
 # Allow actuator endpoints to be accessed without requiring authentication
@@ -344,6 +360,8 @@ documentation:
 # Enable disk space health check
 management:
   health:
+    mail:
+      enabled: false
     elasticsearch:
       enabled: false
   endpoint:

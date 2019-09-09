@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -19,6 +20,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @AllArgsConstructor
 @Component
 public class CcdUtil {
+
+    private static final String UK_HUMAN_READABLE_DATE_FORMAT = "dd/MM/yyyy";
 
     private final Clock clock;
 
@@ -37,6 +40,10 @@ public class CcdUtil {
 
     public static String mapDivorceDateTimeToCCDDateTime(LocalDateTime dateTime) {
         return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+    }
+
+    public static LocalDateTime mapCCDDateTimeToLocalDateTime(String dateTime) {
+        return LocalDateTime.parse(dateTime);
     }
 
     public String getCurrentDateWithCustomerFacingFormat() {
@@ -65,6 +72,11 @@ public class CcdUtil {
 
     public static String formatDateForCCD(LocalDate plus) {
         return plus.format(ofPattern(CCD_DATE_FORMAT));
+    }
+
+    public static String formatFromCCDFormatToHumanReadableFormat(String inputDate) {
+        LocalDate localDate = parseDateUsingCcdFormat(inputDate);
+        return localDate.format(DateTimeFormatter.ofPattern(UK_HUMAN_READABLE_DATE_FORMAT));
     }
 
 }
