@@ -25,6 +25,16 @@ spring:
     static-locations:
   flyway:
     enabled: false
+  mail:
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+    host: localhost
+    port: 32773
+    default-encoding: UTF-8
+    test-connection: false
 
 quartzProperties:
   org.quartz:
@@ -101,7 +111,7 @@ feature-toggle:
       baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://localhost:4028}
   toggle:
     bulk-printer-toggle-name: "divorce_bulk_print"
-    feature_resp_solicitor_details: ${FEATURE_RESP_SOLICITOR_DETAILS:false}
+    feature_resp_solicitor_details: ${FEATURE_RESP_SOLICITOR_DETAILS:true}
     dn_refusal: ${FEATURE_DN_REFUSAL:false}
 
 send-letter:
@@ -141,6 +151,7 @@ uk:
           DECREE_ABSOLUTE_REQUESTED_NOTIFICATION: b1296cb4-1df2-4d89-b32c-23600a0a8070
           DN_SUBMISSION: edf3bce9-f63a-4be0-93a9-d0c80dff7983
           GENERIC_UPDATE: 6ee6ec29-5e88-4516-99cb-2edc30256575
+          GENERIC_UPDATE_RESPONDENT: dc47109d-95f0-4a55-a11f-de41a5201cbc
           PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION: 9937c8bc-dc7a-4210-a25b-20aceb82d48d
           PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION: 686ce418-6d76-48ce-b903-a87d2b832125
           RESPONDENT_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION: 80b986e1-056b-4577-a343-bb2e72e2a3f0
@@ -162,6 +173,7 @@ uk:
           SOL_APPLICANT_RESP_NOT_RESPONDED: 88b793ee-d888-4d87-bd3d-8f3a36353135
           SOL_GENERAL_CASE_UPDATE: 951d26d9-e5fc-40de-a9da-d3ab957cb5e3
           SOL_RESP_COE_NOTIFICATION: e7117ed4-83ff-43f9-8521-e70d31063c7e
+          SOL_PERSONAL_SERVICE: 1e2f2ac5-ce4c-4fce-aca0-47a876eda089
           CASE_ELIGIBLE_FOR_NOTIFICATION_FOR_APPLICANT: 71fd2e7e-42dc-4dcf-a9bb-007ae9d4b27f
 
 
@@ -178,11 +190,11 @@ court-distribution-config:
     separation-5-years:
       serviceCentre: 0.2
     adultery:
-        serviceCentre: 0.2
+      serviceCentre: 0.2
     separation-2-years:
-        serviceCentre: 0.2
+      serviceCentre: 0.2
     desertion:
-        serviceCentre: 0.2
+      serviceCentre: 0.2
   divorce-cases-ratio:
     unreasonable-behaviour: 0.30
     separation-5-years: 0.21
@@ -301,8 +313,6 @@ idam:
   caseworker:
     username: dummy
     password: dummy
-  strategic:
-    enabled: false
   s2s-auth:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
@@ -337,6 +347,12 @@ documentation:
   swagger:
     enabled: true
 
+dataExtraction:
+  emailFrom: noreply@reform.hmcts.net
+  status:
+    DA:
+      emailTo: da-extraction@divorce.gov.uk
+
 # GENERAL SPRING BOOT ACTUATOR CONFIG
 # Context path for Spring Boot Actuator endpoints
 # Allow actuator endpoints to be accessed without requiring authentication
@@ -344,13 +360,15 @@ documentation:
 # Enable disk space health check
 management:
   health:
+    mail:
+      enabled: false
     elasticsearch:
       enabled: false
   endpoint:
     health:
       show-details: "ALWAYS"
       cache:
-        time-to-live: 4000
+        time-to-live: 0
   endpoints:
     web:
       base-path: /
@@ -365,6 +383,3 @@ logging:
     uk.gov.hmcts.reform.divorce.orchestration: DEBUG
   pattern:
     console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"
-
-azure:
-  app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:false}

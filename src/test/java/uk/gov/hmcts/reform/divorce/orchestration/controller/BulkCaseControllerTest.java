@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.BulkCaseService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
 import java.util.Collections;
@@ -32,9 +33,11 @@ public class BulkCaseControllerTest {
     @Mock
     private CaseOrchestrationService caseOrchestrationService;
 
+    @Mock
+    private BulkCaseService bulkCaseService;
+
     @InjectMocks
     private BulkCaseController classUnderTest;
-
 
     @Test
     public void whenSearchCases_thenReturnExpectedResponse() throws WorkflowException {
@@ -46,7 +49,6 @@ public class BulkCaseControllerTest {
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody(), is(expected));
-
     }
 
     @Test
@@ -178,6 +180,33 @@ public class BulkCaseControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest
             .editBulkCaseListingData(AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME, request);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(CcdCallbackResponse.builder().errors(Collections.singletonList(error)).build()));
+    }
+
+    @Test
+    public void whenRemoveCasesFromBulkListing_thenReturnExpectedResponse() throws WorkflowException {
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(Collections.emptyMap()).build();
+        CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(bulkCaseService.removeFromBulkListed(request, AUTH_TOKEN)).thenReturn(DUMMY_CASE_DATA);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.removeCasesFromBulkListed(AUTH_TOKEN, request);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(CcdCallbackResponse.builder().data(DUMMY_CASE_DATA).build()));
+    }
+
+    @Test
+    public void whenRemoveCasesFromBulkListingThrowsError_thenReturnExpectedResponse() throws WorkflowException {
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(Collections.emptyMap()).build();
+        CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        String error = "error has occurred";
+
+        when(bulkCaseService.removeFromBulkListed(request, AUTH_TOKEN)).thenThrow(new WorkflowException(error));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.removeCasesFromBulkListed(AUTH_TOKEN, request);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody(), is(CcdCallbackResponse.builder().errors(Collections.singletonList(error)).build()));

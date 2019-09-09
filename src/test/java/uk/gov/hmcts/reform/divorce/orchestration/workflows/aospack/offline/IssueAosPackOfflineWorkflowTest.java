@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,17 +36,24 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_GENERATION_REQUESTS_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueAosPackOfflineWorkflowTest {
 
-    private static final String RESPONDENT_AOS_INVITATION_LETTER = "FL-DIV-LET-ENG-00070.doc";
+    private static final String RESPONDENT_AOS_INVITATION_LETTER = "FL-DIV-LET-ENG-00075.doc";
     private static final String RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-resp";
     private static final String RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_FILENAME = "aos-invitation-letter-offline-respondent";
 
     private static final String CO_RESPONDENT_AOS_INVITATION_LETTER = "FL-DIV-LET-ENG-00076.doc";
     private static final String CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-co-resp";
     private static final String CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_FILENAME = "aos-invitation-letter-offline-co-respondent";
+
+    private static final String RESPONDENT_TWO_YEAR_SEPARATION_AOS_OFFLINE_FORM = "FL-DIV-APP-ENG-00080.docx";
+    private static final String RESPONDENT_TWO_YEAR_SEPARATION_AOS_OFFLINE_FORM_DOCUMENT_TYPE = "two-year-separation-aos-form";
+    private static final String RESPONDENT_TWO_YEAR_SEPARATION_AOS_OFFLINE_FORM_FILENAME = "two-year-separation-aos-form-resp";
 
     @Mock
     private MultipleDocumentGenerationTask documentsGenerationTask;
@@ -64,15 +72,43 @@ public class IssueAosPackOfflineWorkflowTest {
 
     @Before
     public void setUp() throws TaskException {
-        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("testKey", "testValue");
         when(documentsGenerationTask.execute(any(), any())).thenReturn(singletonMap("returnedKey1", "returnedValue1"));
         when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(singletonMap("returnedKey2", "returnedValue2"));
         caseDetails = CaseDetails.builder().caseData(payload).build();
     }
 
     @Test
-    public void testTasksAreCalledWithTheCorrectParams_ForRespondent() throws WorkflowException, TaskException {
-        Map<String, Object> returnedPayload = issueAosPackOfflineWorkflow.run(testAuthToken, caseDetails, DivorceParty.RESPONDENT);
+    public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForTwoYearSeparation() throws WorkflowException, TaskException {
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+
+        Map<String, Object> returnedPayload = issueAosPackOfflineWorkflow.run(testAuthToken, caseDetails, RESPONDENT);
+        assertThat(returnedPayload, hasEntry("returnedKey2", "returnedValue2"));
+
+        verify(documentsGenerationTask).execute(taskContextArgumentCaptor.capture(), eq(caseDetails.getCaseData()));
+        TaskContext taskContext = taskContextArgumentCaptor.getValue();
+        assertThat(taskContext.getTransientObject(AUTH_TOKEN_JSON_KEY), is(testAuthToken));
+        assertThat(taskContext.getTransientObject(CASE_DETAILS_JSON_KEY), is(caseDetails));
+
+        List<DocumentGenerationRequest> documentGenerationRequestList = taskContext.getTransientObject(DOCUMENT_GENERATION_REQUESTS_KEY);
+        DocumentGenerationRequest firstDocumentGenerationRequest = documentGenerationRequestList.get(0);
+        assertThat(firstDocumentGenerationRequest.getDocumentTemplateId(), is(RESPONDENT_AOS_INVITATION_LETTER));
+        assertThat(firstDocumentGenerationRequest.getDocumentType(), is(RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE));
+        assertThat(firstDocumentGenerationRequest.getDocumentFileName(), is(RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_FILENAME));
+        DocumentGenerationRequest secondDocumentGenerationRequest = documentGenerationRequestList.get(1);
+        assertThat(secondDocumentGenerationRequest.getDocumentTemplateId(), is(RESPONDENT_TWO_YEAR_SEPARATION_AOS_OFFLINE_FORM));
+        assertThat(secondDocumentGenerationRequest.getDocumentType(), is(RESPONDENT_TWO_YEAR_SEPARATION_AOS_OFFLINE_FORM_DOCUMENT_TYPE));
+        assertThat(secondDocumentGenerationRequest.getDocumentFileName(), is(RESPONDENT_TWO_YEAR_SEPARATION_AOS_OFFLINE_FORM_FILENAME));
+
+        verify(caseFormatterAddDocuments).execute(any(), argThat(new HamcrestArgumentMatcher<>(allOf(
+            Matchers.<String, Object>hasEntry("returnedKey1", "returnedValue1")
+        ))));
+    }
+
+    @Test
+    public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForOtherReason() throws WorkflowException, TaskException {
+        Map<String, Object> returnedPayload = issueAosPackOfflineWorkflow.run(testAuthToken, caseDetails, RESPONDENT);
         assertThat(returnedPayload, hasEntry("returnedKey2", "returnedValue2"));
 
         verify(documentsGenerationTask).execute(taskContextArgumentCaptor.capture(), eq(caseDetails.getCaseData()));

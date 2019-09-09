@@ -64,7 +64,6 @@ module "div-cos" {
     IDAM_CITIZEN_PASSWORD                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-password.value}"
     IDAM_CASEWORKER_USERNAME                        = "${data.azurerm_key_vault_secret.auth-idam-caseworker-username.value}"
     IDAM_CASEWORKER_PASSWORD                        = "${data.azurerm_key_vault_secret.auth-idam-caseworker-password.value}"
-    IDAM_STRATEGIC_ENABLED                          = "${var.idam_strategic_enabled}"
     UK_GOV_NOTIFY_API_KEY                           = "${data.azurerm_key_vault_secret.uk-gov-notify-api-key.value}"
     AOS_RESPONDED_DAYS_TO_COMPLETE                  = "${var.aos_responded_days_to_complete}"
     AOS_RESPONDED_AWAITING_ANSWER_DAYS_TO_RESPOND   = "${var.aos_responded_awaiting_answer_days_to_respond}"
@@ -92,6 +91,14 @@ module "div-cos" {
     FLYWAY_NOOP_STRATEGY                           = "true"
 
     FEATURE_RESP_SOLICITOR_DETAILS                 = "${var.feature_resp_solicitor_details}"
+
+    SPRING_MAIL_HOST                                  = "${var.spring_mail_host}"
+    SPRING_MAIL_PORT                                  = "${var.spring_mail_port}"
+    SPRING_MAIL_TEST_CONNECTION                       = "${var.spring_mail_test_connection}"
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE  = "${var.spring_mail_properties_mail_smtp_starttls_enable}"
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST        = "${var.spring_mail_properties_mail_smtp_ssl_trust}"
+
+    DATAEXTRACTION_STATUS_DA_EMAILTO       = "${var.dataextraction_status_da_email_to}"
   }
 }
 

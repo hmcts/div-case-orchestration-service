@@ -2,17 +2,14 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.decreeabsolute;
 
 import com.jayway.jsonpath.JsonPath;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 
 import java.util.Map;
 
@@ -41,10 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-public class ProcessApplicantDAEligibilityTest {
+public class ProcessApplicantDAEligibilityTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/process-applicant-da-eligibility";
     private static final String NOTIFICATION_TEMPLATE_ID = "71fd2e7e-42dc-4dcf-a9bb-007ae9d4b27f";

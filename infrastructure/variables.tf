@@ -62,10 +62,6 @@ variable "aos_responded_awaiting_answer_days_to_respond" {
   default = 21
 }
 
-variable "idam_strategic_enabled" {
-  default = "true"
-}
-
 variable "health_check_ttl" {
   type = "string"
   default = "4000"
@@ -118,4 +114,31 @@ variable "feature_dn_refusal" {
 
 variable "documentation_swagger_enabled" {
   default = "true"
+}
+
+variable "spring_mail_host" {
+  type = "string"
+  default = "mta.reform.hmcts.net"
+}
+
+variable "spring_mail_port" {
+  default = 25
+}
+
+variable "spring_mail_test_connection" {
+  default = false
+}
+
+variable "spring_mail_properties_mail_smtp_starttls_enable" {
+  default = true
+}
+
+variable "spring_mail_properties_mail_smtp_ssl_trust" {
+  type = "string"
+  default = "mta.reform.hmcts.net"
+}
+
+variable "dataextraction_status_da_email_to" {
+  type = "string"
+  default = "da_data_extraction@sharklasers.com"
 }

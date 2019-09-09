@@ -82,7 +82,7 @@ public class SendRespondentGenericUpdateNotificationEmailTest {
         verify(emailService)
                 .sendEmail(
                         eq(TEST_USER_EMAIL),
-                        eq(EmailTemplateNames.GENERIC_UPDATE.name()),
+                        eq(EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name()),
                         eq(expectedTemplateVars),
                         any());
     }

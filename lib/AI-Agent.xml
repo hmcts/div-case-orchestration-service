@@ -62,7 +62,7 @@
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.IdamPinGenerator">
             <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
-        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData">
+        <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask">
             <Method name="execute" reportCaughtExceptions="true" reportExecutionTime="true"/>
         </Class>
         <Class name="uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator">

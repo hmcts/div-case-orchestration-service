@@ -51,7 +51,7 @@ public class SendRespondentGenericUpdateNotificationEmail implements Task<Map<St
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, respLastName);
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseNumber);
 
-            emailService.sendEmail(respEmail, EmailTemplateNames.GENERIC_UPDATE.name(), templateVars, RESP_GENERIC_EMAIL_DESC);
+            emailService.sendEmail(respEmail, EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name(), templateVars, RESP_GENERIC_EMAIL_DESC);
         }
 
         return caseData;

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SearchSourceFactory {
 
-    public static SearchSourceBuilder buildCMSBooleanSearchSource(int start, int batchSize, QueryBuilder... builders) {
+    public static String buildCMSBooleanSearchSource(int start, int batchSize, QueryBuilder... builders) {
 
         BoolQueryBuilder query = QueryBuilders.boolQuery();
 
@@ -21,6 +21,8 @@ public class SearchSourceFactory {
             .searchSource()
             .query(query)
             .from(start)
-            .size(batchSize);
+            .size(batchSize)
+            .toString();
     }
+
 }

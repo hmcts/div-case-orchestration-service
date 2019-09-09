@@ -1,6 +1,5 @@
 java:
     environment:
-        APPINSIGHTS_INSTRUMENTATIONKEY: "019ed56f-e01d-4651-895d-bc6334f3d1b1"
         IDAM_API_URL: "https://idam-api.aat.platform.hmcts.net"
         UK_GOV_NOTIFY_API_KEY: "divorce_preprod_live_key-b86e6469-4927-4f50-a029-6ddb523330cf-2409ba37-b5e6-4f03-b052-7d0f0986888d"
         CASE_MAINTENANCE_SERVICE_API_BASEURL: "http://div-cms-aat.service.core-compute-aat.internal"
@@ -13,25 +12,38 @@ java:
         CASE_FORMATTER_SERVICE_API_BASEURL: "http://div-cfs-aat.service.core-compute-aat.internal"
         SERVICE_AUTH_PROVIDER_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
         CASE_VALIDATION_SERVICE_API_BASEURL: "http://div-vs-aat.service.core-compute-aat.internal"
-        IDAM_STRATEGIC_ENABLED: "true"
         DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-aat.service.core-compute-aat.internal"
         FEES_AND_PAYMENTS_SERVICE_API_BASEURL: "http://div-fps-aat.service.core-compute-aat.internal"
         MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE: "30000"
         FEATURE_DN_REFUSAL: "true"
 
-        DIV_SCHEDULER_DB_HOST : ${SERVICE_NAME}-postgresql
+        DIV_SCHEDULER_DB_HOST : "div-cos-aat.postgres.database.azure.com"
         DIV_SCHEDULER_DB_PORT : "5432"
-        DIV_SCHEDULER_DB_NAME : div_scheduler
-        DIV_SCHEDULER_DB_USER_NAME : div_scheduler_user
-        DIV_SCHEDULER_DB_PASSWORD  : div_scheduler_passwd
-        FLYWAY_URL : "jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/div_scheduler"
-        FLYWAY_USER : div_scheduler_user
-        FLYWAY_PASSWORD : div_scheduler_passwd
+        DIV_SCHEDULER_DB_NAME : "div_scheduler"
+        DIV_SCHEDULER_DB_USER_NAME : "div_scheduler@div-cos-aat"
+        FLYWAY_URL : "jdbc:postgresql://div-cos-aat.postgres.database.azure.com:5432/div_scheduler"
         SCHEDULER_SCHEDULES_CREATE_BULK_CASES_ENABLED: false
         SCHEDULER_RE_CREATE: true
         SCHEDULER_ENABLED: true
         FEATURE_RESP_SOLICITOR_DETAILS: "true"
 
+        SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: false
+
+        DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
+
+    keyVaults:
+        "div":
+            resourceGroup: div
+            secrets:
+                - ccd-submission-s2s-auth-secret
+                - div-doc-s2s-auth-secret
+                - idam-secret
+                - frontend-secret
+                - idam-citizen-password
+                - idam-caseworker-password
+                - cos-postgresql-password
+
     # Don't modify below here
     image: ${IMAGE_NAME}
     ingressHost: ${SERVICE_FQDN}
+    aadIdentityName: divorce

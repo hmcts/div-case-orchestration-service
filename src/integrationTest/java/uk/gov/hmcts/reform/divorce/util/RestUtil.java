@@ -7,11 +7,11 @@ import java.util.Collections;
 import java.util.Map;
 
 public class RestUtil {
-    public static Response postToRestService(String url, Map<String, Object> headers, String requestBody) {
+    public static Response postToRestService(String url, Map<String, Object> headers, Object requestBody) {
         return postToRestService(url, headers, requestBody, Collections.emptyMap());
     }
 
-    public static Response postToRestService(String url, Map<String, Object> headers, String requestBody,
+    public static Response postToRestService(String url, Map<String, Object> headers, Object requestBody,
                                              Map<String, Object> params) {
         if (requestBody != null) {
             return SerenityRest.given()
@@ -31,11 +31,11 @@ public class RestUtil {
         }
     }
 
-    public static Response putToRestService(String url, Map<String, Object> headers, String requestBody) {
+    public static Response putToRestService(String url, Map<String, Object> headers, Object requestBody) {
         return putToRestService(url, headers, requestBody, Collections.emptyMap());
     }
 
-    public static Response putToRestService(String url, Map<String, Object> headers, String requestBody,
+    public static Response putToRestService(String url, Map<String, Object> headers, Object requestBody,
                                              Map<String, Object> params) {
         if (requestBody != null) {
             return SerenityRest.given()

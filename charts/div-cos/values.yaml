@@ -5,6 +5,17 @@ java:
         REFORM_TEAM: "div"
         SLOT: "PRODUCTION"
         SERVICE_AUTH_MICROSERVICE : "divorce_frontend"
+        DIV_SCHEDULER_DB_HOST : "{{ .Release.Name }}-postgresql"
+        DIV_SCHEDULER_DB_PORT : "5432"
+        DIV_SCHEDULER_DB_NAME : "{{ .Values.postgresql.postgresqlDatabase}}"
+        DIV_SCHEDULER_DB_USER_NAME : "{{ .Values.postgresql.postgresqlUsername}}"
+        DIV_SCHEDULER_DB_PASSWORD  : "{{ .Values.postgresql.postgresqlPassword}}"
+        FLYWAY_URL : "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
+
+        SPRING_MAIL_HOST: mta.reform.hmcts.net
+        SPRING_MAIL_PORT: 25
+        SPRING_MAIL_TEST_CONNECTION: false
+        SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
 
     keyVaults:
         "div":

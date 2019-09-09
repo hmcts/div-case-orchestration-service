@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.AuthenticateUserResponse;
 import uk.gov.hmcts.reform.idam.client.models.ExchangeCodeRequest;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -24,7 +26,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 @Slf4j
-public abstract class RetrievePinUserDetails implements Task<UserDetails> {
+@Component
+@RequiredArgsConstructor
+public class RetrievePinUserDetails implements Task<UserDetails> {
     @Value("${auth2.client.id}")
     private String authClientId;
 
@@ -34,21 +38,27 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
     @Value("${idam.api.redirect-url}")
     private String authRedirectUrl;
 
-    @Autowired
-    private AuthUtil authUtil;
+    private final AuthUtil authUtil;
 
-    @Autowired
-    private IdamClient idamClient;
+    private final IdamClient idamClient;
+
+    private String PIN_ERROR_MSG = "Invalid pin";
 
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) throws TaskException {
-        String pinCode = authenticatePinUser(
+        AuthenticateUserResponse pinResponse = idamClient.authenticatePinUser(
             context.getTransientObject(RESPONDENT_PIN),
             authClientId,
-            authRedirectUrl);
+            authRedirectUrl,
+            null);
+
+        if (pinResponse == null) {
+            throw new TaskException(new AuthenticationError(PIN_ERROR_MSG));
+        }
 
         ExchangeCodeRequest exchangeCodeRequest =
-            new ExchangeCodeRequest(pinCode, GRANT_TYPE, authRedirectUrl, authClientId, authClientSecret);
+            new ExchangeCodeRequest(
+                pinResponse.getCode(), GRANT_TYPE, authRedirectUrl, authClientId, authClientSecret);
 
         String pinAuthToken = authUtil.getBearToken(
             idamClient.exchangeCode(exchangeCodeRequest).getAccessToken()
@@ -57,7 +67,7 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
         UserDetails pinUserDetails = idamClient.getUserDetails(pinAuthToken);
 
         if (pinUserDetails == null) {
-            throw new TaskException(new AuthenticationError("Invalid pin"));
+            throw new TaskException(new AuthenticationError(PIN_ERROR_MSG));
         }
 
         final String letterHolderId = pinUserDetails.getId();
@@ -87,8 +97,4 @@ public abstract class RetrievePinUserDetails implements Task<UserDetails> {
 
         return pinUserDetails;
     }
-
-    protected abstract String authenticatePinUser(String pin, String authClientId, String authRedirectUrl)
-        throws TaskException;
-
 }
