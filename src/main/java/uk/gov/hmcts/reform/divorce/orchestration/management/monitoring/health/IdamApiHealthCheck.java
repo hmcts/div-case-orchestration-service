@@ -11,7 +11,7 @@ public class IdamApiHealthCheck extends WebServiceHealthCheck {
     @Autowired
     public IdamApiHealthCheck(HttpEntityFactory httpEntityFactory,
                                   @Qualifier("healthCheckRestTemplate") RestTemplate restTemplate,
-                                  @Value("${idam.api.url}/health") String uri) {
+                                  @Value("${idam.client.url}/health") String uri) {
         super(httpEntityFactory, restTemplate, uri);
     }
 }

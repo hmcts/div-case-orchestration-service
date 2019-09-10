@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -14,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UnlinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateRespondentDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -46,7 +46,7 @@ public class LinkRespondentWorkflowUTest {
 
     @Test
     public void whenRunLinkRespondent_thenProceedAsExpected() throws Exception {
-        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+        final UserDetails userDetails = UserDetails.builder().build();
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
@@ -65,7 +65,7 @@ public class LinkRespondentWorkflowUTest {
 
     @Test
     public void whenUpdateRespondentDetailsFails_thenCallUnlinkRespondent() throws Exception {
-        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+        final UserDetails userDetails = UserDetails.builder().build();
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
@@ -88,7 +88,7 @@ public class LinkRespondentWorkflowUTest {
 
     @Test
     public void whenLinkRespondentFails_thenOtherTaskAreNotCalled() throws Exception {
-        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+        final UserDetails userDetails = UserDetails.builder().build();
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);

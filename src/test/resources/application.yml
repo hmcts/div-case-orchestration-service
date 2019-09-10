@@ -301,10 +301,11 @@ dncourt:
       phone: "0300 303 0642"
 
 idam:
-  api:
-    url: ${IDAM_API_URL:http://localhost:4503}
-    redirect-url: ${IDAM_API_REDIRECT_URL:http://localhost:8080/authenticated}
+  client:
+    redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:8080/authenticated}
     port: 4503
+    secret: ${SERVICE_AUTH_SECRET:dummysecret}
+    id: divorce
     health:
       context-path: /health
   citizen:
@@ -317,11 +318,8 @@ idam:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
     secret: ${SERVICE_AUTH_SECRET:dummysecret}
-
-auth2:
-  client:
-    id: divorce
-    secret: dummy
+  api:
+    url: ${IDAM_API_URL:http://localhost:4503}
 
 document:
   generator:

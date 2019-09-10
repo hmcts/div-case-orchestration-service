@@ -20,13 +20,13 @@ public class AuthUtil {
     private static final String AUTHORIZATION_CODE = "authorization_code";
     private static final String CODE = "code";
 
-    @Value("${idam.api.redirect-url}")
+    @Value("${idam.client.redirect_uri}")
     private String authRedirectUrl;
 
-    @Value("${auth2.client.id}")
+    @Value("${idam.client.id}")
     private String authClientId;
 
-    @Value("${auth2.client.secret}")
+    @Value("${idam.client.secret}")
     private String authClientSecret;
 
     @Value("${idam.citizen.username}")

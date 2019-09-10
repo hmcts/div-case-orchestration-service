@@ -41,7 +41,8 @@ public class RespondentPinGenerator implements Task<Map<String, Object>> {
     private GeneratePinResponse generateRespondentPin(final Map<String, Object> caseData) {
         GeneratePinRequest pinRequest = new GeneratePinRequest(
             String.valueOf(caseData.getOrDefault(D_8_PETITIONER_FIRST_NAME, "")),
-            String.valueOf(caseData.getOrDefault(D_8_PETITIONER_LAST_NAME, ""))
+            String.valueOf(caseData.getOrDefault(D_8_PETITIONER_LAST_NAME, "")),
+            null
         );
         return idamClient.generatePin(pinRequest, authUtil.getCitizenToken());
     }

@@ -1,14 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import feign.Request;
-import feign.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
@@ -17,29 +14,24 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.AuthenticateUserResponse;
 import uk.gov.hmcts.reform.idam.client.models.ExchangeCodeRequest;
 import uk.gov.hmcts.reform.idam.client.models.TokenExchangeResponse;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.FOUND;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GRANT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LOCATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
@@ -104,7 +96,7 @@ public class RetrievePinUserDetailsUTest {
 
     @Test
     public void givenPinUserNotFound_whenExecute_thenThrowException() {
-        final Response idamRedirectResponse = buildResponse(FOUND, Collections.singletonList(AUTH_URL_WITH_REDIRECT));
+        final AuthenticateUserResponse authenticateUserResponse = new AuthenticateUserResponse(TEST_PIN_CODE);
         final TokenExchangeResponse tokenExchangeResponse = new TokenExchangeResponse(BEARER_AUTH_TOKEN);
         ExchangeCodeRequest exchangeCodeRequest =
             new ExchangeCodeRequest(TEST_PIN_CODE, GRANT_TYPE, AUTH_REDIRECT_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET);
@@ -115,7 +107,7 @@ public class RetrievePinUserDetailsUTest {
         taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null))
-            .thenReturn(idamRedirectResponse);
+            .thenReturn(authenticateUserResponse);
         when(idamClient.exchangeCode(exchangeCodeRequest))
             .thenReturn(tokenExchangeResponse);
         when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(null);
@@ -133,7 +125,7 @@ public class RetrievePinUserDetailsUTest {
 
     @Test
     public void givenPinUserExists_whenExecute_thenProceedAsExpected() throws TaskException {
-        final Response idamRedirectResponse = buildResponse(FOUND, Collections.singletonList(AUTH_URL_WITH_REDIRECT));
+        final AuthenticateUserResponse authenticateUserResponse = new AuthenticateUserResponse(TEST_PIN_CODE);
         final TokenExchangeResponse tokenExchangeResponse = new TokenExchangeResponse(BEARER_AUTH_TOKEN);
         ExchangeCodeRequest exchangeCodeRequest =
             new ExchangeCodeRequest(TEST_PIN_CODE, GRANT_TYPE, AUTH_REDIRECT_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET);
@@ -150,7 +142,7 @@ public class RetrievePinUserDetailsUTest {
         final UserDetails pinUserDetails = UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
 
         when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null))
-            .thenReturn(idamRedirectResponse);
+            .thenReturn(authenticateUserResponse);
         when(idamClient.exchangeCode(exchangeCodeRequest)).thenReturn(tokenExchangeResponse);
         when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(pinUserDetails);
 
@@ -162,13 +154,5 @@ public class RetrievePinUserDetailsUTest {
         verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null);
         verify(idamClient).exchangeCode(exchangeCodeRequest);
         verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
-    }
-
-    private Response buildResponse(HttpStatus status, List<String> locationHeaders) {
-        return Response.builder()
-            .request(Request.create(Request.HttpMethod.GET, "http//example.com", Collections.emptyMap(), null))
-            .status(status.value())
-            .headers(Collections.singletonMap(LOCATION_HEADER, locationHeaders))
-            .build();
     }
 }
