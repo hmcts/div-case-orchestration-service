@@ -28,7 +28,6 @@ public class FamilyManDataExtractionIT extends RetrieveCaseSupport {
     private String testDataExtractionEndPoint;
 
     @Test
-    @Ignore
     public void shouldEmailCsvFileWithCase_ForDecreeAbsoluteIssued() {
         final UserDetails caseWorkerUser = createCaseWorkerUser();
 

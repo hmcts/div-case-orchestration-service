@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.transformation.CaseDetail
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class CMSHelper {
@@ -48,8 +49,8 @@ public class CMSHelper {
 
         List<String> transformedResults = new ArrayList<>();
         for (CaseDetails caseDetails : finalResult.getCases()) {
-            String transformedCaseData = caseDetailsMapper.mapCaseData(caseDetails);
-            transformedResults.add(transformedCaseData);
+            Optional<String> transformedCaseData = caseDetailsMapper.mapCaseData(caseDetails);
+            transformedCaseData.ifPresent(transformedResults::add);
         }
         return transformedResults;
     }
