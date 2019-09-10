@@ -148,14 +148,18 @@ public class DataExtractionFileCreatorTest {
     }
 
     @Test
-    public void shouldThrowTaskExceptionWhenMandatoryFieldIsNotFound() throws TaskException {
-        expectedException.expect(TaskException.class);
+    public void shouldNotAddCaseToFileWhenMandatoryFieldsAreNotPresent() throws TaskException, IOException {
+        Map<String, Object> firstCaseData = new HashMap<>();
+        firstCaseData.put("DecreeAbsoluteApplicationDate", "2018-06-12T16:49:00.015");
+        firstCaseData.put("DecreeNisiGrantedDate", "2017-08-17");
+        Map<String, Object> secondCaseData = new HashMap<>();
+        secondCaseData.put("D8caseReference", "TEST2");
+        secondCaseData.put("DecreeAbsoluteApplicationDate", "2018-06-24T16:49:00.015");
+        secondCaseData.put("DecreeNisiGrantedDate", "2017-08-26");
 
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put("DecreeAbsoluteApplicationDate", "2018-06-24T16:49:00.015");
-        caseData.put("DecreeNisiGrantedDate", "2017-08-26");
         SearchResult searchResult = SearchResult.builder().cases(newArrayList(
-            CaseDetails.builder().caseData(caseData).build()
+            CaseDetails.builder().caseData(firstCaseData).build(),
+            CaseDetails.builder().caseData(secondCaseData).build()
         )).build();
         when(caseMaintenanceClient.searchCases(eq(TEST_AUTHORISATION_TOKEN), eq(
             buildCMSBooleanSearchSource(0, 50,
@@ -167,6 +171,12 @@ public class DataExtractionFileCreatorTest {
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, TEST_AUTHORISATION_TOKEN);
         taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, LocalDate.parse(testLastModifiedDate));
         classUnderTest.execute(taskContext, null);
+
+        File createdFile = taskContext.getTransientObject(FILE_TO_PUBLISH);
+        assertThat(createdFile, is(notNullValue()));
+        List<String> fileLines = Files.readAllLines(createdFile.toPath());
+        assertThat(fileLines.get(0), is("CaseReferenceNumber,DAApplicationDate,DNPronouncementDate,PartyApplyingForDA"));
+        assertThat(fileLines.get(1), is("TEST2,24/06/2018,26/08/2017,petitioner"));
     }
 
 }
