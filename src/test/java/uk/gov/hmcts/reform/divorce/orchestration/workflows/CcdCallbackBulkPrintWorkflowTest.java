@@ -15,10 +15,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentAosPackPrinter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAosPackPrinter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSolicitorAosInvitationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
@@ -61,6 +63,12 @@ public class CcdCallbackBulkPrintWorkflowTest {
 
     @Mock
     private SendRespondentSolicitorAosInvitationEmail respondentSolicitorAosEmailSender;
+
+    @Mock
+    private RespondentLetterGenerator respondentLetterGenerator;
+
+    @Mock
+    private CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Mock
     private ModifyDueDate modifyDueDate;
@@ -176,6 +184,8 @@ public class CcdCallbackBulkPrintWorkflowTest {
         when(coRespondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentSolicitorAosEmailSender.execute(context, payload)).thenReturn(payload);
+        when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
+        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
 
         Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
         assertThat(response, is(payload));
@@ -185,6 +195,8 @@ public class CcdCallbackBulkPrintWorkflowTest {
             fetchPrintDocsFromDmStore,
             respondentPinGenerator,
             respondentSolicitorAosEmailSender,
+            respondentLetterGenerator,
+            caseFormatterAddDocuments,
             coRespondentAosPackPrinter,
             modifyDueDate
         );
