@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.transformation.CaseDetail
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.transformation.CaseIdMapper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
