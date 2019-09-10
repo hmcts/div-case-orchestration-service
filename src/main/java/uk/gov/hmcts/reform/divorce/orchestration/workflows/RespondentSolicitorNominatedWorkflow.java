@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSolicitorAosInvitationEmail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,15 +21,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final RespondentPinGenerator respondentPinGenerator;
-    private final SendRespondentSolicitorAosInvitationEmail sendRespondentSolicitorNotificationEmail;
     private final ResetRespondentLinkingFields resetRespondentLinkingFields;
 
     @Autowired
     public RespondentSolicitorNominatedWorkflow(RespondentPinGenerator respondentPinGenerator,
-                                                SendRespondentSolicitorAosInvitationEmail sendRespondentSolicitorAosInvitationEmail,
                                                 ResetRespondentLinkingFields resetRespondentLinkingFields) {
         this.respondentPinGenerator = respondentPinGenerator;
-        this.sendRespondentSolicitorNotificationEmail = sendRespondentSolicitorAosInvitationEmail;
         this.resetRespondentLinkingFields = resetRespondentLinkingFields;
     }
 
@@ -41,7 +37,6 @@ public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<St
         final Map<String, Object> caseData = caseDetails.getCaseData();
 
         tasks.add(respondentPinGenerator);
-        tasks.add(sendRespondentSolicitorNotificationEmail);
         tasks.add(resetRespondentLinkingFields);
 
         return this.execute(

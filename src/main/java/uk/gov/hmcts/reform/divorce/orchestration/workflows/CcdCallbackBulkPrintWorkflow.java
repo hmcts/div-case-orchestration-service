@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAosPackPrinter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSolicitorAosInvitationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 
 import java.util.ArrayList;
@@ -42,7 +41,6 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
     private final RespondentAosPackPrinter respondentAosPackPrinter;
     private final CoRespondentAosPackPrinter coRespondentAosPackPrinter;
     private final RespondentPinGenerator respondentPinGenerator;
-    private final SendRespondentSolicitorAosInvitationEmail respondentSolicitorAosEmailSender;
     private final ModifyDueDate modifyDueDate;
     private final RespondentLetterGenerator respondentLetterGenerator;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
@@ -75,7 +73,6 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
             if (isNotEmpty(solicitorEmail)) {
                 return asList(
                     respondentPinGenerator,
-                    respondentSolicitorAosEmailSender,
                     respondentLetterGenerator, // re-generate the AoS letter with the new PIN
                     caseFormatterAddDocuments);
             }

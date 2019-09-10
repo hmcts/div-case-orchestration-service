@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSolicitorAosInvitationEmail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,9 +36,6 @@ public class RespondentSolicitorNominatedWorkflowTest {
     @Mock
     private ResetRespondentLinkingFields resetRespondentLinkingFields;
 
-    @Mock
-    private SendRespondentSolicitorAosInvitationEmail sendRespondentSolicitorNotificationEmail;
-
     private CaseDetails caseDetails;
     private Map<String, Object> payload;
     private TaskContext context;
@@ -48,7 +44,6 @@ public class RespondentSolicitorNominatedWorkflowTest {
     public void setUp() {
         respondentSolicitorNominatedWorkflow = new RespondentSolicitorNominatedWorkflow(
                 respondentPinGenerator,
-                sendRespondentSolicitorNotificationEmail,
                 resetRespondentLinkingFields
         );
 
@@ -68,17 +63,15 @@ public class RespondentSolicitorNominatedWorkflowTest {
     public void testRunCallsTheRequiredTasks() throws WorkflowException, TaskException {
         //Given
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
-        when(sendRespondentSolicitorNotificationEmail.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
         Map<String, Object> response = respondentSolicitorNominatedWorkflow.run(caseDetails);
 
         //Then
-        InOrder inOrder = inOrder(respondentPinGenerator, sendRespondentSolicitorNotificationEmail, resetRespondentLinkingFields);
+        InOrder inOrder = inOrder(respondentPinGenerator, resetRespondentLinkingFields);
         assertThat(response, is(payload));
         inOrder.verify(respondentPinGenerator).execute(context, payload);
-        inOrder.verify(sendRespondentSolicitorNotificationEmail).execute(context, payload);
         inOrder.verify(resetRespondentLinkingFields).execute(context, payload);
     }
 }
