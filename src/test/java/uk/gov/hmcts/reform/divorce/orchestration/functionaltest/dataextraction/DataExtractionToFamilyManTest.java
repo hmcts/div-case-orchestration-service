@@ -8,8 +8,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DataExtractionService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction.DataExtractionEmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
@@ -33,8 +33,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
 
@@ -42,7 +40,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
     private static final String TEST_AUTH_TOKEN = "testAuthToken";
 
     @Autowired
-    private MockMvc webClient;
+    private DataExtractionService dataExtractionService;
 
     @MockBean
     private DataExtractionEmailClient mockEmailClient;
@@ -74,8 +72,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
                 + "}"))
         );
 
-        webClient.perform(post("/cases/data-extraction/family-man"))
-            .andExpect(status().isOk());
+        dataExtractionService.requestDataExtractionForPreviousDay();
 
         await().untilAsserted(() -> {
             //Make sure it's only called once until all the files are ready to be extracted
