@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -90,26 +89,6 @@ public class CMSHelperTest {
             .thenReturn(SearchResult.builder()
                 .total(totalSearchResults)
                 .cases(Collections.emptyList())
-                .build());
-
-        List<String> transformedCases = classUnderTest.searchCMSCases(start, pageSize, AUTH_TOKEN, TEST_QUERY_BUILDER);
-        assertThat(transformedCases, hasSize(0));
-        assertThat(transformedCases, equalTo(expectedCaseIdsInTheContext));
-
-        verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
-            jsonPathValueMatcher("$.query.bool.filter[*].match.state.query", hasItem(DN_PRONOUNCED))));
-    }
-
-    @Test
-    public void shouldNotTransformEmptyOptionalLines() throws TaskException {
-        final int totalSearchResults = 1;
-
-        final List<String> expectedCaseIdsInTheContext = Collections.emptyList();
-
-        when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
-            .thenReturn(SearchResult.builder()
-                .total(totalSearchResults)
-                .cases(singletonList(CaseDetails.builder().build()))
                 .build());
 
         List<String> transformedCases = classUnderTest.searchCMSCases(start, pageSize, AUTH_TOKEN, TEST_QUERY_BUILDER);

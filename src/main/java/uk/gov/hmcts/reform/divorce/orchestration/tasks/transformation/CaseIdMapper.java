@@ -10,7 +10,7 @@ public class CaseIdMapper implements CaseDetailsMapper {
 
     @Override
     public Optional<String> mapCaseData(CaseDetails caseDetails) {
-        return Optional.ofNullable(caseDetails.getCaseId());
+        return Optional.of(caseDetails.getCaseId());
     }
 
 }
