@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.dataextraction;
 
 import io.restassured.response.Response;
 import org.apache.http.entity.ContentType;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +28,7 @@ public class FamilyManDataExtractionIT extends RetrieveCaseSupport {
     private String testDataExtractionEndPoint;
 
     @Test
+    @Ignore
     public void shouldEmailCsvFileWithCase_ForDecreeAbsoluteIssued() {
         final UserDetails caseWorkerUser = createCaseWorkerUser();
 
