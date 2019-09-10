@@ -17,12 +17,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.transformation.CaseDetail
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.transformation.CaseIdMapper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -100,11 +101,31 @@ public class CMSHelperTest {
     }
 
     @Test
+    public void shouldNotTransformEmptyOptionalLines() throws TaskException {
+        final int totalSearchResults = 1;
+
+        final List<String> expectedCaseIdsInTheContext = Collections.emptyList();
+
+        when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
+            .thenReturn(SearchResult.builder()
+                .total(totalSearchResults)
+                .cases(singletonList(CaseDetails.builder().build()))
+                .build());
+
+        List<String> transformedCases = classUnderTest.searchCMSCases(start, pageSize, AUTH_TOKEN, TEST_QUERY_BUILDER);
+        assertThat(transformedCases, hasSize(0));
+        assertThat(transformedCases, equalTo(expectedCaseIdsInTheContext));
+
+        verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
+            jsonPathValueMatcher("$.query.bool.filter[*].match.state.query", hasItem(DN_PRONOUNCED))));
+    }
+
+    @Test
     public void execute_pageSize10_totalResults5() throws TaskException {
 
         final int totalSearchResults = 5;
 
-        final List<String> expectedCaseIdsInTheContext = Arrays.asList("1", "2", "3", "4", "5");
+        final List<String> expectedCaseIdsInTheContext = asList("1", "2", "3", "4", "5");
 
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
             .thenReturn(SearchResult.builder()
@@ -124,7 +145,7 @@ public class CMSHelperTest {
 
         final int totalSearchResults = 10;
 
-        final List<String> expectedCaseIdsInTheContext = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
+        final List<String> expectedCaseIdsInTheContext = asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
 
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
             .thenReturn(SearchResult.builder()
@@ -144,10 +165,10 @@ public class CMSHelperTest {
 
         final int totalSearchResults = 20;
 
-        final List<String> expectedCaseIdsInTheContext = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
+        final List<String> expectedCaseIdsInTheContext = asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
             "12", "13", "14", "15", "16", "17", "18", "19", "20");
 
-        List<SearchResult> searchResultBatchList = Arrays.asList(
+        List<SearchResult> searchResultBatchList = asList(
             SearchResult.builder()
                 .total(totalSearchResults)
                 .cases(buildCases(0, 10))
@@ -173,10 +194,10 @@ public class CMSHelperTest {
 
         final int totalSearchResults = 30;
 
-        final List<String> expectedCaseIdsInTheContext = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
+        final List<String> expectedCaseIdsInTheContext = asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
             "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30");
 
-        List<SearchResult> searchResultBatchList = Arrays.asList(
+        List<SearchResult> searchResultBatchList = asList(
             SearchResult.builder()
                 .total(totalSearchResults)
                 .cases(buildCases(0, 10))
