@@ -9,3 +9,4 @@ health_check_ttl = 30000
 
 scheduler_enabled = "true"
 feature_resp_solicitor_details = "true"
+feature_dn_refusal = "true"
