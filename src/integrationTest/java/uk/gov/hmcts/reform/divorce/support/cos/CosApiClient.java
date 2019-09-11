@@ -198,4 +198,13 @@ public interface CosApiClient {
             value = "/remove-la-make-decision-fields"
     )
     Map<String, Object> removeLegalAdvisorMakeDecisionFields(@RequestBody CcdCallbackRequest ccdCallbackRequest);
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/dn-about-to-be-granted"
+    )
+    CcdCallbackResponse processDnAboutToBeGranted(
+            @RequestHeader(AUTHORIZATION) String authorisation,
+            @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
 }
