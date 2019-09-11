@@ -175,9 +175,8 @@ public class CcdCallbackBulkPrintWorkflowTest {
         when(serviceMethodValidationTask.execute(context, payload)).thenReturn(payload);
         when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
         when(modifyDueDate.execute(context, payload)).thenReturn(payload);
+        when(respondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
         when(coRespondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
-        when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
-        when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
 
         Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
@@ -186,8 +185,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
         final InOrder inOrder = inOrder(
             serviceMethodValidationTask,
             fetchPrintDocsFromDmStore,
-            respondentPinGenerator,
-            respondentLetterGenerator,
+            respondentAosPackPrinter,
             caseFormatterAddDocuments,
             coRespondentAosPackPrinter,
             modifyDueDate
@@ -195,11 +193,9 @@ public class CcdCallbackBulkPrintWorkflowTest {
 
         inOrder.verify(serviceMethodValidationTask).execute(context, payload);
         inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);
-        inOrder.verify(respondentPinGenerator).execute(context, payload);
+        inOrder.verify(respondentAosPackPrinter).execute(context, payload);
         inOrder.verify(coRespondentAosPackPrinter).execute(context, payload);
         inOrder.verify(modifyDueDate).execute(context, payload);
-
-        verifyZeroInteractions(respondentAosPackPrinter);
     }
 
     @After

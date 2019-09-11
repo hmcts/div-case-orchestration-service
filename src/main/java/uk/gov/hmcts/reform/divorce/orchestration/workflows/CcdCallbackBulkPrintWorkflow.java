@@ -72,8 +72,7 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
             final String solicitorEmail = (String) caseData.get(D8_RESPONDENT_SOLICITOR_EMAIL);
             if (isNotEmpty(solicitorEmail)) {
                 return asList(
-                    respondentPinGenerator,
-                    respondentLetterGenerator, // re-generate the AoS letter with the new PIN
+                    respondentAosPackPrinter,
                     caseFormatterAddDocuments);
             }
         }
