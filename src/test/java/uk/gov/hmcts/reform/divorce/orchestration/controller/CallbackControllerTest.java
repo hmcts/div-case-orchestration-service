@@ -844,7 +844,7 @@ public class CallbackControllerTest {
     }
 
     public void testDnAboutToBeGrantedCallsRightServiceMethod() throws CaseOrchestrationServiceException {
-        when(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(any()))
+        when(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(any(), eq(AUTH_TOKEN)))
             .thenReturn(singletonMap("newKey", "newValue"));
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
@@ -852,17 +852,17 @@ public class CallbackControllerTest {
                 .caseData(singletonMap("testKey", "testValue"))
                 .build())
             .build();
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnAboutToBeGranted(ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnAboutToBeGranted(AUTH_TOKEN, ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), hasEntry("newKey", "newValue"));
         assertThat(response.getBody().getErrors(), is(nullValue()));
-        verify(caseOrchestrationService).processCaseBeforeDecreeNisiIsGranted(eq(ccdCallbackRequest));
+        verify(caseOrchestrationService).processCaseBeforeDecreeNisiIsGranted(eq(ccdCallbackRequest), eq(AUTH_TOKEN));
     }
 
     @Test
     public void testDnAboutToBeGrantedHandlesServiceException() throws CaseOrchestrationServiceException {
-        when(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(any()))
+        when(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(any(), eq(AUTH_TOKEN)))
             .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
@@ -870,12 +870,12 @@ public class CallbackControllerTest {
                 .caseData(singletonMap("testKey", "testValue"))
                 .build())
             .build();
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnAboutToBeGranted(ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnAboutToBeGranted(AUTH_TOKEN, ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem(equalTo("This is a test error message.")));
-        verify(caseOrchestrationService).processCaseBeforeDecreeNisiIsGranted(eq(ccdCallbackRequest));
+        verify(caseOrchestrationService).processCaseBeforeDecreeNisiIsGranted(eq(ccdCallbackRequest), eq(AUTH_TOKEN));
     }
 
     @Test
@@ -894,6 +894,27 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), hasEntry("newKey", "newValue"));
         assertThat(response.getBody().getErrors(), is(nullValue()));
+        verify(caseOrchestrationService).cleanStateCallback(eq(ccdCallbackRequest), eq(AUTH_TOKEN));
+    }
+
+    @Test
+    public void testDnDecisionMadeCallsRightServiceMethodToNotifyAndClearState() throws WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(singletonMap("testKey", "testValue"))
+                .build())
+            .build();
+
+        when(caseOrchestrationService.notifyForRefusalOrder(ccdCallbackRequest)).thenReturn(Collections.emptyMap());
+        when(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(singletonMap("newKey", "newValue"));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnDecisionMadeCallback(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), hasEntry("newKey", "newValue"));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+        verify(caseOrchestrationService).notifyForRefusalOrder(eq(ccdCallbackRequest));
         verify(caseOrchestrationService).cleanStateCallback(eq(ccdCallbackRequest), eq(AUTH_TOKEN));
     }
 
