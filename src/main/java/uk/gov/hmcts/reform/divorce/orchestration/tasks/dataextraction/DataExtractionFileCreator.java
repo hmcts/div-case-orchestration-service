@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
+import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
 
 @Component
+@Slf4j
 public class DataExtractionFileCreator implements Task<Void> {
 
     private final CMSHelper cmsHelper;
@@ -42,6 +44,7 @@ public class DataExtractionFileCreator implements Task<Void> {
             QueryBuilders.termsQuery("state", DA_REQUESTED.toLowerCase(), DIVORCE_GRANTED.toLowerCase())
         };
         List<String> csvBodyLines = cmsHelper.searchCMSCases(0, 50, authToken, queryBuilders);
+        log.info("Created csv file with {} lines of case data", csvBodyLines.size());
 
         StringBuilder csvFileContent = new StringBuilder();
         csvFileContent.append("CaseReferenceNumber,DAApplicationDate,DNPronouncementDate,PartyApplyingForDA");
