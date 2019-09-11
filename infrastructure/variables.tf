@@ -116,6 +116,12 @@ variable "documentation_swagger_enabled" {
   default = "true"
 }
 
+variable "scheduler_send_updated_cases_to_robotics_cron" {
+  type    = "string"
+  default = "0 0 2 ? * * *"
+  description = "The scheduler job should run every day at 2 am"
+}
+
 variable "spring_mail_host" {
   type = "string"
   default = "mta.reform.hmcts.net"

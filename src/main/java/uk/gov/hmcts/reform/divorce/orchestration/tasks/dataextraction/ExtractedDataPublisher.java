@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -15,6 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
 
 @Component
+@Slf4j
 public class ExtractedDataPublisher implements Task<Void> {
 
     private static final DateTimeFormatter DATA_EXTRACTION_DATE_FORMAT_FOR_FILE_NAME = DateTimeFormatter.ofPattern("ddMMyyyy000000");
@@ -30,6 +32,7 @@ public class ExtractedDataPublisher implements Task<Void> {
 
         try {
             emailClient.sendEmailWithAttachment(attachmentFileName, context.getTransientObject(FILE_TO_PUBLISH));
+            log.info("Sent extracted data to {}", emailClient.getDestinationEmailAddress());
         } catch (MessagingException e) {
             throw new TaskException("Error sending e-mail with data extraction file.", e);
         }
