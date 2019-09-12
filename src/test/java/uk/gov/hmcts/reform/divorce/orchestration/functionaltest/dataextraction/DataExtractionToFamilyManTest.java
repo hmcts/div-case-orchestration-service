@@ -76,10 +76,10 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
 
         await().untilAsserted(() -> {
             //Make sure it's only called once until all the files are ready to be extracted
-            verify(mockEmailClient, times(1)).sendEmailWithAttachment(any(), any());
+            verify(mockEmailClient, times(1)).sendEmailWithAttachment(any(), any(), any());//TODO - we might not need this, and the field below could be outside of await
 
             String expectedAttachmentName = String.format("DA_%s.csv", LocalDate.now().minusDays(1).format(FILE_NAME_DATE_FORMAT));
-            verify(mockEmailClient).sendEmailWithAttachment(eq(expectedAttachmentName), attachmentCaptor.capture());
+            verify(mockEmailClient).sendEmailWithAttachment(eq("da-extraction@divorce.gov.uk"), eq(expectedAttachmentName), attachmentCaptor.capture());
             File attachmentFile = attachmentCaptor.getValue();
             assertThat(attachmentFile, is(notNullValue()));
             List<String> lines = Files.readAllLines(attachmentFile.toPath());
