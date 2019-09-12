@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_2_YR_CONSENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADMIT_ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
@@ -116,7 +116,7 @@ public class SolicitorAosEventServiceImplUTest {
         final Map<String, Object> caseData = new HashMap<>();
         caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
         caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
-        caseData.put(RESP_AOS_ADULTERY, YES_VALUE);
+        caseData.put(RESP_AOS_ADMIT_ADULTERY, YES_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
         final Map<String, Object> expectedData = new HashMap<>();
@@ -124,7 +124,7 @@ public class SolicitorAosEventServiceImplUTest {
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
         expectedData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
-        expectedData.put(RESP_AOS_ADULTERY, YES_VALUE);
+        expectedData.put(RESP_AOS_ADMIT_ADULTERY, YES_VALUE);
         expectedData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
         expectedData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
@@ -189,12 +189,12 @@ public class SolicitorAosEventServiceImplUTest {
     @Test
     public void givenSolicitorIsRepresenting_DoesNotAdmitAdultery_then_eventTriggeredIs_SolAosReceivedNoAdConStarted() throws WorkflowException {
         final Map<String, Object> caseData = buildSolicitorResponse(true);
-        caseData.put(RESP_AOS_ADULTERY, NO_VALUE);
+        caseData.put(RESP_AOS_ADMIT_ADULTERY, NO_VALUE);
         caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
         Map<String, Object> expectedData = buildSolicitorResponse(true);
-        expectedData.put(RESP_AOS_ADULTERY, NO_VALUE);
+        expectedData.put(RESP_AOS_ADMIT_ADULTERY, NO_VALUE);
         expectedData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());

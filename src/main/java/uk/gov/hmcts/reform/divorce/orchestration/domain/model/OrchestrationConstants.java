@@ -62,7 +62,7 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_SUBMISSION_AWAITING_LA_EVENT_ID = "co-RespAwaitingLAReferral";
     public static final String DECREE_ABSOLUTE_REQUESTED_EVENT_ID = "RequestDA";
     public static final String RESP_AOS_2_YR_CONSENT = "RespAOS2yrConsent";
-    public static final String RESP_AOS_ADULTERY = "RespAOSAdultery";
+    public static final String RESP_AOS_ADMIT_ADULTERY = "RespAOSAdultery";
     public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "RespAdmitOrConsentToFact";
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
