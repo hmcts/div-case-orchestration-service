@@ -14,9 +14,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.QueueAosSolicitorSubmitTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmail;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitRespondentAosCaseForSolicitorTask;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -66,7 +66,7 @@ public class AosSubmissionWorkflowTest {
     private SendRespondentSubmissionNotificationForUndefendedDivorceEmail undefendedDivorceNotificationEmailTask;
 
     @Mock
-    SubmitRespondentAosCaseForSolicitorTask submitRespondentAosCaseForSolicitorTask;
+    private QueueAosSolicitorSubmitTask queueAosSolicitorSubmitTask;
 
     @Captor
     private ArgumentCaptor<TaskContext> taskContextArgumentCaptor;
@@ -79,6 +79,7 @@ public class AosSubmissionWorkflowTest {
         returnedPayloadFromTask = new HashMap<>();
         when(defendedDivorceNotificationEmailTask.execute(any(), any())).thenReturn(returnedPayloadFromTask);
         when(undefendedDivorceNotificationEmailTask.execute(any(), any())).thenReturn(returnedPayloadFromTask);
+        when(queueAosSolicitorSubmitTask.execute(any(), any())).thenReturn(returnedPayloadFromTask);
     }
 
     @Test
@@ -149,30 +150,32 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void testSolicitorTaskIsCalledWhenWorkflowIsRun_whenSolicitorIsRepresenting()
-            throws WorkflowException, IOException {
+            throws WorkflowException, IOException, TaskException {
+
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
                 AOS_SOLICITOR_NOMINATED_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
-        verify(submitRespondentAosCaseForSolicitorTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
+        verify(queueAosSolicitorSubmitTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
     }
 
     @Test
     public void testSolicitorTaskIsNotCalledWhenSolicitorIsNotRepresenting() throws IOException,
-            WorkflowException, TaskException {
+            WorkflowException {
+
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
                 RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
 
         aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
 
-        verifyZeroInteractions(submitRespondentAosCaseForSolicitorTask);
+        verifyZeroInteractions(queueAosSolicitorSubmitTask);
     }
 
     @Test
     public void testSolicitorTaskIsCalled_whenSolicitorIsRepresentingIsEmpty_andRespSolValuesExist()
-            throws WorkflowException, IOException {
+            throws WorkflowException, IOException, TaskException {
 
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
                 AOS_SOLICITOR_NOMINATED_WITHOUT_FIELDS_SET_JSON, CcdCallbackRequest.class);
@@ -180,6 +183,6 @@ public class AosSubmissionWorkflowTest {
 
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
-        verify(submitRespondentAosCaseForSolicitorTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
+        verify(queueAosSolicitorSubmitTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
     }
 }
