@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.DATE_TO_EXTRACT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
 
@@ -36,6 +37,9 @@ public class ExtractedDataPublisherTest {
     @Mock
     private DataExtractionEmailClient emailClient;
 
+    @Mock
+    private CSVExtractor csvExtractor;
+
     @InjectMocks
     private ExtractedDataPublisher classUnderTest;
 
@@ -46,6 +50,9 @@ public class ExtractedDataPublisherTest {
         taskContext = new DefaultTaskContext();
         LocalDate testDateToProcess = LocalDate.of(2019, Month.JULY, 15);
         taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, testDateToProcess);
+
+        when(csvExtractor.getDestinationEmailAddress()).thenReturn("csv-email@divorce.gov.uk");
+        when(csvExtractor.getFileNamePrefix()).thenReturn("Prefix");
     }
 
     @Test
@@ -56,7 +63,7 @@ public class ExtractedDataPublisherTest {
 
         classUnderTest.execute(taskContext, null);
 
-        verify(emailClient).sendEmailWithAttachment(eq("DA_15072019000000.csv"), eq(file));
+        verify(emailClient).sendEmailWithAttachment(eq("csv-email@divorce.gov.uk"), eq("Prefix_15072019000000.csv"), eq(file));
     }
 
     @Test
@@ -64,7 +71,7 @@ public class ExtractedDataPublisherTest {
         expectedException.expect(TaskException.class);
         expectedException.expectCause(instanceOf(MessagingException.class));
 
-        doThrow(MessagingException.class).when(emailClient).sendEmailWithAttachment(any(), any());
+        doThrow(MessagingException.class).when(emailClient).sendEmailWithAttachment(eq("csv-email@divorce.gov.uk"), any(), any());
 
         classUnderTest.execute(taskContext, null);
     }
