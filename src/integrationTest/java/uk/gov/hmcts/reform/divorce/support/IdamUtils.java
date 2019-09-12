@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.support;
 
+import feign.FeignException;
 import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
 import org.apache.http.entity.ContentType;
@@ -9,6 +10,7 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.divorce.model.GeneratePinRequest;
 import uk.gov.hmcts.reform.divorce.model.PinResponse;
 import uk.gov.hmcts.reform.divorce.model.RegisterUserRequest;
+import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.model.UserGroup;
 
 import java.util.ArrayList;
@@ -86,6 +88,18 @@ public class IdamUtils {
             .asString();
     }
 
+    public void deleteUser(final UserDetails user) {
+        Thread userDeletionThread = new Thread(() -> {
+            System.out.println("Deleting user " + user.getEmailAddress());
+
+            SerenityRest.given()
+                .relaxedHTTPSValidation()
+                .delete(idamDeleteUrl(user.getEmailAddress()));
+        });
+        userDeletionThread.setDaemon(true);
+        userDeletionThread.start();
+    }
+
     public String generateUserTokenWithNoRoles(String username, String password) {
         String userLoginDetails = String.join(":", username, password);
         final String authHeader = "Basic " + new String(Base64.getEncoder().encode(userLoginDetails.getBytes()));
@@ -95,6 +109,10 @@ public class IdamUtils {
             .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .relaxedHTTPSValidation()
             .post(idamCodeUrl());
+
+        if (response.getStatusCode() == 401) {
+            throw new FeignException.Unauthorized("User not authorised", response.asByteArray());
+        }
 
         if (response.getStatusCode() >= 300) {
             throw new IllegalStateException("Token generation failed with code: " + response.getStatusCode()
@@ -110,6 +128,10 @@ public class IdamUtils {
 
         String token = response.getBody().path("access_token");
         return "Bearer " + token;
+    }
+
+    private String idamDeleteUrl(String accountEmail) {
+        return idamUserBaseUrl + "/testing-support/accounts/" + accountEmail;
     }
 
     private String idamCreateUrl() {
