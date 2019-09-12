@@ -46,13 +46,6 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
     private static final String PETITIONER = "petitioner";
     private static final String RESPONDENT = "respondent";
 
-    private static final String SOL_APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC =
-            "Resp has not responded - notification sent to solicitor";
-    private static final String APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC =
-            "Resp has not responded - notification sent to petitioner";
-    private static final String SOL_GENERIC_UPDATE_EMAIL_DESC =
-            "Generic Update Notification - Petitioner solicitor";
-
     private final EmailService emailService;
 
     @Autowired
@@ -127,10 +120,10 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
     }
 
     public void sendEmail(String firstName, String lastName, String emailAddress,
-                          String user, Map<String, Object> caseData, String caseId) {
+                          String user, Map<String, Object> caseData, String ccdReference) {
 
-        String ccdReference = caseId;
-        LocalDate daGrantedDate = LocalDateTime.parse((String) caseData.get(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD)).toLocalDate();
+        String daGrantedDataCcdField = (String) caseData.get(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD);
+        LocalDate daGrantedDate = LocalDateTime.parse(daGrantedDataCcdField).toLocalDate();
         String daLimitDownloadDate = formatDateWithCustomerFacingFormat(daGrantedDate.plusYears(1));
 
         if (StringUtils.isNotBlank(emailAddress)) {
@@ -148,7 +141,7 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
                     templateVars,
                     EMAIL_DESC);
         } else {
-            log.warn("no {} email present for case reference: {}", user, ccdReference);
+            log.warn("No {} email present for case reference: {}", user, ccdReference);
         }
     }
 }
