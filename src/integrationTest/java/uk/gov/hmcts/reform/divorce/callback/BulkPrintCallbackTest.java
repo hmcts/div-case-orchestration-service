@@ -86,7 +86,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
 
         CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(CaseDetails.builder().caseData(
-            (Map) response.get("data")).caseId("323").state("submitted").build()
+            (Map) response.get("data")).caseId("1517833758870511").state("Issued").build()
         );
         ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders,
             ccdCallbackRequest).getBody();

@@ -41,7 +41,7 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
     private static final String BULK_LISTED_EVENT = "listed";
     private static final String REMOVE_FROM_BULK_LISTED_EVENT = "removeFromListed";
 
-    private static final int MAX_WAITING_TIME_IN_SECONDS = 60;
+    private static final int MAX_WAITING_TIME_IN_SECONDS = 90;
     private static final int POOL_INTERVAL_IN_MILLIS = 1000;
 
     @Ignore

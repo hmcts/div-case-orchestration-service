@@ -26,9 +26,6 @@ public class DecreeAbsoluteCaseInternalController {
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<String> makeCasesEligibleForDA(
         @RequestHeader(value = "Authorization") String authorizationToken) throws WorkflowException {
-        //TODO - ideally, we should be calling the job, not the service - otherwise we can't guarantee the job works.
-        // Note: if we call the job here and an assumed JobExecutionContext is required to be injected which might not be
-        // as useful as we thought
         int casesProcessed = decreeAbsoluteService.enableCaseEligibleForDecreeAbsolute(authorizationToken);
         return ResponseEntity.ok("Cases made eligible for DA: " + casesProcessed);
     }
