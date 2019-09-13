@@ -29,7 +29,7 @@ public class CSVExtractorFactoryTest {
     private CSVExtractorFactory csvExtractorFactory;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         csvExtractorFactory.init();
     }
 

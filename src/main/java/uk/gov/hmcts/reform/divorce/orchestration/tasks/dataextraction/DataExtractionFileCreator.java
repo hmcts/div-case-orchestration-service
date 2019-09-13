@@ -48,7 +48,7 @@ public class DataExtractionFileCreator implements Task<Void> {
 
         QueryBuilder[] queryBuilders = {
             QueryBuilders.termQuery("last_modified", lastModifiedDate),
-            QueryBuilders.termsQuery("state", DA_REQUESTED.toLowerCase(), DIVORCE_GRANTED.toLowerCase())//TODO - put this in extractor
+            QueryBuilders.termsQuery("state", DA_REQUESTED.toLowerCase(), DIVORCE_GRANTED.toLowerCase())
         };
 
         StringBuilder csvFileContent = new StringBuilder();

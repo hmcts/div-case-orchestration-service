@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DataExtractionService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction.CSVExtractorFactory;
@@ -31,8 +32,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtract
 public class DataExtractionRequestListenerTest {
 
     private static final String TEST_AUTH_TOKEN = "testAuthToken";
-    private final DataExtractionRequest.Status TEST_IMPLEMENTED_STATUS = DA;
-    private final DataExtractionRequest.Status TEST_UNIMPLEMENTED_STATUS = AOS;
+    private static final Status TEST_IMPLEMENTED_STATUS = DA;
+    private static final Status TEST_UNIMPLEMENTED_STATUS = AOS;
 
     @Rule
     public ExpectedException expectedException = none();
