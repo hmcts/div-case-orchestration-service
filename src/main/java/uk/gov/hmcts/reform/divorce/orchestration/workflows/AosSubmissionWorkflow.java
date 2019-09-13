@@ -44,8 +44,11 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         List<Task> tasks = new ArrayList<>();
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        String caseState = ccdCallbackRequest.getCaseDetails().getState();
 
         if (usingRespondentSolicitor(caseData)) {
+            log.info("Attempting to queue solicitor AoS submission for case {}, case state: {}", caseId, caseState);
             tasks.add(queueAosSolicitorSubmitTask);
         } else {
             processCitizenAosSubmissionTasks(ccdCallbackRequest, tasks);
