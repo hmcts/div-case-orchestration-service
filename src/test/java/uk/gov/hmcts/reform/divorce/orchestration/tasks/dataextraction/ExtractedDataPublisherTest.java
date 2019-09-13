@@ -28,6 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.DATE_TO_EXTRACT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.STATUS_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ExtractedDataPublisherTest {
@@ -56,7 +57,7 @@ public class ExtractedDataPublisherTest {
         taskContext = new DefaultTaskContext();
         LocalDate testDateToProcess = LocalDate.of(2019, Month.JULY, 15);
         taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, testDateToProcess);
-        taskContext.setTransientObject("status", testStatus);//TODO constant
+        taskContext.setTransientObject(STATUS_KEY, testStatus);
 
         when(csvExtractor.getDestinationEmailAddress()).thenReturn("csv-email@divorce.gov.uk");
         when(csvExtractor.getFileNamePrefix()).thenReturn("Prefix");

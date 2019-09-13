@@ -24,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.DATE_TO_EXTRACT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.STATUS_KEY;
 
 @Component
 @Slf4j
@@ -33,14 +34,14 @@ public class DataExtractionFileCreator implements Task<Void> {
     private final CSVExtractorFactory csvExtractorFactory;
 
     @Autowired
-    public DataExtractionFileCreator(CSVExtractor csvExtractor, CMSElasticSearchSupport cmsElasticSearchSupport, CSVExtractorFactory csvExtractorFactory) {
+    public DataExtractionFileCreator(CMSElasticSearchSupport cmsElasticSearchSupport, CSVExtractorFactory csvExtractorFactory) {
         this.cmsElasticSearchSupport = cmsElasticSearchSupport;
         this.csvExtractorFactory = csvExtractorFactory;
     }
 
     @Override
     public Void execute(TaskContext context, Void payload) throws TaskException {
-        Status status = context.getTransientObject("status");//TODO - constant
+        Status status = context.getTransientObject(STATUS_KEY);
         CSVExtractor csvExtractor = csvExtractorFactory.getCSVExtractorForStatus(status);
         LocalDate lastModifiedDate = context.getTransientObject(DATE_TO_EXTRACT_KEY);
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
