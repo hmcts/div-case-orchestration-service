@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_REQUESTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,7 +51,10 @@ public class DataExtractionFileCreatorTest {
     private CMSElasticSearchSupport cmsElasticSearchSupport;
 
     @Mock
-    private DecreeAbsoluteDataExtractor mockCaseDetailsMapper;
+    private DecreeAbsoluteDataExtractor mockCaseDetailsMapper;//TODO Interface?
+
+    @Mock
+    private CSVExtractorFactory csvExtractorFactory;
 
     @InjectMocks
     private DataExtractionFileCreator classUnderTest;
@@ -64,6 +68,7 @@ public class DataExtractionFileCreatorTest {
             Optional.of(System.lineSeparator() + "line2"),
             Optional.empty()
         );
+        when(csvExtractorFactory.getCSVExtractorForStatus(DA)).thenReturn(mockCaseDetailsMapper);
     }
 
     @Test
@@ -79,6 +84,7 @@ public class DataExtractionFileCreatorTest {
         DefaultTaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, TEST_AUTHORISATION_TOKEN);
         taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, testLastModifiedDate);
+        taskContext.setTransientObject("status", DA);//TODO constant
         classUnderTest.execute(taskContext, null);
 
         File createdFile = taskContext.getTransientObject(FILE_TO_PUBLISH);
