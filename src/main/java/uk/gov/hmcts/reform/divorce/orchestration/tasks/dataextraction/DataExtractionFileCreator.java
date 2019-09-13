@@ -5,17 +5,18 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CMSHelper;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_REQUESTED;
@@ -27,11 +28,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction
 @Slf4j
 public class DataExtractionFileCreator implements Task<Void> {
 
-    private final CMSHelper cmsHelper;
+    private final CMSElasticSearchSupport cmsElasticSearchSupport;
+    private final CSVExtractor dataExtractor;
 
     @Autowired
-    public DataExtractionFileCreator(CaseMaintenanceClient caseMaintenanceClient, DecreeAbsoluteDataExtractor caseDetailsMapper) {
-        cmsHelper = new CMSHelper(caseMaintenanceClient, caseDetailsMapper);
+    public DataExtractionFileCreator(CSVExtractor caseDetailsMapper, CMSElasticSearchSupport cmsElasticSearchSupport) {
+        this.cmsElasticSearchSupport = cmsElasticSearchSupport;
+        this.dataExtractor = caseDetailsMapper;
     }
 
     @Override
@@ -43,15 +46,17 @@ public class DataExtractionFileCreator implements Task<Void> {
             QueryBuilders.termQuery("last_modified", lastModifiedDate),
             QueryBuilders.termsQuery("state", DA_REQUESTED.toLowerCase(), DIVORCE_GRANTED.toLowerCase())
         };
-        List<String> csvBodyLines = cmsHelper.searchCMSCases(0, 50, authToken, queryBuilders);
-        log.info("Created csv file with {} lines of case data", csvBodyLines.size());
 
         StringBuilder csvFileContent = new StringBuilder();
-        csvFileContent.append("CaseReferenceNumber,DAApplicationDate,DNPronouncementDate,PartyApplyingForDA");
-        csvBodyLines.stream().forEach(csvFileContent::append);
+        csvFileContent.append(dataExtractor.getHeaderLine());
+        List<CaseDetails> casesDetails = cmsElasticSearchSupport.searchCMSCases(0, 50, authToken, queryBuilders).collect(Collectors.toList());
+        for (CaseDetails caseDetails : casesDetails) {
+            dataExtractor.mapCaseData(caseDetails).ifPresent(csvFileContent::append);
+        }
 
         File csvFile = createFile(csvFileContent.toString());
         context.setTransientObject(FILE_TO_PUBLISH, csvFile);
+        log.info("Created csv file with {} lines of case data", casesDetails.size());
 
         return payload;
     }
@@ -60,7 +65,7 @@ public class DataExtractionFileCreator implements Task<Void> {
         File csvFile;
 
         try {
-            csvFile = Files.createTempFile("DA_family_man_data_extraction", ".csv").toFile();
+            csvFile = Files.createTempFile("data_extraction", ".csv").toFile();
             Files.write(csvFile.toPath(), csvFileContent.getBytes());
             csvFile.deleteOnExit();
         } catch (IOException e) {
@@ -69,5 +74,4 @@ public class DataExtractionFileCreator implements Task<Void> {
 
         return csvFile;
     }
-
 }
