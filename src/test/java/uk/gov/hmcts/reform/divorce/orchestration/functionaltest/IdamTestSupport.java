@@ -34,6 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public abstract class IdamTestSupport extends MockedFunctionalTest {
+    private static final String CHAR_SET_HEADER = "charset";
     private static final String IDAM_PIN_DETAILS_CONTEXT_PATH = "/pin";
     private static final String IDAM_AUTHORIZE_CONTEXT_PATH = "/oauth2/authorize";
     private static final String IDAM_EXCHANGE_CODE_CONTEXT_PATH = "/oauth2/token";
@@ -134,14 +135,11 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
         }
     }
 
-    private void stubAuthoriseEndpoint(String authorisation, String responseBody)
-        throws UnsupportedEncodingException {
-        idamServer.stubFor(post(IDAM_AUTHORIZE_CONTEXT_PATH
-            + "?response_type=" + CODE
-            + "&client_id=" + authClientId
-            + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name()))
+    private void stubAuthoriseEndpoint(String authorisation, String responseBody) {
+        final String customFormDataHeader = MediaType.APPLICATION_FORM_URLENCODED_VALUE + "; charset=UTF-8";
+        idamServer.stubFor(post(IDAM_AUTHORIZE_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authorisation))
-            .withHeader(CONTENT_TYPE, new EqualToPattern(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+            .withHeader(CONTENT_TYPE, new EqualToPattern(customFormDataHeader))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
@@ -161,15 +159,10 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
                 .withBody(responseBody)));
     }
 
-    void stubTokenExchangeEndpoint(HttpStatus status, String authCode, String responseBody)
-        throws UnsupportedEncodingException {
-        idamServer.stubFor(post(IDAM_EXCHANGE_CODE_CONTEXT_PATH
-            + "?code=" + authCode
-            + "&grant_type=" + AUTHORIZATION_CODE
-            + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name())
-            + "&client_id=" + authClientId
-            + "&client_secret=" + authClientSecret)
-            .withHeader(CONTENT_TYPE, new EqualToPattern(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    void stubTokenExchangeEndpoint(HttpStatus status, String authCode, String responseBody) {
+        final String customFormDataHeader = MediaType.APPLICATION_FORM_URLENCODED_VALUE + "; charset=UTF-8";
+        idamServer.stubFor(post(IDAM_EXCHANGE_CODE_CONTEXT_PATH)
+            .withHeader(CONTENT_TYPE, new EqualToPattern(customFormDataHeader))
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
