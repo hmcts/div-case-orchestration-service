@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.SubmitSolicitorAosEvent;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
@@ -68,7 +67,7 @@ public class SolicitorAosEventServiceImplUTest {
     }
 
     @Test
-    public void givenSolicitorIsRepresenting_ValuesForReceivedAosFromResp_AreAddedToCaseData() {
+    public void givenSolicitorIsRepresenting_whenValuesReceived_caseIsUpdated() {
         final Map<String, Object> caseData = buildSolicitorResponse( false);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
@@ -84,7 +83,7 @@ public class SolicitorAosEventServiceImplUTest {
     }
 
     @Test
-    public void correctlyMapFieldsInCaseData_When_2yearSepAndRespAos2yrConsentIsYes() {
+    public void given2yearSepAndUndefended_whenEventFired_fieldsAreMappedAndSecondaryEventCorrect() {
         // When Fact = 2 year separation and RespAOS2yrConsent = Yes
         // Set RespAdmitOrConsentToFact = "Yes" and RespWillDefendDivorce = "No"
         final Map<String, Object> caseData = new HashMap<>();
@@ -110,7 +109,7 @@ public class SolicitorAosEventServiceImplUTest {
     }
 
     @Test
-    public void correctlyMapFieldsInCaseData_When_AdulteryAndRespAosAdulteryIsYes() {
+    public void givenAdulteryAdmission_whenEventFired_fieldsAreMappedAndSecondaryEventCorrect() {
         // When Fact = adultery and RespAOSAdultery = Yes
         // Set RespAdmitOrConsentToFact = "Yes" and RespWillDefendDivorce = "No"
         final Map<String, Object> caseData = new HashMap<>();
@@ -136,7 +135,7 @@ public class SolicitorAosEventServiceImplUTest {
     }
 
     @Test
-    public void givenSolicitorIsRepresenting_DefendedDivorce_then_eventTriggeredIs_SolAosSubmittedDefended() {
+    public void givenDefendedDivorce_whenEventIsTriggered_solAosSubmittedDefendedEventFired() {
         final Map<String, Object> caseData = buildSolicitorResponse(true);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
@@ -152,7 +151,7 @@ public class SolicitorAosEventServiceImplUTest {
     }
 
     @Test
-    public void givenSolicitorIsRepresenting_NotDefended_then_eventTriggeredIs_SolAosSubmittedUndefended() {
+    public void givenNotDefended_whenEventTriggered_solAosSubmittedUndefendedEventFired() {
         final Map<String, Object> caseData = buildSolicitorResponse(false);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
@@ -168,7 +167,7 @@ public class SolicitorAosEventServiceImplUTest {
     }
 
     @Test
-    public void givenSolicitorIsRepresenting_DoesNotConsentTo2YearSep_then_eventTriggeredIs_SolAosReceivedNoAdConStarted() throws WorkflowException {
+    public void givenDoesNotConsentTo2YearSep_whenEventTriggered_solAosReceivedNoAdConStartedEventFired() {
         final Map<String, Object> caseData = buildSolicitorResponse(true);
 
         caseData.put(RESP_AOS_2_YR_CONSENT, NO_VALUE);
@@ -187,7 +186,7 @@ public class SolicitorAosEventServiceImplUTest {
     }
 
     @Test
-    public void givenSolicitorIsRepresenting_DoesNotAdmitAdultery_then_eventTriggeredIs_SolAosReceivedNoAdConStarted() throws WorkflowException {
+    public void givenDoesNotAdmitAdultery_whenEventTriggered_SolAosReceivedNoAdConStarted() {
         final Map<String, Object> caseData = buildSolicitorResponse(true);
         caseData.put(RESP_AOS_ADMIT_ADULTERY, NO_VALUE);
         caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);

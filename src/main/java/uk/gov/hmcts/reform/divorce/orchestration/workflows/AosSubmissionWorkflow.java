@@ -42,10 +42,10 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         queueAosSolicitorSubmitTask;
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
-        List<Task> tasks = new ArrayList<>();
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
-        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-        String caseState = ccdCallbackRequest.getCaseDetails().getState();
+        final List<Task> tasks = new ArrayList<>();
+        final Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        final String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        final String caseState = ccdCallbackRequest.getCaseDetails().getState();
 
         if (usingRespondentSolicitor(caseData)) {
             log.info("Attempting to queue solicitor AoS submission for case {}, case state: {}", caseId, caseState);
@@ -57,21 +57,21 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         return execute(
             tasks.toArray(new Task[0]),
             caseData,
-            ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId()),
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CCD_CASE_DATA, caseData)
         );
     }
 
     private void processCitizenAosSubmissionTasks(CcdCallbackRequest ccdCallbackRequest, List<Task> tasks) throws WorkflowException {
-        String defended = (String) ccdCallbackRequest.getCaseDetails().getCaseData().get(RESP_WILL_DEFEND_DIVORCE);
+        final String defended = (String) ccdCallbackRequest.getCaseDetails().getCaseData().get(RESP_WILL_DEFEND_DIVORCE);
 
         if  (YES_VALUE.equalsIgnoreCase(defended)) {
             tasks.add(sendRespondentSubmissionNotificationForDefendedDivorceEmailTask);
         } else if (NO_VALUE.equalsIgnoreCase(defended) || NOT_DEFENDING_NOT_ADMITTING.equalsIgnoreCase(defended)) {
             tasks.add(sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask);
         } else {
-            String errorMessage = String.format("%s field doesn't contain a valid value: %s",
+            final String errorMessage = String.format("%s field doesn't contain a valid value: %s",
                     RESP_WILL_DEFEND_DIVORCE, defended);
             log.error(String.format("%s. %n Case id: %s.", errorMessage, ccdCallbackRequest.getCaseDetails().getCaseId()));
             throw new WorkflowException(errorMessage);
