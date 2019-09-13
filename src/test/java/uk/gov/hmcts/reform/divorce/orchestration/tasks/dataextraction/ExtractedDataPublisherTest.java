@@ -42,7 +42,7 @@ public class ExtractedDataPublisherTest {
     private DataExtractionEmailClient emailClient;
 
     @Mock
-    private CSVExtractor csvExtractor;
+    private CSVExtractorStrategy csvExtractorStrategy;
 
     @Mock
     private CSVExtractorFactory csvExtractorFactory;
@@ -59,9 +59,9 @@ public class ExtractedDataPublisherTest {
         taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, testDateToProcess);
         taskContext.setTransientObject(STATUS_KEY, testStatus);
 
-        when(csvExtractor.getDestinationEmailAddress()).thenReturn("csv-email@divorce.gov.uk");
-        when(csvExtractor.getFileNamePrefix()).thenReturn("Prefix");
-        when(csvExtractorFactory.getCSVExtractorForStatus(testStatus)).thenReturn(csvExtractor);
+        when(csvExtractorStrategy.getDestinationEmailAddress()).thenReturn("csv-email@divorce.gov.uk");
+        when(csvExtractorStrategy.getFileNamePrefix()).thenReturn("Prefix");
+        when(csvExtractorFactory.getCSVExtractorForStatus(testStatus)).thenReturn(csvExtractorStrategy);
     }
 
     @Test

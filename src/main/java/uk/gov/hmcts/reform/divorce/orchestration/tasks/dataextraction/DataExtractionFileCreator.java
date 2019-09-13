@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_REQUESTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.DATE_TO_EXTRACT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.STATUS_KEY;
@@ -42,20 +40,23 @@ public class DataExtractionFileCreator implements Task<Void> {
     @Override
     public Void execute(TaskContext context, Void payload) throws TaskException {
         Status status = context.getTransientObject(STATUS_KEY);
-        CSVExtractor csvExtractor = csvExtractorFactory.getCSVExtractorForStatus(status);
+        CSVExtractorStrategy csvExtractorStrategy = csvExtractorFactory.getCSVExtractorForStatus(status);
         LocalDate lastModifiedDate = context.getTransientObject(DATE_TO_EXTRACT_KEY);
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
 
+        List<String> relevantStates = csvExtractorStrategy.getRelevantCaseStates()
+            .map(String::toLowerCase)
+            .collect(Collectors.toList());
         QueryBuilder[] queryBuilders = {
             QueryBuilders.termQuery("last_modified", lastModifiedDate),
-            QueryBuilders.termsQuery("state", DA_REQUESTED.toLowerCase(), DIVORCE_GRANTED.toLowerCase())
+            QueryBuilders.termsQuery("state", relevantStates)
         };
 
         StringBuilder csvFileContent = new StringBuilder();
-        csvFileContent.append(csvExtractor.getHeaderLine());
+        csvFileContent.append(csvExtractorStrategy.getHeaderLine());
         List<CaseDetails> casesDetails = cmsElasticSearchSupport.searchCMSCases(0, 50, authToken, queryBuilders).collect(Collectors.toList());
         for (CaseDetails caseDetails : casesDetails) {
-            csvExtractor.mapCaseData(caseDetails).ifPresent(csvFileContent::append);
+            csvExtractorStrategy.mapCaseData(caseDetails).ifPresent(csvFileContent::append);
         }
 
         File csvFile = createFile(csvFileContent.toString());

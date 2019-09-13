@@ -4,21 +4,32 @@ import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_REQUESTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_GRANTED;
 
-public class DecreeAbsoluteDataExtractorTest {
+public class DecreeAbsoluteDataExtractorStrategyTest {
 
-    private final DecreeAbsoluteDataExtractor classUnderTest = new DecreeAbsoluteDataExtractor("dest-email@divorce.gov.uk");
+    private final DecreeAbsoluteDataExtractorStrategy classUnderTest = new DecreeAbsoluteDataExtractorStrategy("dest-email@divorce.gov.uk");
 
     @Test
     public void testBasicCsvExtractorValues() {
         assertThat(classUnderTest.getHeaderLine(), is("CaseReferenceNumber,DAApplicationDate,DNPronouncementDate,PartyApplyingForDA"));
         assertThat(classUnderTest.getDestinationEmailAddress(), is("dest-email@divorce.gov.uk"));
         assertThat(classUnderTest.getFileNamePrefix(), is("DA"));
+        List<String> relevantStates = classUnderTest.getRelevantCaseStates().collect(Collectors.toList());
+        assertThat(relevantStates, hasSize(2));
+        assertThat(relevantStates, hasItems(equalTo(DA_REQUESTED), equalTo(DIVORCE_GRANTED)));
     }
 
     @Test
