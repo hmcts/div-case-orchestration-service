@@ -19,6 +19,7 @@ public class DnCourtDetailsConfigValidationTest {
 
     // Maintain list separately so if property is accidentally removed, this test will fail
     private List<String> knownCourtIds = Arrays.asList(
+        "birmingham",
         "bradford",
         "liverpool",
         "newport",
