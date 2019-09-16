@@ -24,8 +24,12 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_CLIENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_CLIENT_SECRET;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_REDIRECT_URL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
@@ -37,10 +41,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 public class RetrievePinUserDetailsUTest {
-    private static final String AUTH_CLIENT_ID = "authClientId";
-    private static final String AUTH_CLIENT_SECRET = "authClientSecret";
-    private static final String AUTH_REDIRECT_URL = "authRedirectUrl";
-    private static final String AUTH_URL_WITH_REDIRECT = "http://www.redirect.url?code=" + TEST_PIN_CODE;
 
     @Mock
     private IdamClient idamClient;
@@ -79,8 +79,8 @@ public class RetrievePinUserDetailsUTest {
         verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void givenLocationKeyNotFound_whenExecute_thenThrowException() throws TaskException {
+    @Test(expected = TaskException.class)
+    public void givenPinUserAuth_whenDataIsNull_thenThrowException() throws TaskException {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();

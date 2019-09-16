@@ -72,4 +72,7 @@ public class TestConstants {
     public static final String FILE_NAME = "testFileName";
     public static final String SOL_SERVICE_METHOD_CCD_FIELD = "SolServiceMethod";
     public static final String PERSONAL_SERVICE_VALUE = "personalService";
+    public static final String AUTH_CLIENT_ID = "authClientId";
+    public static final String AUTH_CLIENT_SECRET = "authClientSecret";
+    public static final String AUTH_REDIRECT_URL = "authRedirectUrl";
 }

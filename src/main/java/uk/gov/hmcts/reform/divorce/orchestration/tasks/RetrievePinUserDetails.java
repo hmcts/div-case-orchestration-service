@@ -42,10 +42,10 @@ public class RetrievePinUserDetails implements Task<UserDetails> {
 
     private final IdamClient idamClient;
 
-    private String PIN_ERROR_MSG = "Invalid pin";
-
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) throws TaskException {
+        final String PIN_ERROR_MSG = "Invalid pin";
+
         AuthenticateUserResponse pinResponse = idamClient.authenticatePinUser(
             context.getTransientObject(RESPONDENT_PIN),
             authClientId,

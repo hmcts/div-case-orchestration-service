@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
+import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
@@ -46,7 +47,7 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
 
     @Test
     public void testResponseHasDataAndNoErrors_whenSolicitorIsNominated_thenEmailIsSentToSolicitor() throws Exception {
-        final PinRequest pinRequest = PinRequest.builder()
+        final GeneratePinRequest pinRequest = GeneratePinRequest.builder()
                         .firstName("")
                         .lastName("")
                         .build();
@@ -81,7 +82,7 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
 
     @Test
     public void testResponseHasErrors_whenSolicitorIsNominated_andSendingEmailFails() throws Exception {
-        final PinRequest pinRequest = PinRequest.builder()
+        final GeneratePinRequest pinRequest = GeneratePinRequest.builder()
                 .firstName("")
                 .lastName("")
                 .build();

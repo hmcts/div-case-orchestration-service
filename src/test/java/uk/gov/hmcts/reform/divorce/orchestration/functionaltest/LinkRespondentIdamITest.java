@@ -142,7 +142,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
     @Test
     public void givenExchangeCodeFails_whenLinkRespondent_thenReturnBadRequest() throws Exception {
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
-        stubTokenExchangeEndpoint(BAD_REQUEST, TEST_CODE, TEST_ERROR);
+        stubTokenExchangeEndpoint(BAD_REQUEST, TEST_ERROR);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -154,7 +154,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
     @Test
     public void givenUserDetailsThrowException_whenLinkRespondent_thenReturnBadRequest() throws Exception {
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
-        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubTokenExchangeEndpoint(OK, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(BAD_REQUEST, BEARER_AUTH_TOKEN_1, TEST_ERROR);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -167,7 +167,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
     @Test
     public void givenUserDetailsReturnNull_whenLinkRespondent_thenReturnUnAuthorized() throws Exception {
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
-        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubTokenExchangeEndpoint(OK, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, null);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -179,7 +179,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
     @Test
     public void givenLinkFailsInCms_whenLinkRespondent_thenPropagateException() throws Exception {
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
-        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubTokenExchangeEndpoint(OK, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(UNAUTHORIZED);
 
@@ -192,7 +192,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
     @Test
     public void givenGetRespondentDetailsFails_whenLinkRespondent_thenPropagateException() throws Exception {
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
-        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubTokenExchangeEndpoint(OK, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(UNAUTHORIZED, BEARER_AUTH_TOKEN, TEST_ERROR);
@@ -208,7 +208,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
     @Test
     public void givenUpdateRespondentDetailsFails_whenLinkRespondent_thenPropagateException() throws Exception {
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
-        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubTokenExchangeEndpoint(OK, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
@@ -229,7 +229,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
     @Test
     public void givenAllGoesWell_whenLinkRespondent_thenProceedAsExpected() throws Exception {
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
-        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubTokenExchangeEndpoint(OK, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
@@ -251,7 +251,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
 
         stubSignInForCaseworker();
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
-        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubTokenExchangeEndpoint(OK, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
 
         CaseDetails caseDetailsCoResp = CaseDetails.builder()
@@ -274,7 +274,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
     @Test
     public void givenNoCaseFound_whenLinkRespondent_thenReturn404() throws Exception {
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
-        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubTokenExchangeEndpoint(OK, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
@@ -290,7 +290,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
     @Test
     public void givenLinkingFails_whenLinkRespondent_thenReturn404() throws Exception {
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
-        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubTokenExchangeEndpoint(OK, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(NOT_FOUND);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
@@ -308,7 +308,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
     public void givenNonStandardLinking_whenLinkRespondent_thenProceedAsExpected() throws Exception {
         stubSignInForCaseworker();
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
-        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubTokenExchangeEndpoint(OK, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);
@@ -326,7 +326,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
         stubSignInForCaseworker();
         stubRetrieveCaseByIdFromCMS(OK, convertObjectToJsonString(CASE_DETAILS_NO_AOS));
         stubPinAuthoriseEndpoint(OK, AUTHENTICATE_USER_RESPONSE_JSON);
-        stubTokenExchangeEndpoint(OK, TEST_CODE, TOKEN_EXCHANGE_RESPONSE_1_JSON);
+        stubTokenExchangeEndpoint(OK, TOKEN_EXCHANGE_RESPONSE_1_JSON);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN_1, USER_DETAILS_PIN_USER_JSON);
         stubMaintenanceServerEndpointForLinkRespondent(OK);
         stubUserDetailsEndpoint(OK, BEARER_AUTH_TOKEN, USER_DETAILS_JSON);

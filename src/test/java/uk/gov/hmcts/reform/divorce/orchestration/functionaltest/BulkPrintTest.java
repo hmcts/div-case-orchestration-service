@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ff4j.FeatureToggle;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
+import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 import uk.gov.service.notify.NotificationClientException;
@@ -179,8 +179,8 @@ public class BulkPrintTest extends IdamTestSupport {
                 .documentType(DOCUMENT_TYPE_RESPONDENT_INVITATION)
                 .fileName(String.format(RESPONDENT_INVITATION_FILE_NAME_FORMAT, TEST_CASE_ID))
                 .build();
-        final PinRequest pinRequest =
-            PinRequest.builder()
+        final GeneratePinRequest pinRequest =
+            GeneratePinRequest.builder()
                 .firstName(petitionerFirstName)
                 .lastName(petitionerLastName)
                 .build();
@@ -231,8 +231,8 @@ public class BulkPrintTest extends IdamTestSupport {
         final String petitionerFirstName = "petitioner first name";
         final String petitionerLastName = "petitioner last name";
 
-        final PinRequest pinRequest =
-            PinRequest.builder()
+        final GeneratePinRequest pinRequest =
+            GeneratePinRequest.builder()
                 .firstName(petitionerFirstName)
                 .lastName(petitionerLastName)
                 .build();

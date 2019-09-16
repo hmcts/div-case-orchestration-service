@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.TokenExchangeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -100,10 +101,11 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
                 .withBody(message)));
     }
 
-    void stubPinDetailsEndpoint(String authHeader, PinRequest pinRequest, Pin response) {
+    void stubPinDetailsEndpoint(String authHeader, GeneratePinRequest pinRequest, Pin response) {
+        final String customFormDataHeader = APPLICATION_JSON_VALUE + ";charset=UTF-8";
         idamServer.stubFor(post(IDAM_PIN_DETAILS_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
-            .withHeader(CONTENT_TYPE, new EqualToPattern(APPLICATION_JSON_VALUE))
+            .withHeader(CONTENT_TYPE, new EqualToPattern(customFormDataHeader))
             .withRequestBody(equalToJson(convertObjectToJsonString(pinRequest)))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
@@ -116,7 +118,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
             stubAuthoriseEndpoint(getBasicAuthHeader(citizenUserName, citizenPassword),
                 convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
 
-            stubTokenExchangeEndpoint(HttpStatus.OK, TEST_CODE, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
+            stubTokenExchangeEndpoint(HttpStatus.OK, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -128,7 +130,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
             stubAuthoriseEndpoint(getBasicAuthHeader(caseworkerUserName, caseworkerPassword),
                     convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
 
-            stubTokenExchangeEndpoint(HttpStatus.OK, TEST_CODE, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
+            stubTokenExchangeEndpoint(HttpStatus.OK, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -148,18 +150,19 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
 
     void stubPinAuthoriseEndpoint(HttpStatus status, String responseBody)
         throws UnsupportedEncodingException {
+        final String customFormDataHeader = APPLICATION_JSON_VALUE + "; charset=UTF-8";
         idamServer.stubFor(get(IDAM_PIN_DETAILS_CONTEXT_PATH
                 + "?client_id=" + authClientId
                 + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name()))
             .withHeader("pin", new EqualToPattern(TEST_PIN))
             .willReturn(aResponse()
                 .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .withHeader(CONTENT_TYPE, customFormDataHeader)
                 .withHeader(LOCATION_HEADER, PIN_AUTH_URL_WITH_REDIRECT)
                 .withBody(responseBody)));
     }
 
-    void stubTokenExchangeEndpoint(HttpStatus status, String authCode, String responseBody) {
+    void stubTokenExchangeEndpoint(HttpStatus status, String responseBody) {
         final String customFormDataHeader = MediaType.APPLICATION_FORM_URLENCODED_VALUE + "; charset=UTF-8";
         idamServer.stubFor(post(IDAM_EXCHANGE_CODE_CONTEXT_PATH)
             .withHeader(CONTENT_TYPE, new EqualToPattern(customFormDataHeader))

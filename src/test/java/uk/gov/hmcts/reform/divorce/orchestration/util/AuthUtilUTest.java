@@ -19,7 +19,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_CLIENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_CLIENT_SECRET;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_REDIRECT_URL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GRANT_TYPE;
+import static uk.gov.hmcts.reform.idam.client.IdamClient.BEARER_AUTH_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthUtilUTest {
@@ -42,15 +48,15 @@ public class AuthUtilUTest {
 
     @Test
     public void testGetCitizenToken() {
-        AuthenticateUserResponse authenticateResponse = new AuthenticateUserResponse("mycode");
-        ExchangeCodeRequest exchangeCodeRequest = new ExchangeCodeRequest(
-            authenticateResponse.getCode(), anyString(), anyString(), anyString(), anyString());
-        when(idamClient.authenticateUser(any(), any()))
-            .thenReturn(authenticateResponse.getCode());
+        AuthenticateUserResponse authenticateResponse = new AuthenticateUserResponse(TEST_PIN_CODE);
+        ExchangeCodeRequest exchangeCodeRequest =
+            new ExchangeCodeRequest(TEST_PIN_CODE, GRANT_TYPE, AUTH_REDIRECT_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET);
+        when(idamClient.authenticateUser(anyString(), anyString()))
+            .thenReturn(BEARER_AUTH_TYPE + " " + authenticateResponse.getCode());
 
         TokenExchangeResponse tokenExchangeResponse = spy(new TokenExchangeResponse(authenticateResponse.getCode()));
         when(idamClient.exchangeCode(
-            exchangeCodeRequest
+            eq(exchangeCodeRequest)
         ))
             .thenReturn(tokenExchangeResponse);
         String token = authUtil.getCitizenToken();
