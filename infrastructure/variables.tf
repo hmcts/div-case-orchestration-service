@@ -99,7 +99,13 @@ variable "scheduler_make_cases_eligible_da_cron" {
 variable "awaiting_da_period" {
     type = "string"
     default = "43d"
-    description = "The awaiting period for applicant to be eligible for Decree Absolute.Other time units are also supported, e.g. 'm'(i.e. minute),'s'(i.e. second)"
+    description = "The awaiting period for applicant to be eligible for Decree Absolute. Other time units are also supported, e.g. 'm'(i.e. minute),'s'(i.e. second)"
+}
+
+variable "da_overdue_period" {
+  type = "string"
+  default = "1y"
+  description = "The time period for cases to be overdue for decree absolute. Other time units are also supported, e.g. 'm'(i.e. minute),'s'(i.e. second)"
 }
 
 variable "feature_resp_solicitor_details" {

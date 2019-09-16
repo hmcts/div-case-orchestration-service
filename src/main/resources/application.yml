@@ -90,6 +90,7 @@ case:
         baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://localhost:4010}
   event:
     awaiting-da-period: ${AWAITING_DA_PERIOD:43d} # supports different time units e.g. 'm'(i.e. minute),'s'(i.e. second)
+    da-overdue-period: ${DA_OVERDUE_PERIOD:1y}
 
 fees-and-payments:
   service:

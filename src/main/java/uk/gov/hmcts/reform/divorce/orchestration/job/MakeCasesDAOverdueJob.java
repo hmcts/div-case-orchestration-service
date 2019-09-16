@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DecreeAbsoluteService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 @Slf4j
-public class MakeCasesEligibleForDAJob implements Job {
+public class MakeCasesDAOverdueJob implements Job {
 
     @Autowired
     private DecreeAbsoluteService decreeAbsoluteService;
@@ -21,11 +21,11 @@ public class MakeCasesEligibleForDAJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
-            log.info("Starting MakeCasesEligibleForDA Job...");
-            decreeAbsoluteService.enableCaseEligibleForDecreeAbsolute(authUtil.getCaseworkerToken());
-            log.info("MakeCasesEligibleForDA Job executed");
+            log.info("Starting MakeCasesDAOverdue Job...");
+            decreeAbsoluteService.processCaseOverdueForDecreeAbsolute(authUtil.getCaseworkerToken());
+            log.info("MakeCasesDAOverdue Job executed");
         } catch (WorkflowException e) {
-            throw new JobExecutionException("Enable cases eligible for DA service failed", e);
+            throw new JobExecutionException("Cases overdue for DA failed", e);
         }
     }
 

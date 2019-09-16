@@ -24,6 +24,10 @@ public class CMSElasticSearchSupport {
     }
 
     public Stream<CaseDetails> searchCMSCases(int start, int pageSize, String authToken, QueryBuilder... builders) {
+        return searchCMSCases(start, pageSize, 0, authToken, builders);
+    }
+
+    public Stream<CaseDetails> searchCMSCases(int start, int pageSize, int pagesReturned, String authToken, QueryBuilder... builders) {
         SearchResult finalResult = SearchResult.builder()
             .total(0)
             .cases(new ArrayList<>())
@@ -31,6 +35,7 @@ public class CMSElasticSearchSupport {
 
         int searchTotalNumberOfResults;
         int rollingSearchResultSize = 0;
+        int upperSearchLimit;
 
         do {
             SearchResult currentSearchResult = caseMaintenanceClient.searchCases(
@@ -38,12 +43,17 @@ public class CMSElasticSearchSupport {
                 SearchSourceFactory.buildCMSBooleanSearchSource(start, pageSize, builders)
             );
             searchTotalNumberOfResults = currentSearchResult.getTotal();
+            if (searchTotalNumberOfResults > pageSize * pagesReturned && pagesReturned > 0) {
+                upperSearchLimit = pagesReturned * pageSize;
+            } else {
+                upperSearchLimit = searchTotalNumberOfResults;
+            }
             rollingSearchResultSize += currentSearchResult.getCases().size();
             start += pageSize;
             finalResult.setTotal(searchTotalNumberOfResults);
             finalResult.getCases().addAll(currentSearchResult.getCases());
         }
-        while (searchTotalNumberOfResults > rollingSearchResultSize);
+        while (upperSearchLimit > rollingSearchResultSize);
         log.info("Search found {} cases.", finalResult.getCases().size());
 
         return finalResult.getCases().stream();

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -18,33 +19,35 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.SEARCH_RESULT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DA_PERIOD_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_PRONOUNCED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA_CCD_FIELD;
 
 @Component
 @Slf4j
-public class SearchDNPronouncedCases implements Task<Map<String, Object>> {
+public class SearchCasesDAOverdueTask implements Task<Map<String, Object>> {
 
-    private static String DN_GRANTED_DATE = String.format("data.%s", DECREE_NISI_GRANTED_DATE_CCD_FIELD);
+    @Value("${case.event.da-overdue-period:1y}")
+    private String daOverduePeriod;
+
+    private static final String DA_OVERDUE_DATE = String.format("data.%s", DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA_CCD_FIELD);
 
     private final CMSElasticSearchSupport cmsElasticSearchSupport;
 
     @Autowired
-    public SearchDNPronouncedCases(CMSElasticSearchSupport cmsElasticSearchSupport) {
+    public SearchCasesDAOverdueTask(CMSElasticSearchSupport cmsElasticSearchSupport) {
         this.cmsElasticSearchSupport = cmsElasticSearchSupport;
     }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
+
         int start = context.<Integer>getTransientObjectOptional("FROM").orElse(0);
         int pageSize = context.<Integer>getTransientObjectOptional("PAGE_SIZE").orElse(50);
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
-        String coolOffPeriodInDN = context.getTransientObject(AWAITING_DA_PERIOD_KEY);
 
-        QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, DN_PRONOUNCED);
-        QueryBuilder dateFilter = QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildCoolOffPeriodInDNBoundary(coolOffPeriodInDN));
+        QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_DA);
+        QueryBuilder dateFilter = QueryBuilders.rangeQuery(DA_OVERDUE_DATE).lte(buildCoolOffPeriod(daOverduePeriod));
 
         try {
             List<String> caseIdList = cmsElasticSearchSupport.searchCMSCases(start, pageSize, authToken, stateQuery, dateFilter)
@@ -52,16 +55,15 @@ public class SearchDNPronouncedCases implements Task<Map<String, Object>> {
                 .collect(Collectors.toList());
             context.setTransientObject(SEARCH_RESULT_KEY, caseIdList);
         } catch (FeignException fException) {
-            log.error("DN Pronounced cases eligible for DA search job failed: " + fException.getMessage(), fException);
+            log.error("DA Overdue search job failed: " + fException.getMessage(), fException);
             throw fException;
         }
 
         return payload;
     }
 
-    protected static String buildCoolOffPeriodInDNBoundary(final String coolOffPeriodInDN) {
-        String timeUnit = String.valueOf(coolOffPeriodInDN.charAt(coolOffPeriodInDN.length() - 1));
-        return String.format("now/%s-%s", timeUnit, coolOffPeriodInDN);
+    private static String buildCoolOffPeriod(final String coolOffPeriod) {
+        String timeUnit = String.valueOf(coolOffPeriod.charAt(coolOffPeriod.length() - 1));
+        return String.format("now/%s-%s", timeUnit, coolOffPeriod);
     }
-
 }
