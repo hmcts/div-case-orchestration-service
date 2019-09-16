@@ -13,6 +13,7 @@ java:
         DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         FEES_AND_PAYMENTS_SERVICE_API_BASEURL: "http://div-fps-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         SERVICE_AUTH_MICROSERVICE : "divorce_frontend"
+        MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE: "30000"
         DIV_SCHEDULER_DB_HOST : "div-cos-{{ .Values.global.environment }}.postgres.database.azure.com"
         DIV_SCHEDULER_DB_PORT : "5432"
         DIV_SCHEDULER_DB_NAME : "div_scheduler"
@@ -32,7 +33,9 @@ java:
                 - div-doc-s2s-auth-secret
                 - idam-secret
                 - frontend-secret
+                - idam-citizen-username
                 - idam-citizen-password
+                - idam-caseworker-username
                 - idam-caseworker-password
                 - uk-gov-notify-api-key
                 - cos-postgresql-password

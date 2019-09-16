@@ -1,9 +1,6 @@
 java:
     environment:
         IDAM_API_URL: "https://idam-api.aat.platform.hmcts.net"
-        IDAM_CITIZEN_USERNAME: "DivCitizenUser@AAT.com"
-        IDAM_CASEWORKER_USERNAME: "DivCaseWorkerUser@AAT.com"
-        MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE: "30000"
         FEATURE_DN_REFUSAL: "true"
         SCHEDULER_SCHEDULES_CREATE_BULK_CASES_ENABLED: false
         SCHEDULER_RE_CREATE: true
