@@ -6,6 +6,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -23,22 +24,25 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.DATE_TO_EXTRACT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.STATUS_KEY;
 
 @Component
 @Slf4j
 public class DataExtractionFileCreator implements Task<Void> {
 
     private final CMSElasticSearchSupport cmsElasticSearchSupport;
-    private final CSVExtractor dataExtractor;
+    private final CSVExtractorFactory csvExtractorFactory;
 
     @Autowired
-    public DataExtractionFileCreator(CSVExtractor caseDetailsMapper, CMSElasticSearchSupport cmsElasticSearchSupport) {
+    public DataExtractionFileCreator(CMSElasticSearchSupport cmsElasticSearchSupport, CSVExtractorFactory csvExtractorFactory) {
         this.cmsElasticSearchSupport = cmsElasticSearchSupport;
-        this.dataExtractor = caseDetailsMapper;
+        this.csvExtractorFactory = csvExtractorFactory;
     }
 
     @Override
     public Void execute(TaskContext context, Void payload) throws TaskException {
+        Status status = context.getTransientObject(STATUS_KEY);
+        CSVExtractor csvExtractor = csvExtractorFactory.getCSVExtractorForStatus(status);
         LocalDate lastModifiedDate = context.getTransientObject(DATE_TO_EXTRACT_KEY);
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
 
@@ -48,10 +52,10 @@ public class DataExtractionFileCreator implements Task<Void> {
         };
 
         StringBuilder csvFileContent = new StringBuilder();
-        csvFileContent.append(dataExtractor.getHeaderLine());
+        csvFileContent.append(csvExtractor.getHeaderLine());
         List<CaseDetails> casesDetails = cmsElasticSearchSupport.searchCMSCases(0, 50, authToken, queryBuilders).collect(Collectors.toList());
         for (CaseDetails caseDetails : casesDetails) {
-            dataExtractor.mapCaseData(caseDetails).ifPresent(csvFileContent::append);
+            csvExtractor.mapCaseData(caseDetails).ifPresent(csvFileContent::append);
         }
 
         File csvFile = createFile(csvFileContent.toString());

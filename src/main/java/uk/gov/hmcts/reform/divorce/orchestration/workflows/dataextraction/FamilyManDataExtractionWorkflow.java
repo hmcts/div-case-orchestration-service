@@ -20,6 +20,7 @@ public class FamilyManDataExtractionWorkflow extends DefaultWorkflow<Void> {
 
     public static final String FILE_TO_PUBLISH = "fileToPublish";
     public static final String DATE_TO_EXTRACT_KEY = "dateToExtract";
+    public static final String STATUS_KEY = "status";
 
     @Autowired
     private DataExtractionFileCreator dataExtractionFileCreator;
@@ -36,7 +37,8 @@ public class FamilyManDataExtractionWorkflow extends DefaultWorkflow<Void> {
             new DefaultTaskContext(),
             null,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(DATE_TO_EXTRACT_KEY, dateToExtract)
+            ImmutablePair.of(DATE_TO_EXTRACT_KEY, dateToExtract),
+            ImmutablePair.of(STATUS_KEY, status)
         );
     }
 
