@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -31,8 +32,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_REQUESTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.STATUS_KEY;
@@ -42,6 +41,7 @@ public class DataExtractionFileCreatorTest {
 
     private static final String TEST_AUTHORISATION_TOKEN = "testToken";
     private static final String DATE_TO_EXTRACT_KEY = "dateToExtract";
+    private static final String TEST_RELEVANT_STATE = "TEST_RELEVANT_STATE";
 
     private final LocalDate testLastModifiedDate = LocalDate.parse("2019-04-12");
 
@@ -63,6 +63,7 @@ public class DataExtractionFileCreatorTest {
     @Before
     public void setUp() throws TaskException {
         when(csvExtractor.getHeaderLine()).thenReturn("header");
+        when(csvExtractor.getRelevantCaseStates()).thenReturn(Stream.of(TEST_RELEVANT_STATE));
         when(csvExtractor.mapCaseData(any())).thenReturn(
             Optional.of(System.lineSeparator() + "line1"),
             Optional.empty(),
@@ -97,7 +98,7 @@ public class DataExtractionFileCreatorTest {
 
         verify(cmsElasticSearchSupport).searchCMSCases(eq(0), eq(50), eq(TEST_AUTHORISATION_TOKEN),
             eq(QueryBuilders.termQuery("last_modified", testLastModifiedDate)),
-            eq(QueryBuilders.termsQuery("state", DA_REQUESTED.toLowerCase(), DIVORCE_GRANTED.toLowerCase()))
+            eq(QueryBuilders.termsQuery("state", asList(TEST_RELEVANT_STATE.toLowerCase())))
         );
     }
 }
