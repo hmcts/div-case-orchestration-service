@@ -6,177 +6,99 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
-import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_REQUESTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_GRANTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.SearchSourceFactory.buildCMSBooleanSearchSource;
+import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.STATUS_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DataExtractionFileCreatorTest {
 
     private static final String TEST_AUTHORISATION_TOKEN = "testToken";
     private static final String DATE_TO_EXTRACT_KEY = "dateToExtract";
+    private static final String TEST_RELEVANT_STATE = "TEST_RELEVANT_STATE";
 
-    private final String testLastModifiedDate = "2019-04-12";
+    private final LocalDate testLastModifiedDate = LocalDate.parse("2019-04-12");
 
     @Rule
     public ExpectedException expectedException = none();
 
     @Mock
-    private CaseMaintenanceClient caseMaintenanceClient;
+    private CMSElasticSearchSupport cmsElasticSearchSupport;
 
-    private final DecreeAbsoluteDataExtractor caseDetailsMapper = new DecreeAbsoluteDataExtractor();
+    @Mock
+    private CSVExtractor csvExtractor;
 
+    @Mock
+    private CSVExtractorFactory csvExtractorFactory;
+
+    @InjectMocks
     private DataExtractionFileCreator classUnderTest;
 
     @Before
-    public void setUp() {
-        classUnderTest = new DataExtractionFileCreator(caseMaintenanceClient, caseDetailsMapper);
+    public void setUp() throws TaskException {
+        when(csvExtractor.getHeaderLine()).thenReturn("header");
+        when(csvExtractor.getRelevantCaseStates()).thenReturn(Stream.of(TEST_RELEVANT_STATE));
+        when(csvExtractor.mapCaseData(any())).thenReturn(
+            Optional.of(System.lineSeparator() + "line1"),
+            Optional.empty(),
+            Optional.of(System.lineSeparator() + "line2"),
+            Optional.empty()
+        );
+        when(csvExtractorFactory.getCSVExtractorForStatus(DA)).thenReturn(csvExtractor);
     }
 
     @Test
-    public void shouldAddFileToContext() throws TaskException, IOException {
-        Map<String, Object> firstCaseData = new HashMap<>();
-        firstCaseData.put("D8caseReference", "TEST1");
-        firstCaseData.put("DecreeAbsoluteApplicationDate", "2018-06-12T16:49:00.015");
-        firstCaseData.put("DecreeNisiGrantedDate", "2017-08-17");
-        Map<String, Object> secondCaseData = new HashMap<>();
-        secondCaseData.put("D8caseReference", "TEST2");
-        secondCaseData.put("DecreeAbsoluteApplicationDate", "2018-06-24T16:49:00.015");
-        secondCaseData.put("DecreeNisiGrantedDate", "2017-08-26");
-
-        SearchResult searchResult = SearchResult.builder().cases(newArrayList(
-            CaseDetails.builder().caseData(firstCaseData).build(),
-            CaseDetails.builder().caseData(secondCaseData).build()
-        )).build();
-        when(caseMaintenanceClient.searchCases(eq(TEST_AUTHORISATION_TOKEN), eq(
-            buildCMSBooleanSearchSource(0, 50,
-                QueryBuilders.termQuery("last_modified", testLastModifiedDate),
-                QueryBuilders.termsQuery("state", DA_REQUESTED.toLowerCase(), DIVORCE_GRANTED.toLowerCase()))
-        ))).thenReturn(searchResult);
+    public void givenTransformedCaseDetails_shouldAddExtractionFileToContext() throws TaskException, IOException {
+        when(cmsElasticSearchSupport.searchCMSCases(eq(0), eq(50), eq(TEST_AUTHORISATION_TOKEN), any(), any()))
+            .thenReturn(Stream.of(
+                CaseDetails.builder().build(),
+                CaseDetails.builder().build(),
+                CaseDetails.builder().build(),
+                CaseDetails.builder().build()
+            ));
 
         DefaultTaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, TEST_AUTHORISATION_TOKEN);
-        taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, LocalDate.parse(testLastModifiedDate));
+        taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, testLastModifiedDate);
+        taskContext.setTransientObject(STATUS_KEY, DA);
         classUnderTest.execute(taskContext, null);
 
         File createdFile = taskContext.getTransientObject(FILE_TO_PUBLISH);
         assertThat(createdFile, is(notNullValue()));
         List<String> fileLines = Files.readAllLines(createdFile.toPath());
-        assertThat(fileLines.get(0), is("CaseReferenceNumber,DAApplicationDate,DNPronouncementDate,PartyApplyingForDA"));
-        assertThat(fileLines.get(1), is("TEST1,12/06/2018,17/08/2017,petitioner"));
-        assertThat(fileLines.get(2), is("TEST2,24/06/2018,26/08/2017,petitioner"));
+        assertThat(fileLines.get(0), is("header"));
+        assertThat(fileLines.get(1), is("line1"));
+        assertThat(fileLines.get(2), is("line2"));
+
+        verify(cmsElasticSearchSupport).searchCMSCases(eq(0), eq(50), eq(TEST_AUTHORISATION_TOKEN),
+            eq(QueryBuilders.termQuery("last_modified", testLastModifiedDate)),
+            eq(QueryBuilders.termsQuery("state", asList(TEST_RELEVANT_STATE.toLowerCase())))
+        );
     }
-
-    @Test
-    public void shouldUseDecreeAbsoluteGrantedDate_WhenDecreeAbsoluteApplicationDate_IsNotProvided() throws TaskException, IOException {
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put("D8caseReference", "TEST1");
-        caseData.put("DecreeAbsoluteGrantedDate", "2017-08-17T16:49:00.015");
-        caseData.put("DecreeNisiGrantedDate", "2017-08-26");
-
-        SearchResult searchResult = SearchResult.builder().cases(newArrayList(
-            CaseDetails.builder().caseData(caseData).build()
-        )).build();
-        when(caseMaintenanceClient.searchCases(eq(TEST_AUTHORISATION_TOKEN), eq(
-            buildCMSBooleanSearchSource(0, 50,
-                QueryBuilders.termQuery("last_modified", testLastModifiedDate),
-                QueryBuilders.termsQuery("state", DA_REQUESTED.toLowerCase(), DIVORCE_GRANTED.toLowerCase()))
-        ))).thenReturn(searchResult);
-
-        DefaultTaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, TEST_AUTHORISATION_TOKEN);
-        taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, LocalDate.parse(testLastModifiedDate));
-        classUnderTest.execute(taskContext, null);
-
-        File createdFile = taskContext.getTransientObject(FILE_TO_PUBLISH);
-        assertThat(createdFile, is(notNullValue()));
-        List<String> fileLines = Files.readAllLines(createdFile.toPath());
-        assertThat(fileLines.get(0), is("CaseReferenceNumber,DAApplicationDate,DNPronouncementDate,PartyApplyingForDA"));
-        assertThat(fileLines.get(1), is("TEST1,17/08/2017,26/08/2017,petitioner"));
-    }
-
-    @Test
-    public void shouldNotInsertDate_WhenDecreeNisiGrantedDate_IsNotProvided() throws TaskException, IOException {
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put("D8caseReference", "TEST1");
-        caseData.put("DecreeAbsoluteGrantedDate", "2017-08-17T16:49:00.015");
-
-        SearchResult searchResult = SearchResult.builder().cases(newArrayList(
-            CaseDetails.builder().caseData(caseData).build()
-        )).build();
-        when(caseMaintenanceClient.searchCases(eq(TEST_AUTHORISATION_TOKEN), eq(
-            buildCMSBooleanSearchSource(0, 50,
-                QueryBuilders.termQuery("last_modified", testLastModifiedDate),
-                QueryBuilders.termsQuery("state", DA_REQUESTED.toLowerCase(), DIVORCE_GRANTED.toLowerCase()))
-        ))).thenReturn(searchResult);
-
-        DefaultTaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, TEST_AUTHORISATION_TOKEN);
-        taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, LocalDate.parse(testLastModifiedDate));
-        classUnderTest.execute(taskContext, null);
-
-        File createdFile = taskContext.getTransientObject(FILE_TO_PUBLISH);
-        assertThat(createdFile, is(notNullValue()));
-        List<String> fileLines = Files.readAllLines(createdFile.toPath());
-        assertThat(fileLines.get(0), is("CaseReferenceNumber,DAApplicationDate,DNPronouncementDate,PartyApplyingForDA"));
-        assertThat(fileLines.get(1), is("TEST1,17/08/2017,,petitioner"));
-    }
-
-    @Test
-    public void shouldNotAddCaseToFileWhenMandatoryFieldsAreNotPresent() throws TaskException, IOException {
-        Map<String, Object> firstCaseData = new HashMap<>();
-        firstCaseData.put("DecreeAbsoluteApplicationDate", "2018-06-12T16:49:00.015");
-        firstCaseData.put("DecreeNisiGrantedDate", "2017-08-17");
-        Map<String, Object> secondCaseData = new HashMap<>();
-        secondCaseData.put("D8caseReference", "TEST2");
-        secondCaseData.put("DecreeAbsoluteApplicationDate", "2018-06-24T16:49:00.015");
-        secondCaseData.put("DecreeNisiGrantedDate", "2017-08-26");
-
-        SearchResult searchResult = SearchResult.builder().cases(newArrayList(
-            CaseDetails.builder().caseData(firstCaseData).build(),
-            CaseDetails.builder().caseData(secondCaseData).build()
-        )).build();
-        when(caseMaintenanceClient.searchCases(eq(TEST_AUTHORISATION_TOKEN), eq(
-            buildCMSBooleanSearchSource(0, 50,
-                QueryBuilders.termQuery("last_modified", testLastModifiedDate),
-                QueryBuilders.termsQuery("state", DA_REQUESTED.toLowerCase(), DIVORCE_GRANTED.toLowerCase()))
-        ))).thenReturn(searchResult);
-
-        DefaultTaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, TEST_AUTHORISATION_TOKEN);
-        taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, LocalDate.parse(testLastModifiedDate));
-        classUnderTest.execute(taskContext, null);
-
-        File createdFile = taskContext.getTransientObject(FILE_TO_PUBLISH);
-        assertThat(createdFile, is(notNullValue()));
-        List<String> fileLines = Files.readAllLines(createdFile.toPath());
-        assertThat(fileLines.get(0), is("CaseReferenceNumber,DAApplicationDate,DNPronouncementDate,PartyApplyingForDA"));
-        assertThat(fileLines.get(1), is("TEST2,24/06/2018,26/08/2017,petitioner"));
-    }
-
 }

@@ -2,29 +2,28 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.SearchSourceFactory;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.transformation.CaseDetailsMapper;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.stream.Stream;
 
 @Slf4j
-public class CMSHelper {
+@Component
+public class CMSElasticSearchSupport {
 
-    private final CaseDetailsMapper caseDetailsMapper;
-    private CaseMaintenanceClient caseMaintenanceClient;
+    private final CaseMaintenanceClient caseMaintenanceClient;
 
-    public CMSHelper(CaseMaintenanceClient caseMaintenanceClient, CaseDetailsMapper caseDetailsMapper) {
+    @Autowired
+    public CMSElasticSearchSupport(CaseMaintenanceClient caseMaintenanceClient) {
         this.caseMaintenanceClient = caseMaintenanceClient;
-        this.caseDetailsMapper = caseDetailsMapper;
     }
 
-    public List<String> searchCMSCases(int start, int pageSize, String authToken, QueryBuilder... builders) throws TaskException {
+    public Stream<CaseDetails> searchCMSCases(int start, int pageSize, String authToken, QueryBuilder... builders) {
         SearchResult finalResult = SearchResult.builder()
             .total(0)
             .cases(new ArrayList<>())
@@ -47,12 +46,7 @@ public class CMSHelper {
         while (searchTotalNumberOfResults > rollingSearchResultSize);
         log.info("Search found {} cases.", finalResult.getCases().size());
 
-        List<String> transformedResults = new ArrayList<>();
-        for (CaseDetails caseDetails : finalResult.getCases()) {
-            Optional<String> transformedCaseData = caseDetailsMapper.mapCaseData(caseDetails);
-            transformedCaseData.ifPresent(transformedResults::add);
-        }
-        return transformedResults;
+        return finalResult.getCases().stream();
     }
 
 }
