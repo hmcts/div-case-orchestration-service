@@ -17,8 +17,9 @@ public class CreateBulkCaseJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
+            log.info("Starting CreateBulkCase Job");
             orchestrationService.generateBulkCaseForListing();
-            log.info("CreateBulkCaseJob executed");
+            log.info("CreateBulkCase Job executed");
         } catch (WorkflowException e) {
             throw new JobExecutionException("BulkCase creation failed", e);
         }

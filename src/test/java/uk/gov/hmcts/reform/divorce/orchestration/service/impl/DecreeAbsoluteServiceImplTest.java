@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.NotifyRespondentOfDARequestedWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDAOverdueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCasesWorkflow;
 
 import java.util.Map;
@@ -48,10 +49,13 @@ public class DecreeAbsoluteServiceImplTest {
     private UpdateDNPronouncedCasesWorkflow updateDNPronouncedCasesWorkflow;
 
     @Mock
+    private UpdateDAOverdueWorkflow updateDAOverdueWorkflow;
+
+    @Mock
     private NotifyRespondentOfDARequestedWorkflow notifyRespondentOfDARequestedWorkflow;
 
     @Test
-    public void run_10CasesEligibleForDA_10CasesProcessed() throws WorkflowException {
+    public void runUpdateDNPronouncedCasesWorkflow_10CasesEligibleForDA_10CasesProcessed() throws WorkflowException {
         when(updateDNPronouncedCasesWorkflow.run(AUTH_TOKEN)).thenReturn(10);
 
         int casesProcessed = classUnderTest.enableCaseEligibleForDecreeAbsolute(AUTH_TOKEN);
@@ -61,7 +65,7 @@ public class DecreeAbsoluteServiceImplTest {
     }
 
     @Test
-    public void run_throwsWorkflowException_workflowExceptionThrown() throws WorkflowException {
+    public void runUpdateDNPronouncedCasesWorkflow_throwsWorkflowException_workflowExceptionThrown() throws WorkflowException {
         expectedException.expect(WorkflowException.class);
         expectedException.expectMessage("a WorkflowException message");
         when(updateDNPronouncedCasesWorkflow.run(AUTH_TOKEN)).thenThrow(new WorkflowException(" a WorkflowException message"));
@@ -69,6 +73,24 @@ public class DecreeAbsoluteServiceImplTest {
         classUnderTest.enableCaseEligibleForDecreeAbsolute(AUTH_TOKEN);
     }
 
+    @Test
+    public void runUpdateDAOverdueWorkflow_10CasesOverdueForDA_10CasesProcessed() throws WorkflowException {
+        when(updateDAOverdueWorkflow.run(AUTH_TOKEN)).thenReturn(10);
+
+        int casesProcessed = classUnderTest.processCaseOverdueForDecreeAbsolute(AUTH_TOKEN);
+
+        assertEquals(10, casesProcessed);
+        verify(updateDAOverdueWorkflow).run(AUTH_TOKEN);
+    }
+
+    @Test
+    public void runUpdateDAOverdueWorkflow_throwsWorkflowException_workflowExceptionThrown() throws WorkflowException {
+        expectedException.expect(WorkflowException.class);
+        expectedException.expectMessage("a WorkflowException message");
+        when(updateDAOverdueWorkflow.run(AUTH_TOKEN)).thenThrow(new WorkflowException(" a WorkflowException message"));
+
+        classUnderTest.processCaseOverdueForDecreeAbsolute(AUTH_TOKEN);
+    }
 
     @Test
     public void shouldCallTheRightWorkflow_forNotifyRespondentOfDARequested() throws WorkflowException {

@@ -10,8 +10,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchDNPronouncedCases;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDNPronouncedCase;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchCasesDAOverdueTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDAOverdueCase;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,10 +21,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.SEARCH_RESULT_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASES_OVERDUE_FOR_DA_PROCESSED_COUNT;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UpdateDNPronouncedCasesWorkflowTest {
+public class UpdateDAOverdueWorkflowTest {
 
     private static int EXPECTED_CASES_PROCESSED_COUNT = 10;
 
@@ -32,25 +32,25 @@ public class UpdateDNPronouncedCasesWorkflowTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Mock
-    private SearchDNPronouncedCases searchDNPronouncedCases;
+    private SearchCasesDAOverdueTask searchCasesDAOverdueTask;
 
     @Mock
-    private UpdateDNPronouncedCase updateDNPronouncedCase;
+    private UpdateDAOverdueCase updateDAOverdueCase;
 
     @InjectMocks
-    private UpdateDNPronouncedCasesWorkflow classUnderTest;
+    private UpdateDAOverdueWorkflow classUnderTest;
 
     @Test
     public void execute_taskExceptionThrownInAnyTask_workflowExceptionThrown() throws TaskException, WorkflowException {
 
         expectedException.expect(WorkflowException.class);
-        expectedException.expectMessage("a WorfklowException message");
+        expectedException.expectMessage("a WorkflowException message");
 
-        when(searchDNPronouncedCases.execute(any(), any())).thenThrow(new TaskException("a WorfklowException message"));
+        when(searchCasesDAOverdueTask.execute(any(), any())).thenThrow(new TaskException("a WorkflowException message"));
         classUnderTest.run(AUTH_TOKEN);
 
-        verify(searchDNPronouncedCases, times(1)).execute(any(), any());
-        verify(updateDNPronouncedCase, times(0)).execute(any(), any());
+        verify(searchCasesDAOverdueTask, times(1)).execute(any(), any());
+        verify(updateDAOverdueCase, times(0)).execute(any(), any());
     }
 
     @Test
@@ -60,9 +60,9 @@ public class UpdateDNPronouncedCasesWorkflowTest {
 
         int actualCasesProcessedCount = classUnderTest.run(AUTH_TOKEN);
 
-        verify(searchDNPronouncedCases, times(1)).execute(any(), any());
-        verify(updateDNPronouncedCase, times(1)).execute(any(), any());
-        assertEquals(actualCasesProcessedCount, EXPECTED_CASES_PROCESSED_COUNT);
+        verify(searchCasesDAOverdueTask, times(1)).execute(any(), any());
+        verify(updateDAOverdueCase, times(1)).execute(any(), any());
+        assertEquals(EXPECTED_CASES_PROCESSED_COUNT, actualCasesProcessedCount);
     }
 
     private int getSearchResult(TaskContext taskContext) {
@@ -74,14 +74,14 @@ public class UpdateDNPronouncedCasesWorkflowTest {
     }
 
     private void updateCasesProcessedCount(TaskContext taskContext, int count) {
-        taskContext.setTransientObject(CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT, count);
+        taskContext.setTransientObject(CASES_OVERDUE_FOR_DA_PROCESSED_COUNT, count);
     }
 
     private void whenSearchTaskSetCasesCountInContext() throws TaskException {
         doAnswer(args -> {
             setSearchResult(args.getArgument(0), EXPECTED_CASES_PROCESSED_COUNT);
             return null;
-        }).when(searchDNPronouncedCases).execute(any(), any());
+        }).when(searchCasesDAOverdueTask).execute(any(), any());
     }
 
     private void whenUpdateTaskGetCasesCountAndPutInContext() throws TaskException {
@@ -89,6 +89,6 @@ public class UpdateDNPronouncedCasesWorkflowTest {
             int casesCount = getSearchResult(args.getArgument(0));
             updateCasesProcessedCount(args.getArgument(0), casesCount);
             return null;
-        }).when(updateDNPronouncedCase).execute(any(), any());
+        }).when(updateDAOverdueCase).execute(any(), any());
     }
 }
