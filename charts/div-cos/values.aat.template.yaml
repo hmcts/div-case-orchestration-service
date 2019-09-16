@@ -13,17 +13,6 @@ java:
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: false
         DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
 
-    keyVaults:
-        "div":
-            resourceGroup: div
-            secrets:
-                - ccd-submission-s2s-auth-secret
-                - div-doc-s2s-auth-secret
-                - idam-secret
-                - frontend-secret
-                - idam-citizen-password
-                - idam-caseworker-password
-
     # Don't modify below here
     image: ${IMAGE_NAME}
     ingressHost: ${SERVICE_FQDN}
