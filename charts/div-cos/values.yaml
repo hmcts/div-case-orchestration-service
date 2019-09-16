@@ -1,5 +1,6 @@
 java:
     applicationPort: 4012
+    ingressHost: "div-cos-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     environment:
         CASE_MAINTENANCE_SERVICE_API_BASEURL: "http://div-cms-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         PAYMENT_API_BASEURL: "http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
