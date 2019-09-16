@@ -6,14 +6,16 @@ java:
     IDAM_CASEWORKER_USERNAME: "DivCaseWorkerUser@AAT.com"
     MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE: "30000"
     FEATURE_DN_REFUSAL: "true"
-
     SCHEDULER_SCHEDULES_CREATE_BULK_CASES_ENABLED: false
     SCHEDULER_ENABLED: true
     FEATURE_RESP_SOLICITOR_DETAILS: "true"
-
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: false
-
     DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
+    DIV_SCHEDULER_DB_HOST : "{{ .Release.Name }}-postgresql"
+    DIV_SCHEDULER_DB_NAME : "{{ .Values.postgresql.postgresqlDatabase}}"
+    DIV_SCHEDULER_DB_USER_NAME : "{{ .Values.postgresql.postgresqlUsername}}"
+    DIV_SCHEDULER_DB_PASSWORD  : "{{ .Values.postgresql.postgresqlPassword}}"
+    FLYWAY_URL : "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
 
   # Don't modify these properties
   image: ${IMAGE_NAME}
