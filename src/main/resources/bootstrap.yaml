@@ -12,3 +12,4 @@ spring:
         div.idam-citizen-password: IDAM_CITIZEN_PASSWORD
         div.idam-caseworker-password: IDAM_CASEWORKER_PASSWORD
         div.cos-postgresql-password: DIV_SCHEDULER_DB_PASSWORD
+        div.uk-gov-notify-api-key: UK_GOV_NOTIFY_API_KEY
