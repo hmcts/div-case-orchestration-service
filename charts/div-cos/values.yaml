@@ -1,9 +1,16 @@
 java:
     applicationPort: 4012
     environment:
-        REFORM_SERVICE_NAME: "cos"
-        REFORM_TEAM: "div"
-        SLOT: "PRODUCTION"
+        CASE_MAINTENANCE_SERVICE_API_BASEURL: "http://div-cms-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        PAYMENT_API_BASEURL: "http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        FEATURE_TOGGLE_SERVICE_API_BASEURL: "http://rpe-feature-toggle-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        SEND_LETTER_SERIVCE_BASEURL: "http://rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        IDAM_API_REDIRECT_URL: "https://div-pfe-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/authenticated"
+        CASE_FORMATTER_SERVICE_API_BASEURL: "http://div-cfs-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        SERVICE_AUTH_PROVIDER_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        CASE_VALIDATION_SERVICE_API_BASEURL: "http://div-vs-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        FEES_AND_PAYMENTS_SERVICE_API_BASEURL: "http://div-fps-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         SERVICE_AUTH_MICROSERVICE : "divorce_frontend"
         DIV_SCHEDULER_DB_HOST : "{{ .Release.Name }}-postgresql"
         DIV_SCHEDULER_DB_PORT : "5432"
