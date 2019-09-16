@@ -13,12 +13,11 @@ java:
         DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         FEES_AND_PAYMENTS_SERVICE_API_BASEURL: "http://div-fps-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         SERVICE_AUTH_MICROSERVICE : "divorce_frontend"
-        DIV_SCHEDULER_DB_HOST : "{{ .Release.Name }}-postgresql"
+        DIV_SCHEDULER_DB_HOST : "div-cos-{{ .Values.global.environment }}.postgres.database.azure.com"
         DIV_SCHEDULER_DB_PORT : "5432"
-        DIV_SCHEDULER_DB_NAME : "{{ .Values.postgresql.postgresqlDatabase}}"
-        DIV_SCHEDULER_DB_USER_NAME : "{{ .Values.postgresql.postgresqlUsername}}"
-        DIV_SCHEDULER_DB_PASSWORD  : "{{ .Values.postgresql.postgresqlPassword}}"
-        FLYWAY_URL : "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
+        DIV_SCHEDULER_DB_NAME : "div_scheduler"
+        DIV_SCHEDULER_DB_USER_NAME : "div_scheduler@div-cos-{{ .Values.global.environment }}"
+        FLYWAY_URL : "jdbc:postgresql://div-cos-{{ .Values.global.environment }}.postgres.database.azure.com:5432/div_scheduler"
 
         SPRING_MAIL_HOST: mta.reform.hmcts.net
         SPRING_MAIL_PORT: 25
@@ -35,3 +34,4 @@ java:
                 - frontend-secret
                 - idam-citizen-password
                 - idam-caseworker-password
+                - cos-postgresql-password

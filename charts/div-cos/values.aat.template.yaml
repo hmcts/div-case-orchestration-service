@@ -6,19 +6,11 @@ java:
         IDAM_CASEWORKER_USERNAME: "DivCaseWorkerUser@AAT.com"
         MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE: "30000"
         FEATURE_DN_REFUSAL: "true"
-
-        DIV_SCHEDULER_DB_HOST : "div-cos-aat.postgres.database.azure.com"
-        DIV_SCHEDULER_DB_PORT : "5432"
-        DIV_SCHEDULER_DB_NAME : "div_scheduler"
-        DIV_SCHEDULER_DB_USER_NAME : "div_scheduler@div-cos-aat"
-        FLYWAY_URL : "jdbc:postgresql://div-cos-aat.postgres.database.azure.com:5432/div_scheduler"
         SCHEDULER_SCHEDULES_CREATE_BULK_CASES_ENABLED: false
         SCHEDULER_RE_CREATE: true
         SCHEDULER_ENABLED: true
         FEATURE_RESP_SOLICITOR_DETAILS: "true"
-
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: false
-
         DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
 
     keyVaults:
@@ -31,7 +23,6 @@ java:
                 - frontend-secret
                 - idam-citizen-password
                 - idam-caseworker-password
-                - cos-postgresql-password
 
     # Don't modify below here
     image: ${IMAGE_NAME}
