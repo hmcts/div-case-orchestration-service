@@ -52,7 +52,7 @@ public class DataExtractionFileCreatorTest {
     private CMSElasticSearchSupport cmsElasticSearchSupport;
 
     @Mock
-    private CSVExtractorStrategy csvExtractorStrategy;
+    private CSVExtractor csvExtractor;
 
     @Mock
     private CSVExtractorFactory csvExtractorFactory;
@@ -62,15 +62,15 @@ public class DataExtractionFileCreatorTest {
 
     @Before
     public void setUp() throws TaskException {
-        when(csvExtractorStrategy.getHeaderLine()).thenReturn("header");
-        when(csvExtractorStrategy.getRelevantCaseStates()).thenReturn(Stream.of(TEST_RELEVANT_STATE));
-        when(csvExtractorStrategy.mapCaseData(any())).thenReturn(
+        when(csvExtractor.getHeaderLine()).thenReturn("header");
+        when(csvExtractor.getRelevantCaseStates()).thenReturn(Stream.of(TEST_RELEVANT_STATE));
+        when(csvExtractor.mapCaseData(any())).thenReturn(
             Optional.of(System.lineSeparator() + "line1"),
             Optional.empty(),
             Optional.of(System.lineSeparator() + "line2"),
             Optional.empty()
         );
-        when(csvExtractorFactory.getCSVExtractorForStatus(DA)).thenReturn(csvExtractorStrategy);
+        when(csvExtractorFactory.getCSVExtractorForStatus(DA)).thenReturn(csvExtractor);
     }
 
     @Test

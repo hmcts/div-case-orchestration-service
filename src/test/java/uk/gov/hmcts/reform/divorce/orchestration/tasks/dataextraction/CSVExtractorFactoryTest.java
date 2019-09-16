@@ -23,7 +23,7 @@ public class CSVExtractorFactoryTest {
     public ExpectedException expectedException = none();
 
     @Mock
-    private DecreeAbsoluteDataExtractorStrategy decreeAbsoluteDataExtractorStrategy;
+    private DecreeAbsoluteDataExtractor decreeAbsoluteDataExtractor;
 
     @InjectMocks
     private CSVExtractorFactory csvExtractorFactory;
@@ -35,7 +35,7 @@ public class CSVExtractorFactoryTest {
 
     @Test
     public void getRightCSVExtractor() {
-        assertThat(csvExtractorFactory.getCSVExtractorForStatus(DA), is(decreeAbsoluteDataExtractorStrategy));
+        assertThat(csvExtractorFactory.getCSVExtractorForStatus(DA), is(decreeAbsoluteDataExtractor));
     }
 
     @Test

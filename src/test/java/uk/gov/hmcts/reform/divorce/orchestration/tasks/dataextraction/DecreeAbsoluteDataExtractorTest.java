@@ -17,9 +17,9 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_REQUESTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_GRANTED;
 
-public class DecreeAbsoluteDataExtractorStrategyTest {
+public class DecreeAbsoluteDataExtractorTest {
 
-    private final DecreeAbsoluteDataExtractorStrategy classUnderTest = new DecreeAbsoluteDataExtractorStrategy("dest-email@divorce.gov.uk");
+    private final DecreeAbsoluteDataExtractor classUnderTest = new DecreeAbsoluteDataExtractor("dest-email@divorce.gov.uk");
 
     @Test
     public void testBasicCsvExtractorValues() {

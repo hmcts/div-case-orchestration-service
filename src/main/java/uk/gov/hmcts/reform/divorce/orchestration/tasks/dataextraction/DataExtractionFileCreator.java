@@ -40,11 +40,11 @@ public class DataExtractionFileCreator implements Task<Void> {
     @Override
     public Void execute(TaskContext context, Void payload) throws TaskException {
         Status status = context.getTransientObject(STATUS_KEY);
-        CSVExtractorStrategy csvExtractorStrategy = csvExtractorFactory.getCSVExtractorForStatus(status);
+        CSVExtractor csvExtractor = csvExtractorFactory.getCSVExtractorForStatus(status);
         LocalDate lastModifiedDate = context.getTransientObject(DATE_TO_EXTRACT_KEY);
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
 
-        List<String> relevantStates = csvExtractorStrategy.getRelevantCaseStates()
+        List<String> relevantStates = csvExtractor.getRelevantCaseStates()
             .map(String::toLowerCase)
             .collect(Collectors.toList());
         QueryBuilder[] queryBuilders = {
@@ -53,10 +53,10 @@ public class DataExtractionFileCreator implements Task<Void> {
         };
 
         StringBuilder csvFileContent = new StringBuilder();
-        csvFileContent.append(csvExtractorStrategy.getHeaderLine());
+        csvFileContent.append(csvExtractor.getHeaderLine());
         List<CaseDetails> casesDetails = cmsElasticSearchSupport.searchCMSCases(0, 50, authToken, queryBuilders).collect(Collectors.toList());
         for (CaseDetails caseDetails : casesDetails) {
-            csvExtractorStrategy.mapCaseData(caseDetails).ifPresent(csvFileContent::append);
+            csvExtractor.mapCaseData(caseDetails).ifPresent(csvFileContent::append);
         }
 
         File csvFile = createFile(csvFileContent.toString());

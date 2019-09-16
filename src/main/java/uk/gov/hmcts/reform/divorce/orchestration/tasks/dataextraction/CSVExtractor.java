@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 /**
  * Interface used for extracting case details into CSV files.
  */
-public interface CSVExtractorStrategy {
+public interface CSVExtractor {
 
     String getHeaderLine();
 

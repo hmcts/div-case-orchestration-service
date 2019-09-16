@@ -16,23 +16,23 @@ import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtract
 public class CSVExtractorFactory {
 
     @Autowired
-    private DecreeAbsoluteDataExtractorStrategy decreeAbsoluteDataExtractorStrategy;
+    private DecreeAbsoluteDataExtractor decreeAbsoluteDataExtractor;
 
-    private Map<Status, CSVExtractorStrategy> csvExtractorMap = new EnumMap<>(Status.class);
+    private Map<Status, CSVExtractor> csvExtractorMap = new EnumMap<>(Status.class);
 
     @PostConstruct
     public void init() {
-        csvExtractorMap.put(DA, decreeAbsoluteDataExtractorStrategy);
+        csvExtractorMap.put(DA, decreeAbsoluteDataExtractor);
     }
 
-    public CSVExtractorStrategy getCSVExtractorForStatus(Status status) {
-        CSVExtractorStrategy csvExtractorStrategy = csvExtractorMap.get(status);
+    public CSVExtractor getCSVExtractorForStatus(Status status) {
+        CSVExtractor csvExtractor = csvExtractorMap.get(status);
 
-        if (csvExtractorStrategy == null) {
+        if (csvExtractor == null) {
             throw new UnsupportedOperationException(format("CSVExtractor for %s not implemented.", status));
         }
 
-        return csvExtractorStrategy;
+        return csvExtractor;
     }
 
     public boolean hasCSVExtractorForStatus(Status status) {

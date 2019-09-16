@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.mapCCDDateT
 
 @Component
 @Slf4j
-public class DecreeAbsoluteDataExtractorStrategy implements CSVExtractorStrategy {
+public class DecreeAbsoluteDataExtractor implements CSVExtractor {
 
     private static final String COMMA = ",";
     private static final String WHO_APPLIED_FOR_DA = "petitioner";
@@ -34,7 +34,7 @@ public class DecreeAbsoluteDataExtractorStrategy implements CSVExtractorStrategy
 
     private final String destinationEmailAddress;
 
-    public DecreeAbsoluteDataExtractorStrategy(
+    public DecreeAbsoluteDataExtractor(
         @Value("${dataExtraction.status.DA.emailTo}") String destinationEmailAddress) {
         this.destinationEmailAddress = destinationEmailAddress;
     }
