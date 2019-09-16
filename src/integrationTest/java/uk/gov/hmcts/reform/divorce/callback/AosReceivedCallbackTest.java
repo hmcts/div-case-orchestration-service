@@ -39,7 +39,7 @@ public class AosReceivedCallbackTest extends IntegrationTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void givenCaseWithoutEmail_whenSubmitAOS_thenReturnAOSDataPlusAnswersDocument() {
+    public void  givenCaseWithoutEmail_whenSubmitAOS_thenReturnAOSDataPlusAnswersDocument() {
 
         Map<String, Object> aosCaseWithoutEmailAddress = ResourceLoader
                 .loadJsonToObject(ERROR_CASE_RESPONSE, Map.class);
