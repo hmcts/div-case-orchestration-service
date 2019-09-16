@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.UNFORMATTED_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -72,6 +73,7 @@ public class SendDaGrantedNotificationEmailTest {
     @Before
     public void setup() {
         context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
 
         testData = new HashMap<>();
         testData.put(D_8_CASE_REFERENCE, TEST_CASE_ID);
@@ -94,7 +96,7 @@ public class SendDaGrantedNotificationEmailTest {
                 TEST_CUSTOMER_FACING_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE);
 
         expectedPetSolicitorTemplateVars = new HashMap<>();
-        expectedPetSolicitorTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID);
+        expectedPetSolicitorTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedPetSolicitorTemplateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, TEST_SOLICITOR_EMAIL);
         expectedPetSolicitorTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         expectedPetSolicitorTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME);
@@ -172,7 +174,7 @@ public class SendDaGrantedNotificationEmailTest {
 
     @Test
     public void shouldCallEmailServiceForDaNotificationIfSolicitorEmailIsPresent() throws TaskException {
-        testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
         testData.put(PET_SOL_EMAIL, TEST_SOLICITOR_EMAIL);
         testData.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);

@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @Component
@@ -59,7 +61,7 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
         String solicitorEmail = (String) caseData.get(PET_SOL_EMAIL);
 
         if (StringUtils.isNotBlank(solicitorEmail)) {
-            sendEmailToPetitionerSolicitor(caseData);
+            sendEmailToPetitionerSolicitor(context, caseData);
         } else {
             sendEmailToPetitioner(caseData);
         }
@@ -81,9 +83,9 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
         );
     }
 
-    private void sendEmailToPetitionerSolicitor(Map<String, Object> caseData) throws TaskException {
+    private void sendEmailToPetitionerSolicitor(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
-        String caseReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        String ccdReference = context.getTransientObject(CASE_ID_JSON_KEY);
         String solicitorEmail = (String) caseData.get(PET_SOL_EMAIL);
         String solicitorName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
 
@@ -96,8 +98,7 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
 
         templateVars.put(NOTIFICATION_EMAIL, solicitorEmail);
         templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
-        //confirm its case reference vs case id json key
-        templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseReference);
+        templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, formatCaseIdToReferenceNumber(ccdReference));
         templateVars.put(NOTIFICATION_PET_NAME, petFirstName + " " + petLastName);
         templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
 
