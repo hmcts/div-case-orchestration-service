@@ -17,6 +17,17 @@ java:
     DIV_SCHEDULER_DB_PASSWORD  : "{{ .Values.postgresql.postgresqlPassword}}"
     FLYWAY_URL : "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
 
+  keyVaults:
+    "div":
+      resourceGroup: div
+      secrets:
+        - ccd-submission-s2s-auth-secret
+        - div-doc-s2s-auth-secret
+        - idam-secret
+        - frontend-secret
+        - idam-citizen-password
+        - idam-caseworker-password
+
   # Don't modify these properties
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
