@@ -33,7 +33,9 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_REQUESTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.STATUS_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DataExtractionFileCreatorTest {
@@ -50,20 +52,24 @@ public class DataExtractionFileCreatorTest {
     private CMSElasticSearchSupport cmsElasticSearchSupport;
 
     @Mock
-    private DecreeAbsoluteDataExtractor mockCaseDetailsMapper;
+    private CSVExtractor csvExtractor;
+
+    @Mock
+    private CSVExtractorFactory csvExtractorFactory;
 
     @InjectMocks
     private DataExtractionFileCreator classUnderTest;
 
     @Before
-    public void setUp() {
-        when(mockCaseDetailsMapper.getHeaderLine()).thenReturn("header");
-        when(mockCaseDetailsMapper.mapCaseData(any())).thenReturn(
+    public void setUp() throws TaskException {
+        when(csvExtractor.getHeaderLine()).thenReturn("header");
+        when(csvExtractor.mapCaseData(any())).thenReturn(
             Optional.of(System.lineSeparator() + "line1"),
             Optional.empty(),
             Optional.of(System.lineSeparator() + "line2"),
             Optional.empty()
         );
+        when(csvExtractorFactory.getCSVExtractorForStatus(DA)).thenReturn(csvExtractor);
     }
 
     @Test
@@ -79,6 +85,7 @@ public class DataExtractionFileCreatorTest {
         DefaultTaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, TEST_AUTHORISATION_TOKEN);
         taskContext.setTransientObject(DATE_TO_EXTRACT_KEY, testLastModifiedDate);
+        taskContext.setTransientObject(STATUS_KEY, DA);
         classUnderTest.execute(taskContext, null);
 
         File createdFile = taskContext.getTransientObject(FILE_TO_PUBLISH);
