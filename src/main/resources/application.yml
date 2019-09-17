@@ -94,6 +94,7 @@ case:
         baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://localhost:4010}
   event:
     awaiting-da-period: ${AWAITING_DA_PERIOD:43d} # supports different time units e.g. 'm'(i.e. minute),'s'(i.e. second)
+    da-overdue-period: ${DA_OVERDUE_PERIOD:1y}
 
 fees-and-payments:
   service:
@@ -343,6 +344,11 @@ dncourt:
     nottinghamJustice:
       name: "Nottingham Justice Centre"
       address: "Carrington Street\nNottingham\nNG2 1EE"
+      email: "divorcecase@justice.gov.uk"
+      phone: "0300 303 0642"
+    birmingham:
+      name: "Birmingham Civil and Family Justice Centre"
+      address: "Priory Courts\n33 Bull Street\nBirmingham\nB4 6DS"
       email: "divorcecase@justice.gov.uk"
       phone: "0300 303 0642"
 

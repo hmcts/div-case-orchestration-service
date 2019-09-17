@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DataExtractionService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction.CSVExtractorFactory;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.time.LocalDate;
@@ -23,6 +24,9 @@ public class DataExtractionRequestListener implements ApplicationListener<DataEx
     private final DataExtractionService dataExtractionService;
 
     @Autowired
+    private final CSVExtractorFactory csvExtractorFactory;
+
+    @Autowired
     private final AuthUtil authUtil;
 
     @Override
@@ -31,7 +35,7 @@ public class DataExtractionRequestListener implements ApplicationListener<DataEx
         LocalDate dateToExtract = event.getDate();
         log.info("Listened to {} for status {} and date {}" + DataExtractionRequest.class.getName(), status, dateToExtract);
 
-        if (status.equals(DataExtractionRequest.Status.DA)) {
+        if (csvExtractorFactory.hasCSVExtractorForStatus(status)) {
             try {
                 dataExtractionService.extractCasesToFamilyMan(status, dateToExtract, authUtil.getCaseworkerToken());
             } catch (CaseOrchestrationServiceException exception) {

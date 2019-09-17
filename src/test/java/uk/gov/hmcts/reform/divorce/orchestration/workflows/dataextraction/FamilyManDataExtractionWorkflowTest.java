@@ -8,7 +8,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -28,14 +28,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DA;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FamilyManDataExtractionWorkflowTest {
 
-    private static final String TEST_AUTH_TOKEN = "testAuthToken";
-
     private static final String FILE_TO_PUBLISH = "fileToPublish";
     private static final String DATE_TO_EXTRACT_KEY = "dateToExtract";
+    private static final String STATUS_KEY = "status";
+
+    private static final String TEST_AUTH_TOKEN = "testAuthToken";
+    private static final Status TEST_STATUS = DA;
 
     @Mock
     private DataExtractionFileCreator dataExtractionFileCreatorTask;
@@ -67,17 +70,18 @@ public class FamilyManDataExtractionWorkflowTest {
         });
 
         LocalDate dateToExtract = LocalDate.now();
-        classUnderTest.run(DataExtractionRequest.Status.DA, dateToExtract, TEST_AUTH_TOKEN);
+        classUnderTest.run(TEST_STATUS, dateToExtract, TEST_AUTH_TOKEN);
 
         verify(dataExtractionFileCreatorTask).execute(taskContextArgumentCaptor.capture(), any());
         verify(publisherTask).execute(taskContextArgumentCaptor.capture(), any());
-
         List<TaskContext> taskContexts = taskContextArgumentCaptor.getAllValues();
         TaskContext dataExtractionFileCreatorTaskContext = taskContexts.get(0);
         assertThat(dataExtractionFileCreatorTaskContext.getTransientObject(AUTH_TOKEN_JSON_KEY), is(TEST_AUTH_TOKEN));
         assertThat(dataExtractionFileCreatorTaskContext.getTransientObject(DATE_TO_EXTRACT_KEY), is(dateToExtract));
+        assertThat(dataExtractionFileCreatorTaskContext.getTransientObject(STATUS_KEY), is(TEST_STATUS));
         TaskContext publisherTaskContext = taskContexts.get(1);
         assertThat(publisherTaskContext.getTransientObject(FILE_TO_PUBLISH), is(fileToPublish));
+        assertThat(dataExtractionFileCreatorTaskContext.getTransientObject(STATUS_KEY), is(TEST_STATUS));
     }
 
 }

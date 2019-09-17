@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -25,11 +26,12 @@ public class ExtractedDataPublisher implements Task<Void> {
     private DataExtractionEmailClient emailClient;
 
     @Autowired
-    private CSVExtractor csvExtractor;
+    private CSVExtractorFactory csvExtractorFactory;
 
     @Override
     public Void execute(TaskContext context, Void payload) throws TaskException {
-
+        Status status = context.getTransientObject("status");
+        CSVExtractor csvExtractor = csvExtractorFactory.getCSVExtractorForStatus(status);
         String dateToProcess = getDateToProcess(context);
         String attachmentFileName = String.format("%s_%s.csv", csvExtractor.getFileNamePrefix(), dateToProcess);
 
