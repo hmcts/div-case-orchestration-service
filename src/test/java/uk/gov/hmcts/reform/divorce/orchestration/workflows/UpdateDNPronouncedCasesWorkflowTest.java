@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -8,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -28,7 +26,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateDNPronouncedCasesWorkflowTest {
 
-    private static String DAYS_BEFORE_ELIGBLE_FOR_DA = "43d";
     private static int EXPECTED_CASES_PROCESSED_COUNT = 10;
 
     @Rule
@@ -42,11 +39,6 @@ public class UpdateDNPronouncedCasesWorkflowTest {
 
     @InjectMocks
     private UpdateDNPronouncedCasesWorkflow classUnderTest;
-
-    @Before
-    public void setup() {
-        ReflectionTestUtils.setField(classUnderTest, "awaitingDAPeriod", DAYS_BEFORE_ELIGBLE_FOR_DA);
-    }
 
     @Test
     public void execute_taskExceptionThrownInAnyTask_workflowExceptionThrown() throws TaskException, WorkflowException {
