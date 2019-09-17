@@ -74,6 +74,8 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
 
     @Test
     public void givenUnauthorizedRequest_whenGetPetitionIssueFees_thenReturnErrorData() {
+        final Map<String, Object> caseData = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
+
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         headers.put(HttpHeaders.AUTHORIZATION, AUTHORIZATION_CODE);
@@ -81,6 +83,7 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
         final CcdCallbackRequest callbackData = CcdCallbackRequest.builder()
             .eventId(SOLICITOR_SUBMIT_EVENT)
             .caseDetails(CaseDetails.builder()
+                .caseData(caseData)
                 .build())
             .build();
 
