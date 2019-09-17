@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import sun.jvm.hotspot.oops.ObjectHeap;
 import uk.gov.hmcts.reform.divorce.formatter.service.CaseFormatterService;
 import uk.gov.hmcts.reform.divorce.model.ccd.DaCaseData;
 import uk.gov.hmcts.reform.divorce.model.usersession.DivorceSession;
@@ -16,8 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
