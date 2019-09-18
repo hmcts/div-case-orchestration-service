@@ -855,11 +855,11 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldCallTheRightWorkflow_forSendDnSubmittedNotificationCallback() throws WorkflowException {
+    public void shouldCallTheRightWorkflow_forHandleDnSubmittedCallback() throws WorkflowException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         when(dnSubmittedEmailNotificationWorkflow.run(caseDetails.getCaseId(), caseDetails.getCaseData())).thenReturn(requestPayload);
 
-        classUnderTest.sendDnSubmittedEmailNotification(ccdCallbackRequest);
+        classUnderTest.handleDnSubmittedCallback(ccdCallbackRequest);
 
         verify(dnSubmittedEmailNotificationWorkflow).run(caseDetails.getCaseId(), caseDetails.getCaseData());
     }
@@ -1176,10 +1176,10 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldCallTheRightWorkflow_forSendDaGrantedNotificationCallback() throws WorkflowException {
+    public void shouldCallTheRightWorkflow_forHandleDaGrantedCallbackCallback() throws WorkflowException {
         when(sendDaGrantedNotificationEmailWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData())).thenReturn(requestPayload);
 
-        classUnderTest.sendDaGrantedNotification(ccdCallbackRequest);
+        classUnderTest.handleDaGrantedCallback(ccdCallbackRequest);
 
         verify(sendDaGrantedNotificationEmailWorkflow).run(ccdCallbackRequest.getCaseDetails().getCaseData());
     }
@@ -1391,12 +1391,12 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldCallTheRightWorkflow_forNotifyApplicantCanFinaliseDivorce() throws WorkflowException {
+    public void shouldCallTheRightWorkflow_forHandleMakeCaseEligibleForDaSubmittedCallback() throws WorkflowException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         when(notifyApplicantCanFinaliseDivorceWorkflow.run(caseDetails.getCaseId(), caseDetails.getCaseData()))
             .thenReturn(requestPayload);
 
-        classUnderTest.notifyApplicantCanFinaliseDivorce(ccdCallbackRequest);
+        classUnderTest.handleMakeCaseEligibleForDaSubmittedCallback(ccdCallbackRequest);
 
         verify(notifyApplicantCanFinaliseDivorceWorkflow).run(caseDetails.getCaseId(), caseDetails.getCaseData());
     }
