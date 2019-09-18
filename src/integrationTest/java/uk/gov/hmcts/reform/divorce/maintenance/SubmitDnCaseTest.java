@@ -28,4 +28,23 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
         assertEquals(caseDetails.getId(), cosResponse.path("id"));
         assertEquals("AwaitingLegalAdvisorReferral", cosResponse.path("state"));
     }
+
+    @Test
+    public void whenSubmitDnWithAwaitingClarification_thenProceedAsExpected() throws Exception {
+        final UserDetails userDetails = createCitizenUser();
+
+        final CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);
+
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, "aosSubmittedUndefended", userDetails);
+        updateCase(String.valueOf(caseDetails.getId()), null, "refertoLegalAdvisor");
+        updateCase(String.valueOf(caseDetails.getId()), null, "dnClarificationRequested");
+
+        Response cosResponse = submitDnCase(userDetails.getAuthToken(), caseDetails.getId(),
+            "dn-submit.json");
+
+        assertEquals(OK.value(), cosResponse.getStatusCode());
+        assertEquals(caseDetails.getId(), cosResponse.path("id"));
+        assertEquals("ClarificationSubmitted", cosResponse.path("state"));
+    }
 }
