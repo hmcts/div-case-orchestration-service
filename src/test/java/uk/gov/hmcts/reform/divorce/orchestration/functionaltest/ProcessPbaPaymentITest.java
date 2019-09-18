@@ -76,12 +76,16 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
 
     @Before
     public void setup() {
+        paymentServiceServer.resetAll();
+        serviceAuthProviderServer.resetAll();
+        formatterServiceServer.resetAll();
+
         FeeResponse feeResponse = FeeResponse.builder()
-                .amount(TEST_FEE_AMOUNT)
-                .feeCode(TEST_FEE_CODE)
-                .version(TEST_FEE_VERSION)
-                .description(TEST_FEE_DESCRIPTION)
-                .build();
+            .amount(TEST_FEE_AMOUNT)
+            .feeCode(TEST_FEE_CODE)
+            .version(TEST_FEE_VERSION)
+            .description(TEST_FEE_DESCRIPTION)
+            .build();
         OrderSummary orderSummary = new OrderSummary();
         orderSummary.add(feeResponse);
 
@@ -127,30 +131,30 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
 
         caseDetails = CaseDetails.builder()
-                        .caseData(caseData)
-                        .caseId(TEST_CASE_ID)
-                        .state(TEST_STATE)
-                        .build();
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
 
         ccdCallbackRequest = CcdCallbackRequest.builder()
-                        .caseDetails(caseDetails)
-                        .build();
+            .caseDetails(caseDetails)
+            .build();
 
         final CcdCallbackResponse expected = CcdCallbackResponse.builder()
-                .data(caseData)
-                .build();
+            .data(caseData)
+            .build();
 
         stubCreditAccountPayment(HttpStatus.OK, new CreditAccountPaymentResponse());
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
         stubFormatterServerEndpoint(caseData);
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(ccdCallbackRequest))
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(expected)));
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
     }
 
     @Test
@@ -159,54 +163,55 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, NO_VALUE);
 
         caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .caseId(TEST_CASE_ID)
-                .state(TEST_STATE)
-                .build();
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
 
         ccdCallbackRequest = CcdCallbackRequest.builder()
-                .caseDetails(caseDetails)
-                .build();
+            .caseDetails(caseDetails)
+            .build();
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
-                .errors(Collections.singletonList(
-                        "Statement of truth for solicitor and petitioner needs to be accepted"
-                ))
-                .build();
+            .errors(Collections.singletonList(
+                "Statement of truth for solicitor and petitioner needs to be accepted"
+            ))
+            .build();
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(ccdCallbackRequest))
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(expected)));
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
     }
 
     private void stubCreditAccountPayment(HttpStatus status, CreditAccountPaymentResponse response) {
         paymentServiceServer.stubFor(WireMock.post(PAYMENTS_CREDIT_ACCOUNT_CONTEXT_PATH)
-                .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-                .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
-                .withRequestBody(equalToJson(convertObjectToJsonString(request)))
-                .willReturn(aResponse()
-                        .withStatus(status.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(convertObjectToJsonString(response))));
+            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
+            .withRequestBody(equalToJson(convertObjectToJsonString(request)))
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(convertObjectToJsonString(response))));
     }
 
     private void stubServiceAuthProvider(HttpStatus status, String response) {
         serviceAuthProviderServer.stubFor(WireMock.post(SERVICE_AUTH_CONTEXT_PATH)
-                .willReturn(aResponse()
-                        .withStatus(status.value())
-                        .withBody(response)));
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withBody(response)));
     }
 
-    private void stubFormatterServerEndpoint(Map<String , Object> data) {
+    private void stubFormatterServerEndpoint(Map<String, Object> data) {
         formatterServiceServer.stubFor(WireMock.post(FORMAT_REMOVE_PETITION_DOCUMENTS_CONTEXT_PATH)
             .withRequestBody(equalToJson(convertObjectToJsonString(data)))
             .willReturn(aResponse()
-                    .withStatus(HttpStatus.OK.value())
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                    .withBody(convertObjectToJsonString(data))));
+                .withStatus(HttpStatus.OK.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(convertObjectToJsonString(data))));
     }
+
 }
