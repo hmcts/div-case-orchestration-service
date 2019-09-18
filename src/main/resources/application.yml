@@ -344,7 +344,7 @@ dataExtraction:
   emailFrom: noreply@reform.hmcts.net
   status:
     DA:
-      emailTo: da-extraction@divorce.gov.uk
+      emailTo:
 
 bulk-action:
   page-size: 50
