@@ -23,11 +23,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_AOS_COMPLETE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_CLARIFICATION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SubmitDnCaseUTest {
@@ -72,5 +74,18 @@ public class SubmitDnCaseUTest {
 
         verify(caseMaintenanceClient)
                 .updateCase(AUTH_TOKEN, TEST_CASE_ID, DN_RECEIVED_AOS_COMPLETE, divorceSession);
+    }
+
+    @Test
+    public void givenDnSubmitAndAwaitingClarification_whenExecute_thenProceedAsExpected() {
+        final Map<String, Object> divorceSession = ImmutableMap.of();
+
+        when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(
+            CaseDetails.builder().caseId(TEST_CASE_ID).state(AWAITING_CLARIFICATION).build());
+
+        assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
+
+        verify(caseMaintenanceClient)
+            .updateCase(AUTH_TOKEN, TEST_CASE_ID, DN_RECEIVED_CLARIFICATION, divorceSession);
     }
 }

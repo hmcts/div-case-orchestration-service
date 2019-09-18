@@ -29,10 +29,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_AOS_COMPLETE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class SubmitDnCaseITest extends MockedFunctionalTest {
@@ -137,6 +139,28 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_AOS_COMPLETE, caseData, caseDataString);
+
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(caseData))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(caseDataString));
+    }
+
+    @Test
+    public void givenDnReceivedAndAwaitingClarification_whenSubmitDn_thenProceedAsExpected() throws Exception {
+        final Map<String, Object> caseData = getCaseData();
+        final String caseDataString = convertObjectToJsonString(caseData);
+        final Map<String, Object> caseDetails = new HashMap<>();
+
+        caseDetails.put(CASE_STATE_JSON_KEY, AWAITING_CLARIFICATION);
+        caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
+
+        stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
+        stubFormatterServerEndpoint(OK, caseData, caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_CLARIFICATION, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
