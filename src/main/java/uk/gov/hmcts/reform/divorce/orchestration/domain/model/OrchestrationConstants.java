@@ -316,7 +316,11 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_FIRM_JSON_KEY = "PetitionerSolicitorFirm";
     public static final String SOLICITOR_REFERENCE_JSON_KEY = "D8SolicitorReference";
     public static final String SOLICITOR_STATEMENT_OF_TRUTH = "solSignStatementofTruth";
+    public static final String RESP_SOL_REPRESENTED = "respondentSolicitorRepresented";
     public static final String D8_RESPONDENT_SOLICITOR_EMAIL = "D8RespondentSolicitorEmail";
+    public static final String D8_RESPONDENT_SOLICITOR_COMPANY = "D8RespondentSolicitorCompany";
+    public static final String D8_RESPONDENT_SOLICITOR_PHONE = "D8RespondentSolicitorPhone";
+    public static final String D8_RESPONDENT_SOLICITOR_REFERENCE = "respondentSolicitorReference";
     public static final String D8_RESPONDENT_SOLICITOR_NAME = "D8RespondentSolicitorName";
     public static final String D8DOCUMENTS_GENERATED = "D8DocumentsGenerated";
     public static final String PETITIONER_SOLICITOR_EMAIL = "PetitionerSolicitorEmail";

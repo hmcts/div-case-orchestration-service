@@ -15,8 +15,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentAosPackPrinte
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAosPackPrinter;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 
 import java.util.ArrayList;
@@ -25,11 +23,13 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_COMPANY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
 @RequiredArgsConstructor
@@ -40,9 +40,7 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
     private final RespondentAosPackPrinter respondentAosPackPrinter;
     private final CoRespondentAosPackPrinter coRespondentAosPackPrinter;
-    private final RespondentPinGenerator respondentPinGenerator;
     private final ModifyDueDate modifyDueDate;
-    private final RespondentLetterGenerator respondentLetterGenerator;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Value("${feature-toggle.toggle.feature_resp_solicitor_details}")
@@ -68,14 +66,23 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
     }
 
     private List<Task> getRespondentAosCommunicationTasks(final Map<String, Object> caseData) {
-        if (featureToggleRespSolicitor) {
-            final String solicitorEmail = (String) caseData.get(D8_RESPONDENT_SOLICITOR_EMAIL);
-            if (isNotEmpty(solicitorEmail)) {
-                return asList(
+    if (featureToggleRespSolicitor) {
+        if (usingRespondentSolicitor(caseData)) {
+            return asList(
                     respondentAosPackPrinter,
                     caseFormatterAddDocuments);
-            }
         }
+    }
         return singletonList(respondentAosPackPrinter);
+    }
+
+    private boolean usingRespondentSolicitor(Map<String, Object> caseData) {
+        // TODO - temporary fix until we implement setting respondentSolicitorRepresented in CCD for Resp Sol cases
+        final String respondentSolicitorRepresented = (String) caseData.get(RESP_SOL_REPRESENTED);
+        final String respondentSolicitorName = (String) caseData.get(D8_RESPONDENT_SOLICITOR_NAME);
+        final String respondentSolicitorCompany = (String) caseData.get(D8_RESPONDENT_SOLICITOR_COMPANY);
+
+        return YES_VALUE.equalsIgnoreCase(respondentSolicitorRepresented)
+                || respondentSolicitorName != null && respondentSolicitorCompany != null;
     }
 }
