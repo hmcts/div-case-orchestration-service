@@ -300,6 +300,11 @@ dncourt:
       address: "Carrington Street\nNottingham\nNG2 1EE"
       email: "divorcecase@justice.gov.uk"
       phone: "0300 303 0642"
+    birmingham:
+      name: "Birmingham Civil and Family Justice Centre"
+      address: "Priory Courts\n33 Bull Street\nBirmingham\nB4 6DS"
+      email: "divorcecase@justice.gov.uk"
+      phone: "0300 303 0642"
 
 idam:
   api:
