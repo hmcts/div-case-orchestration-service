@@ -10,3 +10,7 @@ health_check_ttl = 30000
 scheduler_enabled = "true"
 feature_resp_solicitor_details = "true"
 feature_dn_refusal = "true"
+
+scheduler_send_updated_cases_to_robotics_enabled = "true"
+
+dataextraction_status_da_email_to = "da_data_extraction@sharklasers.com"
