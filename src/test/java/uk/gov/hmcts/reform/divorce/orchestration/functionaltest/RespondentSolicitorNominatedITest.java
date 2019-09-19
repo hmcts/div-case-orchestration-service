@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAosPackPrinter;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
@@ -31,6 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -41,39 +45,29 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
     @Autowired
     private MockMvc webClient;
 
-    @MockBean
-    private EmailClient mockEmailClient;
-
-    @InjectMocks
-    private CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
-
-    @Mock
-    private RespondentAosPackPrinter respondentAosPackPrinter;
-
-    private TaskContext context;
-
-    private Map<String, Object> payload;
-
     @Test
-    public void testResponseHasDataAndNoErrors_whenSolicitorIsNominated_thenLetterIsGenerated_andNoEmailIsSent() throws Exception {
+    public void givenRespondentSolicitorNominated_whenCallbackCalled_linkingFieldsAreReset() throws Exception {
 
-        ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", true);
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/aosSolicitorNominated.json", CcdCallbackRequest.class);
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        Map<String, Object> expectedCaseData = new HashMap<>(caseData);
+        expectedCaseData.put(RECEIVED_AOS_FROM_RESP, null);
+        expectedCaseData.put(RECEIVED_AOS_FROM_RESP_DATE, null);
+        expectedCaseData.put(RESPONDENT_EMAIL_ADDRESS, null);
 
         final PinRequest pinRequest = PinRequest.builder()
-                        .firstName("")
-                        .lastName("")
-                        .build();
+            .firstName("")
+            .lastName("")
+            .build();
 
         final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
 
-        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/aosSolicitorNominated.json", CcdCallbackRequest.class);
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
-                .data(caseData)
+                .data(expectedCaseData)
                 .build();
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -86,9 +80,5 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
                         isJson(),
                         hasJsonPath("$.errors", nullValue())
                 )));
-
-        // Trying to verify AoS pack printer task is run / the service is called
-        verify(respondentAosPackPrinter).execute(context, payload);
-        verifyZeroInteractions(mockEmailClient);
     }
 }

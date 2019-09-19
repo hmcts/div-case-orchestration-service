@@ -29,6 +29,8 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -41,6 +43,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CcdCallbackBulkPrintWorkflowTest {
@@ -61,9 +64,6 @@ public class CcdCallbackBulkPrintWorkflowTest {
     private RespondentPinGenerator respondentPinGenerator;
 
     @Mock
-    private RespondentLetterGenerator respondentLetterGenerator;
-
-    @Mock
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Mock
@@ -79,32 +79,32 @@ public class CcdCallbackBulkPrintWorkflowTest {
     private TaskContext context;
 
     @Before
-    public void setUp() {
-        payload = new HashMap<>();
-        payload.put("foo", "bar");
+    public void setUp() throws Exception {
+        payload = getJsonFromResourceFile(
+            "/jsonExamples/payloads/aos-respondent-solicitor-nominated.json", HashMap.class);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .state(TEST_STATE)
             .caseData(payload)
             .build();
+
         ccdCallbackRequestRequest =
                 CcdCallbackRequest.builder()
                         .eventId(TEST_EVENT_ID)
                         .token(TEST_TOKEN)
-                        .caseDetails(
-                            caseDetails
-                        )
+                        .caseDetails(caseDetails)
                         .build();
 
         context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, ccdCallbackRequestRequest.getCaseDetails());
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
     }
 
     @Test
     public void whenNoSolicitorRepresentingRespondent() throws WorkflowException, TaskException {
+        HashMap<String, Object> payload = (HashMap<String, Object>) ccdCallbackRequestRequest.getCaseDetails().getCaseData();
 
         when(serviceMethodValidationTask.execute(context, payload)).thenReturn(payload);
         when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
@@ -134,7 +134,6 @@ public class CcdCallbackBulkPrintWorkflowTest {
 
     @Test
     public void whenSolicitorRepresentingRespondentAndRespSolicitorFeatureToggleDisabled() throws WorkflowException, TaskException {
-
         ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", false);
 
         payload.put(D8_RESPONDENT_SOLICITOR_EMAIL, "foo@bar.com");

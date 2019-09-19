@@ -60,7 +60,7 @@ public class RespondentSolicitorNominatedWorkflowTest {
     }
 
     @Test
-    public void testRunCallsTheRequiredTasks() throws WorkflowException, TaskException {
+    public void testRunCallsTheRequiredTasks() throws WorkflowException {
         //Given
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);

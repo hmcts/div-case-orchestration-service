@@ -66,13 +66,11 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
     }
 
     private List<Task> getRespondentAosCommunicationTasks(final Map<String, Object> caseData) {
-    if (featureToggleRespSolicitor) {
-        if (usingRespondentSolicitor(caseData)) {
+        if (featureToggleRespSolicitor && usingRespondentSolicitor(caseData)) {
             return asList(
-                    respondentAosPackPrinter,
-                    caseFormatterAddDocuments);
+                respondentAosPackPrinter,
+                caseFormatterAddDocuments);
         }
-    }
         return singletonList(respondentAosPackPrinter);
     }
 
@@ -83,6 +81,6 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
         final String respondentSolicitorCompany = (String) caseData.get(D8_RESPONDENT_SOLICITOR_COMPANY);
 
         return YES_VALUE.equalsIgnoreCase(respondentSolicitorRepresented)
-                || respondentSolicitorName != null && respondentSolicitorCompany != null;
+            || respondentSolicitorName != null && respondentSolicitorCompany != null;
     }
 }

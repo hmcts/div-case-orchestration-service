@@ -40,7 +40,7 @@ public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<St
         tasks.add(resetRespondentLinkingFields);
 
         return this.execute(
-            tasks.toArray(new Task[tasks.size()]),
+            tasks.toArray(new Task[0]),
             caseData,
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId())
         );
