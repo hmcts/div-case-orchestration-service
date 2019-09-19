@@ -41,7 +41,7 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2019-15052</cve>
     </suppress>
-    <suppress until="2019-09-30">
+    <suppress>
         <notes><![CDATA[
             This is exploitable in com.zaxxer.hikari.HikariConfig which we do not use.
             Pending the release of a stable jackson databind version (>2.9.9.3) ]]></notes>
