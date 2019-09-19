@@ -558,9 +558,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+    public Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest,
+                                                            String authToken) throws CaseOrchestrationServiceException {
         try {
-            return respondentSolicitorNominatedWorkflow.run(ccdCallbackRequest.getCaseDetails());
+            return respondentSolicitorNominatedWorkflow.run(ccdCallbackRequest.getCaseDetails(), authToken);
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
         }

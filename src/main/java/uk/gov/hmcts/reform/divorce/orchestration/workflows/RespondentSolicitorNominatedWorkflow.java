@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
@@ -50,7 +52,7 @@ public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<St
         this.resetRespondentLinkingFields = resetRespondentLinkingFields;
     }
 
-    public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
+    public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
 
         List<Task> tasks = new ArrayList<>();
 
@@ -67,6 +69,8 @@ public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<St
         return this.execute(
             tasks.toArray(new Task[0]),
             caseData,
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId())
         );
     }

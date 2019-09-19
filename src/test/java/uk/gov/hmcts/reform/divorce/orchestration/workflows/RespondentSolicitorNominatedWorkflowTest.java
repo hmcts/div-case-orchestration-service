@@ -25,8 +25,11 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -81,6 +84,8 @@ public class RespondentSolicitorNominatedWorkflowTest {
 
         context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
     }
 
     @Test
@@ -96,7 +101,7 @@ public class RespondentSolicitorNominatedWorkflowTest {
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = respondentSolicitorNominatedWorkflow.run(caseDetails);
+        Map<String, Object> response = respondentSolicitorNominatedWorkflow.run(caseDetails, AUTH_TOKEN);
 
         //Then
         InOrder inOrder = inOrder(
