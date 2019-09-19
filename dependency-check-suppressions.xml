@@ -44,8 +44,9 @@
     <suppress>
         <notes><![CDATA[
             This is exploitable in com.zaxxer.hikari.HikariConfig which we do not use.
-            Pending the release of a stable jackson databind version (>2.9.9.3) ]]></notes>
-        <packageUrl regex="true">.*</packageUrl>
+            Pending the release of a stable jackson databind version (>2.9.9.3) ]]>
+        </notes>
+        <gav regex="true">.*</gav>
         <cve>CVE-2019-14540</cve>
         <cve>CVE-2019-16335</cve>
     </suppress>
