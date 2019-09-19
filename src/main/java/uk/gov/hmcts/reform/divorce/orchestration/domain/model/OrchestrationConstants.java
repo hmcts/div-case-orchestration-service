@@ -130,6 +130,8 @@ public class OrchestrationConstants {
     public static final String START_AOS_EVENT_ID = "startAos";
     public static final String PAYMENT_MADE_EVENT = "paymentMade";
     public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID = "MakeEligibleForDA_Petitioner";
+    public static final String MAKE_CASE_DA_OVERDUE_EVENT_ID = "DecreeAbsoluteOverdue";
+    public static final String AWAITING_DECREE_ABSOLUTE = "AwaitingDecreeAbsolute";
     public static final String SOLICITOR_CREATE_EVENT = "solicitorCreate";
     public static final String SOLICITOR_SUBMIT_EVENT = "solicitorStatementOfTruthPaySubmit";
 
@@ -149,6 +151,7 @@ public class OrchestrationConstants {
     public static final String AWAITING_DA = "AwaitingDecreeAbsolute";
     public static final String DN_REFUSED = "DNisRefused";
     public static final String DA_REQUESTED = "DARequested";
+    public static final String DA_OVERDUE = "DAOverdue";
     public static final String DIVORCE_GRANTED = "DivorceGranted";
 
     // CCD Co-Respondent Fields
@@ -346,7 +349,9 @@ public class OrchestrationConstants {
 
     // DA related
     public static final String AWAITING_DA_PERIOD_KEY = "awaitingDAPeriod";
+    public static final String DA_OVERDUE_PERIOD_KEY = "daOverduePeriod";
     public static final String CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT = "casesEligibleForDAProcessedCount";
+    public static final String CASES_OVERDUE_FOR_DA_PROCESSED_COUNT = "casesOverdueForDAProcessedCount";
 
 
     // Validation
@@ -364,4 +369,5 @@ public class OrchestrationConstants {
 
     // Elastic Search
     public static final String ES_CASE_ID_KEY = "reference";
+    public static final String QUERY_BUILDERS = "queryBuilders";
 }
