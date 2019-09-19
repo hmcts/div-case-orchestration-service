@@ -41,7 +41,6 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
     private final RespondentAosPackPrinter respondentAosPackPrinter;
     private final CoRespondentAosPackPrinter coRespondentAosPackPrinter;
     private final ModifyDueDate modifyDueDate;
-    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Value("${feature-toggle.toggle.feature_resp_solicitor_details}")
     private boolean featureToggleRespSolicitor;
@@ -53,34 +52,15 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
 
         tasks.add(serviceMethodValidationTask);
         tasks.add(fetchPrintDocsFromDmStore);
-        tasks.addAll(getRespondentAosCommunicationTasks(caseDetails.getCaseData()));
+        tasks.add(respondentAosPackPrinter);
         tasks.add(coRespondentAosPackPrinter);
         tasks.add(modifyDueDate);
 
-        return this.execute(tasks.toArray(new Task[tasks.size()]),
+        return this.execute(tasks.toArray(new Task[0]),
             caseDetails.getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId())
         );
-    }
-
-    private List<Task> getRespondentAosCommunicationTasks(final Map<String, Object> caseData) {
-        if (featureToggleRespSolicitor && usingRespondentSolicitor(caseData)) {
-            return asList(
-                respondentAosPackPrinter,
-                caseFormatterAddDocuments);
-        }
-        return singletonList(respondentAosPackPrinter);
-    }
-
-    private boolean usingRespondentSolicitor(Map<String, Object> caseData) {
-        // TODO - temporary fix until we implement setting respondentSolicitorRepresented in CCD for Resp Sol cases
-        final String respondentSolicitorRepresented = (String) caseData.get(RESP_SOL_REPRESENTED);
-        final String respondentSolicitorName = (String) caseData.get(D8_RESPONDENT_SOLICITOR_NAME);
-        final String respondentSolicitorCompany = (String) caseData.get(D8_RESPONDENT_SOLICITOR_COMPANY);
-
-        return YES_VALUE.equalsIgnoreCase(respondentSolicitorRepresented)
-            || respondentSolicitorName != null && respondentSolicitorCompany != null;
     }
 }
