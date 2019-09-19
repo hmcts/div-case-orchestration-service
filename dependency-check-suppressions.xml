@@ -43,8 +43,9 @@
     </suppress>
     <suppress until="2019-09-30">
         <notes><![CDATA[
-                file name: jackson-databind-2.9.9.3.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+            This is exploitable in com.zaxxer.hikari.HikariConfig which we do not use.
+            Pending the release of a stable jackson databind version (>2.9.9.3) ]]></notes>
+        <packageUrl regex="true">.*</packageUrl>
         <cve>CVE-2019-14540</cve>
         <cve>CVE-2019-16335</cve>
     </suppress>
