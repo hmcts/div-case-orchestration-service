@@ -37,7 +37,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @Component
@@ -98,7 +97,7 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
 
         templateVars.put(NOTIFICATION_EMAIL, solicitorEmail);
         templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
-        templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, formatCaseIdToReferenceNumber(ccdReference));
+        templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, ccdReference);
         templateVars.put(NOTIFICATION_PET_NAME, petFirstName + " " + petLastName);
         templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
 
