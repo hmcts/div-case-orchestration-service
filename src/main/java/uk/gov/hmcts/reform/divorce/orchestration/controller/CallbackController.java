@@ -218,7 +218,19 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> petitionUpdated(
         @RequestHeader(value = "Authorization", required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest);
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.info("/petition-updated endpoint called for caseId {}", caseId);
+
+        try {
+            caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest);
+        } catch (WorkflowException e) {
+            log.error("Failed to complete service for caseId {}", caseId, e);
+            return ResponseEntity.ok(CcdCallbackResponse.builder()
+                    .data(ccdCallbackRequest.getCaseDetails().getCaseData())
+                    .errors(singletonList(e.getMessage()))
+                    .build());
+        }
+
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(ccdCallbackRequest.getCaseDetails().getCaseData())
             .build());
