@@ -1,22 +1,35 @@
 java:
     applicationPort: 4012
+    ingressHost: "div-cos-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     environment:
-        REFORM_SERVICE_NAME: "cos"
-        REFORM_TEAM: "div"
-        SLOT: "PRODUCTION"
+        CASE_MAINTENANCE_SERVICE_API_BASEURL: "http://div-cms-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        PAYMENT_API_BASEURL: "http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        FEATURE_TOGGLE_SERVICE_API_BASEURL: "http://rpe-feature-toggle-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        SEND_LETTER_SERIVCE_BASEURL: "http://rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        IDAM_API_REDIRECT_URL: "https://div-pfe-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/authenticated"
+        CASE_FORMATTER_SERVICE_API_BASEURL: "http://div-cfs-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        SERVICE_AUTH_PROVIDER_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        CASE_VALIDATION_SERVICE_API_BASEURL: "http://div-vs-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        FEES_AND_PAYMENTS_SERVICE_API_BASEURL: "http://div-fps-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         SERVICE_AUTH_MICROSERVICE : "divorce_frontend"
-        DIV_SCHEDULER_DB_HOST : "{{ .Release.Name }}-postgresql"
+        MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE: "30000"
+        SCHEDULER_RE_CREATE: true
+        SCHEDULER_ENABLED: true
+        FEATURE_DN_REFUSAL: false
+        FEATURE_RESP_SOLICITOR_DETAILS: false
+        DIV_SCHEDULER_DB_HOST : "div-cos-{{ .Values.global.environment }}.postgres.database.azure.com"
         DIV_SCHEDULER_DB_PORT : "5432"
-        DIV_SCHEDULER_DB_NAME : "{{ .Values.postgresql.postgresqlDatabase}}"
-        DIV_SCHEDULER_DB_USER_NAME : "{{ .Values.postgresql.postgresqlUsername}}"
-        DIV_SCHEDULER_DB_PASSWORD  : "{{ .Values.postgresql.postgresqlPassword}}"
-        FLYWAY_URL : "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
-
+        DIV_SCHEDULER_DB_NAME : "div_scheduler"
+        DIV_SCHEDULER_DB_USER_NAME : "div_scheduler@div-cos-{{ .Values.global.environment }}"
+        FLYWAY_URL : "jdbc:postgresql://div-cos-{{ .Values.global.environment }}.postgres.database.azure.com:5432/div_scheduler"
+        FLYWAY_NOOP_STRATEGY: true
         SPRING_MAIL_HOST: mta.reform.hmcts.net
         SPRING_MAIL_PORT: 25
         SPRING_MAIL_TEST_CONNECTION: false
+        SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
-
+        SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_CRON: "0 0 2 ? * * *"
     keyVaults:
         "div":
             resourceGroup: div
@@ -25,5 +38,9 @@ java:
                 - div-doc-s2s-auth-secret
                 - idam-secret
                 - frontend-secret
+                - idam-citizen-username
                 - idam-citizen-password
+                - idam-caseworker-username
                 - idam-caseworker-password
+                - uk-gov-notify-api-key
+                - cos-postgresql-password
