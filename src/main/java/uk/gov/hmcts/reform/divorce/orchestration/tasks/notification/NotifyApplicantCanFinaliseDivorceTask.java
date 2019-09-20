@@ -27,7 +27,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 public class NotifyApplicantCanFinaliseDivorceTask implements Task<Map<String, Object>> {
 
-    private static final String TEMPLATE_ID = "71fd2e7e-42dc-4dcf-a9bb-007ae9d4b27f";
     private static final String EMAIL_REFERENCE = "Applicant can finalise divorce";
 
     @Autowired
