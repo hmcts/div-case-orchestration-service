@@ -1,53 +1,52 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import feign.FeignException;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.AdditionalAnswers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.transformation.CaseIdMapper;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.SEARCH_RESULT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DA_PERIOD_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_PRONOUNCED;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.JsonPathMatcher.jsonPathValueMatcher;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchDNPronouncedCases.buildCoolOffPeriodInDNBoundary;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SearchDNPronouncedCasesTest {
 
+    private static String DN_GRANTED_DATE = String.format("data.%s", DECREE_NISI_GRANTED_DATE_CCD_FIELD);
+
     @Mock
-    private CaseMaintenanceClient caseMaintenanceClient;
+    private CMSElasticSearchSupport mockCmsElasticSearchSupport;
 
-    private CaseIdMapper caseDetailsMapper = new CaseIdMapper();
-
+    @InjectMocks
     private SearchDNPronouncedCases classUnderTest;
 
     private int pageSize;
@@ -60,8 +59,6 @@ public class SearchDNPronouncedCasesTest {
 
     @Before
     public void setupTaskContextWithSearchSettings() {
-        classUnderTest = new SearchDNPronouncedCases(caseMaintenanceClient, caseDetailsMapper);
-
         pageSize = 10;
         start = 0;
 
@@ -79,141 +76,36 @@ public class SearchDNPronouncedCasesTest {
     }
 
     @Test
-    public void execute_pageSize10_totalResults0() throws TaskException {
-
-        final int totalSearchResults = 0;
-
+    public void shouldReturnNoResultIfNoneIsReturnedFromElasticSearchSupport() throws TaskException {
         final List<String> expectedCaseIdsInTheContext = Collections.emptyList();
-
-        when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
-            .thenReturn(SearchResult.builder()
-                .total(totalSearchResults)
-                .cases(Collections.emptyList())
-                .build());
+        when(mockCmsElasticSearchSupport.searchCMSCases(eq(start), eq(pageSize), eq(AUTH_TOKEN), any(), any())).thenReturn(Stream.empty());
 
         final Map<String, Object> actualResult = classUnderTest.execute(contextBeingModified, null);
         assertEquals(expectedCaseIdsInTheContext, contextBeingModified.getTransientObject(SEARCH_RESULT_KEY));
         assertNull(actualResult);
 
-        verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
-            jsonPathValueMatcher("$.query.bool.filter[*].match.state.query", hasItem(DN_PRONOUNCED))));
+        verify(mockCmsElasticSearchSupport).searchCMSCases(eq(start), eq(pageSize), eq(AUTH_TOKEN),
+            eq(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, DN_PRONOUNCED)),
+            eq(QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildCoolOffPeriodInDNBoundary(timeSinceDNWasPronounced))));
     }
 
     @Test
-    public void execute_pageSize10_totalResults5() throws TaskException {
-
-        final int totalSearchResults = 5;
-
+    public void shouldReturnResults() throws TaskException {
         final List<String> expectedCaseIdsInTheContext = Arrays.asList("1", "2", "3", "4", "5");
-
-        when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
-            .thenReturn(SearchResult.builder()
-                .total(totalSearchResults)
-                .cases(buildCases(0, 5))
-                .build());
+        when(mockCmsElasticSearchSupport.searchCMSCases(eq(start), eq(pageSize), eq(AUTH_TOKEN), any(), any())).thenReturn(buildCases(5));
 
         final Map<String, Object> actualResult = classUnderTest.execute(contextBeingModified, null);
         assertEquals(expectedCaseIdsInTheContext, contextBeingModified.getTransientObject(SEARCH_RESULT_KEY));
         assertNull(actualResult);
 
-        verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
-            jsonPathValueMatcher("$.query.bool.filter[*].match.state.query", hasItem(DN_PRONOUNCED))));
+        verify(mockCmsElasticSearchSupport).searchCMSCases(eq(start), eq(pageSize), eq(AUTH_TOKEN),
+            eq(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, DN_PRONOUNCED)),
+            eq(QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildCoolOffPeriodInDNBoundary(timeSinceDNWasPronounced))));
     }
 
     @Test
-    public void execute_pageSize10_totalResults10() throws TaskException {
-
-        final int totalSearchResults = 10;
-
-        final List<String> expectedCaseIdsInTheContext = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
-
-        when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
-            .thenReturn(SearchResult.builder()
-                .total(totalSearchResults)
-                .cases(buildCases(0, 10))
-                .build());
-
-        final Map<String, Object> actualResult = classUnderTest.execute(contextBeingModified, null);
-        assertEquals(expectedCaseIdsInTheContext, contextBeingModified.getTransientObject(SEARCH_RESULT_KEY));
-        assertNull(actualResult);
-
-        verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
-            jsonPathValueMatcher("$.query.bool.filter[*].match.state.query", hasItem(DN_PRONOUNCED))));
-    }
-
-    @Test
-    public void execute_pageSize10_totalResults20() throws TaskException {
-
-        final int totalSearchResults = 20;
-
-        final List<String> expectedCaseIdsInTheContext = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
-            "12", "13", "14", "15", "16", "17", "18", "19", "20");
-
-        List<SearchResult> searchResultBatchList = Arrays.asList(
-            SearchResult.builder()
-                .total(totalSearchResults)
-                .cases(buildCases(0, 10))
-                .build(),
-            SearchResult.builder()
-                .total(totalSearchResults)
-                .cases(buildCases(10, 10))
-                .build()
-        );
-
-        when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
-            .thenAnswer(AdditionalAnswers.returnsElementsOf(searchResultBatchList));
-
-        final Map<String, Object> actualResult = classUnderTest.execute(contextBeingModified, null);
-        assertEquals(expectedCaseIdsInTheContext, contextBeingModified.getTransientObject(SEARCH_RESULT_KEY));
-        assertNull(actualResult);
-
-        verify(caseMaintenanceClient, times(2)).searchCases(eq(AUTH_TOKEN), argThat(
-            jsonPathValueMatcher("$.query.bool.filter[*].match.state.query", hasItem(DN_PRONOUNCED))));
-    }
-
-    @Test
-    public void execute_pageSize10_totalResults30() throws TaskException {
-
-        final int totalSearchResults = 30;
-
-        final List<String> expectedCaseIdsInTheContext = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
-            "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30");
-
-        List<SearchResult> searchResultBatchList = Arrays.asList(
-            SearchResult.builder()
-                .total(totalSearchResults)
-                .cases(buildCases(0, 10))
-                .build(),
-            SearchResult.builder()
-                .total(totalSearchResults)
-                .cases(buildCases(10, 10))
-                .build(),
-            SearchResult.builder()
-                .total(totalSearchResults)
-                .cases(buildCases(20, 10))
-                .build()
-        );
-
-        when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
-            .thenAnswer(AdditionalAnswers.returnsElementsOf(searchResultBatchList));
-
-        final Map<String, Object> actualResult = classUnderTest.execute(contextBeingModified, null);
-        assertEquals(expectedCaseIdsInTheContext, contextBeingModified.getTransientObject(SEARCH_RESULT_KEY));
-        assertNull(actualResult);
-
-        verify(caseMaintenanceClient, times(3)).searchCases(eq(AUTH_TOKEN), argThat(
-            jsonPathValueMatcher("$.query.bool.filter[*].match.state.query", hasItem(DN_PRONOUNCED))));
-    }
-
-    @Test
-    public void execute_exceptionDuringSearch_searchStops() throws TaskException {
-        final int totalSearchResults = 20;
-
-        when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
-            .thenReturn(SearchResult.builder()
-                .total(totalSearchResults)
-                .cases(buildCases(0, 10))
-                .build())
+    public void shouldRethrowFeignException() throws TaskException {
+        when(mockCmsElasticSearchSupport.searchCMSCases(eq(start), eq(pageSize), eq(AUTH_TOKEN), any(), any()))
             .thenThrow(new FeignException.BadRequest("Bad test request", "".getBytes()));
 
         Map<String, Object> actualResult = null;
@@ -225,24 +117,19 @@ public class SearchDNPronouncedCasesTest {
         }
 
         assertNull(actualResult);
-        verify(caseMaintenanceClient, times(2)).searchCases(eq(AUTH_TOKEN), argThat(
-            jsonPathValueMatcher("$.query.bool.filter[*].match.state.query", hasItem(DN_PRONOUNCED))));
+        verify(mockCmsElasticSearchSupport).searchCMSCases(eq(start), eq(pageSize), eq(AUTH_TOKEN),
+            eq(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, DN_PRONOUNCED)),
+            eq(QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildCoolOffPeriodInDNBoundary(timeSinceDNWasPronounced))));
     }
 
-    private List<CaseDetails> buildCases(int startId, int caseCount) {
-        final List<CaseDetails> cases = new ArrayList<>();
+    private Stream<CaseDetails> buildCases(int caseCount) {
+        Stream.Builder<CaseDetails> streamBuilder = Stream.builder();
 
-        for (int i = 0; i < caseCount; i++) {
-            cases.add(buildCase(startId + 1));
-            startId++;
+        for (int i = 1; i <= caseCount; i++) {
+            streamBuilder.add(CaseDetails.builder().caseId(String.valueOf(i)).build());
         }
-        return cases;
-    }
 
-    private CaseDetails buildCase(int caseId) {
-        return CaseDetails.builder()
-            .caseId(String.valueOf(caseId))
-            .build();
+        return streamBuilder.build();
     }
 
 }

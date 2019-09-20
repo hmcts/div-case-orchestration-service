@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.DataExtractionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow;
 
 import java.time.LocalDate;
@@ -30,13 +31,31 @@ public class DataExtractionServiceImplTest {
     public ExpectedException expectedException = none();
 
     @Mock
+    private DataExtractionWorkflow dataExtractionWorkflow;
+
+    @Mock
     private FamilyManDataExtractionWorkflow mockWorkflow;
 
     @InjectMocks
     private DataExtractionServiceImpl classUnderTest;
 
     @Test
-    public void shouldCallWorkflowWithRightParameters() throws WorkflowException, CaseOrchestrationServiceException {
+    public void shouldCallDataExtractionWorkflowWithCorrectParameters() throws WorkflowException, CaseOrchestrationServiceException {
+        classUnderTest.requestDataExtractionForPreviousDay();
+        verify(dataExtractionWorkflow).run();
+    }
+
+    @Test
+    public void shouldThrowNewExceptionWhenDataExtractionWorkflowFails() throws WorkflowException, CaseOrchestrationServiceException {
+        doThrow(WorkflowException.class).when(dataExtractionWorkflow).run();
+        expectedException.expect(CaseOrchestrationServiceException.class);
+        expectedException.expectCause(instanceOf(WorkflowException.class));
+
+        classUnderTest.requestDataExtractionForPreviousDay();
+    }
+
+    @Test
+    public void shouldCallFamilyManDataExtractionWorkflowWithCorrectParameters() throws WorkflowException, CaseOrchestrationServiceException {
         classUnderTest.extractCasesToFamilyMan(DA, LocalDate.now(), TEST_AUTH_TOKEN);
 
         verify(mockWorkflow).run(eq(DA), eq(LocalDate.now()), eq(TEST_AUTH_TOKEN));

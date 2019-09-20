@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CARE_OF_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMAIL_LABEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINE_SEPARATOR;
@@ -39,8 +40,9 @@ public class DnCourt {
     }
 
     private String formatContactDetails() {
+        String careOfCourt = String.join(SPACE_SEPARATOR, CARE_OF_PREFIX, name);
         String emailContact = String.join(SPACE_SEPARATOR, EMAIL_LABEL, email);
         String phoneContact = String.join(SPACE_SEPARATOR, PHONE_LABEL, phone);
-        return String.join(LINE_SEPARATOR, address, EMPTY_STRING, emailContact, phoneContact);
+        return String.join(LINE_SEPARATOR, careOfCourt, address, EMPTY_STRING, emailContact, phoneContact);
     }
 }

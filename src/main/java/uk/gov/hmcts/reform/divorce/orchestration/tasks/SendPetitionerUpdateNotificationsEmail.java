@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +32,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_RECEIVED_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_RECEIVED_AOS_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
@@ -42,22 +46,23 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @Component
+@Slf4j
 public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, Object>> {
 
-    private static final String GENERIC_UPDATE_EMAIL_DESC = "Generic Update Notification - Petitioner";
-    private static final String AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC =
+    public static final String GENERIC_UPDATE_EMAIL_DESC = "Generic Update Notification - Petitioner";
+    public static final String AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC =
             "Resp does not admit adultery update notification";
-    private static final String AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC =
+    public static final String AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC =
             "Resp does not admit adultery update notification - no reply from co-resp";
-    private static final String AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC =
+    public static final String AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC =
             "Resp does not consent to 2 year separation update notification";
-    private static final String SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC =
+    public static final String SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC =
         "Resp response submission notification sent to solicitor";
-    private static final String SOL_APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC =
+    public static final String SOL_APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC =
         "Resp has not responded - notification sent to solicitor";
-    private static final String APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC =
+    public static final String APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC =
         "Resp has not responded - notification sent to petitioner";
-    private static final String SOL_GENERIC_UPDATE_EMAIL_DESC =
+    public static final String SOL_GENERIC_UPDATE_EMAIL_DESC =
         "Generic Update Notification - Petitioner solicitor";
 
     private static final String RESP_ANSWER_RECVD_EVENT = "answerReceived";
@@ -93,7 +98,12 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
             templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
             templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
 
-            sendSolicitorEmail(petSolEmail, eventId, templateVars);
+            try {
+                sendSolicitorEmail(petSolEmail, eventId, templateVars);
+            } catch (NotificationClientException e) {
+                log.error("Error sending AOS overdue notification email to solicitor", e);
+                throw  new TaskException(e.getMessage(), e);
+            }
         } else if (StringUtils.isNotBlank(petEmail)) {
             String relationship = getMandatoryPropertyValueAsString(caseData, D_8_DIVORCED_WHO);
             templateVars.put(NOTIFICATION_EMAIL, petEmail);
@@ -102,24 +112,29 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
             templateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE));
 
-            sendPetitionerEmail(caseData, petEmail, eventId, templateVars);
+            try {
+                sendPetitionerEmail(caseData, petEmail, eventId, templateVars);
+            } catch (NotificationClientException e) {
+                log.error("Error sending AOS overdue notification email to petitioner", e);
+                throw  new TaskException(e.getMessage(), e);
+            }
         }
         return caseData;
     }
 
-    private void sendSolicitorEmail(String petSolicitorEmail, String eventId, Map<String, String> templateVars) {
+    private void sendSolicitorEmail(String petSolicitorEmail, String eventId, Map<String, String> templateVars) throws NotificationClientException {
         if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_RECVD_EVENT)) {
-            emailService.sendEmail(petSolicitorEmail,
+            emailService.sendEmailAndReturnExceptionIfFails(petSolicitorEmail,
                 EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED.name(),
                 templateVars,
                 SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC);
-        } else if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_NOT_RECVD_EVENT)) {
-            emailService.sendEmail(petSolicitorEmail,
+        } else if (isAosOverdueEvent(eventId)) {
+            emailService.sendEmailAndReturnExceptionIfFails(petSolicitorEmail,
                 EmailTemplateNames.SOL_APPLICANT_RESP_NOT_RESPONDED.name(),
                 templateVars,
                 SOL_APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC);
         } else {
-            emailService.sendEmail(
+            emailService.sendEmailAndReturnExceptionIfFails(
                 petSolicitorEmail,
                 EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name(),
                 templateVars,
@@ -128,16 +143,16 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
     }
 
     private void sendPetitionerEmail(Map<String, Object> caseData, String petitionerEmail,
-                                     String eventId, Map<String, String> templateVars) {
-        if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_NOT_RECVD_EVENT)) {
-            emailService.sendEmail(petitionerEmail,
+                                     String eventId, Map<String, String> templateVars) throws NotificationClientException {
+        if (isAosOverdueEvent(eventId)) {
+            emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
                 EmailTemplateNames.PETITIONER_RESP_NOT_RESPONDED.name(),
                 templateVars,
                 APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC);
         } else if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_RECVD_EVENT)) {
             sendAosAnswerRecvdPetEmail(caseData, petitionerEmail, templateVars);
         } else {
-            emailService.sendEmail(
+            emailService.sendEmailAndReturnExceptionIfFails(
                 petitionerEmail,
                 EmailTemplateNames.GENERIC_UPDATE.name(),
                 templateVars, GENERIC_UPDATE_EMAIL_DESC);
@@ -145,24 +160,24 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
     }
 
     private void sendAosAnswerRecvdPetEmail(Map<String, Object> caseData, String petitionerEmail,
-                                            Map<String, String> templateVars) {
+                                            Map<String, String> templateVars) throws NotificationClientException {
         if (isAdulteryAndNoConsent(caseData)) {
             if (isCoRespNamedAndNotReplied(caseData)) {
-                emailService.sendEmail(petitionerEmail,
+                emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
                     EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
                     templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC);
             } else {
-                emailService.sendEmail(petitionerEmail,
+                emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
                     EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
                     templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC);
             }
         } else if (isSep2YrAndNoConsent(caseData)) {
-            emailService.sendEmail(petitionerEmail,
+            emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
                 EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
                 templateVars, AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC);
 
         } else {
-            emailService.sendEmail(
+            emailService.sendEmailAndReturnExceptionIfFails(
                 petitionerEmail,
                 EmailTemplateNames.GENERIC_UPDATE.name(),
                 templateVars, GENERIC_UPDATE_EMAIL_DESC);
@@ -173,6 +188,12 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
         String reasonForDivorce = getFieldAsStringOrNull(caseData, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseData, RESP_ADMIT_OR_CONSENT_TO_FACT);
         return StringUtils.equalsIgnoreCase(ADULTERY, reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
+    }
+
+    private boolean isAosOverdueEvent(String eventId) {
+        return StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_NOT_RECVD_EVENT)
+                || StringUtils.equalsIgnoreCase(eventId, NOT_RECEIVED_AOS_EVENT_ID)
+                || StringUtils.equalsIgnoreCase(eventId, NOT_RECEIVED_AOS_STARTED_EVENT_ID);
     }
 
     private boolean isSep2YrAndNoConsent(Map<String, Object> caseData) {

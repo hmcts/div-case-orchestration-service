@@ -68,6 +68,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyForRefusalOrderWorkflow;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -157,6 +158,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RemoveLinkFromListedWorkflow removeLinkFromListedWorkflow;
     private final RemoveDnOutcomeCaseFlagWorkflow removeDnOutcomeCaseFlagWorkflow;
     private final RemoveLegalAdvisorMakeDecisionFieldsWorkflow removeLegalAdvisorMakeDecisionFieldsWorkflow;
+    private final NotifyForRefusalOrderWorkflow notifyForRefusalOrderWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -668,9 +670,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+    public Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest, String authToken)
+        throws CaseOrchestrationServiceException {
+
         try {
-            return decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails());
+            return decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails(), authToken);
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
         }
@@ -740,6 +744,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> removeLegalAdvisorMakeDecisionFields(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return removeLegalAdvisorMakeDecisionFieldsWorkflow.run(ccdCallbackRequest);
+    }
+
+    @Override
+    public Map<String, Object> notifyForRefusalOrder(CcdCallbackRequest ccdCallbackRequest)
+            throws WorkflowException {
+
+        return notifyForRefusalOrderWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
     }
 
     private boolean isPetitionerClaimingCosts(Map<String, Object> caseData) {

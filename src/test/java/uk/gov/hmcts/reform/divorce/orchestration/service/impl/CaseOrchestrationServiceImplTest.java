@@ -71,6 +71,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCas
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyForRefusalOrderWorkflow;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -281,6 +282,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
+
+    @Mock
+    private NotifyForRefusalOrderWorkflow notifyForRefusalOrderWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1213,9 +1217,10 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldCallWorkflow_ForDecreeNisiIsAboutToBeGranted() throws WorkflowException, CaseOrchestrationServiceException {
-        when(decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN))
+                .thenReturn(singletonMap("returnedKey", "returnedValue"));
 
-        Map<String, Object> returnedPayload = classUnderTest.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest);
+        Map<String, Object> returnedPayload = classUnderTest.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest, AUTH_TOKEN);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
     }
@@ -1223,14 +1228,14 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldThrowServiceException_ForDecreeNisiIsAboutToBeGranted_WhenWorkflowExceptionIsCaught()
         throws WorkflowException, CaseOrchestrationServiceException {
-        when(decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails()))
+        when(decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN))
             .thenThrow(new WorkflowException("This operation threw an exception."));
 
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectMessage(is("This operation threw an exception."));
         expectedException.expectCause(is(instanceOf(WorkflowException.class)));
 
-        classUnderTest.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest);
+        classUnderTest.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest, AUTH_TOKEN);
     }
 
     @Test
@@ -1475,6 +1480,7 @@ public class CaseOrchestrationServiceImplTest {
         classUnderTest.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN);
     }
 
+    @Test
     public void shouldNotCallBulkPrint_IfNotSendViaPost_WhenProcessingCcdCallbackConfirmPersonalService()
         throws WorkflowException {
 
@@ -1494,6 +1500,26 @@ public class CaseOrchestrationServiceImplTest {
 
         assertThat(returnedPayload, equalTo(requestPayload));
         verifyZeroInteractions(ccdCallbackBulkPrintWorkflow);
+    }
+
+    @Test
+    public void shouldCallTheRefusalOrderClarificationNotifyWorkflow() throws WorkflowException {
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(
+                CaseDetails.builder()
+                    .caseData(requestPayload)
+                    .caseId(TEST_CASE_ID)
+                    .state(TEST_STATE)
+                    .build())
+            .eventId(TEST_EVENT_ID)
+            .token(TEST_TOKEN)
+            .build();
+
+        when(notifyForRefusalOrderWorkflow.run(eq(requestPayload))).thenReturn(requestPayload);
+
+        classUnderTest.notifyForRefusalOrder(ccdCallbackRequest);
+
+        verify(notifyForRefusalOrderWorkflow).run(eq(requestPayload));
     }
 
     @After

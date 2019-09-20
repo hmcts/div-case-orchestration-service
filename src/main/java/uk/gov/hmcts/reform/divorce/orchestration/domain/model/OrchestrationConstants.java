@@ -52,6 +52,7 @@ public class OrchestrationConstants {
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String CCD_CASE_ID = "id";
     public static final String NOT_RECEIVED_AOS_EVENT_ID = "aosNotReceived";
+    public static final String NOT_RECEIVED_AOS_STARTED_EVENT_ID = "aosNotReceivedStarted";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID = "co-RespAOSReceivedAwaiting";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_STARTED_EVENT_ID = "co-RespAOSReceivedStarted";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_SUBMIT_AWAIT_EVENT_ID = "co-RespAOSReceivedAwaitingAnswer";
@@ -117,6 +118,7 @@ public class OrchestrationConstants {
     //CCD DN fields
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
     public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
+    public static final String REFUSAL_DECISION_MORE_INFO_VALUE = "moreInfo";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
@@ -135,6 +137,8 @@ public class OrchestrationConstants {
     public static final String START_AOS_EVENT_ID = "startAos";
     public static final String PAYMENT_MADE_EVENT = "paymentMade";
     public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID = "MakeEligibleForDA_Petitioner";
+    public static final String MAKE_CASE_DA_OVERDUE_EVENT_ID = "DecreeAbsoluteOverdue";
+    public static final String AWAITING_DECREE_ABSOLUTE = "AwaitingDecreeAbsolute";
     public static final String SOLICITOR_CREATE_EVENT = "solicitorCreate";
     public static final String SOLICITOR_SUBMIT_EVENT = "solicitorStatementOfTruthPaySubmit";
 
@@ -154,6 +158,7 @@ public class OrchestrationConstants {
     public static final String AWAITING_DA = "AwaitingDecreeAbsolute";
     public static final String DN_REFUSED = "DNisRefused";
     public static final String DA_REQUESTED = "DARequested";
+    public static final String DA_OVERDUE = "DAOverdue";
     public static final String DIVORCE_GRANTED = "DivorceGranted";
 
     // CCD Co-Respondent Fields
@@ -239,6 +244,7 @@ public class OrchestrationConstants {
     public static final String SEND_VIA_POST = "Post";
 
     // Court Data Keys
+    public static final String CARE_OF_PREFIX = "c/o";
     public static final String DIVORCE_CENTRE_SITEID_JSON_KEY = "D8SelectedDivorceCentreSiteId";
     public static final String DIVORCE_UNIT_JSON_KEY = "D8DivorceUnit";
     public static final String COURT_CONTACT_JSON_KEY = "CourtContactDetails";
@@ -275,6 +281,9 @@ public class OrchestrationConstants {
     public static final String DECREE_NISI_TEMPLATE_ID = "FL-DIV-GNO-ENG-00021.docx";
     public static final String DOCUMENT_TYPE_DN_ANSWERS = "dnAnswers";
     public static final String DN_ANSWERS_TEMPLATE_ID = "FL-DIV-GNO-ENG-00022.docx";
+    public static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
+    public static final String DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE = "d79";
+    public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME = "decreeNisiRefusalOrder";
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
     public static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
@@ -351,7 +360,9 @@ public class OrchestrationConstants {
 
     // DA related
     public static final String AWAITING_DA_PERIOD_KEY = "awaitingDAPeriod";
+    public static final String DA_OVERDUE_PERIOD_KEY = "daOverduePeriod";
     public static final String CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT = "casesEligibleForDAProcessedCount";
+    public static final String CASES_OVERDUE_FOR_DA_PROCESSED_COUNT = "casesOverdueForDAProcessedCount";
 
 
     // Validation
@@ -369,4 +380,5 @@ public class OrchestrationConstants {
 
     // Elastic Search
     public static final String ES_CASE_ID_KEY = "reference";
+    public static final String QUERY_BUILDERS = "queryBuilders";
 }

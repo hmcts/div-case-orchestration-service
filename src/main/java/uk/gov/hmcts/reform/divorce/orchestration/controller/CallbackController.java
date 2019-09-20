@@ -217,7 +217,19 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> petitionUpdated(
         @RequestHeader(value = "Authorization", required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest);
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.info("/petition-updated endpoint called for caseId {}", caseId);
+
+        try {
+            caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest);
+        } catch (WorkflowException e) {
+            log.error("Failed to complete service for caseId {}", caseId, e);
+            return ResponseEntity.ok(CcdCallbackResponse.builder()
+                    .data(ccdCallbackRequest.getCaseDetails().getCaseData())
+                    .errors(singletonList(e.getMessage()))
+                    .build());
+        }
+
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(ccdCallbackRequest.getCaseDetails().getCaseData())
             .build());
@@ -696,6 +708,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> dnAboutToBeGranted(
+        @RequestHeader(value = "Authorization") String authToken,
         @RequestBody @ApiParam("CaseData")
             CcdCallbackRequest ccdCallbackRequest) {
 
@@ -703,7 +716,7 @@ public class CallbackController {
 
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
         try {
-            callbackResponseBuilder.data(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest));
+            callbackResponseBuilder.data(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest, authToken));
             log.info("Processed case successfully. Case id: {}", caseId);
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
@@ -746,6 +759,7 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    @Deprecated // Replaced by below dn-decision-made endpoint. This must remain in code until production ccd config is updated.
     @PostMapping(path = "/clean-state")
     @ApiOperation(value = "Clear state from case data")
     @ApiResponses(value = {
@@ -756,6 +770,28 @@ public class CallbackController {
         @RequestHeader("Authorization")
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        callbackResponseBuilder.data(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, authorizationToken));
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.debug("Cleared case state. Case ID: {}", caseId);
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/dn-decision-made")
+    @ApiOperation(value = "Perform post Decree Nisi make decision event actions")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed"),
+        @ApiResponse(code = 401, message = "Not authorised"),
+        @ApiResponse(code = 404, message = "Case not found")})
+    public ResponseEntity<CcdCallbackResponse> dnDecisionMadeCallback(
+        @RequestHeader("Authorization")
+        @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        caseOrchestrationService.notifyForRefusalOrder(ccdCallbackRequest);
+
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         callbackResponseBuilder.data(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, authorizationToken));

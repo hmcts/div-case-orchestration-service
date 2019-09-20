@@ -18,19 +18,16 @@ public class DataExtractionEmailClient {
     private static final String EMAIL_TEXT = "Data extraction file";
 
     private final String emailFrom;
-    private final String destinationEmailAddress;
 
     private final JavaMailSenderImpl mailSender;
 
     public DataExtractionEmailClient(@Value("${dataExtraction.emailFrom}") String emailFrom,
-                                     @Value("${dataExtraction.status.DA.emailTo}") String destinationEmailAddress,
                                      @Autowired JavaMailSenderImpl mailSender) {
         this.emailFrom = emailFrom;
-        this.destinationEmailAddress = destinationEmailAddress;
         this.mailSender = mailSender;
     }
 
-    public void sendEmailWithAttachment(String attachmentFileName, File attachment) throws MessagingException {
+    public void sendEmailWithAttachment(String destinationEmailAddress, String attachmentFileName, File attachment) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
