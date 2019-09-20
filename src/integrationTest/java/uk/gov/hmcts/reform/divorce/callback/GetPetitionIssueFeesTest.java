@@ -75,8 +75,6 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
     @Test
     public void givenUnauthorizedRequest_whenGetPetitionIssueFees_thenReturnErrorData() {
         final Map<String, Object> caseData = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
-        final UserDetails solicitorUser = createSolicitorUser();
-        uk.gov.hmcts.reform.ccd.client.model.CaseDetails caseDetails = ccdClientSupport.submitSolicitorCase(caseData, solicitorUser);
 
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
@@ -85,8 +83,6 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
         final CcdCallbackRequest callbackData = CcdCallbackRequest.builder()
             .eventId(SOLICITOR_SUBMIT_EVENT)
             .caseDetails(CaseDetails.builder()
-                .caseId(String.valueOf(caseDetails.getId()))
-                .state(caseDetails.getState())
                 .caseData(caseData)
                 .build())
             .build();
@@ -103,5 +99,4 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
 
         assertEquals(responseData.size(), 1);
     }
-
 }

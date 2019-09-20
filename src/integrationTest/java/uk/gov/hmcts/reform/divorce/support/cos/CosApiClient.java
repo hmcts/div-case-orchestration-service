@@ -149,7 +149,7 @@ public interface CosApiClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "generate-dn-pronouncement-documents"
+        value = "/generate-dn-pronouncement-documents"
     )
     Map<String, Object> generateDnPronouncedDocuments(@RequestHeader(AUTHORIZATION) String authorisation,
                                                       @RequestBody CcdCallbackRequest ccdCallbackRequest);

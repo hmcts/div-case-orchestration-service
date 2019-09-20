@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -20,27 +19,12 @@ import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class DnPronouncedDocumentsGeneratedTest extends IntegrationTest {
 
-    private static final String CCD_CALLBACK_REQUEST = "fixtures/callback/basic-case.json";
     private static final String BULK_CASE_LINK_CCD_CALLBACK_REQUEST = "fixtures/callback/basic-case-with-bulk-case-link.json";
     private static final String COSTS_CLAIM_CCD_CALLBACK_REQUEST = "fixtures/callback/costs-claim-granted.json";
     private static final String TEST_CASE_ID = "0123456789012345";
 
     @Autowired
     private CosApiClient cosApiClient;
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void givenCase_whenGenerateDnPronouncedDocumentsWithNoBulkCaseLink_thenReturnCallbackResponseWithNoDocuments() {
-        CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(CCD_CALLBACK_REQUEST, CcdCallbackRequest.class);
-
-        Map<String, Object> response = cosApiClient.generateDnPronouncedDocuments(createCaseWorkerUser().getAuthToken(), ccdCallbackRequest);
-
-        String jsonResponse = objectToJson(response);
-
-        assertThat(
-                jsonResponse,
-                hasNoJsonPath("$.data.D8DocumentsGenerated"));
-    }
 
     @SuppressWarnings("unchecked")
     @Test
