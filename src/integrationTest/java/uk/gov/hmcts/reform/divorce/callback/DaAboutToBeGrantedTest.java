@@ -14,7 +14,6 @@ import static org.junit.Assert.assertNotNull;
 public class DaAboutToBeGrantedTest extends IntegrationTest {
 
     private static final String BASE_CASE_RESPONSE = "fixtures/da-about-to-be-granted/da-about-to-be-granted.json";
-    private static final String ERROR_CASE_RESPONSE = "fixtures/da-about-to-be-granted/da-about-to-be-granted-error.json";
     private static final String DA_GRANTED_DATE = "DecreeAbsoluteGrantedDate";
     private static final String DOCUMENTS_GENERATED = "D8DocumentsGenerated";
 
