@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,19 +15,21 @@ import static java.util.Arrays.asList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
 
 @Slf4j
 @Component
-public class CoRespondentAosPackPrinter implements Task<Map<String, Object>> {
+public class RespondentAosPackPrinter implements Task<Map<String, Object>> {
 
-    private static final String LETTER_TYPE_CO_RESPONDENT_PACK = "co-respondent-aos-pack";
+    //TODO - delete this once tests pass with new class
+
+    private static final String LETTER_TYPE_RESPONDENT_PACK = "respondent-aos-pack";
 
     private final BulkPrintService bulkPrintService;
 
     @Autowired
-    public CoRespondentAosPackPrinter(final BulkPrintService bulkPrintService) {
+    public RespondentAosPackPrinter(final BulkPrintService bulkPrintService) {
         this.bulkPrintService = bulkPrintService;
     }
 
@@ -39,21 +41,20 @@ public class CoRespondentAosPackPrinter implements Task<Map<String, Object>> {
         final Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = context.getTransientObject(DOCUMENTS_GENERATED);
 
         final GeneratedDocumentInfo miniPetition = generatedDocumentInfoList.get(DOCUMENT_TYPE_PETITION);
-        final GeneratedDocumentInfo coRespondentLetter = generatedDocumentInfoList.get(DOCUMENT_TYPE_CO_RESPONDENT_INVITATION);
+        final GeneratedDocumentInfo respondentAosLetter = generatedDocumentInfoList.get(DOCUMENT_TYPE_RESPONDENT_INVITATION);
 
-        // The order of co-respondent Letter and miniPetition arguments is important here.
-        // Sending the co-respondent letter first ensures it is the first piece of paper in the envelope so that the address label is displayed.
+        // The order of respondentAosLetter and miniPetition arguments is important here.
+        // Sending the respondentAosLetter first ensures it is the first piece of paper in the envelope so that the address label is displayed.
 
-        if (coRespondentLetter != null && miniPetition != null) {
+        if (respondentAosLetter != null && miniPetition != null) {
             try {
-                bulkPrintService.send(caseDetails.getCaseId(), LETTER_TYPE_CO_RESPONDENT_PACK, asList(coRespondentLetter, miniPetition));
+                bulkPrintService.send(caseDetails.getCaseId(), LETTER_TYPE_RESPONDENT_PACK, asList(respondentAosLetter, miniPetition));
             } catch (final Exception e) {
                 context.setTaskFailed(true);
-                log.error(String.format("Co-respondent pack bulk print failed for case [%s]", caseDetails.getCaseId()), e);
-                context.setTransientObject(BULK_PRINT_ERROR_KEY, "Bulk print failed for co-respondent pack");
+                log.error("Respondent pack bulk print failed for case {}", caseDetails.getCaseId(), e);
+                context.setTransientObject(BULK_PRINT_ERROR_KEY, "Bulk print failed for respondent pack");
             }
         }
-
         return payload;
     }
 }

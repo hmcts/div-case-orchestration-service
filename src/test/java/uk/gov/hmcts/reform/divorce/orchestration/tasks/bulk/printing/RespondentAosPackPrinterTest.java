@@ -1,5 +1,6 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -25,20 +26,34 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.BULK_PRINT_LETTER_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.DOCUMENT_TYPES_TO_PRINT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RespondentAosPackPrinterTest {
+
+    //TODO - delete this when all is done
 
     @Mock
     private BulkPrintService bulkPrintService;
 
     @InjectMocks
-    private RespondentAosPackPrinter classUnderTest;
+    private BulkPrinter classUnderTest;
+
+    private DefaultTaskContext context;
+
+    @Before
+    public void setUp() throws Exception {
+        context = new DefaultTaskContext();
+        context.setTransientObject(BULK_PRINT_LETTER_TYPE, "respondent-aos-pack");
+        context.setTransientObject(DOCUMENT_TYPES_TO_PRINT, asList(DOCUMENT_TYPE_RESPONDENT_INVITATION, DOCUMENT_TYPE_PETITION));
+    }
 
     @Test
     public void happyPath() {
-        final DefaultTaskContext context = new DefaultTaskContext();
-
         final String caseId = "case-id";
         final CaseDetails caseDetails = CaseDetails.builder().caseId(caseId).build();
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
@@ -46,9 +61,9 @@ public class RespondentAosPackPrinterTest {
         final GeneratedDocumentInfo miniPetition = mock(GeneratedDocumentInfo.class);
         final GeneratedDocumentInfo respondentAosLetter = mock(GeneratedDocumentInfo.class);
         final Map<String, GeneratedDocumentInfo> generatedDocuments = new HashMap<>();
-        generatedDocuments.put("petition", miniPetition);
-        generatedDocuments.put("aos", respondentAosLetter);
-        context.setTransientObject("DocumentsGenerated", generatedDocuments);
+        generatedDocuments.put(DOCUMENT_TYPE_PETITION, miniPetition);
+        generatedDocuments.put(DOCUMENT_TYPE_RESPONDENT_INVITATION, respondentAosLetter);
+        context.setTransientObject(DOCUMENTS_GENERATED, generatedDocuments);
 
         final Map<String, Object> payload = emptyMap();
         final Map<String, Object> result = classUnderTest.execute(context, payload);
@@ -61,7 +76,6 @@ public class RespondentAosPackPrinterTest {
 
     @Test
     public void errorsFromBulkPrintServiceAreReported() {
-        final DefaultTaskContext context = new DefaultTaskContext();
         final String caseId = "case-id";
         final CaseDetails caseDetails = CaseDetails.builder().caseId(caseId).build();
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
@@ -69,21 +83,20 @@ public class RespondentAosPackPrinterTest {
         final GeneratedDocumentInfo miniPetition = mock(GeneratedDocumentInfo.class);
         final GeneratedDocumentInfo respondentAosLetter = mock(GeneratedDocumentInfo.class);
         final Map<String, GeneratedDocumentInfo> generatedDocuments = new HashMap<>();
-        generatedDocuments.put("petition", miniPetition);
-        generatedDocuments.put("aos", respondentAosLetter);
-        context.setTransientObject("DocumentsGenerated", generatedDocuments);
+        generatedDocuments.put(DOCUMENT_TYPE_PETITION, miniPetition);
+        generatedDocuments.put(DOCUMENT_TYPE_RESPONDENT_INVITATION, respondentAosLetter);
+        context.setTransientObject(DOCUMENTS_GENERATED, generatedDocuments);
 
         doThrow(new RuntimeException()).when(bulkPrintService).send(anyString(), anyString(), anyList());
 
         classUnderTest.execute(context, emptyMap());
 
         assertThat(context.hasTaskFailed(), is(true));
-        assertThat(context.getTransientObject(BULK_PRINT_ERROR_KEY), is("Bulk print failed for respondent pack"));
+        assertThat(context.getTransientObject(BULK_PRINT_ERROR_KEY), is("Bulk print failed for " + "respondent-aos-pack"));
     }
 
     @Test
     public void respondentPackCannotBePrintedWithoutTheRespondentLetter() {
-        final DefaultTaskContext context = new DefaultTaskContext();
         final String caseId = "case-id";
         final CaseDetails caseDetails = CaseDetails.builder().caseId(caseId).build();
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
@@ -100,7 +113,6 @@ public class RespondentAosPackPrinterTest {
 
     @Test
     public void respondentPackCannotBePrintedWithoutTheMiniPetition() {
-        final DefaultTaskContext context = new DefaultTaskContext();
         final String caseId = "case-id";
         final CaseDetails caseDetails = CaseDetails.builder().caseId(caseId).build();
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
