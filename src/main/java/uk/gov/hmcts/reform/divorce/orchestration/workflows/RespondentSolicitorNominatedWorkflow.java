@@ -55,7 +55,6 @@ public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<St
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
 
         List<Task> tasks = new ArrayList<>();
-
         final Map<String, Object> caseData = caseDetails.getCaseData();
 
         tasks.add(respondentPinGenerator);

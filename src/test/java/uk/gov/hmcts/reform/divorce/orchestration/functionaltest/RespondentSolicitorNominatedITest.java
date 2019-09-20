@@ -124,10 +124,10 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
                 .documents(new ArrayList<>(documentsForFormatter))
                 .build();
 
+        stubFormatterServerEndpoint(documentFormatRequest);
+        stubDocumentGeneratorServerEndpoint(generateDocumentRequest, expectedAosInvitation);
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-        stubDocumentGeneratorServerEndpoint(generateDocumentRequest, expectedAosInvitation);
-        stubFormatterServerEndpoint(documentFormatRequest);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
                 .header(AUTHORIZATION, AUTH_TOKEN)
@@ -135,7 +135,6 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(expected)))
                 .andExpect(content().string(allOf(
                         isJson(),
                         hasJsonPath("$.errors", nullValue())
