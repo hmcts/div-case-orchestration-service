@@ -1,31 +1,29 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
+import uk.gov.hmcts.reform.divorce.formatter.service.CaseFormatterService;
+import uk.gov.hmcts.reform.divorce.model.ccd.CoreCaseData;
+import uk.gov.hmcts.reform.divorce.model.usersession.DivorceSession;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
+@RequiredArgsConstructor
 @Component
 public class FormatDivorceSessionToCaseData implements Task<Map<String, Object>> {
 
-    private final CaseFormatterClient caseFormatterClient;
-
-    @Autowired
-    public FormatDivorceSessionToCaseData(CaseFormatterClient caseFormatterClient) {
-        this.caseFormatterClient = caseFormatterClient;
-    }
+    private final CaseFormatterService caseFormatterService;
+    private final ObjectMapper objectMapper;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
-        return caseFormatterClient.transformToCCDFormat(
-                context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
-                payload
-        );
+        DivorceSession divorceSession = objectMapper.convertValue(payload, DivorceSession.class);
+        CoreCaseData coreCaseData = caseFormatterService.transformToCCDFormat(divorceSession, null);
+        return objectMapper.convertValue(coreCaseData, Map.class);
     }
 
 }

@@ -49,7 +49,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 
 public class SubmitCoRespondentAosCaseITest extends MockedFunctionalTest {
     private static final String API_URL = "/submit-co-respondent-aos";
-    private static final String FORMAT_TO_AOS_CASE_CONTEXT_PATH = "/caseformatter/version/1/to-aos-submit-format";
     private static final String UPDATE_CONTEXT_PATH = "/casemaintenance/version/1/updateCase/" + TEST_CASE_ID + "/";
     private static final String RETRIEVE_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
 
@@ -86,21 +85,7 @@ public class SubmitCoRespondentAosCaseITest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenCaseFormatterFails_whenSubmitCoRespondentAos_thenPropagateTheException() throws Exception {
-        stubFormatterServerEndpoint(BAD_REQUEST, emptyMap(), TEST_ERROR);
-
-        webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(emptyMap()))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andExpect(content().string(containsString(TEST_ERROR)));
-    }
-
-    @Test
     public void givenCaseRetrievalFails_whenSubmitCoRespondentAos_thenPropagateTheException() throws Exception {
-        stubFormatterServerEndpoint(OK, emptyMap(), convertObjectToJsonString(emptyMap()));
         stubMaintenanceServerEndpointForAosRetrieval(NOT_FOUND, convertObjectToJsonString(TEST_ERROR));
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -114,8 +99,6 @@ public class SubmitCoRespondentAosCaseITest extends MockedFunctionalTest {
 
     @Test
     public void givenCaseUpdateFails_whenSubmitCoRespondentAos_thenPropagateTheException() throws Exception {
-        stubFormatterServerEndpoint(OK, emptyMap(), convertObjectToJsonString(getCoRespondentSubmitData()));
-
         final CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).state(AOS_AWAITING).build();
         stubMaintenanceServerEndpointForAosRetrieval(OK, convertObjectToJsonString(caseDetails));
 
@@ -134,8 +117,6 @@ public class SubmitCoRespondentAosCaseITest extends MockedFunctionalTest {
     public void happyPath() throws Exception {
         final String caseDataString = convertObjectToJsonString(getCoRespondentSubmitData());
 
-        stubFormatterServerEndpoint(OK, emptyMap(), caseDataString);
-
         final CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).state(AOS_AWAITING).build();
         stubMaintenanceServerEndpointForAosRetrieval(OK, convertObjectToJsonString(caseDetails));
 
@@ -152,47 +133,37 @@ public class SubmitCoRespondentAosCaseITest extends MockedFunctionalTest {
 
     @Test
     public void dueDateIsRecalculatedWhenCoRespondentIsDefending() throws Exception {
-        final Map<String, Object> originalSubmissionData = new HashMap<>();
-        originalSubmissionData.putAll(getCoRespondentSubmitData());
-        originalSubmissionData.put(CO_RESPONDENT_DEFENDS_DIVORCE, "YES");
-        originalSubmissionData.put(CO_RESPONDENT_DUE_DATE, "01-01-2001");
-
-        final String caseDataString = convertObjectToJsonString(originalSubmissionData);
-
-        stubFormatterServerEndpoint(OK, originalSubmissionData, caseDataString);
-
         final CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).state(AOS_AWAITING).build();
         stubMaintenanceServerEndpointForAosRetrieval(OK, convertObjectToJsonString(caseDetails));
 
-        final Map<String, Object> recalculatedSubmissionData = new HashMap<>();
-        recalculatedSubmissionData.putAll(getCoRespondentSubmitData());
+        final Map<String, Object> recalculatedSubmissionData = new HashMap<>(getCoRespondentSubmitData());
         recalculatedSubmissionData.put(CO_RESPONDENT_DEFENDS_DIVORCE, "YES");
         recalculatedSubmissionData.put(CO_RESPONDENT_DUE_DATE, today.plusDays(21).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        stubMaintenanceServerEndpointForAosUpdate(OK, recalculatedSubmissionData, caseDataString);
+        recalculatedSubmissionData.put("CoRespConsentToEmail", "YES");
+        final String expectedString = convertObjectToJsonString(recalculatedSubmissionData);
+        stubMaintenanceServerEndpointForAosUpdate(OK, recalculatedSubmissionData, expectedString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(originalSubmissionData))
+            .content(convertObjectToJsonString(ImmutableMap.of(
+                "coRespondentAnswers", ImmutableMap.of(
+                        "defendsDivorce","Yes",
+                        "aos", ImmutableMap.of("dueDate","01-01-2001"),
+                        "contactInfo", ImmutableMap.of("consentToReceivingEmails", "Yes")
+                    )
+            )))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().json(caseDataString));
+            .andExpect(content().json(expectedString));
     }
 
     private Map<String, Object> getCoRespondentSubmitData() {
         return ImmutableMap.of(
+            "RespContactMethodIsDigital", "YES",
             RECEIVED_AOS_FROM_CO_RESP, YES_VALUE,
             RECEIVED_AOS_FROM_CO_RESP_DATE, today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         );
-    }
-
-    private void stubFormatterServerEndpoint(HttpStatus status, Map<String, Object> caseData, String response) {
-        formatterServiceServer.stubFor(post(FORMAT_TO_AOS_CASE_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
-            .willReturn(aResponse()
-                .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withBody(response)));
     }
 
     private void stubMaintenanceServerEndpointForAosRetrieval(final HttpStatus status, final String response) {

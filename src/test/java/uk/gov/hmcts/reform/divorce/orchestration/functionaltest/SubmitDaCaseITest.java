@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +40,7 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
     @Test
     public void givenNoAuthToken_whenSubmitDa_thenReturnBadRequest() throws Exception {
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .content(convertObjectToJsonString(getCaseData()))
+            .content(convertObjectToJsonString(getDivorceCaseData()))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
@@ -58,7 +57,7 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
 
     @Test
     public void givenCaseUpdateFails_whenSubmitDa_thenPropagateTheException() throws Exception {
-        final Map<String, Object> caseData = new HashMap<>();
+        final Map<String, Object> caseData = getCcdCaseData();
         final Map<String, Object> caseDetails = new HashMap<>();
 
         caseDetails.put(CASE_STATE_JSON_KEY, DN_PRONOUNCED);
@@ -68,7 +67,7 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
+            .content(convertObjectToJsonString(getDivorceCaseData()))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
@@ -76,18 +75,18 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
 
     @Test
     public void givenCaseUpdateIsSuccessful_whenSubmitDa_thenProceedAsExpected() throws Exception {
-        final Map<String, Object> caseData = getCaseData();
+        final Map<String, Object> caseData = getCcdCaseData();
         final String caseDataString = convertObjectToJsonString(caseData);
         final Map<String, Object> caseDetails = new HashMap<>();
 
         caseDetails.put(CASE_STATE_JSON_KEY, DN_PRONOUNCED);
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
-        stubMaintenanceServerEndpointForUpdate(OK, DECREE_ABSOLUTE_REQUESTED_EVENT_ID, Collections.emptyMap(), caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, DECREE_ABSOLUTE_REQUESTED_EVENT_ID, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
+            .content(convertObjectToJsonString(getDivorceCaseData()))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
@@ -104,7 +103,11 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
                 .withBody(response)));
     }
 
-    private Map<String, Object> getCaseData() {
-        return ImmutableMap.of("ApplyForDecreeAbsolute", "a");
+    private Map<String, Object> getDivorceCaseData() {
+        return ImmutableMap.of("applyForDecreeAbsolute", "Yes");
+    }
+
+    private Map<String, Object> getCcdCaseData() {
+        return ImmutableMap.of("ApplyForDecreeAbsolute", "YES");
     }
 }

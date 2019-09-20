@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
+import uk.gov.hmcts.reform.divorce.formatter.service.CaseFormatterService;
+import uk.gov.hmcts.reform.divorce.model.ccd.DnCaseData;
+import uk.gov.hmcts.reform.divorce.model.usersession.DivorceSession;
 
 import java.util.Map;
 
@@ -18,7 +21,10 @@ import static org.mockito.Mockito.when;
 public class FormatDivorceSessionToDnCaseDataUTest {
 
     @Mock
-    private CaseFormatterClient caseFormatterClient;
+    private CaseFormatterService caseFormatterService;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     @InjectMocks
     private FormatDivorceSessionToDnCaseData classUnderTest;
@@ -29,10 +35,16 @@ public class FormatDivorceSessionToDnCaseDataUTest {
         final Map<String, Object> sessionData = mock(Map.class);
         final Map<String, Object> expectedOutput = mock(Map.class);
 
-        when(caseFormatterClient.transformToDnCaseFormat(sessionData)).thenReturn(expectedOutput);
+        DivorceSession divorceSession = mock(DivorceSession.class);
+        DnCaseData dnCaseData = mock(DnCaseData.class);
+        when(objectMapper.convertValue(sessionData, DivorceSession.class)).thenReturn(divorceSession);
+        when(caseFormatterService.getDnCaseData(divorceSession)).thenReturn(dnCaseData);
+        when(objectMapper.convertValue(dnCaseData, Map.class)).thenReturn(expectedOutput);
 
         assertEquals(expectedOutput, classUnderTest.execute(null, sessionData));
 
-        verify(caseFormatterClient).transformToDnCaseFormat(sessionData);
+        verify(objectMapper).convertValue(sessionData, DivorceSession.class);
+        verify(caseFormatterService).getDnCaseData(divorceSession);
+        verify(objectMapper).convertValue(dnCaseData, Map.class);
     }
 }
