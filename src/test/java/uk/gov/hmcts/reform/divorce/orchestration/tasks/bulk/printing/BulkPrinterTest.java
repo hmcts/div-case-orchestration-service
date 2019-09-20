@@ -51,13 +51,13 @@ public class BulkPrinterTest {
         context = new DefaultTaskContext();
         context.setTransientObject(BULK_PRINT_LETTER_TYPE, TEST_LETTER_TYPE);
         context.setTransientObject(DOCUMENT_TYPES_TO_PRINT, asList(TEST_FIRST_DOCUMENT_TYPE, TEST_SECOND_DOCUMENT_TYPE));
+
+        final CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
     }
 
     @Test
     public void happyPath() {
-        final CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-
         final GeneratedDocumentInfo secondDocument = mock(GeneratedDocumentInfo.class);
         final GeneratedDocumentInfo firstDocument = mock(GeneratedDocumentInfo.class);
         final Map<String, GeneratedDocumentInfo> generatedDocuments = new HashMap<>();
@@ -71,12 +71,32 @@ public class BulkPrinterTest {
         verify(bulkPrintService).send(TEST_CASE_ID, TEST_LETTER_TYPE, asList(firstDocument, secondDocument));
     }
 
+    @Test
+    public void shouldAddNecessaryInfoToContextWhenPrintingSpecifiedDocuments() {
+        final GeneratedDocumentInfo firstDocument = mock(GeneratedDocumentInfo.class);
+        final GeneratedDocumentInfo secondDocument = mock(GeneratedDocumentInfo.class);
+        final GeneratedDocumentInfo thirdDocument = mock(GeneratedDocumentInfo.class);
+        final GeneratedDocumentInfo fourthDocument = mock(GeneratedDocumentInfo.class);
+        final Map<String, GeneratedDocumentInfo> generatedDocuments = new HashMap<>();
+        generatedDocuments.put(TEST_FIRST_DOCUMENT_TYPE, firstDocument);
+        generatedDocuments.put(TEST_SECOND_DOCUMENT_TYPE, secondDocument);
+        generatedDocuments.put("differentDocumentType1", thirdDocument);
+        generatedDocuments.put("differentDocumentType2", fourthDocument);
+        context.setTransientObject(DOCUMENTS_GENERATED, generatedDocuments);
+
+        Map<String, Object> returnedPayload = classUnderTest.printSpecifiedDocument(context, emptyMap(),
+            "differentLetterType",
+            asList("differentDocumentType1", "differentDocumentType2"));
+        assertThat(returnedPayload, is(emptyMap()));
+        verify(bulkPrintService).send(TEST_CASE_ID, "differentLetterType", asList(thirdDocument, fourthDocument));
+
+        returnedPayload = classUnderTest.execute(context, emptyMap());
+        assertThat(returnedPayload, is(emptyMap()));
+        verify(bulkPrintService).send(TEST_CASE_ID, TEST_LETTER_TYPE, asList(firstDocument, secondDocument));
+    }
 
     @Test
     public void errorsFromBulkPrintServiceAreReported() {
-        final CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-
         final GeneratedDocumentInfo miniPetition = mock(GeneratedDocumentInfo.class);
         final GeneratedDocumentInfo respondentAosLetter = mock(GeneratedDocumentInfo.class);
         final Map<String, GeneratedDocumentInfo> generatedDocuments = new HashMap<>();
@@ -93,10 +113,7 @@ public class BulkPrinterTest {
     }
 
     @Test
-    public void respondentPackCannotBePrintedWithoutTheRespondentLetter() {
-        final CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-
+    public void packCannotBePrintedWithoutTheFirstDocument() {
         final GeneratedDocumentInfo miniPetition = mock(GeneratedDocumentInfo.class);
         final Map<String, GeneratedDocumentInfo> generatedDocuments = new HashMap<>();
         generatedDocuments.put(TEST_SECOND_DOCUMENT_TYPE, miniPetition);
@@ -108,10 +125,7 @@ public class BulkPrinterTest {
     }
 
     @Test
-    public void respondentPackCannotBePrintedWithoutTheMiniPetition() {
-        final CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-
+    public void packCannotBePrintedWithoutTheSecondDocument() {
         final GeneratedDocumentInfo respondentAosLetter = mock(GeneratedDocumentInfo.class);
         final Map<String, GeneratedDocumentInfo> generatedDocuments = new HashMap<>();
         generatedDocuments.put(TEST_FIRST_DOCUMENT_TYPE, respondentAosLetter);
