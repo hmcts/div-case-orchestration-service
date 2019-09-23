@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.divorce.RetryRule;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 
@@ -27,14 +28,8 @@ public abstract class IntegrationTest {
     private static final String SOLICITOR_USER_NAME = "TEST_SOLICITOR";
     private static final String EMAIL_DOMAIN = "@mailinator.com";
     private static final String CITIZEN_ROLE = "citizen";
-    private static final String CASEWORKER_DIVORCE_ROLE = "caseworker-divorce";
-    private static final String CASEWORKER_DIVORCE_COURTADMIN_ROLE = "caseworker-divorce-courtadmin";
-    private static final String CASEWORKER_DIVORCE_COURTADMIN_BETA_ROLE = "caseworker-divorce-courtadmin_beta";
-    private static final String CASEWORKER_DIVORCE_SOLICITOR_ROLE = "caseworker-divorce-solicitor";
-    private static final String CASEWORKER_ROLE = "caseworker";
     private static final String PASSWORD = "genericPassword123";
     private static final String CITIZEN_USERGROUP = "citizens";
-    private static final String CASEWORKER_USERGROUP = "caseworker";
 
     protected static final String ERRORS = "errors";
     protected static final String DATA = "data";
@@ -54,6 +49,9 @@ public abstract class IntegrationTest {
 
     @Rule
     public SpringIntegrationMethodRule springMethodIntegration;
+
+    @Rule
+    public RetryRule retryRule;
 
     protected IntegrationTest() {
         this.springMethodIntegration = new SpringIntegrationMethodRule();
