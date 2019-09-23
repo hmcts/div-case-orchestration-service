@@ -40,6 +40,8 @@
         </notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2019-15052</cve>
+        <cve>CVE-2019-16370</cve>
+
     </suppress>
     <suppress>
         <notes><![CDATA[
