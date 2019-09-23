@@ -60,7 +60,7 @@ public class SolicitorCallbackController {
                         .build());
     }
 
-    @PostMapping(path = "/send-solicitor-personal-service-pack-email")
+    @PostMapping(path = "/handle-post-personal-service-pack")
     @ApiOperation(value = "Callback to notify solicitor that personal service pack has been issued")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed")})

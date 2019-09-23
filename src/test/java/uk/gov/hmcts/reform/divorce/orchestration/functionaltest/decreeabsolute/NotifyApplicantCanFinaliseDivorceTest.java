@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 
 public class NotifyApplicantCanFinaliseDivorceTest extends MockedFunctionalTest {
 
-    private static final String API_URL = "/handle-make-case-eligible-for-da-submitted-callback";
+    private static final String API_URL = "/handle-post-make-case-eligible-for-da-submitted";
     private static final String NOTIFICATION_TEMPLATE_ID = "71fd2e7e-42dc-4dcf-a9bb-007ae9d4b27f";
 
     @MockBean

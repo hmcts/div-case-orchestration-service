@@ -534,7 +534,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> handleDnSubmittedCallback(CcdCallbackRequest ccdCallbackRequest)
+    public Map<String, Object> handleDnSubmitted(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException {
 
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
@@ -650,7 +650,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> handleDaGrantedCallback(CcdCallbackRequest ccdCallbackRequest)
+    public Map<String, Object> handleDaGranted(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException {
 
         return sendDaGrantedNotificationEmailWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
@@ -759,7 +759,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> handleMakeCaseEligibleForDaSubmittedCallback(CcdCallbackRequest ccdCallbackRequest)
+    public Map<String, Object> handleMakeCaseEligibleForDaSubmitted(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException {
 
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();

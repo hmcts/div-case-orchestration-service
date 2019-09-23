@@ -75,7 +75,7 @@ public interface CaseOrchestrationService {
 
     CcdCallbackResponse dnSubmitted(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
-    Map<String, Object> handleDnSubmittedCallback(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+    Map<String, Object> handleDnSubmitted(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> submitDnCase(Map<String, Object> divorceSession, String authorizationToken, String caseId)
         throws WorkflowException;
@@ -129,11 +129,11 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> handleGrantDACallback(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
-    Map<String, Object> handleDaGrantedCallback(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+    Map<String, Object> handleDaGranted(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> processApplicantDecreeAbsoluteEligibility(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
-    Map<String, Object> handleMakeCaseEligibleForDaSubmittedCallback(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+    Map<String, Object> handleMakeCaseEligibleForDaSubmitted(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> removeBulkLink(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 

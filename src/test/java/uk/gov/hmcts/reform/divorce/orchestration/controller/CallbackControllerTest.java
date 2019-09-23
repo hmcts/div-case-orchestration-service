@@ -102,16 +102,16 @@ public class CallbackControllerTest {
 
     @Test
     public void testServiceMethodIsCalled_WhenHandleDnSubmittedCallback() throws WorkflowException {
-        when(caseOrchestrationService.handleDnSubmittedCallback(any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(caseOrchestrationService.handleDnSubmitted(any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
             .build();
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleDnSubmittedCallback(callbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleDnSubmitted(callbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
-        verify(caseOrchestrationService).handleDnSubmittedCallback(callbackRequest);
+        verify(caseOrchestrationService).handleDnSubmitted(callbackRequest);
     }
 
     @Test
@@ -718,16 +718,16 @@ public class CallbackControllerTest {
 
     @Test
     public void testServiceMethodIsCalled_WhenHandleDaGrantedCallback() throws WorkflowException {
-        when(caseOrchestrationService.handleDaGrantedCallback(any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(caseOrchestrationService.handleDaGranted(any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
             .build();
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleDaGrantedCallback(callbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleDaGranted(callbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
-        verify(caseOrchestrationService).handleDaGrantedCallback(callbackRequest);
+        verify(caseOrchestrationService).handleDaGranted(callbackRequest);
     }
 
     @Test
@@ -962,16 +962,16 @@ public class CallbackControllerTest {
 
     @Test
     public void testServiceMethodIsCalled_WhenNotifyPetitionerCanFinaliseDivorce() throws WorkflowException {
-        when(caseOrchestrationService.handleMakeCaseEligibleForDaSubmittedCallback(any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(caseOrchestrationService.handleMakeCaseEligibleForDaSubmitted(any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
             .build();
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleMakeCaseEligibleForDaSubmittedCallback(callbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleMakeCaseEligibleForDaSubmitted(callbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
-        verify(caseOrchestrationService).handleMakeCaseEligibleForDaSubmittedCallback(callbackRequest);
+        verify(caseOrchestrationService).handleMakeCaseEligibleForDaSubmitted(callbackRequest);
     }
 
     @Test

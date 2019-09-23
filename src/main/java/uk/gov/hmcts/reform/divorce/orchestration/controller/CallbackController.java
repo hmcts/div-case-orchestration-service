@@ -88,15 +88,15 @@ public class CallbackController {
         return ResponseEntity.ok(caseOrchestrationService.dnSubmitted(ccdCallbackRequest, authorizationToken));
     }
 
-    @PostMapping(path = "/handle-dn-submitted-callback")
+    @PostMapping(path = "/handle-post-dn-submitted")
     @ApiOperation(value = "Callback to run after DN Submit event has finished")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed")})
-    public ResponseEntity<CcdCallbackResponse> handleDnSubmittedCallback(
+    public ResponseEntity<CcdCallbackResponse> handleDnSubmitted(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseOrchestrationService.handleDnSubmittedCallback(ccdCallbackRequest))
+            .data(caseOrchestrationService.handleDnSubmitted(ccdCallbackRequest))
             .build());
     }
 
@@ -625,15 +625,15 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/handle-da-granted-callback")
+    @PostMapping(path = "/handle-post-da-granted")
     @ApiOperation(value = "Callback to run after DA Grant event has finished")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed")})
-    public ResponseEntity<CcdCallbackResponse> handleDaGrantedCallback(
+    public ResponseEntity<CcdCallbackResponse> handleDaGranted(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseOrchestrationService.handleDaGrantedCallback(ccdCallbackRequest))
+            .data(caseOrchestrationService.handleDaGranted(ccdCallbackRequest))
             .build());
     }
 
@@ -847,15 +847,15 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/handle-make-case-eligible-for-da-submitted-callback")
+    @PostMapping(path = "/handle-post-make-case-eligible-for-da-submitted")
     @ApiOperation(value = "Callback to run after Make Case Eligible For DA event has finished")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed")})
-    public ResponseEntity<CcdCallbackResponse> handleMakeCaseEligibleForDaSubmittedCallback(
+    public ResponseEntity<CcdCallbackResponse> handleMakeCaseEligibleForDaSubmitted(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseOrchestrationService.handleMakeCaseEligibleForDaSubmittedCallback(ccdCallbackRequest))
+            .data(caseOrchestrationService.handleMakeCaseEligibleForDaSubmitted(ccdCallbackRequest))
             .build());
     }
 
