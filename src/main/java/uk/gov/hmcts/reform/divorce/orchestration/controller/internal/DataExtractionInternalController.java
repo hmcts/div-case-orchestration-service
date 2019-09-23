@@ -12,7 +12,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.event.listener.DataExtractionRe
 
 import java.time.LocalDate;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DA;
+import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DN;
 
 /**
  * This class provides endpoint so trigger the data extraction process on demand (meant to be used for tests).
@@ -32,5 +34,8 @@ public class DataExtractionInternalController {
     public void startDataExtractionToFamilyMan() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         listener.onApplicationEvent(new DataExtractionRequest(this, DA, yesterday));
+        listener.onApplicationEvent(new DataExtractionRequest(this, AOS, yesterday));
+        listener.onApplicationEvent(new DataExtractionRequest(this, DN, yesterday));
     }
+
 }
