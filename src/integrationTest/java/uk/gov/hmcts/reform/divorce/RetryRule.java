@@ -1,21 +1,19 @@
 package uk.gov.hmcts.reform.divorce;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+@RequiredArgsConstructor
+@Slf4j
 public class RetryRule implements TestRule {
-    private int retryCount;
 
-    public RetryRule(int retryCount) {
-        this.retryCount = retryCount;
-    }
+    private final int retryCount;
 
+    @Override
     public Statement apply(Statement base, Description description) {
-        return statement(base, description);
-    }
-
-    private Statement statement(final Statement base, final Description description) {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
@@ -27,12 +25,10 @@ public class RetryRule implements TestRule {
                         return;
                     } catch (Throwable t) {
                         caughtThrowable = t;
-                        System.err.println(
-                                description.getDisplayName() + ": run " + (i + 1) + " failed. - " + t.getMessage()
-                        );
+                        log.error("{}: run {} failed. - {}", description.getDisplayName(), (i + 1), t.getMessage());
                     }
                 }
-                System.err.println(description.getDisplayName() + ": giving up after " + retryCount + " failures.");
+                log.error("{}: giving up after {} failures.", description.getDisplayName(), retryCount);
                 throw caughtThrowable;
             }
         };
