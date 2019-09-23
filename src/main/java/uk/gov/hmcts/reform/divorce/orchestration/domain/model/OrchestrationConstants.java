@@ -120,6 +120,7 @@ public class OrchestrationConstants {
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
     public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
     public static final String REFUSAL_DECISION_MORE_INFO_VALUE = "moreInfo";
+    public static final String DN_REFUSED_REJECT_OPTION = "reject";
     public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
 
     // CCD Events
