@@ -50,6 +50,9 @@ public abstract class IntegrationTest {
     @Rule
     public SpringIntegrationMethodRule springMethodIntegration;
 
+    @Rule
+    public RetryRule retryRule;
+
     protected IntegrationTest() {
         this.springMethodIntegration = new SpringIntegrationMethodRule();
     }
