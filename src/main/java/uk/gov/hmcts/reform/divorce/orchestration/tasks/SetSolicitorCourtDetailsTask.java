@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 
 @Component
-public class SetCourtDetails implements Task<Map<String, Object>> {
+public class SetSolicitorCourtDetailsTask implements Task<Map<String, Object>> {
 
     @Autowired
     private CcdUtil ccdUtil;

@@ -22,12 +22,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SetCourtDetailsTest {
+public class SetSolicitorCourtDetailsTaskTest {
 
     private static final String FIXED_DATE = "2019-05-11";
 
     @InjectMocks
-    private SetCourtDetails setCourtDetails;
+    private SetSolicitorCourtDetailsTask setSolicitorCourtDetailsTask;
 
     @Mock
     private CcdUtil ccdUtil;
@@ -45,23 +45,23 @@ public class SetCourtDetailsTest {
 
     @Test
     public void executeShouldSetDateAndCourtDetailsOnPayload_solicitorReleaseFeatureOff() {
-        ReflectionTestUtils.setField(setCourtDetails, "featureToggleRespSolicitor", false);
+        ReflectionTestUtils.setField(setSolicitorCourtDetailsTask, "featureToggleRespSolicitor", false);
         Map<String, Object> resultData = new HashMap<>();
         resultData.put(CREATED_DATE_JSON_KEY, FIXED_DATE);
         resultData.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getId());
         resultData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.EASTMIDLANDS.getSiteId());
 
-        assertEquals(resultData, setCourtDetails.execute(context, testData));
+        assertEquals(resultData, setSolicitorCourtDetailsTask.execute(context, testData));
     }
 
     @Test
     public void executeShouldSetDateAndCourtDetailsOnPayload_solicitorReleaseFeatureOn() {
-        ReflectionTestUtils.setField(setCourtDetails, "featureToggleRespSolicitor", true);
+        ReflectionTestUtils.setField(setSolicitorCourtDetailsTask, "featureToggleRespSolicitor", true);
         Map<String, Object> resultData = new HashMap<>();
         resultData.put(CREATED_DATE_JSON_KEY, FIXED_DATE);
         resultData.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.SERVICE_CENTER.getId());
         resultData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.SERVICE_CENTER.getSiteId());
 
-        assertEquals(resultData, setCourtDetails.execute(context, testData));
+        assertEquals(resultData, setSolicitorCourtDetailsTask.execute(context, testData));
     }
 }
