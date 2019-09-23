@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -43,11 +44,23 @@ public class SetCourtDetailsTest {
     }
 
     @Test
-    public void executeShouldSetDateAndCourtDetailsOnPayload() {
+    public void executeShouldSetDateAndCourtDetailsOnPayload_solicitorReleaseFeatureOff() {
+        ReflectionTestUtils.setField(setCourtDetails, "featureToggleRespSolicitor", false);
         Map<String, Object> resultData = new HashMap<>();
         resultData.put(CREATED_DATE_JSON_KEY, FIXED_DATE);
         resultData.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getId());
         resultData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.EASTMIDLANDS.getSiteId());
+
+        assertEquals(resultData, setCourtDetails.execute(context, testData));
+    }
+
+    @Test
+    public void executeShouldSetDateAndCourtDetailsOnPayload_solicitorReleaseFeatureOn() {
+        ReflectionTestUtils.setField(setCourtDetails, "featureToggleRespSolicitor", true);
+        Map<String, Object> resultData = new HashMap<>();
+        resultData.put(CREATED_DATE_JSON_KEY, FIXED_DATE);
+        resultData.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.SERVICE_CENTER.getId());
+        resultData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.SERVICE_CENTER.getSiteId());
 
         assertEquals(resultData, setCourtDetails.execute(context, testData));
     }
