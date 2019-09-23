@@ -345,6 +345,8 @@ dataExtraction:
   status:
     DA:
       emailTo:
+    AOS:
+      emailTo:
 
 bulk-action:
   page-size: 50
