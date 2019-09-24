@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.util;
 
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -66,5 +67,12 @@ public class TaskUtils {
 
     private static TaskException buildTaskExceptionForMandatoryProperty(String key) {
         return new TaskException(format("Could not evaluate value of mandatory property \"%s\"", key));
+    }
+
+    public static String retrieveAndFormatCCDDateFieldIfPresent(String fieldName, Map<String, Object> caseData, String defaultValue) {
+        return Optional.ofNullable(caseData.get(fieldName))
+            .map((String.class::cast))
+            .map(CcdUtil::formatFromCCDFormatToHumanReadableFormat)
+            .orElse(defaultValue);
     }
 }

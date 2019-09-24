@@ -52,6 +52,7 @@ public class OrchestrationConstants {
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String CCD_CASE_ID = "id";
     public static final String NOT_RECEIVED_AOS_EVENT_ID = "aosNotReceived";
+    public static final String NOT_RECEIVED_AOS_STARTED_EVENT_ID = "aosNotReceivedStarted";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID = "co-RespAOSReceivedAwaiting";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_STARTED_EVENT_ID = "co-RespAOSReceivedStarted";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_SUBMIT_AWAIT_EVENT_ID = "co-RespAOSReceivedAwaitingAnswer";
@@ -115,6 +116,7 @@ public class OrchestrationConstants {
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
     public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
     public static final String REFUSAL_DECISION_MORE_INFO_VALUE = "moreInfo";
+    public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";

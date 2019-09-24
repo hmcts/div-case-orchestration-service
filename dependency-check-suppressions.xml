@@ -40,5 +40,24 @@
         </notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2019-15052</cve>
+        <cve>CVE-2019-16370</cve>
+
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            This is exploitable in com.zaxxer.hikari.HikariConfig and com.zaxxer.hikari.HikariDataSource
+            which we do not use. Pending the release of a stable jackson databind version (>2.9.9.3)
+            Suppression added on the 19/09/2019. ]]>
+        </notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2019-14540</cve>
+        <cve>CVE-2019-16335</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            A low severity security issue was reported in the Gradle signing plugin. ]]>
+        </notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2019-16370</cve>
     </suppress>
 </suppressions>

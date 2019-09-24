@@ -122,12 +122,6 @@ variable "documentation_swagger_enabled" {
   default = "true"
 }
 
-variable "scheduler_send_updated_cases_to_robotics_cron" {
-  type    = "string"
-  default = "0 0 2 ? * * *"
-  description = "The scheduler job should run every day at 2 am"
-}
-
 variable "spring_mail_host" {
   type = "string"
   default = "mta.reform.hmcts.net"
@@ -152,5 +146,11 @@ variable "spring_mail_properties_mail_smtp_ssl_trust" {
 
 variable "dataextraction_status_da_email_to" {
   type = "string"
-  default = "da_data_extraction@sharklasers.com"
+}
+
+variable "dataextraction_status_aos_email_to" {
+  type = "string"
+}
+
+variable "scheduler_send_updated_cases_to_robotics_enabled" {
 }
