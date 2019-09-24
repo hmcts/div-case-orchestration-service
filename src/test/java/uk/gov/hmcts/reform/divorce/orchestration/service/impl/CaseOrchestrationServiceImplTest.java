@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
@@ -56,7 +57,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
@@ -173,7 +173,7 @@ public class CaseOrchestrationServiceImplTest {
     private SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
 
     @Mock
-    private SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
+    private AosSubmissionWorkflow aosSubmissionWorkflow;
 
     @Mock
     private SendCoRespondSubmissionNotificationWorkflow sendCoRespondSubmissionNotificationWorkflow;
@@ -689,13 +689,13 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void givenCaseData_whenSendRespondentSubmissionNotification_thenReturnPayload() throws Exception {
-        when(sendRespondentSubmissionNotificationWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
+        when(aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(requestPayload);
 
         Map<String, Object> returnedPayload = classUnderTest
-            .sendRespondentSubmissionNotificationEmail(ccdCallbackRequest);
+            .aosSubmission(ccdCallbackRequest, AUTH_TOKEN);
 
         assertEquals(requestPayload, returnedPayload);
-        verify(sendRespondentSubmissionNotificationWorkflow).run(ccdCallbackRequest);
+        verify(aosSubmissionWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
     }
 
     @Test

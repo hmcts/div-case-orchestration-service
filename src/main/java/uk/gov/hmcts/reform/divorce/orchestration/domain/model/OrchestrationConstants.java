@@ -62,6 +62,8 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_SUBMISSION_AWAITING_DN_EVENT_ID = "co-RespAwaitingDN";
     public static final String CO_RESPONDENT_SUBMISSION_AWAITING_LA_EVENT_ID = "co-RespAwaitingLAReferral";
     public static final String DECREE_ABSOLUTE_REQUESTED_EVENT_ID = "RequestDA";
+    public static final String RESP_AOS_2_YR_CONSENT = "RespAOS2yrConsent";
+    public static final String RESP_AOS_ADMIT_ADULTERY = "RespAOSAdultery";
     public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "RespAdmitOrConsentToFact";
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
@@ -108,6 +110,7 @@ public class OrchestrationConstants {
     public static final String REMOVE_FROM_BULK_CASE_LISTED_EVENT = "removeFromBulkCaseListed";
     public static final String SOL_SERVICE_METHOD_CCD_FIELD = "SolServiceMethod";
     public static final String PERSONAL_SERVICE_VALUE = "personalService";
+    public static final String NOT_DEFENDING_NOT_ADMITTING = "NoNoAdmission";
 
     public static final String PET_SOL_EMAIL = "PetitionerSolicitorEmail";
     public static final String PET_SOL_NAME = "PetitionerSolicitorName";
@@ -116,6 +119,7 @@ public class OrchestrationConstants {
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
     public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
     public static final String REFUSAL_DECISION_MORE_INFO_VALUE = "moreInfo";
+    public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
@@ -127,6 +131,9 @@ public class OrchestrationConstants {
     public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";
     public static final String COMPLETED_AOS_EVENT_ID = "aosReceivedNoAdConStarted";
     public static final String AOS_NOMINATE_SOLICITOR = "aosNominateSol";
+    public static final String SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID = "solAosSubmittedDefended";
+    public static final String SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID = "solAosSubmittedUndefended";
+    public static final String SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID = "solAosReceivedNoAdConStarted";
     public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
     public static final String START_AOS_EVENT_ID = "startAos";
     public static final String PAYMENT_MADE_EVENT = "paymentMade";
