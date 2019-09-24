@@ -1099,21 +1099,21 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void testServiceCallsRightWorkflowWithRightData_ForProcessingAosSolicitorNominated()
         throws WorkflowException, CaseOrchestrationServiceException {
-        when(respondentSolicitorNominatedWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()))).thenReturn(requestPayload);
+        when(respondentSolicitorNominatedWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN)).thenReturn(requestPayload);
 
-        assertThat(classUnderTest.processAosSolicitorNominated(ccdCallbackRequest), is(equalTo(requestPayload)));
+        assertThat(classUnderTest.processAosSolicitorNominated(ccdCallbackRequest, AUTH_TOKEN), is(equalTo(requestPayload)));
     }
 
     @Test
     public void shouldThrowException_ForProcessingAosSolicitorNominated_WhenWorkflowExceptionIsCaught()
         throws WorkflowException, CaseOrchestrationServiceException {
-        when(respondentSolicitorNominatedWorkflow.run(eq(ccdCallbackRequest.getCaseDetails())))
-            .thenThrow(new WorkflowException("This operation threw an exception."));
+        when(respondentSolicitorNominatedWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN))
+                .thenThrow(new WorkflowException("This operation threw an exception."));
 
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectMessage(is("This operation threw an exception."));
 
-        classUnderTest.processAosSolicitorNominated(ccdCallbackRequest);
+        classUnderTest.processAosSolicitorNominated(ccdCallbackRequest, AUTH_TOKEN);
     }
 
     @Test

@@ -731,9 +731,9 @@ public class CallbackControllerTest {
                 .build())
             .build();
 
-        when(caseOrchestrationService.processAosSolicitorNominated(incomingRequest)).thenReturn(incomingPayload);
+        when(caseOrchestrationService.processAosSolicitorNominated(incomingRequest, AUTH_TOKEN)).thenReturn(incomingPayload);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosSolicitorNominated(incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosSolicitorNominated(AUTH_TOKEN, incomingRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
@@ -748,10 +748,10 @@ public class CallbackControllerTest {
                 .caseData(incomingPayload)
                 .build())
             .build();
-        when(caseOrchestrationService.processAosSolicitorNominated(incomingRequest))
+        when(caseOrchestrationService.processAosSolicitorNominated(incomingRequest, AUTH_TOKEN))
             .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosSolicitorNominated(incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosSolicitorNominated(AUTH_TOKEN, incomingRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(nullValue()));

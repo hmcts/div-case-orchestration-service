@@ -10,10 +10,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAosPackPrinter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSolicitorAosInvitationEmail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,8 +25,11 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,10 +41,22 @@ public class RespondentSolicitorNominatedWorkflowTest {
     private RespondentPinGenerator respondentPinGenerator;
 
     @Mock
-    private ResetRespondentLinkingFields resetRespondentLinkingFields;
+    private RespondentLetterGenerator respondentLetterGenerator;
 
     @Mock
-    private SendRespondentSolicitorAosInvitationEmail sendRespondentSolicitorNotificationEmail;
+    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+
+    @Mock
+    private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+
+    @Mock
+    private RespondentAosPackPrinter respondentAosPackPrinter;
+
+    @Mock
+    private ModifyDueDate modifyDueDate;
+
+    @Mock
+    private ResetRespondentLinkingFields resetRespondentLinkingFields;
 
     private CaseDetails caseDetails;
     private Map<String, Object> payload;
@@ -48,7 +66,11 @@ public class RespondentSolicitorNominatedWorkflowTest {
     public void setUp() {
         respondentSolicitorNominatedWorkflow = new RespondentSolicitorNominatedWorkflow(
                 respondentPinGenerator,
-                sendRespondentSolicitorNotificationEmail,
+                respondentLetterGenerator,
+                caseFormatterAddDocuments,
+                fetchPrintDocsFromDmStore,
+                respondentAosPackPrinter,
+                modifyDueDate,
                 resetRespondentLinkingFields
         );
 
@@ -62,23 +84,41 @@ public class RespondentSolicitorNominatedWorkflowTest {
 
         context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
     }
 
     @Test
-    public void testRunCallsTheRequiredTasks() throws WorkflowException, TaskException {
+    public void testRunCallsTheRequiredTasks() throws WorkflowException {
+
         //Given
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
-        when(sendRespondentSolicitorNotificationEmail.execute(context, payload)).thenReturn(payload);
+        when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
+        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
+        when(respondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
+        when(modifyDueDate.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
-        Map<String, Object> response = respondentSolicitorNominatedWorkflow.run(caseDetails);
+        Map<String, Object> response = respondentSolicitorNominatedWorkflow.run(caseDetails, AUTH_TOKEN);
 
         //Then
-        InOrder inOrder = inOrder(respondentPinGenerator, sendRespondentSolicitorNotificationEmail, resetRespondentLinkingFields);
+        InOrder inOrder = inOrder(
+                respondentPinGenerator,
+                respondentLetterGenerator,
+                caseFormatterAddDocuments,
+                fetchPrintDocsFromDmStore,
+                respondentAosPackPrinter,
+                modifyDueDate ,
+                resetRespondentLinkingFields);
         assertThat(response, is(payload));
         inOrder.verify(respondentPinGenerator).execute(context, payload);
-        inOrder.verify(sendRespondentSolicitorNotificationEmail).execute(context, payload);
+        inOrder.verify(respondentLetterGenerator).execute(context, payload);
+        inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
+        inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);
+        inOrder.verify(respondentAosPackPrinter).execute(context, payload);
+        inOrder.verify(modifyDueDate).execute(context, payload);
         inOrder.verify(resetRespondentLinkingFields).execute(context, payload);
     }
 }

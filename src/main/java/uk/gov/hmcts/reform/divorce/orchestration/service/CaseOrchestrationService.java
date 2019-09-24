@@ -102,7 +102,8 @@ public interface CaseOrchestrationService {
     Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, String authToken, String templateId,
                                                          String documentType, String filename) throws WorkflowException;
 
-    Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
+    Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest,
+                                                     String authToken) throws CaseOrchestrationServiceException;
 
     Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
