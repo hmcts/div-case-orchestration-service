@@ -647,6 +647,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> aosSolicitorNominated(
+        @RequestHeader(value = "Authorization") String authToken,
         @RequestBody @ApiParam("CaseData")
             CcdCallbackRequest ccdCallbackRequest) {
 
@@ -657,7 +658,7 @@ public class CallbackController {
 
         try {
             callbackResponseBuilder.data(
-                caseOrchestrationService.processAosSolicitorNominated(ccdCallbackRequest));
+                caseOrchestrationService.processAosSolicitorNominated(ccdCallbackRequest, authToken));
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format("Failed processing AOS solicitor callback. Case ID:  %s", caseId),
                 exception);
