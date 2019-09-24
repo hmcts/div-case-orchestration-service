@@ -348,6 +348,8 @@ dataExtraction:
       emailTo:
     AOS:
       emailTo:
+    DN:
+      emailTo:
 
 bulk-action:
   page-size: 50

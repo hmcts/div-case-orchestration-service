@@ -11,6 +11,8 @@ import java.util.stream.Stream;
  */
 public interface CSVExtractor {
 
+    String COMMA = ",";
+
     String getHeaderLine();
 
     String getDestinationEmailAddress();
