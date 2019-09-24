@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -26,6 +27,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -36,6 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
@@ -50,11 +53,11 @@ public class NotifyForRefusalOrderTaskTest {
     private static final String PETITIONER_EMAIL = "applicant@divorce.gov.uk";
     private static final String PETITIONER_FIRST_NAME = "Jerry";
     private static final String PETITIONER_LAST_NAME = "Johnson";
-    private static final String RELEATION = "husband";
+    private static final String RELATION = "husband";
+    private static final FeeResponse TEST_FEES = FeeResponse.builder().amount(50.00).build();
 
     private Map<String, Object> incomingPayload;
     private TaskContext taskContext;
-
 
     @Mock
     private EmailService emailService;
@@ -72,6 +75,7 @@ public class NotifyForRefusalOrderTaskTest {
         incomingPayload.put(D_8_CASE_REFERENCE, TEST_CASE_REFERENCE);
         incomingPayload.put(D_8_INFERRED_PETITIONER_GENDER, MALE_GENDER);
         taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AMEND_PETITION_FEE_JSON_KEY, TEST_FEES);
     }
 
     @Test
@@ -87,7 +91,6 @@ public class NotifyForRefusalOrderTaskTest {
                 allOf(
                     hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_REFERENCE),
                     hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, PETITIONER_FIRST_NAME),
-                    hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, PETITIONER_LAST_NAME),
                     hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, PETITIONER_LAST_NAME)
                 )
             )),
@@ -109,7 +112,8 @@ public class NotifyForRefusalOrderTaskTest {
                     hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_REFERENCE),
                     hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, PETITIONER_FIRST_NAME),
                     hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, PETITIONER_LAST_NAME),
-                    hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELEATION)
+                    hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION),
+                    hasEntry(NOTIFICATION_FEES_KEY, TEST_FEES.getAmount().toString())
                 )
             )),
             anyString()
