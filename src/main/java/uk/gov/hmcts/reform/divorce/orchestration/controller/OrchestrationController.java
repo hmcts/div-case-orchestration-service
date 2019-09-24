@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseCreationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
@@ -31,7 +30,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
 import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MediaType;
 
@@ -230,30 +228,6 @@ public class OrchestrationController {
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
-
-    @PostMapping(path = "/aos-received")
-    @ApiOperation(value = "Respondent confirmation notification ")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Notification sent successful"),
-        @ApiResponse(code = 401, message = "User Not Authenticated"),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> aosReceived(
-        @RequestHeader("Authorization")
-        @ApiParam(value = "JWT authorisation token issued by IDAM",
-            required = true) final String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return ResponseEntity.ok(orchestrationService.aosReceived(ccdCallbackRequest, authorizationToken));
-    }
-
-    @PostMapping(path = "/co-respondent-received")
-    @ApiOperation(value = "Co-Respondent confirmation notification ")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Notification sent successful"),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> corespReceived(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return ResponseEntity.ok(orchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest));
     }
 
     @PostMapping(path = "/submit-aos/{caseId}",

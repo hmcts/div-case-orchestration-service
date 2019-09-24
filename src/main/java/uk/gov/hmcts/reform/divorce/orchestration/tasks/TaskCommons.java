@@ -14,7 +14,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
 
-@Deprecated // I'd be good to split those into well defined/reusable tasks instead of "common" methods
+// TODO: split those into well defined/reusable tasks instead of "common" methods
 @Component
 @Slf4j
 public class TaskCommons {
