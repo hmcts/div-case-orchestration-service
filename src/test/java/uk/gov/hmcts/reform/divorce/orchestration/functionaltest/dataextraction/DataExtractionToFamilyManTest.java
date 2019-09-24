@@ -114,7 +114,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
 
         await().untilAsserted(() -> {
             //Make sure it's only called once until all the files are ready to be extracted
-            verify(mockEmailClient, times(2)).sendEmailWithAttachment(any(), any(), any());
+            verify(mockEmailClient, times(3)).sendEmailWithAttachment(any(), any(), any());
         });
         verifyExtractionInteractions("DA",
             "da-extraction@divorce.gov.uk",
