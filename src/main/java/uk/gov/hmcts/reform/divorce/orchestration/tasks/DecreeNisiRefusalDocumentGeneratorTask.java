@@ -19,11 +19,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_REJECT_VALUE;
 
 @Component
 @AllArgsConstructor
@@ -41,6 +43,16 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
         if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {
             GeneratedDocumentInfo generatedDocumentInfo = generatePdfDocument(
                 DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
+                DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE,
+                DECREE_NISI_REFUSAL_DOCUMENT_NAME,
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+                caseDetails
+            );
+
+            documentCollection.add(generatedDocumentInfo);
+        } else if (REFUSAL_DECISION_REJECT_VALUE.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {
+            GeneratedDocumentInfo generatedDocumentInfo = generatePdfDocument(
+                DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID,
                 DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE,
                 DECREE_NISI_REFUSAL_DOCUMENT_NAME,
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY),

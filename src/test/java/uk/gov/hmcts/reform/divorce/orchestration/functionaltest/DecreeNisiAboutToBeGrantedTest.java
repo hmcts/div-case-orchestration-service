@@ -47,6 +47,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_DECISION_DATE_FIELD;
@@ -57,11 +58,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_REJECT_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
@@ -250,12 +251,49 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
     @Test
     public void givenRejection_whenMakeDecision_thenReturnRightState() throws Exception {
-        String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
-            singletonMap(CCD_CASE_DATA_FIELD,
-                ImmutableMap.of(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION,
-                    DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE)
-            ))
+        Map<String, Object> caseData = ImmutableMap.of(
+            DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
+            REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_REJECT_VALUE
         );
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
+
+        final GenerateDocumentRequest documentGenerationRequest =
+            GenerateDocumentRequest.builder()
+                .template(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                .build();
+
+        final GeneratedDocumentInfo documentGenerationResponse =
+            GeneratedDocumentInfo.builder()
+                .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
+                .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
+                .build();
+
+        Map<String, Object> expectedDocumentUpdateRequestData = new HashMap<>();
+        expectedDocumentUpdateRequestData.putAll(caseData);
+        // Additional fields
+        expectedDocumentUpdateRequestData.putAll(ImmutableMap.of(
+            STATE_CCD_FIELD, DN_REFUSED,
+            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
+        ));
+
+        final DocumentUpdateRequest documentUpdateRequest =
+            DocumentUpdateRequest.builder()
+                .documents(asList(documentGenerationResponse))
+                .caseData(expectedDocumentUpdateRequestData)
+                .build();
+
+        stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
+        stubFormatterServerEndpoint(documentUpdateRequest, expectedDocumentUpdateRequestData);
+
+        String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
+            ImmutableMap.of(
+                ID, TEST_CASE_ID,
+                CCD_CASE_DATA_FIELD, caseData
+            )
+        ));
+
         webClient.perform(post(API_URL).header(AUTHORIZATION, AUTH_TOKEN).content(inputJson).contentType(APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(allOf(
@@ -263,7 +301,9 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 hasJsonPath(CCD_RESPONSE_DATA_FIELD, allOf(
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(NO_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(DN_REFUSED)),
-                    hasJsonPath(DN_DECISION_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat()))
+                    hasJsonPath(DN_DECISION_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat())),
+                    hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD),
+                    hasNoJsonPath(DN_OUTCOME_FLAG_CCD_FIELD)
                 ))
             )));
     }
@@ -274,7 +314,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             singletonMap(CCD_CASE_DATA_FIELD,
-                ImmutableMap.of(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION,
+                ImmutableMap.of(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_REJECT_VALUE,
                     DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE)
             ))
         );

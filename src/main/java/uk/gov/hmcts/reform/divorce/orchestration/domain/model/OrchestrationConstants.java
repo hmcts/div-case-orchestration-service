@@ -119,6 +119,7 @@ public class OrchestrationConstants {
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
     public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
     public static final String REFUSAL_DECISION_MORE_INFO_VALUE = "moreInfo";
+    public static final String REFUSAL_DECISION_REJECT_VALUE = "reject";
     public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
 
     // CCD Events
@@ -283,6 +284,7 @@ public class OrchestrationConstants {
     public static final String DOCUMENT_TYPE_DN_ANSWERS = "dnAnswers";
     public static final String DN_ANSWERS_TEMPLATE_ID = "FL-DIV-GNO-ENG-00022.docx";
     public static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
+    public static final String DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00098.docx";
     public static final String DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE = "d79";
     public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME = "decreeNisiRefusalOrder";
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
