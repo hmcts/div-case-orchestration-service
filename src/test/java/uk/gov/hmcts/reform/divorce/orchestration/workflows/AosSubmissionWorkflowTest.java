@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.QueueAosSolicitorSubmitTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmail;
 
@@ -31,14 +32,27 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendRespondentSubmissionNotificationWorkflowTest {
+public class AosSubmissionWorkflowTest {
 
     private static final String UNFORMATTED_CASE_ID = "0123456789012345";
+    private static final String RESP_ACKNOWLEDGES_SERVICE_DEFENDING_DIVORCE_JSON =
+            "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json";
+    private static final String RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON =
+            "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json";
+    private static final String RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING__NOT_ADMITTING_DIVORCE_JSON =
+            "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingNotAdmittingDivorce.json";
+    private static final String UNCLEAR_ACKNOWLEDGEMENT_OF_SERVICE_JSON =
+            "/jsonExamples/payloads/unclearAcknowledgementOfService.json";
+    private static final String AOS_SOLICITOR_NOMINATED_JSON =
+            "/jsonExamples/payloads/aosSolicitorNominated.json";
+    private static final String AOS_SOLICITOR_NOMINATED_WITHOUT_FIELDS_SET_JSON =
+            "/jsonExamples/payloads/aosSolicitorNominatedWithoutFieldSet.json";
 
     private Map<String, Object> returnedPayloadFromTask;
 
@@ -51,26 +65,30 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
     @Mock
     private SendRespondentSubmissionNotificationForUndefendedDivorceEmail undefendedDivorceNotificationEmailTask;
 
+    @Mock
+    private QueueAosSolicitorSubmitTask queueAosSolicitorSubmitTask;
+
     @Captor
     private ArgumentCaptor<TaskContext> taskContextArgumentCaptor;
 
     @InjectMocks
-    private SendRespondentSubmissionNotificationWorkflow workflow;
+    private AosSubmissionWorkflow aosSubmissionWorkflow;
 
     @Before
     public void setUp() throws TaskException {
         returnedPayloadFromTask = new HashMap<>();
         when(defendedDivorceNotificationEmailTask.execute(any(), any())).thenReturn(returnedPayloadFromTask);
         when(undefendedDivorceNotificationEmailTask.execute(any(), any())).thenReturn(returnedPayloadFromTask);
+        when(queueAosSolicitorSubmitTask.execute(any(), any())).thenReturn(returnedPayloadFromTask);
     }
 
     @Test
     public void testDefendedTaskIsCalledWhenWorkflowIsRun() throws WorkflowException, IOException, TaskException {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CcdCallbackRequest.class);
+                RESP_ACKNOWLEDGES_SERVICE_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayloadFromWorkflow = workflow.run(ccdCallbackRequest);
+        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(defendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
         verifyZeroInteractions(undefendedDivorceNotificationEmailTask);
@@ -84,10 +102,10 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
     public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorce() throws IOException,
             WorkflowException, TaskException {
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CcdCallbackRequest.class);
+                RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayloadFromWorkflow = workflow.run(callbackRequest);
+        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
 
         verify(undefendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
         verifyZeroInteractions(defendedDivorceNotificationEmailTask);
@@ -98,13 +116,13 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
     }
 
     @Test
-    public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorceButNotAdmitWhatIsSaid() throws IOException,
-            WorkflowException, TaskException {
+    public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorceButNotAdmitWhatIsSaid()
+            throws IOException, WorkflowException, TaskException {
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingNotAdmittingDivorce.json", CcdCallbackRequest.class);
+                RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING__NOT_ADMITTING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayloadFromWorkflow = workflow.run(callbackRequest);
+        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
 
         verify(undefendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
         verifyZeroInteractions(defendedDivorceNotificationEmailTask);
@@ -122,11 +140,49 @@ public class SendRespondentSubmissionNotificationWorkflowTest {
             RESP_WILL_DEFEND_DIVORCE));
 
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/unclearAcknowledgementOfService.json", CcdCallbackRequest.class);
+                UNCLEAR_ACKNOWLEDGEMENT_OF_SERVICE_JSON, CcdCallbackRequest.class);
         Map<String, Object> incomingCaseDate = ccdCallbackRequest.getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayloadFromWorkflow = workflow.run(ccdCallbackRequest);
+        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
         assertThat(returnedPayloadFromWorkflow.size(), is(incomingCaseDate.size() + 1));
+    }
+
+    @Test
+    public void testSolicitorTaskIsCalledWhenWorkflowIsRun_whenSolicitorIsRepresenting()
+            throws WorkflowException, IOException, TaskException {
+
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                AOS_SOLICITOR_NOMINATED_JSON, CcdCallbackRequest.class);
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(queueAosSolicitorSubmitTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
+    }
+
+    @Test
+    public void testSolicitorTaskIsNotCalledWhenSolicitorIsNotRepresenting() throws IOException,
+            WorkflowException {
+
+        CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
+                RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
+
+        aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
+
+        verifyZeroInteractions(queueAosSolicitorSubmitTask);
+    }
+
+    @Test
+    public void testSolicitorTaskIsCalled_whenSolicitorIsRepresentingIsEmpty_andRespSolValuesExist()
+            throws WorkflowException, IOException, TaskException {
+
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                AOS_SOLICITOR_NOMINATED_WITHOUT_FIELDS_SET_JSON, CcdCallbackRequest.class);
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(queueAosSolicitorSubmitTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
     }
 }
