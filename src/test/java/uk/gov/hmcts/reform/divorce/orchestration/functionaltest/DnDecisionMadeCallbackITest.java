@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,6 +59,8 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
     private static final String API_URL = "/dn-decision-made";
     private static final String CMS_UPDATE_CASE = "/casemaintenance/version/1/updateCase/%s/cleanCaseState";
 
+    private static final String AMEND_PETITION_FEE_CONTEXT_PATH =  "/fees-and-payments/version/1/amend-fee";
+
     @MockBean
     private EmailClient emailClient;
 
@@ -79,6 +82,7 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
             .build();
 
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, caseId), HttpStatus.OK, Strings.EMPTY, POST);
+        stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().build());
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -126,6 +130,7 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
             .build();
 
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, caseId), HttpStatus.OK, Strings.EMPTY, POST);
+        stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().build());
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -156,6 +161,14 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
         maintenanceServiceServer.verify(times, new RequestPatternBuilder(method, urlEqualTo(path))
             .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
             .withRequestBody(equalTo(body)));
+    }
+
+    private void stubGetFeeFromFeesAndPayments(HttpStatus status, FeeResponse feeResponse) {
+        feesAndPaymentsServer.stubFor(WireMock.get(AMEND_PETITION_FEE_CONTEXT_PATH)
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(convertObjectToJsonString(feeResponse))));
     }
 
     private void waitAsyncCompleted() {
