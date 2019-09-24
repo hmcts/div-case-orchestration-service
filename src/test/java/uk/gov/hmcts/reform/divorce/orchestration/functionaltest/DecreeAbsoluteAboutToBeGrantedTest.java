@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static java.util.Collections.singletonMap;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -53,7 +52,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class DecreeAbsoluteAboutToBeGrantedTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/da-about-to-be-granted";
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.<String, Object>builder()
@@ -90,7 +88,6 @@ public class DecreeAbsoluteAboutToBeGrantedTest extends MockedFunctionalTest {
                 .build();
 
         stubDocumentGeneratorServerEndpoint(daDocumentGenerationResponse);
-        stubFormatterServerEndpoint(daDocumentGenerationResponse, CASE_DATA);
         when(mockEmailClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenReturn(null);
 
@@ -130,16 +127,6 @@ public class DecreeAbsoluteAboutToBeGrantedTest extends MockedFunctionalTest {
     private void stubDocumentGeneratorServerEndpoint(GeneratedDocumentInfo response) {
         documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
-    }
-
-    private void stubFormatterServerEndpoint(GeneratedDocumentInfo generatedDocumentInfo ,
-                                             Map<String, Object> response) {
-        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-            .withRequestBody(containing(convertObjectToJsonString(generatedDocumentInfo)))
             .willReturn(aResponse()
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withStatus(HttpStatus.OK.value())

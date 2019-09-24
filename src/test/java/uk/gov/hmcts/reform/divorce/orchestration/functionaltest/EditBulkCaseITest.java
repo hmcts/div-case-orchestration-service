@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
@@ -25,7 +24,6 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static java.time.ZoneOffset.UTC;
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.contains;
 import static org.mockito.Mockito.when;
@@ -37,14 +35,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class EditBulkCaseITest extends MockedFunctionalTest {
     private static final String API_URL = "/bulk/edit/listing?templateId=a&documentType=b&filename=c";
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
     private static final String ERROR_MESSAGE = "Court hearing date is in the past";
 
@@ -83,7 +79,7 @@ public class EditBulkCaseITest extends MockedFunctionalTest {
         final String documentType = "b";
         final String filename = "c";
 
-        caseData.put("hearingDate","2000-01-01T10:20:55.000");
+        caseData.put("hearingDate","2030-01-01T10:20:55.000");
         caseData.put("PronouncementJudge", "Judge");
 
         final GenerateDocumentRequest documentGenerationRequest =
@@ -98,16 +94,12 @@ public class EditBulkCaseITest extends MockedFunctionalTest {
                 .fileName(filename + TEST_CASE_ID)
                 .build();
 
-        final DocumentUpdateRequest documentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .documents(asList(documentGenerationResponse))
-                .caseData(caseData)
-                .build();
-
-        final Map<String, Object> formattedCaseData = DUMMY_CASE_DATA;
+        final Map<String, Object> expectedResponse = ImmutableMap.of(
+                "PronouncementJudge", "Judge",
+                "hearingDate", "2030-01-01T10:20:55.000"
+        );
 
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -115,7 +107,7 @@ public class EditBulkCaseITest extends MockedFunctionalTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(ImmutableMap.of("data", formattedCaseData))));
+            .andExpect(content().json(convertObjectToJsonString(ImmutableMap.of("data", expectedResponse))));
     }
 
     @Test
@@ -145,15 +137,4 @@ public class EditBulkCaseITest extends MockedFunctionalTest {
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(response))));
     }
-
-    private void stubFormatterServerEndpoint(DocumentUpdateRequest documentUpdateRequest,
-                                             Map<String, Object> response) {
-        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
-    }
-
 }

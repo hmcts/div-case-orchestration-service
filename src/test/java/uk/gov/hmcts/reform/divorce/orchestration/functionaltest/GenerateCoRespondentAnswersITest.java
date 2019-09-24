@@ -7,20 +7,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -36,7 +38,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class GenerateCoRespondentAnswersITest extends MockedFunctionalTest {
     private static final String API_URL = "/co-respondent-generate-answers";
 
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
     private static final String USER_TOKEN = "anytoken";
@@ -68,22 +69,29 @@ public class GenerateCoRespondentAnswersITest extends MockedFunctionalTest {
         stubDocumentGeneratorServerEndpoint(HttpStatus.OK.value(),
                 generateCoRespondentAnswersRequest, generatedCoRespondentAnswersResponse);
 
-        final DocumentUpdateRequest documentUpdateRequest =
-                DocumentUpdateRequest.builder()
-                        .documents(asList(generatedCoRespondentAnswersResponse))
-                        .caseData(ccdCallbackRequest.getCaseDetails().getCaseData())
-                        .build();
-
         Map<String, Object> responseData = Collections
-                .singletonMap("D8DocumentsGenerated", generatedCoRespondentAnswersResponse);
+                .singletonMap("D8DocumentsGenerated", new ArrayList<CollectionMember<Document>>() {
+                    {
+                        Document document = new Document();
+                        document.setDocumentFileName("coRespondentAnswers");
+                        document.setDocumentType("coRespondentAnswers");
+                        document.setDocumentLink(new DocumentLink() {
+                            {
+                                setDocumentBinaryUrl("null/binary");
+                                setDocumentFilename("coRespondentAnswers.pdf");
+                            }
+                        });
+                        CollectionMember<Document> collectionMember = new CollectionMember<>();
+                        collectionMember.setValue(document);
+                        add(collectionMember);
+                    }
+                });
 
-        stubFormatterServerEndpoint(documentUpdateRequest, responseData);
-
-        CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
+        String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(CcdCallbackResponse
                 .builder()
                 .data(responseData)
-                .build();
-        String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
+                .build()
+        );
 
         webClient.perform(post(API_URL)
                 .header(AUTHORIZATION, USER_TOKEN)
@@ -139,16 +147,6 @@ public class GenerateCoRespondentAnswersITest extends MockedFunctionalTest {
                 .willReturn(aResponse()
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                         .withStatus(httpStatus)
-                        .withBody(convertObjectToJsonString(response))));
-    }
-
-    private void stubFormatterServerEndpoint(DocumentUpdateRequest documentUpdateRequest,
-                                             Map<String, Object> response) {
-        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
-                .willReturn(aResponse()
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withStatus(HttpStatus.OK.value())
                         .withBody(convertObjectToJsonString(response))));
     }
 }

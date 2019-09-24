@@ -8,19 +8,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -48,7 +50,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 
 public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
     private static final String API_URL = "/generate-dn-pronouncement-documents";
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.of(
@@ -125,10 +126,33 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
                 .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
                 .build();
 
+        Map<String, Object> caseData = new HashMap<>(CASE_DATA);
+        caseData.put("D8DocumentsGenerated", new ArrayList<CollectionMember<Document>>() {
+            {
+                Document document = new Document();
+                document.setDocumentFileName("decreeNisitest.case.id");
+                document.setDocumentType("dnGranted");
+                document.setDocumentLink(new DocumentLink() {
+                    {
+                        setDocumentBinaryUrl("null/binary");
+                        setDocumentFilename("decreeNisitest.case.id.pdf");
+                    }
+                });
+                CollectionMember<Document> collectionMember = new CollectionMember<>();
+                collectionMember.setValue(document);
+                add(collectionMember);
+            }
+        });
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .build();
+
         final GenerateDocumentRequest costsOrderDocumentGenerationRequest =
             GenerateDocumentRequest.builder()
                 .template(COSTS_ORDER_TEMPLATE_ID)
-                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
                 .build();
 
         final GeneratedDocumentInfo dnDocumentGenerationResponse =
@@ -143,25 +167,9 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
                 .fileName(COSTS_ORDER_DOCUMENT_TYPE + TEST_CASE_ID)
                 .build();
 
-        final DocumentUpdateRequest dnDocumentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .documents(asList(dnDocumentGenerationResponse))
-                .caseData(CASE_DATA)
-                .build();
-
-        final DocumentUpdateRequest costsOrderDocumentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .documents(asList(costsOrderDocumentGenerationResponse))
-                .caseData(CASE_DATA)
-                .build();
-
-        final Map<String, Object> emptyCaseData = emptyMap();
-
         stubDocumentGeneratorServerEndpoint(dnDocumentGenerationRequest, dnDocumentGenerationResponse);
-        stubFormatterServerEndpoint(dnDocumentUpdateRequest, emptyCaseData);
 
         stubDocumentGeneratorServerEndpoint(costsOrderDocumentGenerationRequest, costsOrderDocumentGenerationResponse);
-        stubFormatterServerEndpoint(costsOrderDocumentUpdateRequest, emptyCaseData);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
 
@@ -202,16 +210,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
                 .fileName(DECREE_NISI_FILENAME + TEST_CASE_ID)
                 .build();
 
-        final DocumentUpdateRequest dnDocumentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .documents(asList(dnDocumentGenerationResponse))
-                .caseData(caseData)
-                .build();
-
-        final Map<String, Object> emptyCaseData = emptyMap();
-
         stubDocumentGeneratorServerEndpoint(dnDocumentGenerationRequest, dnDocumentGenerationResponse);
-        stubFormatterServerEndpoint(dnDocumentUpdateRequest, emptyCaseData);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
@@ -255,16 +254,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
                 .fileName(DECREE_NISI_FILENAME + TEST_CASE_ID)
                 .build();
 
-        final DocumentUpdateRequest dnDocumentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .documents(asList(dnDocumentGenerationResponse))
-                .caseData(caseData)
-                .build();
-
-        final Map<String, Object> emptyCaseData = emptyMap();
-
         stubDocumentGeneratorServerEndpoint(dnDocumentGenerationRequest, dnDocumentGenerationResponse);
-        stubFormatterServerEndpoint(dnDocumentUpdateRequest, emptyCaseData);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
@@ -287,15 +277,4 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(response))));
     }
-
-    private void stubFormatterServerEndpoint(DocumentUpdateRequest documentUpdateRequest,
-                                             Map<String, Object> response) {
-        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
-    }
-
 }
