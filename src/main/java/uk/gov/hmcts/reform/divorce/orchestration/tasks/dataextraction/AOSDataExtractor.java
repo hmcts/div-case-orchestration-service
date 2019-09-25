@@ -16,14 +16,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.retrieveAndFormatCCDDateFieldIfPresent;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.formatFromCCDFormatToHumanReadableFormat;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.retrieveAndFormatCCDDateFieldIfPresent;
 
 @Component
 @Slf4j
 public class AOSDataExtractor implements CSVExtractor {
 
-    private static final String COMMA = ",";
     private static final String FILE_NAME_PREFIX = "AOSDN";
 
     private final String destinationEmailAddress;
@@ -60,7 +59,6 @@ public class AOSDataExtractor implements CSVExtractor {
         try {
             StringBuilder csvLine = new StringBuilder();
 
-            csvLine.append(System.lineSeparator());
             csvLine.append(getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE));
             csvLine.append(COMMA);
 

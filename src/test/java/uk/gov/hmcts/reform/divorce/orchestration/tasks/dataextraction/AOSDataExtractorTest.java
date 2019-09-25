@@ -51,8 +51,8 @@ public class AOSDataExtractorTest {
         Optional<String> firstTransformedTestCaseData = classUnderTest.mapCaseData(firstTestCaseDetails);
         Optional<String> secondTransformedTestCaseData = classUnderTest.mapCaseData(secondTestCaseDetails);
 
-        assertThat(firstTransformedTestCaseData.get(), is(System.lineSeparator() + "LV17D90000,16/07/2019,02/08/2019,06/09/2019"));
-        assertThat(secondTransformedTestCaseData.get(), is(System.lineSeparator() + "LV17D90001,23/12/2018,15/01/2019,19/03/2019"));
+        assertThat(firstTransformedTestCaseData.get(), is("LV17D90000,16/07/2019,02/08/2019,06/09/2019"));
+        assertThat(secondTransformedTestCaseData.get(), is("LV17D90001,23/12/2018,15/01/2019,19/03/2019"));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class AOSDataExtractorTest {
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseDataWithoutReceivedAOSfromRespDate).build();
         Optional<String> transformedTestCaseData = classUnderTest.mapCaseData(caseDetails);
 
-        assertThat(transformedTestCaseData.get(), is(System.lineSeparator() + "LV17D90002,,14/02/2019,28/04/2019"));
+        assertThat(transformedTestCaseData.get(), is("LV17D90002,,14/02/2019,28/04/2019"));
     }
 
     @Test
@@ -78,7 +78,7 @@ public class AOSDataExtractorTest {
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseDataWithoutReceivedAosFromCoRespDate).build();
         Optional<String> transformedTestCaseData = classUnderTest.mapCaseData(caseDetails);
 
-        assertThat(transformedTestCaseData.get(), is(System.lineSeparator() + "LV17D90003,02/05/2019,,10/06/2019"));
+        assertThat(transformedTestCaseData.get(), is("LV17D90003,02/05/2019,,10/06/2019"));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class AOSDataExtractorTest {
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseDataWithoutReceivedAosFromCoRespDate).build();
         Optional<String> transformedTestCaseData = classUnderTest.mapCaseData(caseDetails);
 
-        assertThat(transformedTestCaseData.get(), is(System.lineSeparator() + "LV17D90004,,,12/09/2019"));
+        assertThat(transformedTestCaseData.get(), is("LV17D90004,,,12/09/2019"));
     }
 
     @Test

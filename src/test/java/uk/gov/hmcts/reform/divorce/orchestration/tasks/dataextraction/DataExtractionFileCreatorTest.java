@@ -65,9 +65,9 @@ public class DataExtractionFileCreatorTest {
         when(csvExtractor.getHeaderLine()).thenReturn("header");
         when(csvExtractor.getRelevantCaseStates()).thenReturn(Stream.of(TEST_RELEVANT_STATE));
         when(csvExtractor.mapCaseData(any())).thenReturn(
-            Optional.of(System.lineSeparator() + "line1"),
+            Optional.of("line1"),
             Optional.empty(),
-            Optional.of(System.lineSeparator() + "line2"),
+            Optional.of("line2"),
             Optional.empty()
         );
         when(csvExtractorFactory.getCSVExtractorForStatus(DA)).thenReturn(csvExtractor);

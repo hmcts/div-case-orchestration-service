@@ -28,7 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.mapCCDDateT
 @Slf4j
 public class DecreeAbsoluteDataExtractor implements CSVExtractor {
 
-    private static final String COMMA = ",";
     private static final String WHO_APPLIED_FOR_DA = "petitioner";
     private static final String FILE_NAME_PREFIX = "DA";
 
@@ -67,7 +66,6 @@ public class DecreeAbsoluteDataExtractor implements CSVExtractor {
         try {
             StringBuilder csvLine = new StringBuilder();
 
-            csvLine.append(System.lineSeparator());
             csvLine.append(getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE));
             csvLine.append(COMMA);
 

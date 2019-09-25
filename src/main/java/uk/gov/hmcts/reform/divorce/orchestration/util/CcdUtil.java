@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
@@ -77,6 +78,13 @@ public class CcdUtil {
     public static String formatFromCCDFormatToHumanReadableFormat(String inputDate) {
         LocalDate localDate = parseDateUsingCcdFormat(inputDate);
         return localDate.format(DateTimeFormatter.ofPattern(UK_HUMAN_READABLE_DATE_FORMAT));
+    }
+
+    public static String retrieveAndFormatCCDDateFieldIfPresent(String fieldName, Map<String, Object> caseData, String defaultValue) {
+        return Optional.ofNullable(caseData.get(fieldName))
+            .map((String.class::cast))
+            .map(CcdUtil::formatFromCCDFormatToHumanReadableFormat)
+            .orElse(defaultValue);
     }
 
 }
