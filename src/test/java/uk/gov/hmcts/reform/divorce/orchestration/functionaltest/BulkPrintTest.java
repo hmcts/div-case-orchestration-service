@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ff4j.FeatureToggle;
@@ -46,7 +45,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
@@ -99,8 +97,6 @@ public class BulkPrintTest extends IdamTestSupport {
 
     private static final String SOLICITOR_AOS_INVITATION_EMAIL_ID = "a193f039-2252-425d-861c-6dba255b7e6e";
 
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
-
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
     @ClassRule
@@ -123,7 +119,6 @@ public class BulkPrintTest extends IdamTestSupport {
         sendLetterService.resetAll();
         stubDMStore(HttpStatus.OK);
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
-
     }
 
     @Test
@@ -185,20 +180,14 @@ public class BulkPrintTest extends IdamTestSupport {
                 .lastName(petitionerLastName)
                 .build();
         final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
-        final DocumentUpdateRequest documentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .documents(asList(generatedAosInvitationResponse))
-                .caseData(caseData)
-                .build();
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
         stubFeatureToggleService(true);
         stubSendLetterService(HttpStatus.OK);
         stubDocumentGeneratorServerEndpoint(generateAosInvitationRequest, generatedAosInvitationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, caseData);
 
-        Map<String, Object> expectedCaseData = caseDataWithDocuments();
+        Map<String, Object> expectedCaseData = expectedCaseDataWithDocuments();
         expectedCaseData.put("dueDate", LocalDate.now().plus(9, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE));
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .data(expectedCaseData)
@@ -295,8 +284,29 @@ public class BulkPrintTest extends IdamTestSupport {
         final Map<String, Object> caseData = new HashMap<>();
         caseData.put("D8DocumentsGenerated", Arrays.asList(
             newDocument("http://localhost:4020/binary", "issue", DOCUMENT_TYPE_PETITION),
-            newDocument("http://localhost:4020/binary", "aosletter", DOCUMENT_TYPE_RESPONDENT_INVITATION),
-            newDocument("http://localhost:4020/binary", "coRespondentletter", DOCUMENT_TYPE_CO_RESPONDENT_INVITATION)
+            newDocument("http://localhost:4020/binary", "coRespondentletter", DOCUMENT_TYPE_CO_RESPONDENT_INVITATION),
+            newDocument("http://localhost:4020/binary", "aosletter", DOCUMENT_TYPE_RESPONDENT_INVITATION)
+        ));
+        return caseData;
+    }
+
+    private Map<String, Object> expectedCaseDataWithDocuments() {
+        final Map<String, Object> caseData = new HashMap<>();
+        Document document = new Document();
+        document.setDocumentFileName("aosinvitationtest.case.id");
+        DocumentLink documentLink = new DocumentLink();
+        documentLink.setDocumentBinaryUrl("null/binary");
+        documentLink.setDocumentFilename("aosinvitationtest.case.id.pdf");
+        document.setDocumentLink(documentLink);
+        document.setDocumentType("aos");
+        CollectionMember<Document> collectionMember = new CollectionMember<>();
+        collectionMember.setValue(document);
+
+
+        caseData.put("D8DocumentsGenerated", Arrays.asList(
+                newDocument("http://localhost:4020/binary", "issue", DOCUMENT_TYPE_PETITION),
+                newDocument("http://localhost:4020/binary", "coRespondentletter", DOCUMENT_TYPE_CO_RESPONDENT_INVITATION),
+                collectionMember
         ));
         return caseData;
     }
@@ -391,16 +401,6 @@ public class BulkPrintTest extends IdamTestSupport {
         documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
             .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
-    }
-
-    private void stubFormatterServerEndpoint(DocumentUpdateRequest documentUpdateRequest,
-                                             Map<String, Object> response) {
-        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
             .willReturn(aResponse()
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withStatus(HttpStatus.OK.value())

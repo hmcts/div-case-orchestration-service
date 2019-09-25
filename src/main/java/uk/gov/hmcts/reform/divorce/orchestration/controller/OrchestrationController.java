@@ -169,7 +169,8 @@ public class OrchestrationController {
     public ResponseEntity<CaseDataResponse> retrieveAosCase(
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken) throws WorkflowException {
 
-        return ResponseEntity.ok(orchestrationService.retrieveAosCase(authorizationToken));
+        return ResponseEntity.ok(orchestrationService.retrieveAosCase(
+            authorizationToken));
     }
 
     @GetMapping(path = "/retrieve-case", produces = MediaType.APPLICATION_JSON)

@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -15,9 +16,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static java.time.ZoneOffset.UTC;
 import static java.util.Collections.singletonMap;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -64,7 +68,6 @@ public class DecreeAbsoluteAboutToBeGrantedTest extends MockedFunctionalTest {
         .put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE)
         .build();
 
-
     private static final Map CASE_DETAILS = singletonMap(CASE_DETAILS_JSON_KEY,
         ImmutableMap.<String, Object>builder()
             .put(CCD_CASE_DATA_FIELD, CASE_DATA)
@@ -77,6 +80,15 @@ public class DecreeAbsoluteAboutToBeGrantedTest extends MockedFunctionalTest {
 
     @MockBean
     EmailClient mockEmailClient;
+
+    @MockBean
+    private Clock clock;
+
+    @Before
+    public void setup() {
+        when(clock.instant()).thenReturn(LocalDateTime.of(2019, 6, 30, 10, 0,0).toInstant(UTC));
+        when(clock.getZone()).thenReturn(UTC);
+    }
 
     @Test
     public void givenCorrectRespondentDetails_ThenOkResponse() throws Exception {
