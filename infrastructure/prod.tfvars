@@ -10,3 +10,4 @@ scheduler_send_updated_cases_to_robotics_enabled = "true"
 
 dataextraction_status_da_email_to = "StokeCTSC4.Auto@justice.gov.uk"
 dataextraction_status_aos_email_to = "Auto.StokeCTSC2@justice.gov.uk"
+dataextraction_status_dn_email_to = "StokeCTSC3.Auto@justice.gov.uk"

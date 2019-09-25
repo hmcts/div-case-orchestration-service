@@ -362,6 +362,8 @@ dataExtraction:
       emailTo: da-extraction@divorce.gov.uk
     AOS:
       emailTo: aos-extraction@divorce.gov.uk
+    DN:
+      emailTo: dn-extraction@divorce.gov.uk
 
 # GENERAL SPRING BOOT ACTUATOR CONFIG
 # Context path for Spring Boot Actuator endpoints

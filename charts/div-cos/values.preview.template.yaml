@@ -6,6 +6,7 @@ java:
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: false
     DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
     DATAEXTRACTION_STATUS_AOS_EMAILTO: aos_data_extraction@sharklasers.com
+    DATAEXTRACTION_STATUS_DN_EMAILTO: dn_data_extraction@sharklasers.com
     DIV_SCHEDULER_DB_HOST : "{{ .Release.Name }}-postgresql"
     DIV_SCHEDULER_DB_NAME : "{{ .Values.postgresql.postgresqlDatabase}}"
     DIV_SCHEDULER_DB_USER_NAME : "{{ .Values.postgresql.postgresqlUsername}}"
