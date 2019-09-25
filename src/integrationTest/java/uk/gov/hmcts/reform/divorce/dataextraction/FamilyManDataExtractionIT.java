@@ -27,7 +27,7 @@ public class FamilyManDataExtractionIT extends RetrieveCaseSupport {
     private String testDataExtractionEndPoint;
 
     @Test
-    public void shouldEmailCsvFileWithCase_ForDecreeAbsoluteIssued() {
+    public void shouldEmailCsvFiles() {
         final UserDetails caseWorkerUser = createCaseWorkerUser();
 
         Response response = callTestEndpoint(caseWorkerUser.getAuthToken());
