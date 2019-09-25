@@ -35,7 +35,7 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         return this.execute(new Task[]{
-                setSolicitorCourtDetailsTask,
+            setSolicitorCourtDetailsTask,
             addMiniPetitionDraftTask,
             caseFormatterAddDocuments
             }, caseDetails.getCaseData(),
