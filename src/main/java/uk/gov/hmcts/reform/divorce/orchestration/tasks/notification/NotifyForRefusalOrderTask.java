@@ -50,7 +50,7 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
 
             final String petitionerEmail = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_EMAIL);
             String refusalReason = (String) payload.get(REFUSAL_DECISION_CCD_FIELD);
-            if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase((String) payload.get(REFUSAL_DECISION_CCD_FIELD))) {
+            if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase(refusalReason)) {
                 emailService.sendEmail(
                     petitionerEmail,
                     EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name(),
