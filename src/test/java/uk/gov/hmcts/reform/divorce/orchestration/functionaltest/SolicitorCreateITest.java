@@ -44,7 +44,6 @@ public class SolicitorCreateITest extends MockedFunctionalTest {
     private static final String API_URL_CREATE = "/solicitor-create";
 
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
-    private static final String FORMAT_ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
 
     @Autowired
     private CcdUtil ccdUtil;
@@ -91,7 +90,6 @@ public class SolicitorCreateITest extends MockedFunctionalTest {
             .build();
 
         stubDocumentGeneratorServerEndpoint(documentRequest, documentInfo);
-        stubFormatterServerEndpoint(documentFormatRequest);
 
         webClient.perform(post(API_URL_CREATE)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -110,14 +108,5 @@ public class SolicitorCreateITest extends MockedFunctionalTest {
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(response))));
-    }
-
-    private void stubFormatterServerEndpoint(DocumentUpdateRequest data) {
-        formatterServiceServer.stubFor(WireMock.post(FORMAT_ADD_DOCUMENTS_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(data)))
-            .willReturn(aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withBody(convertObjectToJsonString(data))));
     }
 }

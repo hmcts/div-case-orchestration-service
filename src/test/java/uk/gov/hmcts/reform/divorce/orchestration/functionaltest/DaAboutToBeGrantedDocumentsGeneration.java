@@ -58,7 +58,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest {
 
     private static final String API_URL = "/da-about-to-be-granted";
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.<String, Object>builder()
@@ -117,7 +116,6 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
                 .build();
 
         stubDocumentGeneratorServerEndpoint(daDocumentGenerationRequest, daDocumentGenerationResponse);
-        stubFormatterServerEndpoint(daDocumentUpdateRequest, CASE_DATA);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
 
@@ -160,15 +158,4 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(response))));
     }
-
-    private void stubFormatterServerEndpoint(DocumentUpdateRequest documentUpdateRequest,
-        Map<String, Object> response) {
-        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
-    }
-
 }

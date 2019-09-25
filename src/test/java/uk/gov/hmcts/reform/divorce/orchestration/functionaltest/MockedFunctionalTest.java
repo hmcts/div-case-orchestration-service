@@ -33,9 +33,6 @@ public abstract class MockedFunctionalTest {
     public static WireMockClassRule feesAndPaymentsServer = new WireMockClassRule(buildWireMockConfig(4009));
 
     @ClassRule
-    public static WireMockClassRule formatterServiceServer = new WireMockClassRule(buildWireMockConfig(4011));
-
-    @ClassRule
     public static WireMockClassRule idamServer = new WireMockClassRule(buildWireMockConfig(4503));
 
     @ClassRule

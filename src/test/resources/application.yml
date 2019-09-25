@@ -80,14 +80,6 @@ server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
 
 case:
-  formatter:
-    service:
-      api:
-        baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://localhost:4011}
-  validation:
-    service:
-      api:
-        baseurl: ${CASE_VALIDATION_SERVICE_API_BASEURL:http://localhost:4008}
   maintenance:
     service:
       api:
