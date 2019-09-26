@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -35,20 +36,29 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL_ADDRESS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaRequestedNotifyRespondentEmailTask.EMAIL_DESC;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaRequestedNotifyRespondentEmailTask.REQUESTED_BY_APPLICANT;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaRequestedNotifyRespondentEmailTask.REQUESTED_BY_SOLICITOR;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendDaRequestedNotifyRespondentEmailTaskTest {
@@ -59,8 +69,6 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
     @InjectMocks
     SendDaRequestedNotifyRespondentEmailTask sendDaRequestedNotifyRespondentEmailTask;
 
-    private static String APPLICANT_REQUESTED_DA_NOTIFICATION_EMAIL_DESC =
-        "Decree Absolute Requested Notification - Applicant Requested Decree Absolute";
     private TaskContext context;
     private Map<String, Object> testData;
     private Map<String, String> expectedTemplateVars;
@@ -68,6 +76,7 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
     @Before
     public void setup() {
         context = new DefaultTaskContext();
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, CaseDetails.builder().caseId("1").build());
 
         testData = new HashMap<>();
         testData.put(D_8_CASE_REFERENCE, TEST_CASE_ID);
@@ -108,7 +117,7 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
                 eq(TEST_RESPONDENT_EMAIL),
                 eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION.name()),
                 anyMap(),
-                eq(EMAIL_DESC)
+                eq(REQUESTED_BY_APPLICANT)
             );
 
         sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
@@ -133,7 +142,7 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
                     eq(TEST_RESPONDENT_EMAIL),
                     eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION.name()),
                     eq(expectedTemplateVars),
-                    eq(APPLICANT_REQUESTED_DA_NOTIFICATION_EMAIL_DESC));
+                    eq(REQUESTED_BY_APPLICANT));
         } catch (NotificationClientException e) {
             fail("exception occurred in test");
         }
@@ -143,11 +152,14 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
     public void shouldSendEmailToRespondentSolicitor() throws TaskException {
         testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         testData.put(RESPONDENT_EMAIL_ADDRESS, "");
+
         testData.put(RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_RESPONDENT_SOLICITOR_EMAIL);
+
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
-        testData.put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP);
-        testData.put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_GENDER);
+        testData.put(D_8_PETITIONER_FIRST_NAME, TEST_RESPONDENT_LAST_NAME);
+        testData.put(D_8_PETITIONER_LAST_NAME, TEST_RELATIONSHIP);
+        testData.put(D8_RESPONDENT_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
 
         Map returnPayload = sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
 
@@ -157,9 +169,9 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
             verify(emailService)
                 .sendEmailAndReturnExceptionIfFails(
                     eq(TEST_RESPONDENT_SOLICITOR_EMAIL),
-                    eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION.name()),
+                    eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR.name()),
                     anyMap(),
-                    eq(APPLICANT_REQUESTED_DA_NOTIFICATION_EMAIL_DESC));
+                    eq(REQUESTED_BY_SOLICITOR));
         } catch (NotificationClientException e) {
             fail("exception occurred in test");
         }
