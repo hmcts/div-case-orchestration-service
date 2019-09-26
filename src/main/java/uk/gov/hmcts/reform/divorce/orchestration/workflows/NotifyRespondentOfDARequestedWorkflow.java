@@ -37,7 +37,7 @@ public class NotifyRespondentOfDARequestedWorkflow extends DefaultWorkflow<Map<S
     private void validateDaIsRequested(CaseDetails caseDetails) throws WorkflowException {
         String applyForDecreeAbsolute = (String) caseDetails.getCaseData().get(APPLY_FOR_DA);
 
-        if (applyForDecreeAbsolute == null || !applyForDecreeAbsolute.equalsIgnoreCase(YES_VALUE)) {
+        if (!YES_VALUE.equalsIgnoreCase(applyForDecreeAbsolute)) {
             throw new WorkflowException("You must select 'Yes' to apply for Decree Absolute");
         }
     }
