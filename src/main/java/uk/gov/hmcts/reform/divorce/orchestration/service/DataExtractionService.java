@@ -10,6 +10,13 @@ import java.time.LocalDate;
 public interface DataExtractionService {
 
     /**
+     * Process case statuses along with yesterday's date.
+     *
+     * @throws CaseOrchestrationServiceException if any exception occurs
+     */
+    void requestDataExtractionForPreviousDay() throws CaseOrchestrationServiceException;
+
+    /**
      * Extracts the data from cases moved to a given status with a given period to Family Man.
      *
      * @param status    Status in which the case to be extracted have to be.

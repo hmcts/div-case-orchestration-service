@@ -19,6 +19,15 @@ public interface DecreeAbsoluteService {
      */
     int enableCaseEligibleForDecreeAbsolute(String authToken) throws WorkflowException;
 
+    /**
+     * Process cases which are overdue for Decree Absolute.
+     *
+     * @param authToken Authorisation token
+     * @return a number of cases are processed
+     * @throws WorkflowException if any exception occurs
+     */
+    int processCaseOverdueForDecreeAbsolute(String authToken) throws WorkflowException;
+
     /** Notify Respondents that the applicant has requested Decree Absolute.
      *
      * @param ccdCallbackRequest Callback request containing CCD Case Data

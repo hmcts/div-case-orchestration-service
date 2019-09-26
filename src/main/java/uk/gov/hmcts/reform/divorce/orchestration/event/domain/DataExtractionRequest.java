@@ -27,6 +27,8 @@ public class DataExtractionRequest extends ApplicationEvent {
     }
 
     public enum Status {
+        AOS,
+        DN,
         DA
     }
 

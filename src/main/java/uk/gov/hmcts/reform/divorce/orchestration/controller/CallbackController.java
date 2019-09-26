@@ -192,9 +192,8 @@ public class CallbackController {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.info("/aos-submitted endpoint called for caseId {}", caseId);
         Map<String, Object> returnedCaseData;
-
         try {
-            returnedCaseData = caseOrchestrationService.sendRespondentSubmissionNotificationEmail(ccdCallbackRequest);
+            returnedCaseData = caseOrchestrationService.aosSubmission(ccdCallbackRequest, authorizationToken);
         } catch (WorkflowException e) {
             log.error("Failed to call service for caseId {}", caseId, e);
             return ResponseEntity.ok(CcdCallbackResponse.builder()
@@ -218,7 +217,19 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> petitionUpdated(
         @RequestHeader(value = "Authorization", required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest);
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.info("/petition-updated endpoint called for caseId {}", caseId);
+
+        try {
+            caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest);
+        } catch (WorkflowException e) {
+            log.error("Failed to complete service for caseId {}", caseId, e);
+            return ResponseEntity.ok(CcdCallbackResponse.builder()
+                    .data(ccdCallbackRequest.getCaseDetails().getCaseData())
+                    .errors(singletonList(e.getMessage()))
+                    .build());
+        }
+
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(ccdCallbackRequest.getCaseDetails().getCaseData())
             .build());
@@ -602,6 +613,30 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    @PostMapping(path = "/aos-received")
+    @ApiOperation(value = "Respondent confirmation notification ")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Notification sent successful"),
+            @ApiResponse(code = 401, message = "User Not Authenticated"),
+            @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> aosReceived(
+            @RequestHeader("Authorization")
+            @ApiParam(value = "JWT authorisation token issued by IDAM",
+                    required = true) final String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return ResponseEntity.ok(caseOrchestrationService.aosReceived(ccdCallbackRequest, authorizationToken));
+    }
+
+    @PostMapping(path = "/co-respondent-received")
+    @ApiOperation(value = "Co-Respondent confirmation notification ")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Notification sent successful"),
+            @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> corespReceived(
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return ResponseEntity.ok(caseOrchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest));
+    }
+
     @PostMapping(path = "/aos-solicitor-nominated",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Handles actions that need to happen once a respondent nominates a solicitor.")
@@ -612,6 +647,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> aosSolicitorNominated(
+        @RequestHeader(value = "Authorization") String authToken,
         @RequestBody @ApiParam("CaseData")
             CcdCallbackRequest ccdCallbackRequest) {
 
@@ -622,7 +658,7 @@ public class CallbackController {
 
         try {
             callbackResponseBuilder.data(
-                caseOrchestrationService.processAosSolicitorNominated(ccdCallbackRequest));
+                caseOrchestrationService.processAosSolicitorNominated(ccdCallbackRequest, authToken));
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format("Failed processing AOS solicitor callback. Case ID:  %s", caseId),
                 exception);
