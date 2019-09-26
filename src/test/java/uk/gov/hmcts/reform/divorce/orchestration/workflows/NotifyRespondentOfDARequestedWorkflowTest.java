@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -20,8 +21,10 @@ import java.util.Map;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.APPLY_FOR_DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -34,9 +37,13 @@ public class NotifyRespondentOfDARequestedWorkflowTest {
     private NotifyRespondentOfDARequestedWorkflow notifyRespondentOfDARequestedWorkflow;
 
     @Test
-    public void callsTheRequiredTask() throws WorkflowException, TaskException {
+    public void callsTheRequiredTaskWithAllExpectedDataIsOk() throws WorkflowException, TaskException {
         final TaskContext context = new DefaultTaskContext();
         final Map<String, Object> payload = new HashMap<>();
+        payload.put(APPLY_FOR_DA, "yes");
+
+        when(sendDaRequestedNotifyRespondentEmail.execute(ArgumentMatchers.any(), ArgumentMatchers.any(Map.class)))
+            .thenReturn(payload);
 
         final CaseDetails caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
@@ -52,6 +59,21 @@ public class NotifyRespondentOfDARequestedWorkflowTest {
         assertThat(result, is(payload));
 
         verify(sendDaRequestedNotifyRespondentEmail).execute(context, payload);
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void callsTheRequiredTaskWithoutApplyForDaFlagThrowsWorkflowException() throws WorkflowException, TaskException {
+        final TaskContext context = new DefaultTaskContext();
+        final Map<String, Object> payload = new HashMap<>();
+
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .caseData(payload)
+            .build();
+
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        final Map<String, Object> result = notifyRespondentOfDARequestedWorkflow.run(ccdCallbackRequest);
     }
 
 }

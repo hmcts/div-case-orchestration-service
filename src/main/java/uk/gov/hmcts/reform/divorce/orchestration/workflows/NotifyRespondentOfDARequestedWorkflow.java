@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaRequestedNotifyResp
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.APPLY_FOR_DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 
 @Component
@@ -25,10 +26,20 @@ public class NotifyRespondentOfDARequestedWorkflow extends DefaultWorkflow<Map<S
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
+        validateDaIsRequested(caseDetails);
+
         return this.execute(
             new Task[] {sendDaRequestedNotifyRespondentEmail},
             ccdCallbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails)
         );
+    }
+
+    private void validateDaIsRequested(CaseDetails caseDetails) throws WorkflowException {
+        String applyForDecreeAbsolute = (String) caseDetails.getCaseData().get(APPLY_FOR_DA);
+
+        if (applyForDecreeAbsolute == null || !applyForDecreeAbsolute.equalsIgnoreCase("yes")) {
+            throw new WorkflowException("You must select 'Yes' to apply for Decree Absolute");
+        }
     }
 }

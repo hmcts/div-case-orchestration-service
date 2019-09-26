@@ -34,7 +34,7 @@ public class DecreeAbsoluteController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> notifyRespondentOfDARequested(
-        @RequestHeader(value = "Authorization") String authorizationToken  ,
+        @RequestHeader(value = "Authorization") String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 

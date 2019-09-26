@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFER
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.APPLY_FOR_DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -46,8 +47,8 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
         .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
         .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
         .put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_GENDER)
+        .put(APPLY_FOR_DA, "yes")
         .build();
-
 
     private static final Map CASE_DETAILS = singletonMap(CASE_DETAILS_JSON_KEY,
         ImmutableMap.<String, Object>builder()

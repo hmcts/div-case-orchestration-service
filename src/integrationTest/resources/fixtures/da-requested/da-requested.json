@@ -17,7 +17,8 @@
       "D8RespondentLastName": "RespLast",
       "D8caseReference": "EZ80D81234",
       "D8InferredPetitionerGender": "female",
-      "RespEmailAddress": "respondentda@mailinator.com"
+      "RespEmailAddress": "respondentda@mailinator.com",
+      "ApplyForDecreeAbsolute": "yes"
     }
   }
 }
