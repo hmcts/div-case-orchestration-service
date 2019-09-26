@@ -6,7 +6,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -26,6 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.APPLY_FOR_DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotifyRespondentOfDARequestedWorkflowTest {
@@ -40,7 +40,7 @@ public class NotifyRespondentOfDARequestedWorkflowTest {
     public void callsTheRequiredTaskWithAllExpectedDataIsOk() throws WorkflowException, TaskException {
         final TaskContext context = new DefaultTaskContext();
         final Map<String, Object> payload = new HashMap<>();
-        payload.put(APPLY_FOR_DA, "yes");
+        payload.put(APPLY_FOR_DA, YES_VALUE);
 
         when(sendDaRequestedNotifyRespondentEmailTask.execute(ArgumentMatchers.any(), ArgumentMatchers.any(Map.class)))
             .thenReturn(payload);
@@ -73,7 +73,7 @@ public class NotifyRespondentOfDARequestedWorkflowTest {
             .build();
 
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-        final Map<String, Object> result = notifyRespondentOfDARequestedWorkflow.run(ccdCallbackRequest);
+        notifyRespondentOfDARequestedWorkflow.run(ccdCallbackRequest);
     }
 
 }
