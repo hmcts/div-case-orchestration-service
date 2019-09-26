@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
@@ -11,6 +12,9 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_OPTIONS_CCD_FIELD;
 
 public class CaseDataUtilsTest {
 
@@ -63,6 +67,30 @@ public class CaseDataUtilsTest {
     @Test
     public void givenNonCcdCollectionData_whenGetElementFromCollection_theReturnNull() {
         assertThat(CaseDataUtils.getElementFromCollection(DUMMY_CASE_DATA), is(nullValue()));
+    }
+
+    @Test
+    public void givenClaimCostAndDnContinueClaimCost_whenCheckPetitionerClaimCost_thenReturnTrue(){
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
+        caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, "Continue");
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
+        assertThat(CaseDataUtils.isPetitionerClaimingCosts(caseData), is(true));
+    }
+
+    @Test
+    public void givenNoClaimCost_whenCheckPetitionerClaimCost_thenReturnFalse(){
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
+        assertThat(CaseDataUtils.isPetitionerClaimingCosts(caseData), is(false));
+    }
+
+    @Test
+    public void givenClaimCostAndDnNoContinueClaimCost_whenCheckPetitionerClaimCost_thenReturnFalse(){
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
+        caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, "No");
+        assertThat(CaseDataUtils.isPetitionerClaimingCosts(caseData), is(false));
     }
 
 }

@@ -44,6 +44,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDNDocumentsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDnOutcomeCaseFlagWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLegalAdvisorMakeDecisionFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkFromListedWorkflow;
@@ -285,6 +286,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private NotifyForRefusalOrderWorkflow notifyForRefusalOrderWorkflow;
+
+    @Mock
+    private RemoveDNDocumentsWorkflow removeDNDocumentsWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1520,6 +1524,26 @@ public class CaseOrchestrationServiceImplTest {
         classUnderTest.notifyForRefusalOrder(ccdCallbackRequest);
 
         verify(notifyForRefusalOrderWorkflow).run(eq(requestPayload));
+    }
+
+    @Test
+    public void shouldCallRemoveDNGrantedDocumentsWorkflow() throws WorkflowException {
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(
+                CaseDetails.builder()
+                    .caseData(requestPayload)
+                    .caseId(TEST_CASE_ID)
+                    .state(TEST_STATE)
+                    .build())
+            .eventId(TEST_EVENT_ID)
+            .token(TEST_TOKEN)
+            .build();
+
+        when(removeDNDocumentsWorkflow.run(eq(requestPayload))).thenReturn(requestPayload);
+
+        classUnderTest.removeDNGrantedDocuments(ccdCallbackRequest);
+
+        verify(removeDNDocumentsWorkflow).run(eq(requestPayload));
     }
 
     @After
