@@ -48,8 +48,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL_ADDRESS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -69,11 +73,12 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
     private TaskContext context;
     private Map<String, Object> testData;
     private Map<String, String> expectedTemplateVars;
+    private static final String CCD_CASE_ID = "123123123";
 
     @Before
     public void setup() {
         context = new DefaultTaskContext();
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, CaseDetails.builder().caseId("1").build());
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, CaseDetails.builder().caseId(CCD_CASE_ID).build());
 
         testData = new HashMap<>();
         testData.put(D_8_CASE_REFERENCE, TEST_CASE_ID);
@@ -149,14 +154,13 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
     public void shouldSendEmailToRespondentSolicitor() throws TaskException {
         testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         testData.put(RESPONDENT_EMAIL_ADDRESS, "");
-
         testData.put(RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_RESPONDENT_SOLICITOR_EMAIL);
-
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_RESPONDENT_LAST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_RELATIONSHIP);
         testData.put(D8_RESPONDENT_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        Map<String, String> expectedTempVars = prepareExpectedTemplateVarsForSolicitor(testData);
 
         Map returnPayload = sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
 
@@ -167,7 +171,7 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
                 .sendEmailAndReturnExceptionIfFails(
                     eq(TEST_RESPONDENT_SOLICITOR_EMAIL),
                     eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR.name()),
-                    anyMap(),
+                    eq(expectedTempVars),
                     eq(REQUESTED_BY_SOLICITOR));
         } catch (NotificationClientException e) {
             fail("exception occurred in test");
@@ -191,5 +195,23 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
                 is(format("Could not evaluate value of mandatory property \"%s\"", "D8InferredPetitionerGender"))
             );
         }
+    }
+
+    private Map<String, String> prepareExpectedTemplateVarsForSolicitor(Map<String, Object> caseData) {
+        Map<String, String> templateVars = new HashMap<>();
+
+        String respondentName = String
+            .format("%s %s", caseData.get(RESP_FIRST_NAME_CCD_FIELD), caseData.get(RESP_LAST_NAME_CCD_FIELD));
+        String petitionerName = String
+            .format("%s %s", caseData.get(D_8_PETITIONER_FIRST_NAME), caseData.get(D_8_PETITIONER_LAST_NAME));
+
+        templateVars.put(NOTIFICATION_PET_NAME, petitionerName);
+        templateVars.put(NOTIFICATION_RESP_NAME, respondentName);
+        templateVars.put(NOTIFICATION_SOLICITOR_NAME, (String) caseData.get(D8_RESPONDENT_SOLICITOR_NAME));
+        templateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, TEST_RESPONDENT_SOLICITOR_EMAIL);
+        templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, CCD_CASE_ID);
+
+
+        return templateVars;
     }
 }
