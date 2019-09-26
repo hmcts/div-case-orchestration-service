@@ -52,7 +52,7 @@ public class SendDaRequestedNotifyRespondentEmailTest {
     @Mock EmailService emailService;
 
     @InjectMocks
-    SendDaRequestedNotifyRespondentEmail sendDaRequestedNotifyRespondentEmail;
+    SendDaRequestedNotifyRespondentEmailTask sendDaRequestedNotifyRespondentEmailTask;
 
     private static String APPLICANT_REQUESTED_DA_NOTIFICATION_EMAIL_DESC =
         "Decree Absolute Requested Notification - Applicant Requested Decree Absolute";
@@ -84,7 +84,7 @@ public class SendDaRequestedNotifyRespondentEmailTest {
         testData.put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP);
         testData.put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_GENDER);
 
-        sendDaRequestedNotifyRespondentEmail.execute(context, testData);
+        sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
         verifyZeroInteractions(emailService);
     }
 
@@ -98,7 +98,7 @@ public class SendDaRequestedNotifyRespondentEmailTest {
         testData.put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_GENDER);
 
 
-        Map returnPayload = sendDaRequestedNotifyRespondentEmail.execute(context, testData);
+        Map returnPayload = sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
 
         assertEquals(testData, returnPayload);
 
@@ -123,7 +123,7 @@ public class SendDaRequestedNotifyRespondentEmailTest {
         testData.put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP);
 
         try {
-            sendDaRequestedNotifyRespondentEmail.execute(context, testData);
+            sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
             fail("Failed to catch task exception");
         } catch (TaskException e) {
             assertThat(e.getMessage(), is(format("Could not evaluate value of mandatory property \"%s\"", "D8InferredPetitionerGender")));
