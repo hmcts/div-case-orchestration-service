@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaRequestedNotifyRespondentEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaRequestedNotifyRespondentEmailTask;
 
 import java.util.Map;
 
@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class NotifyRespondentOfDARequestedWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
-    private SendDaRequestedNotifyRespondentEmail sendDaRequestedNotifyRespondentEmail;
+    private SendDaRequestedNotifyRespondentEmailTask sendDaRequestedNotifyRespondentEmailTask;
 
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
@@ -29,7 +29,7 @@ public class NotifyRespondentOfDARequestedWorkflow extends DefaultWorkflow<Map<S
         validateDaIsRequested(caseDetails);
 
         return this.execute(
-            new Task[] {sendDaRequestedNotifyRespondentEmail},
+            new Task[] {sendDaRequestedNotifyRespondentEmailTask},
             ccdCallbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails)
         );

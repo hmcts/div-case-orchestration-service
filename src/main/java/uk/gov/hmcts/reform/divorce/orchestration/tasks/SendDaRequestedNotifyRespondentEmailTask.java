@@ -31,14 +31,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRe
 
 @Component
 @Slf4j
-public class SendDaRequestedNotifyRespondentEmail implements Task<Map<String, Object>> {
+public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESC = "Decree Absolute Requested Notification - Applicant Requested Decree Absolute";
 
     private final EmailService emailService;
 
     @Autowired
-    public SendDaRequestedNotifyRespondentEmail(EmailService emailService) {
+    public SendDaRequestedNotifyRespondentEmailTask(EmailService emailService) {
         this.emailService = emailService;
     }
 
