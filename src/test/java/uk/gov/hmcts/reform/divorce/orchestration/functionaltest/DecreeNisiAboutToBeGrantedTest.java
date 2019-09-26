@@ -85,7 +85,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
-    private static final long FIXED_TIME_EPOCH = 1000000l;
+    private static final long FIXED_TIME_EPOCH = 1000000L;
 
     @Autowired
     private MockMvc webClient;
