@@ -133,15 +133,7 @@ public abstract class IntegrationTest {
     protected UserDetails createSolicitorUser() {
 
         final String username = SOLICITOR_USER_NAME + EMAIL_DOMAIN;
-        try {
-            return getCreatedUserDetails(username);
-        } catch (FeignException.Unauthorized e) {
-            return wrapInRetry(() -> {
-                return getUserDetails(username, CASEWORKER_USERGROUP,
-                    CASEWORKER_ROLE, CASEWORKER_DIVORCE_ROLE, CASEWORKER_DIVORCE_SOLICITOR_ROLE
-                );
-            });
-        }
+        return getCreatedUserDetails(username);
     }
 
     private UserDetails getUserDetails(String username, String userGroup,boolean keepUser, String... role) {
