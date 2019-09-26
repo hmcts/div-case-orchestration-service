@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRe
 @Slf4j
 public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String, Object>> {
 
-    private static final String EMAIL_DESC = "Decree Absolute Requested Notification - Applicant Requested Decree Absolute";
+    static final String EMAIL_DESC = "Decree Absolute Requested Notification - Applicant Requested Decree Absolute";
 
     private final EmailService emailService;
 
