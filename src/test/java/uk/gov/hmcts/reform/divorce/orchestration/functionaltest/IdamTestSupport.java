@@ -45,24 +45,24 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     private static final String PIN_AUTH_URL_WITH_REDIRECT = "http://www.redirect.url?code=" + TEST_CODE;
 
 
-    private static final AuthenticateUserResponse AUTHENTICATE_USER_RESPONSE =
+    protected  static final AuthenticateUserResponse AUTHENTICATE_USER_RESPONSE =
         AuthenticateUserResponse.builder()
             .code(TEST_CODE)
             .build();
 
-    static final String AUTHENTICATE_USER_RESPONSE_JSON = convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE);
+    protected static final String AUTHENTICATE_USER_RESPONSE_JSON = convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE);
 
     private static final UserDetails USER_DETAILS_PIN_USER =
         UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
 
-    static final String USER_DETAILS_PIN_USER_JSON = convertObjectToJsonString(USER_DETAILS_PIN_USER);
+    protected static final String USER_DETAILS_PIN_USER_JSON = convertObjectToJsonString(USER_DETAILS_PIN_USER);
 
-    private static final UserDetails USER_DETAILS =
+    protected  static final UserDetails USER_DETAILS =
         UserDetails.builder().id(TEST_USER_ID).email(TEST_EMAIL).build();
 
-    static final String USER_DETAILS_JSON = convertObjectToJsonString(USER_DETAILS);
+    protected  static final String USER_DETAILS_JSON = convertObjectToJsonString(USER_DETAILS);
 
-    private static final TokenExchangeResponse TOKEN_EXCHANGE_RESPONSE =
+    protected  static final TokenExchangeResponse TOKEN_EXCHANGE_RESPONSE =
         TokenExchangeResponse.builder()
             .accessToken(AUTH_TOKEN_1)
             .build();
@@ -90,7 +90,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     @Value("${idam.caseworker.password}")
     private String caseworkerPassword;
 
-    void stubUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
+    protected void stubUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
         idamServer.stubFor(get(IDAM_USER_DETAILS_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
             .willReturn(aResponse()
@@ -99,7 +99,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
                 .withBody(message)));
     }
 
-    void stubPinDetailsEndpoint(String authHeader, PinRequest pinRequest, Pin response) {
+    protected void stubPinDetailsEndpoint(String authHeader, PinRequest pinRequest, Pin response) {
         idamServer.stubFor(post(IDAM_PIN_DETAILS_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
             .withHeader(CONTENT_TYPE, new EqualToPattern(APPLICATION_JSON_VALUE))
@@ -110,7 +110,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
                 .withBody(convertObjectToJsonString(response))));
     }
 
-    void stubSignIn() {
+    protected void stubSignIn() {
         try {
             stubAuthoriseEndpoint(getBasicAuthHeader(citizenUserName, citizenPassword),
                 convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
@@ -122,7 +122,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
         }
     }
 
-    void stubSignInForCaseworker() {
+    protected void stubSignInForCaseworker() {
         try {
             stubAuthoriseEndpoint(getBasicAuthHeader(caseworkerUserName, caseworkerPassword),
                     convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));

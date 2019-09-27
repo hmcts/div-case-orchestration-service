@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseCancelPronouncementEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
@@ -289,6 +290,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private RemoveDNDocumentsWorkflow removeDNDocumentsWorkflow;
+
+    @Mock
+    private BulkCaseCancelPronouncementEventWorkflow bulkCaseCancelPronouncementEventWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1175,6 +1179,24 @@ public class CaseOrchestrationServiceImplTest {
             .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.processBulkCaseScheduleForHearing(ccdCallbackRequest, AUTH_TOKEN);
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_ForProcessCancelBulkCasePronouncement() throws WorkflowException {
+        when(bulkCaseCancelPronouncementEventWorkflow.run(eq(ccdCallbackRequest), eq(AUTH_TOKEN)))
+            .thenReturn(requestPayload);
+
+        assertThat(classUnderTest.processCancelBulkCasePronouncement(ccdCallbackRequest, AUTH_TOKEN),
+            is(equalTo(requestPayload)));
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldThrowException_ForProcessCancelBulkCasePronouncement_WhenWorkflowExceptionIsCaught()
+        throws WorkflowException {
+        when(bulkCaseCancelPronouncementEventWorkflow.run(eq(ccdCallbackRequest), eq(AUTH_TOKEN)))
+            .thenThrow(new WorkflowException("This operation threw an exception"));
+
+        classUnderTest.processCancelBulkCasePronouncement(ccdCallbackRequest, AUTH_TOKEN);
     }
 
     @Test

@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseCancelPronouncementEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseRemoveCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
@@ -141,6 +142,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
     private final SeparationFieldsWorkflow separationFieldsWorkflow;
     private final BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
+    private final BulkCaseCancelPronouncementEventWorkflow bulkCaseCancelPronouncementEventWorkflow;
     private final ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
     private final RespondentSolicitorLinkCaseWorkflow respondentSolicitorLinkCaseWorkflow;
     private final DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
@@ -643,11 +645,21 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         return separationFieldsWorkflow.errors();
     }
 
+    @Override
     public Map<String, Object> processBulkCaseScheduleForHearing(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
         String bulkCaseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.info("Starting Bulk Schedule For Listing Callback on Bulk Case {}", bulkCaseId);
         Map<String, Object> result = bulkCaseUpdateHearingDetailsEventWorkflow.run(ccdCallbackRequest, authToken);
         log.info("Bulk Scheduling Successfully Initiated on Bulk Case {}", bulkCaseId);
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> processCancelBulkCasePronouncement(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        String bulkCaseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.info("Starting Bulk Schedule cancel pronouncement for bulk with case id{}", bulkCaseId);
+        Map<String, Object> result = bulkCaseCancelPronouncementEventWorkflow.run(ccdCallbackRequest, authToken);
+        log.info("Bulk cancel pronouncement Successfully Initiated on Bulk Case {}", bulkCaseId);
         return result;
     }
 

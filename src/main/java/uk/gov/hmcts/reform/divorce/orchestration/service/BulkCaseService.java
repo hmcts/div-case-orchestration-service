@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service;
 
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseAcceptedCasesEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseCancelPronouncementEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseCreateEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseRemovePronouncementDetailsEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulk.BulkCaseUpdateCourtHearingEvent;
@@ -23,5 +24,7 @@ public interface BulkCaseService {
     void handleBulkCaseRemovePronouncementDetailsEvent(BulkCaseRemovePronouncementDetailsEvent event);
 
     Map<String, Object> removeFromBulkListed(CcdCallbackRequest callbackRequest, String auth) throws WorkflowException;
+
+    void handleBulkCaseCancelPronouncementDetailsEvent(BulkCaseCancelPronouncementEvent event) throws WorkflowException;
 
 }
