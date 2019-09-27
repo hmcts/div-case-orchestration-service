@@ -361,23 +361,27 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public CcdCallbackResponse sendCoRespReceivedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        Map<String, Object> response = sendCoRespondSubmissionNotificationWorkflow.run(ccdCallbackRequest);
-        log.info("Co-respondent received notification completed with CASE ID: {}.",
-            ccdCallbackRequest.getCaseDetails().getCaseId());
+    public CcdCallbackResponse sendCoRespReceivedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+        try {
+            Map<String, Object> response = sendCoRespondSubmissionNotificationWorkflow.run(ccdCallbackRequest);
+            log.info("Co-respondent received notification completed with CASE ID: {}.",
+                    ccdCallbackRequest.getCaseDetails().getCaseId());
 
-        if (sendCoRespondSubmissionNotificationWorkflow.errors().isEmpty()) {
-            return CcdCallbackResponse.builder()
-                .data(response)
-                .build();
-        } else {
-            Map<String, Object> workflowErrors = sendCoRespondSubmissionNotificationWorkflow.errors();
-            log.error("Co-respondent received notification with CASE ID: {} failed." + workflowErrors,
-                ccdCallbackRequest.getCaseDetails().getCaseId());
-            return CcdCallbackResponse
-                .builder()
-                .errors(getNotificationErrors(workflowErrors))
-                .build();
+            if (sendCoRespondSubmissionNotificationWorkflow.errors().isEmpty()) {
+                return CcdCallbackResponse.builder()
+                        .data(response)
+                        .build();
+            } else {
+                Map<String, Object> workflowErrors = sendCoRespondSubmissionNotificationWorkflow.errors();
+                log.error("Co-respondent received notification with CASE ID: {} failed." + workflowErrors,
+                        ccdCallbackRequest.getCaseDetails().getCaseId());
+                return CcdCallbackResponse
+                        .builder()
+                        .errors(getNotificationErrors(workflowErrors))
+                        .build();
+            }
+        } catch (WorkflowException e) {
+            throw new CaseOrchestrationServiceException(e);
         }
     }
 

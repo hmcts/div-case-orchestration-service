@@ -36,6 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @Component
 @AllArgsConstructor
@@ -54,24 +55,24 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
     private final CcdUtil ccdUtil;
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        try {
+            Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
-        String caseNumber = (String) caseData.get(D_8_CASE_REFERENCE);
-        String firstName = (String) caseData.get(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME);
-        String lastName = (String)  caseData.get(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME);
+            String caseNumber = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+            String firstName = getMandatoryPropertyValueAsString(caseData, D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME);
+            String lastName = getMandatoryPropertyValueAsString(caseData, D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME);
 
-        Map<String, Object> templateVars = new HashMap<>();
+            Map<String, Object> templateVars = new HashMap<>();
 
-        templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, firstName);
-        templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, lastName);
-        templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, caseNumber);
-        String corespondentEmail = (String) caseData.get(CO_RESP_EMAIL_ADDRESS);
+            templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, firstName);
+            templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, lastName);
+            templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, caseNumber);
+            String corespondentEmail = getMandatoryPropertyValueAsString(caseData, CO_RESP_EMAIL_ADDRESS);
 
-        EmailTemplateNames template = EmailTemplateNames.CO_RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION;
+            EmailTemplateNames template = EmailTemplateNames.CO_RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION;
 
-        if (isDefended(caseData)) {
-            String rdcName = (String) caseData.get(D_8_DIVORCE_UNIT);
-            try {
+            if (isDefended(caseData)) {
+                String rdcName = (String) caseData.get(D_8_DIVORCE_UNIT);
                 Court assignedCourt = taskCommons.getCourt(rdcName);
                 templateVars.put(NOTIFICATION_RDC_NAME_KEY, assignedCourt.getIdentifiableCentreName());
                 String formSubmissionDateLimit = ccdUtil.getFormattedDueDate(caseData, CO_RESPONDENT_DUE_DATE);
@@ -79,21 +80,20 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
                 templateVars.put(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, formSubmissionDateLimit);
                 templateVars.put(NOTIFICATION_COURT_ADDRESS_KEY, assignedCourt.getFormattedAddress());
                 template = EmailTemplateNames.CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
-            } catch (TaskException e) {
-                throw new WorkflowException("Unable to send co-respondent notification",e);
             }
+            return execute(new Task[] {
+                emailTask,
+                petitionerEmailTask
+                },
+                caseData,
+                ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId()),
+                ImmutablePair.of(NOTIFICATION_EMAIL, corespondentEmail),
+                ImmutablePair.of(NOTIFICATION_TEMPLATE, template),
+                ImmutablePair.of(NOTIFICATION_TEMPLATE_VARS, templateVars)
+            );
+        } catch (TaskException e) {
+            throw new WorkflowException(e.getMessage(), e);
         }
-
-        return execute(new Task[] {
-            emailTask,
-            petitionerEmailTask
-            },
-            caseData,
-            ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId()),
-            ImmutablePair.of(NOTIFICATION_EMAIL, corespondentEmail),
-            ImmutablePair.of(NOTIFICATION_TEMPLATE, template),
-            ImmutablePair.of(NOTIFICATION_TEMPLATE_VARS, templateVars)
-        );
     }
 
     private boolean isDefended(Map<String, Object> caseData) {

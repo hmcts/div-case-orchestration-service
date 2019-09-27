@@ -32,7 +32,6 @@ import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
 @Slf4j
 public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
-    private static final String SUBMIT_COMPLETE_RDC_CASE = "submit-complete-case.json";
     private static final String SUBMIT_COMPLETE_SERVICE_CENTRE_CASE = "submit-complete-service-centre-case.json";
     private static final String SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE = "submit-complete-service-centre-coRespondent-case.json";
     private static final String RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-aos/";

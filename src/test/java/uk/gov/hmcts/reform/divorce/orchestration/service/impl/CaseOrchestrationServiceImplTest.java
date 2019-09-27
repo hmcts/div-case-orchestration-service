@@ -835,7 +835,7 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenNoError_whenExecuteCoRespReceivedWorkflow_thenReturnCaseData() throws WorkflowException {
+    public void givenNoError_whenExecuteCoRespReceivedWorkflow_thenReturnCaseData() throws WorkflowException, CaseOrchestrationServiceException {
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
             .data(ccdCallbackRequest.getCaseDetails().getCaseData())
             .build();

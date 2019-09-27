@@ -628,13 +628,25 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/co-respondent-received")
-    @ApiOperation(value = "Co-Respondent confirmation notification ")
+    @ApiOperation(value = "Co-Respondent confirmation notification")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Notification sent successful"),
             @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> corespReceived(
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return ResponseEntity.ok(caseOrchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest));
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.info("Co-Respondent confirmation notification callback. Case ID: {}", caseId);
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            return ResponseEntity.ok(caseOrchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest));
+        } catch (CaseOrchestrationServiceException exception) {
+            log.error(format("Co-Respondent confirmation notification callback. Case ID:  %s", caseId),
+                    exception);
+            callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+            return ResponseEntity.ok(callbackResponseBuilder.build());
+        }
     }
 
     @PostMapping(path = "/aos-solicitor-nominated",
