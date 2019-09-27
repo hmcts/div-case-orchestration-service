@@ -41,17 +41,16 @@ public class CSVExtractorFactoryTest {
     @Test
     public void shouldThrowExceptionWhenTryingToRetrieveUnimplementedCSVExtractor() {
         expectedException.expect(UnsupportedOperationException.class);
-        expectedException.expectMessage("CSVExtractor for AOS not implemented.");
+        expectedException.expectMessage("CSVExtractor for DN not implemented.");
 
-        csvExtractorFactory.getCSVExtractorForStatus(AOS);
         csvExtractorFactory.getCSVExtractorForStatus(DN);
     }
 
     @Test
     public void hasCSVExtractorForStatus() {
         assertThat(csvExtractorFactory.hasCSVExtractorForStatus(DA), is(true));
-        assertThat(csvExtractorFactory.hasCSVExtractorForStatus(DN), is(false));
-        assertThat(csvExtractorFactory.hasCSVExtractorForStatus(AOS), is(false));
+        assertThat(csvExtractorFactory.hasCSVExtractorForStatus(DN), is(true));
+        assertThat(csvExtractorFactory.hasCSVExtractorForStatus(AOS), is(true));
     }
 
 }

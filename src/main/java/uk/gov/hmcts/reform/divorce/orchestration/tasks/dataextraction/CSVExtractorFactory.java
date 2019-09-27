@@ -10,7 +10,9 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DA;
+import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DN;
 
 @Component
 public class CSVExtractorFactory {
@@ -18,11 +20,19 @@ public class CSVExtractorFactory {
     @Autowired
     private DecreeAbsoluteDataExtractor decreeAbsoluteDataExtractor;
 
+    @Autowired
+    private AOSDataExtractor aosDataExtractor;
+
+    @Autowired
+    private DecreeNisiDataExtractor decreeNisiDataExtractor;
+
     private Map<Status, CSVExtractor> csvExtractorMap = new EnumMap<>(Status.class);
 
     @PostConstruct
     public void init() {
         csvExtractorMap.put(DA, decreeAbsoluteDataExtractor);
+        csvExtractorMap.put(AOS, aosDataExtractor);
+        csvExtractorMap.put(DN, decreeNisiDataExtractor);
     }
 
     public CSVExtractor getCSVExtractorForStatus(Status status) {

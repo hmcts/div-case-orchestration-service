@@ -148,5 +148,12 @@ variable "dataextraction_status_da_email_to" {
   type = "string"
 }
 
+variable "dataextraction_status_aos_email_to" {
+  type = "string"
+}
+
+variable "dataextraction_status_dn_email_to" {
+  type = "string"
+}
 variable "scheduler_send_updated_cases_to_robotics_enabled" {
 }
