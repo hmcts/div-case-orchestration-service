@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,38 +108,6 @@ public class CoRespondentSubmittedITest extends MockedFunctionalTest {
                 .andExpect(content().string(expectedResponse));
 
         verifyEmailSent(TEST_EMAIL, Collections.EMPTY_MAP);
-    }
-
-    @Test
-    public void givenCaseWithoutCoRespEmail_whenSubmitAOS_thenReturnNotificationError() throws Exception {
-        Map<String, Object> caseDetailMap = new HashMap<>();
-        caseDetailMap.put(D_8_CASE_REFERENCE, D8_ID);
-        caseDetailMap.put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, CO_RESP_FIRST_NAME);
-        caseDetailMap.put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, CO_RESP_LAST_NAME);
-        caseDetailMap.put(CO_RESP_EMAIL_ADDRESS, null);
-        caseDetailMap.put(CO_RESPONDENT_DEFENDS_DIVORCE, NO_VALUE);
-        caseDetailMap.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
-        caseDetailMap.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
-
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(CASE_ID)
-                .caseDetails(CaseDetails.builder()
-                        .caseData(caseDetailMap)
-                        .build())
-                .build();
-
-        CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
-                .builder()
-                .errors(ImmutableList.of(
-                        "Could not evaluate value of mandatory property \"CoRespEmailAddress\""
-                ))
-                .build();
-        String expectedResponse = ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackResponse);
-        webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, USER_TOKEN)
-                .content(ObjectMapperTestUtil.convertObjectToJsonString(ccdCallbackRequest))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(expectedResponse));
     }
 
     @Test
