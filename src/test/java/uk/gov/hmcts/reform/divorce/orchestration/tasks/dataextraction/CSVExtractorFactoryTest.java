@@ -49,7 +49,7 @@ public class CSVExtractorFactoryTest {
     @Test
     public void hasCSVExtractorForStatus() {
         assertThat(csvExtractorFactory.hasCSVExtractorForStatus(DA), is(true));
-        assertThat(csvExtractorFactory.hasCSVExtractorForStatus(DN), is(false));
+        assertThat(csvExtractorFactory.hasCSVExtractorForStatus(DN), is(true));
         assertThat(csvExtractorFactory.hasCSVExtractorForStatus(AOS), is(true));
     }
 

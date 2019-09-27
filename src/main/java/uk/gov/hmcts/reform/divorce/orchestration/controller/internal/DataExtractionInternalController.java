@@ -29,8 +29,8 @@ public class DataExtractionInternalController {
     @PostMapping(path = "/cases/data-extraction/family-man")
     @ApiOperation(value = "Starts data extraction for family man for the present day. This is meant to only be used as a testing tool.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Data extraction process started"),
-        @ApiResponse(code = 400, message = "Bad Request")})
+            @ApiResponse(code = 200, message = "Data extraction process started"),
+            @ApiResponse(code = 400, message = "Bad Request")})
     public void startDataExtractionToFamilyMan() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         listener.onApplicationEvent(new DataExtractionRequest(this, DA, yesterday));

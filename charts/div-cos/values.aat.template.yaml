@@ -7,6 +7,7 @@ java:
         SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_ENABLED: true
         DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
         DATAEXTRACTION_STATUS_AOS_EMAILTO: aos_data_extraction@sharklasers.com
+        DATAEXTRACTION_STATUS_DN_EMAILTO: dn_data_extraction@sharklasers.com
     # Don't modify below here
     image: ${IMAGE_NAME}
     ingressHost: ${SERVICE_FQDN}

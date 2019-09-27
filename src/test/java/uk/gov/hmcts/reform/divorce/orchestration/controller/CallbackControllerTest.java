@@ -188,7 +188,6 @@ public class CallbackControllerTest {
             .build();
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
-        when(caseOrchestrationService.sendRespondentSubmissionNotificationEmail(ccdCallbackRequest)).thenReturn(caseData);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.respondentAOSSubmitted(null, ccdCallbackRequest);
 
@@ -732,9 +731,9 @@ public class CallbackControllerTest {
                 .build())
             .build();
 
-        when(caseOrchestrationService.processAosSolicitorNominated(incomingRequest)).thenReturn(incomingPayload);
+        when(caseOrchestrationService.processAosSolicitorNominated(incomingRequest, AUTH_TOKEN)).thenReturn(incomingPayload);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosSolicitorNominated(incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosSolicitorNominated(AUTH_TOKEN, incomingRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
@@ -749,10 +748,10 @@ public class CallbackControllerTest {
                 .caseData(incomingPayload)
                 .build())
             .build();
-        when(caseOrchestrationService.processAosSolicitorNominated(incomingRequest))
+        when(caseOrchestrationService.processAosSolicitorNominated(incomingRequest, AUTH_TOKEN))
             .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosSolicitorNominated(incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosSolicitorNominated(AUTH_TOKEN, incomingRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(nullValue()));
@@ -986,6 +985,23 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.removeBulkLinkFromCase(request);
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody(), is(CcdCallbackResponse.builder().data(expectedResponse).build()));
+    }
+
+    @Test
+    public void whenCoRespondentSubmittedCallback_thenReturnCcdResponse() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .build();
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+        when(caseOrchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest)).thenReturn(expectedResponse);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.corespReceived(ccdCallbackRequest);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
     }
 
     @Test
