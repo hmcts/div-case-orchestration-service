@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.util.RestUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -43,46 +42,6 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
 
         ResponseBody retrieveCaseResponseBody = retrieveCase(userDetails.getAuthToken()).body();
         assertThat(retrieveCaseResponseBody.path(RETRIEVED_DATA_COURT_ID_KEY), is(allocatedCourt));
-    }
-
-    @Test
-    public void givenDivorceSession_WithCourt_whenSubmitIsCalled_CaseIsCreated_AndCourtIsIgnored() throws Exception {
-        UserDetails userDetails = createCitizenUser();
-        Response submissionResponse = submitCase(userDetails, "basic-divorce-session.json");
-
-        ResponseBody caseCreationResponseBody = submissionResponse.getBody();
-        assertThat(submissionResponse.getStatusCode(), is(HttpStatus.OK.value()));
-        assertThat(caseCreationResponseBody.path(CASE_ID_KEY), is(not("0")));
-        String allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
-        assertThat(allocatedCourt, allOf(
-                is(notNullValue()),
-                is(not("unknown-court"))
-        ));
-
-        ResponseBody retrieveCaseResponseBody = retrieveCase(userDetails.getAuthToken()).body();
-        assertThat(retrieveCaseResponseBody.path(RETRIEVED_DATA_COURT_ID_KEY), is(allocatedCourt));
-    }
-
-    @Test
-    public void givenAnExistingCase_whenSubmitIsCalled_aNewCaseIsNotCreated() throws Exception {
-        UserDetails userDetails = createCitizenUser();
-        Response submissionResponse = submitCase(userDetails, "divorce-session-with-court-selected.json");
-
-        ResponseBody caseCreationResponseBody = submissionResponse.getBody();
-        assertThat(submissionResponse.getStatusCode(), is(HttpStatus.OK.value()));
-        String existingCaseId = caseCreationResponseBody.path(CASE_ID_KEY);
-        assertThat(existingCaseId, is(not("0")));
-        String allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
-        assertThat(allocatedCourt, is(notNullValue()));
-
-        ResponseBody retrieveCaseResponseBody = retrieveCase(userDetails.getAuthToken()).body();
-        assertThat(retrieveCaseResponseBody.path(RETRIEVED_DATA_COURT_ID_KEY), is(allocatedCourt));
-
-        submissionResponse = submitCase(userDetails, "divorce-session-with-court-selected.json");
-        caseCreationResponseBody = submissionResponse.getBody();
-        assertThat(caseCreationResponseBody.path(CASE_ID_KEY), is(existingCaseId));
-        allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
-        assertThat(allocatedCourt, is(notNullValue()));
     }
 
     private Response submitCase(UserDetails userDetails, String fileName) throws Exception {

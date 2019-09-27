@@ -15,7 +15,6 @@ import java.time.LocalDate;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE;
@@ -36,7 +35,6 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     private static final String RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-aos/";
     private static final String TEST_AOS_AWAITING_EVENT_ID = "testAosAwaiting";
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
-    private static final String TEST_AWAITING_DECREE_ABSOLUTE = "testAwaitingDecreeAbsolute";
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";
     private static final String AOS_DEFEND_CONSENT_JSON_FILE_PATH = "aos-defend-consent.json";
     private static final String CO_RESP_ANSWERS_JSON_FILE_PATH = "co-respondent-answers.json";
@@ -57,22 +55,6 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Test
-    public void givenCaseIsDisallowedState_whenSubmittingCoRespondentAnswers_thenReturnBadRequest() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
-
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
-            Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
-        log.info("Case " + caseDetails.getId() + " created.");
-
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AWAITING_DECREE_ABSOLUTE, userDetails);
-
-        final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + CO_RESP_ANSWERS_JSON_FILE_PATH);
-        Response coRespondentSubmissionResponse = submitCoRespondentAosCase(userDetails, coRespondentAnswersJson);
-
-        assertThat(coRespondentSubmissionResponse.getStatusCode(), is(BAD_REQUEST.value()));
-    }
 
     @Test
     public void canSubmitAndRetrieveCoRespondentAnswers() throws Exception {
