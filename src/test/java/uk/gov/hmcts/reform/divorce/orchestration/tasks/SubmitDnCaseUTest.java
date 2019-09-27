@@ -18,13 +18,13 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
@@ -54,8 +54,8 @@ public class SubmitDnCaseUTest {
     public void givenDnSubmitAndAosNotComplete_whenExecute_thenProceedAsExpected() {
         final Map<String, Object> divorceSession = ImmutableMap.of();
 
-        when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(
-                CaseDetails.builder().caseId(TEST_CASE_ID).state(AWAITING_DECREE_NISI).build());
+        TASK_CONTEXT.setTransientObject(CASE_DETAILS_JSON_KEY,
+            CaseDetails.builder().caseId(TEST_CASE_ID).state(AWAITING_DECREE_NISI).build());
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
@@ -67,8 +67,8 @@ public class SubmitDnCaseUTest {
     public void givenDnSubmitAndAosComplete_whenExecute_thenProceedAsExpected() {
         final Map<String, Object> divorceSession = ImmutableMap.of();
 
-        when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(
-                CaseDetails.builder().caseId(TEST_CASE_ID).state(AOS_COMPLETED).build());
+        TASK_CONTEXT.setTransientObject(CASE_DETAILS_JSON_KEY,
+            CaseDetails.builder().caseId(TEST_CASE_ID).state(AOS_COMPLETED).build());
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
@@ -80,7 +80,7 @@ public class SubmitDnCaseUTest {
     public void givenDnSubmitAndAwaitingClarification_whenExecute_thenProceedAsExpected() {
         final Map<String, Object> divorceSession = ImmutableMap.of();
 
-        when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(
+        TASK_CONTEXT.setTransientObject(CASE_DETAILS_JSON_KEY,
             CaseDetails.builder().caseId(TEST_CASE_ID).state(AWAITING_CLARIFICATION).build());
 
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));

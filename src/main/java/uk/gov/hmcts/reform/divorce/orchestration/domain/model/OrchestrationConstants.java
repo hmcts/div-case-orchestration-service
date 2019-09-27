@@ -385,4 +385,8 @@ public class OrchestrationConstants {
     // Elastic Search
     public static final String ES_CASE_ID_KEY = "reference";
     public static final String QUERY_BUILDERS = "queryBuilders";
+
+    // Case Data Formatter Meta Fields
+    public static final String FORMATTER_CASE_DATA_KEY = "caseData";
+    public static final String FORMATTER_DIVORCE_SESSION_KEY = "divorceSession";
 }

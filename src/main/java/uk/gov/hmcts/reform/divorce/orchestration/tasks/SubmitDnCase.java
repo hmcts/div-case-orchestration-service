@@ -12,6 +12,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
@@ -35,10 +36,7 @@ public class SubmitDnCase implements Task<Map<String, Object>> {
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
         String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
 
-        final CaseDetails currentCaseDetails = caseMaintenanceClient.retrievePetitionById(
-                authToken,
-                caseId
-        );
+        final CaseDetails currentCaseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
 
         String eventId = getDnEventId(currentCaseDetails);
 
