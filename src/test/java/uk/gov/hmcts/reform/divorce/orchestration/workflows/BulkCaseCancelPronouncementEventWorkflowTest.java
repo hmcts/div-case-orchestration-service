@@ -31,7 +31,7 @@ public class BulkCaseCancelPronouncementEventWorkflowTest {
     private BulkCaseCancelPronouncementEventWorkflow classToTest;
 
     @Test
-    public void whenProcessAwaitingPronouncement_thenProcessAsExpected() throws Exception{
+    public void whenProcessAwaitingPronouncement_thenProcessAsExpected() throws Exception {
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails
                 .builder()

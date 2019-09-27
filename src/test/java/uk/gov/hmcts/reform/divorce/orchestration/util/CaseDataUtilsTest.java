@@ -70,7 +70,7 @@ public class CaseDataUtilsTest {
     }
 
     @Test
-    public void givenClaimCostAndDnContinueClaimCost_whenCheckPetitionerClaimCost_thenReturnTrue(){
+    public void givenClaimCostAndDnContinueClaimCost_whenCheckPetitionerClaimCost_thenReturnTrue() {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, "Continue");
@@ -79,14 +79,14 @@ public class CaseDataUtilsTest {
     }
 
     @Test
-    public void givenNoClaimCost_whenCheckPetitionerClaimCost_thenReturnFalse(){
+    public void givenNoClaimCost_whenCheckPetitionerClaimCost_thenReturnFalse() {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
         assertThat(CaseDataUtils.isPetitionerClaimingCosts(caseData), is(false));
     }
 
     @Test
-    public void givenClaimCostAndDnNoContinueClaimCost_whenCheckPetitionerClaimCost_thenReturnFalse(){
+    public void givenClaimCostAndDnNoContinueClaimCost_whenCheckPetitionerClaimCost_thenReturnFalse() {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
         caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, "No");
