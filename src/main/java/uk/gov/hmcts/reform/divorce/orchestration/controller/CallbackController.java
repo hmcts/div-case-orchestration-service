@@ -912,7 +912,7 @@ public class CallbackController {
     @PostMapping(path = "/pronouncement/cancel")
     @ApiOperation(value = "Callback to cancel dn pronouncement.")
     @ApiResponses(value = {
-    @ApiResponse(code = 200, message = "Callback processed.")})
+        @ApiResponse(code = 200, message = "Callback processed.")})
     public ResponseEntity<CcdCallbackResponse> removeDNGrantedDocuments(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 

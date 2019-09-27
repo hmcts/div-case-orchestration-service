@@ -18,6 +18,6 @@ public class RemoveCostOrderDocumentTask implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, final Map<String, Object> caseData) {
-            return caseFormatterClient.removeAllDocumentsByType(COSTS_ORDER_DOCUMENT_TYPE, caseData);
+        return caseFormatterClient.removeAllDocumentsByType(COSTS_ORDER_DOCUMENT_TYPE, caseData);
     }
 }

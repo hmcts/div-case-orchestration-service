@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.event.bulk;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.springframework.context.ApplicationEvent;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 
 import java.util.Map;
 
