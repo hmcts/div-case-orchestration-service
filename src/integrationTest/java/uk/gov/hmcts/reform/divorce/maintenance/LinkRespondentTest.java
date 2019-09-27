@@ -4,10 +4,12 @@ import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.divorce.category.NightlyTest;
 import uk.gov.hmcts.reform.divorce.model.PinResponse;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
@@ -43,6 +45,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     private String contextPath;
 
     @Test
+    @Category(NightlyTest.class)
     public void givenPinIdNotMatching_whenLinkRespondent_thenReturnUnauthorized() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
@@ -99,6 +102,84 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     @Test
+    @Category(NightlyTest.class)
+    public void givenAosOverdueState_whenLinkRespondent_thenCaseShouldBeLinked() {
+        final UserDetails petitionerUserDetails = createCitizenUser();
+
+        final PinResponse pinResponse =
+            idamTestSupportUtil.generatePin(PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME,
+                petitionerUserDetails.getAuthToken());
+
+        final CaseDetails caseDetails = submitCase(
+            SUBMIT_UNLINKED_CASE_JSON_FILE_PATH,
+            petitionerUserDetails);
+
+        updateCase(String.valueOf(caseDetails.getId()),
+            null,
+            PAYMENT_REFERENCE_EVENT,
+            ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
+
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
+            null,
+            TEST_AOS_AWAITING_EVENT,
+            petitionerUserDetails);
+
+        updateCase(String.valueOf(caseDetails.getId()), null, "aosNotReceived");
+
+        final UserDetails respondentUserDetails = createCitizenUser();
+        Response linkResponse =
+            linkRespondent(
+                respondentUserDetails.getAuthToken(),
+                caseDetails.getId(),
+                pinResponse.getPin()
+            );
+
+        assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
+        Response caseResponse = retrieveAosCase(respondentUserDetails.getAuthToken());
+        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
+        assertCaseDetailsRespondent(respondentUserDetails, String.valueOf(caseDetails.getId()));
+    }
+
+    @Test
+    @Category(NightlyTest.class)
+    public void givenValidCaseDetails_whenLinkCoRespondent_thenCaseShouldBeLinked() {
+        final UserDetails petitionerUserDetails = createCitizenUser();
+
+        final PinResponse pinResponse =
+            idamTestSupportUtil.generatePin(PIN_USER_FIRST_NAME, PIN_USER_LAST_NAME,
+                petitionerUserDetails.getAuthToken());
+
+        final CaseDetails caseDetails = submitCase(
+            SUBMIT_UNLINKED_CASE_JSON_FILE_PATH,
+            petitionerUserDetails);
+
+        updateCase(String.valueOf(caseDetails.getId()),
+            null,
+            PAYMENT_REFERENCE_EVENT,
+            ImmutablePair.of(CO_RESPONDENT_LETTER_HOLDER_ID, pinResponse.getUserId()));
+
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
+            null,
+            TEST_AOS_AWAITING_EVENT,
+            petitionerUserDetails);
+
+        final UserDetails coRespondentUserDetails = createCitizenUser();
+
+        Response linkResponse =
+            linkRespondent(
+                coRespondentUserDetails.getAuthToken(),
+                caseDetails.getId(),
+                pinResponse.getPin()
+            );
+
+        assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
+        Response caseResponse = retrieveAosCase(coRespondentUserDetails.getAuthToken());
+        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
+        assertCaseDetailsCoRespondent(coRespondentUserDetails, String.valueOf(caseDetails.getId()));
+    }
+
+    @Test
+    @Category(NightlyTest.class)
     public void givenLinkedCase_whenLinkCoRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 

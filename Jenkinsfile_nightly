@@ -18,8 +18,13 @@ def component = "cos"
 
 withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
-    
+
     env.Rules = params.SecurityRules
     enableMutationTest()
     enableSecurityScan()
+    after('mutationTest') {
+        stage('Functional Nightly') {
+            gradle('functionalNightly')
+        }
+    }
 }

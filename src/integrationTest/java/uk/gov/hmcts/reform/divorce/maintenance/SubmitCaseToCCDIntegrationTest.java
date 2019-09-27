@@ -4,9 +4,11 @@ import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.divorce.category.NightlyTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.cos.RetrieveCaseSupport;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
@@ -42,6 +44,29 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
 
         ResponseBody retrieveCaseResponseBody = retrieveCase(userDetails.getAuthToken()).body();
         assertThat(retrieveCaseResponseBody.path(RETRIEVED_DATA_COURT_ID_KEY), is(allocatedCourt));
+    }
+
+    @Test
+    @Category(NightlyTest.class)
+    public void givenAnExistingCase_whenSubmitIsCalled_aNewCaseIsNotCreated() throws Exception {
+        UserDetails userDetails = createCitizenUser();
+        Response submissionResponse = submitCase(userDetails, "divorce-session-with-court-selected.json");
+
+        ResponseBody caseCreationResponseBody = submissionResponse.getBody();
+        assertThat(submissionResponse.getStatusCode(), is(HttpStatus.OK.value()));
+        String existingCaseId = caseCreationResponseBody.path(CASE_ID_KEY);
+        assertThat(existingCaseId, is(not("0")));
+        String allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
+        assertThat(allocatedCourt, is(notNullValue()));
+
+        ResponseBody retrieveCaseResponseBody = retrieveCase(userDetails.getAuthToken()).body();
+        assertThat(retrieveCaseResponseBody.path(RETRIEVED_DATA_COURT_ID_KEY), is(allocatedCourt));
+
+        submissionResponse = submitCase(userDetails, "divorce-session-with-court-selected.json");
+        caseCreationResponseBody = submissionResponse.getBody();
+        assertThat(caseCreationResponseBody.path(CASE_ID_KEY), is(existingCaseId));
+        allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
+        assertThat(allocatedCourt, is(notNullValue()));
     }
 
     private Response submitCase(UserDetails userDetails, String fileName) throws Exception {

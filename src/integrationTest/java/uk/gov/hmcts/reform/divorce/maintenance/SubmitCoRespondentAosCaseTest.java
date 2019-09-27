@@ -5,9 +5,11 @@ import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.divorce.category.NightlyTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
 
@@ -15,6 +17,7 @@ import java.time.LocalDate;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE;
@@ -35,6 +38,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     private static final String RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-aos/";
     private static final String TEST_AOS_AWAITING_EVENT_ID = "testAosAwaiting";
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
+    private static final String TEST_AWAITING_DECREE_ABSOLUTE = "testAwaitingDecreeAbsolute";
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";
     private static final String AOS_DEFEND_CONSENT_JSON_FILE_PATH = "aos-defend-consent.json";
     private static final String CO_RESP_ANSWERS_JSON_FILE_PATH = "co-respondent-answers.json";
@@ -57,6 +61,23 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     private ObjectMapper objectMapper;
 
     @Test
+    @Category(NightlyTest.class)
+    public void givenCaseIsDisallowedState_whenSubmittingCoRespondentAnswers_thenReturnBadRequest() throws Exception {
+        final UserDetails userDetails = createCitizenUser();
+
+        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
+            Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
+        log.info("Case " + caseDetails.getId() + " created.");
+
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AWAITING_DECREE_ABSOLUTE, userDetails);
+
+        final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + CO_RESP_ANSWERS_JSON_FILE_PATH);
+        Response coRespondentSubmissionResponse = submitCoRespondentAosCase(userDetails, coRespondentAnswersJson);
+
+        assertThat(coRespondentSubmissionResponse.getStatusCode(), is(BAD_REQUEST.value()));
+    }
+
+    @Test
     public void canSubmitAndRetrieveCoRespondentAnswers() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
@@ -75,6 +96,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     }
 
     @Test
+    @Category(NightlyTest.class)
     public void givenCaseIsAosAwaiting_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
@@ -93,6 +115,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     }
 
     @Test
+    @Category(NightlyTest.class)
     public void givenCaseIsAosStarted_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
@@ -111,6 +134,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     }
 
     @Test
+    @Category(NightlyTest.class)
     public void givenCaseIsAosSubmittedAwaitingAnswer_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -131,6 +155,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     }
 
     @Test
+    @Category(NightlyTest.class)
     public void givenCaseIsAosOverdue_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -150,6 +175,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     }
 
     @Test
+    @Category(NightlyTest.class)
     public void givenCaseIsAosDefended_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -179,6 +205,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
      * at 23:59.
      */
     @Test
+    @Category(NightlyTest.class)
     public void givenCoRespondentIsDefending_whenSubmittingCoRespondentAnswers_thenDueDateIsRecalculated() throws Exception {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
