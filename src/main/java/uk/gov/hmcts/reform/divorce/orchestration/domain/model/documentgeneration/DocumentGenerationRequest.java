@@ -1,8 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 /**
  * This is representation of a request for generating a document as per the COS domain.
  */
+@EqualsAndHashCode
+@ToString
 public class DocumentGenerationRequest {
 
     private String documentTemplateId;
@@ -26,4 +31,5 @@ public class DocumentGenerationRequest {
     public String getDocumentFileName() {
         return documentFileName;
     }
+
 }
