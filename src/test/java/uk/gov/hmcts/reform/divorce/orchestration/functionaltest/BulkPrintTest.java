@@ -79,6 +79,8 @@ public class BulkPrintTest extends IdamTestSupport {
 
     private static final String SOLICITOR_AOS_INVITATION_EMAIL_ID = "a193f039-2252-425d-861c-6dba255b7e6e";
 
+    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
+
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
     @ClassRule
