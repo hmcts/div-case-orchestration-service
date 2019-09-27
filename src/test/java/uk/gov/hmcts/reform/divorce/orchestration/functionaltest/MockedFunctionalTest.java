@@ -63,7 +63,7 @@ public abstract class MockedFunctionalTest {
     public static WireMockClassRule validationServiceServer = new WireMockClassRule(buildWireMockConfig(4008));
 
     @ClassRule
-    public static WireMockClassRule documentStore = new WireMockClassRule(4020);
+    public static WireMockClassRule documentStore = new WireMockClassRule(buildWireMockConfig(4020));
 
     private static WireMockConfiguration buildWireMockConfig(int port) {
         return WireMockSpring
