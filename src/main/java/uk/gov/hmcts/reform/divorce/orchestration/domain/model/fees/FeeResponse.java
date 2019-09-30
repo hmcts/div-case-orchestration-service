@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import java.text.DecimalFormat;
+
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(description = "The response from retrieving a fee from fees and payments service")
@@ -19,4 +21,9 @@ public class FeeResponse {
     private Integer version;
     @ApiModelProperty(value = "The fee description")
     private String description;
+
+    public String getFormattedFeeAmount() {
+        DecimalFormat df = new DecimalFormat("0.00");
+        return df.format(amount);
+    }
 }

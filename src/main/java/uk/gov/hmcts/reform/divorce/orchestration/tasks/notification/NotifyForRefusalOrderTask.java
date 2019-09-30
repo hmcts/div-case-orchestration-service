@@ -63,7 +63,7 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
                     D_8_INFERRED_PETITIONER_GENDER);
                 String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
                 personalisation.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
-                personalisation.put(NOTIFICATION_FEES_KEY, String.valueOf(amendFee.getAmount()));
+                personalisation.put(NOTIFICATION_FEES_KEY, amendFee.getFormattedFeeAmount());
                 emailService.sendEmail(
                     petitionerEmail,
                     EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION.name(),
