@@ -29,7 +29,7 @@ public class BulkCaseConstants {
     public static final String LISTED_EVENT = "listed";
     public static final String CREATE_EVENT = "create";
     public static final String PRONOUNCED_EVENT = "pronounced";
-
+    public static final String CANCEL_BULK_PRONOUNCED_EVENT = "cancelPronouncement";
     //Errors
     public static final String BULKCASE_CREATION_ERROR = "BulKCaseCreation_Error";
 }
