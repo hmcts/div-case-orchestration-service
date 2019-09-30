@@ -82,7 +82,7 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
             .build();
 
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, caseId), HttpStatus.OK, Strings.EMPTY, POST);
-        stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().build());
+        stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().amount(50.00).build());
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -130,7 +130,7 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
             .build();
 
         stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, caseId), HttpStatus.OK, Strings.EMPTY, POST);
-        stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().build());
+        stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().amount(50.00).build());
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
