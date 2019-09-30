@@ -45,7 +45,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_BULK_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_ACCEPTED_LIST_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CANCEL_BULK_PRONOUNCED_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_LIST_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CREATE_EVENT;
@@ -390,14 +389,12 @@ public class BulkCaseServiceImplTest {
         Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
             CCD_CASE_DATA_FIELD, ImmutableMap.of(CASE_LIST_KEY, Arrays.asList(caseData, caseData)));
 
-        BulkWorkflowExecutionResult result = BulkWorkflowExecutionResult.builder().successStatus(true).build();
-        when(updateCaseWithinBulkWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN)).thenReturn(result);
+        when(updateCaseWithinBulkWorkflow.executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN)).thenReturn(true);
         BulkCaseCancelPronouncementEvent event = new BulkCaseCancelPronouncementEvent(taskContext, caseDetail);
 
         classToTest.handleBulkCaseCancelPronouncementDetailsEvent(event);
 
-        verify(updateCaseWithinBulkWorkflow, times(1)).executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
-        verify(updateBulkCaseWorkflow, times(1)).run(Collections.emptyMap(), AUTH_TOKEN, TEST_CASE_ID, CANCEL_BULK_PRONOUNCED_EVENT);
+        verify(updateCaseWithinBulkWorkflow, times(1)).executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
     }
 
     @Test
@@ -408,19 +405,17 @@ public class BulkCaseServiceImplTest {
         Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
             CCD_CASE_DATA_FIELD, ImmutableMap.of(CASE_LIST_KEY, Arrays.asList(caseData, caseData)));
 
-        BulkWorkflowExecutionResult result = BulkWorkflowExecutionResult.builder().successStatus(false).build();
-        when(linkBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN)).thenReturn(result);
-        BulkCaseCreateEvent event = new BulkCaseCreateEvent(taskContext, caseDetail);
+        when(updateCaseWithinBulkWorkflow.executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN)).thenReturn(false);
+        BulkCaseCancelPronouncementEvent event = new BulkCaseCancelPronouncementEvent(taskContext, caseDetail);
 
         try {
-            classToTest.handleBulkCaseCreateEvent(event);
+            classToTest.handleBulkCaseCancelPronouncementDetailsEvent(event);
             Assert.fail("Expected bulkUpdateException");
         } catch (BulkUpdateException e) {
             assertThat(e.getMessage(),
-                containsString(String.format("Failed to updating bulk case link for some cases on bulk case id %s", TEST_CASE_ID)));
+                containsString(String.format("Failed to cancel pronouncement for some cases on bulk case id %s", TEST_CASE_ID)));
 
         }
-        verify(linkBulkCaseWorkflow, times(1)).executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
-        verify(updateBulkCaseWorkflow, never()).run(Collections.emptyMap(), AUTH_TOKEN, TEST_CASE_ID, CREATE_EVENT);
+        verify(updateCaseWithinBulkWorkflow, times(1)).executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
     }
 }

@@ -221,11 +221,11 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         Map<String, Object> caseResponse = event.getCaseDetails();
         final String bulkCaseId = String.valueOf(caseResponse.get(OrchestrationConstants.ID));
 
-        BulkWorkflowExecutionResult result =
-            updateCaseWithinBulkWorkflow.executeWithRetriesForCreate(caseResponse, bulkCaseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
+        boolean result =
+            updateCaseWithinBulkWorkflow.executeWithRetries(caseResponse, bulkCaseId, context.getTransientObject(AUTH_TOKEN_JSON_KEY));
 
-        if (!result.isSuccessStatus()) {
-            throw new BulkUpdateException(String.format("Failed to cancel pronouncment for some cases on bulk case id %s", bulkCaseId));
+        if (!result) {
+            throw new BulkUpdateException(String.format("Failed to cancel pronouncement for some cases on bulk case id %s", bulkCaseId));
         }
 
         updateBulkCaseWorkflow.run(emptyMap(), context.getTransientObject(AUTH_TOKEN_JSON_KEY), bulkCaseId, CANCEL_BULK_PRONOUNCED_EVENT);
