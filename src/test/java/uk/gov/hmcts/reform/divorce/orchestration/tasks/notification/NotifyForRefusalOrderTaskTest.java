@@ -55,6 +55,7 @@ public class NotifyForRefusalOrderTaskTest {
     private static final String PETITIONER_LAST_NAME = "Johnson";
     private static final String RELATION = "husband";
     private static final FeeResponse TEST_FEES = FeeResponse.builder().amount(50.00).build();
+    private static final String FEE_AMOUNT_AS_STRING = "50.00";
 
     private Map<String, Object> incomingPayload;
     private TaskContext taskContext;
@@ -113,7 +114,7 @@ public class NotifyForRefusalOrderTaskTest {
                     hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, PETITIONER_FIRST_NAME),
                     hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, PETITIONER_LAST_NAME),
                     hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION),
-                    hasEntry(NOTIFICATION_FEES_KEY, TEST_FEES.getAmount().toString())
+                    hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING)
                 )
             )),
             anyString()
