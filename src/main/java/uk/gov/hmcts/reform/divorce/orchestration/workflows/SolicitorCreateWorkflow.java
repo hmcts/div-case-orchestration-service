@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCourtDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 
 import java.util.Map;
 
@@ -19,23 +19,23 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final SetCourtDetails setCourtDetails;
+    private final SetSolicitorCourtDetailsTask setSolicitorCourtDetailsTask;
     private final AddMiniPetitionDraftTask addMiniPetitionDraftTask;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Autowired
     public SolicitorCreateWorkflow(
-            SetCourtDetails setCourtDetails,
-            AddMiniPetitionDraftTask addMiniPetitionDraftTask,
-            CaseFormatterAddDocuments caseFormatterAddDocuments) {
-        this.setCourtDetails = setCourtDetails;
+        SetSolicitorCourtDetailsTask setSolicitorCourtDetailsTask,
+        AddMiniPetitionDraftTask addMiniPetitionDraftTask,
+        CaseFormatterAddDocuments caseFormatterAddDocuments) {
+        this.setSolicitorCourtDetailsTask = setSolicitorCourtDetailsTask;
         this.addMiniPetitionDraftTask = addMiniPetitionDraftTask;
         this.caseFormatterAddDocuments = caseFormatterAddDocuments;
     }
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         return this.execute(new Task[]{
-            setCourtDetails,
+            setSolicitorCourtDetailsTask,
             addMiniPetitionDraftTask,
             caseFormatterAddDocuments
             }, caseDetails.getCaseData(),
