@@ -55,7 +55,7 @@ public class NotifyForRefusalOrderTaskTest {
     private static final String PETITIONER_LAST_NAME = "Johnson";
     private static final String RELATION = "husband";
     private static final FeeResponse TEST_FEES = FeeResponse.builder().amount(50.00).build();
-    private static final String FEE_AMOUNT_AS_STRING = "50.00";
+    private static final String FEE_AMOUNT_AS_STRING = "50";
 
     private Map<String, Object> incomingPayload;
     private TaskContext taskContext;
