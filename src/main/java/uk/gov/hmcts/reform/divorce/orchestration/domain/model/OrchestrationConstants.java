@@ -145,6 +145,7 @@ public class OrchestrationConstants {
 
     // CCD Case States
     public static final String AOS_AWAITING = "AosAwaiting";
+    public static final String AOS_AWAITING_SOLICITOR = "AosAwaitingSol";
     public static final String AOS_COMPLETED = "AosCompleted";
     public static final String AOS_OVERDUE = "AosOverdue";
     public static final String AOS_STARTED = "AosStarted";
