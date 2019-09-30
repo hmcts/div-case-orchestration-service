@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -25,11 +25,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.AosPackOfflineService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
+import javax.ws.rs.core.MediaType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -225,9 +224,9 @@ public class CallbackController {
         } catch (WorkflowException e) {
             log.error("Failed to complete service for caseId {}", caseId, e);
             return ResponseEntity.ok(CcdCallbackResponse.builder()
-                    .data(ccdCallbackRequest.getCaseDetails().getCaseData())
-                    .errors(singletonList(e.getMessage()))
-                    .build());
+                .data(ccdCallbackRequest.getCaseDetails().getCaseData())
+                .errors(singletonList(e.getMessage()))
+                .build());
         }
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
@@ -301,29 +300,29 @@ public class CallbackController {
 
         try {
             Map<String, Object> response = caseOrchestrationService.ccdCallbackBulkPrintHandler(ccdCallbackRequest,
-                    authorizationToken);
+                authorizationToken);
 
             if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
                 return ResponseEntity.ok(
-                        CcdCallbackResponse.builder()
-                                .data(ImmutableMap.of())
-                                .warnings(ImmutableList.of())
-                                .errors(singletonList("Failed to bulk print documents"))
-                                .build());
+                    CcdCallbackResponse.builder()
+                        .data(ImmutableMap.of())
+                        .warnings(ImmutableList.of())
+                        .errors(singletonList("Failed to bulk print documents"))
+                        .build());
             }
             return ResponseEntity.ok(
-                    CcdCallbackResponse.builder()
-                            .data(response)
-                            .errors(Collections.emptyList())
-                            .warnings(Collections.emptyList())
-                            .build());
+                CcdCallbackResponse.builder()
+                    .data(response)
+                    .errors(Collections.emptyList())
+                    .warnings(Collections.emptyList())
+                    .build());
         } catch (WorkflowException e) {
             return ResponseEntity.ok(
-                    CcdCallbackResponse.builder()
-                            .data(ImmutableMap.of())
-                            .warnings(ImmutableList.of())
-                            .errors(singletonList("Failed to bulk print documents - " + e.getMessage()))
-                            .build());
+                CcdCallbackResponse.builder()
+                    .data(ImmutableMap.of())
+                    .warnings(ImmutableList.of())
+                    .errors(singletonList("Failed to bulk print documents - " + e.getMessage()))
+                    .build());
         }
     }
 
@@ -616,24 +615,24 @@ public class CallbackController {
     @PostMapping(path = "/aos-received")
     @ApiOperation(value = "Respondent confirmation notification ")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Notification sent successful"),
-            @ApiResponse(code = 401, message = "User Not Authenticated"),
-            @ApiResponse(code = 400, message = "Bad Request")})
+        @ApiResponse(code = 200, message = "Notification sent successful"),
+        @ApiResponse(code = 401, message = "User Not Authenticated"),
+        @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> aosReceived(
-            @RequestHeader("Authorization")
-            @ApiParam(value = "JWT authorisation token issued by IDAM",
-                    required = true) final String authorizationToken,
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestHeader("Authorization")
+        @ApiParam(value = "JWT authorisation token issued by IDAM",
+            required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.aosReceived(ccdCallbackRequest, authorizationToken));
     }
 
     @PostMapping(path = "/co-respondent-received")
     @ApiOperation(value = "Co-Respondent confirmation notification ")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Notification sent successful"),
-            @ApiResponse(code = 400, message = "Bad Request")})
+        @ApiResponse(code = 200, message = "Notification sent successful"),
+        @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> corespReceived(
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest));
     }
 
@@ -892,20 +891,20 @@ public class CallbackController {
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
                 .data(caseOrchestrationService.removeDnOutcomeCaseFlag(ccdCallbackRequest))
-            .build());
+                .build());
     }
 
     @PostMapping(path = "/remove-la-make-decision-fields")
     @ApiOperation(value = "Callback to remove the fields set by the legal advsior when they make a decision.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Callback processed.")})
+        @ApiResponse(code = 200, message = "Callback processed.")})
     public ResponseEntity<CcdCallbackResponse> removeLegalAdvisorMakeDecisionFields(
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
                 .data(caseOrchestrationService.removeLegalAdvisorMakeDecisionFields(ccdCallbackRequest))
-            .build());
+                .build());
     }
 
     private List<String> getErrors(Map<String, Object> response) {
