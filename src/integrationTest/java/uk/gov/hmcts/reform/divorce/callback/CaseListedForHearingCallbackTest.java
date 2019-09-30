@@ -14,7 +14,6 @@ import static org.junit.Assert.assertNotNull;
 public class CaseListedForHearingCallbackTest extends IntegrationTest {
 
     private static final String BASE_CASE_RESPONSE = "fixtures/case-linked-for-hearing/case-linked-for-hearing.json";
-    private static final String ERROR_CASE_RESPONSE = "fixtures/case-linked-for-hearing/case-linked-for-hearing-error.json";
 
     @Autowired
     private CosApiClient cosApiClient;
