@@ -63,7 +63,7 @@ public class DataExtractionFileCreator implements Task<Void> {
 
         File csvFile = createFile(csvFileContent.toString());
         context.setTransientObject(FILE_TO_PUBLISH, csvFile);
-        log.info("Created csv file with {} lines of case data", casesDetails.size());
+        log.info("Created csv file with {} lines of case data for {}", casesDetails.size(), status.name());
 
         return payload;
     }
