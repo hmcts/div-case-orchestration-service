@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaRequestedNotifyRespondentEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaRequestedNotifyRespondentEmailTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class NotifyRespondentOfDARequestedWorkflowTest {
 
     @Mock
-    private SendDaRequestedNotifyRespondentEmail sendDaRequestedNotifyRespondentEmail;
+    private SendDaRequestedNotifyRespondentEmailTask sendDaRequestedNotifyRespondentEmailTask;
 
     @InjectMocks
     private NotifyRespondentOfDARequestedWorkflow notifyRespondentOfDARequestedWorkflow;
@@ -51,7 +51,7 @@ public class NotifyRespondentOfDARequestedWorkflowTest {
 
         assertThat(result, is(payload));
 
-        verify(sendDaRequestedNotifyRespondentEmail).execute(context, payload);
+        verify(sendDaRequestedNotifyRespondentEmailTask).execute(context, payload);
     }
 
 }

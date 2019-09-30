@@ -760,7 +760,6 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @Deprecated // Replaced by below dn-decision-made endpoint. This must remain in code until production ccd config is updated.
     @PostMapping(path = "/clean-state")
     @ApiOperation(value = "Clear state from case data")
     @ApiResponses(value = {

@@ -34,7 +34,7 @@ public class DecreeAbsoluteController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> notifyRespondentOfDARequested(
-        @RequestHeader(value = "Authorization") String authorizationToken  ,
+        @RequestHeader(value = "Authorization") String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
@@ -51,4 +51,26 @@ public class DecreeAbsoluteController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    @PostMapping(path = "/validate-da-request", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Validate if user selected a valid value")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "input validated - check errors list", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> validateDaRequest(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            decreeAbsoluteService.validateDaRequest(ccdCallbackRequest.getCaseDetails());
+            log.info("DA request for case id {} was valid.", caseId);
+        } catch (WorkflowException exception) {
+            log.error("DA request for case id {} was INVALID.", caseId, exception);
+            callbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
 }
