@@ -42,6 +42,7 @@ module "div-cos" {
   asp_name                        = "${local.asp_name}"
   asp_rg                          = "${local.asp_rg}"
   instance_size                   = "${var.instance_size}"
+  enable_ase                      = false
 
   app_settings = {
     // logging vars
