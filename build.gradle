@@ -430,7 +430,24 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
+    useJUnit {
+        excludeCategories 'uk.gov.hmcts.reform.divorce.category.NightlyTest'
+    }
+    finalizedBy aggregate
+}
 
+task functionalNightly(type: Test, description: 'Runs the nightly functional tests.', group: 'Verification') {
+    printf("Available processors:::::::::: " + Runtime.runtime.availableProcessors().intdiv(2).toString())
+
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    forkEvery = 10
+
+    setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
+    setClasspath(sourceSets.integrationTest.runtimeClasspath)
+
+    useJUnit {
+        includeCategories 'uk.gov.hmcts.reform.divorce.category.NightlyTest'
+    }
     finalizedBy aggregate
 }
 
