@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-;import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
@@ -50,6 +50,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
+;
+
 public class SubmitCaseTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/submit";
@@ -85,7 +87,7 @@ public class SubmitCaseTest extends MockedFunctionalTest {
     @Test
     public void givenCaseDataAndAuth_whenCaseDataIsSubmitted_thenReturnSuccess() throws Exception {
         caseData = ImmutableMap.of(
-            "createdDate",  CcdUtil.formatDateForCCD(LocalDate.now()),
+            "createdDate", CcdUtil.formatDateForCCD(LocalDate.now()),
             "D8DivorceUnit", "serviceCentre",
             "D8Cohort", "onlineSubmissionPrivateBeta",
             "RespondentContactDetailsConfidential", "share"
