@@ -46,6 +46,7 @@ public class OrchestrationConstants {
     public static final String D_8_INFERRED_RESPONDENT_GENDER = "D8InferredRespondentGender";
     public static final String D_8_INFERRED_PETITIONER_GENDER = "D8InferredPetitionerGender";
     public static final String D_8_DIVORCED_WHO = "D8DivorceWho";
+    public static final String APPLY_FOR_DA = "ApplyForDecreeAbsolute";
     public static final String D_8_REASON_FOR_DIVORCE = "D8ReasonForDivorce";
     public static final String D_8_CO_RESPONDENT_NAMED = "D8ReasonForDivorceAdulteryWishToName";
     public static final String D_8_CO_RESPONDENT_NAMED_OLD = "D8ReasonForDivorceAdulteryIsNamed";
@@ -241,6 +242,7 @@ public class OrchestrationConstants {
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
     public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
+    public static final String RESPONDENT_SOLICITOR_EMAIL_ADDRESS = "D8RespondentSolicitorEmail";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
     public static final String SEND_VIA_EMAIL_OR_POST = "SendViaEmailOrPost";
     public static final String SEND_VIA_POST = "Post";
