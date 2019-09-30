@@ -118,6 +118,8 @@ public interface CaseOrchestrationService {
     Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest, String authToken)
         throws CaseOrchestrationServiceException;
 
+    Map<String, Object> processCancelBulkCasePronouncement(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
+
     Map<String, Object> updateBulkCaseDnPronounce(CaseDetails caseDetails, String authToken) throws WorkflowException;
 
     Map<String, Object> cleanStateCallback(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException;
@@ -142,4 +144,6 @@ public interface CaseOrchestrationService {
     Map<String, Object> removeLegalAdvisorMakeDecisionFields(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> notifyForRefusalOrder(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    Map<String, Object> removeDNGrantedDocuments(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 }
