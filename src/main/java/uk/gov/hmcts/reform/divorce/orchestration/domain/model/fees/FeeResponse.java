@@ -24,6 +24,7 @@ public class FeeResponse {
 
     public String getFormattedFeeAmount() {
         DecimalFormat df = new DecimalFormat("0.00");
-        return df.format(amount);
+        // Remove trailing pence if 0
+        return df.format(amount).replace(".00", "");
     }
 }
