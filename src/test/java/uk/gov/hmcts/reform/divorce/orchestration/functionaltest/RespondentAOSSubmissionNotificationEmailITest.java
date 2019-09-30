@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -41,6 +42,8 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     @MockBean
     private EmailClient mockClient;
 
+    private static final String USER_TOKEN = "anytoken";
+
     @Test
     public void testResponseHasDataAndNoErrors_whenEmailCanBeSent_forDefendedDivorce() throws Exception {
 
@@ -52,6 +55,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
                 .build();
 
         webClient.perform(post(API_URL)
+                .header(AUTHORIZATION, USER_TOKEN)
                 .content(convertObjectToJsonString(ccdCallbackRequest))
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON))

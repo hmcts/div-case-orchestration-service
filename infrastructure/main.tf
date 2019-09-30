@@ -100,6 +100,9 @@ module "div-cos" {
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST        = "${var.spring_mail_properties_mail_smtp_ssl_trust}"
 
     DATAEXTRACTION_STATUS_DA_EMAILTO       = "${var.dataextraction_status_da_email_to}"
+    DATAEXTRACTION_STATUS_AOS_EMAILTO      = "${var.dataextraction_status_aos_email_to}"
+    DATAEXTRACTION_STATUS_DN_EMAILTO       = "${var.dataextraction_status_dn_email_to}"
+
     SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_ENABLED  = "${var.scheduler_send_updated_cases_to_robotics_enabled}"
   }
 }

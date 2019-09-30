@@ -54,7 +54,7 @@ public interface CaseOrchestrationService {
     Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException;
 
-    Map<String, Object> sendRespondentSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+    Map<String, Object> aosSubmission(CcdCallbackRequest ccdCallbackRequest, String authorizationToken) throws WorkflowException;
 
     Map<String, Object> sendPetitionerClarificationRequestNotification(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
@@ -102,7 +102,8 @@ public interface CaseOrchestrationService {
     Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, String authToken, String templateId,
                                                          String documentType, String filename) throws WorkflowException;
 
-    Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
+    Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest,
+                                                     String authToken) throws CaseOrchestrationServiceException;
 
     Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
