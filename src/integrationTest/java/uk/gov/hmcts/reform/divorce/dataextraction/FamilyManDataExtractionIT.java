@@ -29,7 +29,7 @@ public class FamilyManDataExtractionIT extends RetrieveCaseSupport {
 
     @Ignore //flaky test
     @Test
-    public void shouldEmailCsvFileWithCase_ForDecreeAbsoluteIssued() {
+    public void shouldEmailCsvFiles() {
         final UserDetails caseWorkerUser = createCaseWorkerUser();
 
         Response response = callTestEndpoint(caseWorkerUser.getAuthToken());
