@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -61,6 +62,37 @@ public class DecreeAbsoluteControllerTest {
             .thenThrow(new WorkflowException(TEST_MSG));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.notifyRespondentOfDARequested(AUTH_TOKEN, ccdCallbackRequest);
+        assert (Objects.requireNonNull(response.getBody()).getErrors().contains(TEST_MSG));
+    }
+
+    @Test
+    public void validateDaRequest_happyPath() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.validateDaRequest(ccdCallbackRequest);
+
+        assertEquals(OK, response.getStatusCode());
+    }
+
+    @Test
+    public void validateDaRequest_exceptionOccurred_returnsResponseError() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+
+        final String TEST_MSG = "Validation error!";
+        doThrow(new WorkflowException("Validation error!"))
+            .when(decreeAbsoluteService).validateDaRequest(ccdCallbackRequest.getCaseDetails());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.validateDaRequest(ccdCallbackRequest);
         assert (Objects.requireNonNull(response.getBody()).getErrors().contains(TEST_MSG));
     }
 }
