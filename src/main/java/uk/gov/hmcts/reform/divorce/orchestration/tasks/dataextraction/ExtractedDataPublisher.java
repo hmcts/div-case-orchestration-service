@@ -31,15 +31,18 @@ public class ExtractedDataPublisher implements Task<Void> {
     @Override
     public Void execute(TaskContext context, Void payload) throws TaskException {
         Status status = context.getTransientObject("status");
+        log.info("Ready to publish csv file for {}", status.name());
         CSVExtractor csvExtractor = csvExtractorFactory.getCSVExtractorForStatus(status);
         String dateToProcess = getDateToProcess(context);
         String attachmentFileName = String.format("%s_%s.csv", csvExtractor.getFileNamePrefix(), dateToProcess);
 
         try {
-            emailClient.sendEmailWithAttachment(csvExtractor.getDestinationEmailAddress(),
+            String destinationEmailAddress = csvExtractor.getDestinationEmailAddress();
+            log.info("Will send csv file to {}", destinationEmailAddress);
+            emailClient.sendEmailWithAttachment(destinationEmailAddress,
                 attachmentFileName,
                 context.getTransientObject(FILE_TO_PUBLISH));
-            log.info("Sent extracted data to {}", csvExtractor.getDestinationEmailAddress());
+            log.info("Sent extracted data to {}", destinationEmailAddress);
         } catch (MessagingException e) {
             throw new TaskException("Error sending e-mail with data extraction file.", e);
         }
