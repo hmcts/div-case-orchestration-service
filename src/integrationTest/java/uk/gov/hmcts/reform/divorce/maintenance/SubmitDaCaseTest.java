@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
-import feign.FeignException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +12,10 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 
 public class SubmitDaCaseTest extends CcdSubmissionSupport {
 
-    private static final String TEST_CASE_ID = "1234567890123456";
     private static final String STATE_JSON_KEY = "state";
     private static final String DA_REQUESTED_STATE = "DARequested";
     private static final String UPDATE_TO_DN_PRONOUNCED_EVENT_ID = "testDNPronounced";
@@ -29,17 +25,7 @@ public class SubmitDaCaseTest extends CcdSubmissionSupport {
     private CosApiClient cosApiClient;
 
     @Test
-    public void givenUserTokenIsNull_whenSubmitDa_thenReturnBadRequest() throws Exception {
-        try {
-            cosApiClient.submitDaCase(null, Collections.emptyMap(), TEST_CASE_ID);
-            fail();
-        } catch (FeignException exception) {
-            assertEquals(BAD_REQUEST.value(), exception.status());
-        }
-    }
-
-    @Test
-    public void whenSubmitDa_thenProceedAsExpected() throws Exception {
+    public void whenSubmitDa_thenProceedAsExpected() {
         final UserDetails userDetails = createCitizenUser();
 
         final CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);
