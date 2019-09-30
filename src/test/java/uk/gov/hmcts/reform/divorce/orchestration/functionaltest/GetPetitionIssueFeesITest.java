@@ -111,6 +111,34 @@ public class GetPetitionIssueFeesITest extends MockedFunctionalTest {
             .andExpect(content().json(convertObjectToJsonString(expected)));
     }
 
+    @Test
+    public void givenUnauthorizedRequest_whenGetPetitionIssueFees_thenReturnErrorData() throws Exception {
+        FeeResponse feeResponse = FeeResponse.builder()
+                .amount(TEST_FEE_AMOUNT)
+                .feeCode(TEST_FEE_CODE)
+                .version(TEST_FEE_VERSION)
+                .description(TEST_FEE_DESCRIPTION)
+                .build();
+
+        stubMaintenanceServerEndpointForAddPetitionerSolicitorRole(HttpStatus.FORBIDDEN);
+        stubGetFeeFromFeesAndPayments(HttpStatus.OK, feeResponse);
+
+        OrderSummary orderSummary = new OrderSummary();
+        orderSummary.add(feeResponse);
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+                .errors(Collections.singletonList("Problem setting the [PETSOLICITOR] role to the case"))
+                .build();
+
+        webClient.perform(post(API_URL)
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .content(convertObjectToJsonString(CREATE_EVENT))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(convertObjectToJsonString(expected)));
+    }
+
     private void stubGetFeeFromFeesAndPayments(HttpStatus status, FeeResponse feeResponse) {
         feesAndPaymentsServer.stubFor(WireMock.get(PETITION_ISSUE_FEE_CONTEXT_PATH)
                 .willReturn(aResponse()
