@@ -8,9 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.model.usersession.DivorceSession;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,18 +30,21 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_AOS_COMPLETE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-public class SubmitDnCaseITest extends MockedFunctionalTest {
+public class SubmitDnCaseITest extends IdamTestSupport {
     private static final String API_URL = String.format("/submit-dn/%s", TEST_CASE_ID);
     private static final String UPDATE_CONTEXT_PATH = "/casemaintenance/version/1/updateCase/" + TEST_CASE_ID + "/";
     private static final String RETRIEVE_CASE_CONTEXT_PATH = String.format(
@@ -76,6 +82,7 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
         caseDetails.put(CASE_STATE_JSON_KEY, AOS_AWAITING);
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
+        stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
         stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, DN_RECEIVED, caseData, TEST_ERROR);
 
@@ -97,6 +104,7 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
         caseDetails.put(CASE_STATE_JSON_KEY, AOS_AWAITING);
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
+        stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
         stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED, caseData, caseDataString);
 
@@ -118,12 +126,43 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
         caseDetails.put(CASE_STATE_JSON_KEY, AOS_COMPLETED);
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
+        stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
         stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_AOS_COMPLETE, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(Collections.emptyMap()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(caseDataString));
+    }
+
+    @Test
+    public void givenDnReceivedAndAwaitingClarification_whenSubmitDn_thenProceedAsExpected() throws Exception {
+        final String clarificationResponse = "A response to the clarification request.";
+        CollectionMember<String> expectedDnClarificationResponse = new CollectionMember();
+        expectedDnClarificationResponse.setValue(clarificationResponse);
+
+        final Map<String, Object> caseData = getCaseData();
+        caseData.put("DnClarificationResponse", Arrays.asList(expectedDnClarificationResponse));
+        final String caseDataString = convertObjectToJsonString(caseData);
+        final Map<String, Object> caseDetails = new HashMap<>();
+
+        caseDetails.put(CASE_STATE_JSON_KEY, AWAITING_CLARIFICATION);
+        caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
+
+        stubSignInForCaseworker();
+        stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
+        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_CLARIFICATION, caseData, caseDataString);
+
+        DivorceSession divorceSession = new DivorceSession();
+        divorceSession.setClarificationResponse(clarificationResponse);
+
+        webClient.perform(MockMvcRequestBuilders.post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(divorceSession))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -143,7 +182,7 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
 
     private void stubMaintenanceServerEndpointForRetrieveCaseById(HttpStatus status, Map<String, Object> cmsData) {
         maintenanceServiceServer.stubFor(WireMock.get(RETRIEVE_CASE_CONTEXT_PATH)
-            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .withHeader(AUTHORIZATION, new EqualToPattern(BEARER_AUTH_TOKEN_1))
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
@@ -179,6 +218,10 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
                 put("DesertionAskedToResumeDN" , null);
                 put("DesertionAskedToResumeDNRefused" , null);
                 put("DesertionAskedToResumeDNDetails" , null);
+                put("RefusalClarificationReason", null);
+                put("RefusalClarificationAdditionalInfo", null);
+                put("DnClarificationResponse", null);
+                put("DocumentsUploadedDnClarification", null);
             }};
     }
 }

@@ -36,7 +36,6 @@ plugins {
 allprojects {
 
     def springBootVersion = '2.1.2.RELEASE'
-    def springCloudVersion = 'Finchley.RELEASE'
 
     apply plugin: 'java'
     apply plugin: 'checkstyle'
@@ -244,7 +243,7 @@ def versions = [
         hibernateTypes               : '2.4.0',
         flyway                       : '5.2.4',
         elasticsearch                : '7.3.0',
-        divCommonLib                 : '1.0.10'
+        divCommonLib                 : '1.1.1'
 ]
 
 dependencies {

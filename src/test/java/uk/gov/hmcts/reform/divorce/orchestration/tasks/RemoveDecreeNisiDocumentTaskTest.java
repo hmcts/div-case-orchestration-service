@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
+import uk.gov.hmcts.reform.divorce.formatter.service.CaseFormatterService;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class RemoveDecreeNisiDocumentTaskTest {
 
     @Mock
-    private CaseFormatterClient caseFormatterClient;
+    private CaseFormatterService caseFormatterService;
 
     @InjectMocks
     private RemoveDecreeNisiDocumentTask classToTest;
@@ -31,7 +31,7 @@ public class RemoveDecreeNisiDocumentTaskTest {
         final Map<String, Object> payload = new HashMap<>();
         final Map<String, Object> expected = DUMMY_CASE_DATA;
 
-        when(caseFormatterClient.removeAllDocumentsByType(DECREE_NISI_DOCUMENT_TYPE, payload)).thenReturn(expected);
+        when(caseFormatterService.removeAllDocumentsByType(payload, DECREE_NISI_DOCUMENT_TYPE)).thenReturn(expected);
 
         assertThat(classToTest.execute(new DefaultTaskContext(), payload), Is.is(expected));
     }
