@@ -173,7 +173,7 @@ public class BulkPrintTest extends IdamTestSupport {
         );
 
         final CaseDetails caseDetails = CaseDetails.builder()
-            .state("Issued")
+            .state("AwaitingService")
             .caseData(caseData)
             .build();
 

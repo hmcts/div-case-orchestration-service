@@ -19,14 +19,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 public class ServiceMethodValidationTask implements Task<Map<String, Object>> {
 
-    private static final String ISSUED_STATE = "Issued";
+    private static final String AWAITING_SERVICE_STATE = "AwaitingService";
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         String solServiceMethod = getOptionalPropertyValueAsString(payload, SOL_SERVICE_METHOD_CCD_FIELD, null);
         if (!Strings.isNullOrEmpty(solServiceMethod) && PERSONAL_SERVICE_VALUE.equals(solServiceMethod)) {
             String currentCaseState = context.getTransientObject(CASE_STATE_JSON_KEY);
-            if (ISSUED_STATE.equals(currentCaseState)) {
+            if (!AWAITING_SERVICE_STATE.equals(currentCaseState)) {
                 final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
                 log.error("Unexpected service method {} - Case ID: {}", solServiceMethod, caseId);
                 throw new TaskException(
