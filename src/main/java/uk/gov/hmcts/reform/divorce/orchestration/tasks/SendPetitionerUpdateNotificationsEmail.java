@@ -14,7 +14,6 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -41,8 +40,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @Component
@@ -51,11 +51,11 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
 
     public static final String GENERIC_UPDATE_EMAIL_DESC = "Generic Update Notification - Petitioner";
     public static final String AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC =
-            "Resp does not admit adultery update notification";
+        "Resp does not admit adultery update notification";
     public static final String AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC =
-            "Resp does not admit adultery update notification - no reply from co-resp";
+        "Resp does not admit adultery update notification - no reply from co-resp";
     public static final String AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC =
-            "Resp does not consent to 2 year separation update notification";
+        "Resp does not consent to 2 year separation update notification";
     public static final String SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC =
         "Resp response submission notification sent to solicitor";
     public static final String SOL_APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC =
@@ -102,7 +102,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
                 sendSolicitorEmail(petSolEmail, eventId, templateVars);
             } catch (NotificationClientException e) {
                 log.error("Error sending AOS overdue notification email to solicitor", e);
-                throw  new TaskException(e.getMessage(), e);
+                throw new TaskException(e.getMessage(), e);
             }
         } else if (StringUtils.isNotBlank(petEmail)) {
             String relationship = getMandatoryPropertyValueAsString(caseData, D_8_DIVORCED_WHO);
@@ -116,7 +116,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
                 sendPetitionerEmail(caseData, petEmail, eventId, templateVars);
             } catch (NotificationClientException e) {
                 log.error("Error sending AOS overdue notification email to petitioner", e);
-                throw  new TaskException(e.getMessage(), e);
+                throw new TaskException(e.getMessage(), e);
             }
         }
         return caseData;
@@ -192,14 +192,14 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
 
     private boolean isAosOverdueEvent(String eventId) {
         return StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_NOT_RECVD_EVENT)
-                || StringUtils.equalsIgnoreCase(eventId, NOT_RECEIVED_AOS_EVENT_ID)
-                || StringUtils.equalsIgnoreCase(eventId, NOT_RECEIVED_AOS_STARTED_EVENT_ID);
+            || StringUtils.equalsIgnoreCase(eventId, NOT_RECEIVED_AOS_EVENT_ID)
+            || StringUtils.equalsIgnoreCase(eventId, NOT_RECEIVED_AOS_STARTED_EVENT_ID);
     }
 
     private boolean isSep2YrAndNoConsent(Map<String, Object> caseData) {
         String reasonForDivorce = getFieldAsStringOrNull(caseData, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseData, RESP_ADMIT_OR_CONSENT_TO_FACT);
-        return StringUtils.equalsIgnoreCase(SEPARATION_2YRS, reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
+        return SEPARATION_TWO_YEARS.equalsIgnoreCase(reasonForDivorce) && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact);
     }
 
     private boolean isCoRespNamedAndNotReplied(Map<String, Object> caseData) {
@@ -208,7 +208,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
         return StringUtils.equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !StringUtils.equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE);
     }
 
-    private String getFieldAsStringOrNull(final Map<String, Object>  caseData, String fieldKey) {
+    private String getFieldAsStringOrNull(final Map<String, Object> caseData, String fieldKey) {
         Object fieldValue = caseData.get(fieldKey);
         if (fieldValue == null) {
             return null;

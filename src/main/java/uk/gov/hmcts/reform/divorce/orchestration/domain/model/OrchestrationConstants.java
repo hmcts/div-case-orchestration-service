@@ -200,14 +200,6 @@ public class OrchestrationConstants {
     public static final String LIMIT_DATE_TO_CONTACT_COURT = "limit date to contact court";
     public static final Period PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT = Period.ofWeeks(2);
 
-
-    // Reasons For Divorce
-    public static final String ADULTERY = "adultery";
-    public static final String SEPARATION_2YRS = "separation-2-years";
-    public static final String UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
-    public static final String SEPARATION_5YRS = "separation-5-years";
-    public static final String DESERTION = "desertion";
-
     // Case state
     public static final String AWAITING_PAYMENT = "AwaitingPayment";
     public static final String AWAITING_HWF_DECISION = "AwaitingHWFDecision";
@@ -294,16 +286,6 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
 
-    public static final String RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-resp";
-    public static final String RESPONDENT_AOS_INVITATION_LETTER_FILENAME = "aos-invitation-letter-offline-respondent";
-    public static final String RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00075.doc";
-    public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-co-resp";
-    public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME = "aos-invitation-letter-offline-co-respondent";
-    public static final String CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00076.doc";
-    public static final String AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE = "two-year-separation-aos-form";
-    public static final String AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME = "two-year-separation-aos-form-resp";
-    public static final String AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID = "FL-DIV-APP-ENG-00080.docx";
-
     public static final String DOCUMENT_TYPE_COE = "coe";
 
     public static final String SOL_DOCUMENT_LINK_FIELD = "solDocumentLinkFieldName";
@@ -311,7 +293,6 @@ public class OrchestrationConstants {
     public static final String RESP_ANSWERS_LINK = "respondentanswerslink";
     public static final String CO_RESP_ANSWERS_LINK = "corespondentanswerslink";
     public static final String SOLICITOR_LINKED_EMAIL = "RespSolLinkedEmail";
-
 
     // Fees
     public static final String CURRENCY = "GBP";
