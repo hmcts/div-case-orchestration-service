@@ -12,7 +12,6 @@ java:
     DIV_SCHEDULER_DB_USER_NAME : "{{ .Values.postgresql.postgresqlUsername}}"
     DIV_SCHEDULER_DB_PASSWORD  : "{{ .Values.postgresql.postgresqlPassword}}"
     FLYWAY_URL : "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
-    CASE_MAINTENANCE_SERVICE_API_BASEURL: "http://div-cms-pr-185.service.core-compute-preview.internal"
 
   keyVaults:
     "div":
