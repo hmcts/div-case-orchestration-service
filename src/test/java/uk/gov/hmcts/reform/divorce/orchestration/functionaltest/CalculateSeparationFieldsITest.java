@@ -24,8 +24,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_SEP_REF_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_SEP_TIME_TOGETHER_PERMITTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_5YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEP_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_FIVE_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class CalculateSeparationFieldsITest extends MockedFunctionalTest {
@@ -41,7 +41,7 @@ public class CalculateSeparationFieldsITest extends MockedFunctionalTest {
         String pastDate5Yrs9Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now().minusYears(5).minusMonths(9));
         String pastDate5Yrs6Mnths = DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now().minusYears(5).minusMonths(6));
 
-        Map<String, Object> testCaseData = ImmutableMap.of(D_8_REASON_FOR_DIVORCE, SEPARATION_5YRS,
+        Map<String, Object> testCaseData = ImmutableMap.of(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS,
             D_8_MENTAL_SEP_DATE, pastDate5Yrs8Mnths,
             D_8_PHYSICAL_SEP_DAIE, pastDate5Yrs9Mnths);
 

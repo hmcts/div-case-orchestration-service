@@ -33,11 +33,12 @@ public class DataExtractionRequestListener implements ApplicationListener<DataEx
     public void onApplicationEvent(DataExtractionRequest event) {
         DataExtractionRequest.Status status = event.getStatus();
         LocalDate dateToExtract = event.getDate();
-        log.info("Listened to {} for status {} and date {}" + DataExtractionRequest.class.getName(), status, dateToExtract);
+        log.info("Listened to {} for status {} and date {}", DataExtractionRequest.class.getName(), status, dateToExtract);
 
         if (csvExtractorFactory.hasCSVExtractorForStatus(status)) {
             try {
                 dataExtractionService.extractCasesToFamilyMan(status, dateToExtract, authUtil.getCaseworkerToken());
+                log.info("Data extracted for {}", status.name());
             } catch (CaseOrchestrationServiceException exception) {
                 String errorMessage = format("Error extracting data to Family man for status %s and date %s", status, dateToExtract.toString());
                 log.error(errorMessage, exception);

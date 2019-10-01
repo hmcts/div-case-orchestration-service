@@ -907,6 +907,28 @@ public class CallbackController {
                 .build());
     }
 
+    @PostMapping(path = "/pronouncement/cancel")
+    @ApiOperation(value = "Callback to cancel dn pronouncement.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> removeDNGrantedDocuments(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder response = CcdCallbackResponse.builder();
+
+        try {
+            response.data(caseOrchestrationService.removeDNGrantedDocuments(ccdCallbackRequest))
+                .build();
+            log.info("Delete DN granted documents for case id [{}]", ccdCallbackRequest.getCaseDetails().getCaseId());
+        } catch (WorkflowException exception) {
+            response.errors(singletonList(exception.getMessage()))
+                .build();
+            log.error("Delete DN granted documents for case id [{}]", ccdCallbackRequest.getCaseDetails().getCaseId(), exception);
+        }
+        return ResponseEntity.ok(response.build());
+    }
+
+
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();

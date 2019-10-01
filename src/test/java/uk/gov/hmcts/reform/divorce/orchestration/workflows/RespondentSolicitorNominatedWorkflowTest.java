@@ -14,9 +14,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAosPackPrinter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,22 +65,22 @@ public class RespondentSolicitorNominatedWorkflowTest {
     @Before
     public void setUp() {
         respondentSolicitorNominatedWorkflow = new RespondentSolicitorNominatedWorkflow(
-                respondentPinGenerator,
-                respondentLetterGenerator,
-                caseFormatterAddDocuments,
-                fetchPrintDocsFromDmStore,
-                respondentAosPackPrinter,
-                modifyDueDate,
-                resetRespondentLinkingFields
+            respondentPinGenerator,
+            respondentLetterGenerator,
+            caseFormatterAddDocuments,
+            fetchPrintDocsFromDmStore,
+            respondentAosPackPrinter,
+            modifyDueDate,
+            resetRespondentLinkingFields
         );
 
         payload = new HashMap<>();
 
         caseDetails = CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .state(TEST_STATE)
-                .caseData(payload)
-                .build();
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .caseData(payload)
+            .build();
 
         context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
@@ -105,13 +105,13 @@ public class RespondentSolicitorNominatedWorkflowTest {
 
         //Then
         InOrder inOrder = inOrder(
-                respondentPinGenerator,
-                respondentLetterGenerator,
-                caseFormatterAddDocuments,
-                fetchPrintDocsFromDmStore,
-                respondentAosPackPrinter,
-                modifyDueDate ,
-                resetRespondentLinkingFields);
+            respondentPinGenerator,
+            respondentLetterGenerator,
+            caseFormatterAddDocuments,
+            fetchPrintDocsFromDmStore,
+            respondentAosPackPrinter,
+            modifyDueDate,
+            resetRespondentLinkingFields);
         assertThat(response, is(payload));
         inOrder.verify(respondentPinGenerator).execute(context, payload);
         inOrder.verify(respondentLetterGenerator).execute(context, payload);
