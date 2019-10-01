@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PERSONAL_SERVICE_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_SERVICE_METHOD_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
@@ -18,16 +19,25 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 public class ServiceMethodValidationTask implements Task<Map<String, Object>> {
 
+    private static final String AWAITING_SERVICE_STATE = "AwaitingService";
+
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         String solServiceMethod = getOptionalPropertyValueAsString(payload, SOL_SERVICE_METHOD_CCD_FIELD, null);
         if (!Strings.isNullOrEmpty(solServiceMethod) && PERSONAL_SERVICE_VALUE.equals(solServiceMethod)) {
-            final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
-            log.error("Unexpected service method {} - Case ID: {}", solServiceMethod, caseId);
-            throw new TaskException(
-                    "This event cannot be used when the service method is Personal Service. "
-                            + "Please use the Personal Service event instead"
-            );
+            String currentCaseState = context.getTransientObject(CASE_STATE_JSON_KEY);
+            if (!AWAITING_SERVICE_STATE.equals(currentCaseState)) {
+                final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
+                log.error("Unexpected service method {} - Case ID: {}, State: {}",
+                        solServiceMethod,
+                        caseId,
+                        currentCaseState
+                );
+                throw new TaskException(
+                        "This event cannot be used when service method is "
+                                + "Personal Service and the case is not in Awaiting Service."
+                );
+            }
         }
         return payload;
     }
