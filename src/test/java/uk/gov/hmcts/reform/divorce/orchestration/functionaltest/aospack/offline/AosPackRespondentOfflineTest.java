@@ -30,7 +30,6 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.lang.String.format;
 import static java.util.Collections.singletonMap;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -119,6 +118,7 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
         GeneratedDocumentInfo invitationLetterDocumentInfo = GeneratedDocumentInfo.builder()
             .documentType(RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE)
             .fileName(RESPONDENT_AOS_INVITATION_LETTER_FILENAME)
+            .url("http://localhost:4020/1/binary")
             .build();
         stubDocumentGeneratorServerEndpoint(invitationLetterDocumentRequest, invitationLetterDocumentInfo);
         String invitationLetterFilename = RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
@@ -131,6 +131,7 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
         GeneratedDocumentInfo formDocumentInfo = GeneratedDocumentInfo.builder()
             .documentType(AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE)
             .fileName(AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME)
+            .url("http://localhost:4020/2/binary")
             .build();
 
         stubDocumentGeneratorServerEndpoint(formDocumentRequest, formDocumentInfo);
@@ -180,6 +181,7 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
         GeneratedDocumentInfo invitationLetterDocumentInfo = GeneratedDocumentInfo.builder()
             .documentType(CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE)
             .fileName(CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME)
+            .url("http://localhost:4020/1/binary")
             .build();
         stubDocumentGeneratorServerEndpoint(invitationLetterDocumentRequest, invitationLetterDocumentInfo);
         String invitationLetterFilename = CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
@@ -192,6 +194,7 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
         GeneratedDocumentInfo formDocumentInfo = GeneratedDocumentInfo.builder()
             .documentType(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE)
             .fileName(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME)
+            .url("http://localhost:4020/2/binary")
             .build();
         stubDocumentGeneratorServerEndpoint(formDocumentRequest, formDocumentInfo);
         String formFilename = AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME + caseDetails.getCaseId();
