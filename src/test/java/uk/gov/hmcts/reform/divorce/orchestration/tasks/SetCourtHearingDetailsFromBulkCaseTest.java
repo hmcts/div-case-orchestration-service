@@ -6,8 +6,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -51,17 +51,17 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
     @Test
     public void givenCourtHearingDetailsFromBulkCase_whenSetCourtHearingDetailsOnCcdCase_thenReturnFormattedData() throws TaskException {
         Map<String, Object> bulkCaseDetails = ImmutableMap.of(
-                ID, TEST_CASE_ID,
-                CCD_CASE_DATA_FIELD, ImmutableMap.of(
-                        COURT_NAME_CCD_FIELD, COURT_NAME,
-                        COURT_HEARING_DATE_CCD_FIELD, COURT_HEARING_DATE_TIME
-                ));
+            ID, TEST_CASE_ID,
+            CCD_CASE_DATA_FIELD, ImmutableMap.of(
+                COURT_NAME_CCD_FIELD, COURT_NAME,
+                COURT_HEARING_DATE_CCD_FIELD, COURT_HEARING_DATE_TIME
+            ));
 
         context.setTransientObject(BULK_CASE_DETAILS_CONTEXT_KEY, bulkCaseDetails);
 
         CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(Collections.emptyMap())
-                .build();
+            .caseData(Collections.emptyMap())
+            .build();
 
         CollectionMember<Map<String, Object>> expectedDateTimeCollection = new CollectionMember<>();
         expectedDateTimeCollection.setValue(ImmutableMap.of(
@@ -82,11 +82,11 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
     @Test
     public void givenCourtHearingDetailsFromBulkCase_whenSetCourtHearingDetailsOnCcdCaseWithExistingHearing_thenReturnFormattedData() throws TaskException {
         Map<String, Object> bulkCaseDetails = ImmutableMap.of(
-                ID, TEST_CASE_ID,
-                CCD_CASE_DATA_FIELD, ImmutableMap.of(
-                        COURT_NAME_CCD_FIELD, COURT_NAME,
-                        COURT_HEARING_DATE_CCD_FIELD, COURT_HEARING_DATE_TIME
-                ));
+            ID, TEST_CASE_ID,
+            CCD_CASE_DATA_FIELD, ImmutableMap.of(
+                COURT_NAME_CCD_FIELD, COURT_NAME,
+                COURT_HEARING_DATE_CCD_FIELD, COURT_HEARING_DATE_TIME
+            ));
 
         context.setTransientObject(BULK_CASE_DETAILS_CONTEXT_KEY, bulkCaseDetails);
 
@@ -100,8 +100,8 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
         courtHearings.add(existingDateTimeCollection);
 
         CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(Collections.singletonMap(DATETIME_OF_HEARING_CCD_FIELD, courtHearings))
-                .build();
+            .caseData(Collections.singletonMap(DATETIME_OF_HEARING_CCD_FIELD, courtHearings))
+            .build();
 
         CollectionMember<Map<String, Object>> newDateTimeCollection = new CollectionMember<>();
         newDateTimeCollection.setValue(ImmutableMap.of(

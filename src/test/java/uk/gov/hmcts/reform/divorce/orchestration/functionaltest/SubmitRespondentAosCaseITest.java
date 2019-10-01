@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
     private static final String API_URL = String.format("/submit-aos/%s", TEST_CASE_ID);
 
-    private static final String FORMAT_TO_AOS_CASE_CONTEXT_PATH = "/caseformatter/version/1/to-aos-submit-format";
     private static final String UPDATE_CONTEXT_PATH = "/casemaintenance/version/1/updateCase/" + TEST_CASE_ID + "/";
     private static final String RETRIEVE_CASE_CONTEXT_PATH = String.format(
         "/casemaintenance/version/1/case/%s",
@@ -91,25 +91,8 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenCaseFormatterFails_whenSubmitAos_thenPropagateTheException() throws Exception {
-        final Map<String, Object> caseData = buildRespondentResponse(YES_VALUE, true);
-
-        stubFormatterServerEndpoint(BAD_REQUEST, caseData, TEST_ERROR);
-
-        webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andExpect(content().string(containsString(TEST_ERROR)));
-    }
-
-    @Test
     public void givenCaseRetrievalFails_whenSubmitAos_thenPropagateTheException() throws Exception {
         final Map<String, Object> caseData = buildRespondentResponse(YES_VALUE, false);
-
-        stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
 
         stubMaintenanceServerEndpointForRetrieveCaseById(NOT_FOUND, emptyMap());
 
@@ -125,8 +108,6 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
     public void givenCaseUpdateFails_whenSubmitAos_thenPropagateTheException() throws Exception {
         final Map<String, Object> caseData = buildRespondentResponse(YES_VALUE, false);
 
-        stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
-
         final Map<String, Object> existingCaseData = new HashMap<>();
         existingCaseData.put(CCD_CASE_DATA_FIELD, emptyMap());
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
@@ -135,7 +116,10 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
+            .content(convertObjectToJsonString(ImmutableMap.of(
+                    "respAdmitOrConsentToFact", "Yes",
+                    "respWillDefendDivorce", "No"
+            )))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
@@ -147,8 +131,6 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
         final Map<String, Object> caseData = buildRespondentResponse(YES_VALUE, true);
         final String caseDataString = convertObjectToJsonString(caseData);
 
-        stubFormatterServerEndpoint(OK, caseData, caseDataString);
-
         final Map<String, Object> existingCaseData = new HashMap<>();
         existingCaseData.put(CCD_CASE_DATA_FIELD, emptyMap());
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
@@ -157,7 +139,10 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
+            .content(convertObjectToJsonString(ImmutableMap.of(
+                    "respAdmitOrConsentToFact", "Yes",
+                    "respWillDefendDivorce", "Yes"
+            )))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -170,8 +155,6 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
 
         final String caseDataString = convertObjectToJsonString(caseData);
 
-        stubFormatterServerEndpoint(OK, caseData, caseDataString);
-
         final Map<String, Object> existingCaseData = new HashMap<>();
         existingCaseData.put(CCD_CASE_DATA_FIELD, emptyMap());
 
@@ -181,7 +164,10 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
+            .content(convertObjectToJsonString(ImmutableMap.of(
+                    "respAdmitOrConsentToFact", "No",
+                    "respWillDefendDivorce", "Yes"
+            )))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -196,8 +182,6 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
 
         final String caseDataString = convertObjectToJsonString(caseData);
 
-        stubFormatterServerEndpoint(OK, caseData, caseDataString);
-
         final Map<String, Object> existingCaseData = new HashMap<>();
         existingCaseData.put(CCD_CASE_DATA_FIELD, singletonMap(D_8_REASON_FOR_DIVORCE, ADULTERY));
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
@@ -206,7 +190,10 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
+            .content(convertObjectToJsonString(ImmutableMap.of(
+                    "respAdmitOrConsentToFact", "No",
+                    "respWillDefendDivorce", "No"
+            )))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -222,12 +209,14 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
         existingCaseData.put(CCD_CASE_DATA_FIELD, singletonMap(D_8_REASON_FOR_DIVORCE, SEPARATION_2YRS));
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
 
-        stubFormatterServerEndpoint(OK, caseData, caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, COMPLETED_AOS_EVENT_ID, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
+            .content(convertObjectToJsonString(ImmutableMap.of(
+                    "respAdmitOrConsentToFact", "No",
+                    "respWillDefendDivorce", "No"
+            )))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -239,12 +228,14 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
         final Map<String, Object> caseData = buildRespondentResponse(YES_VALUE, false);
         final String caseDataString = convertObjectToJsonString(caseData);
 
-        stubFormatterServerEndpoint(OK, caseData, caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, AWAITING_DN_AOS_EVENT_ID, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(caseData))
+            .content(convertObjectToJsonString(ImmutableMap.of(
+                    "respAdmitOrConsentToFact", "Yes",
+                    "respWillDefendDivorce", "No"
+            )))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -256,25 +247,15 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
         final Map<String, Object> caseData = buildSolicitorRepresentationResponse();
         final String caseDataString = convertObjectToJsonString(caseData);
 
-        stubFormatterServerEndpoint(OK, caseData, caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, AOS_NOMINATE_SOLICITOR, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
                 .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(caseData))
+                .content(convertObjectToJsonString(buildSolicitorRepresentationRequest()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(caseDataString));
-    }
-
-    private void stubFormatterServerEndpoint(HttpStatus status, Map<String, Object> caseData, String response) {
-        formatterServiceServer.stubFor(post(FORMAT_TO_AOS_CASE_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
-            .willReturn(aResponse()
-                .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withBody(response)));
     }
 
     private void stubMaintenanceServerEndpointForUpdate(HttpStatus status, String caseEventId,
@@ -308,6 +289,19 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
         }
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         caseData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
+        caseData.put("RespContactMethodIsDigital", "YES");
+
+        return caseData;
+    }
+
+    private Map<String, Object> buildSolicitorRepresentationRequest() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put("respondentSolicitorRepresented", YES_VALUE);
+        caseData.put("respondentSolicitorName", "Some name");
+        caseData.put("respondentSolicitorCompany", "Awesome Solicitors LLP");
+        caseData.put("respondentSolicitorEmail", "solicitor@localhost.local");
+        caseData.put("respondentSolicitorPhoneNumber", "2222222222");
+        caseData.put("respondentSolicitorReference", "2334234");
 
         return caseData;
     }
@@ -320,6 +314,7 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
         caseData.put("D8RespondentSolicitorEmail", "solicitor@localhost.local");
         caseData.put("D8RespondentSolicitorPhone", "2222222222");
         caseData.put("respondentSolicitorReference", "2334234");
+        caseData.put("RespContactMethodIsDigital", "YES");
 
         return caseData;
     }

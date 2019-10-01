@@ -69,7 +69,6 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     private static final String API_URL = "/dn-about-to-be-granted";
     private static final String CCD_RESPONSE_DATA_FIELD = "data";
 
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
     @Autowired
@@ -190,7 +189,6 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 .build();
 
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, expectedDocumentUpdateRequestData);
 
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             ImmutableMap.of(
@@ -295,16 +293,6 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
                 .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
                 .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-                .willReturn(aResponse()
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withStatus(HttpStatus.OK.value())
-                        .withBody(convertObjectToJsonString(response))));
-    }
-
-    private void stubFormatterServerEndpoint(DocumentUpdateRequest documentUpdateRequest,
-                                             Map<String, Object> response) {
-        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
                 .willReturn(aResponse()
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                         .withStatus(HttpStatus.OK.value())

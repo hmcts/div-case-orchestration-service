@@ -62,7 +62,6 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
     private static final String API_URL = "/aos-received";
     private static final String USER_TOKEN = "anytoken";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
-    private static final String FORMAT_ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
 
     private static final String PETITIONER_FIRST_NAME = "any-name";
     private static final String PETITIONER_LAST_NAME = "any-last-name";
@@ -129,7 +128,6 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
             .build();
 
         stubDocumentGeneratorServerEndpoint(documentRequest, documentInfo);
-        stubFormatterServerEndpoint(documentFormatRequest);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, USER_TOKEN)
@@ -139,8 +137,8 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.errors", nullValue()),
-                hasJsonPath("$.data.documents", isJson()),
-                hasJsonPath("$.data.caseData", isJson())
+                hasJsonPath("$.data", isJson()),
+                hasJsonPath("$.data.D8DocumentsGenerated", isJson())
             )));
     }
 
@@ -170,15 +168,8 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
                 .documentType(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .fileName(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .build();
-        final Set<GeneratedDocumentInfo> documentsForFormatter = new HashSet<>();
-        documentsForFormatter.add(respondentAnswersDocResponse);
-        DocumentUpdateRequest docsReq = DocumentUpdateRequest.builder()
-            .caseData(fullCase.getCaseData())
-            .documents(new ArrayList<>(documentsForFormatter))
-            .build();
 
         stubDocumentGeneratorServerEndpoint(respondentAnswersDocRequest, respondentAnswersDocResponse);
-        stubFormatterServerEndpoint(docsReq);
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .eventId(CASE_ID)
@@ -193,7 +184,7 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.errors", nullValue()),
-                hasJsonPath("$.data.documents", isJson())
+                hasJsonPath("$.data.D8DocumentsGenerated", isJson())
             )));
 
         verify(mockEmailClient).sendEmail(any(),
@@ -227,12 +218,6 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
                 .documentType(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .fileName(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .build();
-        final Set<GeneratedDocumentInfo> documentsForFormatter = new HashSet<>();
-        documentsForFormatter.add(respondentAnswersDocResponse);
-        DocumentUpdateRequest docsReq = DocumentUpdateRequest.builder()
-            .caseData(fullCase.getCaseData())
-            .documents(new ArrayList<>(documentsForFormatter))
-            .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .eventId(CASE_ID)
@@ -240,7 +225,6 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
             .build();
 
         stubDocumentGeneratorServerEndpoint(respondentAnswersDocRequest, respondentAnswersDocResponse);
-        stubFormatterServerEndpoint(docsReq);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, USER_TOKEN)
@@ -250,8 +234,9 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.errors", nullValue()),
-                hasJsonPath("$.data.documents", isJson()),
-                hasJsonPath("$.data.caseData", isJson())
+                hasJsonPath("$.data", isJson()),
+                hasJsonPath("$.data.D8DocumentsGenerated", isJson())
+
             )));
 
         verifyZeroInteractions(mockEmailClient);
@@ -311,14 +296,5 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(response))));
-    }
-
-    private void stubFormatterServerEndpoint(DocumentUpdateRequest data) {
-        formatterServiceServer.stubFor(WireMock.post(FORMAT_ADD_DOCUMENTS_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(data)))
-            .willReturn(aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withBody(convertObjectToJsonString(data))));
     }
 }

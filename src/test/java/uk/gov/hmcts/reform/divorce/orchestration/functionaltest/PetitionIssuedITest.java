@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -77,10 +77,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
+;
+
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class PetitionIssuedITest extends IdamTestSupport {
     private static final String API_URL = "/petition-issued";
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
     private static final String PETITION_ISSUE_FEE_CONTEXT_PATH = "/fees-and-payments/version/1/petition-issue-fee";
 
@@ -180,7 +181,6 @@ public class PetitionIssuedITest extends IdamTestSupport {
         final Map<String, Object> formattedCaseData = emptyMap();
 
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
         when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
@@ -216,7 +216,6 @@ public class PetitionIssuedITest extends IdamTestSupport {
         final Map<String, Object> formattedCaseData = emptyMap();
 
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
         when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
@@ -263,7 +262,6 @@ public class PetitionIssuedITest extends IdamTestSupport {
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
         when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
@@ -330,7 +328,6 @@ public class PetitionIssuedITest extends IdamTestSupport {
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
         stubDocumentGeneratorServerEndpoint(generateMiniPetitionRequest, generatedMiniPetitionResponse);
         stubDocumentGeneratorServerEndpoint(generateAosInvitationRequest, generatedAosInvitationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
         when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
@@ -422,8 +419,6 @@ public class PetitionIssuedITest extends IdamTestSupport {
                 .caseData(ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData())
                 .build();
 
-        stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
-
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequestWithServiceCentre))
@@ -439,16 +434,6 @@ public class PetitionIssuedITest extends IdamTestSupport {
         documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
             .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
-    }
-
-    private void stubFormatterServerEndpoint(DocumentUpdateRequest documentUpdateRequest,
-                                             Map<String, Object> response) {
-        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
             .willReturn(aResponse()
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withStatus(HttpStatus.OK.value())

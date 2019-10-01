@@ -15,9 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.BulkUpdateException;
 
@@ -61,7 +61,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     private static final String CASE_ID3 = "1546883073634743";
     private static final String BULK_CASE_ID = "1557223513377278";
     private static final String UPDATE_BODY = convertObjectToJsonString(
-        ImmutableMap.of(BULK_LISTING_CASE_ID_FIELD, new CaseLink(BULK_CASE_ID)));
+        ImmutableMap.of(BULK_LISTING_CASE_ID_FIELD, buildCaseLink(BULK_CASE_ID)));
 
     @Value("${bulk-action.retries.max:4}")
     private int maxRetries;
@@ -219,8 +219,8 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     @Test
     public void give422Error_whenUpdateDivorceCase_thenUpdateBulkCaseWithFilteredCaseList() throws Exception {
         SearchResult result = SearchResult.builder()
-                .cases(Arrays.asList(prepareBulkCase(), prepareBulkCase(), prepareBulkCase()))
-                .build();
+            .cases(Arrays.asList(prepareBulkCase(), prepareBulkCase(), prepareBulkCase()))
+            .build();
 
         stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
         stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.OK, getCmsBulkCaseResponse(), POST);
@@ -232,9 +232,9 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
         stubSignInForCaseworker();
 
         webClient.perform(post(API_URL)
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         waitAsyncCompleted();
 
@@ -247,8 +247,8 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     @Test
     public void give404Error_whenUpdateDivorceCase_thenUpdateBulkCaseWithFilteredCaseList() throws Exception {
         SearchResult result = SearchResult.builder()
-                .cases(Arrays.asList(prepareBulkCase(), prepareBulkCase(), prepareBulkCase()))
-                .build();
+            .cases(Arrays.asList(prepareBulkCase(), prepareBulkCase(), prepareBulkCase()))
+            .build();
 
         stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
         stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.OK, getCmsBulkCaseResponse(), POST);
@@ -260,9 +260,9 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
         stubSignInForCaseworker();
 
         webClient.perform(post(API_URL)
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         waitAsyncCompleted();
 
@@ -285,7 +285,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
     private void stubCmsServerEndpoint(String path, HttpStatus status, String body, HttpMethod method) {
 
-        maintenanceServiceServer.stubFor(WireMock.request(method.name(),urlEqualTo(path))
+        maintenanceServiceServer.stubFor(WireMock.request(method.name(), urlEqualTo(path))
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
@@ -305,5 +305,12 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
     private String getCmsBulkCaseResponse() throws Exception {
         return loadResourceAsString(CMS_RESPONSE_BODY_FILE);
+    }
+
+    public static CaseLink buildCaseLink(String value) {
+        CaseLink caseLink = new CaseLink();
+        caseLink.setCaseReference(value);
+
+        return caseLink;
     }
 }

@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataToDivorceFormatter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataToDivorceFormatterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveAosCase;
 
 import static org.junit.Assert.assertEquals;
@@ -22,7 +22,7 @@ public class RetrieveAosCaseWorkflowUTest {
     @Mock
     private RetrieveAosCase retrieveAosCase;
     @Mock
-    private CaseDataToDivorceFormatter caseDataToDivorceFormatter;
+    private CaseDataToDivorceFormatterTask caseDataToDivorceFormatterTask;
 
     @InjectMocks
     private RetrieveAosCaseWorkflow classUnderTest;
@@ -33,7 +33,7 @@ public class RetrieveAosCaseWorkflowUTest {
 
         final Task[] tasks = new Task[]{
             retrieveAosCase,
-            caseDataToDivorceFormatter
+            caseDataToDivorceFormatterTask
         };
 
         final CaseDataResponse caseDataResponse = CaseDataResponse.builder().build();

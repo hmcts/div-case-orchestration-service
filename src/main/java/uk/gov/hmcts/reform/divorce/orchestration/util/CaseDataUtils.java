@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.time.LocalDate;
@@ -55,10 +55,10 @@ public class CaseDataUtils {
     public static String formatCaseIdToReferenceNumber(String referenceId) {
         try {
             return String.format("%s-%s-%s-%s",
-                    referenceId.substring(0, 4),
-                    referenceId.substring(4, 8),
-                    referenceId.substring(8, 12),
-                    referenceId.substring(12));
+                referenceId.substring(0, 4),
+                referenceId.substring(4, 8),
+                referenceId.substring(8, 12),
+                referenceId.substring(12));
         } catch (Exception exception) {
             log.warn("Error formatting case reference {}", referenceId);
             return referenceId;
@@ -67,22 +67,23 @@ public class CaseDataUtils {
 
     public static LocalDate getLatestCourtHearingDateFromCaseData(Map<String, Object> caseData) throws TaskException {
         List<CollectionMember> courtHearingCollection = objectMapper.convertValue(
-                getMandatoryPropertyValueAsObject(caseData, DATETIME_OF_HEARING_CCD_FIELD), new TypeReference<List<CollectionMember>>() {});
+            getMandatoryPropertyValueAsObject(caseData, DATETIME_OF_HEARING_CCD_FIELD), new TypeReference<List<CollectionMember>>() {
+            });
         // Last element of list is the latest updated Court Hearing Date
         CollectionMember<Map<String, Object>> hearingDateTime = courtHearingCollection.get(courtHearingCollection.size() - 1);
 
         return LocalDate.parse(getMandatoryPropertyValueAsString(hearingDateTime.getValue(), DATE_OF_HEARING_CCD_FIELD),
-                ofPattern(CCD_DATE_FORMAT));
+            ofPattern(CCD_DATE_FORMAT));
     }
 
-    public static String getCaseLinkValue(Map<String, Object> caseData, String fieldName ) {
-        return Optional.ofNullable(getFieldAsStringObjectMap(caseData,fieldName))
+    public static String getCaseLinkValue(Map<String, Object> caseData, String fieldName) {
+        return Optional.ofNullable(getFieldAsStringObjectMap(caseData, fieldName))
             .map(mapData -> mapData.get(CASE_REFERENCE_FIELD))
             .map(String.class::cast)
             .orElse(null);
     }
 
-    public static Map<String, Object> getFieldAsStringObjectMap(Map<String, Object> caseData, String fieldName ) {
+    public static Map<String, Object> getFieldAsStringObjectMap(Map<String, Object> caseData, String fieldName) {
         return (Map<String, Object>) caseData.get(fieldName);
     }
 

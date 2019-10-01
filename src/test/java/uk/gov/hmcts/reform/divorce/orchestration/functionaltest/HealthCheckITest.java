@@ -45,7 +45,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
     @Test
     public void givenAllDependenciesAreUp_whenCheckHealth_thenReturnStatusUp() throws Exception {
-        mockEndpointAndResponse(formatterServiceServer, true);
         mockEndpointAndResponse(maintenanceServiceServer, true);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
@@ -61,8 +60,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
         assertThat(response.getStatusLine().getStatusCode(), equalTo(200));
         assertThat(JsonPath.read(body, "$.status").toString(), equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
-            equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.documentGeneratorServiceHealthCheck.status").toString(),
@@ -82,7 +79,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
     @Test
     public void givenFeatureToggleServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
-        mockEndpointAndResponse(formatterServiceServer, false);
         mockEndpointAndResponse(maintenanceServiceServer, true);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
@@ -98,8 +94,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
         assertThat(response.getStatusLine().getStatusCode(), equalTo(503));
         assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
-            equalTo("DOWN"));
         assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.documentGeneratorServiceHealthCheck.status").toString(),
@@ -117,7 +111,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
     @Test
     public void givenSendLetterServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
-        mockEndpointAndResponse(formatterServiceServer, false);
         mockEndpointAndResponse(maintenanceServiceServer, true);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
@@ -133,8 +126,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
         assertThat(response.getStatusLine().getStatusCode(), equalTo(503));
         assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
-            equalTo("DOWN"));
         assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.documentGeneratorServiceHealthCheck.status").toString(),
@@ -153,41 +144,7 @@ public class HealthCheckITest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenCaseFormatterServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
-        mockEndpointAndResponse(formatterServiceServer, false);
-        mockEndpointAndResponse(maintenanceServiceServer, true);
-        mockEndpointAndResponse(validationServiceServer, true);
-        mockEndpointAndResponse(documentGeneratorServiceServer, true);
-        mockEndpointAndResponse(featureToggleService, true);
-        mockEndpointAndResponse(feesAndPaymentsServer, true);
-        mockEndpointAndResponse(idamServer, true);
-        mockEndpointAndResponse(paymentServiceServer, true);
-        mockEndpointAndResponse(sendLetterService, true);
-        mockEndpointAndResponse(serviceAuthProviderServer, true);
-
-        HttpResponse response = getHealth();
-        String body = EntityUtils.toString(response.getEntity());
-
-        assertThat(response.getStatusLine().getStatusCode(), equalTo(503));
-        assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
-            equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
-            equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.documentGeneratorServiceHealthCheck.status").toString(),
-            equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.feesAndPaymentsServiceHealthCheck.status").toString(),
-            equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
-            equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
-            equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
-    }
-
-    @Test
     public void givenDocumentGeneratorServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
-        mockEndpointAndResponse(formatterServiceServer, true);
         mockEndpointAndResponse(maintenanceServiceServer, true);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, false);
@@ -203,8 +160,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
         assertThat(response.getStatusLine().getStatusCode(), equalTo(503));
         assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
-            equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.documentGeneratorServiceHealthCheck.status").toString(),
@@ -220,7 +175,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
     @Test
     public void givenCaseMaintenanceServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
-        mockEndpointAndResponse(formatterServiceServer, true);
         mockEndpointAndResponse(maintenanceServiceServer, false);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
@@ -236,8 +190,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
         assertThat(response.getStatusLine().getStatusCode(), equalTo(503));
         assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
-            equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
             equalTo("DOWN"));
         assertThat(JsonPath.read(body, "$.details.documentGeneratorServiceHealthCheck.status").toString(),
@@ -253,7 +205,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
     @Test
     public void givenFeesAndPaymentsServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
-        mockEndpointAndResponse(formatterServiceServer, true);
         mockEndpointAndResponse(maintenanceServiceServer, true);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
@@ -269,8 +220,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
         assertThat(response.getStatusLine().getStatusCode(), equalTo(503));
         assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
-            equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.documentGeneratorServiceHealthCheck.status").toString(),
@@ -286,7 +235,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
     @Test
     public void givenPaymentServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
-        mockEndpointAndResponse(formatterServiceServer, true);
         mockEndpointAndResponse(maintenanceServiceServer, true);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
@@ -302,8 +250,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
         assertThat(response.getStatusLine().getStatusCode(), equalTo(503));
         assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
-            equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.documentGeneratorServiceHealthCheck.status").toString(),
@@ -319,7 +265,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
     @Test
     public void givenServiceAuthIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
-        mockEndpointAndResponse(formatterServiceServer, true);
         mockEndpointAndResponse(maintenanceServiceServer, true);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
@@ -335,8 +280,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
         assertThat(response.getStatusLine().getStatusCode(), equalTo(503));
         assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
-            equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.documentGeneratorServiceHealthCheck.status").toString(),
@@ -352,7 +295,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
     @Test
     public void givenAllDependenciesAreDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
-        mockEndpointAndResponse(formatterServiceServer, false);
         mockEndpointAndResponse(maintenanceServiceServer, false);
         mockEndpointAndResponse(validationServiceServer, false);
         mockEndpointAndResponse(documentGeneratorServiceServer, false);
@@ -368,8 +310,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
         assertThat(response.getStatusLine().getStatusCode(), equalTo(503));
         assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
-            equalTo("DOWN"));
         assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
             equalTo("DOWN"));
         assertThat(JsonPath.read(body, "$.details.documentGeneratorServiceHealthCheck.status").toString(),

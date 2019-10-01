@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,14 +45,17 @@ public class UpdateCaseTest extends MockedFunctionalTest {
         "/casemaintenance/version/1/case/%s",
         CASE_ID
     );
-    private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
     private static final String UPDATE_CONTEXT_PATH = String.format(
         "/casemaintenance/version/1/updateCase/%s/%s",
         CASE_ID,
         EVENT_ID
     );
 
-    private static final Map<String, Object> caseData = Collections.emptyMap();
+    private static final Map<String, Object> caseData = ImmutableMap.of(
+        "createdDate",  CcdUtil.formatDateForCCD(LocalDate.now()),
+        "D8Cohort", "onlineSubmissionPrivateBeta",
+        "RespondentContactDetailsConfidential", "share"
+    );
 
     private Map<String, Object> eventData;
 
@@ -68,7 +74,6 @@ public class UpdateCaseTest extends MockedFunctionalTest {
         Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
 
         stubMaintenanceServerEndpointForRetrieveCaseById();
-        stubFormatterServerEndpoint();
         stubMaintenanceServerEndpointForUpdate(responseData);
 
         CaseResponse updateResponse = CaseResponse.builder()
@@ -106,15 +111,6 @@ public class UpdateCaseTest extends MockedFunctionalTest {
     private void stubMaintenanceServerEndpointForRetrieveCaseById() {
         maintenanceServiceServer.stubFor(WireMock.get(RETRIEVE_CASE_CONTEXT_PATH)
                 .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-                .willReturn(aResponse()
-                        .withStatus(HttpStatus.OK.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(convertObjectToJsonString(caseData))));
-    }
-
-    private void stubFormatterServerEndpoint() {
-        formatterServiceServer.stubFor(WireMock.post(CCD_FORMAT_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)

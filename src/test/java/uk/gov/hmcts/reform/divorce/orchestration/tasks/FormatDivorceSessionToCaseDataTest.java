@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.junit.Before;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -8,27 +8,26 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.formatter.service.CaseFormatterService;
+import uk.gov.hmcts.reform.divorce.model.ccd.CoreCaseData;
+import uk.gov.hmcts.reform.divorce.model.usersession.DivorceSession;
 
 import java.util.Map;
 
-import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.rules.ExpectedException.none;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow.SELECTED_COURT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FormatDivorceSessionToCaseDataTest {
 
     @Mock
-    private CaseFormatterClient caseFormatterClient;
+    private CaseFormatterService caseFormatterService;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     @InjectMocks
     private FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
@@ -36,22 +35,21 @@ public class FormatDivorceSessionToCaseDataTest {
     @Rule
     public ExpectedException expectedException = none();
 
-    private Map<String, Object> testData;
-    private TaskContext context;
-
-    @Before
-    public void setup() {
-        testData = singletonMap("Hello", "World");
-        context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-    }
-
     @Test
     public void shouldCallCaseFormatterClientTransformToCCDFormat() {
-        when(caseFormatterClient.transformToCCDFormat(eq(AUTH_TOKEN), any())).thenReturn(testData);
-        context.setTransientObject(SELECTED_COURT, "randomlySelectedCourt");
+        final Map<String, Object> sessionData = mock(Map.class);
+        final Map<String, Object> expectedOutput = mock(Map.class);
 
-        assertEquals(testData, formatDivorceSessionToCaseData.execute(context, testData));
+        DivorceSession divorceSession = mock(DivorceSession.class);
+        CoreCaseData coreCaseData = mock(CoreCaseData.class);
+        when(objectMapper.convertValue(sessionData, DivorceSession.class)).thenReturn(divorceSession);
+        when(caseFormatterService.transformToCCDFormat(divorceSession, null)).thenReturn(coreCaseData);
+        when(objectMapper.convertValue(coreCaseData, Map.class)).thenReturn(expectedOutput);
+
+        assertEquals(expectedOutput, formatDivorceSessionToCaseData.execute(null, sessionData));
+
+        verify(objectMapper).convertValue(sessionData, DivorceSession.class);
+        verify(caseFormatterService).transformToCCDFormat(divorceSession, null);
+        verify(objectMapper).convertValue(coreCaseData, Map.class);
     }
-
 }

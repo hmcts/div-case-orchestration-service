@@ -80,14 +80,6 @@ server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
 
 case:
-  formatter:
-    service:
-      api:
-        baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://localhost:4011}
-  validation:
-    service:
-      api:
-        baseurl: ${CASE_VALIDATION_SERVICE_API_BASEURL:http://localhost:4008}
   maintenance:
     service:
       api:
@@ -179,7 +171,6 @@ uk:
           SOL_RESP_COE_NOTIFICATION: e7117ed4-83ff-43f9-8521-e70d31063c7e
           SOL_PERSONAL_SERVICE: 1e2f2ac5-ce4c-4fce-aca0-47a876eda089
 
-
 court-distribution-config:
   distribution:
     eastMidlands: 0
@@ -259,6 +250,60 @@ court:
       phoneNumber: '0300 303 0642'
       siteId: 'AA07'
       courtId: 'serviceCentre'
+  details: "{
+              \"eastMidlands\":{
+                \"divorceCentre\":\"East Midlands Regional Divorce Centre\",
+                \"courtCity\":\"Nottingham\",
+                \"poBox\":\"PO Box 10447\",
+                \"postCode\":\"NG2 9QN\",
+                \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\":\"eastmidlandsdivorce@hmcts.gsi.gov.uk\",
+                \"phoneNumber\":\"0300 303 0642\",
+                \"siteId\":\"AA01\"
+              },
+              \"westMidlands\":{
+                \"divorceCentre\":\"West Midlands Regional Divorce Centre\",
+                \"courtCity\":\"Stoke-on-Trent\",
+                \"poBox\":\"PO Box 3650\",
+                \"postCode\":\"ST4 9NH\",
+                \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\":\"westmidlandsdivorce@hmcts.gsi.gov.uk\",
+                \"phoneNumber\":\"0300 303 0642\",
+                \"siteId\":\"AA02\"
+              },
+              \"southWest\":{
+                \"divorceCentre\":\"South West Regional Divorce Centre\",
+                \"courtCity\":\"Southampton\",
+                \"poBox\":\"PO Box 1792\",
+                \"postCode\":\"SO15 9GG\",
+                \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\":\"sw-region-divorce@hmcts.gsi.gov.uk\",
+                \"phoneNumber\":\"0300 303 0642\",
+                \"siteId\":\"AA03\"
+              },
+              \"northWest\":{
+                \"divorceCentre\":\"North West Regional Divorce Centre\",
+                \"divorceCentreAddressName\":\"Liverpool Civil & Family Court\",
+                \"courtCity\":\"Liverpool\",
+                \"street\":\"35 Vernon Street\",
+                \"postCode\":\"L2 2BX\",
+                \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\":\"family@liverpool.countycourt.gsi.gov.uk\",
+                \"phoneNumber\":\"0300 303 0642\",
+                \"siteId\":\"AA04\"
+              },
+              \"serviceCentre\": {
+                \"serviceCentreName\": \"Courts and Tribunals Service Centre\",
+                \"divorceCentre\": \"HMCTS Digital Divorce\",
+                \"courtCity\": \"Harlow\",
+                \"poBox\": \"PO Box 12706\",
+                \"postCode\": \"CM20 9QT\",
+                \"openingHours\": \"Telephone Enquiries from: 8.30am to 5pm\",
+                \"email\": \"divorcecase@justice.gov.uk\",
+                \"phoneNumber\": \"0300 303 0642\",
+                \"siteId\": \"AA07\"
+              }
+           }"
 
 dncourt:
   locations:
@@ -308,6 +353,8 @@ dncourt:
       email: "divorcecase@justice.gov.uk"
       phone: "0300 303 0642"
 
+cohort: onlineSubmissionPrivateBeta
+
 idam:
   api:
     url: ${IDAM_API_URL:http://localhost:4503}
@@ -336,6 +383,9 @@ document:
     service:
       api:
         baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://localhost:4007}
+  management:
+    store:
+      url: ${DOCUMENT_MANAGEMENT_STORE_URL:http://localhost:5006}
 
 http:
   connect:

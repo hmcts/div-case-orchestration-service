@@ -136,7 +136,6 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
         final Map<String, Object> formattedCaseData = emptyMap();
 
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -188,7 +187,6 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
         final Map<String, Object> formattedCaseData = emptyMap();
 
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, formattedCaseData);
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
 
@@ -216,15 +214,4 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(response))));
     }
-
-    private void stubFormatterServerEndpoint(DocumentUpdateRequest documentUpdateRequest,
-                                             Map<String, Object> response) {
-        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
-    }
-
 }

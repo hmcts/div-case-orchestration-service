@@ -13,8 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.BulkUpdateException;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 
@@ -82,15 +82,15 @@ public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
         CollectionMember<Map<String, Object>> existingCourtHearing = new CollectionMember<>();
         existingCourtHearing.setId("someRandomId");
         existingCourtHearing.setValue(ImmutableMap.of(
-                DATE_OF_HEARING_CCD_FIELD, "2011-11-11",
-                TIME_OF_HEARING_CCD_FIELD, "11:11"
+            DATE_OF_HEARING_CCD_FIELD, "2011-11-11",
+            TIME_OF_HEARING_CCD_FIELD, "11:11"
         ));
         List<CollectionMember> courtHearings = Collections.singletonList(existingCourtHearing);
 
         String retrieveCaseTwoPath = String.format(CMS_RETRIEVE_CASE_PATH, CASE_ID_SECOND);
 
         stubCmsServerEndpoint(retrieveCaseTwoPath, HttpStatus.OK,
-                caseDataToCaseDetailsJson(Collections.singletonMap(DATETIME_OF_HEARING_CCD_FIELD, courtHearings)), GET);
+            caseDataToCaseDetailsJson(Collections.singletonMap(DATETIME_OF_HEARING_CCD_FIELD, courtHearings)), GET);
 
         String updateCaseOnePath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_FIRST, UPDATE_COURT_HEARING_DETAILS_EVENT);
         String updateCaseTwoPath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_SECOND, UPDATE_COURT_HEARING_DETAILS_EVENT);
@@ -101,17 +101,17 @@ public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
         stubCmsServerEndpoint(updateBulkCasePath, HttpStatus.OK, "{}", POST);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
-                .header(AUTHORIZATION, TEST_AUTH_TOKEN)
-                .content(loadResourceAsString(REQUEST_JSON_PATH))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .header(AUTHORIZATION, TEST_AUTH_TOKEN)
+            .content(loadResourceAsString(REQUEST_JSON_PATH))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         waitAsyncCompleted();
 
         verifyCmsServerEndpoint(1, updateCaseOnePath, RequestMethod.POST, loadResourceAsString(EXPECTED_CASE_UPDATE_JSON_PATH));
         verifyCmsServerEndpoint(1, updateCaseTwoPath, RequestMethod.POST,
-                loadResourceAsString(EXPECTED_CASE_UPDATE_EXISTING_HEARING_JSON_PATH));
+            loadResourceAsString(EXPECTED_CASE_UPDATE_EXISTING_HEARING_JSON_PATH));
         verifyCmsServerEndpoint(1, updateBulkCasePath, RequestMethod.POST, "{}");
     }
 
@@ -211,15 +211,15 @@ public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
     }
 
     private void stubCmsServerEndpoint(String path, HttpStatus status, String body, HttpMethod method) {
-        maintenanceServiceServer.stubFor(WireMock.request(method.name(),urlEqualTo(path))
-                .willReturn(aResponse()
-                        .withStatus(status.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(body)));
+        maintenanceServiceServer.stubFor(WireMock.request(method.name(), urlEqualTo(path))
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(body)));
     }
 
     private void statefulStubCmsServerEndpoint(String path, HttpStatus status, String body, HttpMethod method, String initilaState, String endState) {
-        maintenanceServiceServer.stubFor(WireMock.request(method.name(),urlEqualTo(path))
+        maintenanceServiceServer.stubFor(WireMock.request(method.name(), urlEqualTo(path))
             .inScenario("Test")
             .whenScenarioStateIs(initilaState)
             .willReturn(aResponse()
@@ -232,8 +232,8 @@ public class UpdateBulkCaseHearingDetailsITest extends IdamTestSupport {
 
     private void verifyCmsServerEndpoint(int times, String path, RequestMethod method, String body) {
         maintenanceServiceServer.verify(times, new RequestPatternBuilder(method, urlEqualTo(path))
-                .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
-                .withRequestBody(equalToJson(body)));
+            .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
+            .withRequestBody(equalToJson(body)));
     }
 
     private String caseDataToCaseDetailsJson(Map<String, Object> caseData) {

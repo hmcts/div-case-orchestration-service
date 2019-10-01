@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonpath.JsonPath;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -11,18 +12,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import uk.gov.hmcts.reform.divorce.validation.service.ValidationService;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
@@ -48,20 +50,19 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
+;
+
 public class SubmitCaseTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/submit";
 
-    private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
     private static final String SUBMISSION_CONTEXT_PATH = "/casemaintenance/version/1/submit";
     private static final String DELETE_DRAFT_CONTEXT_PATH = "/casemaintenance/version/1/drafts";
     private static final String RETRIEVE_CASE_CONTEXT_PATH = "/casemaintenance/version/1/case";
 
-    private static final String COURT_ID_JSON_PATH = "$.courts";
-
     private static final String AUTH_TOKEN = "authToken";
 
-    private static final Map<String, Object> CASE_DATA = Collections.emptyMap();
+    private Map<String, Object> caseData = Collections.emptyMap();
 
     private static final ValidationResponse validationResponseOk = ValidationResponse.builder().build();
     private static final ValidationResponse validationResponseFail = ValidationResponse.builder()
@@ -78,17 +79,27 @@ public class SubmitCaseTest extends MockedFunctionalTest {
     @MockBean
     private ValidationService validationService;
 
+    @Before
+    public void setup() {
+        caseData = Collections.emptyMap();
+    }
+
     @Test
     public void givenCaseDataAndAuth_whenCaseDataIsSubmitted_thenReturnSuccess() throws Exception {
+        caseData = ImmutableMap.of(
+            "createdDate", CcdUtil.formatDateForCCD(LocalDate.now()),
+            "D8DivorceUnit", "serviceCentre",
+            "D8Cohort", "onlineSubmissionPrivateBeta",
+            "RespondentContactDetailsConfidential", "share"
+        );
         stubMaintenanceServerEndpointForRetrieve(HttpStatus.NOT_FOUND, null);
-        stubFormatterServerEndpoint();
         stubMaintenanceServerEndpointForSubmit(Collections.singletonMap(ID, TEST_CASE_ID));
         stubMaintenanceServerEndpointForDeleteDraft(HttpStatus.OK);
         when(validationService.validate(any())).thenReturn(validationResponseOk);
 
         MvcResult result = webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(CASE_DATA))
+            .content(convertObjectToJsonString(Collections.emptyMap()))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().is2xxSuccessful())
@@ -136,7 +147,7 @@ public class SubmitCaseTest extends MockedFunctionalTest {
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(CASE_DATA))
+            .content(convertObjectToJsonString(caseData))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().is2xxSuccessful())
@@ -164,7 +175,7 @@ public class SubmitCaseTest extends MockedFunctionalTest {
     @Test
     public void givenNoAuthToken_whenCaseDataIsSubmitted_thenReturnBadRequest() throws Exception {
         webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(CASE_DATA))
+            .content(convertObjectToJsonString(caseData))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
@@ -173,28 +184,18 @@ public class SubmitCaseTest extends MockedFunctionalTest {
     @Test
     public void givenInvalidCaseDataAndAuth_whenCaseDataIsSubmitted_thenReturnBadRequest() throws Exception {
         when(validationService.validate(any())).thenReturn(validationResponseFail);
-        stubFormatterServerEndpoint();
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(CASE_DATA))
+            .content(convertObjectToJsonString(caseData))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().is4xxClientError());
     }
 
-    private void stubFormatterServerEndpoint() {
-        formatterServiceServer.stubFor(WireMock.post(CCD_FORMAT_CONTEXT_PATH)
-            .withRequestBody(matchingJsonPath(COURT_ID_JSON_PATH))
-            .willReturn(aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withBody(convertObjectToJsonString(CASE_DATA))));
-    }
-
     private void stubMaintenanceServerEndpointForSubmit(Map<String, Object> response) {
         maintenanceServiceServer.stubFor(WireMock.post(SUBMISSION_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(CASE_DATA)))
+            .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())

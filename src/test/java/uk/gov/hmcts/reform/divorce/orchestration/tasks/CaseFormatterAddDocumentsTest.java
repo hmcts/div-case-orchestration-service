@@ -1,19 +1,19 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
+import uk.gov.hmcts.reform.divorce.formatter.service.CaseFormatterService;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptySet;
 import static java.util.UUID.randomUUID;
@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class CaseFormatterAddDocumentsTest {
     @Mock
-    private CaseFormatterClient caseFormatterClient;
+    private CaseFormatterService caseFormatterService;
 
     @InjectMocks
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
@@ -49,27 +49,34 @@ public class CaseFormatterAddDocumentsTest {
         final Map<String, Object> inboundPayload = new HashMap<>();
         final DefaultTaskContext context = new DefaultTaskContext();
 
-        final LinkedHashSet<GeneratedDocumentInfo> allDocuments = new LinkedHashSet<>();
-        allDocuments.add(petition);
-        allDocuments.add(aosInvitation);
-        allDocuments.add(coRespondentInvitation);
-
+        final LinkedHashSet<GeneratedDocumentInfo> allDocuments = new LinkedHashSet<GeneratedDocumentInfo>() {
+            {
+                add(petition);
+                add(aosInvitation);
+                add(coRespondentInvitation);
+            }
+        };
         context.setTransientObject(DOCUMENT_COLLECTION, allDocuments);
 
-        final  DocumentUpdateRequest documentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .caseData(inboundPayload)
-                .documents(ImmutableList.of(petition, aosInvitation, coRespondentInvitation))
-                .build();
+        List<uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo> collect =
+                allDocuments.stream().map(generatedDocumentInfo -> {
+                    uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo generatedDocumentModel =
+                            new uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo();
+                    generatedDocumentModel.setFileName(generatedDocumentInfo.getFileName());
+                    generatedDocumentModel.setDocumentType(generatedDocumentInfo.getDocumentType());
+                    generatedDocumentModel.setUrl(generatedDocumentInfo.getUrl());
+                    return generatedDocumentModel;
+                }).collect(Collectors.toList());
 
         final Map<String, Object> payloadWithDocumentsAttached = new HashMap<>();
-        when(caseFormatterClient.addDocuments(documentUpdateRequest)).thenReturn(payloadWithDocumentsAttached);
+        when(caseFormatterService.addDocuments(inboundPayload, collect))
+                .thenReturn(payloadWithDocumentsAttached);
 
         Map<String, Object> response = caseFormatterAddDocuments.execute(context, inboundPayload);
 
         assertThat(response, is(payloadWithDocumentsAttached));
 
-        verify(caseFormatterClient).addDocuments(documentUpdateRequest);
+        verify(caseFormatterService).addDocuments(inboundPayload, collect);
     }
 
     @Test
@@ -82,7 +89,7 @@ public class CaseFormatterAddDocumentsTest {
 
         assertThat(response, is(payload));
 
-        verifyZeroInteractions(caseFormatterClient);
+        verifyZeroInteractions(caseFormatterService);
     }
 
     @Test
@@ -95,7 +102,6 @@ public class CaseFormatterAddDocumentsTest {
 
         assertThat(response, is(payload));
 
-        verifyZeroInteractions(caseFormatterClient);
+        verifyZeroInteractions(caseFormatterService);
     }
-
 }

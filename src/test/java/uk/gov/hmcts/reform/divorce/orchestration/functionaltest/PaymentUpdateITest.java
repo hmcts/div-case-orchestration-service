@@ -41,7 +41,6 @@ public class PaymentUpdateITest extends IdamTestSupport {
             "/casemaintenance/version/1/case/%s",
             CASE_ID
     );
-    private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
     private static final String UPDATE_CONTEXT_PATH = String.format(
             "/casemaintenance/version/1/updateCase/%s/%s",
             CASE_ID,
@@ -86,7 +85,6 @@ public class PaymentUpdateITest extends IdamTestSupport {
     public void givenEventDataAndAuth_whenEventDataIsSubmitted_thenReturnSuccess() throws Exception {
         stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById();
-        stubFormatterServerEndpoint();
 
         Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
         stubMaintenanceServerEndpointForUpdate(responseData);
@@ -101,15 +99,6 @@ public class PaymentUpdateITest extends IdamTestSupport {
     private void stubMaintenanceServerEndpointForRetrieveCaseById() {
         maintenanceServiceServer.stubFor(WireMock.get(RETRIEVE_CASE_CONTEXT_PATH)
                 .withHeader(AUTHORIZATION, new EqualToPattern(BEARER_AUTH_TOKEN_1))
-                .willReturn(aResponse()
-                        .withStatus(HttpStatus.OK.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(convertObjectToJsonString(caseData))));
-    }
-
-    private void stubFormatterServerEndpoint() {
-        formatterServiceServer.stubFor(WireMock.post(CCD_FORMAT_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)

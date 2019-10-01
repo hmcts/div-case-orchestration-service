@@ -1,9 +1,5 @@
 
 case:
-  formatter:
-    service:
-      api:
-        baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://div-cfs-aat.service.core-compute-aat.internal}
   maintenance:
     service:
       api:

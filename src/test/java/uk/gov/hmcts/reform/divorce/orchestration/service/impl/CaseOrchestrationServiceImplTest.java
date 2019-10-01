@@ -13,7 +13,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
@@ -134,6 +133,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.ProcessBulkCaseITest.buildCaseLink;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseOrchestrationServiceImplTest {
@@ -780,7 +780,7 @@ public class CaseOrchestrationServiceImplTest {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
         when(solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN))
-                .thenReturn(requestPayload);
+            .thenReturn(requestPayload);
 
         // when
         Map<String, Object> actual = classUnderTest.solicitorUpdate(ccdCallbackRequest, AUTH_TOKEN);
@@ -971,7 +971,7 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldGenerateOnlyDnDocuments_WhenPetitionerCostsClaimIsNo() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, buildCaseLink(TEST_CASE_ID));
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
@@ -991,51 +991,51 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldGenerateOnlyDnDocuments_WhenPetitionerCostsClaimIsYesButThenPetitionerEndsClaim() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, buildCaseLink(TEST_CASE_ID));
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, DN_COSTS_ENDCLAIM_VALUE);
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-                CaseDetails.builder().caseData(caseData).build())
-                .build();
+            CaseDetails.builder().caseData(caseData).build())
+            .build();
 
         classUnderTest
-                .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+            .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-                DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
+            DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
         verify(documentGenerationWorkflow, never()).run(ccdCallbackRequest, AUTH_TOKEN,
-                COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
+            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
     @Test
     public void shouldGenerateBothDocuments_WhenCostsClaimContinues() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, buildCaseLink(TEST_CASE_ID));
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, "Continue");
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-                CaseDetails.builder().caseData(caseData).build())
-                .build();
+            CaseDetails.builder().caseData(caseData).build())
+            .build();
 
         classUnderTest
-                .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+            .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-                DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
+            DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-                COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
+            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
     @Test
     public void shouldGenerateBothDocuments_WhenCostsClaimGrantedIsNo() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, buildCaseLink(TEST_CASE_ID));
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "No");
 
@@ -1056,7 +1056,7 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldGenerateBothDocuments_WhenCostsClaimGrantedIsYes() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, buildCaseLink(TEST_CASE_ID));
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
@@ -1089,7 +1089,7 @@ public class CaseOrchestrationServiceImplTest {
         throws WorkflowException {
 
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, buildCaseLink(TEST_CASE_ID));
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
@@ -1269,7 +1269,7 @@ public class CaseOrchestrationServiceImplTest {
         throws WorkflowException {
 
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, buildCaseLink(TEST_CASE_ID));
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
@@ -1289,7 +1289,7 @@ public class CaseOrchestrationServiceImplTest {
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         Map<String, Object> expectedResult = new HashMap<>();
-        expectedResult.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        expectedResult.put(BULK_LISTING_CASE_ID_FIELD, buildCaseLink(TEST_CASE_ID));
         expectedResult.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
         expectedResult.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         expectedResult.putAll(requestPayload);
@@ -1385,7 +1385,7 @@ public class CaseOrchestrationServiceImplTest {
             TEMPLATE_ID, DOCUMENT_TYPE, AUTH_TOKEN);
 
         assertThat(returnedPayload, equalTo(expectedPayload));
-        verify(documentGenerationWorkflow, never()).run(any(),any(), any(), any(), any());
+        verify(documentGenerationWorkflow, never()).run(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -1402,7 +1402,7 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(validateBulkCaseListingWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData())).thenReturn(expectedPayload);
-        when((documentGenerationWorkflow).run(ccdCallbackRequest,AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME))
+        when((documentGenerationWorkflow).run(ccdCallbackRequest, AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME))
             .thenReturn(expectedPayload);
 
         Map<String, Object> returnedPayload = classUnderTest
@@ -1410,7 +1410,7 @@ public class CaseOrchestrationServiceImplTest {
 
         assertThat(returnedPayload, equalTo(expectedPayload));
         verify(documentGenerationWorkflow, times(1))
-            .run(ccdCallbackRequest,AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME);
+            .run(ccdCallbackRequest, AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME);
     }
 
     @Test
@@ -1435,11 +1435,11 @@ public class CaseOrchestrationServiceImplTest {
     public void shouldCallRightWorkflow_WhenRemoveDnOutcomeCase() throws WorkflowException {
         Map<String, Object> caseData = DUMMY_CASE_DATA;
         CcdCallbackRequest request = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails
-                        .builder()
-                        .caseData(caseData)
-                        .caseId(TEST_CASE_ID)
-                        .build()).build();
+            .caseDetails(CaseDetails
+                .builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .build()).build();
 
         when(removeDnOutcomeCaseFlagWorkflow.run(request)).thenReturn(caseData);
 
@@ -1451,11 +1451,11 @@ public class CaseOrchestrationServiceImplTest {
     public void shouldCallRightWorkflow_WhenRemoveLegalAdvisorMakeDecisionFields() throws WorkflowException {
         Map<String, Object> caseData = DUMMY_CASE_DATA;
         CcdCallbackRequest request = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails
-                        .builder()
-                        .caseData(caseData)
-                        .caseId(TEST_CASE_ID)
-                        .build()).build();
+            .caseDetails(CaseDetails
+                .builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .build()).build();
 
         when(removeLegalAdvisorMakeDecisionFieldsWorkflow.run(request)).thenReturn(caseData);
 
