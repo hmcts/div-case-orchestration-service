@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinter;
@@ -44,7 +44,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
     private ServiceMethodValidationTask serviceMethodValidationTask;
 
     @Mock
-    private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
 
     @Mock
     private RespondentAosPackPrinter respondentAosPackPrinter;
@@ -91,7 +91,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
     @Test
     public void whenWorkflowRuns_allTasksRun_payloadReturned() throws WorkflowException, TaskException {
         when(serviceMethodValidationTask.execute(context, payload)).thenReturn(payload);
-        when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
+        when(fetchPrintDocsFromDmStoreTask.execute(context, payload)).thenReturn(payload);
         when(modifyDueDate.execute(context, payload)).thenReturn(payload);
         when(respondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
         when(coRespondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
@@ -101,14 +101,14 @@ public class CcdCallbackBulkPrintWorkflowTest {
 
         final InOrder inOrder = inOrder(
             serviceMethodValidationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             respondentAosPackPrinter,
             coRespondentAosPackPrinter,
             modifyDueDate
         );
 
         inOrder.verify(serviceMethodValidationTask).execute(context, payload);
-        inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);
+        inOrder.verify(fetchPrintDocsFromDmStoreTask).execute(context, payload);
         inOrder.verify(respondentAosPackPrinter).execute(context, payload);
         inOrder.verify(coRespondentAosPackPrinter).execute(context, payload);
         inOrder.verify(modifyDueDate).execute(context, payload);

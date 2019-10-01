@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter;
 
@@ -100,7 +100,7 @@ public class IssueAosPackOfflineWorkflowTest {
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Mock
-    private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
 
     @Mock
     private BulkPrinter bulkPrinterTask;
@@ -120,7 +120,7 @@ public class IssueAosPackOfflineWorkflowTest {
         payload.put("testKey", "testValue");
         when(documentsGenerationTask.execute(any(), any())).thenReturn(singletonMap("returnedKey1", "returnedValue1"));
         when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(singletonMap("returnedKey2", "returnedValue2"));
-        when(fetchPrintDocsFromDmStore.execute(any(), any())).thenReturn(singletonMap("returnedKey3", "returnedValue3"));
+        when(fetchPrintDocsFromDmStoreTask.execute(any(), any())).thenReturn(singletonMap("returnedKey3", "returnedValue3"));
         when(bulkPrinterTask.execute(any(), any())).thenReturn(singletonMap("returnedKey4", "returnedValue4"));
         caseDetails = CaseDetails.builder().caseData(payload).build();
     }
@@ -273,7 +273,7 @@ public class IssueAosPackOfflineWorkflowTest {
             Matchers.<String, Object>hasEntry("returnedKey1", "returnedValue1")
         )));
 
-        verify(fetchPrintDocsFromDmStore).execute(any(), argThat(allOf(
+        verify(fetchPrintDocsFromDmStoreTask).execute(any(), argThat(allOf(
             Matchers.<String, Object>hasEntry("returnedKey2", "returnedValue2")
         )));
 

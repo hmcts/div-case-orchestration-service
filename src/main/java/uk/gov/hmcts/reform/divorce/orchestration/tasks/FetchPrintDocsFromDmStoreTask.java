@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @Slf4j
-public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
+public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> {
 
     private static final String DOCUMENTS_GENERATED = "DocumentsGenerated";
 
@@ -43,7 +43,7 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
     private AuthTokenGenerator authTokenGenerator;
     private final RestTemplate restTemplate;
 
-    public FetchPrintDocsFromDmStore(AuthTokenGenerator authTokenGenerator, RestTemplate restTemplate) {
+    public FetchPrintDocsFromDmStoreTask(AuthTokenGenerator authTokenGenerator, RestTemplate restTemplate) {
         this.authTokenGenerator = authTokenGenerator;
         this.restTemplate = restTemplate;
     }
