@@ -6,4 +6,7 @@ public class CaseOrchestrationServiceException extends Exception {
         super(exception.getMessage(), exception);
     }
 
+    public CaseOrchestrationServiceException(String message) {
+        super(message);
+    }
 }

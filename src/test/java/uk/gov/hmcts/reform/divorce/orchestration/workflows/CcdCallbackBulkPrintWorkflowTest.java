@@ -14,11 +14,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentAosPackPrinter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAosPackPrinter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CcdCallbackBulkPrintWorkflowTest {
@@ -74,16 +75,17 @@ public class CcdCallbackBulkPrintWorkflowTest {
             .build();
 
         ccdCallbackRequestRequest =
-                CcdCallbackRequest.builder()
-                        .eventId(TEST_EVENT_ID)
-                        .token(TEST_TOKEN)
-                        .caseDetails(caseDetails)
-                        .build();
+            CcdCallbackRequest.builder()
+                .eventId(TEST_EVENT_ID)
+                .token(TEST_TOKEN)
+                .caseDetails(caseDetails)
+                .build();
 
         context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, ccdCallbackRequestRequest.getCaseDetails());
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        context.setTransientObject(CASE_STATE_JSON_KEY, TEST_STATE);
     }
 
     @Test
@@ -98,11 +100,11 @@ public class CcdCallbackBulkPrintWorkflowTest {
         assertThat(response, is(payload));
 
         final InOrder inOrder = inOrder(
-                serviceMethodValidationTask,
-                fetchPrintDocsFromDmStore,
-                respondentAosPackPrinter,
-                coRespondentAosPackPrinter,
-                modifyDueDate
+            serviceMethodValidationTask,
+            fetchPrintDocsFromDmStore,
+            respondentAosPackPrinter,
+            coRespondentAosPackPrinter,
+            modifyDueDate
         );
 
         inOrder.verify(serviceMethodValidationTask).execute(context, payload);
