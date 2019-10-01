@@ -42,8 +42,8 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
     private static final String API_URL = String.format("/submit-dn/%s", TEST_CASE_ID);
     private static final String UPDATE_CONTEXT_PATH = "/casemaintenance/version/1/updateCase/" + TEST_CASE_ID + "/";
     private static final String RETRIEVE_CASE_CONTEXT_PATH = String.format(
-            "/casemaintenance/version/1/case/%s",
-            TEST_CASE_ID
+        "/casemaintenance/version/1/case/%s",
+        TEST_CASE_ID
     );
 
     @Autowired
@@ -153,32 +153,37 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
     private Map<String, Object> getCaseData() {
         return new HashMap<String, Object>() {
             {
-                put("DNApplicationSubmittedDate" , LocalDate.now().format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
-                put("PetitionChangedYesNoDN" , null);
-                put("PetitionChangedDetailsDN" , null);
-                put("ConfirmPetitionDN" , null);
-                put("DivorceCostsOptionDN" , null);
-                put("CostsDifferentDetails" , null);
-                put("statementOfTruthDN" , null);
-                put("AlternativeRespCorrAddress" , null);
-                put("AdulteryLifeIntolerable" , null);
-                put("AdulteryDateFoundOut" , null);
-                put("DNApplyForDecreeNisi" , null);
-                put("AdulteryLivedApartSinceEventDN" , null);
-                put("AdulteryTimeLivedTogetherDetailsDN" , null);
-                put("BehaviourStillHappeningDN" , null);
-                put("BehaviourMostRecentIncidentDateDN" , null);
-                put("BehaviourLivedApartSinceEventDN" , null);
-                put("BehaviourTimeLivedTogetherDetailsDN" , null);
-                put("DesertionLivedApartSinceEventDN" , null);
-                put("DesertionTimeLivedTogetherDetailsDN" , null);
-                put("SeparationLivedApartSinceEventDN" , null);
-                put("SeparationTimeLivedTogetherDetailsDN" , null);
-                put("DocumentsUploadedDN" , null);
-                put("DocumentsUploadedQuestionDN" , null);
-                put("DesertionAskedToResumeDN" , null);
-                put("DesertionAskedToResumeDNRefused" , null);
-                put("DesertionAskedToResumeDNDetails" , null);
-            }};
+                put("DNApplicationSubmittedDate", LocalDate.now().format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
+                put("PetitionChangedYesNoDN", null);
+                put("PetitionChangedDetailsDN", null);
+                put("ConfirmPetitionDN", null);
+                put("DivorceCostsOptionDN", null);
+                put("CostsDifferentDetails", null);
+                put("statementOfTruthDN", null);
+                put("AlternativeRespCorrAddress", null);
+                put("AdulteryLifeIntolerable", null);
+                put("AdulteryDateFoundOut", null);
+                put("DNApplyForDecreeNisi", null);
+                put("AdulteryLivedApartSinceEventDN", null);
+                put("AdulteryTimeLivedTogetherDetailsDN", null);
+                put("BehaviourStillHappeningDN", null);
+                put("BehaviourMostRecentIncidentDateDN", null);
+                put("BehaviourLivedApartSinceEventDN", null);
+                put("BehaviourTimeLivedTogetherDetailsDN", null);
+                put("DesertionLivedApartSinceEventDN", null);
+                put("DesertionTimeLivedTogetherDetailsDN", null);
+                put("SeparationLivedApartSinceEventDN", null);
+                put("SeparationTimeLivedTogetherDetailsDN", null);
+                put("DocumentsUploadedDN", null);
+                put("DocumentsUploadedQuestionDN", null);
+                put("DesertionAskedToResumeDN", null);
+                put("DesertionAskedToResumeDNRefused", null);
+                put("DesertionAskedToResumeDNDetails", null);
+                put("RefusalClarificationReason", null);
+                put("RefusalClarificationAdditionalInfo", null);
+                put("DnClarificationResponse", null);
+                put("DocumentsUploadedDnClarification", null);
+            }
+        };
     }
 }

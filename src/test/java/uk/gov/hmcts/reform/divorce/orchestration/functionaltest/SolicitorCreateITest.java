@@ -7,21 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -60,9 +56,9 @@ public class SolicitorCreateITest extends MockedFunctionalTest {
         expectedData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.SERVICE_CENTER.getSiteId());
 
         CaseDetails fullCase = CaseDetails.builder()
-                .caseId(caseId)
-                .caseData(expectedData)
-                .build();
+            .caseId(caseId)
+            .caseData(expectedData)
+            .build();
 
         final GenerateDocumentRequest documentRequest =
             GenerateDocumentRequest.builder()
@@ -75,14 +71,6 @@ public class SolicitorCreateITest extends MockedFunctionalTest {
                 .documentType(AddMiniPetitionDraftTask.DOCUMENT_TYPE)
                 .fileName(AddMiniPetitionDraftTask.DOCUMENT_NAME + caseId)
                 .build();
-
-        final Set<GeneratedDocumentInfo> documentsForFormatter = new HashSet<>();
-        documentsForFormatter.add(documentInfo);
-
-        DocumentUpdateRequest documentFormatRequest = DocumentUpdateRequest.builder()
-            .caseData(expectedData)
-            .documents(new ArrayList<>(documentsForFormatter))
-            .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .eventId(CREATE_EVENT)

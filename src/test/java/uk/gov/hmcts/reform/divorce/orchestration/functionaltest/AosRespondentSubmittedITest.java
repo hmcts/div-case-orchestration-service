@@ -8,22 +8,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -113,14 +109,6 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
                 .documentType(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .fileName(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
                 .build();
-
-        final Set<GeneratedDocumentInfo> documentsForFormatter = new HashSet<>();
-        documentsForFormatter.add(documentInfo);
-
-        DocumentUpdateRequest documentFormatRequest = DocumentUpdateRequest.builder()
-            .caseData(caseDetailMap)
-            .documents(new ArrayList<>(documentsForFormatter))
-            .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .eventId(EVENT_ID)

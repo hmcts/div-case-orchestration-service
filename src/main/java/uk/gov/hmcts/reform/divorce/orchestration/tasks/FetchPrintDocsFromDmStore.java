@@ -11,8 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
@@ -76,7 +79,7 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
             ResponseEntity<byte[]> response = restTemplate.exchange(generatedDocumentInfo.getUrl(), HttpMethod.GET, httpEntity, byte[].class);
             if (response.getStatusCode() != HttpStatus.OK) {
                 log.error("Failed to get bytes from document store for document {} in case Id {}",
-                        generatedDocumentInfo.getUrl(), caseDetails.getCaseId());
+                    generatedDocumentInfo.getUrl(), caseDetails.getCaseId());
                 throw new RuntimeException(String.format("Unexpected code from DM store: %s ", response.getStatusCode()));
             }
             generatedDocumentInfo.setBytes(response.getBody());
@@ -89,20 +92,19 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
      */
     @SuppressWarnings("unchecked")
     private Map<String, GeneratedDocumentInfo> extractGeneratedDocumentList(Map<String, Object> caseData) {
-        List<Map> documentList =
-            ofNullable(caseData.get(D8DOCUMENTS_GENERATED)).map(i -> (List<Map>) i).orElse(new ArrayList<>());
+        List<CollectionMember<Document>> documentList =
+            ofNullable(caseData.get(D8DOCUMENTS_GENERATED)).map(i -> (List<CollectionMember<Document>>) i).orElse(new ArrayList<>());
         Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = new HashMap<>();
-        for (Map<String, Object> document : documentList) {
-            Map<String, Object> value = ((Map) document.get(VALUE));
-            String documentType = getStringValue(value, DOCUMENT_TYPE);
-            Map<String, Object> documentLink = (Map) ofNullable(getValue(value, DOCUMENT_LINK)).orElse(null);
+        for (CollectionMember<Document> document : documentList) {
+            Document value = document.getValue();
+            String documentType = value.getDocumentType(); //getStringValue(value, DOCUMENT_TYPE);
+            DocumentLink documentLink = ofNullable(value.getDocumentLink()).orElse(null);//getValue(value, DOCUMENT_LINK)).orElse(null);
 
             if (ofNullable(documentLink).isPresent()) {
                 GeneratedDocumentInfo gdi = GeneratedDocumentInfo.builder()
-                    .documentType(getStringValue(value, DOCUMENT_TYPE))
-                    .url(getStringValue(documentLink, DOCUMENT_URL))
+                    .url(getStringValue(documentLink.getDocumentUrl())) //getStringValue(documentLink, DOCUMENT_URL))
                     .documentType(documentType)
-                    .fileName(getStringValue(documentLink, DOCUMENT_FILENAME))
+                    .fileName(documentLink.getDocumentFilename())//getStringValue(documentLink, DOCUMENT_FILENAME))
                     .build();
                 generatedDocumentInfoList.put(documentType, gdi);
             }
@@ -123,8 +125,8 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
         return result;
     }
 
-    private String getStringValue(Map<String, Object> objectMap, String key) {
-        return ofNullable(getValue(objectMap, key)).map(Object::toString).orElse(StringUtils.EMPTY);
+    private String getStringValue(String text) {
+        return ofNullable(text).map(Object::toString).orElse(StringUtils.EMPTY);
     }
 
 }

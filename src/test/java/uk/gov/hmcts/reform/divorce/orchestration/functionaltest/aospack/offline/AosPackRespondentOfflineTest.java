@@ -11,10 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ff4j.FeatureToggle;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 
@@ -132,6 +132,7 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
             .documentType(AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE)
             .fileName(AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME)
             .build();
+
         stubDocumentGeneratorServerEndpoint(formDocumentRequest, formDocumentInfo);
         String formFilename = AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME + caseDetails.getCaseId();
 

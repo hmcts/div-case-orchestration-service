@@ -7,18 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -127,12 +125,6 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
                 .fileName(filename + TEST_CASE_ID)
                 .build();
 
-        final DocumentUpdateRequest documentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .documents(asList(documentGenerationResponse))
-                .caseData(CASE_DATA)
-                .build();
-
         final Map<String, Object> formattedCaseData = emptyMap();
 
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
@@ -164,25 +156,19 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
         CaseDetails expectedDocumentCaseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(formattedDocumentCaseData).build();
 
         final GenerateDocumentRequest documentGenerationRequest =
-                GenerateDocumentRequest.builder()
-                        .template(templateId)
-                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, expectedDocumentCaseDetails))
-                        .build();
+            GenerateDocumentRequest.builder()
+                .template(templateId)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, expectedDocumentCaseDetails))
+                .build();
 
         final GeneratedDocumentInfo documentGenerationResponse =
-                GeneratedDocumentInfo.builder()
-                        .documentType(documentType)
-                        .fileName(filename + TEST_CASE_ID)
-                        .build();
+            GeneratedDocumentInfo.builder()
+                .documentType(documentType)
+                .fileName(filename + TEST_CASE_ID)
+                .build();
 
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(COURT_NAME_CCD_FIELD, "liverpool");
-
-        final DocumentUpdateRequest documentUpdateRequest =
-                DocumentUpdateRequest.builder()
-                        .documents(asList(documentGenerationResponse))
-                        .caseData(caseData)
-                        .build();
 
         final Map<String, Object> formattedCaseData = emptyMap();
 
@@ -193,15 +179,15 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(ccdCallbackRequest))
-                .param("templateId", "a")
-                .param("documentType", "b")
-                .param("filename", "c")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .param("templateId", "a")
+            .param("documentType", "b")
+            .param("filename", "c")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
     }
 
     private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest generateDocumentRequest,

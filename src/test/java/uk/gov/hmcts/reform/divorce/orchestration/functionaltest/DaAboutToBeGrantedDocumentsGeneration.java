@@ -10,12 +10,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.DocumentUpdateRequest;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -109,12 +109,6 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
                 .fileName(DECREE_ABSOLUTE_FILENAME + TEST_CASE_ID)
                 .build();
 
-        final DocumentUpdateRequest daDocumentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .documents(asList(daDocumentGenerationResponse))
-                .caseData(CASE_DATA)
-                .build();
-
         stubDocumentGeneratorServerEndpoint(daDocumentGenerationRequest, daDocumentGenerationResponse);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
@@ -149,7 +143,7 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
     }
 
     private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest generateDocumentRequest,
-        GeneratedDocumentInfo response) {
+                                                     GeneratedDocumentInfo response) {
         documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
             .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))

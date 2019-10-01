@@ -24,17 +24,17 @@ public class CaseFormatterAddDocuments implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
 
-        final Set<uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo>
-                documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
+        final Set<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
         if (isNotEmpty(documentCollection)) {
-            List<GeneratedDocumentInfo> generatedDocuments = documentCollection.stream().map(generatedDocumentInfo -> {
-                GeneratedDocumentInfo generatedDocumentModel = new GeneratedDocumentInfo();
-                generatedDocumentModel.setFileName(generatedDocumentInfo.getFileName());
-                generatedDocumentModel.setDocumentType(generatedDocumentInfo.getDocumentType());
-                generatedDocumentModel.setUrl(generatedDocumentInfo.getUrl());
-                return generatedDocumentModel;
-            }).collect(Collectors.toList());
+            List<GeneratedDocumentInfo> generatedDocuments = documentCollection.stream()
+                .map(generatedDocumentInfo ->
+                    GeneratedDocumentInfo.builder()
+                        .fileName(generatedDocumentInfo.getFileName())
+                        .documentType(generatedDocumentInfo.getDocumentType())
+                        .url(generatedDocumentInfo.getUrl())
+                        .build()
+                ).collect(Collectors.toList());
             return caseFormatterService.addDocuments(caseData, generatedDocuments);
         }
         return caseData;

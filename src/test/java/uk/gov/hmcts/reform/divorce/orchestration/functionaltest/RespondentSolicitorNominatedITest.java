@@ -9,21 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -77,10 +72,6 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
         );
 
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
-        CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .data(caseData)
-            .build();
-
         caseData.put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
@@ -110,20 +101,6 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
                         ACCESS_CODE, TEST_PIN_CODE)
                 )
                 .build();
-
-        final GeneratedDocumentInfo documentInfo =
-            GeneratedDocumentInfo.builder()
-                .documentType(DOCUMENT_TYPE_RESPONDENT_INVITATION)
-                .fileName(RESPONDENT_INVITATION_TEMPLATE_NAME + caseId)
-                .build();
-
-        final Set<GeneratedDocumentInfo> documentsForFormatter = new HashSet<>();
-        documentsForFormatter.add(documentInfo);
-
-        DocumentUpdateRequest documentFormatRequest = DocumentUpdateRequest.builder()
-            .caseData(caseData)
-            .documents(new ArrayList<>(documentsForFormatter))
-            .build();
 
         stubDocumentGeneratorServerEndpoint(generateDocumentRequest, expectedAosInvitation);
         stubSignIn();

@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -62,8 +62,8 @@ public class CoRespondentLetterGenerator implements Task<Map<String, Object>> {
         coRespondentInvitation.setFileName(String.format(CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT,
                 caseDetails.getCaseId()));
 
-        final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION,
-            new LinkedHashSet<>());
+        final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context
+            .computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
         documentCollection.add(coRespondentInvitation);
 
         return caseData;

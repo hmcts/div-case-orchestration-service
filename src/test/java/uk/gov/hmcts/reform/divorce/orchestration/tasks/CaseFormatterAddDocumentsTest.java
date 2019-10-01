@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.formatter.service.CaseFormatterService;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 
 import java.util.HashMap;
@@ -58,19 +58,18 @@ public class CaseFormatterAddDocumentsTest {
         };
         context.setTransientObject(DOCUMENT_COLLECTION, allDocuments);
 
-        List<uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo> collect =
-                allDocuments.stream().map(generatedDocumentInfo -> {
-                    uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo generatedDocumentModel =
-                            new uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo();
-                    generatedDocumentModel.setFileName(generatedDocumentInfo.getFileName());
-                    generatedDocumentModel.setDocumentType(generatedDocumentInfo.getDocumentType());
-                    generatedDocumentModel.setUrl(generatedDocumentInfo.getUrl());
-                    return generatedDocumentModel;
-                }).collect(Collectors.toList());
+        List<GeneratedDocumentInfo> collect =
+            allDocuments.stream().map(generatedDocumentInfo ->
+                GeneratedDocumentInfo.builder()
+                    .fileName(generatedDocumentInfo.getFileName())
+                    .documentType(generatedDocumentInfo.getDocumentType())
+                    .url(generatedDocumentInfo.getUrl())
+                    .build()
+            ).collect(Collectors.toList());
 
         final Map<String, Object> payloadWithDocumentsAttached = new HashMap<>();
         when(caseFormatterService.addDocuments(inboundPayload, collect))
-                .thenReturn(payloadWithDocumentsAttached);
+            .thenReturn(payloadWithDocumentsAttached);
 
         Map<String, Object> response = caseFormatterAddDocuments.execute(context, inboundPayload);
 

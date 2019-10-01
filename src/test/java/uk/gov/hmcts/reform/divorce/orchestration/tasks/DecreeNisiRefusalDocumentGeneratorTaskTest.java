@@ -5,9 +5,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
@@ -50,9 +50,9 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         final Map<String, Object> payload = new HashMap<>();
         payload.put(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE);
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .caseData(payload)
-                .build();
+            .caseId(TEST_CASE_ID)
+            .caseData(payload)
+            .build();
 
         final TaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
@@ -60,9 +60,9 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
         final GeneratedDocumentInfo expectedDocument = GeneratedDocumentInfo.builder()
-                .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-                .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
-                .build();
+            .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
+            .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
+            .build();
 
         //given
         when(documentGeneratorClient
@@ -77,7 +77,10 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         assertThat(documentCollection, is(newLinkedHashSet(expectedDocument)));
 
         verify(documentGeneratorClient)
-                .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN));
+            .generatePDF(
+                matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID, caseDetails),
+                eq(AUTH_TOKEN)
+            );
     }
 
     @Test
@@ -101,6 +104,9 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         assertEquals(documentCollection.size(), 0);
 
         verify(documentGeneratorClient, never())
-            .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN));
+            .generatePDF(
+                matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID, caseDetails),
+                eq(AUTH_TOKEN)
+            );
     }
 }
