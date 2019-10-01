@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMemb
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ff4j.FeatureToggle;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -64,10 +63,6 @@ public class BulkPrintTest extends IdamTestSupport {
 
     private static final String DUE_DATE = "dueDate";
 
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
-
-    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
-
     @Autowired
     private MockMvc webClient;
 
@@ -76,9 +71,6 @@ public class BulkPrintTest extends IdamTestSupport {
 
     @MockBean
     private EmailClient emailClient;
-
-    @Autowired
-    private CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
 
     @Before
     public void setup() {
@@ -174,13 +166,14 @@ public class BulkPrintTest extends IdamTestSupport {
     }
 
     @Test
-    public void givenServiceMethodIsPersonalService_thenResponseContainsErrors() throws Exception {
+    public void givenServiceMethodIsPersonalServiceAndStateIsIssued_thenResponseContainsErrors() throws Exception {
 
         final Map<String, Object> caseData = Collections.singletonMap(
             SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
         );
 
         final CaseDetails caseDetails = CaseDetails.builder()
+            .state("Issued")
             .caseData(caseData)
             .build();
 
