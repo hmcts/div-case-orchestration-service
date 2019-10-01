@@ -118,7 +118,7 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
         GeneratedDocumentInfo invitationLetterDocumentInfo = GeneratedDocumentInfo.builder()
             .documentType(RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE)
             .fileName(RESPONDENT_AOS_INVITATION_LETTER_FILENAME)
-            .url("http://localhost:4020/1/binary")
+            .url("http://localhost:4020/1")
             .build();
         stubDocumentGeneratorServerEndpoint(invitationLetterDocumentRequest, invitationLetterDocumentInfo);
         String invitationLetterFilename = RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
@@ -131,7 +131,7 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
         GeneratedDocumentInfo formDocumentInfo = GeneratedDocumentInfo.builder()
             .documentType(AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE)
             .fileName(AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME)
-            .url("http://localhost:4020/2/binary")
+            .url("http://localhost:4020/2")
             .build();
 
         stubDocumentGeneratorServerEndpoint(formDocumentRequest, formDocumentInfo);
@@ -181,7 +181,7 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
         GeneratedDocumentInfo invitationLetterDocumentInfo = GeneratedDocumentInfo.builder()
             .documentType(CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE)
             .fileName(CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME)
-            .url("http://localhost:4020/1/binary")
+            .url("http://localhost:4020/1")
             .build();
         stubDocumentGeneratorServerEndpoint(invitationLetterDocumentRequest, invitationLetterDocumentInfo);
         String invitationLetterFilename = CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
@@ -194,7 +194,7 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
         GeneratedDocumentInfo formDocumentInfo = GeneratedDocumentInfo.builder()
             .documentType(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE)
             .fileName(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME)
-            .url("http://localhost:4020/2/binary")
+            .url("http://localhost:4020/2")
             .build();
         stubDocumentGeneratorServerEndpoint(formDocumentRequest, formDocumentInfo);
         String formFilename = AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME + caseDetails.getCaseId();
@@ -253,7 +253,7 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
     }
 
     private void stubDMStore(HttpStatus status) {
-        documentStore.stubFor(WireMock.get("/binary/1")
+        documentStore.stubFor(WireMock.get("/1/binary")
             .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
             .withHeader("user-roles", new EqualToPattern("caseworker-divorce"))
             .willReturn(aResponse()
@@ -261,7 +261,7 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
                 .withHeader(CONTENT_TYPE, ALL_VALUE)
                 .withBody(FIRST_FILE_BYTES)));
 
-        documentStore.stubFor(WireMock.get("/binary/2")
+        documentStore.stubFor(WireMock.get("/2/binary")
             .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
             .withHeader("user-roles", new EqualToPattern("caseworker-divorce"))
             .willReturn(aResponse()

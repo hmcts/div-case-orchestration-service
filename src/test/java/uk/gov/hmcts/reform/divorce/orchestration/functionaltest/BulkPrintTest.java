@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ff4j.FeatureToggle;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -64,12 +63,6 @@ public class BulkPrintTest extends IdamTestSupport {
 
     private static final String DUE_DATE = "dueDate";
 
-    private static final String SOLICITOR_AOS_INVITATION_EMAIL_ID = "a193f039-2252-425d-861c-6dba255b7e6e";
-
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
-
-    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
-
     @Autowired
     private MockMvc webClient;
 
@@ -78,9 +71,6 @@ public class BulkPrintTest extends IdamTestSupport {
 
     @MockBean
     private EmailClient emailClient;
-
-    @Autowired
-    private CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
 
     @Before
     public void setup() {
@@ -197,13 +187,14 @@ public class BulkPrintTest extends IdamTestSupport {
     }
 
     @Test
-    public void givenServiceMethodIsPersonalService_thenResponseContainsErrors() throws Exception {
+    public void givenServiceMethodIsPersonalServiceAndStateIsNotAwaitingService_thenResponseContainsErrors() throws Exception {
 
         final Map<String, Object> caseData = Collections.singletonMap(
             SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
         );
 
         final CaseDetails caseDetails = CaseDetails.builder()
+            .state("Issued")
             .caseData(caseData)
             .build();
 
@@ -221,8 +212,8 @@ public class BulkPrintTest extends IdamTestSupport {
                 isJson(),
                 hasJsonPath("$.data", is(Collections.emptyMap())),
                 hasJsonPath("$.errors",
-                    hasItem("Failed to bulk print documents - This event cannot be used when the service"
-                        + " method is Personal Service. Please use the Personal Service event instead")
+                    hasItem("Failed to bulk print documents - This event cannot be used when "
+                        + "service method is Personal Service and the case is not in Awaiting Service.")
                 )
             )));
     }

@@ -38,6 +38,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_STARTED;
@@ -187,6 +188,23 @@ public class SubmitCoRespondentAosCaseUTest {
         caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
 
         when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(someCaseWithState(AOS_AWAITING));
+        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID, submissionData))
+            .thenReturn(caseUpdateResponse);
+
+        assertThat(submitCoRespondentAosCase.execute(taskContext, submissionData), is(caseUpdateResponse));
+
+        verify(caseMaintenanceClient)
+            .updateCase(AUTH_TOKEN, TEST_CASE_ID, CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID, submissionData);
+    }
+
+    @Test
+    public void givenCaseIsAosAwaitingSolicitor_whenCoRespondentSubmits_thenSubmitCorrectEvent() throws TaskException {
+        final Map<String, Object> submissionData = new HashMap<>();
+
+        final Map<String, Object> caseUpdateResponse = new HashMap<>();
+        caseUpdateResponse.put(CCD_CASE_DATA_FIELD, emptyMap());
+
+        when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(someCaseWithState(AOS_AWAITING_SOLICITOR));
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID, submissionData))
             .thenReturn(caseUpdateResponse);
 

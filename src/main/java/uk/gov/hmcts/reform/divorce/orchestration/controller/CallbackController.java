@@ -299,8 +299,9 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         try {
-            Map<String, Object> response = caseOrchestrationService.ccdCallbackBulkPrintHandler(ccdCallbackRequest,
-                authorizationToken);
+            Map<String, Object> response = caseOrchestrationService.ccdCallbackBulkPrintHandler(
+                ccdCallbackRequest, authorizationToken
+            );
 
             if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
                 return ResponseEntity.ok(
