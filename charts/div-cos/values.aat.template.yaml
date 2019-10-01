@@ -1,4 +1,5 @@
 java:
+    applicationInsightsInstrumentKey: "63c30ef9-a27b-4d38-8afc-4c180fb6ac33"
     environment:
         IDAM_API_URL: "https://idam-api.aat.platform.hmcts.net"
         FEATURE_DN_REFUSAL: "true"
