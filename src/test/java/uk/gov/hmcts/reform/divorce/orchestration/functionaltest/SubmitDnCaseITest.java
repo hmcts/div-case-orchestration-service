@@ -141,21 +141,26 @@ public class SubmitDnCaseITest extends IdamTestSupport {
 
     @Test
     public void givenDnReceivedAndAwaitingClarification_whenSubmitDn_thenProceedAsExpected() throws Exception {
-        final String clarificationResponse = "A response to the clarification request.";
-        CollectionMember<String> expectedDnClarificationResponse = new CollectionMember();
-        expectedDnClarificationResponse.setValue(clarificationResponse);
-
         final Map<String, Object> caseData = getCaseData();
-        caseData.put("DnClarificationResponse", Arrays.asList(expectedDnClarificationResponse));
         final String caseDataString = convertObjectToJsonString(caseData);
         final Map<String, Object> caseDetails = new HashMap<>();
 
         caseDetails.put(CASE_STATE_JSON_KEY, AWAITING_CLARIFICATION);
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
+        final String clarificationResponse = "A response to the clarification request.";
+        CollectionMember<String> expectedDnClarificationResponse = new CollectionMember();
+        expectedDnClarificationResponse.setValue(clarificationResponse);
+
+        final Map<String, Object> expectedCaseDataAfterFormatting = getCaseData();
+        expectedCaseDataAfterFormatting.put("DnClarificationResponse", Arrays.asList(expectedDnClarificationResponse));
+        // Clarification mapper ignores DNApplicationSubmittedDate
+        expectedCaseDataAfterFormatting.put("DNApplicationSubmittedDate", null);
+
         stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
-        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_CLARIFICATION, caseData, caseDataString);
+        stubMaintenanceServerEndpointForUpdate(
+            OK, DN_RECEIVED_CLARIFICATION, expectedCaseDataAfterFormatting, caseDataString);
 
         DivorceSession divorceSession = new DivorceSession();
         divorceSession.setClarificationResponse(clarificationResponse);
