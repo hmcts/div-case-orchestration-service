@@ -43,8 +43,8 @@ public class ServiceMethodValidationTaskTest {
     }
 
     @Test
-    public void testExecuteThrowsExceptionIfServiceMethodIsPersonalServiceAndStateIsNotAwaitingService() throws TaskException {
-        taskContext.setTransientObject(CASE_STATE_JSON_KEY, "SomeOtherState");
+    public void testExecuteDoesNotThrowAnExceptionIfServiceMethodIsPersonalServiceAndStateIsAwaitingService() throws TaskException {
+        taskContext.setTransientObject(CASE_STATE_JSON_KEY, "AwaitingService");
         Map<String, Object> payload = Collections.singletonMap(
                 SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
         );
@@ -52,8 +52,8 @@ public class ServiceMethodValidationTaskTest {
     }
 
     @Test(expected = TaskException.class)
-    public void testExecuteThrowsExceptionIfServiceMethodIsPersonalServiceAndStateIsAwaitingService() throws TaskException {
-        taskContext.setTransientObject(CASE_STATE_JSON_KEY, "AwaitingService");
+    public void testExecuteThrowsExceptionIfServiceMethodIsPersonalServiceAndStateIsNotAwaitingService() throws TaskException {
+        taskContext.setTransientObject(CASE_STATE_JSON_KEY, "SomeOtherState");
         Map<String, Object> payload = Collections.singletonMap(
                 SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
         );

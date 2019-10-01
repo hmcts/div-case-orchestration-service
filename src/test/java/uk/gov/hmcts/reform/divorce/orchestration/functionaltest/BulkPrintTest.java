@@ -166,14 +166,14 @@ public class BulkPrintTest extends IdamTestSupport {
     }
 
     @Test
-    public void givenServiceMethodIsPersonalServiceAndStateIsIssued_thenResponseContainsErrors() throws Exception {
+    public void givenServiceMethodIsPersonalServiceAndStateIsNotAwaitingService_thenResponseContainsErrors() throws Exception {
 
         final Map<String, Object> caseData = Collections.singletonMap(
             SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
         );
 
         final CaseDetails caseDetails = CaseDetails.builder()
-            .state("AwaitingService")
+            .state("Issued")
             .caseData(caseData)
             .build();
 
@@ -191,8 +191,8 @@ public class BulkPrintTest extends IdamTestSupport {
                 isJson(),
                 hasJsonPath("$.data", is(Collections.emptyMap())),
                 hasJsonPath("$.errors",
-                    hasItem("Failed to bulk print documents - This event cannot be used when the service"
-                        + " method is Personal Service. Please use the Personal Service event instead")
+                    hasItem("Failed to bulk print documents - This event cannot be used when "
+                            + "service method is Personal Service and the case is not in Awaiting Service.")
                 )
             )));
     }

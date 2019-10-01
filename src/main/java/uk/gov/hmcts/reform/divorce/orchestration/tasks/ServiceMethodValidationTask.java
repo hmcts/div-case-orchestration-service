@@ -28,10 +28,14 @@ public class ServiceMethodValidationTask implements Task<Map<String, Object>> {
             String currentCaseState = context.getTransientObject(CASE_STATE_JSON_KEY);
             if (!AWAITING_SERVICE_STATE.equals(currentCaseState)) {
                 final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
-                log.error("Unexpected service method {} - Case ID: {}", solServiceMethod, caseId);
+                log.error("Unexpected service method {} - Case ID: {}, State: {}",
+                        solServiceMethod,
+                        caseId,
+                        currentCaseState
+                );
                 throw new TaskException(
-                        "This event cannot be used when the service method is Personal Service. "
-                                + "Please use the Personal Service event instead"
+                        "This event cannot be used when service method is "
+                                + "Personal Service and the case is not in Awaiting Service."
                 );
             }
         }
