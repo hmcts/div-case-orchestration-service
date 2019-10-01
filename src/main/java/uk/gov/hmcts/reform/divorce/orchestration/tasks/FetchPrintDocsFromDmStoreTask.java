@@ -21,6 +21,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,12 +34,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> {
 
+    private static final String DOCUMENT_LINK = "DocumentLink";
+    private static final String VALUE = "value";
+    private static final String DOCUMENT_URL = "document_binary_url";
+    private static final String DOCUMENT_TYPE = "DocumentType";
+    private static final String DOCUMENT_FILENAME = "document_filename";
     private static final String DOCUMENTS_GENERATED = "DocumentsGenerated";
-
     private static final String CASEWORKER_DIVORCE = "caseworker-divorce";
-
     private static final String USER_ROLES = "user-roles";
-
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
     private AuthTokenGenerator authTokenGenerator;
@@ -50,42 +54,88 @@ public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> 
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-
         Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = extractGeneratedDocumentList(caseData);
         populateDocumentBytes(context, generatedDocumentInfoList);
+
         context.setTransientObject(DOCUMENTS_GENERATED, generatedDocumentInfoList);
+
         return caseData;
     }
 
     private void populateDocumentBytes(TaskContext context, Map<String, GeneratedDocumentInfo> generatedDocumentInfos) {
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
+
         for (GeneratedDocumentInfo generatedDocumentInfo : generatedDocumentInfos.values()) {
             HttpHeaders headers = new HttpHeaders();
             headers.set(SERVICE_AUTHORIZATION, authTokenGenerator.generate());
             headers.set(USER_ROLES, CASEWORKER_DIVORCE);
             HttpEntity<RestRequest> httpEntity = new HttpEntity<>(headers);
 
-            ResponseEntity<byte[]> response = restTemplate.exchange(generatedDocumentInfo.getUrl(), HttpMethod.GET, httpEntity, byte[].class);
+            ResponseEntity<byte[]> response = restTemplate.exchange(
+                generatedDocumentInfo.getUrl(), HttpMethod.GET, httpEntity, byte[].class
+            );
+
             if (response.getStatusCode() != HttpStatus.OK) {
                 log.error("Failed to get bytes from document store for document {} in case Id {}",
                     generatedDocumentInfo.getUrl(), caseDetails.getCaseId());
                 throw new RuntimeException(String.format("Unexpected code from DM store: %s ", response.getStatusCode()));
             }
+
             generatedDocumentInfo.setBytes(response.getBody());
         }
     }
 
+    private Map<String, GeneratedDocumentInfo> extractGeneratedDocumentList(Map<String, Object> caseData) {
+        if (isListOfLinkedHashMap(caseData)) {
+            return fromLinkedHashMap(caseData);
+        }
+
+        return fromCollectionMember(caseData);
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean isListOfLinkedHashMap(Map<String, Object> caseData) {
+        List<Object> list = (List<Object>) caseData.get(D8DOCUMENTS_GENERATED);
+
+        return list != null && !list.isEmpty() && list.get(0) instanceof LinkedHashMap;
+    }
+
     /**
-     * I'm not using object mapper here to keep it consistent with rest of code, when we migrate the formatter
-     * service to as module dependency this method could be simplified.
+     * It's meant to get a caseData with D8DOCUMENTS_GENERATED field populated with list of LinkedHashMap
      */
     @SuppressWarnings("unchecked")
-    private Map<String, GeneratedDocumentInfo> extractGeneratedDocumentList(Map<String, Object> caseData) {
-        List<CollectionMember<Document>> documentList =
-            ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
-                .map(i -> (List<CollectionMember<Document>>) i)
-                .orElse(new ArrayList<>());
+    private Map<String, GeneratedDocumentInfo> fromLinkedHashMap(Map<String, Object> caseData) {
+        List<Map> documentList =
+            ofNullable(caseData.get(D8DOCUMENTS_GENERATED)).map(i -> (List<Map>) i).orElse(new ArrayList<>());
+        Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = new HashMap<>();
 
+        for (Map<String, Object> document : documentList) {
+            Map<String, Object> value = ((Map) document.get(VALUE));
+            String documentType = getStringValue(value, DOCUMENT_TYPE);
+            Map<String, Object> documentLink = (Map) ofNullable(getValue(value, DOCUMENT_LINK)).orElse(null);
+
+            if (ofNullable(documentLink).isPresent()) {
+                GeneratedDocumentInfo gdi = GeneratedDocumentInfo.builder()
+                    .documentType(getStringValue(value, DOCUMENT_TYPE))
+                    .url(getStringValue(documentLink, DOCUMENT_URL))
+                    .documentType(documentType)
+                    .fileName(getStringValue(documentLink, DOCUMENT_FILENAME))
+                    .build();
+                generatedDocumentInfoList.put(documentType, gdi);
+            }
+        }
+
+        return generatedDocumentInfoList;
+    }
+
+    /**
+     * It's meant to get a caseData with D8DOCUMENTS_GENERATED field populated with  list of CollectionMember<Document>
+     */
+    @SuppressWarnings("unchecked")
+    private Map<String, GeneratedDocumentInfo> fromCollectionMember(Map<String, Object> caseData) {
+        List<CollectionMember<Document>> documentList = ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
+            .map(i -> (List<CollectionMember<Document>>) i)
+            .orElse(new ArrayList<>());
         Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = new HashMap<>();
 
         for (CollectionMember<Document> document : documentList) {
@@ -106,8 +156,23 @@ public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> 
         return generatedDocumentInfoList;
     }
 
+    private Object getValue(Map<String, Object> objectMap, String key) {
+        Iterator<Map.Entry<String, Object>> iterator = objectMap.entrySet().iterator();
+        Object result = null;
+        while (iterator.hasNext()) {
+            Map.Entry map = iterator.next();
+            if (map.getKey().equals(key)) {
+                result = map.getValue();
+            }
+        }
+        return result;
+    }
+
+    private String getStringValue(Map<String, Object> objectMap, String key) {
+        return ofNullable(getValue(objectMap, key)).map(Object::toString).orElse(StringUtils.EMPTY);
+    }
+
     private String getStringValue(String text) {
         return ofNullable(text).map(Object::toString).orElse(StringUtils.EMPTY);
     }
-
 }
