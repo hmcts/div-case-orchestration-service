@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
@@ -35,11 +37,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_AOS_COMPLETE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_CLARIFICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FORMATTER_CASE_DATA_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FORMATTER_DIVORCE_SESSION_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-public class SubmitDnCaseITest extends MockedFunctionalTest {
+public class SubmitDnCaseITest extends IdamTestSupport {
     private static final String API_URL = String.format("/submit-dn/%s", TEST_CASE_ID);
     private static final String FORMAT_TO_DN_CASE_CONTEXT_PATH = "/caseformatter/version/1/to-dn-submit-format";
+    private static final String FORMAT_TO_DN_CLARIFICATION_CONTEXT_PATH = "/caseformatter/version/1/to-dn-clarification-format";
     private static final String UPDATE_CONTEXT_PATH = "/casemaintenance/version/1/updateCase/" + TEST_CASE_ID + "/";
     private static final String RETRIEVE_CASE_CONTEXT_PATH = String.format(
             "/casemaintenance/version/1/case/%s",
@@ -71,6 +76,7 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
     public void givenCaseFormatterFails_whenSubmitDn_thenPropagateTheException() throws Exception {
         final Map<String, Object> caseData = getCaseData();
 
+        stubSignInForCaseworker();
         stubFormatterServerEndpoint(BAD_REQUEST, caseData, TEST_ERROR);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -91,6 +97,7 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
         caseDetails.put(CASE_STATE_JSON_KEY, AOS_AWAITING);
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
+        stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
         stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED, caseData, caseDataString);
         stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
@@ -114,6 +121,7 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
         caseDetails.put(CASE_STATE_JSON_KEY, AOS_AWAITING);
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
+        stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED, caseData, caseDataString);
@@ -136,6 +144,7 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
         caseDetails.put(CASE_STATE_JSON_KEY, AOS_COMPLETED);
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
+        stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_AOS_COMPLETE, caseData, caseDataString);
@@ -158,8 +167,13 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
         caseDetails.put(CASE_STATE_JSON_KEY, AWAITING_CLARIFICATION);
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
+        stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
-        stubFormatterServerEndpoint(OK, caseData, caseDataString);
+        stubFormatterClarificationEndpoint(OK,
+            ImmutableMap.of(
+                FORMATTER_CASE_DATA_KEY, Collections.emptyMap(),
+                FORMATTER_DIVORCE_SESSION_KEY, Collections.emptyMap()
+            ), caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_CLARIFICATION, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
@@ -180,6 +194,15 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
                 .withBody(response)));
     }
 
+    private void stubFormatterClarificationEndpoint(HttpStatus status, Map<String, Object> caseData, String response) {
+        formatterServiceServer.stubFor(post(FORMAT_TO_DN_CLARIFICATION_CONTEXT_PATH)
+            .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(response)));
+    }
+
     private void stubMaintenanceServerEndpointForUpdate(HttpStatus status, String caseEventId,
                                                         Map<String, Object> caseData, String response) {
         maintenanceServiceServer.stubFor(post(UPDATE_CONTEXT_PATH + caseEventId)
@@ -193,7 +216,7 @@ public class SubmitDnCaseITest extends MockedFunctionalTest {
 
     private void stubMaintenanceServerEndpointForRetrieveCaseById(HttpStatus status, Map<String, Object> cmsData) {
         maintenanceServiceServer.stubFor(WireMock.get(RETRIEVE_CASE_CONTEXT_PATH)
-            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .withHeader(AUTHORIZATION, new EqualToPattern(BEARER_AUTH_TOKEN_1))
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
