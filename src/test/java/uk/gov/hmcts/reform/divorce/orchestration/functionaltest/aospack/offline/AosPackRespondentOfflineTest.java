@@ -110,42 +110,6 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
             "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         caseDetails.getCaseData().put("D8ReasonForDivorce", SEPARATION_TWO_YEARS);
-        GenerateDocumentRequest documentRequest = GenerateDocumentRequest.builder()
-            .template(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID)
-            .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
-            .build();
-        GeneratedDocumentInfo documentInfo = GeneratedDocumentInfo.builder()
-            .documentType(RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE)
-            .fileName(RESPONDENT_AOS_INVITATION_LETTER_FILENAME)
-            .build();
-        stubDocumentGeneratorServerEndpoint(documentRequest, documentInfo);
-        String filename = RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
-
-        webClient.perform(post(format(API_URL, "respondent"))
-            .contentType(MediaType.APPLICATION_JSON)
-            .header(AUTHORIZATION, USER_TOKEN)
-            .content(convertObjectToJsonString(ccdCallbackRequest)))
-            .andExpect(status().isOk())
-            .andExpect(content().string(allOf(
-                isJson(),
-                hasJsonPath("$.data.D8DocumentsGenerated", hasSize(1)),
-                hasJsonPath("$.data.D8DocumentsGenerated", hasItem(
-                    hasJsonPath("value.DocumentFileName", is(filename))
-                ))
-            )));
-
-        documentGeneratorServiceServer.verify(postRequestedFor(urlEqualTo(GENERATE_DOCUMENT_CONTEXT_PATH))
-            .withHeader(AUTHORIZATION, equalTo(USER_TOKEN))
-            .withRequestBody(equalToJson(convertObjectToJsonString(documentRequest))));
-
-    }
-
-    @Test
-    public void testEndpointReturnsAdequateResponse_ForRespondent_ForTwoYearsSeparation() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-            "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
-        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        caseDetails.getCaseData().put("D8ReasonForDivorce", "separation-2-years");
 
         //Stubbing DGS mock for invitation letter
         GenerateDocumentRequest invitationLetterDocumentRequest = GenerateDocumentRequest.builder()

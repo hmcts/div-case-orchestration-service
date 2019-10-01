@@ -87,7 +87,9 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
         final String reasonForDivorce = (String) caseData.get(D_8_REASON_FOR_DIVORCE);
 
         final String letterType = getLetterType(divorceParty);
-        final List<DocumentGenerationRequest> documentGenerationRequestsList = getDocumentGenerationRequestsList(divorceParty, reasonForDivorce);
+        final List<DocumentGenerationRequest> documentGenerationRequestsList = getDocumentGenerationRequestsList(
+            divorceParty, reasonForDivorce
+        );
         final List<String> documentTypesToPrint = documentGenerationRequestsList.stream()
             .map(DocumentGenerationRequest::getDocumentType)
             .collect(Collectors.toList());
