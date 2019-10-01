@@ -24,7 +24,7 @@ withNightlyPipeline(type, product, component) {
     enableSecurityScan()
     after('mutationTest') {
         stage('Functional Nightly') {
-            gradle('functionalNightly')
+            sh './gradlew --no-daemon clean functionalNightly'
         }
     }
 }
