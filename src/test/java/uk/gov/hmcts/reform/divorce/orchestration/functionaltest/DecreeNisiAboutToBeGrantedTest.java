@@ -245,7 +245,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         List<Map<String, Object>> existingDocuments =
             buildDocumentCollection(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE, DECREE_NISI_REFUSAL_DOCUMENT_NAME);
 
-        Map<String, Object> expectedCfsResponse = ObjectMapperTestUtil
+        final Map<String, Object> expectedCfsResponse = ObjectMapperTestUtil
             .getJsonFromResourceFile("/jsonExamples/payloads/documentGeneratedCase.json", Map.class);
 
         Map<String, Object> caseData = ImmutableMap.of(
