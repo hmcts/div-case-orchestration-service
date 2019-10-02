@@ -36,6 +36,7 @@ public class SetDaGrantedDetailsTaskTest {
         when(clock.instant()).thenReturn(LocalDateTime.of(
                 2019, 06, 30, 10, 00, 00).toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(UTC);
+        when(clock.withZone(UTC)).thenReturn(clock);
     }
 
     @Test(expected = TaskException.class)
