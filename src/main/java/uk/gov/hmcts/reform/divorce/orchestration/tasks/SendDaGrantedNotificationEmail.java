@@ -103,7 +103,7 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
 
         emailService.sendEmail(
                 solicitorEmail,
-                EmailTemplateNames.SOL_APPLICANT_DA_GRANTED.name(),
+                EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name(),
                 templateVars,
                 EMAIL_DESC);
     }

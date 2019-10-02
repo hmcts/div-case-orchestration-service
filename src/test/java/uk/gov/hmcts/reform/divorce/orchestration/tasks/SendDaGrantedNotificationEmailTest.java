@@ -190,7 +190,7 @@ public class SendDaGrantedNotificationEmailTest {
         verify(emailService)
                 .sendEmail(
                         eq(TEST_SOLICITOR_EMAIL),
-                        eq(EmailTemplateNames.SOL_APPLICANT_DA_GRANTED.name()),
+                        eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                         eq(expectedPetSolicitorTemplateVars),
                         eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
 
