@@ -100,9 +100,6 @@ public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> 
         return list != null && !list.isEmpty() && list.get(0) instanceof LinkedHashMap;
     }
 
-    /**
-     * It's meant to get a caseData with D8DOCUMENTS_GENERATED field populated with list of LinkedHashMap
-     */
     @SuppressWarnings("unchecked")
     private Map<String, GeneratedDocumentInfo> fromLinkedHashMap(Map<String, Object> caseData) {
         List<Map> documentList =
@@ -128,9 +125,6 @@ public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> 
         return generatedDocumentInfoList;
     }
 
-    /**
-     * It's meant to get a caseData with D8DOCUMENTS_GENERATED field populated with  list of CollectionMember<Document>
-     */
     @SuppressWarnings("unchecked")
     private Map<String, GeneratedDocumentInfo> fromCollectionMember(Map<String, Object> caseData) {
         List<CollectionMember<Document>> documentList = ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
