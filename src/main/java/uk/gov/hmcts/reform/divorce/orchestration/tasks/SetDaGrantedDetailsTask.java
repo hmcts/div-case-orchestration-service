@@ -11,6 +11,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import static java.time.ZoneOffset.UTC;
 import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
@@ -30,7 +31,7 @@ public class SetDaGrantedDetailsTask implements Task<Map<String,Object>> {
             throw new TaskException("Judge who pronounced field must be set.");
         }
 
-        LocalDateTime grantedDateTime = LocalDateTime.now(clock);
+        LocalDateTime grantedDateTime = LocalDateTime.now(clock.withZone(UTC));
         String formattedGrantedDateTime = mapDivorceDateTimeToCCDDateTime(grantedDateTime);
 
         caseData.put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, formattedGrantedDateTime);

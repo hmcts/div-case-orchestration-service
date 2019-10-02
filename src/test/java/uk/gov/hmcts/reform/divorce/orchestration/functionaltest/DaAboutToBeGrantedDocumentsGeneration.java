@@ -93,6 +93,7 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
     public void setup() {
         when(clock.instant()).thenReturn(grantedDate.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(UTC);
+        when(clock.withZone(UTC)).thenReturn(clock);
     }
 
     @Test
