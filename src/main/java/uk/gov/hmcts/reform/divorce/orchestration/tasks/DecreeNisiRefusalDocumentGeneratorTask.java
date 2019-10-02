@@ -51,23 +51,23 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION,
             new LinkedHashSet<>());
 
+        // Rename and set previous refusal order documents to other type so it won't get overwritten
+        List<Map<String, Object>> d8DocumentsGenerated =
+            Optional.ofNullable((List<Map<String, Object>>) caseData.get(D8DOCUMENTS_GENERATED))
+                .orElse(new ArrayList<>());
+
+        d8DocumentsGenerated.stream().filter(collectionMember -> {
+            Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
+            return DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE.equals(document.get(DOCUMENT_TYPE));
+        }).forEach(collectionMember -> {
+            Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
+            document.put(DOCUMENT_TYPE, DOCUMENT_TYPE_OTHER);
+            document.put(DOCUMENT_FILENAME,
+                format(DOCUMENT_FILENAME_FMT, DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD,
+                    caseDetails.getCaseId() + "-" + Instant.now(clock).toEpochMilli()));
+        });
+
         if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {
-            // Rename and set previous refusal order documents to other type so it won't get overwritten
-            List<Map<String, Object>> d8DocumentsGenerated =
-                Optional.ofNullable((List<Map<String, Object>>) caseData.get(D8DOCUMENTS_GENERATED))
-                    .orElse(new ArrayList<>());
-
-            d8DocumentsGenerated.stream().filter(collectionMember -> {
-                Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
-                return DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE.equals(document.get(DOCUMENT_TYPE));
-            }).forEach(collectionMember -> {
-                Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
-                document.put(DOCUMENT_TYPE, DOCUMENT_TYPE_OTHER);
-                document.put(DOCUMENT_FILENAME,
-                    format(DOCUMENT_FILENAME_FMT, DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD,
-                        caseDetails.getCaseId() + "-" + Instant.now(clock).toEpochMilli()));
-            });
-
             GeneratedDocumentInfo generatedDocumentInfo = generatePdfDocument(
                 DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
                 DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE,
