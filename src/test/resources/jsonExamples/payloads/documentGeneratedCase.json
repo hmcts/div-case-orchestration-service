@@ -1,0 +1,34 @@
+{
+  "D8DocumentsGenerated": [
+    {
+      "id": "7b22bf15-d055-41f8-9d77-224fed546841",
+      "value": {
+        "DocumentLink": {
+          "document_url": "https://localhost:8080/documents/1234",
+          "document_filename": "d8petition1513951627081724.pdf",
+          "document_binary_url": "https://localhost:8080/documents/1234/binary"
+        },
+        "DocumentType": "petition",
+        "DocumentComment": null,
+        "DocumentFileName": "d8petition1513951627081724",
+        "DocumentDateAdded": null,
+        "DocumentEmailContent": null
+      }
+    },
+    {
+      "id": "7b22bf15-d055-41f8-9d77-224fed546841",
+      "value": {
+        "DocumentLink": {
+          "document_url": "https://localhost:8080/documents/1234",
+          "document_filename": "d8petition1513951627081724.pdf",
+          "document_binary_url": "https://localhost:8080/documents/1234/binary"
+        },
+        "DocumentType": "d79",
+        "DocumentComment": null,
+        "DocumentFileName": "refusalOrderClarification1513951627081724",
+        "DocumentDateAdded": null,
+        "DocumentEmailContent": null
+      }
+    }
+  ]
+}

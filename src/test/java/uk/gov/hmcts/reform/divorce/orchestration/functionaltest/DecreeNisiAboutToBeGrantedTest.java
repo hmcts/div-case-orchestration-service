@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.FeatureToggleServiceImpl;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.Clock;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -176,6 +178,9 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
     @Test
     public void shouldReturnCaseDataPlusClarificationDocument_AndState_WhenDN_NotGranted_AndDnRefusedForMoreInfo() throws Exception {
+        Map<String, Object> expectedCfsResponse = ObjectMapperTestUtil
+            .getJsonFromResourceFile("/jsonExamples/payloads/documentGeneratedCase.json", Map.class);
+
         Map<String, Object> caseData = ImmutableMap.of(
             DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
             REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE
@@ -195,22 +200,24 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
                 .build();
 
-        Map<String, Object> expectedDocumentUpdateRequestData = new HashMap<>();
-        expectedDocumentUpdateRequestData.putAll(caseData);
+        Map<String, Object> dataInput = new HashMap<>();
+        dataInput.putAll(caseData);
         // Additional fields
-        expectedDocumentUpdateRequestData.putAll(ImmutableMap.of(
+        dataInput.putAll(ImmutableMap.of(
             STATE_CCD_FIELD, AWAITING_CLARIFICATION,
             DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
         ));
 
+        expectedCfsResponse.putAll(dataInput);
+
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
                 .documents(asList(documentGenerationResponse))
-                .caseData(expectedDocumentUpdateRequestData)
+                .caseData(dataInput)
                 .build();
 
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, expectedDocumentUpdateRequestData);
+        stubFormatterServerEndpoint(documentUpdateRequest, expectedCfsResponse);
 
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             ImmutableMap.of(
@@ -238,6 +245,9 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         List<Map<String, Object>> existingDocuments =
             buildDocumentCollection(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE, DECREE_NISI_REFUSAL_DOCUMENT_NAME);
 
+        Map<String, Object> expectedCfsResponse = ObjectMapperTestUtil
+            .getJsonFromResourceFile("/jsonExamples/payloads/documentGeneratedCase.json", Map.class);
+
         Map<String, Object> caseData = ImmutableMap.of(
             DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
             REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE,
@@ -263,10 +273,10 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
                 .build();
 
-        Map<String, Object> expectedDocumentUpdateRequestData = new HashMap<>();
-        expectedDocumentUpdateRequestData.putAll(documentGenerationRequestCaseData);
+        Map<String, Object> inputData = new HashMap<>();
+        inputData.putAll(documentGenerationRequestCaseData);
         // Additional fields
-        expectedDocumentUpdateRequestData.putAll(ImmutableMap.of(
+        inputData.putAll(ImmutableMap.of(
             STATE_CCD_FIELD, AWAITING_CLARIFICATION,
             DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
         ));
@@ -274,11 +284,15 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
                 .documents(asList(documentGenerationResponse))
-                .caseData(expectedDocumentUpdateRequestData)
+                .caseData(inputData)
                 .build();
 
+        expectedCfsResponse.putAll(inputData.entrySet().stream()
+            .filter(x -> x.getKey() != "D8DocumentsGenerated")
+            .collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue())));
+
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, expectedDocumentUpdateRequestData);
+        stubFormatterServerEndpoint(documentUpdateRequest, expectedCfsResponse);
 
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             ImmutableMap.of(
