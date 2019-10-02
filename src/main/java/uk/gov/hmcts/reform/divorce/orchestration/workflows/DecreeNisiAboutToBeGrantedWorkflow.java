@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDnOutcomeFlagFieldTask
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiRefusalDocumentGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLink;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateDNDecisionTask;
 
@@ -24,7 +25,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features.DN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSAL_DRAFT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_DOCUMENT_LINK_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
@@ -47,6 +52,8 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
 
     private final FeatureToggleService featureToggleService;
 
+    private final PopulateDocLink populateDocLink;
+
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         List<Task> tasksToRun = new ArrayList<>();
 
@@ -56,6 +63,8 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
         tasksToRun.add(addDecreeNisiDecisionDateTask);
         Object decreeNisiGranted = caseData.get(DECREE_NISI_GRANTED_CCD_FIELD);
 
+        String documentType = DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
+        String docLinkFieldName = DN_REFUSAL_DRAFT;
         if (YES_VALUE.equals(decreeNisiGranted)) {
             tasksToRun.add(addDnOutcomeFlagFieldTask);
             Object costsClaimGranted = caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD);
@@ -67,13 +76,16 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
         if (featureToggleService.isFeatureEnabled(DN_REFUSAL)) {
             tasksToRun.add(decreeNisiRefusalDocumentGeneratorTask);
             tasksToRun.add(caseFormatterAddDocuments);
+            tasksToRun.add(populateDocLink);
         }
 
         Map<String, Object> payloadToReturn = this.execute(
             tasksToRun.stream().toArray(Task[]::new),
             caseData,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails)
+            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
+            ImmutablePair.of(DOCUMENT_TYPE, documentType),
+            ImmutablePair.of(SOL_DOCUMENT_LINK_FIELD, docLinkFieldName)
         );
 
         return payloadToReturn;
