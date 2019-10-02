@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,23 +64,24 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
-        if (isSolicitorRepresentingPetitioner(caseData)) {
+        String petEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
+        String respEmail = (String) caseData.get(RESPONDENT_EMAIL_ADDRESS);
 
-            String petSolEmail = (String) caseData.get(PET_SOL_EMAIL);
+        if (isSolicitorRepresentingPetitioner(caseData)) {
+            String petSolEmail = getMandatoryPropertyValueAsString(caseData, PET_SOL_EMAIL);
             String petSolName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
 
             sendEmailToSolicitor(context, caseData, petSolEmail, petSolName);
-        } else {
+        } else if (!Strings.isNullOrEmpty(petEmail)) {
             sendEmailToPetitioner(caseData);
         }
 
         if (isSolicitorRepresentingRespondent(caseData)) {
-
-            String respSolEmail = (String) caseData.get(D8_RESPONDENT_SOLICITOR_EMAIL);
+            String respSolEmail = getMandatoryPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_EMAIL);
             String respSolName = getMandatoryPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_NAME);
 
             sendEmailToSolicitor(context, caseData, respSolEmail, respSolName);
-        } else {
+        } else if (!Strings.isNullOrEmpty(respEmail)) {
             sendEmailToRespondent(caseData);
         }
 
@@ -114,7 +116,7 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
         sendEmail(
                 getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME),
                 getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME),
-                (String) caseData.get(D_8_PETITIONER_EMAIL),
+                getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL),
                 PETITIONER,
                 caseData,
                 getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
@@ -126,7 +128,7 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
         sendEmail(
                 getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD),
                 getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD),
-                (String) caseData.get(RESPONDENT_EMAIL_ADDRESS),
+                getMandatoryPropertyValueAsString(caseData, RESPONDENT_EMAIL_ADDRESS),
                 RESPONDENT,
                 caseData,
                 getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
@@ -161,7 +163,8 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
 
     private boolean isSolicitorRepresentingPetitioner(Map<String, Object> caseData) {
         final String petSolicitorEmail = (String) caseData.get(PET_SOL_EMAIL);
-        return StringUtils.isNotBlank(petSolicitorEmail);
+
+        return !Strings.isNullOrEmpty(petSolicitorEmail);
     }
 
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> caseData) {
