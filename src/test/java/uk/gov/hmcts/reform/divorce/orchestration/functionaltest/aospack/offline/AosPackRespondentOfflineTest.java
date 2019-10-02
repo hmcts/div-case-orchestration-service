@@ -324,7 +324,8 @@
 //             documentsGenerated.add(singletonMap("value", value));
 
 //             String documentJsonPath = "$.documents[" + i + "]";
-//             mappingBuilder.withRequestBody(matchingJsonPath(documentJsonPath, matchingJsonPath("documentType", equalTo(documentToStub.getValue()))));
+//             mappingBuilder
+//                 .withRequestBody(matchingJsonPath(documentJsonPath, matchingJsonPath("documentType", equalTo(documentToStub.getValue()))));
 //             mappingBuilder.withRequestBody(matchingJsonPath(documentJsonPath, matchingJsonPath("fileName", equalTo(documentToStub.getKey()))));
 //         }
 
