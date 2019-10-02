@@ -15,7 +15,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.String.format;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -121,7 +125,7 @@ public class SendDaGrantedNotificationEmailTest {
     }
 
     @Test
-    public void shouldNotCallEmailServiceForDaNotificationIfEmailsDoNotExist() throws TaskException {
+    public void shouldNotCallEmailServiceForDaNotificationIfEmailsDoNotExist() throws Exception {
         testData.put(D_8_PETITIONER_EMAIL, "");
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
@@ -129,13 +133,17 @@ public class SendDaGrantedNotificationEmailTest {
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
 
-        sendDaGrantedNotificationEmail.execute(context, testData);
-
-        verifyZeroInteractions(emailService);
+        try {
+            sendDaGrantedNotificationEmail.execute(context, testData);
+            fail("Failed to catch task exception");
+        } catch (TaskException e) {
+            verifyZeroInteractions(emailService);
+            assertThat(e.getMessage(), is(format("Could not evaluate value of mandatory property \"%s\"", "D8PetitionerEmail")));
+        }
     }
 
     @Test
-    public void shouldCallEmailServiceForDaNotificationIfEmailsOnlyOnceIfOnlyOneEmailIsPresent() throws TaskException {
+    public void shouldCallEmailServiceForDaNotificationIfEmailsOnlyOnceIfOnlyOneEmailIsPresent() throws Exception {
         testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         testData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
@@ -145,22 +153,24 @@ public class SendDaGrantedNotificationEmailTest {
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
         testData.put(NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE, TEST_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE);
 
-        Map returnPayload = sendDaGrantedNotificationEmail.execute(context, testData);
+        try {
+            sendDaGrantedNotificationEmail.execute(context, testData);
+            fail("Failed to catch task exception");
+        } catch (TaskException e) {
+            verify(emailService,times(1))
+                    .sendEmailAndReturnExceptionIfFails(
+                            eq(TEST_PETITIONER_EMAIL),
+                            eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
+                            eq(expectedPetitionerTemplateVars),
+                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
 
-        assertEquals(testData, returnPayload);
-
-        verify(emailService,times(1))
-                .sendEmail(
-                        eq(TEST_PETITIONER_EMAIL),
-                        eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
-                        eq(expectedPetitionerTemplateVars),
-                        eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
-
-        verifyNoMoreInteractions(emailService);
+            verifyNoMoreInteractions(emailService);
+            assertThat(e.getMessage(), is(format("Could not evaluate value of mandatory property \"%s\"", "RespEmailAddress")));
+        }
     }
 
     @Test
-    public void shouldCallEmailServiceForDaNotificationEmails() throws TaskException {
+    public void shouldCallEmailServiceForDaNotificationEmails() throws Exception {
         testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         testData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
@@ -175,14 +185,14 @@ public class SendDaGrantedNotificationEmailTest {
         assertEquals(testData, returnPayload);
 
         verify(emailService)
-                .sendEmail(
+                .sendEmailAndReturnExceptionIfFails(
                         eq(TEST_PETITIONER_EMAIL),
                         eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                         eq(expectedPetitionerTemplateVars),
                         eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
 
         verify(emailService)
-                .sendEmail(
+                .sendEmailAndReturnExceptionIfFails(
                         eq(TEST_RESPONDENT_EMAIL),
                         eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                         eq(expectedRespondentTemplateVars),
@@ -190,7 +200,7 @@ public class SendDaGrantedNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallEmailServiceForDaNotificationIfSolicitorIsRepresentingPetitioner() throws TaskException {
+    public void shouldCallEmailServiceForDaNotificationIfSolicitorIsRepresentingPetitioner() throws Exception {
         testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
         testData.put(PET_SOL_EMAIL, TEST_SOLICITOR_EMAIL);
         testData.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
@@ -212,7 +222,7 @@ public class SendDaGrantedNotificationEmailTest {
                         eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC));
 
         verify(emailService)
-                .sendEmail(
+                .sendEmailAndReturnExceptionIfFails(
                         eq(TEST_RESPONDENT_EMAIL),
                         eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                         eq(expectedRespondentTemplateVars),
@@ -221,7 +231,7 @@ public class SendDaGrantedNotificationEmailTest {
 
     // test until we implement setting respondentSolicitorRepresented from CCD for RespSols
     @Test
-    public void shouldCallEmailServiceForDaNotificationIfSolicitorIsRepresentingRespAndRespSolRepresentedValueIsNotPresent() throws TaskException {
+    public void shouldCallEmailServiceForDaNotificationIfSolicitorIsRepresentingRespAndRespSolRepresentedValueIsNotPresent() throws Exception {
         testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
         testData.put(D8_RESPONDENT_SOLICITOR_EMAIL, TEST_RESP_SOLICITOR_EMAIL);
         testData.put(D8_RESPONDENT_SOLICITOR_NAME, TEST_RESP_SOLICITOR_NAME);
@@ -237,7 +247,7 @@ public class SendDaGrantedNotificationEmailTest {
         assertEquals(testData, returnPayload);
 
         verify(emailService)
-                .sendEmail(
+                .sendEmailAndReturnExceptionIfFails(
                         eq(TEST_PETITIONER_EMAIL),
                         eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                         eq(expectedPetitionerTemplateVars),
@@ -252,7 +262,7 @@ public class SendDaGrantedNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallEmailServiceForDaNotificationIfSolicitorIsRepresentingRespAndRespSolRepresentedValueIsPresent() throws TaskException {
+    public void shouldCallEmailServiceForDaNotificationIfSolicitorIsRepresentingRespAndRespSolRepresentedValueIsPresent() throws Exception {
         testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
         testData.put(D8_RESPONDENT_SOLICITOR_EMAIL, TEST_RESP_SOLICITOR_EMAIL);
         testData.put(D8_RESPONDENT_SOLICITOR_NAME, TEST_RESP_SOLICITOR_NAME);
@@ -268,7 +278,7 @@ public class SendDaGrantedNotificationEmailTest {
         assertEquals(testData, returnPayload);
 
         verify(emailService)
-                .sendEmail(
+                .sendEmailAndReturnExceptionIfFails(
                         eq(TEST_PETITIONER_EMAIL),
                         eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                         eq(expectedPetitionerTemplateVars),
@@ -283,7 +293,7 @@ public class SendDaGrantedNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallEmailServiceForDaNotificationIfBothPartiesAreRepresentedBySolicitors() throws TaskException {
+    public void shouldCallEmailServiceForDaNotificationIfBothPartiesAreRepresentedBySolicitors() throws Exception {
         testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
         testData.put(PET_SOL_EMAIL, TEST_SOLICITOR_EMAIL);
         testData.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
@@ -314,5 +324,4 @@ public class SendDaGrantedNotificationEmailTest {
                         eq(expectedRespSolicitorTemplateVars),
                         eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC));
     }
-
 }

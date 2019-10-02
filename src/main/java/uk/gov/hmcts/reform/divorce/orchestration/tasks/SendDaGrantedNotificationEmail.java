@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -64,15 +65,12 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
-        String petEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
-        String respEmail = (String) caseData.get(RESPONDENT_EMAIL_ADDRESS);
-
         if (isSolicitorRepresentingPetitioner(caseData)) {
             String petSolEmail = getMandatoryPropertyValueAsString(caseData, PET_SOL_EMAIL);
             String petSolName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
 
             sendEmailToSolicitor(context, caseData, petSolEmail, petSolName);
-        } else if (!Strings.isNullOrEmpty(petEmail)) {
+        } else {
             sendEmailToPetitioner(caseData);
         }
 
@@ -81,7 +79,7 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
             String respSolName = getMandatoryPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_NAME);
 
             sendEmailToSolicitor(context, caseData, respSolEmail, respSolName);
-        } else if (!Strings.isNullOrEmpty(respEmail)) {
+        } else {
             sendEmailToRespondent(caseData);
         }
 
@@ -113,30 +111,37 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
 
     private void sendEmailToPetitioner(Map<String, Object> caseData) throws TaskException {
 
-        sendEmail(
-                getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME),
-                getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME),
-                getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL),
-                PETITIONER,
-                caseData,
-                getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
-        );
+        try {
+            sendEmail(
+                    getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME),
+                    getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME),
+                    getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL),
+                    caseData,
+                    getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
+            );
+        } catch (NotificationClientException e) {
+            log.error("Error sending AOS overdue notification email to solicitor", e);
+            throw new TaskException(e.getMessage(), e);
+        }
     }
 
-
     private void sendEmailToRespondent(Map<String, Object> caseData) throws TaskException {
-        sendEmail(
-                getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD),
-                getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD),
-                getMandatoryPropertyValueAsString(caseData, RESPONDENT_EMAIL_ADDRESS),
-                RESPONDENT,
-                caseData,
-                getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
-        );
+        try {
+            sendEmail(
+                    getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD),
+                    getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD),
+                    getMandatoryPropertyValueAsString(caseData, RESPONDENT_EMAIL_ADDRESS),
+                    caseData,
+                    getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
+            );
+        } catch (NotificationClientException e) {
+            log.error("Error sending AOS overdue notification email to solicitor", e);
+            throw new TaskException(e.getMessage(), e);
+        }
     }
 
     public void sendEmail(String firstName, String lastName, String emailAddress,
-                          String user, Map<String, Object> caseData, String ccdReference) {
+                          Map<String, Object> caseData, String ccdReference) throws NotificationClientException  {
 
         String daGrantedDataCcdField = (String) caseData.get(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD);
         LocalDate daGrantedDate = LocalDateTime.parse(daGrantedDataCcdField).toLocalDate();
@@ -151,13 +156,11 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
             templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, ccdReference);
             templateVars.put(NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE, daLimitDownloadDate);
 
-            emailService.sendEmail(
+            emailService.sendEmailAndReturnExceptionIfFails(
                     emailAddress,
                     EmailTemplateNames.DA_GRANTED_NOTIFICATION.name(),
                     templateVars,
                     EMAIL_DESC);
-        } else {
-            log.warn("No {} email present for case reference: {}", user, ccdReference);
         }
     }
 
