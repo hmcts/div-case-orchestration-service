@@ -660,8 +660,7 @@ public class CallbackController {
             callbackResponseBuilder.data(
                 caseOrchestrationService.processAosSolicitorNominated(ccdCallbackRequest, authToken));
         } catch (CaseOrchestrationServiceException exception) {
-            log.error(format("Failed processing AOS solicitor callback. Case ID:  %s", caseId),
-                exception);
+            log.error(format("Failed processing AOS solicitor callback. Case ID:  %s", caseId), exception);
             callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 

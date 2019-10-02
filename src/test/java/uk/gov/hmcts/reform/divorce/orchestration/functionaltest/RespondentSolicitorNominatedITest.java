@@ -57,8 +57,6 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
     private MockMvc webClient;
 
     @Test
-    @Ignore
-    // todo: re-write this test
     public void givenRespondentSolicitorNominated_whenCallbackCalled_linkingFieldsAreReset() throws Exception {
         final PinRequest pinRequest = PinRequest.builder()
             .firstName("")
