@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDnOutcomeFlagFieldTask
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiRefusalDocumentGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDnDecisionNotificationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateDNDecisionTask;
 
@@ -45,6 +46,8 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
 
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
+    private final SendDnDecisionNotificationTask sendDnDecisionNotificationTask;
+
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
@@ -67,6 +70,7 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
         if (featureToggleService.isFeatureEnabled(DN_REFUSAL)) {
             tasksToRun.add(decreeNisiRefusalDocumentGeneratorTask);
             tasksToRun.add(caseFormatterAddDocuments);
+            tasksToRun.add(sendDnDecisionNotificationTask);
         }
 
         Map<String, Object> payloadToReturn = this.execute(
