@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,10 +24,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -36,6 +38,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ACCESS_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
@@ -52,9 +58,18 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
     private static final String API_URL = "/aos-solicitor-nominated";
     private static final String AOS_SOL_NOMINATED_JSON = "/jsonExamples/payloads/aosSolicitorNominated.json";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
+    private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
+    private static final byte[] FIRST_FILE_BYTES = "firstFile".getBytes();
 
     @Autowired
     private MockMvc webClient;
+
+    @Before
+    public void setUp() {
+        documentGeneratorServiceServer.resetAll();
+        documentStore.resetAll();
+        serviceAuthProviderServer.resetAll();
+    }
 
     @Test
     public void givenRespondentSolicitorNominated_whenCallbackCalled_linkingFieldsAreReset() throws Exception {
@@ -88,6 +103,7 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
             GeneratedDocumentInfo.builder()
                 .documentType(DOCUMENT_TYPE_RESPONDENT_INVITATION)
                 .fileName(AOS_SOL_NOMINATED_JSON)
+                .url("http://localhost:4020/1")
                 .build();
 
         final GenerateDocumentRequest generateDocumentRequest =
@@ -100,9 +116,23 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
                 )
                 .build();
 
+        //Stubbing DGS mock for invitation letter
+        GenerateDocumentRequest invitationLetterDocumentRequest = GenerateDocumentRequest.builder()
+            .template(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID)
+            .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+            .build();
+        GeneratedDocumentInfo invitationLetterDocumentInfo = GeneratedDocumentInfo.builder()
+            .documentType(RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE)
+            .fileName(RESPONDENT_AOS_INVITATION_LETTER_FILENAME)
+            .url("http://localhost:4020/1")
+            .build();
+        stubDocumentGeneratorServerEndpoint(invitationLetterDocumentRequest, invitationLetterDocumentInfo);
+
+        stubDMStore(HttpStatus.OK);
         stubDocumentGeneratorServerEndpoint(generateDocumentRequest, expectedAosInvitation);
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
+        stubServiceAuthProvider(HttpStatus.OK);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -125,5 +155,22 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(response))));
+    }
+
+    private void stubServiceAuthProvider(HttpStatus status) {
+        serviceAuthProviderServer.stubFor(WireMock.post(SERVICE_AUTH_CONTEXT_PATH)
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withBody(TEST_SERVICE_AUTH_TOKEN)));
+    }
+
+    private void stubDMStore(HttpStatus status) {
+        documentStore.stubFor(WireMock.get("/1/binary")
+            .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
+            .withHeader("user-roles", new EqualToPattern("caseworker-divorce"))
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, ALL_VALUE)
+                .withBody(FIRST_FILE_BYTES)));
     }
 }

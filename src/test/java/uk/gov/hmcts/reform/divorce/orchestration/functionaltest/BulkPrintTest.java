@@ -56,11 +56,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class BulkPrintTest extends IdamTestSupport {
 
     private static final String API_URL = "/bulk-print";
-
-    private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
-
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
-
     private static final String DUE_DATE = "dueDate";
 
     @Autowired

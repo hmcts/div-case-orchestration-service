@@ -46,7 +46,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
     @Test
     public void givenAllDependenciesAreUp_whenCheckHealth_thenReturnStatusUp() throws Exception {
         mockEndpointAndResponse(maintenanceServiceServer, true);
-        mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
         mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, true);
@@ -80,7 +79,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
     @Test
     public void givenFeatureToggleServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
         mockEndpointAndResponse(maintenanceServiceServer, true);
-        mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
         mockEndpointAndResponse(featureToggleService, false);
         mockEndpointAndResponse(feesAndPaymentsServer, true);
@@ -112,7 +110,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
     @Test
     public void givenSendLetterServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
         mockEndpointAndResponse(maintenanceServiceServer, true);
-        mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
         mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, true);
@@ -146,7 +143,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
     @Test
     public void givenDocumentGeneratorServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
         mockEndpointAndResponse(maintenanceServiceServer, true);
-        mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, false);
         mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, true);
@@ -176,7 +172,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
     @Test
     public void givenCaseMaintenanceServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
         mockEndpointAndResponse(maintenanceServiceServer, false);
-        mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
         mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, true);
@@ -206,7 +201,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
     @Test
     public void givenFeesAndPaymentsServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
         mockEndpointAndResponse(maintenanceServiceServer, true);
-        mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
         mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, false);
@@ -236,7 +230,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
     @Test
     public void givenPaymentServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
         mockEndpointAndResponse(maintenanceServiceServer, true);
-        mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
         mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, true);
@@ -266,7 +259,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
     @Test
     public void givenServiceAuthIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
         mockEndpointAndResponse(maintenanceServiceServer, true);
-        mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
         mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, true);
@@ -296,7 +288,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
     @Test
     public void givenAllDependenciesAreDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
         mockEndpointAndResponse(maintenanceServiceServer, false);
-        mockEndpointAndResponse(validationServiceServer, false);
         mockEndpointAndResponse(documentGeneratorServiceServer, false);
         mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, false);

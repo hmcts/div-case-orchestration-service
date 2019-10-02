@@ -22,7 +22,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-
 @ContextConfiguration(classes = OrchestrationServiceApplication.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @PropertySource(value = "classpath:application.yml")
@@ -31,6 +30,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public abstract class MockedFunctionalTest {
 
     private static final String APPLICATION_VND_UK_GOV_HMCTS_LETTER_SERVICE_IN_LETTER = "application/vnd.uk.gov.hmcts.letter-service.in.letter";
+
+    protected static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
 
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(buildWireMockConfig(4010));
@@ -55,9 +56,6 @@ public abstract class MockedFunctionalTest {
 
     @ClassRule
     public static WireMockClassRule serviceAuthProviderServer = new WireMockClassRule(buildWireMockConfig(4504));
-
-    @ClassRule
-    public static WireMockClassRule validationServiceServer = new WireMockClassRule(buildWireMockConfig(4008));
 
     @ClassRule
     public static WireMockClassRule documentStore = new WireMockClassRule(buildWireMockConfig(4020));

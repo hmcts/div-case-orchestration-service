@@ -63,7 +63,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class ProcessPbaPaymentITest extends MockedFunctionalTest {
     private static final String API_URL = "/process-pba-payment";
     private static final String PAYMENTS_CREDIT_ACCOUNT_CONTEXT_PATH = "/credit-account-payments";
-    private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
     private static final String YES_VALUE = "YES";
     private static final String NO_VALUE = "NO";
 

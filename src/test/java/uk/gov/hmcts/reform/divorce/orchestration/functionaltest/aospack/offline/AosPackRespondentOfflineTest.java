@@ -69,12 +69,8 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/issue-aos-pack-offline/party/%s";
     private static final String USER_TOKEN = "anytoken";
-
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
-
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
-
-    private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
 
     private static final byte[] FIRST_FILE_BYTES = "firstFile".getBytes();
     private static final byte[] SECOND_FILE_BYTES = "secondFile".getBytes();
