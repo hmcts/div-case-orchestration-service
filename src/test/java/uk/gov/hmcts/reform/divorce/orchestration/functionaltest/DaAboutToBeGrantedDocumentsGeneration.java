@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -27,6 +28,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -37,9 +40,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECREE_ABSOLUTE_GRANTED_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PRONOUNCEMENT_JUDGE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
@@ -48,9 +53,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -65,14 +72,15 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
         .put(PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_PRONOUNCEMENT_JUDGE)
         .put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
         .put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
+        .put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL)
         .put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME)
         .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
+        .put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL)
         .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
         .put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE)
         .build();
 
     private final LocalDateTime grantedDate = LocalDateTime.parse(TEST_DECREE_ABSOLUTE_GRANTED_DATE);
-
 
     private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
         .caseData(CASE_DATA)
@@ -85,6 +93,9 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
 
     @Autowired
     private MockMvc webClient;
+
+    @MockBean
+    EmailService mockEmailService;
 
     @MockBean
     private Clock clock;
@@ -118,6 +129,8 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
 
         stubDocumentGeneratorServerEndpoint(daDocumentGenerationRequest, daDocumentGenerationResponse);
         stubFormatterServerEndpoint(daDocumentUpdateRequest, CASE_DATA);
+        when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString()))
+                .thenReturn(null);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
 
@@ -170,5 +183,4 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(response))));
     }
-
 }

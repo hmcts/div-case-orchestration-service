@@ -52,8 +52,6 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
 
     private static final String EMAIL_DESC = "Decree Absolute Notification - Decree Absolute Granted";
     private static final String SOL_EMAIL_DESC = "Decree Absolute Notification To Solicitor - Decree Absolute Granted";
-    private static final String PETITIONER = "petitioner";
-    private static final String RESPONDENT = "respondent";
 
     private final EmailService emailService;
 
@@ -120,7 +118,7 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
                     getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
             );
         } catch (NotificationClientException e) {
-            log.error("Error sending AOS overdue notification email to solicitor", e);
+            log.error("Error sending DA Granted notification email to petitioner", e);
             throw new TaskException(e.getMessage(), e);
         }
     }
@@ -135,7 +133,7 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
                     getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
             );
         } catch (NotificationClientException e) {
-            log.error("Error sending AOS overdue notification email to solicitor", e);
+            log.error("Error sending DA Granted notification email to respondent", e);
             throw new TaskException(e.getMessage(), e);
         }
     }
