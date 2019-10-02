@@ -83,10 +83,6 @@ jackson:
     FAIL_ON_EMPTY_BEANS: false
 
 case:
-  formatter:
-    service:
-      api:
-        baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://localhost:4011}
   maintenance:
     service:
       api:
