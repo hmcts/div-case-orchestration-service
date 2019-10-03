@@ -8,7 +8,7 @@ import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.divorce.category.NightlyTest;
+import uk.gov.hmcts.reform.divorce.category.ExtendedTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.cos.RetrieveCaseSupport;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
@@ -47,7 +47,7 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
     }
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenAnExistingCase_whenSubmitIsCalled_aNewCaseIsNotCreated() throws Exception {
         UserDetails userDetails = createCitizenUser();
         Response submissionResponse = submitCase(userDetails, "divorce-session-with-court-selected.json");

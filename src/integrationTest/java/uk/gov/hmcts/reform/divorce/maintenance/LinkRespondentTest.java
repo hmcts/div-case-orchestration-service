@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.divorce.category.NightlyTest;
+import uk.gov.hmcts.reform.divorce.category.ExtendedTest;
 import uk.gov.hmcts.reform.divorce.model.PinResponse;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
@@ -45,7 +45,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     private String contextPath;
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenPinIdNotMatching_whenLinkRespondent_thenReturnUnauthorized() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
@@ -102,7 +102,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenAosOverdueState_whenLinkRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
@@ -141,7 +141,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenValidCaseDetails_whenLinkCoRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
@@ -179,7 +179,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenLinkedCase_whenLinkCoRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
