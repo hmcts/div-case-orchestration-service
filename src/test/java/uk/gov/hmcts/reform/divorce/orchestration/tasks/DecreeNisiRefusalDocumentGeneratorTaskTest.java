@@ -140,7 +140,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
         assertThat(documentCollection, is(newLinkedHashSet(expectedDocument)));
-  
+
         List<Map<String, Object>> currentGeneratedDocs =
             (List<Map<String, Object>>) caseDetails.getCaseData().get(D8DOCUMENTS_GENERATED);
         Map<String, Object> initialDocument = (Map<String, Object>) currentGeneratedDocs.get(0).get(VALUE_KEY);
@@ -148,7 +148,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         assertThat(initialDocument.get(DOCUMENT_TYPE), is(DOCUMENT_TYPE_OTHER));
         assertThat(initialDocument.get(DOCUMENT_FILENAME),
             is(DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + TEST_CASE_ID + "-" + FIXED_TIME_EPOCH));
-
+        
         verify(documentGeneratorClient)
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN));
     }
