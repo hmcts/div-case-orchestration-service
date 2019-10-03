@@ -280,6 +280,7 @@ public class OrchestrationConstants {
     public static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
     public static final String DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE = "d79";
     public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME = "decreeNisiRefusalOrder";
+    public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD = "previousDecreeNisiRefusalOrder";
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
     public static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
@@ -288,6 +289,7 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
 
     public static final String DOCUMENT_TYPE_COE = "coe";
+    public static final String DOCUMENT_TYPE_OTHER = "other";
 
     public static final String SOL_DOCUMENT_LINK_FIELD = "solDocumentLinkFieldName";
     public static final String MINI_PETITION_LINK = "minipetitionlink";
