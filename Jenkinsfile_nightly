@@ -22,9 +22,5 @@ withNightlyPipeline(type, product, component) {
     env.Rules = params.SecurityRules
     enableMutationTest()
     enableSecurityScan()
-    after('mutationTest') {
-        stage('Functional Nightly') {
-            sh './gradlew --no-daemon --init-script init.gradle functionalNightly'
-        }
-    }
+
 }
