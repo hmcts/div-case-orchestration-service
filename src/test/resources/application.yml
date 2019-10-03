@@ -178,7 +178,7 @@ uk:
           SOL_GENERAL_CASE_UPDATE: 951d26d9-e5fc-40de-a9da-d3ab957cb5e3
           SOL_RESP_COE_NOTIFICATION: e7117ed4-83ff-43f9-8521-e70d31063c7e
           SOL_PERSONAL_SERVICE: 1e2f2ac5-ce4c-4fce-aca0-47a876eda089
-          DN_DECISION_MADE: fd6d9667-527f-4c22-b1f1-d095c412ab2c
+          SOL_DN_DECISION_MADE: fd6d9667-527f-4c22-b1f1-d095c412ab2c
 
 court-distribution-config:
   distribution:

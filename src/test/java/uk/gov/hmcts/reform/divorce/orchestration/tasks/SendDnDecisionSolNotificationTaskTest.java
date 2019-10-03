@@ -45,7 +45,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendDnDecisionNotificationTaskTest {
+public class SendDnDecisionSolNotificationTaskTest {
 
     private static final String SOLICITOR_PERSONAL_SERVICE_EMAIL = "DN decision made email";
     private Map<String, Object> testData;
@@ -56,7 +56,7 @@ public class SendDnDecisionNotificationTaskTest {
     EmailService emailService;
 
     @InjectMocks
-    SendDnDecisionNotificationTask sendDnDecisionNotificationTask;
+    SendDnDecisionSolNotificationTask sendDnDecisionSolNotificationTask;
 
     @Before
     public void setup() {
@@ -81,7 +81,7 @@ public class SendDnDecisionNotificationTaskTest {
         );
 
         //when
-        Map<String, Object> result = sendDnDecisionNotificationTask.execute(context, payload);
+        Map<String, Object> result = sendDnDecisionSolNotificationTask.execute(context, payload);
 
         //then
         verifyZeroInteractions(emailService);
@@ -96,7 +96,7 @@ public class SendDnDecisionNotificationTaskTest {
         );
 
         //when
-        Map<String, Object> result = sendDnDecisionNotificationTask.execute(context, payload);
+        Map<String, Object> result = sendDnDecisionSolNotificationTask.execute(context, payload);
 
         //then
         verifyZeroInteractions(emailService);
@@ -118,12 +118,12 @@ public class SendDnDecisionNotificationTaskTest {
         expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
 
         //when
-        sendDnDecisionNotificationTask.execute(context, testData);
+        sendDnDecisionSolNotificationTask.execute(context, testData);
 
         //then
         verify(emailService).sendEmailAndReturnExceptionIfFails(
                 eq(TEST_USER_EMAIL),
-                eq(EmailTemplateNames.DN_DECISION_MADE.name()),
+                eq(EmailTemplateNames.SOL_DN_DECISION_MADE.name()),
                 eq(expectedTemplateVars),
                 eq(SOLICITOR_PERSONAL_SERVICE_EMAIL)
         );

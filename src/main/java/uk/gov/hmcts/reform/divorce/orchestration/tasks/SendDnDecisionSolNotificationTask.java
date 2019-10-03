@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class SendDnDecisionNotificationTask extends SolicitorEmailTask implements Task<Map<String, Object>> {
+public class SendDnDecisionSolNotificationTask extends SolicitorEmailTask implements Task<Map<String, Object>> {
 
     private static final String SOL_PERSONAL_SERVICE_EMAIL = "DN decision made email";
 
@@ -40,7 +40,7 @@ public class SendDnDecisionNotificationTask extends SolicitorEmailTask implement
             try {
                 emailService.sendEmailAndReturnExceptionIfFails(
                         petSolicitorEmail,
-                        EmailTemplateNames.DN_DECISION_MADE.name(),
+                        EmailTemplateNames.SOL_DN_DECISION_MADE.name(),
                         templateVars,
                         SOL_PERSONAL_SERVICE_EMAIL
                 );
