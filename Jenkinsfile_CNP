@@ -69,10 +69,5 @@ withPipeline(type, product, component) {
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-        if (env.CHANGE_TITLE && !env.CHANGE_TITLE.startsWith('[FAST]')) {
-            stage('Functional Extended') {
-                sh './gradlew --no-daemon --init-script init.gradle functionalExtended'
-            }
-        }
     }
 }
