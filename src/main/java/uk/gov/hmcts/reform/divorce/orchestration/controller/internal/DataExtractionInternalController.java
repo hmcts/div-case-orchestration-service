@@ -32,7 +32,7 @@ public class DataExtractionInternalController {
             @ApiResponse(code = 200, message = "Data extraction process started"),
             @ApiResponse(code = 400, message = "Bad Request")})
     public void startDataExtractionToFamilyMan() {
-        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate yesterday = LocalDate.now();
         listener.onApplicationEvent(new DataExtractionRequest(this, DA, yesterday));
         listener.onApplicationEvent(new DataExtractionRequest(this, AOS, yesterday));
         listener.onApplicationEvent(new DataExtractionRequest(this, DN, yesterday));
