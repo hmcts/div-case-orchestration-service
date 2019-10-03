@@ -47,6 +47,8 @@ public class SetDNDecisionStateTask implements Task<Map<String, Object>> {
                     case DN_REFUSED_ADMIN_ERROR_OPTION:
                         newCaseEndState = AWAITING_ADMIN_CLARIFICATION;
                         break;
+                    default:
+                        newCaseEndState = AWAITING_CLARIFICATION;
                 }
             }
         }
