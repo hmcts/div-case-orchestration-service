@@ -42,7 +42,7 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
 
     @Override
     @EventListener
-    public Map<String, Object> fireSecondaryAosEvent(SubmitSolicitorAosEvent event) {
+    public Map<String, Object>  fireSecondaryAosEvent(SubmitSolicitorAosEvent event) {
         // Maps CCD values of RespAOS2yrConsent & RespAOSAdultery
         // to RespAdmitOrConsentToFact & RespWillDefendDivorce fields in Case Data
         String eventId;
@@ -68,15 +68,7 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
             caseData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(RESP_WILL_DEFEND_DIVORCE_2));
         }
 
-        if (respondentIsDefending(caseData)) {
-            eventId = SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
-        } else {
-            eventId = SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
-        }
-
-        if (NO_VALUE.equalsIgnoreCase(respAos2yrConsent) || NO_VALUE.equalsIgnoreCase(respAosAdmitAdultery)) {
-            eventId = SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
-        }
+        eventId = getEventId(caseData);
 
         log.info("Secondary AoS event to be fired is {} for case {}", eventId, caseID);
 
@@ -91,6 +83,22 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
         );
 
         return caseData;
+    }
+
+    private String getEventId(Map<String, Object> caseData) {
+        final String respAos2yrConsent = (String) caseData.get(RESP_AOS_2_YR_CONSENT);
+        final String respAosAdmitAdultery = (String) caseData.get(RESP_AOS_ADMIT_ADULTERY);
+        String eventId;
+        if (respondentIsDefending(caseData)) {
+            eventId = SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
+        } else {
+            eventId = SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
+        }
+
+        if (NO_VALUE.equalsIgnoreCase(respAos2yrConsent) || NO_VALUE.equalsIgnoreCase(respAosAdmitAdultery)) {
+            eventId = SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
+        }
+        return eventId;
     }
 
     private boolean respondentIsDefending(Map<String, Object> submissionData) {
