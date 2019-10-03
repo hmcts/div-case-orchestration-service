@@ -63,7 +63,6 @@ withPipeline(type, product, component) {
     before('functionalTest:preview') {
         env.FEATURE_RESP_SOLICITOR_DETAILS = 'true'
         env.test_environment = 'aat'
-
     }
 
     after('functionalTest:preview') {
