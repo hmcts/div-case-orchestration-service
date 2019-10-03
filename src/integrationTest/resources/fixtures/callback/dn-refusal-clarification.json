@@ -10,7 +10,11 @@
       "D8caseReference": "LV88D85000",
       "D8PetitionerFirstName": "John",
       "D8PetitionerLastName": "Smith",
-      "D8PetitionerEmail": "simulate-delivered@notifications.service.gov.uk"
+      "D8RespondentFirstName": "Mary",
+      "D8RespondentLastName": "Smith",
+      "PetitionerSolicitorName": "Mr solicitor",
+      "D8PetitionerEmail": "simulate-delivered@notifications.service.gov.uk",
+      "PetitionerSolicitorEmail": "simulate-delivered@notifications.service.gov.uk"
     }
   }
 }
