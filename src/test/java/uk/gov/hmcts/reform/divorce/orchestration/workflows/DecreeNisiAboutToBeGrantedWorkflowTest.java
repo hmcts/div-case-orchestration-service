@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDnOutcomeFlagFieldTask
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiRefusalDocumentGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDnDecisionSolNotificationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateDNDecisionTask;
 
@@ -70,9 +69,6 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
 
     @Mock
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
-
-    @Mock
-    private SendDnDecisionSolNotificationTask sendDnDecisionSolNotificationTask;
 
     @Mock
     private FeatureToggleService featureToggleService;
@@ -238,7 +234,6 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         when(addDecreeNisiDecisionDateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(payloadReturnedByTask);
         when(decreeNisiRefusalDocumentGeneratorTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
         when(caseFormatterAddDocuments.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
-        when(sendDnDecisionSolNotificationTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
 
         Map<String, Object> returnedPayload = workflow.run(CaseDetails.builder().caseData(inputPayload).build(), AUTH_TOKEN);
 
@@ -252,8 +247,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
             validateDNDecisionTask,
             addDecreeNisiDecisionDateTask,
             decreeNisiRefusalDocumentGeneratorTask,
-            caseFormatterAddDocuments,
-            sendDnDecisionSolNotificationTask
+            caseFormatterAddDocuments
         );
 
         inOrder.verify(featureToggleService).isFeatureEnabled(eq(Features.DN_REFUSAL));
@@ -262,7 +256,6 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         inOrder.verify(addDecreeNisiDecisionDateTask).execute(any(TaskContext.class), eq(inputPayload));
         inOrder.verify(decreeNisiRefusalDocumentGeneratorTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
         inOrder.verify(caseFormatterAddDocuments).execute(any(TaskContext.class), eq(payloadReturnedByTask));
-        inOrder.verify(sendDnDecisionSolNotificationTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
 
         verify(addDnOutcomeFlagFieldTask, never()).execute(any(), any());
         verify(defineWhoPaysCostsOrderTask, never()).execute(any(), any());
