@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
 
-    private static final String DA_DESIRED_STATES = "[\"darequested\", \"divorcegranted\"]";
+    private static final String DA_DESIRED_STATES = "[\"divorcegranted\"]";
     private static final String AOS_DESIRED_STATES = "[\"awaitinglegaladvisorreferral\"]";
     private static final String DN_DESIRED_STATES = "[\"dnisrefused\", \"dnpronounced\"]";
 
