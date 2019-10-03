@@ -67,6 +67,7 @@ public class OrchestrationConstants {
     public static final String RESP_AOS_ADMIT_ADULTERY = "RespAOSAdultery";
     public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "RespAdmitOrConsentToFact";
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
+    public static final String RESP_WILL_DEFEND_DIVORCE_2 = "RespWillDefendDivorce2";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
     public static final String DN_COSTS_OPTIONS_CCD_FIELD = "DivorceCostsOptionDN";

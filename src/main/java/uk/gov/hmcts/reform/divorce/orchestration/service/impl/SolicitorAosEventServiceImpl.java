@@ -23,11 +23,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_2_YR_CONSENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADMIT_ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE_2;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_FIVE_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 
 @Slf4j
@@ -43,7 +45,7 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
     public Map<String, Object> fireSecondaryAosEvent(SubmitSolicitorAosEvent event) {
         // Maps CCD values of RespAOS2yrConsent & RespAOSAdultery
         // to RespAdmitOrConsentToFact & RespWillDefendDivorce fields in Case Data
-        String eventId;
+        String eventId = null;
         final TaskContext context = (TaskContext) event.getSource();
         final String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
         final String caseID = context.getTransientObject(CASE_ID_JSON_KEY);
@@ -52,7 +54,19 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
         final String respAos2yrConsent = (String) caseData.get(RESP_AOS_2_YR_CONSENT);
         final String respAosAdmitAdultery = (String) caseData.get(RESP_AOS_ADMIT_ADULTERY);
 
-        log.info("Attempting to fire secondary AoS Solicitor submission event for case {}", caseID);
+        if (SEPARATION_TWO_YEARS.equalsIgnoreCase(reasonForDivorce) || ADULTERY.equalsIgnoreCase(reasonForDivorce)) {
+            if (YES_VALUE.equalsIgnoreCase(respAos2yrConsent) || YES_VALUE.equalsIgnoreCase(respAosAdmitAdultery)) {
+                caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+                caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+            } else {
+                caseData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(RESP_WILL_DEFEND_DIVORCE_2));
+                caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+            }
+        }
+
+        if (SEPARATION_FIVE_YEARS.equalsIgnoreCase(reasonForDivorce)) {
+            caseData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(RESP_WILL_DEFEND_DIVORCE_2));
+        }
 
         if (respondentIsDefending(caseData)) {
             eventId = SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
@@ -65,15 +79,6 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
         }
 
         log.info("Secondary AoS event to be fired is {} for case {}", eventId, caseID);
-
-        if ((SEPARATION_TWO_YEARS.equalsIgnoreCase(reasonForDivorce)
-            && YES_VALUE.equalsIgnoreCase(respAos2yrConsent))
-            || (ADULTERY.equalsIgnoreCase(reasonForDivorce)
-            && YES_VALUE.equalsIgnoreCase(respAosAdmitAdultery))) {
-
-            caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
-            caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
-        }
 
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         caseData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
@@ -90,6 +95,8 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
 
     private boolean respondentIsDefending(Map<String, Object> submissionData) {
         final String respWillDefendDivorce = (String) submissionData.get(RESP_WILL_DEFEND_DIVORCE);
-        return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
+        final String respWillDefendDivorce2 = (String) submissionData.get(RESP_WILL_DEFEND_DIVORCE_2);
+        return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce)
+            || YES_VALUE.equalsIgnoreCase(respWillDefendDivorce2);
     }
 }
