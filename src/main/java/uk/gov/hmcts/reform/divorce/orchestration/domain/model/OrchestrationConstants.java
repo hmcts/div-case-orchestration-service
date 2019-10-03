@@ -120,7 +120,7 @@ public class OrchestrationConstants {
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
     public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
     public static final String REFUSAL_DECISION_MORE_INFO_VALUE = "moreInfo";
-    public static final String REFUSAL_DECISION_REJECT_VALUE = "reject";
+    public static final String DN_REFUSED_REJECT_OPTION = "reject";
     public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
 
     // CCD Events
@@ -215,6 +215,7 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_ADDRESSEE_LAST_NAME_KEY = "last name";
     public static final String NOTIFICATION_EMAIL_ADDRESS_KEY = "email address";
     public static final String NOTIFICATION_HUSBAND_OR_WIFE = "husband or wife";
+    public static final String NOTIFICATION_FEES_KEY = "fees";
     public static final String NOTIFICATION_RELATIONSHIP_KEY = "relationship";
     public static final String NOTIFICATION_CCD_REFERENCE_KEY = "CCD reference";
     public static final String NOTIFICATION_REFERENCE_KEY = "ref";
@@ -303,6 +304,7 @@ public class OrchestrationConstants {
     public static final String CURRENCY = "GBP";
     public static final String FEE_PAY_BY_ACCOUNT = "feePayByAccount";
     public static final String PETITION_ISSUE_FEE_JSON_KEY = "petitionIssueFee";
+    public static final String AMEND_PETITION_FEE_JSON_KEY = "amendPetitionFee";
     public static final String PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY = "solApplicationFeeOrderSummary";
     public static final String SERVICE = "DIVORCE";
 

@@ -20,9 +20,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_REJECT_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -71,14 +71,14 @@ public class SetDNDecisionStateTaskTest {
     @Test
     public void givenDnRejected_whenSetDnDecisionState_thenReturnDnRefusedState() {
         Map<String, Object> caseData = ImmutableMap.of(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
-            REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_REJECT_VALUE);
+            REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
 
         Map<String, Object> returnedPayload = classToTest.execute(null, caseData);
 
         assertThat(returnedPayload, allOf(
             hasEntry(STATE_CCD_FIELD, DN_REFUSED),
             hasEntry(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE),
-            hasEntry(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_REJECT_VALUE)
+            hasEntry(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION)
         ));
     }
 
@@ -101,14 +101,14 @@ public class SetDNDecisionStateTaskTest {
         when(featureToggleService.isFeatureEnabled(DN_REFUSAL)).thenReturn(false);
 
         Map<String, Object> caseData = ImmutableMap.of(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
-            REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_REJECT_VALUE);
+            REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
 
         Map<String, Object> returnedPayload = classToTest.execute(null, caseData);
 
         assertThat(returnedPayload, allOf(
             hasEntry(STATE_CCD_FIELD, AWAITING_CLARIFICATION),
             hasEntry(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE),
-            hasEntry(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_REJECT_VALUE)
+            hasEntry(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION)
         ));
     }
 }
