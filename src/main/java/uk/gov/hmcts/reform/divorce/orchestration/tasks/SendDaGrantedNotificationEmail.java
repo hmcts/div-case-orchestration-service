@@ -84,7 +84,10 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
         return caseData;
     }
 
-    private void sendEmailToSolicitor(TaskContext context, Map<String, Object> caseData, String solEmail, String solName) throws TaskException {
+    private void sendEmailToSolicitor(TaskContext context,
+                                      Map<String, Object> caseData,
+                                      String solicitorEmail,
+                                      String solicitorName) throws TaskException {
 
         String ccdReference = context.getTransientObject(CASE_ID_JSON_KEY);
         String petFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
@@ -94,21 +97,20 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
 
         Map<String, String> templateVars = new HashMap<>();
 
-        templateVars.put(NOTIFICATION_EMAIL, solEmail);
-        templateVars.put(NOTIFICATION_SOLICITOR_NAME, solName);
+        templateVars.put(NOTIFICATION_EMAIL, solicitorEmail);
+        templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
         templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, ccdReference);
         templateVars.put(NOTIFICATION_PET_NAME, petFirstName + " " + petLastName);
         templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
 
         emailService.sendEmail(
-                solEmail,
+                solicitorEmail,
                 EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name(),
                 templateVars,
                 SOL_EMAIL_DESC);
     }
 
     private void sendEmailToPetitioner(Map<String, Object> caseData) throws TaskException {
-
         try {
             sendEmail(
                     getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME),

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -125,7 +126,7 @@ public class SendDaGrantedNotificationEmailTest {
     }
 
     @Test
-    public void shouldNotCallEmailServiceForDaNotificationIfEmailsDoNotExist() throws Exception {
+    public void shouldNotCallEmailServiceForDaNotificationIfEmailsDoNotExist() {
         testData.put(D_8_PETITIONER_EMAIL, "");
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
@@ -135,7 +136,7 @@ public class SendDaGrantedNotificationEmailTest {
 
         try {
             sendDaGrantedNotificationEmail.execute(context, testData);
-            fail("Failed to catch task exception");
+            fail("Failed to throw task exception");
         } catch (TaskException e) {
             verifyZeroInteractions(emailService);
             assertThat(e.getMessage(), is(format("Could not evaluate value of mandatory property \"%s\"", "D8PetitionerEmail")));
@@ -143,7 +144,7 @@ public class SendDaGrantedNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallEmailServiceForDaNotificationIfEmailsOnlyOnceIfOnlyOneEmailIsPresent() throws Exception {
+    public void shouldCallEmailServiceForDaNotificationIfEmailsOnlyOnceIfOnlyOneEmailIsPresent() throws NotificationClientException {
         testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         testData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
@@ -155,7 +156,7 @@ public class SendDaGrantedNotificationEmailTest {
 
         try {
             sendDaGrantedNotificationEmail.execute(context, testData);
-            fail("Failed to catch task exception");
+            fail("Failed to throw task exception");
         } catch (TaskException e) {
             verify(emailService,times(1))
                     .sendEmailAndReturnExceptionIfFails(
@@ -170,7 +171,7 @@ public class SendDaGrantedNotificationEmailTest {
     }
 
     @Test
-    public void shouldCallEmailServiceForDaNotificationEmails() throws Exception {
+    public void shouldCallEmailServiceForDaNotificationEmails() throws TaskException {
         testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         testData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
@@ -184,23 +185,27 @@ public class SendDaGrantedNotificationEmailTest {
 
         assertEquals(testData, returnPayload);
 
-        verify(emailService)
-                .sendEmailAndReturnExceptionIfFails(
-                        eq(TEST_PETITIONER_EMAIL),
-                        eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
-                        eq(expectedPetitionerTemplateVars),
-                        eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+        try {
+            verify(emailService)
+                    .sendEmailAndReturnExceptionIfFails(
+                            eq(TEST_PETITIONER_EMAIL),
+                            eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
+                            eq(expectedPetitionerTemplateVars),
+                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
 
-        verify(emailService)
-                .sendEmailAndReturnExceptionIfFails(
-                        eq(TEST_RESPONDENT_EMAIL),
-                        eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
-                        eq(expectedRespondentTemplateVars),
-                        eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+            verify(emailService)
+                    .sendEmailAndReturnExceptionIfFails(
+                            eq(TEST_RESPONDENT_EMAIL),
+                            eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
+                            eq(expectedRespondentTemplateVars),
+                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+        } catch (NotificationClientException e) {
+            fail("Failed to throw task exception");
+        }
     }
 
     @Test
-    public void shouldCallEmailServiceForDaNotificationIfSolicitorIsRepresentingPetitioner() throws Exception {
+    public void shouldCallEmailServiceForDaNotificationIfSolicitorIsRepresentingPetitioner() throws TaskException {
         testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
         testData.put(PET_SOL_EMAIL, TEST_SOLICITOR_EMAIL);
         testData.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
@@ -214,24 +219,28 @@ public class SendDaGrantedNotificationEmailTest {
 
         assertEquals(testData, returnPayload);
 
-        verify(emailService)
-                .sendEmail(
-                        eq(TEST_SOLICITOR_EMAIL),
-                        eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
-                        eq(expectedPetSolicitorTemplateVars),
-                        eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+        try {
+            verify(emailService)
+                    .sendEmail(
+                            eq(TEST_SOLICITOR_EMAIL),
+                            eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
+                            eq(expectedPetSolicitorTemplateVars),
+                            eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC));
 
-        verify(emailService)
-                .sendEmailAndReturnExceptionIfFails(
-                        eq(TEST_RESPONDENT_EMAIL),
-                        eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
-                        eq(expectedRespondentTemplateVars),
-                        eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+            verify(emailService)
+                    .sendEmailAndReturnExceptionIfFails(
+                            eq(TEST_RESPONDENT_EMAIL),
+                            eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
+                            eq(expectedRespondentTemplateVars),
+                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+        } catch (NotificationClientException e) {
+            fail("Failed to throw task exception");
+        }
     }
 
     // test until we implement setting respondentSolicitorRepresented from CCD for RespSols
     @Test
-    public void shouldCallEmailServiceForDaNotificationIfSolicitorIsRepresentingRespAndRespSolRepresentedValueIsNotPresent() throws Exception {
+    public void shouldCallEmailServiceForDaNotificationIfSolicitorIsRepresentingRespAndRespSolRepresentedValueIsNotPresent() throws TaskException {
         testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
         testData.put(D8_RESPONDENT_SOLICITOR_EMAIL, TEST_RESP_SOLICITOR_EMAIL);
         testData.put(D8_RESPONDENT_SOLICITOR_NAME, TEST_RESP_SOLICITOR_NAME);
@@ -246,23 +255,27 @@ public class SendDaGrantedNotificationEmailTest {
 
         assertEquals(testData, returnPayload);
 
-        verify(emailService)
-                .sendEmailAndReturnExceptionIfFails(
-                        eq(TEST_PETITIONER_EMAIL),
-                        eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
-                        eq(expectedPetitionerTemplateVars),
-                        eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+        try {
+            verify(emailService)
+                    .sendEmailAndReturnExceptionIfFails(
+                            eq(TEST_PETITIONER_EMAIL),
+                            eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
+                            eq(expectedPetitionerTemplateVars),
+                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
 
-        verify(emailService)
-                .sendEmail(
-                        eq(TEST_RESP_SOLICITOR_EMAIL),
-                        eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
-                        eq(expectedRespSolicitorTemplateVars),
-                        eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+            verify(emailService)
+                    .sendEmail(
+                            eq(TEST_RESP_SOLICITOR_EMAIL),
+                            eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
+                            eq(expectedRespSolicitorTemplateVars),
+                            eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+        } catch (NotificationClientException e) {
+            fail("Failed to throw task exception");
+        }
     }
 
     @Test
-    public void shouldCallEmailServiceForDaNotificationIfSolicitorIsRepresentingRespAndRespSolRepresentedValueIsPresent() throws Exception {
+    public void shouldCallEmailServiceForDaNotificationIfSolicitorIsRepresentingRespAndRespSolRepresentedValueIsPresent() throws TaskException {
         testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
         testData.put(D8_RESPONDENT_SOLICITOR_EMAIL, TEST_RESP_SOLICITOR_EMAIL);
         testData.put(D8_RESPONDENT_SOLICITOR_NAME, TEST_RESP_SOLICITOR_NAME);
@@ -277,23 +290,27 @@ public class SendDaGrantedNotificationEmailTest {
 
         assertEquals(testData, returnPayload);
 
-        verify(emailService)
-                .sendEmailAndReturnExceptionIfFails(
-                        eq(TEST_PETITIONER_EMAIL),
-                        eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
-                        eq(expectedPetitionerTemplateVars),
-                        eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+        try {
+            verify(emailService)
+                    .sendEmailAndReturnExceptionIfFails(
+                            eq(TEST_PETITIONER_EMAIL),
+                            eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
+                            eq(expectedPetitionerTemplateVars),
+                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
 
-        verify(emailService)
-                .sendEmail(
-                        eq(TEST_RESP_SOLICITOR_EMAIL),
-                        eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
-                        eq(expectedRespSolicitorTemplateVars),
-                        eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+            verify(emailService)
+                    .sendEmail(
+                            eq(TEST_RESP_SOLICITOR_EMAIL),
+                            eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
+                            eq(expectedRespSolicitorTemplateVars),
+                            eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+        } catch (NotificationClientException e) {
+            fail("Failed to throw task exception");
+        }
     }
 
     @Test
-    public void shouldCallEmailServiceForDaNotificationIfBothPartiesAreRepresentedBySolicitors() throws Exception {
+    public void shouldCallEmailServiceForDaNotificationIfBothPartiesAreRepresentedBySolicitors() throws TaskException {
         testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
         testData.put(PET_SOL_EMAIL, TEST_SOLICITOR_EMAIL);
         testData.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
