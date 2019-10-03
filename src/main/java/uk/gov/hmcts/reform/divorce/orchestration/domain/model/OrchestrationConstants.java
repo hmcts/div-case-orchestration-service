@@ -120,6 +120,7 @@ public class OrchestrationConstants {
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
     public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
     public static final String REFUSAL_DECISION_MORE_INFO_VALUE = "moreInfo";
+    public static final String DN_REFUSED_REJECT_OPTION = "reject";
     public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
 
     // CCD Events
@@ -214,6 +215,7 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_ADDRESSEE_LAST_NAME_KEY = "last name";
     public static final String NOTIFICATION_EMAIL_ADDRESS_KEY = "email address";
     public static final String NOTIFICATION_HUSBAND_OR_WIFE = "husband or wife";
+    public static final String NOTIFICATION_FEES_KEY = "fees";
     public static final String NOTIFICATION_RELATIONSHIP_KEY = "relationship";
     public static final String NOTIFICATION_CCD_REFERENCE_KEY = "CCD reference";
     public static final String NOTIFICATION_REFERENCE_KEY = "ref";
@@ -280,6 +282,7 @@ public class OrchestrationConstants {
     public static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
     public static final String DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE = "d79";
     public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME = "decreeNisiRefusalOrder";
+    public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD = "previousDecreeNisiRefusalOrder";
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
     public static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
@@ -288,6 +291,7 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
 
     public static final String DOCUMENT_TYPE_COE = "coe";
+    public static final String DOCUMENT_TYPE_OTHER = "other";
 
     public static final String SOL_DOCUMENT_LINK_FIELD = "solDocumentLinkFieldName";
     public static final String MINI_PETITION_LINK = "minipetitionlink";
@@ -299,6 +303,7 @@ public class OrchestrationConstants {
     public static final String CURRENCY = "GBP";
     public static final String FEE_PAY_BY_ACCOUNT = "feePayByAccount";
     public static final String PETITION_ISSUE_FEE_JSON_KEY = "petitionIssueFee";
+    public static final String AMEND_PETITION_FEE_JSON_KEY = "amendPetitionFee";
     public static final String PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY = "solApplicationFeeOrderSummary";
     public static final String SERVICE = "DIVORCE";
 

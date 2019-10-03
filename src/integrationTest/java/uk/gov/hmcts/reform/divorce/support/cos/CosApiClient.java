@@ -52,7 +52,7 @@ public interface CosApiClient {
     Map<String, Object> aosSubmitted(@RequestBody Map<String, Object> caseDataContent);
 
     @RequestMapping(
-        method = RequestMethod.POST,
+        method = RequestMethod.POST,DecreeNisiAboutToBeGrantedTest
         value = "/aos-solicitor-nominated"
     )
     Map<String, Object> aosSolicitorNominated(@RequestHeader(AUTHORIZATION) String authorisation,
