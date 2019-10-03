@@ -26,13 +26,6 @@ public class RetrieveCaseTest extends RetrieveCaseSupport {
     private ObjectMapper objectMapper;
 
     @Test
-    public void givenNoCase_whenRetrieveCase_thenReturnEmptyResponse() {
-        Response cosResponse = retrieveCase(createCitizenUser().getAuthToken());
-
-        assertEquals(HttpStatus.NOT_FOUND.value(), cosResponse.getStatusCode());
-    }
-
-    @Test
     public void givenCaseExists_whenRetrieveCase_thenReturnResponse() throws Exception {
         UserDetails userDetails = createCitizenUser();
 

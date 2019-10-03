@@ -21,7 +21,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
@@ -39,11 +38,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADMIT_ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorAosEventServiceImplUTest {
@@ -68,7 +68,7 @@ public class SolicitorAosEventServiceImplUTest {
 
     @Test
     public void givenSolicitorIsRepresenting_whenValuesReceived_caseIsUpdated() {
-        final Map<String, Object> caseData = buildSolicitorResponse( false);
+        final Map<String, Object> caseData = buildSolicitorResponse(false);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
         final Map<String, Object> expectedData = new HashMap<>(caseData);
@@ -88,7 +88,7 @@ public class SolicitorAosEventServiceImplUTest {
         // Set RespAdmitOrConsentToFact = "Yes" and RespWillDefendDivorce = "No"
         final Map<String, Object> caseData = new HashMap<>();
         caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
-        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_2YRS);
+        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
         caseData.put(RESP_AOS_2_YR_CONSENT, YES_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
@@ -96,7 +96,7 @@ public class SolicitorAosEventServiceImplUTest {
         expectedData.put(RESP_SOL_REPRESENTED, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
-        expectedData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_2YRS);
+        expectedData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
         expectedData.put(RESP_AOS_2_YR_CONSENT, YES_VALUE);
         expectedData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
         expectedData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
@@ -163,7 +163,7 @@ public class SolicitorAosEventServiceImplUTest {
         assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
 
         verify(caseMaintenanceClient)
-                .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
+            .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
     }
 
     @Test

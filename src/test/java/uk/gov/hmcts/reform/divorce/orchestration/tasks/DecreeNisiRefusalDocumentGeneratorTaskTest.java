@@ -11,8 +11,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.util.Sets.newLinkedHashSet;
@@ -25,14 +29,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_REJECT_VALUE;
@@ -41,8 +51,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGe
 @RunWith(MockitoJUnitRunner.class)
 public class DecreeNisiRefusalDocumentGeneratorTaskTest {
 
+    private static final long FIXED_TIME_EPOCH = 1000000L;
+
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
+
+    @Mock
+    private Clock clock;
 
     @InjectMocks
     private DecreeNisiRefusalDocumentGeneratorTask decreeNisiRefusalDocumentGeneratorTask;
@@ -83,9 +98,66 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
     }
 
     @Test
+    public void callsDocumentGeneratorAndStoresAdditionalGeneratedDocumentForDnRefusalClarificationWithExistingDocs() {
+        when(clock.instant()).thenReturn(Instant.ofEpochMilli(FIXED_TIME_EPOCH));
+
+        Map<String, Object> document = new HashMap<>();
+        document.put(DOCUMENT_TYPE, DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE);
+        document.put(DOCUMENT_FILENAME, DECREE_NISI_REFUSAL_DOCUMENT_NAME);
+
+        Map<String, Object> documentMember = new HashMap<>();
+        documentMember.put(VALUE_KEY, document);
+
+        List<Map<String, Object>> existingDocuments = new ArrayList<>();
+        existingDocuments.add(documentMember);
+
+        final Map<String, Object> payload = new HashMap<>();
+        payload.put(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE);
+        payload.put(D8DOCUMENTS_GENERATED, existingDocuments);
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .caseData(payload)
+            .build();
+
+        final TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+
+        final GeneratedDocumentInfo expectedDocument = GeneratedDocumentInfo.builder()
+            .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
+            .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
+            .build();
+
+        //given
+        when(documentGeneratorClient
+            .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN))
+        ).thenReturn(expectedDocument);
+
+        //when
+        decreeNisiRefusalDocumentGeneratorTask.execute(context, payload);
+
+        final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
+
+        assertThat(documentCollection, is(newLinkedHashSet(expectedDocument)));
+  
+        List<Map<String, Object>> currentGeneratedDocs =
+            (List<Map<String, Object>>) caseDetails.getCaseData().get(D8DOCUMENTS_GENERATED);
+        Map<String, Object> initialDocument = (Map<String, Object>) currentGeneratedDocs.get(0).get(VALUE_KEY);
+
+        assertThat(initialDocument.get(DOCUMENT_TYPE), is(DOCUMENT_TYPE_OTHER));
+        assertThat(initialDocument.get(DOCUMENT_FILENAME),
+            is(DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + TEST_CASE_ID + "-" + FIXED_TIME_EPOCH));
+
+        verify(documentGeneratorClient)
+            .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN));
+    }
+  
+    @Test
     public void callsDocumentGeneratorAndStoresGeneratedDocumentForDnRefusalRejectionWithRejectOption() {
         final Map<String, Object> payload = new HashMap<>();
         payload.put(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_REJECT_VALUE);
+
         final CaseDetails caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .caseData(payload)

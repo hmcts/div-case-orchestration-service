@@ -56,12 +56,14 @@ public class DataExtractionFileCreator implements Task<Void> {
         csvFileContent.append(csvExtractor.getHeaderLine());
         List<CaseDetails> casesDetails = cmsElasticSearchSupport.searchCMSCases(0, 50, authToken, queryBuilders).collect(Collectors.toList());
         for (CaseDetails caseDetails : casesDetails) {
-            csvExtractor.mapCaseData(caseDetails).ifPresent(csvFileContent::append);
+            csvExtractor.mapCaseData(caseDetails)
+                .map(line -> System.lineSeparator() + line)
+                .ifPresent(csvFileContent::append);
         }
 
         File csvFile = createFile(csvFileContent.toString());
         context.setTransientObject(FILE_TO_PUBLISH, csvFile);
-        log.info("Created csv file with {} lines of case data", casesDetails.size());
+        log.info("Created csv file with {} lines of case data for {}", casesDetails.size(), status.name());
 
         return payload;
     }

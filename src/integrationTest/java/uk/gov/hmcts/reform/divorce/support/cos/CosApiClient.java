@@ -55,7 +55,8 @@ public interface CosApiClient {
         method = RequestMethod.POST,
         value = "/aos-solicitor-nominated"
     )
-    Map<String, Object> aosSolicitorNominated(@RequestBody Map<String, Object> caseDataContent);
+    Map<String, Object> aosSolicitorNominated(@RequestHeader(AUTHORIZATION) String authorisation,
+                                              @RequestBody Map<String, Object> caseDataContent);
 
     @RequestMapping(
         method = RequestMethod.POST,

@@ -47,8 +47,8 @@ public class DecreeAbsoluteDataExtractorTest {
         Optional<String> firstTransformedCaseData = classUnderTest.mapCaseData(firstCaseDetails);
         Optional<String> secondTransformedCaseData = classUnderTest.mapCaseData(secondCaseDetails);
 
-        assertThat(firstTransformedCaseData.get(), is(System.lineSeparator() + "TEST1,12/06/2018,17/08/2017,petitioner"));
-        assertThat(secondTransformedCaseData.get(), is(System.lineSeparator() + "TEST2,24/06/2018,26/08/2017,petitioner"));
+        assertThat(firstTransformedCaseData.get(), is("TEST1,12/06/2018,17/08/2017,petitioner"));
+        assertThat(secondTransformedCaseData.get(), is("TEST2,24/06/2018,26/08/2017,petitioner"));
     }
 
     @Test
@@ -61,7 +61,7 @@ public class DecreeAbsoluteDataExtractorTest {
 
         Optional<String> transformedCaseData = classUnderTest.mapCaseData(caseDetails);
 
-        assertThat(transformedCaseData.get(), is(System.lineSeparator() + "TEST1,17/08/2017,26/08/2017,petitioner"));
+        assertThat(transformedCaseData.get(), is("TEST1,17/08/2017,26/08/2017,petitioner"));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class DecreeAbsoluteDataExtractorTest {
 
         Optional<String> transformedCaseData = classUnderTest.mapCaseData(caseDetails);
 
-        assertThat(transformedCaseData.get(), is(System.lineSeparator() + "TEST1,17/08/2017,,petitioner"));
+        assertThat(transformedCaseData.get(), is("TEST1,17/08/2017,,petitioner"));
     }
 
     @Test
@@ -92,7 +92,7 @@ public class DecreeAbsoluteDataExtractorTest {
         Optional<String> secondTransformCaseData = classUnderTest.mapCaseData(secondCaseDetails);
 
         assertThat(firstTransformCaseData, is(Optional.empty()));
-        assertThat(secondTransformCaseData.get(), is(System.lineSeparator() + "TEST2,24/06/2018,26/08/2017,petitioner"));
+        assertThat(secondTransformCaseData.get(), is("TEST2,24/06/2018,26/08/2017,petitioner"));
     }
 
 }

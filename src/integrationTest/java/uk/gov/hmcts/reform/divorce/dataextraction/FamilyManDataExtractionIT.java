@@ -20,14 +20,30 @@ import static org.junit.Assert.assertThat;
 /**
  * This is going to be used to assert that the listener side of the data extraction job is called and runs successfully.
  * Ideally, we'd be testing that the e-mail was sent as expected, but as of now, we have no way of asserting that.
+ *
+ * <p>To run this test locally, you'll need MailHog to be running locally. Here are some instructions to have this done using Docker:
+ * #Download image
+ * docker pull mailhog/mailhog
+ *
+ * <p>#Run new container (if it's the first time you do this)
+ * docker run -d -p 32773:1025 -p 32772:8025 --name localMailHog mailhog/mailhog
+ *
+ * <p>#Start existing container (if it's not the first time you do this)
+ * docker start localMailHog
+ *
+ * <p>#Log into MailHog to assert the e-mails sent by this test.
+ * http://localhost:32772
  */
 public class FamilyManDataExtractionIT extends RetrieveCaseSupport {
 
     @Value("${case.orchestration.jobScheduler.extract-data-to-family-man.context-path}")
     private String testDataExtractionEndPoint;
 
+    /**
+     * Please look into class-level comment if this test is not passing locally.
+     */
     @Test
-    public void shouldEmailCsvFileWithCase_ForDecreeAbsoluteIssued() {
+    public void shouldEmailCsvFiles() {
         final UserDetails caseWorkerUser = createCaseWorkerUser();
 
         Response response = callTestEndpoint(caseWorkerUser.getAuthToken());

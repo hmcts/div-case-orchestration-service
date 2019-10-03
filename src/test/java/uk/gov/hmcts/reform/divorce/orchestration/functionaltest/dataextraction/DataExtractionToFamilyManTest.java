@@ -46,6 +46,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
 
     private static final String DA_DESIRED_STATES = "[\"darequested\", \"divorcegranted\"]";
     private static final String AOS_DESIRED_STATES = "[\"awaitinglegaladvisorreferral\"]";
+    private static final String DN_DESIRED_STATES = "[\"dnisrefused\", \"dnpronounced\"]";
 
     private static final DateTimeFormatter FILE_NAME_DATE_FORMAT = ofPattern("ddMMyyyy000000");
     private static final String TEST_AUTH_TOKEN = "testAuthToken";
@@ -75,6 +76,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
         //Mock CMS to return a case like Elastic search will
         stubJsonResponse(DA_DESIRED_STATES, "{"
             + "  \"cases\": [{"
+            + "    \"id\": 123,"
             + "    \"case_data\": {"
             + "      \"D8caseReference\": \"CR12345\","
             + "      \"DecreeAbsoluteApplicationDate\": \"2017-03-06T16:49:00.015\","
@@ -84,6 +86,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
             + "}");
         stubJsonResponse(AOS_DESIRED_STATES, "{"
             + "  \"cases\": [{"
+            + "    \"id\": 456,"
             + "    \"case_data\": {"
             + "      \"D8caseReference\": \"LV17D90909\","
             + "      \"ReceivedAOSfromRespDate\": \"2019-07-06\","
@@ -92,12 +95,37 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
             + "    }"
             + "  }]"
             + "}");
+        stubJsonResponse(DN_DESIRED_STATES, "{"
+            + "  \"cases\": [{"
+            + "    \"id\": 789,"
+            + "    \"case_data\": {"
+            + "      \"D8caseReference\": \"LV17D90909\","
+            + "      \"DNApprovalDate\": \"2020-12-15\","
+            + "      \"DateAndTimeOfHearing\": ["
+            + "        {"
+            + "          \"id\": \"8bde74de-7a69-411f-aaef-1a5ea8018743\","
+            + "          \"value\": {"
+            + "            \"DateOfHearing\": \"2020-12-10\","
+            + "            \"TimeOfHearing\": \"15:30\""
+            + "          }"
+            + "        }"
+            + "      ],"
+            + "      \"CourtName\": \"This Court\","
+            + "      \"D8DivorceCostsClaim\": \"Yes\","
+            + "      \"WhoPaysCosts\": \"Respondent\","
+            + "      \"costs claim granted\": \"Yes\","
+            + "      \"OrderForAncilliaryRelief\": \"No\","
+            + "      \"OrderOrCauseList\": \"Order\","
+            + "      \"PronouncementJudge\": \"Judge Dave\""
+            + "    }"
+            + "  }]"
+            + "}");
 
         dataExtractionService.requestDataExtractionForPreviousDay();
 
         await().untilAsserted(() -> {
             //Make sure it's only called once until all the files are ready to be extracted
-            verify(mockEmailClient, times(2)).sendEmailWithAttachment(any(), any(), any());
+            verify(mockEmailClient, times(3)).sendEmailWithAttachment(any(), any(), any());
         });
         verifyExtractionInteractions("DA",
             "da-extraction@divorce.gov.uk",
@@ -110,6 +138,13 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
             AOS_DESIRED_STATES,
             "CaseReferenceNumber,ReceivedAOSFromResDate,ReceivedAOSFromCoResDate,ReceivedDNApplicationDate",
             "LV17D90909,06/07/2019,15/07/2019,01/08/2019"
+        );
+        verifyExtractionInteractions("DN",
+            "dn-extraction@divorce.gov.uk",
+            DN_DESIRED_STATES,
+            "CaseReferenceNumber,CofEGrantedDate,HearingDate,HearingTime,PlaceOfHearing,OrderForCosts,"
+                + "PartyToPayCosts,CostsToBeAssessed,OrderForAncilliaryRelief,OrderOrCauseList,JudgesName",
+            "LV17D90909,15/12/2020,10/12/2020,15:30,This Court,Yes,Respondent,Yes,No,Order,Judge Dave"
         );
     }
 

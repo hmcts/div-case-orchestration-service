@@ -647,6 +647,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> aosSolicitorNominated(
+        @RequestHeader(value = "Authorization") String authToken,
         @RequestBody @ApiParam("CaseData")
             CcdCallbackRequest ccdCallbackRequest) {
 
@@ -657,7 +658,7 @@ public class CallbackController {
 
         try {
             callbackResponseBuilder.data(
-                caseOrchestrationService.processAosSolicitorNominated(ccdCallbackRequest));
+                caseOrchestrationService.processAosSolicitorNominated(ccdCallbackRequest, authToken));
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format("Failed processing AOS solicitor callback. Case ID:  %s", caseId),
                 exception);
@@ -759,7 +760,6 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @Deprecated // Replaced by below dn-decision-made endpoint. This must remain in code until production ccd config is updated.
     @PostMapping(path = "/clean-state")
     @ApiOperation(value = "Clear state from case data")
     @ApiResponses(value = {
@@ -907,6 +907,28 @@ public class CallbackController {
                 .data(caseOrchestrationService.removeLegalAdvisorMakeDecisionFields(ccdCallbackRequest))
             .build());
     }
+
+    @PostMapping(path = "/pronouncement/cancel")
+    @ApiOperation(value = "Callback to cancel dn pronouncement.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> removeDNGrantedDocuments(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder response = CcdCallbackResponse.builder();
+
+        try {
+            response.data(caseOrchestrationService.removeDNGrantedDocuments(ccdCallbackRequest))
+                .build();
+            log.info("Delete DN granted documents for case id [{}]", ccdCallbackRequest.getCaseDetails().getCaseId());
+        } catch (WorkflowException exception) {
+            response.errors(singletonList(exception.getMessage()))
+                .build();
+            log.error("Delete DN granted documents for case id [{}]", ccdCallbackRequest.getCaseDetails().getCaseId(), exception);
+        }
+        return ResponseEntity.ok(response.build());
+    }
+
 
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
