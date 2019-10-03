@@ -45,7 +45,7 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
     public Map<String, Object> fireSecondaryAosEvent(SubmitSolicitorAosEvent event) {
         // Maps CCD values of RespAOS2yrConsent & RespAOSAdultery
         // to RespAdmitOrConsentToFact & RespWillDefendDivorce fields in Case Data
-        String eventId = null;
+        String eventId;
         final TaskContext context = (TaskContext) event.getSource();
         final String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
         final String caseID = context.getTransientObject(CASE_ID_JSON_KEY);
