@@ -4,7 +4,7 @@ import io.restassured.response.Response;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.divorce.category.NightlyTest;
+import uk.gov.hmcts.reform.divorce.category.ExtendedTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
@@ -68,7 +68,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     }
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenNoConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         UserDetails userDetails = createCitizenUser();
         CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
@@ -88,7 +88,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     }
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         UserDetails userDetails = createCitizenUser();
         CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
@@ -105,7 +105,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     }
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIsNotAdultery_thenProceedAsExpected() throws Exception {
         UserDetails userDetails = createCitizenUser();
         CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
@@ -123,7 +123,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     }
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIsAdultery_thenProceedAsExpected() throws Exception {
         UserDetails petitioner = createCitizenUser();
         CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON, petitioner);
@@ -144,7 +144,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     }
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIs2YearSeparation_thenProceedAsExpected() throws Exception {
         UserDetails userDetails = createCitizenUser();
         CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON, userDetails);

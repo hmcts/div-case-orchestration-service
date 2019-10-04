@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_REQUESTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_REQUESTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
@@ -55,7 +54,7 @@ public class DecreeAbsoluteDataExtractor implements CSVExtractor {
 
     @Override
     public Stream<String> getRelevantCaseStates() {
-        return Stream.of(DA_REQUESTED, DIVORCE_GRANTED);
+        return Stream.of(DIVORCE_GRANTED);
     }
 
     @Override
