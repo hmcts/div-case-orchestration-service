@@ -109,8 +109,6 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
     }
 
     private boolean respondentIsDefending(Map<String, Object> submissionData) {
-        // as we have already mapped over UI_ONLY_RESP_WILL_DEFEND_DIVORCE to RESP_WILL_DEFEND_DIVORCE
-        // we only need to check the main property here
         final String respWillDefendDivorce = (String) submissionData.get(RESP_WILL_DEFEND_DIVORCE);
         return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
     }
