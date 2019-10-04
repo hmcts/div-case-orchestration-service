@@ -13,6 +13,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class DnAboutToBeGrantedTest extends IntegrationTest {
@@ -33,7 +34,10 @@ public class DnAboutToBeGrantedTest extends IntegrationTest {
         assertThat(jsonResponse,
             hasJsonPath("$.data.state", is(AWAITING_CLARIFICATION)));
 
+        // Note, requires DN Refusal feature flag to be true
         assertThat(jsonResponse,
-            hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentType", is(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)));
+            hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentType", is(DOCUMENT_TYPE_OTHER)));
+        assertThat(jsonResponse,
+            hasJsonPath("$.data.D8DocumentsGenerated[1].value.DocumentType", is(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)));
     }
 }

@@ -250,6 +250,8 @@ public class OrchestrationConstants {
     public static final String PHONE_LABEL = "Phone:";
 
     // Document Generator
+    public static final String DOCUMENT_TYPE_JSON_KEY = "DocumentType";
+    public static final String DOCUMENT_FILENAME_JSON_KEY = "DocumentFileName";
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";
     public static final String DOCUMENT_TYPE_RESPONDENT_INVITATION = "aos";
     public static final String DOCUMENT_TYPE_RESPONDENT_ANSWERS = "respondentAnswers";

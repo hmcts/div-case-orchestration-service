@@ -44,8 +44,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
@@ -106,8 +106,8 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         when(clock.instant()).thenReturn(Instant.ofEpochMilli(FIXED_TIME_EPOCH));
 
         Map<String, Object> document = new HashMap<>();
-        document.put(DOCUMENT_TYPE, DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE);
-        document.put(DOCUMENT_FILENAME, DECREE_NISI_REFUSAL_DOCUMENT_NAME);
+        document.put(DOCUMENT_TYPE_JSON_KEY, DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE);
+        document.put(DOCUMENT_FILENAME_JSON_KEY, DECREE_NISI_REFUSAL_DOCUMENT_NAME);
 
         Map<String, Object> documentMember = new HashMap<>();
         documentMember.put(VALUE_KEY, document);
@@ -149,8 +149,8 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             (List<Map<String, Object>>) caseDetails.getCaseData().get(D8DOCUMENTS_GENERATED);
         Map<String, Object> initialDocument = (Map<String, Object>) currentGeneratedDocs.get(0).get(VALUE_KEY);
 
-        assertThat(initialDocument.get(DOCUMENT_TYPE), is(DOCUMENT_TYPE_OTHER));
-        assertThat(initialDocument.get(DOCUMENT_FILENAME),
+        assertThat(initialDocument.get(DOCUMENT_TYPE_JSON_KEY), is(DOCUMENT_TYPE_OTHER));
+        assertThat(initialDocument.get(DOCUMENT_FILENAME_JSON_KEY),
             is(DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + TEST_CASE_ID + "-" + FIXED_TIME_EPOCH));
         
         verify(documentGeneratorClient)

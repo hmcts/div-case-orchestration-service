@@ -33,9 +33,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
@@ -64,11 +64,11 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
 
         d8DocumentsGenerated.stream().filter(collectionMember -> {
             Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
-            return DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE.equals(document.get(DOCUMENT_TYPE));
+            return DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE.equals(document.get(DOCUMENT_TYPE_JSON_KEY));
         }).forEach(collectionMember -> {
             Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
-            document.put(DOCUMENT_TYPE, DOCUMENT_TYPE_OTHER);
-            document.put(DOCUMENT_FILENAME,
+            document.put(DOCUMENT_TYPE_JSON_KEY, DOCUMENT_TYPE_OTHER);
+            document.put(DOCUMENT_FILENAME_JSON_KEY,
                 format(DOCUMENT_FILENAME_FMT, DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD,
                     caseDetails.getCaseId() + "-" + Instant.now(clock).toEpochMilli()));
         });

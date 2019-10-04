@@ -67,8 +67,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
@@ -461,8 +461,8 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
     private List<Map<String, Object>> buildDocumentCollection(String documentType, String documentName) {
         Map<String, Object> document = new HashMap<>();
-        document.put(DOCUMENT_TYPE, documentType);
-        document.put(DOCUMENT_FILENAME, documentName);
+        document.put(DOCUMENT_TYPE_JSON_KEY, documentType);
+        document.put(DOCUMENT_FILENAME_JSON_KEY, documentName);
 
         Map<String, Object> documentMember = new HashMap<>();
         documentMember.put(VALUE_KEY, document);
