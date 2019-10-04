@@ -74,7 +74,7 @@ public class SendDnDecisionSolNotificationTaskTest {
     }
 
     @Test
-    public void testExecuteDoesNotCallsEmailServiceIfDnIsNotRefusedAnd() throws TaskException {
+    public void testExecuteDoesNotCallEmailServiceIfDnIsNotRefused() throws TaskException {
         //given
         Map<String, Object> payload = ImmutableMap.of(
                 "DecreeNisiGranted", "YES"
@@ -89,7 +89,7 @@ public class SendDnDecisionSolNotificationTaskTest {
     }
 
     @Test
-    public void testExecuteDoesNotCallsEmailServiceIfDnIsNotRefusedAndSolicitorEmailIsNotPresent() throws TaskException {
+    public void testExecuteDoesNotCallEmailServiceIfDnIsNotRefusedAndSolicitorEmailIsNotPresent() throws TaskException {
         //given
         Map<String, Object> payload = ImmutableMap.of(
                 "DecreeNisiGranted", "NO"
