@@ -14,7 +14,6 @@ import static org.junit.Assert.assertNotNull;
 public class DaRequestedNotifyRespondentTest extends IntegrationTest {
 
     private static final String BASE_CASE_RESPONSE = "fixtures/da-requested/da-requested.json";
-    private static final String BASE_CASE_ERROR_RESPONSE = "fixtures/da-requested/da-requested-error.json";
 
     @Autowired
     private CosApiClient cosApiClient;

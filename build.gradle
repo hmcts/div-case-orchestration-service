@@ -119,6 +119,16 @@ allprojects {
                 entry 'jackson-module-parameter-names'
             }
 
+            // solves CVE-2014-3488, CVE-2015-2156, CVE-2019-16869
+            dependencySet(group: 'io.netty', version: '4.1.42.Final') {
+                entry 'netty-buffer'
+                entry 'netty-codec'
+                entry 'netty-codec-http'
+                entry 'netty-common'
+                entry 'netty-handler'
+                entry 'netty-resolver'
+                entry 'netty-transport'
+            }
             dependency group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
         }
     }
@@ -432,7 +442,11 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
-
+    if(System.getenv('CHANGE_TITLE')?.startsWith('[FAST]')) {
+        useJUnit {
+            excludeCategories 'uk.gov.hmcts.reform.divorce.category.ExtendedTest'
+        }
+    }
     finalizedBy aggregate
 }
 

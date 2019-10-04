@@ -1,18 +1,14 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
-import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -21,15 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ff4j.FeatureToggle;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
-import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
-import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -38,51 +26,31 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.ALL_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.PERSONAL_SERVICE_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.SOL_SERVICE_METHOD_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ACCESS_CODE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_FILE_NAME_FORMAT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class BulkPrintTest extends IdamTestSupport {
@@ -93,18 +61,7 @@ public class BulkPrintTest extends IdamTestSupport {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
-    private static final String APPLICATION_VND_UK_GOV_HMCTS_LETTER_SERVICE_IN_LETTER = "application/vnd.uk.gov.hmcts.letter-service.in.letter";
-
     private static final String DUE_DATE = "dueDate";
-
-    private static final String SOLICITOR_AOS_INVITATION_EMAIL_ID = "a193f039-2252-425d-861c-6dba255b7e6e";
-
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
-
-    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
-
-    @ClassRule
-    public static WireMockClassRule documentStore = new WireMockClassRule(4020);
 
     @Autowired
     private MockMvc webClient;
@@ -115,15 +72,11 @@ public class BulkPrintTest extends IdamTestSupport {
     @MockBean
     private EmailClient emailClient;
 
-    @Autowired
-    private CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
-
     @Before
     public void setup() {
         sendLetterService.resetAll();
         stubDMStore(HttpStatus.OK);
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
-
     }
 
     @Test
@@ -148,119 +101,6 @@ public class BulkPrintTest extends IdamTestSupport {
             .andExpect(content().json(convertObjectToJsonString(expected)));
 
         verifyZeroInteractions(emailClient);
-    }
-
-    @Test
-    public void givenCaseDataWithRespondentSolicitor_whenCalledBulkPrint_thenEmailIsSentAndAosPackIsRegenerated() throws Exception {
-        ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", true);
-
-        final String petitionerFirstName = "petitioner first name";
-        final String petitionerLastName = "petitioner last name";
-        final Map<String, Object> caseData = caseDataWithDocuments();
-        caseData.put(D_8_PETITIONER_FIRST_NAME, petitionerFirstName);
-        caseData.put(D_8_PETITIONER_LAST_NAME, petitionerLastName);
-        caseData.put(D8_RESPONDENT_SOLICITOR_EMAIL, "solicitor@localhost.local");
-        caseData.put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
-
-        final CaseDetails caseDetails = CaseDetails.builder()
-            .caseData(caseData).caseId(TEST_CASE_ID).build();
-        final CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(caseDetails)
-            .build();
-        final GenerateDocumentRequest generateAosInvitationRequest =
-            GenerateDocumentRequest.builder()
-                .template(RESPONDENT_INVITATION_TEMPLATE_NAME)
-                .values(ImmutableMap.of(
-                    DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails,
-                    ACCESS_CODE, TEST_PIN_CODE))
-                .build();
-        final GeneratedDocumentInfo generatedAosInvitationResponse =
-            GeneratedDocumentInfo.builder()
-                .documentType(DOCUMENT_TYPE_RESPONDENT_INVITATION)
-                .fileName(String.format(RESPONDENT_INVITATION_FILE_NAME_FORMAT, TEST_CASE_ID))
-                .build();
-        final GeneratePinRequest pinRequest =
-            GeneratePinRequest.builder()
-                .firstName(petitionerFirstName)
-                .lastName(petitionerLastName)
-                .build();
-        final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
-        final DocumentUpdateRequest documentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .documents(asList(generatedAosInvitationResponse))
-                .caseData(caseData)
-                .build();
-
-        stubSignIn();
-        stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-        stubFeatureToggleService(true);
-        stubSendLetterService(HttpStatus.OK);
-        stubDocumentGeneratorServerEndpoint(generateAosInvitationRequest, generatedAosInvitationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, caseData);
-
-        Map<String, Object> expectedCaseData = caseDataWithDocuments();
-        expectedCaseData.put("dueDate", LocalDate.now().plus(9, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE));
-        CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .data(expectedCaseData)
-            .errors(Collections.emptyList())
-            .warnings(Collections.emptyList())
-            .build();
-
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(callbackRequest))
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(expected)));
-
-        verify(emailClient).sendEmail(eq(SOLICITOR_AOS_INVITATION_EMAIL_ID), eq("solicitor@localhost.local"), any(), any());
-
-        // Only the co-respondent letter should have gone out via SendLetter service
-        sendLetterService.verify(1, postRequestedFor(urlEqualTo("/letters")));
-    }
-
-    @Test
-    public void givenCaseDataWithRespondentSolicitorAndEmailServiceIsDown_whenCalledBulkPrint_thenExpectErrors() throws Exception {
-        stubFeatureToggleService(true);
-        mockEmailClientError();
-        stubSendLetterService(HttpStatus.OK);
-
-        ReflectionTestUtils.setField(ccdCallbackBulkPrintWorkflow, "featureToggleRespSolicitor", true);
-
-        final String petitionerFirstName = "petitioner first name";
-        final String petitionerLastName = "petitioner last name";
-
-        final GeneratePinRequest pinRequest =
-            GeneratePinRequest.builder()
-                .firstName(petitionerFirstName)
-                .lastName(petitionerLastName)
-                .build();
-
-        final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
-
-        stubSignIn();
-        stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-
-        final CcdCallbackRequest callbackRequest = callbackWithDocuments();
-        final Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
-        caseData.put(D_8_PETITIONER_FIRST_NAME, petitionerFirstName);
-        caseData.put(D_8_PETITIONER_LAST_NAME, petitionerLastName);
-        caseData.put(D8_RESPONDENT_SOLICITOR_EMAIL, "solicitor@localhost.local");
-
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(callbackRequest))
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string(allOf(
-                    isJson(),
-                    hasJsonPath("$.data", is(Collections.emptyMap())),
-                    hasJsonPath("$.errors",
-                            hasItem("Failed to bulk print documents - Failed to send e-mail")
-                    )
-            )));
     }
 
     @Test
@@ -323,38 +163,38 @@ public class BulkPrintTest extends IdamTestSupport {
             .andExpect(content().json(convertObjectToJsonString(expected)));
 
         sendLetterService.verify(0, postRequestedFor(urlEqualTo("/letters")));
-
     }
 
     @Test
-    public void givenServiceMethodIsPersonalService_thenResponseContainsErrors() throws Exception {
+    public void givenServiceMethodIsPersonalServiceAndStateIsNotAwaitingService_thenResponseContainsErrors() throws Exception {
 
         final Map<String, Object> caseData = Collections.singletonMap(
-                SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
+            SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
         );
 
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(caseData)
-                .build();
+            .state("Issued")
+            .caseData(caseData)
+            .build();
 
         CcdCallbackRequest request = CcdCallbackRequest.builder()
-                .caseDetails(caseDetails)
-                .build();
+            .caseDetails(caseDetails)
+            .build();
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(request))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .header(AUTHORIZATION, AUTH_TOKEN))
-                .andExpect(status().isOk())
-                .andExpect(content().string(allOf(
-                        isJson(),
-                        hasJsonPath("$.data", is(Collections.emptyMap())),
-                        hasJsonPath("$.errors",
-                                hasItem("Failed to bulk print documents - This event cannot be used when the service"
-                                        + " method is Personal Service. Please use the Personal Service event instead")
-                        )
-                )));
+            .content(convertObjectToJsonString(request))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.data", is(Collections.emptyMap())),
+                hasJsonPath("$.errors",
+                    hasItem("Failed to bulk print documents - This event cannot be used when "
+                            + "service method is Personal Service and the case is not in Awaiting Service.")
+                )
+            )));
     }
 
     private void stubFeatureToggleService(boolean toggle) {
@@ -370,41 +210,6 @@ public class BulkPrintTest extends IdamTestSupport {
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(featureToggle))));
 
-    }
-
-    private void stubSendLetterService(HttpStatus status) {
-        sendLetterService.stubFor(WireMock.post("/letters")
-            .withHeader("ServiceAuthorization", new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
-            .withHeader("Content-Type", new EqualToPattern(APPLICATION_VND_UK_GOV_HMCTS_LETTER_SERVICE_IN_LETTER
-                + ".v2+json"))
-            .willReturn(aResponse()
-                .withStatus(status.value())
-                .withBody(convertObjectToJsonString(new SendLetterResponse(UUID.randomUUID())))));
-    }
-
-    private void mockEmailClientError() throws NotificationClientException {
-        when(emailClient.sendEmail(any(), any(), any(), any())).thenThrow(new NotificationClientException(new Exception("error")));
-    }
-
-    private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest generateDocumentRequest,
-                                                     GeneratedDocumentInfo response) {
-        documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
-            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
-    }
-
-    private void stubFormatterServerEndpoint(DocumentUpdateRequest documentUpdateRequest,
-                                             Map<String, Object> response) {
-        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
     }
 
     private void stubDMStore(HttpStatus status) {

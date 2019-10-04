@@ -34,7 +34,8 @@ public class TestConstants {
     public static final String TEST_SERVICE_AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
             + ".eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ"
             + ".SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-    public static final String TEST_SOLICITOR_NAME = "Solcitor name";
+    public static final String TEST_SOLICITOR_NAME = "Solicitor name";
+    public static final String TEST_SOLICITOR_EMAIL = "testSolicitor@email.com";
     public static final String TEST_SERVICE_TOKEN = "testServiceToken";
     public static final String TEST_PETITIONER_FIRST_NAME = "First";
     public static final String TEST_PETITIONER_LAST_NAME = "Last";
@@ -49,6 +50,7 @@ public class TestConstants {
     public static final String TEST_RESPONDENT_FIRST_NAME = "First";
     public static final String TEST_RESPONDENT_LAST_NAME = "Last";
     public static final String TEST_RESPONDENT_EMAIL = "testRespondent@email.com";
+    public static final String TEST_RESPONDENT_SOLICITOR_EMAIL = "testRespondentSolicitor@example.com";
     public static final String TEST_REASON_ADULTERY = "adultery";
     public static final String TEST_REASON_2_YEAR_SEP = "separation-2-years";
     public static final String TEST_REASON_UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";

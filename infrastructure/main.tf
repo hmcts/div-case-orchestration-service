@@ -42,6 +42,7 @@ module "div-cos" {
   asp_name                        = "${local.asp_name}"
   asp_rg                          = "${local.asp_rg}"
   instance_size                   = "${var.instance_size}"
+  enable_ase                      = false
 
   app_settings = {
     // logging vars
@@ -74,6 +75,7 @@ module "div-cos" {
     SCHEDULER_MAKE_CASES_ELIGIBLE_DA_ENABLED        = "${var.scheduler_make_cases_eligible_da_enabled}"
     SCHEDULER_MAKE_CASES_ELIGIBLE_DA_CRON           = "${var.scheduler_make_cases_eligible_da_cron}"
     AWAITING_DA_PERIOD                              = "${var.awaiting_da_period}"
+    DA_OVERDUE_PERIOD                              = "${var.da_overdue_period}"
     FEATURE_DN_REFUSAL                              = "${var.feature_dn_refusal}"
 
     DOCUMENTATION_SWAGGER_ENABLED                   = "${var.documentation_swagger_enabled}"
@@ -99,6 +101,10 @@ module "div-cos" {
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST        = "${var.spring_mail_properties_mail_smtp_ssl_trust}"
 
     DATAEXTRACTION_STATUS_DA_EMAILTO       = "${var.dataextraction_status_da_email_to}"
+    DATAEXTRACTION_STATUS_AOS_EMAILTO      = "${var.dataextraction_status_aos_email_to}"
+    DATAEXTRACTION_STATUS_DN_EMAILTO       = "${var.dataextraction_status_dn_email_to}"
+
+    SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_ENABLED  = "${var.scheduler_send_updated_cases_to_robotics_enabled}"
   }
 }
 

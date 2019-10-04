@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DataExtractionService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction.CSVExtractorFactory;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
+
+import java.time.LocalDate;
 
 import static java.lang.String.format;
 
@@ -21,16 +24,28 @@ public class DataExtractionRequestListener implements ApplicationListener<DataEx
     private final DataExtractionService dataExtractionService;
 
     @Autowired
+    private final CSVExtractorFactory csvExtractorFactory;
+
+    @Autowired
     private final AuthUtil authUtil;
 
     @Override
     public void onApplicationEvent(DataExtractionRequest event) {
-        try {
-            dataExtractionService.extractCasesToFamilyMan(event.getStatus(), event.getDate(), authUtil.getCaseworkerToken());
-        } catch (CaseOrchestrationServiceException exception) {
-            String errorMessage = format("Error extracting data to Family man for %s", event.getDate().toString());
-            log.error(errorMessage, exception);
-            throw new RuntimeException(errorMessage, exception);
+        DataExtractionRequest.Status status = event.getStatus();
+        LocalDate dateToExtract = event.getDate();
+        log.info("Listened to {} for status {} and date {}", DataExtractionRequest.class.getName(), status, dateToExtract);
+
+        if (csvExtractorFactory.hasCSVExtractorForStatus(status)) {
+            try {
+                dataExtractionService.extractCasesToFamilyMan(status, dateToExtract, authUtil.getCaseworkerToken());
+                log.info("Data extracted for {}", status.name());
+            } catch (CaseOrchestrationServiceException exception) {
+                String errorMessage = format("Error extracting data to Family man for status %s and date %s", status, dateToExtract.toString());
+                log.error(errorMessage, exception);
+                throw new RuntimeException(errorMessage, exception);
+            }
+        } else {
+            log.warn("Ignoring data extraction request for status {}. This data extraction status is not yet implemented.", status);
         }
     }
 

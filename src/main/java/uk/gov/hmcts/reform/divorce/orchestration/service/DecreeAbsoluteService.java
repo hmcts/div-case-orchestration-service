@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 
@@ -19,6 +20,15 @@ public interface DecreeAbsoluteService {
      */
     int enableCaseEligibleForDecreeAbsolute(String authToken) throws WorkflowException;
 
+    /**
+     * Process cases which are overdue for Decree Absolute.
+     *
+     * @param authToken Authorisation token
+     * @return a number of cases are processed
+     * @throws WorkflowException if any exception occurs
+     */
+    int processCaseOverdueForDecreeAbsolute(String authToken) throws WorkflowException;
+
     /** Notify Respondents that the applicant has requested Decree Absolute.
      *
      * @param ccdCallbackRequest Callback request containing CCD Case Data
@@ -28,4 +38,5 @@ public interface DecreeAbsoluteService {
      */
     Map<String, Object> notifyRespondentOfDARequested(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
+    void validateDaRequest(CaseDetails caseDetails) throws WorkflowException;
 }

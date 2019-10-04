@@ -55,7 +55,8 @@ public interface CosApiClient {
         method = RequestMethod.POST,
         value = "/aos-solicitor-nominated"
     )
-    Map<String, Object> aosSolicitorNominated(@RequestBody Map<String, Object> caseDataContent);
+    Map<String, Object> aosSolicitorNominated(@RequestHeader(AUTHORIZATION) String authorisation,
+                                              @RequestBody Map<String, Object> caseDataContent);
 
     @RequestMapping(
         method = RequestMethod.POST,
@@ -149,7 +150,7 @@ public interface CosApiClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "generate-dn-pronouncement-documents"
+        value = "/generate-dn-pronouncement-documents"
     )
     Map<String, Object> generateDnPronouncedDocuments(@RequestHeader(AUTHORIZATION) String authorisation,
                                                       @RequestBody CcdCallbackRequest ccdCallbackRequest);
@@ -198,4 +199,13 @@ public interface CosApiClient {
             value = "/remove-la-make-decision-fields"
     )
     Map<String, Object> removeLegalAdvisorMakeDecisionFields(@RequestBody CcdCallbackRequest ccdCallbackRequest);
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/dn-about-to-be-granted"
+    )
+    CcdCallbackResponse processDnAboutToBeGranted(
+            @RequestHeader(AUTHORIZATION) String authorisation,
+            @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
 }
