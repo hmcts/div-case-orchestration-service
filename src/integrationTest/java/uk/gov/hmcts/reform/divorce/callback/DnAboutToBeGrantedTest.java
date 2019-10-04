@@ -34,7 +34,6 @@ public class DnAboutToBeGrantedTest extends IntegrationTest {
         assertThat(jsonResponse,
             hasJsonPath("$.data.state", is(AWAITING_CLARIFICATION)));
 
-        // Note, requires DN Refusal feature flag to be true
         assertThat(jsonResponse,
             hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentType", is(DOCUMENT_TYPE_OTHER)));
         assertThat(jsonResponse,
