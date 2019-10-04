@@ -10,15 +10,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
-import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -60,7 +58,6 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
     private static final String FORMAT_ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
 
-
     @Autowired
     private MockMvc webClient;
 
@@ -77,9 +74,6 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
                 AOS_SOL_NOMINATED_JSON, CcdCallbackRequest.class);
 
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
-        CcdCallbackResponse expected = CcdCallbackResponse.builder()
-                .data(caseData)
-                .build();
 
         caseData.put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
 
@@ -140,38 +134,6 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
                         isJson(),
                         hasJsonPath("$.errors", nullValue())
                 )));
-    }
-
-    @Test
-    public void testResponseHasErrors_whenSolicitorIsNominated_andSendingEmailFails() throws Exception {
-        final GeneratePinRequest pinRequest = GeneratePinRequest.builder()
-                .firstName("")
-                .lastName("")
-                .build();
-
-        final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
-        doThrow(new NotificationClientException("something bad happened")).when(mockEmailClient).sendEmail(any(), any(), any(), any());
-
-        stubSignIn();
-        stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-
-        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/aosSolicitorNominated.json", CcdCallbackRequest.class);
-
-        webClient.perform(MockMvcRequestBuilders.post(API_URL)
-                .content(convertObjectToJsonString(ccdCallbackRequest))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(allOf(
-                        isJson(),
-                        hasJsonPath("$.data", is(nullValue())),
-                        hasJsonPath("$.errors", hasItem("Failed to send e-mail"))
-                )));
-
-        verify(mockEmailClient).sendEmail(eq(SOLICITOR_AOS_INVIATION_LETTER_ID),
-                eq("solicitor@localhost.local"),
-                any(), any());
     }
 
     private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest generateDocumentRequest,

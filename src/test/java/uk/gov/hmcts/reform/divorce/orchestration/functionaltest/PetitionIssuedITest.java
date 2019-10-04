@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
 import uk.gov.hmcts.reform.divorce.validation.service.ValidationService;
 import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
 

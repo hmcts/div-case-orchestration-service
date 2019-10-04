@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.idam.client.models.TokenExchangeResponse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
@@ -22,7 +21,6 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_CLIENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_CLIENT_SECRET;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_REDIRECT_URL;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GRANT_TYPE;
 import static uk.gov.hmcts.reform.idam.client.IdamClient.BEARER_AUTH_TYPE;

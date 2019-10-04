@@ -24,7 +24,6 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_CLIENT_ID;
@@ -127,8 +126,6 @@ public class RetrievePinUserDetailsUTest {
     public void givenPinUserExists_whenExecute_thenProceedAsExpected() throws TaskException {
         final AuthenticateUserResponse authenticateUserResponse = new AuthenticateUserResponse(TEST_PIN_CODE);
         final TokenExchangeResponse tokenExchangeResponse = new TokenExchangeResponse(BEARER_AUTH_TOKEN);
-        ExchangeCodeRequest exchangeCodeRequest =
-            new ExchangeCodeRequest(TEST_PIN_CODE, GRANT_TYPE, AUTH_REDIRECT_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET);
 
         final UserDetails payload = UserDetails.builder().build();
         Map<String, Object> caseData = new HashMap<>();
@@ -140,6 +137,8 @@ public class RetrievePinUserDetailsUTest {
         taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         final UserDetails pinUserDetails = UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
+        ExchangeCodeRequest exchangeCodeRequest =
+                new ExchangeCodeRequest(TEST_PIN_CODE, GRANT_TYPE, AUTH_REDIRECT_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET);
 
         when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null))
             .thenReturn(authenticateUserResponse);

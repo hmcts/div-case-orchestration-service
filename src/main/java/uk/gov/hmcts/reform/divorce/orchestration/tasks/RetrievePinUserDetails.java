@@ -3,10 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.AuthenticateUserResponse;
-import uk.gov.hmcts.reform.idam.client.models.ExchangeCodeRequest;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
@@ -14,13 +10,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.AuthenticateUserResponse;
+import uk.gov.hmcts.reform.idam.client.models.ExchangeCodeRequest;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GRANT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GRANT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
@@ -44,7 +44,7 @@ public class RetrievePinUserDetails implements Task<UserDetails> {
 
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) throws TaskException {
-        final String PIN_ERROR_MSG = "Invalid pin";
+        final String pinError = "Invalid pin";
 
         AuthenticateUserResponse pinResponse = idamClient.authenticatePinUser(
             context.getTransientObject(RESPONDENT_PIN),
@@ -53,7 +53,7 @@ public class RetrievePinUserDetails implements Task<UserDetails> {
             null);
 
         if (pinResponse == null) {
-            throw new TaskException(new AuthenticationError(PIN_ERROR_MSG));
+            throw new TaskException(new AuthenticationError(pinError));
         }
 
         ExchangeCodeRequest exchangeCodeRequest =
@@ -67,7 +67,7 @@ public class RetrievePinUserDetails implements Task<UserDetails> {
         UserDetails pinUserDetails = idamClient.getUserDetails(pinAuthToken);
 
         if (pinUserDetails == null) {
-            throw new TaskException(new AuthenticationError(PIN_ERROR_MSG));
+            throw new TaskException(new AuthenticationError(pinError));
         }
 
         final String letterHolderId = pinUserDetails.getId();
