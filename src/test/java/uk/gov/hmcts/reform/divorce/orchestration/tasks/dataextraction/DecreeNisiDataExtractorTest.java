@@ -108,6 +108,18 @@ public class DecreeNisiDataExtractorTest {
         assertThat(transformedCaseData, is(Optional.empty()));
     }
 
+    @Test
+    public void testCostsClaimGranted_defaultsToNo_whenMissing() throws TaskException {
+        Map<String, Object> caseData = getTestCaseData();
+        caseData.remove(COSTS_CLAIM_GRANTED, TEST_COSTS_CLAIM_GRANTED);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        Optional<String> transformedCaseData = classUnderTest.mapCaseData(caseDetails);
+
+        assertThat(transformedCaseData.get(), is("LV17D80101,15/12/2020,10/12/2020,15:30,serviceCentre,Yes,Respondent,No,No,Order,Judge name"));
+
+    }
+
     private Map<String, Object> getTestCaseData() {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_CASE_REFERENCE, D8_CASE_ID);

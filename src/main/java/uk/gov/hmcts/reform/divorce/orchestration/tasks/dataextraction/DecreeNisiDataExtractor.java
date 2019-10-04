@@ -94,7 +94,7 @@ public class DecreeNisiDataExtractor implements CSVExtractor {
             csvLine.append(COMMA);
             csvLine.append(getOptionalPropertyValueAsString(caseData, WHO_PAYS_COSTS_CCD_FIELD, ""));
             csvLine.append(COMMA);
-            csvLine.append(getMandatoryPropertyValueAsString(caseData, COSTS_CLAIM_GRANTED));
+            csvLine.append(getOptionalPropertyValueAsString(caseData, COSTS_CLAIM_GRANTED, "No"));
             csvLine.append(COMMA);
             csvLine.append("No"); // OrderForAncilliaryRelief will always "no"
             csvLine.append(COMMA);
