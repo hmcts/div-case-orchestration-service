@@ -42,7 +42,7 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
 
     @Override
     @EventListener
-    public Map<String, Object>  fireSecondaryAosEvent(SubmitSolicitorAosEvent event) {
+    public Map<String, Object> fireSecondaryAosEvent(SubmitSolicitorAosEvent event) {
         // Maps CCD values of RespAOS2yrConsent & RespAOSAdultery
         // to RespAdmitOrConsentToFact & RespWillDefendDivorce fields in Case Data.
         // Due to limitation on CCD UI, UI_ONLY_RESP_WILL_DEFEND_DIVORCE is used for
