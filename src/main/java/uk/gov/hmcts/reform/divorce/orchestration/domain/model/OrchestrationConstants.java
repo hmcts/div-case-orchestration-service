@@ -290,6 +290,7 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
+    public static final String FEE_TO_PAY_JSON_KEY = "FeeToPay";
 
     public static final String DOCUMENT_TYPE_COE = "coe";
     public static final String DOCUMENT_TYPE_OTHER = "other";

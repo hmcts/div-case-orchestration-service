@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.FeatureToggleServiceImpl;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
@@ -46,6 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_AMOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PRONOUNCEMENT;
@@ -68,6 +70,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
@@ -84,6 +87,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     private static final String CCD_RESPONSE_DATA_FIELD = "data";
 
     private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
+    private static final String AMEND_PETITION_FEE_CONTEXT_PATH =  "/fees-and-payments/version/1/amend-fee";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
     private static final long FIXED_TIME_EPOCH = 1000000L;
@@ -210,6 +214,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 .caseData(expectedDocumentUpdateRequestData)
                 .build();
 
+        stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().amount(TEST_FEE_AMOUNT).build());
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
         stubFormatterServerEndpoint(documentUpdateRequest, expectedDocumentUpdateRequestData);
 
@@ -278,6 +283,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 .caseData(expectedDocumentUpdateRequestData)
                 .build();
 
+        stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().amount(TEST_FEE_AMOUNT).build());
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
         stubFormatterServerEndpoint(documentUpdateRequest, expectedDocumentUpdateRequestData);
 
@@ -339,12 +345,20 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
     @Test
     public void givenRejection_whenMakeDecision_thenReturnRightState() throws Exception {
+        FeeResponse amendFee = FeeResponse.builder().amount(TEST_FEE_AMOUNT).build();
+
         Map<String, Object> caseData = ImmutableMap.of(
             DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
             REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION
         );
 
-        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
+        Map<String, Object> expectedDocumentGenerationRequestData = new HashMap<>(caseData);
+        expectedDocumentGenerationRequestData.put(FEE_TO_PAY_JSON_KEY, amendFee.getFormattedFeeAmount());
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .caseData(expectedDocumentGenerationRequestData)
+            .build();
 
         final GenerateDocumentRequest documentGenerationRequest =
             GenerateDocumentRequest.builder()
@@ -358,8 +372,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
                 .build();
 
-        Map<String, Object> expectedDocumentUpdateRequestData = new HashMap<>();
-        expectedDocumentUpdateRequestData.putAll(caseData);
+        Map<String, Object> expectedDocumentUpdateRequestData = new HashMap<>(caseData);
         // Additional fields
         expectedDocumentUpdateRequestData.putAll(ImmutableMap.of(
             STATE_CCD_FIELD, DN_REFUSED,
@@ -372,6 +385,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 .caseData(expectedDocumentUpdateRequestData)
                 .build();
 
+        stubGetFeeFromFeesAndPayments(HttpStatus.OK, amendFee);
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
         stubFormatterServerEndpoint(documentUpdateRequest, expectedDocumentUpdateRequestData);
 
@@ -437,6 +451,14 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                         .withStatus(HttpStatus.OK.value())
                         .withBody(convertObjectToJsonString(response))));
+    }
+
+    private void stubGetFeeFromFeesAndPayments(HttpStatus status, FeeResponse feeResponse) {
+        feesAndPaymentsServer.stubFor(WireMock.get(AMEND_PETITION_FEE_CONTEXT_PATH)
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(convertObjectToJsonString(feeResponse))));
     }
 
     private void setDnFeature(Boolean enableFeature) {
