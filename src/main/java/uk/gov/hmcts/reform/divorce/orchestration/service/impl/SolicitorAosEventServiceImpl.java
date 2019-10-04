@@ -54,6 +54,9 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
 
         log.info("Attempting to fire secondary AoS Solicitor submission event for case {}", caseID);
 
+
+
+
         if (respondentIsDefending(caseData)) {
             eventId = SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
         } else {
