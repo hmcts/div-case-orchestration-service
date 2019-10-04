@@ -23,10 +23,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_2_YR_CONSENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADMIT_ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE_2;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UI_ONLY_RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_FIVE_YEARS;
@@ -45,7 +45,7 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
     public Map<String, Object>  fireSecondaryAosEvent(SubmitSolicitorAosEvent event) {
         // Maps CCD values of RespAOS2yrConsent & RespAOSAdultery
         // to RespAdmitOrConsentToFact & RespWillDefendDivorce fields in Case Data.
-        // Due to limitation on CCD UI, RESP_WILL_DEFEND_DIVORCE_2 is used for
+        // Due to limitation on CCD UI, UI_ONLY_RESP_WILL_DEFEND_DIVORCE is used for
         // 2yr separation, 5yr separation and adultery to match the journey requirements
         String eventId;
         final TaskContext context = (TaskContext) event.getSource();
@@ -62,17 +62,17 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
                 caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
                 caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
             } else {
-                // if respondent does not admit fact, take secondary RESP_WILL_DEFEND_DIVORCE_2
+                // if respondent does not admit fact, take secondary UI_ONLY_RESP_WILL_DEFEND_DIVORCE
                 // value and map directly onto existing RESP_WILL_DEFEND_DIVORCE
                 caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
-                caseData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(RESP_WILL_DEFEND_DIVORCE_2));
+                caseData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(UI_ONLY_RESP_WILL_DEFEND_DIVORCE));
             }
         }
 
         if (SEPARATION_FIVE_YEARS.equalsIgnoreCase(reasonForDivorce)) {
             // for 5 yr separation, no consent is asked, we just map over
-            // RESP_WILL_DEFEND_DIVORCE_2 to RESP_WILL_DEFEND_DIVORCE
-            caseData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(RESP_WILL_DEFEND_DIVORCE_2));
+            // UI_ONLY_RESP_WILL_DEFEND_DIVORCE to RESP_WILL_DEFEND_DIVORCE
+            caseData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(UI_ONLY_RESP_WILL_DEFEND_DIVORCE));
         }
 
         eventId = getEventId(caseData);
@@ -109,7 +109,7 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
     }
 
     private boolean respondentIsDefending(Map<String, Object> submissionData) {
-        // as we have already mapped over RESP_WILL_DEFEND_DIVORCE_2 to RESP_WILL_DEFEND_DIVORCE
+        // as we have already mapped over UI_ONLY_RESP_WILL_DEFEND_DIVORCE to RESP_WILL_DEFEND_DIVORCE
         // we only need to check the main property here
         final String respWillDefendDivorce = (String) submissionData.get(RESP_WILL_DEFEND_DIVORCE);
         return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
