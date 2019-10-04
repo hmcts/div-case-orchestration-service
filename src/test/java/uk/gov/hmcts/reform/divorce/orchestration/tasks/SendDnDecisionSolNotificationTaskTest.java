@@ -19,7 +19,9 @@ import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
@@ -127,5 +129,25 @@ public class SendDnDecisionSolNotificationTaskTest {
                 eq(expectedTemplateVars),
                 eq(SOLICITOR_PERSONAL_SERVICE_EMAIL)
         );
+    }
+
+    @Test(expected = TaskException.class)
+    public void testExecuteThrowsTaskExceptionIfSendEmailThrowsANotificationException() throws NotificationClientException, TaskException {
+        //given
+        testData.put(PET_SOL_EMAIL, TEST_USER_EMAIL);
+        testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
+        testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_USER_FIRST_NAME);
+        testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_USER_LAST_NAME);
+        testData.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
+
+        expectedTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME);
+        expectedTemplateVars.put(NOTIFICATION_RESP_NAME, TEST_USER_FIRST_NAME + " " + TEST_USER_LAST_NAME);
+        expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
+        doThrow(new NotificationClientException("test"))
+                .when(emailService).sendEmailAndReturnExceptionIfFails(any(), any(), any(), any());
+
+        //when
+        sendDnDecisionSolNotificationTask.execute(context, testData);
     }
 }
