@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +48,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
     private static final String VALUE_KEY = "value";
 
     private final DocumentGeneratorClient documentGeneratorClient;
-    private final Clock clock;
+    private final CcdUtil ccdUtil;
 
     @Override
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
@@ -70,7 +70,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
             document.put(DOCUMENT_TYPE_JSON_KEY, DOCUMENT_TYPE_OTHER);
             document.put(DOCUMENT_FILENAME_JSON_KEY,
                 format(DOCUMENT_FILENAME_FMT, DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD,
-                    caseDetails.getCaseId() + "-" + Instant.now(clock).toEpochMilli()));
+                    ccdUtil.getCurrentDateCcdFormat()));
         });
 
         if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {

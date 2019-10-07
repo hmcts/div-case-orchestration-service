@@ -284,8 +284,8 @@ public class OrchestrationConstants {
     public static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
     public static final String DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00098.docx";
     public static final String DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE = "d79";
-    public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME = "decreeNisiRefusalOrder";
-    public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD = "previousDecreeNisiRefusalOrder";
+    public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME = "DecreeNisiRefusalOrder";
+    public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD = "PreviousDNRefusalOrder";
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
     public static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";

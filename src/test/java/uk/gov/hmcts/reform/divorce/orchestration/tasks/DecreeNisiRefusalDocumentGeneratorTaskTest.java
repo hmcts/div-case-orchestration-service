@@ -11,9 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -55,13 +54,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGe
 @RunWith(MockitoJUnitRunner.class)
 public class DecreeNisiRefusalDocumentGeneratorTaskTest {
 
-    private static final long FIXED_TIME_EPOCH = 1000000L;
+    private static final String FIXED_DATE = "2010-10-10";
 
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
 
     @Mock
-    private Clock clock;
+    private CcdUtil ccdUtil;
 
     @InjectMocks
     private DecreeNisiRefusalDocumentGeneratorTask decreeNisiRefusalDocumentGeneratorTask;
@@ -103,7 +102,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
 
     @Test
     public void callsDocumentGeneratorAndStoresAdditionalGeneratedDocumentForDnRefusalClarificationWithExistingDocs() {
-        when(clock.instant()).thenReturn(Instant.ofEpochMilli(FIXED_TIME_EPOCH));
+        when(ccdUtil.getCurrentDateCcdFormat()).thenReturn(FIXED_DATE);
 
         Map<String, Object> document = new HashMap<>();
         document.put(DOCUMENT_TYPE_JSON_KEY, DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE);
@@ -152,11 +151,13 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         assertThat(initialDocument.get(DOCUMENT_TYPE_JSON_KEY), is(DOCUMENT_TYPE_OTHER));
         assertThat(initialDocument.get(DOCUMENT_FILENAME_JSON_KEY),
             is(DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + TEST_CASE_ID + "-" + FIXED_TIME_EPOCH));
-        
+
+            is(DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + FIXED_DATE));
+
         verify(documentGeneratorClient)
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN));
     }
-  
+
     @Test
     public void callsDocumentGeneratorAndStoresGeneratedDocumentForDnRefusalRejectionWithRejectOption() {
         final FeeResponse amendFee = FeeResponse.builder().amount(TEST_FEE_AMOUNT).build();

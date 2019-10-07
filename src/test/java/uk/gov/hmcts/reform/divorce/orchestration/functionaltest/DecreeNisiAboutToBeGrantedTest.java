@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.impl.FeatureToggleServi
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.Clock;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -90,7 +90,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     private static final String AMEND_PETITION_FEE_CONTEXT_PATH =  "/fees-and-payments/version/1/amend-fee";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
-    private static final long FIXED_TIME_EPOCH = 1000000L;
+    private static final String FIXED_DATE = "2010-10-10";
 
     @Autowired
     private MockMvc webClient;
@@ -107,7 +107,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     @Before
     public void setup() {
         setDnFeature(true);
-        when(clock.instant()).thenReturn(Instant.ofEpochMilli(FIXED_TIME_EPOCH));
+        when(clock.instant()).thenReturn(LocalDate.of(2010, 10, 10).atStartOfDay(UTC).toInstant());
         when(clock.getZone()).thenReturn(UTC);
     }
 
@@ -257,6 +257,10 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
             STATE_CCD_FIELD, AWAITING_CLARIFICATION,
             DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
         ));
+        Map<String, Object> documentGenerationRequestCaseData = new HashMap<>();
+        documentGenerationRequestCaseData.putAll(caseData);
+        documentGenerationRequestCaseData.put(D8DOCUMENTS_GENERATED, buildDocumentCollection(DOCUMENT_TYPE_OTHER,
+            DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + FIXED_DATE));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(expectedRequestData).build();
 
