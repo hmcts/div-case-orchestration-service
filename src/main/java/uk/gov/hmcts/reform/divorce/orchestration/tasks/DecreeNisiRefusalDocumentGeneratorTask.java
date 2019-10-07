@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
@@ -99,7 +100,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
             GeneratedDocumentInfo generatedDocumentInfo = generatePdfDocument(
                 DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID,
                 DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE,
-                DECREE_NISI_REFUSAL_DOCUMENT_NAME,
+                DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME,
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY),
                 caseDetails.toBuilder().caseData(caseDataToSend).build()
             );

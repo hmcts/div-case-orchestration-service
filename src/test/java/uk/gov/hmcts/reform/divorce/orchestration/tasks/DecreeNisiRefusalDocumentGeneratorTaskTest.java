@@ -41,6 +41,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_EXTENSION;
@@ -161,8 +162,6 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
 
         assertThat(initialDocument.get(DOCUMENT_TYPE_JSON_KEY), is(DOCUMENT_TYPE_OTHER));
         assertThat(initialDocument.get(DOCUMENT_FILENAME_JSON_KEY),
-            is(DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + TEST_CASE_ID + "-" + FIXED_TIME_EPOCH));
-
             is(DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + FIXED_DATE));
         assertThat(initialDocument.get(DOCUMENT_LINK_JSON_KEY),
             is(new HashMap<String, Object>() {
@@ -198,7 +197,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
 
         final GeneratedDocumentInfo expectedDocument = GeneratedDocumentInfo.builder()
             .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-            .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
+            .fileName(DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME + TEST_CASE_ID)
             .build();
 
         final Map<String, Object> expectedPayload = new HashMap<>(payload);
