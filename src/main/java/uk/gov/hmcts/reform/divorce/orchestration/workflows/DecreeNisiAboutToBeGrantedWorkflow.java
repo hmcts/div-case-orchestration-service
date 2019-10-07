@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDnOutcomeFlagFieldTask
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiRefusalDocumentGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetAmendPetitionFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLink;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateDNDecisionTask;
@@ -46,6 +47,8 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
 
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
 
+    private final GetAmendPetitionFeeTask getAmendPetitionFeeTask;
+
     private final FeatureToggleService featureToggleService;
 
     private final PopulateDocLink populateDocLink;
@@ -57,7 +60,6 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
         tasksToRun.add(setDNDecisionStateTask);
         tasksToRun.add(validateDNDecisionTask);
         tasksToRun.add(addDecreeNisiDecisionDateTask);
-        Object decreeNisiGranteda = caseData.get(DECREE_NISI_GRANTED_CCD_FIELD);
 
         if (isDNApproval(caseData)) {
             tasksToRun.add(addDnOutcomeFlagFieldTask);
@@ -65,9 +67,8 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
             if (YES_VALUE.equals(costsClaimGranted)) {
                 tasksToRun.add(defineWhoPaysCostsOrderTask);
             }
-        }
-
-        if (featureToggleService.isFeatureEnabled(DN_REFUSAL) && !isDNApproval(caseData)) {
+        }else if (featureToggleService.isFeatureEnabled(DN_REFUSAL) && !isDNApproval(caseData)) {
+            tasksToRun.add(getAmendPetitionFeeTask);
             tasksToRun.add(decreeNisiRefusalDocumentGeneratorTask);
             tasksToRun.add(caseFormatterAddDocuments);
             tasksToRun.add(populateDocLink);

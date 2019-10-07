@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiRefusalDocumentGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLink;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetAmendPetitionFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateDNDecisionTask;
 
@@ -72,13 +73,16 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Mock
+    private GetAmendPetitionFeeTask getAmendPetitionFeeTask;
+
+    @Mock
     private FeatureToggleService featureToggleService;
 
     @Mock
     private PopulateDocLink populateDocLink;
 
     @InjectMocks
-    private DecreeNisiAboutToBeGrantedWorkflow workflow;
+        private DecreeNisiAboutToBeGrantedWorkflow workflow;
 
     private Map<String, Object> inputPayload;
 
@@ -236,6 +240,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         when(setDNDecisionStateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(validateDNDecisionTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(addDecreeNisiDecisionDateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(payloadReturnedByTask);
+        when(getAmendPetitionFeeTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
         when(decreeNisiRefusalDocumentGeneratorTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
         when(caseFormatterAddDocuments.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
         when(populateDocLink.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
@@ -251,6 +256,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
             setDNDecisionStateTask,
             validateDNDecisionTask,
             addDecreeNisiDecisionDateTask,
+            getAmendPetitionFeeTask,
             decreeNisiRefusalDocumentGeneratorTask,
             caseFormatterAddDocuments,
             populateDocLink
@@ -260,6 +266,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         inOrder.verify(setDNDecisionStateTask).execute(any(TaskContext.class), eq(inputPayload));
         inOrder.verify(validateDNDecisionTask).execute(any(TaskContext.class), eq(inputPayload));
         inOrder.verify(addDecreeNisiDecisionDateTask).execute(any(TaskContext.class), eq(inputPayload));
+        inOrder.verify(getAmendPetitionFeeTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
         inOrder.verify(decreeNisiRefusalDocumentGeneratorTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
         inOrder.verify(caseFormatterAddDocuments).execute(any(TaskContext.class), eq(payloadReturnedByTask));
         inOrder.verify(populateDocLink).execute(any(TaskContext.class), eq(payloadReturnedByTask));
