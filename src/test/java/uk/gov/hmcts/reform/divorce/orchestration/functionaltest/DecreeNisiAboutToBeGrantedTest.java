@@ -186,7 +186,14 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
             REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE
         );
 
-        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
+        Map<String, Object> expectedRequestData = new HashMap<>();
+        expectedRequestData.putAll(caseData);
+        expectedRequestData.putAll(ImmutableMap.of(
+            STATE_CCD_FIELD, AWAITING_CLARIFICATION,
+            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
+        ));
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(expectedRequestData).build();
 
         final GenerateDocumentRequest documentGenerationRequest =
             GenerateDocumentRequest.builder()
@@ -200,23 +207,15 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
                 .build();
 
-        Map<String, Object> expectedDocumentUpdateRequestData = new HashMap<>();
-        expectedDocumentUpdateRequestData.putAll(caseData);
-        // Additional fields
-        expectedDocumentUpdateRequestData.putAll(ImmutableMap.of(
-            STATE_CCD_FIELD, AWAITING_CLARIFICATION,
-            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
-        ));
-
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
                 .documents(asList(documentGenerationResponse))
-                .caseData(expectedDocumentUpdateRequestData)
+                .caseData(expectedRequestData)
                 .build();
 
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().amount(TEST_FEE_AMOUNT).build());
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, expectedDocumentUpdateRequestData);
+        stubFormatterServerEndpoint(documentUpdateRequest, expectedRequestData);
 
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             ImmutableMap.of(
@@ -250,12 +249,16 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
             D8DOCUMENTS_GENERATED, existingDocuments
         );
 
-        Map<String, Object> documentGenerationRequestCaseData = new HashMap<>();
-        documentGenerationRequestCaseData.putAll(caseData);
-        documentGenerationRequestCaseData.put(D8DOCUMENTS_GENERATED, buildDocumentCollection(DOCUMENT_TYPE_OTHER,
-            DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + TEST_CASE_ID + "-" + FIXED_TIME_EPOCH));
+        Map<String, Object> expectedRequestData = new HashMap<>();
+        expectedRequestData.putAll(caseData);
+        expectedRequestData.putAll(ImmutableMap.of(
+            D8DOCUMENTS_GENERATED, buildDocumentCollection(DOCUMENT_TYPE_OTHER,
+            DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + TEST_CASE_ID + "-" + FIXED_TIME_EPOCH),
+            STATE_CCD_FIELD, AWAITING_CLARIFICATION,
+            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
+        ));
 
-        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(documentGenerationRequestCaseData).build();
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(expectedRequestData).build();
 
         final GenerateDocumentRequest documentGenerationRequest =
             GenerateDocumentRequest.builder()
@@ -269,23 +272,15 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
                 .build();
 
-        Map<String, Object> expectedDocumentUpdateRequestData = new HashMap<>();
-        expectedDocumentUpdateRequestData.putAll(documentGenerationRequestCaseData);
-        // Additional fields
-        expectedDocumentUpdateRequestData.putAll(ImmutableMap.of(
-            STATE_CCD_FIELD, AWAITING_CLARIFICATION,
-            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
-        ));
-
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
                 .documents(asList(documentGenerationResponse))
-                .caseData(expectedDocumentUpdateRequestData)
+                .caseData(expectedRequestData)
                 .build();
 
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().amount(TEST_FEE_AMOUNT).build());
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, expectedDocumentUpdateRequestData);
+        stubFormatterServerEndpoint(documentUpdateRequest, expectedRequestData);
 
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             ImmutableMap.of(
@@ -352,12 +347,18 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
             REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION
         );
 
-        Map<String, Object> expectedDocumentGenerationRequestData = new HashMap<>(caseData);
-        expectedDocumentGenerationRequestData.put(FEE_TO_PAY_JSON_KEY, amendFee.getFormattedFeeAmount());
+        Map<String, Object> expectedRequestData = new HashMap<>(caseData);
+        expectedRequestData.putAll(ImmutableMap.of(
+            STATE_CCD_FIELD, DN_REFUSED,
+            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
+        ));
+
+        Map<String, Object> expectedDocumentRequestData = new HashMap<>(expectedRequestData);
+        expectedDocumentRequestData.put(FEE_TO_PAY_JSON_KEY, amendFee.getFormattedFeeAmount());
 
         CaseDetails caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
-            .caseData(expectedDocumentGenerationRequestData)
+            .caseData(expectedDocumentRequestData)
             .build();
 
         final GenerateDocumentRequest documentGenerationRequest =
@@ -372,22 +373,15 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
                 .build();
 
-        Map<String, Object> expectedDocumentUpdateRequestData = new HashMap<>(caseData);
-        // Additional fields
-        expectedDocumentUpdateRequestData.putAll(ImmutableMap.of(
-            STATE_CCD_FIELD, DN_REFUSED,
-            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
-        ));
-
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
                 .documents(asList(documentGenerationResponse))
-                .caseData(expectedDocumentUpdateRequestData)
+                .caseData(expectedRequestData)
                 .build();
 
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, amendFee);
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, expectedDocumentUpdateRequestData);
+        stubFormatterServerEndpoint(documentUpdateRequest, expectedRequestData);
 
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             ImmutableMap.of(

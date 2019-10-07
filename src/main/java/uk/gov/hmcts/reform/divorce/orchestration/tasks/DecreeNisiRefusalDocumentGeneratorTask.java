@@ -79,7 +79,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
                 DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE,
                 DECREE_NISI_REFUSAL_DOCUMENT_NAME,
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY),
-                caseDetails
+                caseDetails.toBuilder().caseData(caseData).build()
             );
 
             documentCollection.add(generatedDocumentInfo);
@@ -87,7 +87,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
             FeeResponse amendFee = context.getTransientObject(AMEND_PETITION_FEE_JSON_KEY);
 
             // Remove reference to existing caseDetails so the context case details is not updated
-            Map<String, Object> caseDataToSend = new HashMap<>(caseDetails.getCaseData());
+            Map<String, Object> caseDataToSend = new HashMap<>(caseData);
             caseDataToSend.put(FEE_TO_PAY_JSON_KEY, amendFee.getFormattedFeeAmount());
 
             GeneratedDocumentInfo generatedDocumentInfo = generatePdfDocument(
