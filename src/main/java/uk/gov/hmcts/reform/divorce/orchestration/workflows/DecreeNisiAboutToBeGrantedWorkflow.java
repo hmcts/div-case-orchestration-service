@@ -56,18 +56,18 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         List<Task> tasksToRun = new ArrayList<>();
 
-        Map<String, Object> caseData = caseDetails.getCaseData();
         tasksToRun.add(setDNDecisionStateTask);
         tasksToRun.add(validateDNDecisionTask);
         tasksToRun.add(addDecreeNisiDecisionDateTask);
 
+        Map<String, Object> caseData = caseDetails.getCaseData();
         if (isDNApproval(caseData)) {
             tasksToRun.add(addDnOutcomeFlagFieldTask);
             Object costsClaimGranted = caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD);
             if (YES_VALUE.equals(costsClaimGranted)) {
                 tasksToRun.add(defineWhoPaysCostsOrderTask);
             }
-        }else if (featureToggleService.isFeatureEnabled(DN_REFUSAL) && !isDNApproval(caseData)) {
+        } else if (featureToggleService.isFeatureEnabled(DN_REFUSAL) && !isDNApproval(caseData)) {
             tasksToRun.add(getAmendPetitionFeeTask);
             tasksToRun.add(decreeNisiRefusalDocumentGeneratorTask);
             tasksToRun.add(caseFormatterAddDocuments);

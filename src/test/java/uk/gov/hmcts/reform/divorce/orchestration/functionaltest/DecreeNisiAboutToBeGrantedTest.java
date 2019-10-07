@@ -183,7 +183,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
     @Test
     public void shouldReturnCaseDataPlusClarificationDocument_AndState_WhenDN_NotGranted_AndDnRefusedForMoreInfo() throws Exception {
-        Map<String, Object> expectedCfsResponse = ObjectMapperTestUtil
+        final Map<String, Object> expectedCfsResponse = ObjectMapperTestUtil
             .getJsonFromResourceFile("/jsonExamples/payloads/documentGeneratedCase.json", Map.class);
 
         Map<String, Object> caseData = ImmutableMap.of(
@@ -372,6 +372,9 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     public void givenRejection_whenMakeDecision_thenReturnRightState() throws Exception {
         FeeResponse amendFee = FeeResponse.builder().amount(TEST_FEE_AMOUNT).build();
 
+        final Map<String, Object> expectedCfsResponse = ObjectMapperTestUtil
+            .getJsonFromResourceFile("/jsonExamples/payloads/documentGeneratedCase.json", Map.class);
+
         Map<String, Object> caseData = ImmutableMap.of(
             DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
             REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION
@@ -403,6 +406,8 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
                 .build();
 
+        expectedCfsResponse.putAll(expectedRequestData);
+
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
                 .documents(asList(documentGenerationResponse))
@@ -411,7 +416,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, amendFee);
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, expectedRequestData);
+        stubFormatterServerEndpoint(documentUpdateRequest, expectedCfsResponse);
 
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             ImmutableMap.of(
