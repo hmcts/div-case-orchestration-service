@@ -276,7 +276,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
             DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
         ));
 
-        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(expectedRequestData).build();
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(documentGenerationRequestCaseData).build();
 
         final GenerateDocumentRequest documentGenerationRequest =
             GenerateDocumentRequest.builder()
