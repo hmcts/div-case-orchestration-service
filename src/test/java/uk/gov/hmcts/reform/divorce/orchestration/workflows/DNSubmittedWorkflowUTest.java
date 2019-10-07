@@ -13,13 +13,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiAnswersGeneratorTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.DnSubmittedEmailNotificationTask;
 
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
@@ -28,8 +26,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class DNSubmittedWorkflowUTest {
 
-    @Mock
-    private DnSubmittedEmailNotificationTask emailNotificationTask;
     @Mock
     private DecreeNisiAnswersGeneratorTask decreeNisiAnswersGenerator;
     @Mock
@@ -50,8 +46,6 @@ public class DNSubmittedWorkflowUTest {
                 .build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        when(emailNotificationTask.execute(any(),
-                eq(caseDetails.getCaseData()))).thenReturn(caseDetails.getCaseData());
         when(decreeNisiAnswersGenerator.execute(any(), any())).thenReturn(caseDetails.getCaseData());
         when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(caseDetails.getCaseData());
 

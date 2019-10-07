@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -16,12 +17,16 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.SolicitorService;
 import java.util.Collections;
 import java.util.Map;
 
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,5 +74,19 @@ public class SolicitorCallbackControllerTest {
         assertThat(response.getBody().getErrors(), contains("Failed to issue solicitor personal service - test"));
 
         verify(solicitorService).issuePersonalServicePack(request, AUTH_TOKEN);
+    }
+
+    @Test
+    public void testServiceMethodIsCalled_WhenSendSolicitorPersonalServiceEmail() throws WorkflowException {
+        when(solicitorService.sendSolicitorPersonalServiceEmail(any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+
+        CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
+            .build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.sendSolicitorPersonalServiceEmail(callbackRequest);
+
+        assertThat(response.getStatusCode(), CoreMatchers.is(OK));
+        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+        verify(solicitorService).sendSolicitorPersonalServiceEmail(callbackRequest);
     }
 }

@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDaGrantedDetailsTask;
 
 import java.util.HashMap;
@@ -47,9 +46,6 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflowTest {
     @Mock
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
 
-    @Mock
-    private SendDaGrantedNotificationEmail sendDaGrantedNotificationEmail;
-
     @InjectMocks
     private DecreeAbsoluteAboutToBeGrantedWorkflow decreeAbsoluteAboutToBeGrantedWorkflow;
 
@@ -79,13 +75,11 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflowTest {
         final InOrder inOrder = inOrder(
                 setDaGrantedDetailsTask,
                 documentGenerationTask,
-                caseFormatterAddDocuments,
-                sendDaGrantedNotificationEmail);
+                caseFormatterAddDocuments);
 
         inOrder.verify(setDaGrantedDetailsTask).execute(context, payload);
         inOrder.verify(documentGenerationTask).execute(context, payload);
         inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
-        inOrder.verify(sendDaGrantedNotificationEmail).execute(context, payload);
     }
 
 }
