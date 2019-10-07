@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
@@ -84,7 +84,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
 
         final GeneratedDocumentInfo expectedDocument = GeneratedDocumentInfo.builder()
             .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-            .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
+            .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
             .build();
 
         //given
@@ -111,10 +111,10 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
 
         Map<String, Object> document = new HashMap<>();
         document.put(DOCUMENT_TYPE_JSON_KEY, DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE);
-        document.put(DOCUMENT_FILENAME_JSON_KEY, DECREE_NISI_REFUSAL_DOCUMENT_NAME);
+        document.put(DOCUMENT_FILENAME_JSON_KEY, DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME);
         document.put(DOCUMENT_LINK_JSON_KEY, new HashMap<String, Object>() {
             {
-                put(DOCUMENT_LINK_FILENAME_JSON_KEY,DECREE_NISI_REFUSAL_DOCUMENT_NAME + DOCUMENT_EXTENSION);
+                put(DOCUMENT_LINK_FILENAME_JSON_KEY,DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + DOCUMENT_EXTENSION);
             }
         });
 
@@ -139,7 +139,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
 
         final GeneratedDocumentInfo expectedDocument = GeneratedDocumentInfo.builder()
             .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-            .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
+            .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
             .build();
 
         //given

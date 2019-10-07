@@ -56,7 +56,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
@@ -208,7 +208,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         final GeneratedDocumentInfo documentGenerationResponse =
             GeneratedDocumentInfo.builder()
                 .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-                .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
+                .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
                 .build();
 
         final DocumentUpdateRequest documentUpdateRequest =
@@ -245,7 +245,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     @Test
     public void shouldReturnCaseDataPlusClarificationDocument_AndState_WhenDN_NotGranted_AndDnRefusedForMoreInfoWithExistingDocs() throws Exception {
         List<Map<String, Object>> existingDocuments =
-            buildDocumentCollection(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE, DECREE_NISI_REFUSAL_DOCUMENT_NAME);
+            buildDocumentCollection(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE, DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME);
 
         Map<String, Object> caseData = ImmutableMap.of(
             DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
@@ -277,7 +277,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         final GeneratedDocumentInfo documentGenerationResponse =
             GeneratedDocumentInfo.builder()
                 .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-                .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
+                .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
                 .build();
 
         final DocumentUpdateRequest documentUpdateRequest =
