@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -22,8 +23,11 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_CLIENT_ID;
@@ -93,12 +97,10 @@ public class RetrievePinUserDetailsUTest {
         verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null);
     }
 
-    @Test
-    public void givenPinUserNotFound_whenExecute_thenThrowException() {
+    @Test(expected = TaskException.class)
+    public void givenPinUserNotFound_whenExecute_thenThrowException() throws TaskException {
         final AuthenticateUserResponse authenticateUserResponse = new AuthenticateUserResponse(TEST_PIN_CODE);
         final TokenExchangeResponse tokenExchangeResponse = new TokenExchangeResponse(BEARER_AUTH_TOKEN);
-        ExchangeCodeRequest exchangeCodeRequest =
-            new ExchangeCodeRequest(TEST_PIN_CODE, GRANT_TYPE, AUTH_REDIRECT_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET);
 
         final UserDetails payload = UserDetails.builder().build();
 
@@ -107,18 +109,21 @@ public class RetrievePinUserDetailsUTest {
 
         when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null))
             .thenReturn(authenticateUserResponse);
-        when(idamClient.exchangeCode(exchangeCodeRequest))
+        when(idamClient.exchangeCode(any(ExchangeCodeRequest.class)))
             .thenReturn(tokenExchangeResponse);
         when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(null);
 
-        try {
-            classUnderTest.execute(taskContext, payload);
-        } catch (TaskException taskException) {
-            assertTrue(taskException.getCause() instanceof AuthenticationError);
-        }
+        classUnderTest.execute(taskContext, payload);
 
         verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null);
-        verify(idamClient).exchangeCode(exchangeCodeRequest);
+        ArgumentCaptor<ExchangeCodeRequest> captor = ArgumentCaptor.forClass(ExchangeCodeRequest.class);
+        verify(idamClient).exchangeCode(captor.capture());
+        ExchangeCodeRequest actualExchangeCodeRequest = captor.getValue();
+        assertThat(actualExchangeCodeRequest.getCode(), is(TEST_PIN_CODE));
+        assertThat(actualExchangeCodeRequest.getGrantType(), is(GRANT_TYPE));
+        assertThat(actualExchangeCodeRequest.getRedirectUri(), is(AUTH_REDIRECT_URL));
+        assertThat(actualExchangeCodeRequest.getClientId(), is(AUTH_CLIENT_ID));
+        assertThat(actualExchangeCodeRequest.getClientSecret(), is(AUTH_CLIENT_SECRET));
         verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
     }
 
@@ -137,12 +142,9 @@ public class RetrievePinUserDetailsUTest {
         taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         final UserDetails pinUserDetails = UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
-        ExchangeCodeRequest exchangeCodeRequest =
-                new ExchangeCodeRequest(TEST_PIN_CODE, GRANT_TYPE, AUTH_REDIRECT_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET);
-
         when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null))
             .thenReturn(authenticateUserResponse);
-        when(idamClient.exchangeCode(exchangeCodeRequest)).thenReturn(tokenExchangeResponse);
+        when(idamClient.exchangeCode(any(ExchangeCodeRequest.class))).thenReturn(tokenExchangeResponse);
         when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(pinUserDetails);
 
         UserDetails actual = classUnderTest.execute(taskContext, payload);
@@ -151,7 +153,14 @@ public class RetrievePinUserDetailsUTest {
         assertEquals(TEST_LETTER_HOLDER_ID_CODE, taskContext.getTransientObject(RESPONDENT_LETTER_HOLDER_ID));
 
         verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null);
-        verify(idamClient).exchangeCode(exchangeCodeRequest);
+        ArgumentCaptor<ExchangeCodeRequest> captor = ArgumentCaptor.forClass(ExchangeCodeRequest.class);
+        verify(idamClient).exchangeCode(captor.capture());
+        ExchangeCodeRequest actualExchangeCodeRequest = captor.getValue();
+        assertThat(actualExchangeCodeRequest.getCode(), is(TEST_PIN_CODE));
+        assertThat(actualExchangeCodeRequest.getGrantType(), is(GRANT_TYPE));
+        assertThat(actualExchangeCodeRequest.getRedirectUri(), is(AUTH_REDIRECT_URL));
+        assertThat(actualExchangeCodeRequest.getClientId(), is(AUTH_CLIENT_ID));
+        assertThat(actualExchangeCodeRequest.getClientSecret(), is(AUTH_CLIENT_SECRET));
         verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
     }
 }
