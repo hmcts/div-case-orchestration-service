@@ -16,6 +16,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonMap;
@@ -26,8 +27,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSAL_DRAFT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_DRAFT_LINK_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
@@ -48,7 +51,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
 
-        final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION,
+        final Set<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION,
             new LinkedHashSet<>());
 
         // Rename and set previous refusal order documents to other type so it won't get overwritten
@@ -58,6 +61,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
 
         d8DocumentsGenerated.stream().filter(collectionMember -> {
             Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
+
             return DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE.equals(document.get(DOCUMENT_TYPE));
         }).forEach(collectionMember -> {
             Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
@@ -77,9 +81,15 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
             );
 
             documentCollection.add(generatedDocumentInfo);
+            setDraftLinkInContext(context, DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE, DN_REFUSAL_DRAFT);
         }
 
         return caseData;
+    }
+
+    private void setDraftLinkInContext(final TaskContext context, String documentType, String docLinkFieldName) {
+        context.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, docLinkFieldName);
+        context.setTransientObject(DOCUMENT_TYPE, documentType);
     }
 
     private GeneratedDocumentInfo generatePdfDocument(String templateId, String documentType, String documentName,

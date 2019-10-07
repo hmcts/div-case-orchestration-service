@@ -25,13 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features.DN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSAL_DRAFT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_DOCUMENT_LINK_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
@@ -63,11 +57,9 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
         tasksToRun.add(setDNDecisionStateTask);
         tasksToRun.add(validateDNDecisionTask);
         tasksToRun.add(addDecreeNisiDecisionDateTask);
-        Object decreeNisiGranted = caseData.get(DECREE_NISI_GRANTED_CCD_FIELD);
+        Object decreeNisiGranteda = caseData.get(DECREE_NISI_GRANTED_CCD_FIELD);
 
-        String documentType = DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
-        String docLinkFieldName = DN_REFUSAL_DRAFT;
-        if (YES_VALUE.equals(decreeNisiGranted)) {
+        if (isDNApproval(caseData)) {
             tasksToRun.add(addDnOutcomeFlagFieldTask);
             Object costsClaimGranted = caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD);
             if (YES_VALUE.equals(costsClaimGranted)) {
@@ -75,24 +67,24 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
             }
         }
 
-        if (featureToggleService.isFeatureEnabled(DN_REFUSAL)) {
+        if (featureToggleService.isFeatureEnabled(DN_REFUSAL) && !isDNApproval(caseData)) {
             tasksToRun.add(decreeNisiRefusalDocumentGeneratorTask);
             tasksToRun.add(caseFormatterAddDocuments);
-            if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {
-                tasksToRun.add(populateDocLink);
-            }
+            tasksToRun.add(populateDocLink);
         }
 
         Map<String, Object> payloadToReturn = this.execute(
             tasksToRun.stream().toArray(Task[]::new),
             caseData,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
-            ImmutablePair.of(DOCUMENT_TYPE, documentType),
-            ImmutablePair.of(SOL_DOCUMENT_LINK_FIELD, docLinkFieldName)
+            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails)
         );
 
         return payloadToReturn;
+    }
+
+    private boolean isDNApproval(Map<String, Object> caseData) {
+        return YES_VALUE.equals(caseData.get(DECREE_NISI_GRANTED_CCD_FIELD));
     }
 
 }
