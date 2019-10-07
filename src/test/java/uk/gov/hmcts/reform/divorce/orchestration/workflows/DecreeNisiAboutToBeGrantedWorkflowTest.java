@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDnOutcomeFlagFieldTask
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiRefusalDocumentGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetAmendPetitionFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateDNDecisionTask;
 
@@ -71,6 +72,9 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Mock
+    private GetAmendPetitionFeeTask getAmendPetitionFeeTask;
+
+    @Mock
     private FeatureToggleService featureToggleService;
 
     @InjectMocks
@@ -90,7 +94,6 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
 
         Map<String, Object> payloadReturnedByTask = new HashMap<>(inputPayload);
         payloadReturnedByTask.put("addedKey", "addedValue");
-        when(featureToggleService.isFeatureEnabled(eq(Features.DN_REFUSAL))).thenReturn(false);
         when(setDNDecisionStateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(validateDNDecisionTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(addDecreeNisiDecisionDateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(payloadReturnedByTask);
@@ -105,7 +108,6 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         ));
 
         final InOrder inOrder = inOrder(
-            featureToggleService,
             setDNDecisionStateTask,
             validateDNDecisionTask,
             addDecreeNisiDecisionDateTask,
@@ -113,7 +115,6 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
             defineWhoPaysCostsOrderTask
         );
 
-        inOrder.verify(featureToggleService).isFeatureEnabled(eq(Features.DN_REFUSAL));
         inOrder.verify(setDNDecisionStateTask).execute(any(TaskContext.class), eq(inputPayload));
         inOrder.verify(validateDNDecisionTask).execute(any(TaskContext.class), eq(inputPayload));
         inOrder.verify(addDecreeNisiDecisionDateTask).execute(any(TaskContext.class), eq(inputPayload));
@@ -128,7 +129,6 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
 
         Map<String, Object> payloadReturnedByTask = new HashMap<>(inputPayload);
         payloadReturnedByTask.put("addedKey", "addedValue");
-        when(featureToggleService.isFeatureEnabled(eq(Features.DN_REFUSAL))).thenReturn(false);
         when(setDNDecisionStateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(validateDNDecisionTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(addDecreeNisiDecisionDateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(payloadReturnedByTask);
@@ -142,14 +142,12 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         ));
 
         final InOrder inOrder = inOrder(
-            featureToggleService,
             setDNDecisionStateTask,
             validateDNDecisionTask,
             addDecreeNisiDecisionDateTask,
             addDnOutcomeFlagFieldTask
         );
 
-        inOrder.verify(featureToggleService).isFeatureEnabled(eq(Features.DN_REFUSAL));
         inOrder.verify(setDNDecisionStateTask).execute(any(TaskContext.class), eq(inputPayload));
         inOrder.verify(validateDNDecisionTask).execute(any(TaskContext.class), eq(inputPayload));
         inOrder.verify(addDecreeNisiDecisionDateTask).execute(any(TaskContext.class), eq(inputPayload));
@@ -232,6 +230,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         when(setDNDecisionStateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(validateDNDecisionTask.execute(isNotNull(), eq(inputPayload))).thenReturn(inputPayload);
         when(addDecreeNisiDecisionDateTask.execute(isNotNull(), eq(inputPayload))).thenReturn(payloadReturnedByTask);
+        when(getAmendPetitionFeeTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
         when(decreeNisiRefusalDocumentGeneratorTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
         when(caseFormatterAddDocuments.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
 
@@ -246,6 +245,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
             setDNDecisionStateTask,
             validateDNDecisionTask,
             addDecreeNisiDecisionDateTask,
+            getAmendPetitionFeeTask,
             decreeNisiRefusalDocumentGeneratorTask,
             caseFormatterAddDocuments
         );
@@ -254,6 +254,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         inOrder.verify(setDNDecisionStateTask).execute(any(TaskContext.class), eq(inputPayload));
         inOrder.verify(validateDNDecisionTask).execute(any(TaskContext.class), eq(inputPayload));
         inOrder.verify(addDecreeNisiDecisionDateTask).execute(any(TaskContext.class), eq(inputPayload));
+        inOrder.verify(getAmendPetitionFeeTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
         inOrder.verify(decreeNisiRefusalDocumentGeneratorTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
         inOrder.verify(caseFormatterAddDocuments).execute(any(TaskContext.class), eq(payloadReturnedByTask));
 
