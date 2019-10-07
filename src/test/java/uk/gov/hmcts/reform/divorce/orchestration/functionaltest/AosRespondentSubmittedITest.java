@@ -87,7 +87,7 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.errors", nullValue()),
-                hasJsonPath("$.data.D8DocumentsGenerated", isJson())
+                hasJsonPath("$.data.documents", isJson())
             )));
     }
 
