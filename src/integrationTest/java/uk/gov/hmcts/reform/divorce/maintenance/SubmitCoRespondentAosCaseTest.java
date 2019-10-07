@@ -9,7 +9,7 @@ import org.junit.experimental.categories.Category;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.divorce.category.NightlyTest;
+import uk.gov.hmcts.reform.divorce.category.ExtendedTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
 
@@ -61,7 +61,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     private ObjectMapper objectMapper;
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenCaseIsDisallowedState_whenSubmittingCoRespondentAnswers_thenReturnBadRequest() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
@@ -96,7 +96,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     }
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenCaseIsAosAwaiting_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
@@ -115,7 +115,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     }
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenCaseIsAosStarted_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
@@ -134,7 +134,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     }
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenCaseIsAosSubmittedAwaitingAnswer_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -155,7 +155,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     }
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenCaseIsAosOverdue_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -175,7 +175,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     }
 
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenCaseIsAosDefended_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -205,7 +205,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
      * at 23:59.
      */
     @Test
-    @Category(NightlyTest.class)
+    @Category(ExtendedTest.class)
     public void givenCoRespondentIsDefending_whenSubmittingCoRespondentAnswers_thenDueDateIsRecalculated() throws Exception {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
