@@ -61,7 +61,6 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
 
         d8DocumentsGenerated.stream().filter(collectionMember -> {
             Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
-
             return DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE.equals(document.get(DOCUMENT_TYPE));
         }).forEach(collectionMember -> {
             Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);

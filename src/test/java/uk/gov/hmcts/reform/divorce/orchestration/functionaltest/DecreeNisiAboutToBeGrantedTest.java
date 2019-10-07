@@ -64,6 +64,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_DECISION_DATE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
@@ -76,7 +77,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
@@ -293,6 +293,74 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
         stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
         stubFormatterServerEndpoint(documentUpdateRequest, expectedCfsResponse);
+
+        String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
+            ImmutableMap.of(
+                ID, TEST_CASE_ID,
+                CCD_CASE_DATA_FIELD, caseData
+            )
+        ));
+
+        webClient.perform(post(API_URL).header(AUTHORIZATION, AUTH_TOKEN).content(inputJson).contentType(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath(CCD_RESPONSE_DATA_FIELD, allOf(
+                    hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(NO_VALUE)),
+                    hasJsonPath(STATE_CCD_FIELD, equalTo(AWAITING_CLARIFICATION)),
+                    hasJsonPath(DN_DECISION_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat())),
+                    hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD),
+                    hasNoJsonPath(DN_OUTCOME_FLAG_CCD_FIELD)
+                ))
+            )));
+    }
+
+    @Test
+    public void shouldReturnCaseDataPlusClarificationDocument_AndState_WhenDN_NotGranted_AndDnRefusedForMoreInfoWithExistingDocs() throws Exception {
+        List<Map<String, Object>> existingDocuments =
+            buildDocumentCollection(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE, DECREE_NISI_REFUSAL_DOCUMENT_NAME);
+
+        Map<String, Object> caseData = ImmutableMap.of(
+            DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
+            REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE,
+            D8DOCUMENTS_GENERATED, existingDocuments
+        );
+
+        Map<String, Object> documentGenerationRequestCaseData = new HashMap<>();
+        documentGenerationRequestCaseData.putAll(caseData);
+        documentGenerationRequestCaseData.put(D8DOCUMENTS_GENERATED, buildDocumentCollection(DOCUMENT_TYPE_OTHER,
+            DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + TEST_CASE_ID + "-" + FIXED_TIME_EPOCH));
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(documentGenerationRequestCaseData).build();
+
+        final GenerateDocumentRequest documentGenerationRequest =
+            GenerateDocumentRequest.builder()
+                .template(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                .build();
+
+        final GeneratedDocumentInfo documentGenerationResponse =
+            GeneratedDocumentInfo.builder()
+                .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
+                .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
+                .build();
+
+        Map<String, Object> expectedDocumentUpdateRequestData = new HashMap<>();
+        expectedDocumentUpdateRequestData.putAll(documentGenerationRequestCaseData);
+        // Additional fields
+        expectedDocumentUpdateRequestData.putAll(ImmutableMap.of(
+            STATE_CCD_FIELD, AWAITING_CLARIFICATION,
+            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
+        ));
+
+        final DocumentUpdateRequest documentUpdateRequest =
+            DocumentUpdateRequest.builder()
+                .documents(asList(documentGenerationResponse))
+                .caseData(expectedDocumentUpdateRequestData)
+                .build();
+
+        stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
+        stubFormatterServerEndpoint(documentUpdateRequest, expectedDocumentUpdateRequestData);
 
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             ImmutableMap.of(
