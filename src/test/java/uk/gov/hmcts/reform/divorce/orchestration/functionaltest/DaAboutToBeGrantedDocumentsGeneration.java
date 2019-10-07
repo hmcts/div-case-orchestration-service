@@ -53,6 +53,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDaGrantedDetailsTask.LONDON_TIME_ZONE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest {
@@ -93,7 +94,7 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
     public void setup() {
         when(clock.instant()).thenReturn(grantedDate.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(UTC);
-        when(clock.withZone(UTC)).thenReturn(clock);
+        when(clock.withZone(LONDON_TIME_ZONE)).thenReturn(clock);
     }
 
     @Test

@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PRONO
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDaGrantedDetailsTask.LONDON_TIME_ZONE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SetDaGrantedDetailsTaskTest {
@@ -36,7 +37,7 @@ public class SetDaGrantedDetailsTaskTest {
         when(clock.instant()).thenReturn(LocalDateTime.of(
                 2019, 06, 30, 10, 00, 00).toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(UTC);
-        when(clock.withZone(UTC)).thenReturn(clock);
+        when(clock.withZone(LONDON_TIME_ZONE)).thenReturn(clock);
     }
 
     @Test(expected = TaskException.class)
