@@ -4,9 +4,7 @@ import com.jayway.jsonpath.JsonPath;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 
@@ -36,9 +34,6 @@ public class ProcessApplicantDAEligibilityTest extends MockedFunctionalTest {
 
     @Autowired
     private MockMvc webClient;
-
-    @MockBean
-    private EmailClient mockClient;
 
     @Test
     public void shouldReturnCaseData_WhenCalling_GrantDecreeAbsoluteForPetitioner() throws Exception {
