@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_EXTENSION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_LINK_FILENAME_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_LINK_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_TO_PAY_JSON_KEY;
@@ -467,6 +471,8 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         Map<String, Object> document = new HashMap<>();
         document.put(DOCUMENT_TYPE_JSON_KEY, documentType);
         document.put(DOCUMENT_FILENAME_JSON_KEY, documentName);
+        document.put(DOCUMENT_LINK_JSON_KEY,
+            Collections.singletonMap(DOCUMENT_LINK_FILENAME_JSON_KEY, documentName + DOCUMENT_EXTENSION));
 
         Map<String, Object> documentMember = new HashMap<>();
         documentMember.put(VALUE_KEY, document);

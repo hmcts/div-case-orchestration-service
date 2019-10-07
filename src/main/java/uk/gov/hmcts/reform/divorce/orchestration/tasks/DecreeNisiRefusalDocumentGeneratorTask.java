@@ -32,8 +32,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_EXTENSION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_LINK_FILENAME_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_LINK_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_TO_PAY_JSON_KEY;
@@ -65,11 +68,15 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
             Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
             return DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE.equals(document.get(DOCUMENT_TYPE_JSON_KEY));
         }).forEach(collectionMember -> {
+            String newFileName = format(DOCUMENT_FILENAME_FMT, DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD,
+                ccdUtil.getCurrentDateCcdFormat());
+
             Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
             document.put(DOCUMENT_TYPE_JSON_KEY, DOCUMENT_TYPE_OTHER);
-            document.put(DOCUMENT_FILENAME_JSON_KEY,
-                format(DOCUMENT_FILENAME_FMT, DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD,
-                    ccdUtil.getCurrentDateCcdFormat()));
+            document.put(DOCUMENT_FILENAME_JSON_KEY,newFileName);
+
+            Map<String, Object> documentLink = (Map<String, Object>) document.get(DOCUMENT_LINK_JSON_KEY);
+            documentLink.put(DOCUMENT_LINK_FILENAME_JSON_KEY, newFileName.concat(DOCUMENT_EXTENSION));
         });
 
         if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {

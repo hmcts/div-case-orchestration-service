@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -43,7 +44,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_EXTENSION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_LINK_FILENAME_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_LINK_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_TO_PAY_JSON_KEY;
@@ -107,6 +111,10 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         Map<String, Object> document = new HashMap<>();
         document.put(DOCUMENT_TYPE_JSON_KEY, DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE);
         document.put(DOCUMENT_FILENAME_JSON_KEY, DECREE_NISI_REFUSAL_DOCUMENT_NAME);
+        document.put(DOCUMENT_LINK_JSON_KEY, new HashMap<String, Object>() {{
+            put(DOCUMENT_LINK_FILENAME_JSON_KEY,
+                DECREE_NISI_REFUSAL_DOCUMENT_NAME + DOCUMENT_EXTENSION);
+        }});
 
         Map<String, Object> documentMember = new HashMap<>();
         documentMember.put(VALUE_KEY, document);
@@ -153,6 +161,12 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             is(DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + TEST_CASE_ID + "-" + FIXED_TIME_EPOCH));
 
             is(DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + FIXED_DATE));
+        assertThat(initialDocument.get(DOCUMENT_LINK_JSON_KEY),
+            is(new HashMap<String, Object>() {{
+                put(DOCUMENT_LINK_FILENAME_JSON_KEY,
+                    DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + FIXED_DATE + DOCUMENT_EXTENSION);
+            }})
+        );
 
         verify(documentGeneratorClient)
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN));
