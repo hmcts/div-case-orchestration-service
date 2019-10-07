@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDaGrantedDetailsTask;
 
 import java.util.Map;
@@ -37,9 +36,6 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<
     @Autowired
     CaseFormatterAddDocuments caseFormatterAddDocuments;
 
-    @Autowired
-    SendDaGrantedNotificationEmail sendDaGrantedNotificationEmail;
-
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
@@ -47,8 +43,7 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<
             new Task[] {
                 setDaGrantedDetailsTask,
                 documentGenerationTask,
-                caseFormatterAddDocuments,
-                sendDaGrantedNotificationEmail
+                caseFormatterAddDocuments
             },
             caseDetails.getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
