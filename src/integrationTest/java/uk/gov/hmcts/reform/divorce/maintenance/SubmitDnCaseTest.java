@@ -21,8 +21,11 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, userDetails);
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, "aosSubmittedUndefended", userDetails);
 
-        Response cosResponse = submitDnCase(userDetails.getAuthToken(), caseDetails.getId(),
-            "dn-submit.json");
+        Response cosResponse = submitDnCase(
+            userDetails.getAuthToken(),
+            caseDetails.getId(),
+            "dn-submit.json"
+        );
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path("id"));
