@@ -21,8 +21,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.Clock;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,11 +58,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_DECISION_DATE_FIELD;
@@ -69,8 +71,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_EXTENSION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_LINK_FILENAME_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_LINK_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
@@ -92,7 +97,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     private static final String AMEND_PETITION_FEE_CONTEXT_PATH =  "/fees-and-payments/version/1/amend-fee";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
-    private static final long FIXED_TIME_EPOCH = 1000000L;
+    private static final String FIXED_DATE = "2010-10-10";
 
     @Autowired
     private MockMvc webClient;
@@ -109,7 +114,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     @Before
     public void setup() {
         setDnFeature(true);
-        when(clock.instant()).thenReturn(Instant.ofEpochMilli(FIXED_TIME_EPOCH));
+        when(clock.instant()).thenReturn(LocalDate.of(2010, 10, 10).atStartOfDay(UTC).toInstant());
         when(clock.getZone()).thenReturn(UTC);
     }
 
@@ -209,7 +214,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         final GeneratedDocumentInfo documentGenerationResponse =
             GeneratedDocumentInfo.builder()
                 .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-                .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
+                .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
                 .build();
 
         Map<String, Object> dataInput = new HashMap<>();
@@ -256,7 +261,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     @Test
     public void shouldReturnCaseDataPlusClarificationDocument_AndState_WhenDN_NotGranted_AndDnRefusedForMoreInfoWithExistingDocs() throws Exception {
         List<Map<String, Object>> existingDocuments =
-            buildDocumentCollection(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE, DECREE_NISI_REFUSAL_DOCUMENT_NAME);
+            buildDocumentCollection(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE, DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME);
 
         final Map<String, Object> expectedCfsResponse = ObjectMapperTestUtil
             .getJsonFromResourceFile("/jsonExamples/payloads/documentGeneratedCase.json", Map.class);
@@ -271,7 +276,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         documentGenerationRequestCaseData.putAll(caseData);
         documentGenerationRequestCaseData.putAll(ImmutableMap.of(
             D8DOCUMENTS_GENERATED, buildDocumentCollection(DOCUMENT_TYPE_OTHER,
-            DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + TEST_CASE_ID + "-" + FIXED_TIME_EPOCH),
+            DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + FIXED_DATE),
             STATE_CCD_FIELD, AWAITING_CLARIFICATION,
             DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
         ));
@@ -287,7 +292,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         final GeneratedDocumentInfo documentGenerationResponse =
             GeneratedDocumentInfo.builder()
                 .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-                .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
+                .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
                 .build();
 
         Map<String, Object> inputData = new HashMap<>();
@@ -403,7 +408,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         final GeneratedDocumentInfo documentGenerationResponse =
             GeneratedDocumentInfo.builder()
                 .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-                .fileName(DECREE_NISI_REFUSAL_DOCUMENT_NAME + TEST_CASE_ID)
+                .fileName(DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME + TEST_CASE_ID)
                 .build();
 
         expectedCfsResponse.putAll(expectedRequestData);
@@ -496,8 +501,10 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
     private List<Map<String, Object>> buildDocumentCollection(String documentType, String documentName) {
         Map<String, Object> document = new HashMap<>();
-        document.put(DOCUMENT_TYPE, documentType);
-        document.put(DOCUMENT_FILENAME, documentName);
+        document.put(DOCUMENT_TYPE_JSON_KEY, documentType);
+        document.put(DOCUMENT_FILENAME_JSON_KEY, documentName);
+        document.put(DOCUMENT_LINK_JSON_KEY,
+            Collections.singletonMap(DOCUMENT_LINK_FILENAME_JSON_KEY, documentName + DOCUMENT_EXTENSION));
 
         Map<String, Object> documentMember = new HashMap<>();
         documentMember.put(VALUE_KEY, document);
