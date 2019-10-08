@@ -873,7 +873,7 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/issue-aos-pack-offline/party/{party}")
+    @PostMapping(path = "/issue-aos-pack-offline/parties/{party}")
     @ApiOperation(value = "Callback to issue AOS pack (offline)")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed")})
