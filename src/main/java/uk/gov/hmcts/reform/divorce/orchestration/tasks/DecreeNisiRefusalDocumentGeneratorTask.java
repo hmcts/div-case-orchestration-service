@@ -86,6 +86,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
             );
 
             documentCollection.add(generatedDocumentInfo);
+            setDraftLinkInContext(context, DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE, DN_REFUSAL_DRAFT);
         } else if (DN_REFUSED_REJECT_OPTION.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {
             FeeResponse amendFee = context.getTransientObject(AMEND_PETITION_FEE_JSON_KEY);
 
