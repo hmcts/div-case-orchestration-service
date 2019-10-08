@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.controller.internal;
+package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.event.listener.DataExtractionRe
 import java.time.LocalDate;
 import java.util.List;
 
+import static java.time.Month.AUGUST;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.times;
@@ -23,7 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtract
 import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DN;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DataExtractionInternalControllerTest {
+public class DataExtractionControllerTest {
 
     private final LocalDate yesterday = LocalDate.now().minusDays(1);
 
@@ -34,7 +36,7 @@ public class DataExtractionInternalControllerTest {
     private ArgumentCaptor<DataExtractionRequest> dataExtractionRequestArgumentCaptor;
 
     @InjectMocks
-    private DataExtractionInternalController classUnderTest;
+    private DataExtractionController classUnderTest;
 
     @Test
     public void shouldCallJob_ForFamilyManDataExtraction() {
@@ -46,6 +48,18 @@ public class DataExtractionInternalControllerTest {
         verifyEvent(allEvents.get(0), DA);
         verifyEvent(allEvents.get(1), AOS);
         verifyEvent(allEvents.get(2), DN);
+    }
+
+    @Test
+    public void shouldCallListenerWithGivenParameters() {
+        LocalDate lastModifiedDate = LocalDate.of(2019, AUGUST, 12);
+        classUnderTest.startDataExtractionToFamilyManForGivenStatusAndDate(DA, lastModifiedDate);
+
+        verify(listener).onApplicationEvent(dataExtractionRequestArgumentCaptor.capture());
+        DataExtractionRequest dataExtractionRequest = dataExtractionRequestArgumentCaptor.getValue();
+        assertThat(dataExtractionRequest.getSource(), is(instanceOf(DataExtractionController.class)));
+        assertThat(dataExtractionRequest.getStatus(), is(DA));
+        assertThat(dataExtractionRequest.getDate(), is(lastModifiedDate));
     }
 
     private void verifyEvent(DataExtractionRequest event, Status expectedStatus) {

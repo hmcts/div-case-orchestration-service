@@ -42,14 +42,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * This test uses the service (just like the scheduled job will).
+ */
 public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
 
-    private static final String DA_DESIRED_STATES = "[\"divorcegranted\"]";
+    protected static final String DA_DESIRED_STATES = "[\"divorcegranted\"]";
     private static final String AOS_DESIRED_STATES = "[\"awaitinglegaladvisorreferral\"]";
     private static final String DN_DESIRED_STATES = "[\"dnisrefused\", \"dnpronounced\"]";
 
     private static final DateTimeFormatter FILE_NAME_DATE_FORMAT = ofPattern("ddMMyyyy000000");
-    private static final String TEST_AUTH_TOKEN = "testAuthToken";
+    protected static final String TEST_AUTH_TOKEN = "testAuthToken";
 
     private String yesterday;
 
@@ -57,22 +60,21 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
     private DataExtractionService dataExtractionService;
 
     @MockBean
-    private DataExtractionEmailClient mockEmailClient;
+    protected DataExtractionEmailClient mockEmailClient;
 
     @MockBean
-    private AuthUtil authUtil;
+    protected AuthUtil authUtil;
 
     @Captor
     private ArgumentCaptor<File> attachmentCaptor;
 
     @Before
     public void setUp() {
+        maintenanceServiceServer.resetAll();
+
         when(authUtil.getCaseworkerToken()).thenReturn(TEST_AUTH_TOKEN);
         yesterday = LocalDate.now().minusDays(1).format(FILE_NAME_DATE_FORMAT);
-    }
 
-    @Test
-    public void shouldEmailCsvFileWithCase_ForDecreeAbsoluteIssued() throws Exception {
         //Mock CMS to return a case like Elastic search will
         stubJsonResponse(DA_DESIRED_STATES, "{"
             + "  \"cases\": [{"
@@ -120,7 +122,10 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
             + "    }"
             + "  }]"
             + "}");
+    }
 
+    @Test
+    public void shouldEmailCsvFileWithCase_ForDecreeAbsoluteIssued() throws Exception {
         dataExtractionService.requestDataExtractionForPreviousDay();
 
         await().untilAsserted(() -> {
