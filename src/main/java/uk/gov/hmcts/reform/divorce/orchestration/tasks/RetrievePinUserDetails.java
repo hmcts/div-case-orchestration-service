@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.idam.client.models.AuthenticateUserResponse;
 import uk.gov.hmcts.reform.idam.client.models.ExchangeCodeRequest;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
@@ -45,12 +46,17 @@ public class RetrievePinUserDetails implements Task<UserDetails> {
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) throws TaskException {
         final String pinError = "Invalid pin";
+        AuthenticateUserResponse pinResponse = null;
 
-        AuthenticateUserResponse pinResponse = idamClient.authenticatePinUser(
-            context.getTransientObject(RESPONDENT_PIN),
-            authClientId,
-            authRedirectUrl,
-            null);
+        try {
+            pinResponse = idamClient.authenticatePinUser(
+                context.getTransientObject(RESPONDENT_PIN),
+                null);
+        } catch (UnsupportedEncodingException ex) {
+            log.error("Problem encoding callback URL for IDAM. Check config to ensure this is set correctly.");
+            throw new TaskException("Problem with IDAM config");
+        }
+
 
         if (pinResponse == null) {
             throw new TaskException(new AuthenticationError(pinError));

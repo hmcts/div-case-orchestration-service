@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.idam.client.models.ExchangeCodeRequest;
 import uk.gov.hmcts.reform.idam.client.models.TokenExchangeResponse;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,13 +65,13 @@ public class RetrievePinUserDetailsUTest {
     }
 
     @Test
-    public void givenHttpStatusIsNotFoundOrOK_whenExecute_thenThrowException() {
+    public void givenHttpStatusIsNotFoundOrOK_whenExecute_thenThrowException() throws UnsupportedEncodingException {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
-        when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null))
+        when(idamClient.authenticatePinUser(TEST_PIN, null))
             .thenReturn(null);
 
         try {
@@ -79,26 +80,34 @@ public class RetrievePinUserDetailsUTest {
             assertTrue(e.getCause() instanceof AuthenticationError);
         }
 
-        verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null);
+        verify(idamClient).authenticatePinUser(TEST_PIN, null);
     }
 
     @Test(expected = TaskException.class)
-    public void givenPinUserAuth_whenDataIsNull_thenThrowException() throws TaskException {
+    public void givenPinUserAuth_whenDataIsNull_thenThrowException() throws TaskException, UnsupportedEncodingException {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
-        when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null))
+        when(idamClient.authenticatePinUser(TEST_PIN, null))
             .thenReturn(null);
 
         classUnderTest.execute(taskContext, payload);
 
-        verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null);
+        verify(idamClient).authenticatePinUser(TEST_PIN, null);
     }
 
     @Test(expected = TaskException.class)
-    public void givenPinUserNotFound_whenExecute_thenThrowException() throws TaskException {
+    public void givenInvalidRedirectUrlEncoding_whenAuthenticatePinUser_thenThrowException() throws TaskException {
+        final UserDetails payload = UserDetails.builder().build();
+        final TaskContext taskContext = new DefaultTaskContext();
+        ReflectionTestUtils.setField(classUnderTest, "authRedirectUrl", "������", null);
+        classUnderTest.execute(taskContext, payload);
+    }
+
+    @Test(expected = TaskException.class)
+    public void givenPinUserNotFound_whenExecute_thenThrowException() throws TaskException, UnsupportedEncodingException {
         final AuthenticateUserResponse authenticateUserResponse = new AuthenticateUserResponse(TEST_PIN_CODE);
         final TokenExchangeResponse tokenExchangeResponse = new TokenExchangeResponse(BEARER_AUTH_TOKEN);
 
@@ -107,7 +116,7 @@ public class RetrievePinUserDetailsUTest {
         final TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
-        when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null))
+        when(idamClient.authenticatePinUser(TEST_PIN, null))
             .thenReturn(authenticateUserResponse);
         when(idamClient.exchangeCode(any(ExchangeCodeRequest.class)))
             .thenReturn(tokenExchangeResponse);
@@ -115,7 +124,7 @@ public class RetrievePinUserDetailsUTest {
 
         classUnderTest.execute(taskContext, payload);
 
-        verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null);
+        verify(idamClient).authenticatePinUser(TEST_PIN, null);
         ArgumentCaptor<ExchangeCodeRequest> captor = ArgumentCaptor.forClass(ExchangeCodeRequest.class);
         verify(idamClient).exchangeCode(captor.capture());
         ExchangeCodeRequest actualExchangeCodeRequest = captor.getValue();
@@ -128,7 +137,7 @@ public class RetrievePinUserDetailsUTest {
     }
 
     @Test
-    public void givenPinUserExists_whenExecute_thenProceedAsExpected() throws TaskException {
+    public void givenPinUserExists_whenExecute_thenProceedAsExpected() throws TaskException, UnsupportedEncodingException {
         final AuthenticateUserResponse authenticateUserResponse = new AuthenticateUserResponse(TEST_PIN_CODE);
         final TokenExchangeResponse tokenExchangeResponse = new TokenExchangeResponse(BEARER_AUTH_TOKEN);
 
@@ -142,7 +151,7 @@ public class RetrievePinUserDetailsUTest {
         taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         final UserDetails pinUserDetails = UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
-        when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null))
+        when(idamClient.authenticatePinUser(TEST_PIN, null))
             .thenReturn(authenticateUserResponse);
         when(idamClient.exchangeCode(any(ExchangeCodeRequest.class))).thenReturn(tokenExchangeResponse);
         when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(pinUserDetails);
@@ -152,7 +161,7 @@ public class RetrievePinUserDetailsUTest {
         assertEquals(pinUserDetails, actual);
         assertEquals(TEST_LETTER_HOLDER_ID_CODE, taskContext.getTransientObject(RESPONDENT_LETTER_HOLDER_ID));
 
-        verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL, null);
+        verify(idamClient).authenticatePinUser(TEST_PIN, null);
         ArgumentCaptor<ExchangeCodeRequest> captor = ArgumentCaptor.forClass(ExchangeCodeRequest.class);
         verify(idamClient).exchangeCode(captor.capture());
         ExchangeCodeRequest actualExchangeCodeRequest = captor.getValue();

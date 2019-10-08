@@ -18,13 +18,13 @@ import java.util.stream.Stream;
 
 public class IdamUtils {
 
-    @Value("${idam.client.baseUrl}")
+    @Value("${auth.idam.client.baseUrl}")
     private String idamUserBaseUrl;
 
     @Value("${auth.idam.client.redirectUri}")
     private String idamRedirectUri;
 
-    @Value("${idam.client.secret}")
+    @Value("${auth.idam.client.secret}")
     private String idamSecret;
 
     public PinResponse generatePin(String firstName, String lastName, String authToken) {
