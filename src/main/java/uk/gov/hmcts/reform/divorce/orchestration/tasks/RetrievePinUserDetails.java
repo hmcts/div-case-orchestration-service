@@ -46,7 +46,7 @@ public class RetrievePinUserDetails implements Task<UserDetails> {
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) throws TaskException {
         final String pinError = "Invalid pin";
-        AuthenticateUserResponse pinResponse = null;
+        AuthenticateUserResponse pinResponse;
 
         try {
             pinResponse = idamClient.authenticatePinUser(
@@ -56,7 +56,6 @@ public class RetrievePinUserDetails implements Task<UserDetails> {
             log.error("Problem encoding callback URL for IDAM. Check config to ensure this is set correctly.");
             throw new TaskException("Problem with IDAM config");
         }
-
 
         if (pinResponse == null) {
             throw new TaskException(new AuthenticationError(pinError));
@@ -80,7 +79,6 @@ public class RetrievePinUserDetails implements Task<UserDetails> {
         final Map<String, Object> caseData = ((CaseDetails) context
             .getTransientObject(CASE_DETAILS_JSON_KEY))
             .getCaseData();
-
         final String coRespondentLetterHolderId = (String) caseData.get(CO_RESPONDENT_LETTER_HOLDER_ID);
         final String respondentLetterHolderId = (String) caseData.get(RESPONDENT_LETTER_HOLDER_ID);
         final boolean isRespondent = letterHolderId.equals(respondentLetterHolderId);
