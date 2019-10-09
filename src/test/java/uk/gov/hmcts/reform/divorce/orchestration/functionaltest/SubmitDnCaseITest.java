@@ -229,7 +229,7 @@ public class SubmitDnCaseITest extends IdamTestSupport {
                 put("DesertionAskedToResumeDNDetails", null);
                 put("DocumentsUploadedDnClarification", null);
                 put("DnClarificationResponse", null);
-                put("DnClarificationUploadAnyOtherDocuments", null);
+                put("DnClarificationUploadDocuments", null);
             }
         };
     }
