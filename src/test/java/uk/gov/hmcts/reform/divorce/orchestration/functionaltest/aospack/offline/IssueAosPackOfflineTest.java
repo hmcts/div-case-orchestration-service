@@ -70,9 +70,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
 @DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
-public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
+public class IssueAosPackOfflineTest extends MockedFunctionalTest {
 
-    private static final String API_URL = "/issue-aos-pack-offline/party/%s";
+    private static final String API_URL = "/issue-aos-pack-offline/parties/%s";
     private static final String USER_TOKEN = "anytoken";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";

@@ -1135,6 +1135,34 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void testProcessAosOfflineAnswers_callsRightService() throws CaseOrchestrationServiceException {
+        when(aosPackOfflineService.processAosPackOfflineAnswers(any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(singletonMap("incomingKey", "incomingValue")).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.processAosPackOfflineAnswers(ccdCallbackRequest, RESPONDENT);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+        verify(aosPackOfflineService).processAosPackOfflineAnswers(eq(caseDetails.getCaseData()), eq(RESPONDENT));
+    }
+
+    @Test
+    public void testProcessAosOfflineAnswers_returnsErrors_whenServiceThrowsException() throws CaseOrchestrationServiceException {
+        when(aosPackOfflineService.processAosPackOfflineAnswers(any(), any()))
+            .thenThrow(new CaseOrchestrationServiceException(new RuntimeException("Error message")));
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.processAosPackOfflineAnswers(ccdCallbackRequest, RESPONDENT);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), hasItem(equalTo("Error message")));
+        assertThat(response.getBody().getData(), is(nullValue()));
+    }
+
+    @Test
     public void testRemoveFromCallbackListed_ForCoRespondent_callsRightService() throws WorkflowException, JsonProcessingException {
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();

@@ -59,7 +59,6 @@ public class CallbackController {
     @Autowired
     private AosPackOfflineService aosPackOfflineService;
 
-
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Request clarification from petitioner via notification ")
     @ApiResponses(value = {
@@ -873,7 +872,7 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/issue-aos-pack-offline/party/{party}")
+    @PostMapping(path = "/issue-aos-pack-offline/parties/{party}")
     @ApiOperation(value = "Callback to issue AOS pack (offline)")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed")})
@@ -899,6 +898,30 @@ public class CallbackController {
         }
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(path = "/processAosOfflineAnswers/parties/{party}")
+    @ApiOperation(value = "Callback to issue AOS pack (offline)")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed")})
+    public ResponseEntity<CcdCallbackResponse> processAosPackOfflineAnswers(
+        @RequestBody @ApiParam("CaseData")
+            CcdCallbackRequest ccdCallbackRequest,
+        @PathVariable("party") @ApiParam("Party in divorce (respondent or co-respondent")
+            DivorceParty party) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+            responseBuilder.data(aosPackOfflineService.processAosPackOfflineAnswers(caseDetails.getCaseData(), party));
+            log.info("Processed AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());
+        } catch (CaseOrchestrationServiceException exception) {
+            log.error(exception.getMessage(), exception);
+            responseBuilder.errors(singletonList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(responseBuilder.build());
     }
 
     @PostMapping(path = "/listing/remove-bulk-link")
