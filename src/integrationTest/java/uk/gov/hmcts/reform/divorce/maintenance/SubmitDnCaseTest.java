@@ -40,6 +40,9 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
     public void whenSubmitDnWithAwaitingClarification_thenProceedAsExpected() throws Exception {
         updateCaseForCitizen(TEST_AOS_STARTED_EVENT_ID);
         updateCaseForCitizen(AOS_SUBMITTED_UNDEFENDED_EVENT_ID);
+        submitDnCase();
+
+        // Move to AwaitingClarification
         updateCaseForCaseworker("refertoLegalAdvisor");
         updateCaseForCaseworker("dnClarificationRequested");
 
