@@ -227,10 +227,8 @@ public class SubmitDnCaseITest extends IdamTestSupport {
                 put("DesertionAskedToResumeDN", null);
                 put("DesertionAskedToResumeDNRefused", null);
                 put("DesertionAskedToResumeDNDetails", null);
-                put("RefusalClarificationReason", null);
-                put("RefusalClarificationAdditionalInfo", null);
-                put("DnClarificationResponse", null);
                 put("DocumentsUploadedDnClarification", null);
+                put("DnClarificationResponse", null);
                 put("DnOutcomeCase", null);
             }
         };
