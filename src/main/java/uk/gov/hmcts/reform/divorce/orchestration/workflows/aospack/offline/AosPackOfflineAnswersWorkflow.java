@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
+
 @Component
 public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
@@ -21,7 +23,7 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
     public Map<String, Object> run(Map<String, Object> payload, DivorceParty divorceParty) throws WorkflowException {
 
         List<Task> tasks = new ArrayList<>();
-        if (divorceParty.equals(DivorceParty.RESPONDENT)) {
+        if (divorceParty.equals(RESPONDENT)) {
             tasks.add(respondentAosAnswersProcessor);
         }
 

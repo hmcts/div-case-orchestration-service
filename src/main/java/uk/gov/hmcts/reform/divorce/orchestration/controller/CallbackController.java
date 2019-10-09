@@ -914,7 +914,9 @@ public class CallbackController {
         CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
 
         try {
-            responseBuilder.data(aosPackOfflineService.processAosPackOfflineAnswers(ccdCallbackRequest.getCaseDetails().getCaseData(), party));
+            CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+            responseBuilder.data(aosPackOfflineService.processAosPackOfflineAnswers(caseDetails.getCaseData(), party));
+            log.info("Processed AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());
         } catch (CaseOrchestrationServiceException exception) {
             log.error(exception.getMessage(), exception);
             responseBuilder.errors(singletonList(exception.getMessage()));

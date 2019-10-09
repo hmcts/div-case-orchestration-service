@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.lang.Boolean.FALSE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_SUBMITTED_AWAITING_ANSWER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DECREE_NISI;
@@ -42,17 +41,17 @@ public class RespondentAosAnswersProcessor implements Task<Map<String, Object>> 
         boolean respondentDefendingDivorce = Optional.ofNullable(payload.get(RESP_WILL_DEFEND_DIVORCE))
             .map(String.class::cast)
             .map(YES_VALUE::equalsIgnoreCase)
-            .orElse(FALSE);
+            .orElse(false);
 
         String reasonForDivorce = getMandatoryPropertyValueAsString(payload, D_8_REASON_FOR_DIVORCE);
 
         if (respondentDefendingDivorce) {
             newState = AOS_SUBMITTED_AWAITING_ANSWER;
-        } else if (ADULTERY.equalsIgnoreCase(reasonForDivorce) || SEPARATION_TWO_YEARS.equalsIgnoreCase(reasonForDivorce)) {
+        } else if (isReasonAdulteryOrTwoYearsSeparation(reasonForDivorce)) {
             boolean respondentAdmitsOrConsent = Optional.ofNullable(payload.get(RESP_ADMIT_OR_CONSENT_TO_FACT))
                 .map(String.class::cast)
                 .map(YES_VALUE::equalsIgnoreCase)
-                .orElse(FALSE);
+                .orElse(false);
 
             if (respondentAdmitsOrConsent) {
                 newState = AWAITING_DECREE_NISI;
@@ -64,6 +63,10 @@ public class RespondentAosAnswersProcessor implements Task<Map<String, Object>> 
         }
 
         return newState;
+    }
+
+    private boolean isReasonAdulteryOrTwoYearsSeparation(String reasonForDivorce) {
+        return ADULTERY.equalsIgnoreCase(reasonForDivorce) || SEPARATION_TWO_YEARS.equalsIgnoreCase(reasonForDivorce);
     }
 
 }
