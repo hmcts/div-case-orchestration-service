@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RecordIsUsingOfflineChannel;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter;
 
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOffl
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_PARTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_GENERATION_REQUESTS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
@@ -84,6 +86,9 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
     private BulkPrinter bulkPrinter;
 
     @Autowired
+    private RecordIsUsingOfflineChannel recordIsUsingOfflineChannel;
+
+    @Autowired
     private ModifyDueDate modifyDueDate;
 
     public Map<String, Object> run(String authToken, CaseDetails caseDetails, DivorceParty divorceParty) throws WorkflowException {
@@ -102,6 +107,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
         tasks.add(caseFormatterAddDocuments);
         tasks.add(fetchPrintDocsFromDmStore);
         tasks.add(bulkPrinter);
+        tasks.add(recordIsUsingOfflineChannel);
         if (divorceParty.equals(RESPONDENT)) {
             tasks.add(modifyDueDate);
         }
@@ -112,7 +118,8 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
             ImmutablePair.of(DOCUMENT_GENERATION_REQUESTS_KEY, documentGenerationRequestsList),
             ImmutablePair.of(BULK_PRINT_LETTER_TYPE, letterType),
-            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, documentTypesToPrint)
+            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, documentTypesToPrint),
+            ImmutablePair.of(DIVORCE_PARTY, divorceParty)
         );
     }
 

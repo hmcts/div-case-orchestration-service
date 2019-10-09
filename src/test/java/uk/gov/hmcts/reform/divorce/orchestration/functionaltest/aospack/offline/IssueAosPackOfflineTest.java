@@ -72,6 +72,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOffl
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
@@ -305,6 +306,72 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(allOf(isJson())))
                 .andExpect(content().string(hasNoJsonPath("$.data.dueDate")));
+    }
+
+    @Test
+    public void testEndpointReturnsRespContactMethodIsDigitalSetToNoInResponse_ForRespondent() throws Exception {
+
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        caseDetails.getCaseData().put("D8ReasonForDivorce", SEPARATION_TWO_YEARS);
+
+        GenerateDocumentRequest invitationLetterDocumentRequest = stubDgsInvitationLetterUsing(
+                RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID, RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, caseDetails);
+        String invitationLetterFilename = RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
+
+        GenerateDocumentRequest formDocumentRequest = stubDgsFormUsing(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
+                AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE, AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME, caseDetails);
+        String formFilename = AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME + caseDetails.getCaseId();
+
+        //Stubbing CFS
+        stubFormatterServerEndpoint(asList(
+                ImmutablePair.of(invitationLetterFilename, RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE),
+                ImmutablePair.of(formFilename, AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE)
+        ));
+
+        webClient.perform(post(format(API_URL, RESPONDENT.getDescription()))
+                .content(convertObjectToJsonString(ccdCallbackRequest))
+                .header(AUTHORIZATION, USER_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        isJson(),
+                        hasJsonPath("$.data.RespContactMethodIsDigital", is(NO_VALUE)))));
+    }
+
+    @Test
+    public void testEndpointReturnsCoRespContactMethodIsDigitalSetToInResponse_ForCoRespondent() throws Exception {
+
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        caseDetails.getCaseData().put("D8ReasonForDivorce", ADULTERY);
+
+        GenerateDocumentRequest invitationLetterDocumentRequest = stubDgsInvitationLetterUsing(
+                CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID, CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, caseDetails);
+        String invitationLetterFilename = CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
+
+        GenerateDocumentRequest formDocumentRequest = stubDgsFormUsing(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
+                AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE, AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME, caseDetails);
+        String formFilename = AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME + caseDetails.getCaseId();
+
+        //Stubbing CFS
+        stubFormatterServerEndpoint(asList(
+                ImmutablePair.of(invitationLetterFilename, CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE),
+                ImmutablePair.of(formFilename, AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE)
+        ));
+
+        webClient.perform(post(format(API_URL, CO_RESPONDENT.getDescription()))
+                .content(convertObjectToJsonString(ccdCallbackRequest))
+                .header(AUTHORIZATION, USER_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        isJson(),
+                        hasJsonPath("$.data.CoRespContactMethodIsDigital", is(NO_VALUE)))));
     }
 
     private GenerateDocumentRequest stubDgsInvitationLetterUsing(String templateId, String documentType, CaseDetails caseDetails) {
