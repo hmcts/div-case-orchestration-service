@@ -22,10 +22,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.Div
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RecordIsUsingOfflineChannelTest {
+public class MarkJourneyAsOfflineTest {
 
     @InjectMocks
-    private RecordIsUsingOfflineChannel recordIsUsingOfflineChannel;
+    private MarkJourneyAsOffline markJourneyAsOffline;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -38,29 +38,21 @@ public class RecordIsUsingOfflineChannelTest {
 
     @Test
     public void whenExecute_thenRespContactMethodIsDigitalIsSetToNo_forRespondent() {
-        setPartyToRespondent();
-        executeAndExpectValueIsNoFor(RESP_IS_USING_DIGITAL_CHANNEL);
+        context.setTransientObject(DIVORCE_PARTY, RESPONDENT);
+
+        Map<String, Object> returnedPayload = markJourneyAsOffline.execute(context, testData);
+        assertThat(returnedPayload, allOf(
+                hasEntry(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
+        ));
     }
 
     @Test
     public void whenExecute_thenCoRespContactMethodIsDigitalIsSetToNo_forCoRespondent() {
-        setPartyToCoRespondent();
-        executeAndExpectValueIsNoFor(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL);
-    }
-
-
-    private void setPartyToRespondent() {
-        context.setTransientObject(DIVORCE_PARTY, RESPONDENT);
-    }
-
-    private void setPartyToCoRespondent() {
         context.setTransientObject(DIVORCE_PARTY, CO_RESPONDENT);
-    }
 
-    private void executeAndExpectValueIsNoFor(String isUsingDigitalChannel) {
-        Map<String, Object> returnedPayload = recordIsUsingOfflineChannel.execute(context, testData);
+        Map<String, Object> returnedPayload = markJourneyAsOffline.execute(context, testData);
         assertThat(returnedPayload, allOf(
-                hasEntry(isUsingDigitalChannel, NO_VALUE)
+                hasEntry(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
         ));
     }
 }

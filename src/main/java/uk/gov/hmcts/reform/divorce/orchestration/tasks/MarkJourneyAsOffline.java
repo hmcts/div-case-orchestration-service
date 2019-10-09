@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.Div
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 
 @Service
-public class RecordIsUsingOfflineChannel implements Task<Map<String, Object>> {
+public class MarkJourneyAsOffline implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload)  {
@@ -23,7 +23,7 @@ public class RecordIsUsingOfflineChannel implements Task<Map<String, Object>> {
 
         if (RESPONDENT.equals(divorceParty)) {
             payload.put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
-        } else if (divorceParty.equals(CO_RESPONDENT)) {
+        } else if (CO_RESPONDENT.equals(divorceParty)) {
             payload.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
         }
         return payload;

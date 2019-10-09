@@ -12,9 +12,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RecordIsUsingOfflineChannel;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter;
 
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
     private BulkPrinter bulkPrinter;
 
     @Autowired
-    private RecordIsUsingOfflineChannel recordIsUsingOfflineChannel;
+    private MarkJourneyAsOffline markJourneyAsOffline;
 
     @Autowired
     private ModifyDueDate modifyDueDate;
@@ -107,7 +107,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
         tasks.add(caseFormatterAddDocuments);
         tasks.add(fetchPrintDocsFromDmStore);
         tasks.add(bulkPrinter);
-        tasks.add(recordIsUsingOfflineChannel);
+        tasks.add(markJourneyAsOffline);
         if (divorceParty.equals(RESPONDENT)) {
             tasks.add(modifyDueDate);
         }

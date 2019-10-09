@@ -17,9 +17,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RecordIsUsingOfflineChannel;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter;
 
 import java.util.HashMap;
@@ -114,7 +114,7 @@ public class IssueAosPackOfflineWorkflowTest {
     private ModifyDueDate modifyDueDate;
 
     @Mock
-    private RecordIsUsingOfflineChannel recordIsUsingOfflineChannel;
+    private MarkJourneyAsOffline markJourneyAsOffline;
 
     @InjectMocks
     private IssueAosPackOfflineWorkflow classUnderTest;
@@ -133,7 +133,7 @@ public class IssueAosPackOfflineWorkflowTest {
         when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(singletonMap("returnedKey2", "returnedValue2"));
         when(fetchPrintDocsFromDmStore.execute(any(), any())).thenReturn(singletonMap("returnedKey3", "returnedValue3"));
         when(bulkPrinterTask.execute(any(), any())).thenReturn(singletonMap("returnedKey4", "returnedValue4"));
-        when(recordIsUsingOfflineChannel.execute(any(), any())).thenReturn(singletonMap("returnedKey5", "returnedValue5"));
+        when(markJourneyAsOffline.execute(any(), any())).thenReturn(singletonMap("returnedKey5", "returnedValue5"));
         when(modifyDueDate.execute(any(), any())).thenReturn(singletonMap("returnedKey6", "returnedValue6"));
         caseDetails = CaseDetails.builder().caseData(payload).build();
     }
@@ -154,7 +154,7 @@ public class IssueAosPackOfflineWorkflowTest {
             )
         );
         verifyDocumentGeneratorReceivesExpectedParameters(expectedDocumentGenerationRequests);
-        verifyRecordIsUsingOfflineChannelReceivesExpectedParameterWithValueOf(RESPONDENT);
+        verifyMarkJourneyAsOfflineReceivesExpectedParameterWithValueOf(RESPONDENT);
         verifyTasksAreCalledInOrder();
         verifyModifyDueDateIsCalled();
         verifyBulkPrintIsCalledAsExpected(AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE,
@@ -177,7 +177,7 @@ public class IssueAosPackOfflineWorkflowTest {
             )
         );
         verifyDocumentGeneratorReceivesExpectedParameters(expectedDocumentGenerationRequests);
-        verifyRecordIsUsingOfflineChannelReceivesExpectedParameterWithValueOf(RESPONDENT);
+        verifyMarkJourneyAsOfflineReceivesExpectedParameterWithValueOf(RESPONDENT);
         verifyTasksAreCalledInOrder();
         verifyModifyDueDateIsCalled();
         verifyBulkPrintIsCalledAsExpected(AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE,
@@ -200,7 +200,7 @@ public class IssueAosPackOfflineWorkflowTest {
             )
         );
         verifyDocumentGeneratorReceivesExpectedParameters(expectedDocumentGenerationRequests);
-        verifyRecordIsUsingOfflineChannelReceivesExpectedParameterWithValueOf(RESPONDENT);
+        verifyMarkJourneyAsOfflineReceivesExpectedParameterWithValueOf(RESPONDENT);
         verifyTasksAreCalledInOrder();
         verifyModifyDueDateIsCalled();
         verifyBulkPrintIsCalledAsExpected(AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE,
@@ -223,7 +223,7 @@ public class IssueAosPackOfflineWorkflowTest {
             )
         );
         verifyDocumentGeneratorReceivesExpectedParameters(expectedDocumentGenerationRequests);
-        verifyRecordIsUsingOfflineChannelReceivesExpectedParameterWithValueOf(RESPONDENT);
+        verifyMarkJourneyAsOfflineReceivesExpectedParameterWithValueOf(RESPONDENT);
         verifyTasksAreCalledInOrder();
         verifyModifyDueDateIsCalled();
         verifyBulkPrintIsCalledAsExpected(AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE,
@@ -246,7 +246,7 @@ public class IssueAosPackOfflineWorkflowTest {
             )
         );
         verifyDocumentGeneratorReceivesExpectedParameters(expectedDocumentGenerationRequests);
-        verifyRecordIsUsingOfflineChannelReceivesExpectedParameterWithValueOf(RESPONDENT);
+        verifyMarkJourneyAsOfflineReceivesExpectedParameterWithValueOf(RESPONDENT);
         verifyTasksAreCalledInOrder();
         verifyModifyDueDateIsCalled();
         verifyBulkPrintIsCalledAsExpected(AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE,
@@ -273,7 +273,7 @@ public class IssueAosPackOfflineWorkflowTest {
             )
         );
         verifyDocumentGeneratorReceivesExpectedParameters(expectedDocumentGenerationRequests);
-        verifyRecordIsUsingOfflineChannelReceivesExpectedParameterWithValueOf(CO_RESPONDENT);
+        verifyMarkJourneyAsOfflineReceivesExpectedParameterWithValueOf(CO_RESPONDENT);
         verifyTasksAreCalledInOrder();
         verifyModifyDueDateIsNotCalled();
 
@@ -293,7 +293,7 @@ public class IssueAosPackOfflineWorkflowTest {
 
     }
 
-    private void verifyRecordIsUsingOfflineChannelReceivesExpectedParameterWithValueOf(DivorceParty divorceParty) {
+    private void verifyMarkJourneyAsOfflineReceivesExpectedParameterWithValueOf(DivorceParty divorceParty) {
         TaskContext taskContext = taskContextArgumentCaptor.getValue();
         assertThat(taskContext.getTransientObject(DIVORCE_PARTY), is(divorceParty));
     }
@@ -311,7 +311,7 @@ public class IssueAosPackOfflineWorkflowTest {
             Matchers.<String, Object>hasEntry("returnedKey3", "returnedValue3")
         )));
 
-        verify(recordIsUsingOfflineChannel).execute(taskContextArgumentCaptor.capture(), argThat(allOf(
+        verify(markJourneyAsOffline).execute(taskContextArgumentCaptor.capture(), argThat(allOf(
                 Matchers.<String, Object>hasEntry("returnedKey4", "returnedValue4")
         )));
     }
