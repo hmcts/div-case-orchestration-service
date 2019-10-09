@@ -5,7 +5,6 @@ java:
         FEATURE_DN_REFUSAL: "true"
         FEATURE_RESP_SOLICITOR_DETAILS: "true"
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: false
-        SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_ENABLED: true
         DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
         DATAEXTRACTION_STATUS_AOS_EMAILTO: aos_data_extraction@sharklasers.com
         DATAEXTRACTION_STATUS_DN_EMAILTO: dn_data_extraction@sharklasers.com
