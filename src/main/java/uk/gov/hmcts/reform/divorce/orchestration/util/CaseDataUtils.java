@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -10,11 +11,20 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_ENDCLAIM_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_OPTIONS_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsObject;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
@@ -63,5 +73,30 @@ public class CaseDataUtils {
 
         return LocalDate.parse(getMandatoryPropertyValueAsString(hearingDateTime.getValue(), DATE_OF_HEARING_CCD_FIELD),
                 ofPattern(CCD_DATE_FORMAT));
+    }
+
+    public static String getCaseLinkValue(Map<String, Object> caseData, String fieldName ) {
+        return Optional.ofNullable(getFieldAsStringObjectMap(caseData,fieldName))
+            .map(mapData -> mapData.get(CASE_REFERENCE_FIELD))
+            .map(String.class::cast)
+            .orElse(null);
+    }
+
+    public static Map<String, Object> getFieldAsStringObjectMap(Map<String, Object> caseData, String fieldName ) {
+        return (Map<String, Object>) caseData.get(fieldName);
+    }
+
+    public static Map<String, Object> createCaseLinkField(String fieldName, String linkId) {
+        return ImmutableMap.of(fieldName, ImmutableMap.of(CASE_REFERENCE_FIELD, linkId));
+    }
+
+    public static Map<String, Object> getElementFromCollection(Map<String, Object> collectionEntry) {
+        return getFieldAsStringObjectMap(collectionEntry, VALUE_KEY);
+    }
+
+    public static boolean isPetitionerClaimingCosts(Map<String, Object> caseData) {
+        return YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)))
+            && !DN_COSTS_ENDCLAIM_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DN_COSTS_OPTIONS_CCD_FIELD)))
+            && Objects.nonNull(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
     }
 }

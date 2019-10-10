@@ -27,6 +27,7 @@ public abstract class WebServiceHealthCheck implements HealthIndicator {
         this.uri = uri;
     }
 
+    @Override
     public Health health() {
         HttpEntity<Object> httpEntity = httpEntityFactory.createRequestEntityForHealthCheck();
         ResponseEntity<Object> responseEntity;

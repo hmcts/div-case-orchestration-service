@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_NOMINATE_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
@@ -24,8 +23,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 
 @Component
 @RequiredArgsConstructor
@@ -84,13 +84,13 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
     private boolean isRespondentAgreeingDivorceButNotAdmittingFact(Map<String, Object> submissionData, TaskContext context) {
         final String respAdmitOrConsentToFact = (String) submissionData.get(RESP_ADMIT_OR_CONSENT_TO_FACT);
         final CaseDetails currentCaseDetails = caseMaintenanceClient.retrievePetitionById(
-                context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
-                context.getTransientObject(CASE_ID_JSON_KEY).toString()
+            context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
+            context.getTransientObject(CASE_ID_JSON_KEY).toString()
         );
 
-        final String reasonForDivorce = (String)currentCaseDetails.getCaseData().get(D_8_REASON_FOR_DIVORCE);
+        final String reasonForDivorce = (String) currentCaseDetails.getCaseData().get(D_8_REASON_FOR_DIVORCE);
         return (ADULTERY.equalsIgnoreCase(reasonForDivorce)
-                || SEPARATION_2YRS.equalsIgnoreCase(reasonForDivorce))
-                && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact);
+            || SEPARATION_TWO_YEARS.equalsIgnoreCase(reasonForDivorce))
+            && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact);
     }
 }

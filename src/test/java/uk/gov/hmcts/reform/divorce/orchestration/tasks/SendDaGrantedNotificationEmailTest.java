@@ -21,7 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CUSTOMER_FACING_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECREE_ABSOLUTE_GRANTED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE;
@@ -31,6 +31,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.UNFORMATTED_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
@@ -41,8 +43,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL_ADDRESS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
@@ -60,6 +68,7 @@ public class SendDaGrantedNotificationEmailTest {
     private Map<String, Object> testData;
     private Map<String, String> expectedPetitionerTemplateVars;
     private Map<String, String> expectedRespondentTemplateVars;
+    private Map<String, String> expectedPetSolicitorTemplateVars;
 
     @Before
     public void setup() {
@@ -67,24 +76,31 @@ public class SendDaGrantedNotificationEmailTest {
         context.setTransientObject(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
 
         testData = new HashMap<>();
-        testData.put(D_8_CASE_REFERENCE, D8_CASE_ID);
+        testData.put(D_8_CASE_REFERENCE, TEST_CASE_ID);
         testData.put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE);
 
         expectedPetitionerTemplateVars = new HashMap<>();
-        expectedPetitionerTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID);
+        expectedPetitionerTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_ID);
         expectedPetitionerTemplateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, TEST_PETITIONER_EMAIL);
         expectedPetitionerTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME);
         expectedPetitionerTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME);
         expectedPetitionerTemplateVars.put(NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE,
-            TEST_CUSTOMER_FACING_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE);
+                TEST_CUSTOMER_FACING_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE);
 
         expectedRespondentTemplateVars = new HashMap<>();
-        expectedRespondentTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID);
+        expectedRespondentTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_ID);
         expectedRespondentTemplateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, TEST_RESPONDENT_EMAIL);
         expectedRespondentTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_RESPONDENT_FIRST_NAME);
         expectedRespondentTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_RESPONDENT_LAST_NAME);
         expectedRespondentTemplateVars.put(NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE,
-            TEST_CUSTOMER_FACING_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE);
+                TEST_CUSTOMER_FACING_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE);
+
+        expectedPetSolicitorTemplateVars = new HashMap<>();
+        expectedPetSolicitorTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
+        expectedPetSolicitorTemplateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, TEST_SOLICITOR_EMAIL);
+        expectedPetSolicitorTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        expectedPetSolicitorTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME);
+        expectedPetSolicitorTemplateVars.put(NOTIFICATION_RESP_NAME, TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME);
     }
 
     @Test
@@ -103,7 +119,7 @@ public class SendDaGrantedNotificationEmailTest {
 
     @Test
     public void shouldCallEmailServiceForDaNotificationIfEmailsOnlyOnceIfOnlyOneEmailIsPresent() throws TaskException {
-        testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
+        testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         testData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
@@ -117,18 +133,18 @@ public class SendDaGrantedNotificationEmailTest {
         assertEquals(testData, returnPayload);
 
         verify(emailService,times(1))
-            .sendEmail(
-                eq(TEST_PETITIONER_EMAIL),
-                eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
-                eq(expectedPetitionerTemplateVars),
-                eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+                .sendEmail(
+                        eq(TEST_PETITIONER_EMAIL),
+                        eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
+                        eq(expectedPetitionerTemplateVars),
+                        eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
 
         verifyNoMoreInteractions(emailService);
     }
 
     @Test
     public void shouldCallEmailServiceForDaNotificationEmails() throws TaskException {
-        testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
+        testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         testData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
@@ -142,17 +158,47 @@ public class SendDaGrantedNotificationEmailTest {
         assertEquals(testData, returnPayload);
 
         verify(emailService)
-            .sendEmail(
-                eq(TEST_PETITIONER_EMAIL),
-                eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
-                eq(expectedPetitionerTemplateVars),
-                eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+                .sendEmail(
+                        eq(TEST_PETITIONER_EMAIL),
+                        eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
+                        eq(expectedPetitionerTemplateVars),
+                        eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
 
         verify(emailService)
-            .sendEmail(
-                eq(TEST_RESPONDENT_EMAIL),
-                eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
-                eq(expectedRespondentTemplateVars),
-                eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+                .sendEmail(
+                        eq(TEST_RESPONDENT_EMAIL),
+                        eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
+                        eq(expectedRespondentTemplateVars),
+                        eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+    }
+
+    @Test
+    public void shouldCallEmailServiceForDaNotificationIfSolicitorEmailIsPresent() throws TaskException {
+        testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
+        testData.put(PET_SOL_EMAIL, TEST_SOLICITOR_EMAIL);
+        testData.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
+        testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
+        testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
+        testData.put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL);
+        testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
+        testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
+
+        Map returnPayload = sendDaGrantedNotificationEmail.execute(context, testData);
+
+        assertEquals(testData, returnPayload);
+
+        verify(emailService)
+                .sendEmail(
+                        eq(TEST_SOLICITOR_EMAIL),
+                        eq(EmailTemplateNames.SOL_APPLICANT_DA_GRANTED.name()),
+                        eq(expectedPetSolicitorTemplateVars),
+                        eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+
+        verify(emailService)
+                .sendEmail(
+                        eq(TEST_RESPONDENT_EMAIL),
+                        eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
+                        eq(expectedRespondentTemplateVars),
+                        eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
     }
 }

@@ -20,26 +20,26 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFie
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDate;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 
 @Component
 @Slf4j
 public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final SetIssueDate setIssueDate;
-    private final ValidateCaseData validateCaseData;
+    private final ValidateCaseDataTask validateCaseDataTask;
     private final PetitionGenerator petitionGenerator;
     private final RespondentPinGenerator respondentPinGenerator;
     private final CoRespondentPinGenerator coRespondentPinGenerator;
@@ -52,7 +52,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
     @SuppressWarnings("squid:S00107") // Can never have enough collaborators
-    public IssueEventWorkflow(ValidateCaseData validateCaseData,
+    public IssueEventWorkflow(ValidateCaseDataTask validateCaseDataTask,
                               SetIssueDate setIssueDate,
                               PetitionGenerator petitionGenerator,
                               RespondentPinGenerator respondentPinGenerator,
@@ -63,7 +63,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
                               CaseFormatterAddDocuments caseFormatterAddDocuments,
                               ResetRespondentLinkingFields resetRespondentLinkingFields,
                               ResetCoRespondentLinkingFields resetCoRespondentLinkingFields) {
-        this.validateCaseData = validateCaseData;
+        this.validateCaseDataTask = validateCaseDataTask;
         this.setIssueDate = setIssueDate;
         this.petitionGenerator = petitionGenerator;
         this.respondentPinGenerator = respondentPinGenerator;
@@ -81,7 +81,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
         List<Task> tasks = new ArrayList<>();
 
-        tasks.add(validateCaseData);
+        tasks.add(validateCaseDataTask);
         tasks.add(setIssueDate);
         tasks.add(petitionGenerator);
 

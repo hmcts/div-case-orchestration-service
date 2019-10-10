@@ -15,9 +15,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_NOT_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_NAME_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
@@ -43,7 +45,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils.formatDateWithCustomerFacingFormat;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @Component
 @Slf4j
@@ -56,14 +58,16 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
+        String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
         log.info("Executing task to notify petitioner about certificate of entitlement. Case id: {}",
-            (String) context.getTransientObject(CASE_ID_JSON_KEY));
+            caseId);
 
         String petSolicitorEmail = (String) payload.get(PET_SOL_EMAIL);
         String petitionerEmail = (String) payload.get(D_8_PETITIONER_EMAIL);
         String familyManCaseId = getMandatoryPropertyValueAsString(payload, D_8_CASE_REFERENCE);
         String petitionerFirstName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_LAST_NAME);
+        String courtName = getMandatoryPropertyValueAsString(payload, COURT_NAME_CCD_FIELD);
         EmailTemplateNames template = null;
         String emailToBeSentTo = null;
 
@@ -78,7 +82,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
             String respLastName = getMandatoryPropertyValueAsString(payload, RESP_LAST_NAME_CCD_FIELD);
             String solicitorName = getMandatoryPropertyValueAsString(payload, PET_SOL_NAME);
 
-            templateParameters.put(NOTIFICATION_CCD_REFERENCE_KEY, familyManCaseId);
+            templateParameters.put(NOTIFICATION_CCD_REFERENCE_KEY, caseId);
             templateParameters.put(NOTIFICATION_EMAIL, petSolicitorEmail);
             templateParameters.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
             templateParameters.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
@@ -111,6 +115,8 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
         }
 
         try {
+            templateParameters.put(COURT_NAME_TEMPLATE_ID, taskCommons.getDnCourt(courtName).getName());
+
             taskCommons.sendEmail(template,
                 EMAIL_DESCRIPTION,
                 emailToBeSentTo,

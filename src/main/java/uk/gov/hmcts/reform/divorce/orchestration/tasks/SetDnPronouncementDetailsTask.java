@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
-import uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDateTime;
 import java.util.Map;

@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -24,7 +24,6 @@ import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DESERTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DESERTION_TIME_TOGETHER_PERMITTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_MENTAL_SEP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PHYSICAL_SEP_DAIE;
@@ -33,10 +32,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_SEP_REF_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_SEP_TIME_TOGETHER_PERMITTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_5YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEP_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.DESERTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_FIVE_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SetSeparationFieldsTest {
@@ -65,7 +65,7 @@ public class SetSeparationFieldsTest {
         String pastDate5Yrs8Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now(clock).minusYears(5).minusMonths(8));
         String pastDate5Yrs9Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now(clock).minusYears(5).minusMonths(9));
 
-        testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_5YRS);
+        testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS);
         testData.put(D_8_MENTAL_SEP_DATE, pastDate5Yrs8Mnths);
         testData.put(D_8_PHYSICAL_SEP_DAIE, pastDate5Yrs9Mnths);
 
@@ -87,7 +87,7 @@ public class SetSeparationFieldsTest {
         String pastDate5Yrs8Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now(clock).minusYears(5).minusMonths(8));
         String todayDate = DateUtils.formatDateFromDateTime(LocalDateTime.now(clock));
 
-        testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_5YRS);
+        testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS);
         testData.put(D_8_MENTAL_SEP_DATE, pastDate5Yrs8Mnths);
         testData.put(D_8_PHYSICAL_SEP_DAIE, todayDate);
 
@@ -102,7 +102,7 @@ public class SetSeparationFieldsTest {
         String pastDate2Yrs8Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now(clock).minusYears(2).minusMonths(8));
         String pastDate2Yrs9Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now(clock).minusYears(2).minusMonths(9));
 
-        testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_2YRS);
+        testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
         testData.put(D_8_MENTAL_SEP_DATE, pastDate2Yrs8Mnths);
         testData.put(D_8_PHYSICAL_SEP_DAIE, pastDate2Yrs9Mnths);
 

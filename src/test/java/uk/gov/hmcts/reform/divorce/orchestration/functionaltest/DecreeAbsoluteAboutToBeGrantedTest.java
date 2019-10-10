@@ -1,37 +1,28 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
-
 import org.json.JSONObject;
-import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static java.util.Collections.singletonMap;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -47,6 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
@@ -58,17 +50,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = OrchestrationServiceApplication.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@PropertySource(value = "classpath:application.yml")
-@AutoConfigureMockMvc
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class DecreeAbsoluteAboutToBeGrantedTest {
+public class DecreeAbsoluteAboutToBeGrantedTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/da-about-to-be-granted";
     private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
+
     private static final Map<String, Object> CASE_DATA = ImmutableMap.<String, Object>builder()
         .put(PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_PRONOUNCEMENT_JUDGE)
         .put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
@@ -80,43 +67,35 @@ public class DecreeAbsoluteAboutToBeGrantedTest {
         .build();
 
 
-    private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
-        .caseData(CASE_DATA)
-        .caseId(TEST_CASE_ID)
-        .build();
-
-    private static final CcdCallbackRequest CCD_CALLBACK_REQUEST = CcdCallbackRequest.builder()
-        .caseDetails(CASE_DETAILS)
-        .build();
+    private static final Map CASE_DETAILS = singletonMap(CASE_DETAILS_JSON_KEY,
+        ImmutableMap.<String, Object>builder()
+            .put(CCD_CASE_DATA_FIELD, CASE_DATA)
+            .put(CCD_CASE_ID, TEST_CASE_ID)
+            .build()
+    );
 
     @Autowired
     private MockMvc webClient;
 
-    @ClassRule
-    public static WireMockClassRule documentGeneratorServiceServer = new WireMockClassRule(4007);
-
-    @ClassRule
-    public static WireMockClassRule formatterServiceServer = new WireMockClassRule(4011);
+    @MockBean
+    EmailClient mockEmailClient;
 
     @Test
-    public void assertCallBackFromDaAboutToBeGrantedRequest() throws Exception {
+    public void givenCorrectRespondentDetails_ThenOkResponse() throws Exception {
 
-        final GeneratedDocumentInfo daDocumentGenerationResponse =
+        GeneratedDocumentInfo daDocumentGenerationResponse =
             GeneratedDocumentInfo.builder()
                 .documentType(DECREE_ABSOLUTE_DOCUMENT_TYPE)
-                .fileName(DECREE_ABSOLUTE_FILENAME + "null")
+                .fileName(DECREE_ABSOLUTE_FILENAME + TEST_CASE_ID)
                 .build();
 
         stubDocumentGeneratorServerEndpoint(daDocumentGenerationResponse);
         stubFormatterServerEndpoint(daDocumentGenerationResponse, CASE_DATA);
+        when(mockEmailClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
+            .thenReturn(null);
 
+        String inputJson = JSONObject.valueToString(CASE_DETAILS);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
-
-        HashMap<Object, Object> caseData = new HashMap<>();
-        caseData.put(PRONOUNCEMENT_JUDGE_CCD_FIELD, "District Judge");
-
-        String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
-                singletonMap(CCD_CASE_DATA_FIELD, caseData)));
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -140,8 +119,9 @@ public class DecreeAbsoluteAboutToBeGrantedTest {
     @Test
     public void givenAuthHeaderIsNull_whenEndpointInvoked_thenReturnBadRequest()
         throws Exception {
+        String inputJson = JSONObject.valueToString(CASE_DETAILS);
         webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
+            .content(convertObjectToJsonString(inputJson))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());

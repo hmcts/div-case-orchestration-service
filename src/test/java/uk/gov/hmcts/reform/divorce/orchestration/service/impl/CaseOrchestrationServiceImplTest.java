@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -23,10 +24,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseCancelPronouncementEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CleanStatusCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeAbsoluteAboutToBeGrantedWorkflow;
@@ -39,7 +43,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDNDocumentsWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDnOutcomeCaseFlagWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLegalAdvisorMakeDecisionFieldsWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkFromListedWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
@@ -49,7 +59,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
@@ -64,6 +73,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCas
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyApplicantCanFinaliseDivorceWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyForRefusalOrderWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendDaGrantedNotificationEmailWorkflow;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -89,6 +102,10 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.FILE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECREE_ABSOLUTE_GRANTED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
@@ -161,7 +178,7 @@ public class CaseOrchestrationServiceImplTest {
     private SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
 
     @Mock
-    private SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
+    private AosSubmissionWorkflow aosSubmissionWorkflow;
 
     @Mock
     private SendCoRespondSubmissionNotificationWorkflow sendCoRespondSubmissionNotificationWorkflow;
@@ -251,7 +268,43 @@ public class CaseOrchestrationServiceImplTest {
     private ApplicantDecreeAbsoluteEligibilityWorkflow applicantDecreeAbsoluteEligibilityWorkflow;
 
     @Mock
+    private PetitionerSolicitorRoleWorkflow petitionerSolicitorRoleWorkflow;
+
+    @Mock
     private DecreeAbsoluteAboutToBeGrantedWorkflow decreeAbsoluteAboutToBeGrantedWorkflow;
+
+    @Mock
+    private RemoveLinkWorkflow removeLinkWorkflow;
+
+    @Mock
+    private RemoveLinkFromListedWorkflow removeLinkFromListedWorkflow;
+
+    @Mock
+    private RemoveDnOutcomeCaseFlagWorkflow removeDnOutcomeCaseFlagWorkflow;
+
+    @Mock
+    private RemoveLegalAdvisorMakeDecisionFieldsWorkflow removeLegalAdvisorMakeDecisionFieldsWorkflow;
+
+    @Mock
+    private CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
+
+    @Mock
+    private NotifyForRefusalOrderWorkflow notifyForRefusalOrderWorkflow;
+
+    @Mock
+    private RemoveDNDocumentsWorkflow removeDNDocumentsWorkflow;
+
+    @Mock
+    private BulkCaseCancelPronouncementEventWorkflow bulkCaseCancelPronouncementEventWorkflow;
+
+    @Mock
+    private NotifyApplicantCanFinaliseDivorceWorkflow notifyApplicantCanFinaliseDivorceWorkflow;
+
+    @Mock
+    private SendDaGrantedNotificationEmailWorkflow sendDaGrantedNotificationEmailWorkflow;
+
+    @Mock
+    private DnSubmittedEmailNotificationWorkflow dnSubmittedEmailNotificationWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -656,13 +709,13 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void givenCaseData_whenSendRespondentSubmissionNotification_thenReturnPayload() throws Exception {
-        when(sendRespondentSubmissionNotificationWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
+        when(aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(requestPayload);
 
         Map<String, Object> returnedPayload = classUnderTest
-            .sendRespondentSubmissionNotificationEmail(ccdCallbackRequest);
+            .aosSubmission(ccdCallbackRequest, AUTH_TOKEN);
 
         assertEquals(requestPayload, returnedPayload);
-        verify(sendRespondentSubmissionNotificationWorkflow).run(ccdCallbackRequest);
+        verify(aosSubmissionWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
     }
 
     @Test
@@ -670,12 +723,14 @@ public class CaseOrchestrationServiceImplTest {
         // given
         when(setOrderSummaryWorkflow.run(requestPayload))
             .thenReturn(requestPayload);
+        when(petitionerSolicitorRoleWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
+            .thenReturn(requestPayload);
 
         // when
-        Map<String, Object> actual = classUnderTest.setOrderSummary(ccdCallbackRequest);
+        CcdCallbackResponse actual = classUnderTest.setOrderSummaryAssignRole(ccdCallbackRequest, AUTH_TOKEN);
 
         // then
-        assertEquals(requestPayload, actual);
+        assertEquals(requestPayload, actual.getData());
 
         verify(setOrderSummaryWorkflow).run(requestPayload);
     }
@@ -797,6 +852,16 @@ public class CaseOrchestrationServiceImplTest {
         CcdCallbackResponse ccdResponse = classUnderTest.dnSubmitted(ccdCallbackRequest, AUTH_TOKEN);
 
         assertEquals(expectedResponse, ccdResponse);
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_forHandleDnSubmitted() throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(dnSubmittedEmailNotificationWorkflow.run(caseDetails.getCaseId(), caseDetails.getCaseData())).thenReturn(requestPayload);
+
+        classUnderTest.handleDnSubmitted(ccdCallbackRequest);
+
+        verify(dnSubmittedEmailNotificationWorkflow).run(caseDetails.getCaseId(), caseDetails.getCaseData());
     }
 
     @Test
@@ -1064,21 +1129,21 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void testServiceCallsRightWorkflowWithRightData_ForProcessingAosSolicitorNominated()
         throws WorkflowException, CaseOrchestrationServiceException {
-        when(respondentSolicitorNominatedWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()))).thenReturn(requestPayload);
+        when(respondentSolicitorNominatedWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN)).thenReturn(requestPayload);
 
-        assertThat(classUnderTest.processAosSolicitorNominated(ccdCallbackRequest), is(equalTo(requestPayload)));
+        assertThat(classUnderTest.processAosSolicitorNominated(ccdCallbackRequest, AUTH_TOKEN), is(equalTo(requestPayload)));
     }
 
     @Test
     public void shouldThrowException_ForProcessingAosSolicitorNominated_WhenWorkflowExceptionIsCaught()
         throws WorkflowException, CaseOrchestrationServiceException {
-        when(respondentSolicitorNominatedWorkflow.run(eq(ccdCallbackRequest.getCaseDetails())))
-            .thenThrow(new WorkflowException("This operation threw an exception."));
+        when(respondentSolicitorNominatedWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN))
+                .thenThrow(new WorkflowException("This operation threw an exception."));
 
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectMessage(is("This operation threw an exception."));
 
-        classUnderTest.processAosSolicitorNominated(ccdCallbackRequest);
+        classUnderTest.processAosSolicitorNominated(ccdCallbackRequest, AUTH_TOKEN);
     }
 
     @Test
@@ -1108,7 +1173,15 @@ public class CaseOrchestrationServiceImplTest {
         classUnderTest.handleGrantDACallback(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(decreeAbsoluteAboutToBeGrantedWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
+    }
 
+    @Test
+    public void shouldCallTheRightWorkflow_forHandleDaGranted() throws WorkflowException {
+        when(sendDaGrantedNotificationEmailWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData())).thenReturn(requestPayload);
+
+        classUnderTest.handleDaGranted(ccdCallbackRequest);
+
+        verify(sendDaGrantedNotificationEmailWorkflow).run(ccdCallbackRequest.getCaseDetails().getCaseData());
     }
 
     @Test(expected = WorkflowException.class)
@@ -1136,6 +1209,24 @@ public class CaseOrchestrationServiceImplTest {
             .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.processBulkCaseScheduleForHearing(ccdCallbackRequest, AUTH_TOKEN);
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_ForProcessCancelBulkCasePronouncement() throws WorkflowException {
+        when(bulkCaseCancelPronouncementEventWorkflow.run(eq(ccdCallbackRequest), eq(AUTH_TOKEN)))
+            .thenReturn(requestPayload);
+
+        assertThat(classUnderTest.processCancelBulkCasePronouncement(ccdCallbackRequest, AUTH_TOKEN),
+            is(equalTo(requestPayload)));
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldThrowException_ForProcessCancelBulkCasePronouncement_WhenWorkflowExceptionIsCaught()
+        throws WorkflowException {
+        when(bulkCaseCancelPronouncementEventWorkflow.run(eq(ccdCallbackRequest), eq(AUTH_TOKEN)))
+            .thenThrow(new WorkflowException("This operation threw an exception"));
+
+        classUnderTest.processCancelBulkCasePronouncement(ccdCallbackRequest, AUTH_TOKEN);
     }
 
     @Test
@@ -1182,9 +1273,10 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldCallWorkflow_ForDecreeNisiIsAboutToBeGranted() throws WorkflowException, CaseOrchestrationServiceException {
-        when(decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN))
+                .thenReturn(singletonMap("returnedKey", "returnedValue"));
 
-        Map<String, Object> returnedPayload = classUnderTest.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest);
+        Map<String, Object> returnedPayload = classUnderTest.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest, AUTH_TOKEN);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
     }
@@ -1192,14 +1284,14 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldThrowServiceException_ForDecreeNisiIsAboutToBeGranted_WhenWorkflowExceptionIsCaught()
         throws WorkflowException, CaseOrchestrationServiceException {
-        when(decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails()))
+        when(decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN))
             .thenThrow(new WorkflowException("This operation threw an exception."));
 
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectMessage(is("This operation threw an exception."));
         expectedException.expectCause(is(instanceOf(WorkflowException.class)));
 
-        classUnderTest.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest);
+        classUnderTest.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest, AUTH_TOKEN);
     }
 
     @Test
@@ -1296,6 +1388,225 @@ public class CaseOrchestrationServiceImplTest {
         expectedException.expectCause(equalTo(testFailureCause));
 
         classUnderTest.processApplicantDecreeAbsoluteEligibility(ccdCallbackRequest);
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_forHandleMakeCaseEligibleForDaSubmitted() throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(notifyApplicantCanFinaliseDivorceWorkflow.run(caseDetails.getCaseId(), caseDetails.getCaseData()))
+            .thenReturn(requestPayload);
+
+        classUnderTest.handleMakeCaseEligibleForDaSubmitted(ccdCallbackRequest);
+
+        verify(notifyApplicantCanFinaliseDivorceWorkflow).run(caseDetails.getCaseId(), caseDetails.getCaseData());
+    }
+
+    @Test
+    public void shouldCallRightWorkflow_WhenRemoveBulkLink() throws WorkflowException {
+        Map<String, Object> caseData = DUMMY_CASE_DATA;
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails
+                .builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .build()).build();
+
+        when(removeLinkWorkflow.run(request.getCaseDetails().getCaseData())).thenReturn(caseData);
+        classUnderTest.removeBulkLink(request);
+
+
+        Map<String, Object> response = classUnderTest.removeBulkLink(request);
+        assertThat(response, is(caseData));
+    }
+
+    @Test
+    public void givenBulkCaseWithoutJudge_whenEditBulkCase_thenReturnCaseWithoutDocument() throws Exception {
+        when(validateBulkCaseListingWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData())).thenReturn(expectedPayload);
+        Map<String, Object> returnedPayload = classUnderTest.editBulkCaseListingData(ccdCallbackRequest, FILE_NAME,
+            TEMPLATE_ID, DOCUMENT_TYPE, AUTH_TOKEN);
+
+        assertThat(returnedPayload, equalTo(expectedPayload));
+        verify(documentGenerationWorkflow, never()).run(any(),any(), any(), any(), any());
+    }
+
+    @Test
+    public void givenBulkCaseWithJudge_whenEditBulkCase_thenReturnGenerateDocumentCalled() throws Exception {
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(
+                CaseDetails.builder()
+                    .caseData(ImmutableMap.of(PRONOUNCEMENT_JUDGE_CCD_FIELD, "Judge"))
+                    .caseId(TEST_CASE_ID)
+                    .state(TEST_STATE)
+                    .build())
+            .eventId(TEST_EVENT_ID)
+            .token(TEST_TOKEN)
+            .build();
+
+        when(validateBulkCaseListingWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData())).thenReturn(expectedPayload);
+        when((documentGenerationWorkflow).run(ccdCallbackRequest,AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME))
+            .thenReturn(expectedPayload);
+
+        Map<String, Object> returnedPayload = classUnderTest
+            .editBulkCaseListingData(ccdCallbackRequest, FILE_NAME, TEMPLATE_ID, DOCUMENT_TYPE, AUTH_TOKEN);
+
+        assertThat(returnedPayload, equalTo(expectedPayload));
+        verify(documentGenerationWorkflow, times(1))
+            .run(ccdCallbackRequest,AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME);
+    }
+
+    @Test
+    public void shouldCallRightWorkflow_WhenRemoveBulkListed() throws WorkflowException {
+        Map<String, Object> caseData = DUMMY_CASE_DATA;
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails
+                .builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .build()).build();
+
+        when(removeLinkFromListedWorkflow.run(request.getCaseDetails().getCaseData())).thenReturn(caseData);
+        classUnderTest.removeBulkLink(request);
+
+
+        Map<String, Object> response = classUnderTest.removeBulkListed(request);
+        assertThat(response, is(caseData));
+    }
+
+    @Test
+    public void shouldCallRightWorkflow_WhenRemoveDnOutcomeCase() throws WorkflowException {
+        Map<String, Object> caseData = DUMMY_CASE_DATA;
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails
+                        .builder()
+                        .caseData(caseData)
+                        .caseId(TEST_CASE_ID)
+                        .build()).build();
+
+        when(removeDnOutcomeCaseFlagWorkflow.run(request)).thenReturn(caseData);
+
+        Map<String, Object> response = classUnderTest.removeDnOutcomeCaseFlag(request);
+        assertThat(response, is(caseData));
+    }
+
+    @Test
+    public void shouldCallRightWorkflow_WhenRemoveLegalAdvisorMakeDecisionFields() throws WorkflowException {
+        Map<String, Object> caseData = DUMMY_CASE_DATA;
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+                .caseDetails(CaseDetails
+                        .builder()
+                        .caseData(caseData)
+                        .caseId(TEST_CASE_ID)
+                        .build()).build();
+
+        when(removeLegalAdvisorMakeDecisionFieldsWorkflow.run(request)).thenReturn(caseData);
+
+        Map<String, Object> response = classUnderTest.removeLegalAdvisorMakeDecisionFields(request);
+        assertThat(response, is(caseData));
+    }
+
+    @Test
+    public void shouldCallRightWorkflow_WhenCcdCallbackConfirmPersonalServiceCalled()
+        throws WorkflowException {
+        requestPayload = singletonMap(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST, OrchestrationConstants.SEND_VIA_POST);
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(
+                CaseDetails.builder()
+                    .caseData(requestPayload)
+                    .caseId(TEST_CASE_ID)
+                    .state(TEST_STATE)
+                    .build())
+            .eventId(TEST_EVENT_ID)
+            .token(TEST_TOKEN)
+            .build();
+
+        when(ccdCallbackBulkPrintWorkflow.run(any(), any())).thenReturn(requestPayload);
+
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN);
+
+        assertThat(returnedPayload, equalTo(requestPayload));
+        verify(ccdCallbackBulkPrintWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldThrowException_IfExceptionIsThrown_WhenProcessingCcdCallbackConfirmPersonalService()
+        throws WorkflowException {
+        requestPayload = singletonMap(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST, OrchestrationConstants.SEND_VIA_POST);
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(
+                CaseDetails.builder()
+                    .caseData(requestPayload)
+                    .caseId(TEST_CASE_ID)
+                    .state(TEST_STATE)
+                    .build())
+            .eventId(TEST_EVENT_ID)
+            .token(TEST_TOKEN)
+            .build();
+
+        WorkflowException testFailureCause = new WorkflowException("Unable to generate bulk print...");
+        when(ccdCallbackBulkPrintWorkflow.run(any(), any())).thenThrow(testFailureCause);
+        classUnderTest.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN);
+    }
+
+    @Test
+    public void shouldNotCallBulkPrint_IfNotSendViaPost_WhenProcessingCcdCallbackConfirmPersonalService()
+        throws WorkflowException {
+
+        requestPayload = singletonMap(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST, OrchestrationConstants.SEND_VIA_EMAIL_OR_POST);
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(
+                CaseDetails.builder()
+                    .caseData(requestPayload)
+                    .caseId(TEST_CASE_ID)
+                    .state(TEST_STATE)
+                    .build())
+            .eventId(TEST_EVENT_ID)
+            .token(TEST_TOKEN)
+            .build();
+
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN);
+
+        assertThat(returnedPayload, equalTo(requestPayload));
+        verifyZeroInteractions(ccdCallbackBulkPrintWorkflow);
+    }
+
+    @Test
+    public void shouldCallTheRefusalOrderClarificationNotifyWorkflow() throws WorkflowException {
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(
+                CaseDetails.builder()
+                    .caseData(requestPayload)
+                    .caseId(TEST_CASE_ID)
+                    .state(TEST_STATE)
+                    .build())
+            .eventId(TEST_EVENT_ID)
+            .token(TEST_TOKEN)
+            .build();
+
+        when(notifyForRefusalOrderWorkflow.run(eq(requestPayload))).thenReturn(requestPayload);
+
+        classUnderTest.notifyForRefusalOrder(ccdCallbackRequest);
+
+        verify(notifyForRefusalOrderWorkflow).run(eq(requestPayload));
+    }
+
+    @Test
+    public void shouldCallRemoveDNGrantedDocumentsWorkflow() throws WorkflowException {
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(
+                CaseDetails.builder()
+                    .caseData(requestPayload)
+                    .caseId(TEST_CASE_ID)
+                    .state(TEST_STATE)
+                    .build())
+            .eventId(TEST_EVENT_ID)
+            .token(TEST_TOKEN)
+            .build();
+
+        when(removeDNDocumentsWorkflow.run(eq(requestPayload))).thenReturn(requestPayload);
+
+        classUnderTest.removeDNGrantedDocuments(ccdCallbackRequest);
+
+        verify(removeDNDocumentsWorkflow).run(eq(requestPayload));
     }
 
     @After

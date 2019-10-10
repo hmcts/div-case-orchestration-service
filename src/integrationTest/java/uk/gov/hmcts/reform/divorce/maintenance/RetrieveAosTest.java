@@ -26,20 +26,6 @@ public class RetrieveAosTest extends RetrieveAosCaseSupport {
     private ObjectMapper objectMapper;
 
     @Test
-    public void givenUserTokenIsNull_whenAuthenticateUser_thenReturnBadRequest() {
-        Response cosResponse = retrieveAosCase(null);
-
-        assertEquals(HttpStatus.BAD_REQUEST.value(), cosResponse.getStatusCode());
-    }
-
-    @Test
-    public void givenNoCase_whenRetrieveAosCase_thenReturnEmptyResponse() {
-        Response cosResponse = retrieveAosCase(createCitizenUser().getAuthToken());
-
-        assertEquals(HttpStatus.NOT_FOUND.value(), cosResponse.getStatusCode());
-    }
-
-    @Test
     public void givenCaseExists_whenRetrieveAosCase_thenReturnResponse() throws Exception {
         UserDetails userDetails = createCitizenUser();
 

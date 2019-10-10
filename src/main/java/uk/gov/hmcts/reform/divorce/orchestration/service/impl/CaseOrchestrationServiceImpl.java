@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -15,7 +17,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseCancelPronouncementEventWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseRemoveCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
@@ -33,7 +38,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDNDocumentsWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDnOutcomeCaseFlagWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLegalAdvisorMakeDecisionFieldsWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkFromListedWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCallbackWorkflow;
@@ -45,7 +56,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendDnPronouncedNotif
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendRespondentSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
@@ -57,10 +67,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDaCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyApplicantCanFinaliseDivorceWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyForRefusalOrderWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendDaGrantedNotificationEmailWorkflow;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -80,12 +93,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_TEMPLATE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_ENDCLAIM_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_OPTIONS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isPetitionerClaimingCosts;
 
 @Slf4j
 @Service
@@ -113,7 +123,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
     private final SendPetitionerEmailNotificationWorkflow sendPetitionerEmailNotificationWorkflow;
     private final SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
-    private final SendRespondentSubmissionNotificationWorkflow sendRespondentSubmissionNotificationWorkflow;
+    private final AosSubmissionWorkflow aosSubmissionWorkflow;
     private final SendCoRespondSubmissionNotificationWorkflow sendCoRespondSubmissionNotificationWorkflow;
     private final RespondentSubmittedCallbackWorkflow aosRespondedWorkflow;
     private final SubmitRespondentAosCaseWorkflow submitRespondentAosCaseWorkflow;
@@ -121,6 +131,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
     private final SubmitDaCaseWorkflow submitDaCaseWorkflow;
     private final DNSubmittedWorkflow dnSubmittedWorkflow;
+    private final DnSubmittedEmailNotificationWorkflow dnSubmittedEmailNotificationWorkflow;
     private final SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
     private final GetCaseWorkflow getCaseWorkflow;
     private final AuthUtil authUtil;
@@ -135,15 +146,25 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
     private final SeparationFieldsWorkflow separationFieldsWorkflow;
     private final BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
+    private final BulkCaseCancelPronouncementEventWorkflow bulkCaseCancelPronouncementEventWorkflow;
     private final ValidateBulkCaseListingWorkflow validateBulkCaseListingWorkflow;
     private final RespondentSolicitorLinkCaseWorkflow respondentSolicitorLinkCaseWorkflow;
     private final DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
     private final BulkCaseUpdateDnPronounceDatesWorkflow bulkCaseUpdateDnPronounceDatesWorkflow;
-    private final UpdateDNPronouncedCasesWorkflow updateDNPronouncedCasesWorkflow;
     private final CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
     private final MakeCaseEligibleForDecreeAbsoluteWorkflow makeCaseEligibleForDecreeAbsoluteWorkflow;
     private final DecreeAbsoluteAboutToBeGrantedWorkflow decreeAbsoluteAboutToBeGrantedWorkflow;
+    private final SendDaGrantedNotificationEmailWorkflow sendDaGrantedNotificationEmailWorkflow;
     private final ApplicantDecreeAbsoluteEligibilityWorkflow applicantDecreeAbsoluteEligibilityWorkflow;
+    private final NotifyApplicantCanFinaliseDivorceWorkflow notifyApplicantCanFinaliseDivorceWorkflow;
+    private final RemoveLinkWorkflow removeLinkWorkflow;
+    private final BulkCaseRemoveCasesWorkflow bulkCaseRemoveCasesWorkflow;
+    private final PetitionerSolicitorRoleWorkflow petitionerSolicitorRoleWorkflow;
+    private final RemoveLinkFromListedWorkflow removeLinkFromListedWorkflow;
+    private final RemoveDnOutcomeCaseFlagWorkflow removeDnOutcomeCaseFlagWorkflow;
+    private final RemoveLegalAdvisorMakeDecisionFieldsWorkflow removeLegalAdvisorMakeDecisionFieldsWorkflow;
+    private final NotifyForRefusalOrderWorkflow notifyForRefusalOrderWorkflow;
+    private final RemoveDNDocumentsWorkflow removeDNDocumentsWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -160,6 +181,20 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 ccdCallbackRequest.getCaseDetails().getCaseId());
             return issueEventWorkflow.errors();
         }
+    }
+
+    @Override
+    public Map<String, Object> ccdCallbackConfirmPersonalService(CcdCallbackRequest ccdCallbackRequest, String authToken)
+        throws WorkflowException {
+
+        Map<String, Object> payLoad = ccdCallbackRequest.getCaseDetails().getCaseData();
+        String sendViaEmailOrPost = (String)payLoad.get(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST);
+        if (StringUtils.equalsIgnoreCase(sendViaEmailOrPost, OrchestrationConstants.SEND_VIA_POST)) {
+            log.info("Confirm personal service callback for case with CASE ID: {} calling bulk print service",
+                ccdCallbackRequest.getCaseDetails().getCaseId());
+            payLoad = ccdCallbackBulkPrintHandler(ccdCallbackRequest, authToken);
+        }
+        return payLoad;
     }
 
     @Override
@@ -353,9 +388,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> sendRespondentSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
+    public Map<String, Object> aosSubmission(CcdCallbackRequest ccdCallbackRequest, String authToken)
             throws WorkflowException {
-        return sendRespondentSubmissionNotificationWorkflow.run(ccdCallbackRequest);
+        return aosSubmissionWorkflow.run(ccdCallbackRequest, authToken);
     }
 
     private List<String> getNotificationErrors(Map<String, Object> notificationErrors) {
@@ -388,8 +423,26 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> setOrderSummary(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return setOrderSummaryWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+    public CcdCallbackResponse setOrderSummaryAssignRole(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        Map<String, Object> updatedCase = setOrderSummaryWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+        ccdCallbackRequest.getCaseDetails().setCaseData(updatedCase);
+        Map<String, Object> solicitorPayload = petitionerSolicitorRoleWorkflow.run(ccdCallbackRequest, authToken);
+
+        if (petitionerSolicitorRoleWorkflow.errors().isEmpty()) {
+            log.info("Callback to assign [PETSOLICITOR] role with CASE ID: {} successfully completed", caseId);
+            return CcdCallbackResponse.builder()
+                .data(solicitorPayload)
+                .build();
+        } else {
+            log.error("Callback to assign [PETSOLICITOR] role with CASE ID: {} failed. ", caseId);
+            List<String> errors = petitionerSolicitorRoleWorkflow.errors().values().stream()
+                .map(x -> (String) x)
+                .collect(Collectors.toList());
+            return CcdCallbackResponse.builder()
+                .errors(errors)
+                .build();
+        }
     }
 
     @Override
@@ -481,6 +534,16 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
+    public Map<String, Object> handleDnSubmitted(CcdCallbackRequest ccdCallbackRequest)
+        throws WorkflowException {
+
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        String caseId = caseDetails.getCaseId();
+
+        return dnSubmittedEmailNotificationWorkflow.run(caseId, caseDetails.getCaseData());
+    }
+
+    @Override
     public Map<String, Object> amendPetition(String caseId, String authorisation) throws WorkflowException {
         Map<String, Object> response = amendPetitionWorkflow.run(caseId, authorisation);
         if (response != null) {
@@ -511,9 +574,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+    public Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest,
+                                                            String authToken) throws CaseOrchestrationServiceException {
         try {
-            return respondentSolicitorNominatedWorkflow.run(ccdCallbackRequest.getCaseDetails());
+            return respondentSolicitorNominatedWorkflow.run(ccdCallbackRequest.getCaseDetails(), authToken);
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
         }
@@ -586,6 +650,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
+    public Map<String, Object> handleDaGranted(CcdCallbackRequest ccdCallbackRequest)
+        throws WorkflowException {
+
+        return sendDaGrantedNotificationEmailWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+    }
+
+    @Override
     public Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException {
 
@@ -597,6 +668,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         return separationFieldsWorkflow.errors();
     }
 
+    @Override
     public Map<String, Object> processBulkCaseScheduleForHearing(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
         String bulkCaseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.info("Starting Bulk Schedule For Listing Callback on Bulk Case {}", bulkCaseId);
@@ -606,14 +678,37 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
+    public Map<String, Object> processCancelBulkCasePronouncement(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        String bulkCaseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.info("Starting Bulk Schedule cancel pronouncement for bulk with case id{}", bulkCaseId);
+        Map<String, Object> result = bulkCaseCancelPronouncementEventWorkflow.run(ccdCallbackRequest, authToken);
+        log.info("Bulk cancel pronouncement Successfully Initiated on Bulk Case {}", bulkCaseId);
+        return result;
+    }
+
+    @Override
     public Map<String, Object> validateBulkCaseListingData(Map<String, Object> caseData) throws WorkflowException {
         return validateBulkCaseListingWorkflow.run(caseData);
     }
 
     @Override
-    public Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+    public Map<String, Object> editBulkCaseListingData(CcdCallbackRequest ccdCallbackRequest, String fileName,
+                                                       String templateId, String documentType, String authToken) throws WorkflowException {
+        Map<String, Object> response = validateBulkCaseListingWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+        String judgeName = (String) ccdCallbackRequest.getCaseDetails().getCaseData().get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
+        if (StringUtils.isNotEmpty(judgeName)) {
+            response = documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, documentType, fileName);
+        }
+
+        return  response;
+    }
+
+    @Override
+    public Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest, String authToken)
+        throws CaseOrchestrationServiceException {
+
         try {
-            return decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails());
+            return decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails(), authToken);
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
         }
@@ -622,6 +717,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> updateBulkCaseDnPronounce(CaseDetails caseDetails, String authToken) throws WorkflowException {
         return bulkCaseUpdateDnPronounceDatesWorkflow.run(caseDetails, authToken);
+    }
+
+    @Override
+    public Map<String, Object> updateBulkCaseAcceptedCases(CaseDetails caseDetails, String authToken) throws WorkflowException {
+        return bulkCaseRemoveCasesWorkflow.run(caseDetails, authToken);
     }
 
     @Override
@@ -658,9 +758,47 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         }
     }
 
-    private boolean isPetitionerClaimingCosts(Map<String, Object> caseData) {
-        return YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)))
-            && !DN_COSTS_ENDCLAIM_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DN_COSTS_OPTIONS_CCD_FIELD)))
-            && Objects.nonNull(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
+    @Override
+    public Map<String, Object> handleMakeCaseEligibleForDaSubmitted(CcdCallbackRequest ccdCallbackRequest)
+        throws WorkflowException {
+
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        String caseId = caseDetails.getCaseId();
+
+        return notifyApplicantCanFinaliseDivorceWorkflow.run(caseId, caseDetails.getCaseData());
+    }
+
+    @Override
+    public Map<String, Object> removeBulkLink(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        return removeLinkWorkflow.run(caseDetails.getCaseData());
+    }
+
+    @Override
+    public Map<String, Object> removeBulkListed(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        return removeLinkFromListedWorkflow.run(caseDetails.getCaseData());
+    }
+
+    @Override
+    public Map<String, Object> removeDnOutcomeCaseFlag(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return removeDnOutcomeCaseFlagWorkflow.run(ccdCallbackRequest);
+    }
+
+    @Override
+    public Map<String, Object> removeLegalAdvisorMakeDecisionFields(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return removeLegalAdvisorMakeDecisionFieldsWorkflow.run(ccdCallbackRequest);
+    }
+
+    @Override
+    public Map<String, Object> notifyForRefusalOrder(CcdCallbackRequest ccdCallbackRequest)
+            throws WorkflowException {
+
+        return notifyForRefusalOrderWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+    }
+
+    @Override
+    public Map<String, Object> removeDNGrantedDocuments(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return removeDNDocumentsWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
     }
 }

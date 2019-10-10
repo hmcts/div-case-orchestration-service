@@ -4,16 +4,13 @@ case:
     service:
       api:
         baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://div-cfs-aat.service.core-compute-aat.internal}
-  validation:
-    service:
-      api:
-        baseurl: ${CASE_VALIDATION_SERVICE_API_BASEURL:http://div-vs-aat.service.core-compute-aat.internal}
   maintenance:
     service:
       api:
         baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://div-cms-aat.service.core-compute-aat.internal}
   event:
     awaiting-da-period: 43 #in days
+    da-overdue-period: 365 #in days
 
 fees-and-payments:
   service:
@@ -29,6 +26,10 @@ feature-toggle:
   service:
     api:
       baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://rpe-feature-toggle-api-aat.service.core-compute-aat.internal}
+  toggle:
+    bulk-printer-toggle-name: "divorce_bulk_print"
+    feature_resp_solicitor_details: true
+    dn_refusal: true
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://rpe-send-letter-service-aat.service.core-compute-aat.internal}

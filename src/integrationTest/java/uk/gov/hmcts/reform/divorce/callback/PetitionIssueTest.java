@@ -11,9 +11,7 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,9 +23,6 @@ import static uk.gov.hmcts.reform.divorce.util.DateConstants.CCD_DATE_FORMATTER;
 
 public class PetitionIssueTest extends IntegrationTest {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/issue-petition/";
-
-    private static final List<String> EXPECTED_ERROR =
-        Collections.singletonList("D8StatementOfTruth must be 'YES'. Actual data is: null");
 
     private static final String D8_MINI_PETITION_DOCUMENT_URL_PATH =
         "data.D8DocumentsGenerated[0].value.DocumentLink.document_url";
@@ -72,69 +67,12 @@ public class PetitionIssueTest extends IntegrationTest {
     private String contextPath;
 
     @Test
-    public void givenUserTokenIsNull_whenRetrievePetition_thenReturnBadRequest() throws Exception {
-        Response cosResponse = issuePetition(null, "ccd-callback-petition-issued.json", null);
-
-        assertEquals(HttpStatus.BAD_REQUEST.value(), cosResponse.getStatusCode());
-    }
-
-    @Test
-    public void givenInvalidCaseData_whenRetrievePetition_thenReturnValidationError() throws Exception {
-        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
-            "invalid-ccd-callback-petition-issued.json", null);
-
-        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertEquals(EXPECTED_ERROR, cosResponse.path(ERRORS));
-    }
-
-    @Test
-    public void givenGenerateAosNull_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
-        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
-            "ccd-callback-aos-invitation.json", null);
-
-        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertGeneratedDocumentsExists(cosResponse, false, false);
-        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
-    }
-
-    @Test
-    public void givenGenerateAosFalse_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
-        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
-            "ccd-callback-aos-invitation.json", false);
-
-        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertGeneratedDocumentsExists(cosResponse, false, false);
-        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
-    }
-
-    @Test
-    public void givenGenerateAosTrue_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
-        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
-            "ccd-callback-aos-invitation.json", true);
-
-        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertGeneratedDocumentsExists(cosResponse, false, false);
-        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
-    }
-
-    @Test
     public void givenGenerateAosTrueAndServiceCentre_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
         Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
             "ccd-callback-aos-invitation-service-centre.json", true);
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
         assertGeneratedDocumentsExists(cosResponse, true, false);
-        assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
-    }
-
-
-    @Test
-    public void givenGenerateAosTrueAndEastMidlandsRdc_whenRetrievePetition_thenReturnExpectedCaseData() throws Exception {
-        Response cosResponse = issuePetition(createCaseWorkerUser().getAuthToken(),
-            "ccd-callback-aos-invitation-east-midlands.json", true);
-
-        assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertGeneratedDocumentsExists(cosResponse, true, true);
         assertEquals(EXPECTED_ISSUE_DATE, cosResponse.path(ISSUE_DATE));
     }
 

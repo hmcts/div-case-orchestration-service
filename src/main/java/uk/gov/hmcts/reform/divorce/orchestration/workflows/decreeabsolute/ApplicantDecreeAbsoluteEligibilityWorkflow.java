@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CalculateDecreeAbsoluteDates;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.NotifyApplicantCanFinaliseDivorceTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDaRequestedDetailsTask;
 
 import java.util.Map;
 
@@ -20,13 +20,13 @@ public class ApplicantDecreeAbsoluteEligibilityWorkflow extends DefaultWorkflow<
     private CalculateDecreeAbsoluteDates calculateDecreeAbsoluteDates;
 
     @Autowired
-    private NotifyApplicantCanFinaliseDivorceTask notifyApplicantCanFinaliseDivorceTask;
+    SetDaRequestedDetailsTask setDaRequestedDetailsTask;
 
     public Map<String, Object> run(String caseId, Map<String, Object> payload) throws WorkflowException {
         return execute(
             new Task[] {
                 calculateDecreeAbsoluteDates,
-                notifyApplicantCanFinaliseDivorceTask
+                setDaRequestedDetailsTask
             },
             payload,
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId));

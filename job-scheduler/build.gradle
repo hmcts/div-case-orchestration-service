@@ -19,8 +19,8 @@ compileTestJava {
 }
 
 def versions = [
-  reformJavaLogging : '4.0.1',
-  jacksonDatabind   : '2.9.9.1',
+  reformJavaLogging : '5.0.1',
+  jacksonDatabind   : '2.10.0',
   flyway            : '5.2.4',
   postgresql        : '42.2.5',
   lombok            : '1.16.16',
@@ -34,13 +34,16 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
+
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   compile group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
 
+  compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
+    force = true
+  }
+
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.assertj', name: 'assertj-core', version: versions.assertj
-  compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
-     force = true
-  }
 }

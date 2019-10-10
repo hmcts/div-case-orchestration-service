@@ -1,3 +1,17 @@
 {
-  "CaseTitle": "Divorce Case"
+  "CaseTitle": "Divorce Case",
+  "CaseList": [
+    {
+      "id": "6c8a94a4-1566-43fa-a797-b559221aaef0",
+      "value": {
+        "CostOrder": null,
+        "CaseParties": "John Smith vs Jane Jamed",
+        "CaseReference": {
+          "CaseReference": "1558711395612316"
+        },
+        "DNApprovalDate": null,
+        "FamilyManReference": "LV17D80100"
+      }
+    }
+  ]
 }

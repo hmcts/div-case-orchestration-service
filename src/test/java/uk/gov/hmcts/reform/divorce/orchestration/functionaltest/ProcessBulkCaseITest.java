@@ -2,27 +2,19 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
@@ -51,13 +43,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = OrchestrationServiceApplication.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@PropertySource(value = "classpath:application.yml")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@AutoConfigureMockMvc
 @Slf4j
+@RunWith(SpringRunner.class)
 public class ProcessBulkCaseITest extends IdamTestSupport {
 
     private static final String CMS_SEARCH = "/casemaintenance/version/1/search";
@@ -75,8 +62,6 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     private static final String BULK_CASE_ID = "1557223513377278";
     private static final String UPDATE_BODY = convertObjectToJsonString(
         ImmutableMap.of(BULK_LISTING_CASE_ID_FIELD, new CaseLink(BULK_CASE_ID)));
-    @ClassRule
-    public static WireMockClassRule cmsServiceServer = new WireMockClassRule(4010);
 
     @Value("${bulk-action.retries.max:4}")
     private int maxRetries;
@@ -98,7 +83,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
     @Before
     public void cleanUp() {
-        cmsServiceServer.resetAll();
+        maintenanceServiceServer.resetAll();
     }
 
     @Test
@@ -231,6 +216,62 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID3), RequestMethod.POST, UPDATE_BODY);
     }
 
+    @Test
+    public void give422Error_whenUpdateDivorceCase_thenUpdateBulkCaseWithFilteredCaseList() throws Exception {
+        SearchResult result = SearchResult.builder()
+                .cases(Arrays.asList(prepareBulkCase(), prepareBulkCase(), prepareBulkCase()))
+                .build();
+
+        stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
+        stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID1), HttpStatus.UNPROCESSABLE_ENTITY, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID2), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID3), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, CREATE_EVENT), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+
+        stubSignInForCaseworker();
+
+        webClient.perform(post(API_URL)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        waitAsyncCompleted();
+
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID3), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, CREATE_EVENT), RequestMethod.POST);
+    }
+
+    @Test
+    public void give404Error_whenUpdateDivorceCase_thenUpdateBulkCaseWithFilteredCaseList() throws Exception {
+        SearchResult result = SearchResult.builder()
+                .cases(Arrays.asList(prepareBulkCase(), prepareBulkCase(), prepareBulkCase()))
+                .build();
+
+        stubCmsServerEndpoint(CMS_SEARCH, HttpStatus.OK, convertObjectToJsonString(result), POST);
+        stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID1), HttpStatus.NOT_FOUND, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID2), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID3), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+        stubCmsServerEndpoint(String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, CREATE_EVENT), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
+
+        stubSignInForCaseworker();
+
+        webClient.perform(post(API_URL)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        waitAsyncCompleted();
+
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID3), RequestMethod.POST, UPDATE_BODY);
+        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, CREATE_EVENT), RequestMethod.POST);
+    }
+
     private void waitAsyncCompleted() {
         await().until(() -> asyncTaskExecutor.getThreadPoolExecutor().getActiveCount() == 0);
     }
@@ -244,7 +285,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
 
     private void stubCmsServerEndpoint(String path, HttpStatus status, String body, HttpMethod method) {
 
-        cmsServiceServer.stubFor(WireMock.request(method.name(),urlEqualTo(path))
+        maintenanceServiceServer.stubFor(WireMock.request(method.name(),urlEqualTo(path))
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
@@ -252,12 +293,12 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     }
 
     private void verifyCmsServerEndpoint(int times, String path, RequestMethod method) {
-        cmsServiceServer.verify(times, new RequestPatternBuilder(method, urlEqualTo(path))
+        maintenanceServiceServer.verify(times, new RequestPatternBuilder(method, urlEqualTo(path))
             .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE)));
     }
 
     private void verifyCmsServerEndpoint(int times, String path, RequestMethod method, String body) {
-        cmsServiceServer.verify(times, new RequestPatternBuilder(method, urlEqualTo(path))
+        maintenanceServiceServer.verify(times, new RequestPatternBuilder(method, urlEqualTo(path))
             .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
             .withRequestBody(equalTo(body)));
     }

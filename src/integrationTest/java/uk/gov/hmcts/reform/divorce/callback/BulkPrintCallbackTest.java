@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -38,7 +37,6 @@ public class BulkPrintCallbackTest extends IntegrationTest {
     private Map<String, Object> citizenHeaders;
 
     private Map<String, Object> caseworkerHeaders;
-
 
     @Before
     public void setup() {
@@ -68,7 +66,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
             (Map) response.get("data")).caseId("323").state("submitted").build()
         );
         ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders,
-            ResourceLoader.objectToJson(ccdCallbackRequest)).getBody();
+            ccdCallbackRequest).getBody();
         assertThat("Response body is not a JSON: " + body.asString(),
                 body.asString(),
                 isJson()
@@ -88,10 +86,10 @@ public class BulkPrintCallbackTest extends IntegrationTest {
 
         CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(CaseDetails.builder().caseData(
-            (Map) response.get("data")).caseId("323").state("submitted").build()
+            (Map) response.get("data")).caseId("1517833758870511").state("Issued").build()
         );
         ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders,
-            ResourceLoader.objectToJson(ccdCallbackRequest)).getBody();
+            ccdCallbackRequest).getBody();
         assertThat("Response body is not a JSON: " + body.asString(),
             body.asString(),
             isJson()

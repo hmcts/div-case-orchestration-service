@@ -15,6 +15,9 @@ public interface CaseOrchestrationService {
     Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest, String authToken,
                                                  boolean generateAosInvitation) throws WorkflowException;
 
+    Map<String, Object> ccdCallbackConfirmPersonalService(CcdCallbackRequest ccdCallbackRequest, String authToken)
+        throws WorkflowException;
+
     Map<String, Object> ccdCallbackBulkPrintHandler(CcdCallbackRequest ccdCallbackRequest, String authToken)
         throws WorkflowException;
 
@@ -36,7 +39,6 @@ public interface CaseOrchestrationService {
 
     CcdCallbackResponse aosReceived(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
-
     Map<String, Object> getDraft(String authToken) throws WorkflowException;
 
     Map<String, Object> saveDraft(Map<String, Object> payLoad,
@@ -51,11 +53,11 @@ public interface CaseOrchestrationService {
     Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException;
 
-    Map<String, Object> sendRespondentSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+    Map<String, Object> aosSubmission(CcdCallbackRequest ccdCallbackRequest, String authorizationToken) throws WorkflowException;
 
     Map<String, Object> sendPetitionerClarificationRequestNotification(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
-    Map<String, Object> setOrderSummary(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+    CcdCallbackResponse setOrderSummaryAssignRole(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> solicitorSubmission(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
@@ -72,6 +74,8 @@ public interface CaseOrchestrationService {
         throws WorkflowException;
 
     CcdCallbackResponse dnSubmitted(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
+
+    Map<String, Object> handleDnSubmitted(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> submitDnCase(Map<String, Object> divorceSession, String authorizationToken, String caseId)
         throws WorkflowException;
@@ -99,7 +103,8 @@ public interface CaseOrchestrationService {
     Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, String authToken, String templateId,
                                                          String documentType, String filename) throws WorkflowException;
 
-    Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
+    Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest,
+                                                     String authToken) throws CaseOrchestrationServiceException;
 
     Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
@@ -111,7 +116,10 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> processAosSolicitorLinkCase(CcdCallbackRequest request, String authToken) throws CaseOrchestrationServiceException;
 
-    Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
+    Map<String, Object> processCaseBeforeDecreeNisiIsGranted(CcdCallbackRequest ccdCallbackRequest, String authToken)
+        throws CaseOrchestrationServiceException;
+
+    Map<String, Object> processCancelBulkCasePronouncement(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> updateBulkCaseDnPronounce(CaseDetails caseDetails, String authToken) throws WorkflowException;
 
@@ -121,5 +129,26 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> handleGrantDACallback(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
+    Map<String, Object> handleDaGranted(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
     Map<String, Object> processApplicantDecreeAbsoluteEligibility(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
+
+    Map<String, Object> handleMakeCaseEligibleForDaSubmitted(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    Map<String, Object> removeBulkLink(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    Map<String, Object> updateBulkCaseAcceptedCases(CaseDetails caseDetails, String authToken) throws WorkflowException;
+
+    Map<String, Object> editBulkCaseListingData(CcdCallbackRequest ccdCallbackRequest, String fileName,
+                                                String templateId, String documentType, String authToken) throws WorkflowException;
+
+    Map<String, Object> removeBulkListed(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    Map<String, Object> removeDnOutcomeCaseFlag(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    Map<String, Object> removeLegalAdvisorMakeDecisionFields(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    Map<String, Object> notifyForRefusalOrder(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    Map<String, Object> removeDNGrantedDocuments(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 }

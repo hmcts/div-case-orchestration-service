@@ -15,6 +15,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.rules.ExpectedException.none;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CARE_OF_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMAIL_LABEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINE_SEPARATOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PHONE_LABEL;
@@ -88,7 +89,8 @@ public class CourtLookupServiceTest {
         assertEquals(foundCourt.getEmail(), "divorcecase@justice.gov.uk");
         assertEquals(foundCourt.getPhone(), "0300 303 0642");
 
-        String expectedContactDetails = foundCourt.getAddress() + LINE_SEPARATOR + LINE_SEPARATOR
+        String expectedContactDetails = CARE_OF_PREFIX + SPACE_SEPARATOR + foundCourt.getName() + LINE_SEPARATOR
+                + foundCourt.getAddress() + LINE_SEPARATOR + LINE_SEPARATOR
                 + EMAIL_LABEL + SPACE_SEPARATOR + foundCourt.getEmail() + LINE_SEPARATOR
                 + PHONE_LABEL + SPACE_SEPARATOR + foundCourt.getPhone();
         assertEquals(foundCourt.getFormattedContactDetails(), expectedContactDetails);

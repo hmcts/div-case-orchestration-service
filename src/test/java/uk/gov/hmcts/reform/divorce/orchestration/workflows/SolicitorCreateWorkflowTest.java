@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCourtDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 
 import java.util.Collections;
 import java.util.Map;
@@ -35,7 +35,7 @@ public class SolicitorCreateWorkflowTest {
     CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Mock
-    SetCourtDetails setCourtDetails;
+    SetSolicitorCourtDetailsTask setSolicitorCourtDetailsTask;
 
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
@@ -50,14 +50,14 @@ public class SolicitorCreateWorkflowTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        when(setCourtDetails.execute(any(), eq(payload))).thenReturn(payload);
+        when(setSolicitorCourtDetailsTask.execute(any(), eq(payload))).thenReturn(payload);
         when(addMiniPetitionDraftTask.execute(any(), eq(payload))).thenReturn(payload);
 
         assertEquals(payload, solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN));
 
-        InOrder inOrder = inOrder(setCourtDetails, addMiniPetitionDraftTask, caseFormatterAddDocuments);
+        InOrder inOrder = inOrder(setSolicitorCourtDetailsTask, addMiniPetitionDraftTask, caseFormatterAddDocuments);
 
-        inOrder.verify(setCourtDetails).execute(context, payload);
+        inOrder.verify(setSolicitorCourtDetailsTask).execute(context, payload);
         inOrder.verify(addMiniPetitionDraftTask).execute(context, payload);
         inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
     }

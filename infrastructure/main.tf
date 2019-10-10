@@ -29,7 +29,7 @@ locals {
 }
 
 module "div-cos" {
-  source                          = "git@github.com:hmcts/moj-module-webapp.git"
+  source                          = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product                         = "${var.product}-${var.component}"
   location                        = "${var.location}"
   env                             = "${var.env}"
@@ -42,6 +42,7 @@ module "div-cos" {
   asp_name                        = "${local.asp_name}"
   asp_rg                          = "${local.asp_rg}"
   instance_size                   = "${var.instance_size}"
+  enable_ase                      = false
 
   app_settings = {
     // logging vars
@@ -64,7 +65,6 @@ module "div-cos" {
     IDAM_CITIZEN_PASSWORD                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-password.value}"
     IDAM_CASEWORKER_USERNAME                        = "${data.azurerm_key_vault_secret.auth-idam-caseworker-username.value}"
     IDAM_CASEWORKER_PASSWORD                        = "${data.azurerm_key_vault_secret.auth-idam-caseworker-password.value}"
-    IDAM_STRATEGIC_ENABLED                          = "${var.idam_strategic_enabled}"
     UK_GOV_NOTIFY_API_KEY                           = "${data.azurerm_key_vault_secret.uk-gov-notify-api-key.value}"
     AOS_RESPONDED_DAYS_TO_COMPLETE                  = "${var.aos_responded_days_to_complete}"
     AOS_RESPONDED_AWAITING_ANSWER_DAYS_TO_RESPOND   = "${var.aos_responded_awaiting_answer_days_to_respond}"
@@ -75,6 +75,8 @@ module "div-cos" {
     SCHEDULER_MAKE_CASES_ELIGIBLE_DA_ENABLED        = "${var.scheduler_make_cases_eligible_da_enabled}"
     SCHEDULER_MAKE_CASES_ELIGIBLE_DA_CRON           = "${var.scheduler_make_cases_eligible_da_cron}"
     AWAITING_DA_PERIOD                              = "${var.awaiting_da_period}"
+    DA_OVERDUE_PERIOD                              = "${var.da_overdue_period}"
+    FEATURE_DN_REFUSAL                              = "${var.feature_dn_refusal}"
 
     DOCUMENTATION_SWAGGER_ENABLED                   = "${var.documentation_swagger_enabled}"
 
@@ -91,6 +93,18 @@ module "div-cos" {
     FLYWAY_NOOP_STRATEGY                           = "true"
 
     FEATURE_RESP_SOLICITOR_DETAILS                 = "${var.feature_resp_solicitor_details}"
+
+    SPRING_MAIL_HOST                                  = "${var.spring_mail_host}"
+    SPRING_MAIL_PORT                                  = "${var.spring_mail_port}"
+    SPRING_MAIL_TEST_CONNECTION                       = "${var.spring_mail_test_connection}"
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE  = "${var.spring_mail_properties_mail_smtp_starttls_enable}"
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST        = "${var.spring_mail_properties_mail_smtp_ssl_trust}"
+
+    DATAEXTRACTION_STATUS_DA_EMAILTO       = "${var.dataextraction_status_da_email_to}"
+    DATAEXTRACTION_STATUS_AOS_EMAILTO      = "${var.dataextraction_status_aos_email_to}"
+    DATAEXTRACTION_STATUS_DN_EMAILTO       = "${var.dataextraction_status_dn_email_to}"
+
+    SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_ENABLED  = "${var.scheduler_send_updated_cases_to_robotics_enabled}"
   }
 }
 

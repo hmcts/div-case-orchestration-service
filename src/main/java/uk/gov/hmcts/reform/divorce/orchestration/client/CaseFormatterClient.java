@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,5 +79,16 @@ public interface CaseFormatterClient {
     )
     Map<String, Object> transformToDaCaseFormat(
             @RequestBody Map<String, Object> divorceSession
+    );
+
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/caseformatter/version/1/remove/documents/{documentType}",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> removeAllDocumentsByType(
+        @PathVariable("documentType") String eventId,
+        @RequestBody Map<String, Object> caseData
     );
 }
