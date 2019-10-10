@@ -33,6 +33,47 @@ plugins {
     id 'info.solidsoft.pitest' version '1.3.0'
 }
 
+def versions = [
+        commonsBeanUtils             : '1.9.4',
+        commonsIo                    : '2.5',
+        commonsLang3                 : '3.7',
+        springfoxSwagger             : '2.9.2',
+        lombok                       : '1.16.16',
+        puppyCrawl                   : '8.21',
+        reformsJavaLogging           : '5.0.1',
+        reformHealth                 : '0.0.3',
+        reformPropertiesVolume       : '0.0.4',
+        serviceTokenGenerator        : '3.0.0',
+        hmctsNotify                  : '3.14.1-RELEASE',
+        feignHttpClient              : '10.2.0',
+        reformSpringBootAutoConfigure: '1.1.0',
+        springCloudDependencies      : '2.1.2.RELEASE',
+        restAssured                  : '3.0.3',
+        serenity                     : '2.0.41',
+        serenityCucumber             : '1.9.31',
+        unirest                      : '1.4.9',
+        jsonAssert                   : '1.2.3',
+        pitest                       : '1.3.2',
+        gradlePitest                 : '1.4.0',
+        sonarPitest                  : '0.5',
+        ccdStoreClient               : '4.6.2',
+        javaxWsRs                    : '2.1.1',
+        jsonPathAssert               : '2.2.0',
+        jackson                      : '2.10.0',
+        guava                        : '27.1-jre',
+        bcpkixJdk15on                : '1.60',
+        springSecurityRsa            : '1.0.8.RELEASE',
+        springSecurityCrypto         : '5.1.5.RELEASE',
+        tomcat                       : '9.0.22',
+        sendLetterClient             : '2.1.1',
+        commonsMath3                 : '3.6.1',
+        postgresql                   : '42.2.5',
+        hibernateTypes               : '2.4.0',
+        flyway                       : '5.2.4',
+        elasticsearch                : '7.3.0',
+        divCommonLib                 : '1.0.7'
+]
+
 allprojects {
 
     def springBootVersion = '2.1.2.RELEASE'
@@ -100,21 +141,21 @@ allprojects {
             }
             dependencySet(
                     group: 'com.fasterxml.jackson.core',
-                    version: dependencyManagement.importedProperties['jackson.version']
+                    version: versions.jackson
             ) {
                 entry 'jackson-core'
                 entry 'jackson-databind'
             }
             dependencySet(
                     group: 'com.fasterxml.jackson.datatype',
-                    version: dependencyManagement.importedProperties['jackson.version']
+                    version: versions.jackson
             ) {
                 entry 'jackson-datatype-jdk8'
                 entry 'jackson-datatype-jsr310'
             }
             dependencySet(
                     group: 'com.fasterxml.jackson.module',
-                    version: dependencyManagement.importedProperties['jackson.version']
+                    version: versions.jackson
             ) {
                 entry 'jackson-module-parameter-names'
             }
@@ -216,47 +257,6 @@ dependencyCheck {
     suppressionFile = 'dependency-check-suppressions.xml'
 }
 
-def versions = [
-        commonsBeanUtils             : '1.9.4',
-        commonsIo                    : '2.5',
-        commonsLang3                 : '3.7',
-        springfoxSwagger             : '2.9.2',
-        lombok                       : '1.16.16',
-        puppyCrawl                   : '8.21',
-        reformsJavaLogging           : '5.0.1',
-        reformHealth                 : '0.0.3',
-        reformPropertiesVolume       : '0.0.4',
-        serviceTokenGenerator        : '3.0.0',
-        hmctsNotify                  : '3.14.1-RELEASE',
-        feignHttpClient              : '10.2.0',
-        reformSpringBootAutoConfigure: '1.1.0',
-        springCloudDependencies      : '2.1.2.RELEASE',
-        restAssured                  : '3.0.3',
-        serenity                     : '2.0.41',
-        serenityCucumber             : '1.9.31',
-        unirest                      : '1.4.9',
-        jsonAssert                   : '1.2.3',
-        pitest                       : '1.3.2',
-        gradlePitest                 : '1.4.0',
-        sonarPitest                  : '0.5',
-        ccdStoreClient               : '4.6.2',
-        javaxWsRs                    : '2.1.1',
-        jsonPathAssert               : '2.2.0',
-        jacksonDatabind              : '2.10.0',
-        guava                        : '27.1-jre',
-        bcpkixJdk15on                : '1.60',
-        springSecurityRsa            : '1.0.8.RELEASE',
-        springSecurityCrypto         : '5.1.5.RELEASE',
-        tomcat                       : '9.0.22',
-        sendLetterClient             : '2.1.1',
-        commonsMath3                 : '3.6.1',
-        postgresql                   : '42.2.5',
-        hibernateTypes               : '2.4.0',
-        flyway                       : '5.2.4',
-        elasticsearch                : '7.3.0',
-        divCommonLib                 : '1.0.7'
-]
-
 dependencies {
     compile project(':job-scheduler')
 
@@ -325,7 +325,7 @@ dependencies {
     compile group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
     compile group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
 
-    compile(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jacksonDatabind) {
+    compile(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson) {
         force = true
     }
 
