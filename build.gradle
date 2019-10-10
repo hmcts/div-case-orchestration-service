@@ -100,10 +100,10 @@ allprojects {
             }
             dependencySet(
                     group: 'com.fasterxml.jackson.core',
-                    version: '2.10.0'
+                    version: dependencyManagement.importedProperties['jackson.version']
             ) {
-                entry 'jackson-databind'
                 entry 'jackson-core'
+                entry 'jackson-databind'
             }
             dependencySet(
                     group: 'com.fasterxml.jackson.datatype',
@@ -158,6 +158,7 @@ compileJava {
 compileTestJava {
     options.compilerArgs << '-Xlint:deprecation'
 }
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -324,11 +325,9 @@ dependencies {
     compile group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
     compile group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
 
-    compile(group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '5.3')
-            {
-                exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
-                exclude group: 'com.fasterxml.jackson.core', module: 'jackson-core'
-            }
+    compile(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jacksonDatabind) {
+        force = true
+    }
 
     compile(group: 'com.google.guava', name: 'guava', version: versions.guava) {
         force = true
