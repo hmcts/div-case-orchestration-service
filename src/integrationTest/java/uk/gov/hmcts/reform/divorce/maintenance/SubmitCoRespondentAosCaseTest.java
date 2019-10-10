@@ -5,16 +5,17 @@ import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.divorce.category.ExtendedTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
 
 import java.time.LocalDate;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
@@ -46,30 +47,21 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     private static final String STATE_KEY = "state";
     private static final String ID = "id";
 
+    private static final String CO_RESPONDENT_ANSWERS_JSON;
+
+    static {
+        try {
+            CO_RESPONDENT_ANSWERS_JSON = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + CO_RESP_ANSWERS_JSON_FILE_PATH);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
-    public void givenUserTokenIsNull_whenSubmitCoRespondentAos_thenReturnBadRequest() throws Exception {
-        final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + CO_RESP_ANSWERS_JSON_FILE_PATH);
-        final UserDetails user = UserDetails.builder()
-            .emailAddress(CO_RESP_EMAIL_ADDRESS)
-            .build();
-        Response cosResponse = submitCoRespondentAosCase(user, coRespondentAnswersJson);
-
-        assertEquals(BAD_REQUEST.value(), cosResponse.getStatusCode());
-    }
-
-    @Test
-    public void givenNoCaseData_whenSubmitAos_thenReturnBadRequest() {
-        final UserDetails userDetails = createCitizenUser();
-
-        Response coRespondentSubmissionResponse = submitCoRespondentAosCase(userDetails, null);
-
-        assertThat(coRespondentSubmissionResponse.getStatusCode(), is(BAD_REQUEST.value()));
-    }
-
-    @Test
+    @Category(ExtendedTest.class)
     public void givenCaseIsDisallowedState_whenSubmittingCoRespondentAnswers_thenReturnBadRequest() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
@@ -95,16 +87,16 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_AWAITING_EVENT_ID, userDetails);
 
-        final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + CO_RESP_ANSWERS_JSON_FILE_PATH);
-        final Response coRespondentSubmissionResponse = submitCoRespondentAosCase(userDetails, coRespondentAnswersJson);
+        final Response coRespondentSubmissionResponse = submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
         assertThat(coRespondentSubmissionResponse.getStatusCode(), is(OK.value()));
         assertThat(coRespondentSubmissionResponse.path(ID), is(caseDetails.getId()));
 
-        checkCaseAfterSuccessfulCoRespondentSubmission(userDetails, String.valueOf(caseDetails.getId()), coRespondentAnswersJson);
+        checkCaseAfterSuccessfulCoRespondentSubmission(userDetails, String.valueOf(caseDetails.getId()), CO_RESPONDENT_ANSWERS_JSON);
     }
 
     @Test
+    @Category(ExtendedTest.class)
     public void givenCaseIsAosAwaiting_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
@@ -114,8 +106,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_AWAITING_EVENT_ID, userDetails);
 
-        final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + CO_RESP_ANSWERS_JSON_FILE_PATH);
-        submitCoRespondentAosCase(userDetails, coRespondentAnswersJson);
+        submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
         final Response caseRetrieval = retrieveAosCase(userDetails.getAuthToken());
         assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
@@ -124,6 +115,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     }
 
     @Test
+    @Category(ExtendedTest.class)
     public void givenCaseIsAosStarted_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
@@ -133,8 +125,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, userDetails);
 
-        final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + CO_RESP_ANSWERS_JSON_FILE_PATH);
-        submitCoRespondentAosCase(userDetails, coRespondentAnswersJson);
+        submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
         final Response caseRetrieval = retrieveAosCase(userDetails.getAuthToken());
         assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
@@ -143,6 +134,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     }
 
     @Test
+    @Category(ExtendedTest.class)
     public void givenCaseIsAosSubmittedAwaitingAnswer_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -154,8 +146,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
         final String respondentJson = loadJson(RESPONDENT_PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON_FILE_PATH);
         submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(), respondentJson);
 
-        final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + CO_RESP_ANSWERS_JSON_FILE_PATH);
-        submitCoRespondentAosCase(userDetails, coRespondentAnswersJson);
+        submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
         final Response caseRetrieval = retrieveAosCase(userDetails.getAuthToken());
         assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
@@ -164,6 +155,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     }
 
     @Test
+    @Category(ExtendedTest.class)
     public void givenCaseIsAosOverdue_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -174,8 +166,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
         updateCase(String.valueOf(caseDetails.getId()), null, NOT_RECEIVED_AOS_EVENT_ID);
 
 
-        final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + CO_RESP_ANSWERS_JSON_FILE_PATH);
-        submitCoRespondentAosCase(userDetails, coRespondentAnswersJson);
+        submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
         final Response caseRetrieval = retrieveAosCase(userDetails.getAuthToken());
         assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
@@ -184,6 +175,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     }
 
     @Test
+    @Category(ExtendedTest.class)
     public void givenCaseIsAosDefended_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -199,8 +191,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
         updateCase(String.valueOf(caseDetails.getId()), null, "answerReceived");
 
-        final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + CO_RESP_ANSWERS_JSON_FILE_PATH);
-        submitCoRespondentAosCase(userDetails, coRespondentAnswersJson);
+        submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
         final Response caseRetrieval = retrieveAosCase(userDetails.getAuthToken());
         assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
@@ -214,6 +205,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
      * at 23:59.
      */
     @Test
+    @Category(ExtendedTest.class)
     public void givenCoRespondentIsDefending_whenSubmittingCoRespondentAnswers_thenDueDateIsRecalculated() throws Exception {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,

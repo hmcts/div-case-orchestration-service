@@ -1,11 +1,12 @@
-FROM hmcts/cnp-java-base:openjdk-8u181-jre-alpine3.8-1.0
+ARG APP_INSIGHTS_AGENT_VERSION=2.3.1
+
+FROM hmctspublic.azurecr.io/base/java:openjdk-8-distroless-1.2
 
 ENV APP div-case-orchestration-service.jar
-ENV APPLICATION_TOTAL_MEMORY 1024M
-ENV APPLICATION_SIZE_ON_DISK_IN_MB 56
 
+COPY lib/AI-Agent.xml /opt/app/
 COPY build/libs/$APP /opt/app/
 
-WORKDIR /opt/app
-
 EXPOSE 4012
+
+CMD ["div-case-orchestration-service.jar"]

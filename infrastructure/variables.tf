@@ -62,10 +62,6 @@ variable "aos_responded_awaiting_answer_days_to_respond" {
   default = 21
 }
 
-variable "idam_strategic_enabled" {
-  default = "true"
-}
-
 variable "health_check_ttl" {
   type = "string"
   default = "4000"
@@ -103,7 +99,13 @@ variable "scheduler_make_cases_eligible_da_cron" {
 variable "awaiting_da_period" {
     type = "string"
     default = "43d"
-    description = "The awaiting period for applicant to be eligible for Decree Absolute.Other time units are also supported, e.g. 'm'(i.e. minute),'s'(i.e. second)"
+    description = "The awaiting period for applicant to be eligible for Decree Absolute. Other time units are also supported, e.g. 'm'(i.e. minute),'s'(i.e. second)"
+}
+
+variable "da_overdue_period" {
+  type = "string"
+  default = "1y"
+  description = "The time period for cases to be overdue for decree absolute. Other time units are also supported, e.g. 'm'(i.e. minute),'s'(i.e. second)"
 }
 
 variable "feature_resp_solicitor_details" {
@@ -111,6 +113,47 @@ variable "feature_resp_solicitor_details" {
   default = "false"
 }
 
+variable "feature_dn_refusal" {
+  type    = "string"
+  default = "false"
+}
+
 variable "documentation_swagger_enabled" {
+  default = "true"
+}
+
+variable "spring_mail_host" {
+  type = "string"
+  default = "mta.reform.hmcts.net"
+}
+
+variable "spring_mail_port" {
+  default = 25
+}
+
+variable "spring_mail_test_connection" {
+  default = false
+}
+
+variable "spring_mail_properties_mail_smtp_starttls_enable" {
   default = true
+}
+
+variable "spring_mail_properties_mail_smtp_ssl_trust" {
+  type = "string"
+  default = "mta.reform.hmcts.net"
+}
+
+variable "dataextraction_status_da_email_to" {
+  type = "string"
+}
+
+variable "dataextraction_status_aos_email_to" {
+  type = "string"
+}
+
+variable "dataextraction_status_dn_email_to" {
+  type = "string"
+}
+variable "scheduler_send_updated_cases_to_robotics_enabled" {
 }

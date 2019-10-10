@@ -7,16 +7,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseCreationResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.validation.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
@@ -238,26 +235,6 @@ public class OrchestrationControllerTest {
     }
 
     @Test
-    public void whenGetPetitionIssueFees_thenReturnCcdResponse() throws Exception {
-        final Map<String, Object> caseData = Collections.emptyMap();
-        final CaseDetails caseDetails = CaseDetails.builder()
-            .caseData(caseData)
-            .build();
-
-        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
-        ccdCallbackRequest.setCaseDetails(caseDetails);
-
-        when(caseOrchestrationService.setOrderSummary(ccdCallbackRequest)).thenReturn(caseData);
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.getPetitionIssueFees(ccdCallbackRequest);
-
-        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedResponse, response.getBody());
-    }
-
-    @Test
     public void whenSubmitRespondentAos_thenProceedAsExpected() throws WorkflowException {
         final Map<String, Object> caseData = Collections.emptyMap();
 
@@ -328,22 +305,4 @@ public class OrchestrationControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(caseData, response.getBody());
     }
-
-    @Test
-    public void whenCoRespondentSubmittedCallback_thenReturnCcdResponse() throws Exception {
-        final Map<String, Object> caseData = Collections.emptyMap();
-        final CaseDetails caseDetails = CaseDetails.builder()
-            .caseData(caseData)
-            .build();
-        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
-        ccdCallbackRequest.setCaseDetails(caseDetails);
-        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
-        when(caseOrchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest)).thenReturn(expectedResponse);
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.corespReceived(ccdCallbackRequest);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedResponse, response.getBody());
-    }
-
 }

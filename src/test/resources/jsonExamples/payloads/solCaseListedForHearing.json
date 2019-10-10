@@ -1,6 +1,6 @@
 {
   "case_details": {
-    "id": "0123456789012345",
+    "id": "test.case.id",
     "case_data": {
       "PetitionerSolicitorEmail": "solicitor@justice.uk",
       "D8caseReference": "HR290831",
@@ -12,6 +12,7 @@
       "D8DivorceCostsClaim": "YES",
       "D8InferredPetitionerGender": "male",
       "CostsClaimGranted": "YES",
+      "CourtName": "liverpool",
       "DateAndTimeOfHearing": [
         {
           "id": "a5961401-e669-4637-97b9-b9ea2ddbb2bd",

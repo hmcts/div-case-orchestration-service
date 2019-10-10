@@ -7,27 +7,10 @@ import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
 import static org.junit.Assert.assertEquals;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 
 public class SubmitDnCaseTest extends CcdSubmissionSupport {
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
-
-    @Test
-    public void givenUserTokenIsNull_whenSubmitDn_thenReturnBadRequest() throws Exception {
-        Response cosResponse = submitDnCase(null, 1L, "dn-submit.json");
-
-        assertEquals(BAD_REQUEST.value(), cosResponse.getStatusCode());
-    }
-
-    @Test
-    public void givenNoCaseData_whenSubmitDn_thenReturnBadRequest() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
-
-        Response cosResponse = submitDnCase(userDetails.getAuthToken(), 1L, null);
-
-        assertEquals(BAD_REQUEST.value(), cosResponse.getStatusCode());
-    }
 
     @Test
     public void whenSubmitDn_thenProceedAsExpected() throws Exception {

@@ -10,10 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.BulkCaseService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
 import java.util.Map;
@@ -26,6 +28,8 @@ import static java.util.Arrays.asList;
 public class BulkCaseController {
     
     private final CaseOrchestrationService orchestrationService;
+
+    private final BulkCaseService bulkCaseService;
 
     @PostMapping(path = "/bulk/case")
     @ApiOperation(value = "Create bulk case ready for listing")
@@ -78,6 +82,33 @@ public class BulkCaseController {
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
     }
 
+    @PostMapping(path = "/bulk/edit/listing")
+    @ApiOperation(value = "Callback to validate bulk case data for listing")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Bulk case processing has been initiated"),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> editBulkCaseListingData(
+        @RequestHeader("Authorization")
+        @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
+        @RequestParam(value = "templateId") @ApiParam("templateId") String templateId,
+        @RequestParam(value = "documentType") @ApiParam("documentType") String documentType,
+        @RequestParam(value = "filename") @ApiParam("filename") String filename,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            Map<String, Object> response = orchestrationService.editBulkCaseListingData(ccdCallbackRequest,
+                filename, templateId, documentType, authorizationToken);
+            ccdCallbackResponseBuilder.data(response);
+        } catch (WorkflowException exception) {
+            log.error("Error validating bulk case with BulkCaseId : {}", ccdCallbackRequest.getCaseDetails().getCaseId(), exception);
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
+    }
+
     @PostMapping(path = "/bulk/pronounce/submit")
     @ApiOperation(value = "Callback to set required data on case when DN Pronounced")
     @ApiResponses(value = {
@@ -93,6 +124,71 @@ public class BulkCaseController {
         try {
             ccdCallbackResponseBuilder.data(orchestrationService
                     .updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails(), authorizationToken));
+        } catch (WorkflowException exception) {
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/bulk/remove")
+    @ApiOperation(value = "Callback remove cases from the bulk")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Cases has been removed successfully"),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> removeCasesFromBulk(
+        @RequestHeader("Authorization")
+        @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            ccdCallbackResponseBuilder.data(orchestrationService
+                .updateBulkCaseAcceptedCases(ccdCallbackRequest.getCaseDetails(), authorizationToken));
+        } catch (WorkflowException exception) {
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/bulk/remove/listing")
+    @ApiOperation(value = "Callback remove cases from the bulk listing")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Cases has been removed successfully from listed bulk case"),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> removeCasesFromBulkListed(
+        @RequestHeader("Authorization")
+        @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            ccdCallbackResponseBuilder.data(bulkCaseService.removeFromBulkListed(ccdCallbackRequest, authorizationToken));
+        } catch (WorkflowException exception) {
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
+    }
+
+
+    @PostMapping(path = "/bulk/pronouncement/cancel")
+    @ApiOperation(value = "Callback to cancel bulk pronouncement")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Cases to cancel pronouncement"),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> cancelBulkPronouncement(
+        @RequestHeader("Authorization")
+        @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            orchestrationService.processCancelBulkCasePronouncement(ccdCallbackRequest, authorizationToken);
         } catch (WorkflowException exception) {
             ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
         }

@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.model.PinResponse;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
-import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
 import java.util.HashMap;
@@ -21,6 +20,8 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
 
 public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
 
@@ -32,6 +33,9 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
     private static final String RESPONDENT_SOLICITOR_CASE_NO = "RespondentSolicitorCaseNo";
     private static final String RESPONDENT_SOLICITOR_PIN = "RespondentSolicitorPin";
     private static final String CASE_REFERENCE = "CaseReference";
+    private static final String AMEND_CASE = "amendCase";
+    private static final String TEST_SOLICITOR_EMAIL = "testsolicitor@mailinator.com";
+    private static final String TEST_SOLICITOR_NAME = "sol name";
 
 
     @Value("${case.orchestration.solicitor.solicitor-link-case.context-path}")
@@ -56,7 +60,13 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
 
         String caseId = String.valueOf(caseDetails.getId());
         updateCaseForCitizen(caseId, null, TEST_AOS_STARTED_EVENT_ID, petitionerUserDetails);
-        updateCase(caseId, null, AOS_NOMINATE_SOL_EVENT_ID, ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId()));
+        updateCaseForCitizen(caseId, null, AOS_NOMINATE_SOL_EVENT_ID, petitionerUserDetails,
+                ImmutablePair.of(D8_RESPONDENT_SOLICITOR_NAME, TEST_SOLICITOR_NAME),
+                ImmutablePair.of(D8_RESPONDENT_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL)
+        );
+        updateCase(caseId, null, AMEND_CASE,
+                ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId())
+        );
 
         UserDetails solicitorUser = createSolicitorUser();
 
@@ -103,6 +113,6 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
         HashMap<String, Object> payload = new HashMap<>();
         payload.put(CASE_DETAILS, caseDetails);
 
-        return RestUtil.postToRestService(serverUrl + contextPath, headers, ResourceLoader.objectToJson(payload));
+        return RestUtil.postToRestService(serverUrl + contextPath, headers, payload);
     }
 }

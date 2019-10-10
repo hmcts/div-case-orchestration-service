@@ -17,4 +17,12 @@ public interface FeesAndPaymentsClient {
             headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     FeeResponse getPetitionIssueFee();
+
+
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/fees-and-payments/version/1/amend-fee",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    FeeResponse getAmendPetitioneFee();
 }

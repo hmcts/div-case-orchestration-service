@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.divorce.category.ExtendedTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
@@ -11,7 +13,6 @@ import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_SUBMITTED_AWAITING_ANSWER;
@@ -31,34 +32,21 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     private static final String AOS_DEFEND_CONSENT_JSON = "aos-defend-consent.json";
     private static final String AOS_DEFEND_NO_CONSENT_JSON = "aos-defend-no-consent.json";
     private static final String AOS_NO_DEFEND_CONSENT_JSON = "aos-no-defend-consent.json";
-    private static final String AOS_NO_DEFEND_NO_CONSENT_JSON = "aos-no-defend-no-consent.json";
+    private static final String AOS_NO_DEFEND_NO_CONSENT_JSON;
+
+    static {
+        try {
+            AOS_NO_DEFEND_NO_CONSENT_JSON = loadJson(PAYLOAD_CONTEXT_PATH + "aos-no-defend-no-consent.json");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static final String AOS_SOLICITOR_REPRESENTATION_JSON = "aos-solicitor-representation.json";
 
     private static final String SUBMIT_COMPLETE_CASE_JSON = "submit-unlinked-case.json";
     private static final String SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON = "submit-complete-case-reason-adultery.json";
     private static final String SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON = "submit-complete-case-reason-2yearSep.json";
-
-
-    @Test
-    public void givenUserTokenIsNull_whenSubmitAos_thenReturnBadRequest() throws Exception {
-        Response cosResponse = submitRespondentAosCase(
-            null,
-            1L,
-            loadJson(PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON));
-
-        assertEquals(BAD_REQUEST.value(), cosResponse.getStatusCode());
-    }
-
-    @Test
-    public void givenNoCaseData_whenSubmitAos_thenReturnBadRequest() {
-        final UserDetails userDetails = createCitizenUser();
-
-        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(),
-            1L,
-            null);
-
-        assertEquals(BAD_REQUEST.value(), cosResponse.getStatusCode());
-    }
 
     @Test
     public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
@@ -81,6 +69,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     }
 
     @Test
+    @Category(ExtendedTest.class)
     public void givenNoConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
@@ -101,6 +90,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     }
 
     @Test
+    @Category(ExtendedTest.class)
     public void givenConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
@@ -121,6 +111,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     }
 
     @Test
+    @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIsNotAdultery_thenProceedAsExpected() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
@@ -132,7 +123,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
             userDetails);
 
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-            loadJson(PAYLOAD_CONTEXT_PATH + AOS_NO_DEFEND_NO_CONSENT_JSON));
+            AOS_NO_DEFEND_NO_CONSENT_JSON);
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path(ID));
@@ -142,6 +133,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     }
 
     @Test
+    @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIsAdultery_thenProceedAsExpected() throws Exception {
         final UserDetails petitioner = createCitizenUser();
 
@@ -153,7 +145,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
             petitioner);
 
         Response cosResponse = submitRespondentAosCase(petitioner.getAuthToken(), caseDetails.getId(),
-            loadJson(PAYLOAD_CONTEXT_PATH + AOS_NO_DEFEND_NO_CONSENT_JSON));
+                AOS_NO_DEFEND_NO_CONSENT_JSON);
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path(ID));
@@ -164,6 +156,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     }
 
     @Test
+    @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIs2YearSeparation_thenProceedAsExpected() throws Exception {
         final UserDetails userDetails = createCitizenUser();
 
@@ -175,7 +168,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
             userDetails);
 
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-            loadJson(PAYLOAD_CONTEXT_PATH + AOS_NO_DEFEND_NO_CONSENT_JSON));
+            AOS_NO_DEFEND_NO_CONSENT_JSON);
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path(ID));

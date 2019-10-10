@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
-import org.junit.ClassRule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,7 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-public class IdamTestSupport {
+public abstract class IdamTestSupport extends MockedFunctionalTest {
     private static final String IDAM_PIN_DETAILS_CONTEXT_PATH = "/pin";
     private static final String IDAM_AUTHORIZE_CONTEXT_PATH = "/oauth2/authorize";
     private static final String IDAM_EXCHANGE_CODE_CONTEXT_PATH = "/oauth2/token";
@@ -47,24 +45,24 @@ public class IdamTestSupport {
     private static final String PIN_AUTH_URL_WITH_REDIRECT = "http://www.redirect.url?code=" + TEST_CODE;
 
 
-    private static final AuthenticateUserResponse AUTHENTICATE_USER_RESPONSE =
+    protected  static final AuthenticateUserResponse AUTHENTICATE_USER_RESPONSE =
         AuthenticateUserResponse.builder()
             .code(TEST_CODE)
             .build();
 
-    static final String AUTHENTICATE_USER_RESPONSE_JSON = convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE);
+    protected static final String AUTHENTICATE_USER_RESPONSE_JSON = convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE);
 
     private static final UserDetails USER_DETAILS_PIN_USER =
         UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
 
-    static final String USER_DETAILS_PIN_USER_JSON = convertObjectToJsonString(USER_DETAILS_PIN_USER);
+    protected static final String USER_DETAILS_PIN_USER_JSON = convertObjectToJsonString(USER_DETAILS_PIN_USER);
 
-    private static final UserDetails USER_DETAILS =
+    protected  static final UserDetails USER_DETAILS =
         UserDetails.builder().id(TEST_USER_ID).email(TEST_EMAIL).build();
 
-    static final String USER_DETAILS_JSON = convertObjectToJsonString(USER_DETAILS);
+    protected  static final String USER_DETAILS_JSON = convertObjectToJsonString(USER_DETAILS);
 
-    private static final TokenExchangeResponse TOKEN_EXCHANGE_RESPONSE =
+    protected  static final TokenExchangeResponse TOKEN_EXCHANGE_RESPONSE =
         TokenExchangeResponse.builder()
             .accessToken(AUTH_TOKEN_1)
             .build();
@@ -92,13 +90,7 @@ public class IdamTestSupport {
     @Value("${idam.caseworker.password}")
     private String caseworkerPassword;
 
-    @Value("${idam.strategic.enabled}")
-    private boolean sidamEnabled;
-
-    @ClassRule
-    public static WireMockClassRule idamServer = new WireMockClassRule(4503);
-
-    void stubUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
+    protected void stubUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
         idamServer.stubFor(get(IDAM_USER_DETAILS_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
             .willReturn(aResponse()
@@ -107,7 +99,7 @@ public class IdamTestSupport {
                 .withBody(message)));
     }
 
-    void stubPinDetailsEndpoint(String authHeader, PinRequest pinRequest, Pin response) {
+    protected void stubPinDetailsEndpoint(String authHeader, PinRequest pinRequest, Pin response) {
         idamServer.stubFor(post(IDAM_PIN_DETAILS_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
             .withHeader(CONTENT_TYPE, new EqualToPattern(APPLICATION_JSON_VALUE))
@@ -118,7 +110,7 @@ public class IdamTestSupport {
                 .withBody(convertObjectToJsonString(response))));
     }
 
-    void stubSignIn() {
+    protected void stubSignIn() {
         try {
             stubAuthoriseEndpoint(getBasicAuthHeader(citizenUserName, citizenPassword),
                 convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
@@ -130,7 +122,7 @@ public class IdamTestSupport {
         }
     }
 
-    void stubSignInForCaseworker() {
+    protected void stubSignInForCaseworker() {
         try {
             stubAuthoriseEndpoint(getBasicAuthHeader(caseworkerUserName, caseworkerPassword),
                     convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
@@ -158,28 +150,15 @@ public class IdamTestSupport {
 
     void stubPinAuthoriseEndpoint(HttpStatus status, String responseBody)
         throws UnsupportedEncodingException {
-
-        if (sidamEnabled) {
-            idamServer.stubFor(get(IDAM_PIN_DETAILS_CONTEXT_PATH
-                    + "?client_id=" + authClientId
-                    + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name()))
-                .withHeader("pin", new EqualToPattern(TEST_PIN))
-                .willReturn(aResponse()
-                    .withStatus(status.value())
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                    .withHeader(LOCATION_HEADER, PIN_AUTH_URL_WITH_REDIRECT)
-                    .withBody(responseBody)));
-        } else {
-            idamServer.stubFor(post(IDAM_AUTHORIZE_CONTEXT_PATH
-                + "?response_type=" + CODE
-                + "&client_id=" + authClientId
+        idamServer.stubFor(get(IDAM_PIN_DETAILS_CONTEXT_PATH
+                + "?client_id=" + authClientId
                 + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name()))
-                .withHeader(AUTHORIZATION, new EqualToPattern(PIN_AUTHORIZATION))
-                .willReturn(aResponse()
-                    .withStatus(status.value())
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                    .withBody(responseBody)));
-        }
+            .withHeader("pin", new EqualToPattern(TEST_PIN))
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .withHeader(LOCATION_HEADER, PIN_AUTH_URL_WITH_REDIRECT)
+                .withBody(responseBody)));
     }
 
     void stubTokenExchangeEndpoint(HttpStatus status, String authCode, String responseBody)

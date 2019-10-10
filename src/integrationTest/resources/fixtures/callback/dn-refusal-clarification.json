@@ -1,0 +1,33 @@
+{
+  "token": "token",
+  "event_id": "eventId",
+  "case_details": {
+    "id": "0123456789012345",
+    "state": "state",
+    "case_data": {
+      "DecreeNisiGranted": "No",
+      "RefusalDecision": "moreInfo",
+      "D8caseReference": "LV88D85000",
+      "D8PetitionerFirstName": "John",
+      "D8PetitionerLastName": "Smith",
+      "D8PetitionerEmail": "simulate-delivered@notifications.service.gov.uk",
+      "D8DocumentsGenerated": [
+        {
+          "id": "7b22bf15-d055-41f8-9d77-224fed546841",
+          "value": {
+            "DocumentLink": {
+              "document_url": "https://localhost:8080/documents/1234",
+              "document_filename": "refusalOrder1513951627081724.pdf",
+              "document_binary_url": "https://localhost:8080/documents/1234/binary"
+            },
+            "DocumentType": "d79",
+            "DocumentComment": null,
+            "DocumentFileName": "DecreeNisiRefusalOrder.pdf",
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        }
+      ]
+    }
+  }
+}

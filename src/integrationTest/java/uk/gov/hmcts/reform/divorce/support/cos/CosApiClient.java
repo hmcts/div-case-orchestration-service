@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.support.cos;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,7 +55,8 @@ public interface CosApiClient {
         method = RequestMethod.POST,
         value = "/aos-solicitor-nominated"
     )
-    Map<String, Object> aosSolicitorNominated(@RequestBody Map<String, Object> caseDataContent);
+    Map<String, Object> aosSolicitorNominated(@RequestHeader(AUTHORIZATION) String authorisation,
+                                              @RequestBody Map<String, Object> caseDataContent);
 
     @RequestMapping(
         method = RequestMethod.POST,
@@ -75,6 +75,14 @@ public interface CosApiClient {
     );
 
     @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/da-requested-by-applicant"
+    )
+    Map<String, Object> notifyRespondentOfDARequested(@RequestHeader(AUTHORIZATION) String authorisation,
+                                                      @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
+
+    @RequestMapping(
         method = RequestMethod.GET,
         value = "/draftsapi/version/1",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
@@ -87,7 +95,7 @@ public interface CosApiClient {
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     void saveDraft(@RequestHeader(AUTHORIZATION) String authorisation,
-                   @RequestBody JsonNode caseDataContent,
+                   @RequestBody Map<String, Object> caseDataContent,
                    @RequestParam(name = "sendEmail") String sendEmail
     );
 
@@ -103,7 +111,7 @@ public interface CosApiClient {
         value = "/submit"
     )
     Map<String, Object> submitCase(@RequestHeader(AUTHORIZATION) String authorisation,
-                                   @RequestBody JsonNode caseDataContent
+                                   @RequestBody Map<String, Object> caseDataContent
     );
 
     @RequestMapping(
@@ -122,6 +130,16 @@ public interface CosApiClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
+        value = "/bulk/edit/listing"
+    )
+    Map<String, Object> editBulkListing(@RequestHeader(AUTHORIZATION) String authorisation,
+                                        @RequestBody CcdCallbackRequest ccdCallbackRequest,
+                                        @RequestParam(name = "templateId") String templateId,
+                                        @RequestParam(name = "documentType") String documentType,
+                                        @RequestParam(name = "filename") String filename);
+
+    @RequestMapping(
+        method = RequestMethod.POST,
         value = "/generate-document"
     )
     Map<String, Object> generateDocument(@RequestHeader(AUTHORIZATION) String authorisation,
@@ -132,7 +150,7 @@ public interface CosApiClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "generate-dn-pronouncement-documents"
+        value = "/generate-dn-pronouncement-documents"
     )
     Map<String, Object> generateDnPronouncedDocuments(@RequestHeader(AUTHORIZATION) String authorisation,
                                                       @RequestBody CcdCallbackRequest ccdCallbackRequest);
@@ -151,5 +169,43 @@ public interface CosApiClient {
     Map<String, Object> submitDaCase(@RequestHeader(AUTHORIZATION) String authorisation,
                                      @RequestBody Map<String, Object> caseData,
                                      @PathVariable("caseId") String caseId
+    );
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/issue-aos-pack-offline/parties/{party}"
+    )
+    Map<String, Object> issueAosPackOffline(@RequestHeader(AUTHORIZATION) String authorisation,
+                                            @PathVariable("party") String party,
+                                            @RequestBody CcdCallbackRequest ccdCallbackRequest);
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/personal-service-pack"
+    )
+    CcdCallbackResponse processPersonalServicePack(
+            @RequestHeader(AUTHORIZATION) String authorisation,
+            @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/remove-dn-outcome-case-flag"
+    )
+    Map<String, Object> removeDnOutcomeCaseFlag(@RequestBody CcdCallbackRequest ccdCallbackRequest);
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/remove-la-make-decision-fields"
+    )
+    Map<String, Object> removeLegalAdvisorMakeDecisionFields(@RequestBody CcdCallbackRequest ccdCallbackRequest);
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/dn-about-to-be-granted"
+    )
+    CcdCallbackResponse processDnAboutToBeGranted(
+            @RequestHeader(AUTHORIZATION) String authorisation,
+            @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 }

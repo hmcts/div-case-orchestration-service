@@ -23,6 +23,19 @@ spring:
     name: div-cos
   resources:
     static-locations:
+  mail:
+    properties:
+      mail:
+        smtp:
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
+          starttls:
+            enable: true
+    host: localhost
+    port: 32773
+    default-encoding: UTF-8
+    test-connection: false
 
 quartzProperties:
   org.quartz:
@@ -53,6 +66,12 @@ scheduler:
       description: 'Cron job to make cases eligible for Decree Absolute'
       jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.MakeCasesEligibleForDAJob'
       cron: ${SCHEDULER_MAKE_CASES_ELIGIBLE_DA_CRON:0 0 */3 ? * * *} #Every 3 hours
+    - name: 'DataExtractionToRobotics'
+      enabled: ${SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_ENABLED:false}
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Cron job to extract and publish cases updated on the previous day'
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.DataExtractionJob'
+      cron: ${SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_CRON:0 0 2 ? * * *} #Every day at 2:00
 
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
@@ -68,16 +87,13 @@ case:
     service:
       api:
         baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://localhost:4011}
-  validation:
-    service:
-      api:
-        baseurl: ${CASE_VALIDATION_SERVICE_API_BASEURL:http://localhost:4008}
   maintenance:
     service:
       api:
         baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://localhost:4010}
   event:
     awaiting-da-period: ${AWAITING_DA_PERIOD:43d} # supports different time units e.g. 'm'(i.e. minute),'s'(i.e. second)
+    da-overdue-period: ${DA_OVERDUE_PERIOD:1y}
 
 fees-and-payments:
   service:
@@ -96,6 +112,7 @@ feature-toggle:
   toggle:
     bulk-printer-toggle-name: "divorce_bulk_print"
     feature_resp_solicitor_details: ${FEATURE_RESP_SOLICITOR_DETAILS:false}
+    dn_refusal: ${FEATURE_DN_REFUSAL:false}
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
@@ -107,11 +124,12 @@ uk:
   gov:
     notify:
       api:
-        key: dummy
+        key: ${UK_GOV_NOTIFY_API_KEY:dummy}
+        baseUrl: https://api.notifications.service.gov.uk
       email:
         templateVars:
           SAVE_DRAFT:
-            divorceUrl: https://apply-divorce.service.gov.uk
+            divorceUrl: https://www.apply-divorce.service.gov.uk
         templates:
           AOS_RECEIVED_NO_ADMIT_ADULTERY: 015fb73a-3be2-49d8-8ed8-a4078025dae3
           AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: bc6ee2ec-f62b-4321-b19f-65e868f849eb
@@ -119,11 +137,17 @@ uk:
           APPLIC_SUBMISSION: c323844c-5fb9-4ba4-8290-b84139eb033c
           APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED: e07cbeb8-c2e0-4ba5-84ba-b9bd1ab04b0a
           APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND: 369169ef-c6cb-428c-abbd-427aaa50c2a3
+          APPLICANT_DA_ELIGIBLE: 71fd2e7e-42dc-4dcf-a9bb-007ae9d4b27f
           CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION: 19a8844e-8112-4578-aa4c-dea6c054ab35
           CO_RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION: 486c86ff-a0e2-4eb1-a84c-687641d746de
           DA_GRANTED_NOTIFICATION: b25d9f31-a67e-42f6-a606-0083d273f149
+          DECREE_ABSOLUTE_REQUESTED_NOTIFICATION: b1296cb4-1df2-4d89-b32c-23600a0a8070
+          DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR: 43b52d1a-b9be-4de5-b5ae-627c51a55111
+          DECREE_NISI_REFUSAL_ORDER_CLARIFICATION: bc4c7ba0-4fc0-4f14-876b-1328eca127b8
+          DECREE_NISI_REFUSAL_ORDER_REJECTION: 0216e301-989f-49b8-841e-7f61cef9838a
           DN_SUBMISSION: edf3bce9-f63a-4be0-93a9-d0c80dff7983
           GENERIC_UPDATE: 6ee6ec29-5e88-4516-99cb-2edc30256575
+          GENERIC_UPDATE_RESPONDENT: dc47109d-95f0-4a55-a11f-de41a5201cbc
           PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION: 9937c8bc-dc7a-4210-a25b-20aceb82d48d
           PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION: 686ce418-6d76-48ce-b903-a87d2b832125
           RESPONDENT_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION: 80b986e1-056b-4577-a343-bb2e72e2a3f0
@@ -132,7 +156,6 @@ uk:
           RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED: 44e2dd30-4303-4f4c-a394-ce0b54af81dd
           RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION: 277fd3f3-2fdb-4c79-9354-1b3db8d44cca
           SAVE_DRAFT: 14074c06-87f1-4678-9238-4d71e741eb57
-          RESPONDENT_SOLICITOR_AOS_INVITATION: a193f039-2252-425d-861c-6dba255b7e6e
           AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY: 78e21621-66bd-4c70-a294-15210724b0f6
           AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: 341119b9-5a8d-4c5e-9296-2e6bfa37c49d
           AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS: 2781acfa-3f60-4fc9-8d5b-de35cf121893
@@ -140,12 +163,14 @@ uk:
           SOL_APPLICANT_AOS_RECEIVED: 162ffa54-b008-470e-92b2-a3f2ecb6d30c
           SOL_APPLICANT_COE_NOTIFICATION: 620c982f-a1d9-4645-8c69-d3187a91a826
           SOL_APPLICANT_CORESP_RESPONDED: cff97b35-fcf7-40b7-ac10-87d34369d15e
+          SOL_APPLICANT_DA_ELIGIBLE: f1ab390c-7d28-4ba1-8003-1ae42c677fdf
+          SOL_APPLICANT_DA_GRANTED: fc8f7343-8f07-42b7-a3c5-52543a21015d
           SOL_APPLICANT_DN_SUBMITTED: 5d653b12-2f4e-400d-b724-4081f77a00a9
           SOL_APPLICANT_MORE_INFO_REQUESTED: eababede-7aec-4ded-a61d-f05a7d75f0f9
           SOL_APPLICANT_RESP_NOT_RESPONDED: 88b793ee-d888-4d87-bd3d-8f3a36353135
           SOL_GENERAL_CASE_UPDATE: 951d26d9-e5fc-40de-a9da-d3ab957cb5e3
           SOL_RESP_COE_NOTIFICATION: e7117ed4-83ff-43f9-8521-e70d31063c7e
-          CASE_ELIGIBLE_FOR_NOTIFICATION_FOR_APPLICANT: 71fd2e7e-42dc-4dcf-a9bb-007ae9d4b27f
+          SOL_PERSONAL_SERVICE: 1e2f2ac5-ce4c-4fce-aca0-47a876eda089
 
 court-distribution-config:
   distribution:
@@ -264,6 +289,16 @@ dncourt:
       address: "London Road\nSouthampton\nSO15 2XQ"
       email: "divorcecase@justice.gov.uk"
       phone: "0300 303 0642"
+    nottinghamJustice:
+      name: "Nottingham Justice Centre"
+      address: "Carrington Street\nNottingham\nNG2 1EE"
+      email: "divorcecase@justice.gov.uk"
+      phone: "0300 303 0642"
+    birmingham:
+      name: "Birmingham Civil and Family Justice Centre"
+      address: "Priory Courts\n33 Bull Street\nBirmingham\nB4 6DS"
+      email: "divorcecase@justice.gov.uk"
+      phone: "0300 303 0642"
 
 idam:
   api:
@@ -278,8 +313,6 @@ idam:
   caseworker:
     username: ${IDAM_CASEWORKER_USERNAME:dummyuser}
     password: ${IDAM_CASEWORKER_PASSWORD:dummypassword}
-  strategic:
-    enabled: ${IDAM_STRATEGIC_ENABLED:true}
   s2s-auth:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
@@ -313,6 +346,16 @@ documentation:
   swagger:
     enabled: true
 
+dataExtraction:
+  emailFrom: noreply@reform.hmcts.net
+  status:
+    DA:
+      emailTo:
+    AOS:
+      emailTo:
+    DN:
+      emailTo:
+
 bulk-action:
   page-size: 50
   retries:
@@ -328,6 +371,8 @@ bulk-action:
 # Enable disk space health check
 management:
   health:
+    mail:
+      enabled: false
     elasticsearch:
       enabled: false
   endpoint:
@@ -350,5 +395,3 @@ logging:
   pattern:
     console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"
 
-azure:
-  app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:false}

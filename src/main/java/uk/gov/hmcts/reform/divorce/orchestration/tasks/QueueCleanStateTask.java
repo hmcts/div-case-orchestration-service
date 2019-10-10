@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.event.CleanStatusEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.event.domain.CleanStatusEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.AsyncTask;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 

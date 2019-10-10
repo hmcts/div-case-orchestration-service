@@ -1,6 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration;
 
+import com.google.common.collect.ImmutableMap;
+
+import java.util.Map;
+
 public class TestConstants {
+    public static final String TEST_BULK_CASE_ID = "test.bulk.case.id";
     public static final String TEST_CASE_ID = "test.case.id";
     public static final String TEST_CASE_FAMILY_MAN_ID = "test.family.man.id";
     public static final String TEST_STATE = "test.state";
@@ -29,18 +34,23 @@ public class TestConstants {
     public static final String TEST_SERVICE_AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
             + ".eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ"
             + ".SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-    public static final String TEST_SOLICITOR_NAME = "Solcitor name";
+    public static final String TEST_SOLICITOR_NAME = "Solicitor name";
+    public static final String TEST_SOLICITOR_EMAIL = "testSolicitor@email.com";
     public static final String TEST_SERVICE_TOKEN = "testServiceToken";
     public static final String TEST_PETITIONER_FIRST_NAME = "First";
     public static final String TEST_PETITIONER_LAST_NAME = "Last";
+    public static final String TEST_FIRST_NAME = "First";
+    public static final String TEST_LAST_NAME = "Last";
     public static final String TEST_PETITIONER_EMAIL = "testPetitioner@email.com";
     public static final String TEST_PRONOUNCEMENT_JUDGE = "District Judge";
     public static final String TEST_USER_FIRST_NAME = "user first name";
     public static final String TEST_USER_LAST_NAME = "user last name";
     public static final String TEST_RELATIONSHIP = "wife";
+    public static final String TEST_INFERRED_GENDER = "female";
     public static final String TEST_RESPONDENT_FIRST_NAME = "First";
     public static final String TEST_RESPONDENT_LAST_NAME = "Last";
     public static final String TEST_RESPONDENT_EMAIL = "testRespondent@email.com";
+    public static final String TEST_RESPONDENT_SOLICITOR_EMAIL = "testRespondentSolicitor@example.com";
     public static final String TEST_REASON_ADULTERY = "adultery";
     public static final String TEST_REASON_2_YEAR_SEP = "separation-2-years";
     public static final String TEST_REASON_UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
@@ -48,13 +58,20 @@ public class TestConstants {
     public static final String AWAITING_CONSIDERATION_GENERAL_APPLICATION = "AwaitingConsiderationGeneralApplication";
     public static final String D8_CASE_ID = "LV17D80101";
     public static final String UNFORMATTED_CASE_ID = "0123456789";
-    public static String TEST_TOKEN = "test.token";
-    public static String TEST_EVENT_ID = "test.event.id";
-    public static String AUTH_TOKEN = "test.auth.token";
-    public static String BEARER_AUTH_TOKEN = "Bearer test.auth.token";
-    public static String CASEWORKER_AUTH_TOKEN = "caseworker.auth.token";
-    public static String AUTH_TOKEN_1 = "test.auth.token1";
-    public static String TEST_EMAIL = "test.email";
-    public static String BEARER_AUTH_TOKEN_1 = "Bearer test.auth.token1";
-    public static String TEST_CODE = "test.code";
+    public static final String TEST_TOKEN = "test.token";
+    public static final String TEST_EVENT_ID = "test.event.id";
+    public static final String AUTH_TOKEN = "test.auth.token";
+    public static final String BEARER_AUTH_TOKEN = "Bearer test.auth.token";
+    public static final String CASEWORKER_AUTH_TOKEN = "caseworker.auth.token";
+    public static final String AUTH_TOKEN_1 = "test.auth.token1";
+    public static final String TEST_EMAIL = "test.email";
+    public static final String BEARER_AUTH_TOKEN_1 = "Bearer test.auth.token1";
+    public static final String TEST_CODE = "test.code";
+    public static final String TEST_JUDGE_NAME = "Judge name";
+    public static final Map<String, Object>  DUMMY_CASE_DATA = ImmutableMap.of("someKey", "someValue");
+    public static final String TEMPLATE_ID = "testTemplateId";
+    public static final String DOCUMENT_TYPE = "testDocumentType";
+    public static final String FILE_NAME = "testFileName";
+    public static final String SOL_SERVICE_METHOD_CCD_FIELD = "SolServiceMethod";
+    public static final String PERSONAL_SERVICE_VALUE = "personalService";
 }

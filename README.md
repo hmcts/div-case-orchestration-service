@@ -43,11 +43,10 @@ API documentation is provided with Swagger:
 
 **Unit tests**
 
-To run all unit tests and local functional tests respectively please execute following commands:
+To run all unit tests and local functional tests respectively please execute following command:
 
 ```bash
     ./gradlew test
-    ./gradlew wiremockFunctional
 ```
 
 **Coding style tests**
@@ -76,6 +75,12 @@ To run all integration tests locally:
 * Replace the `replace_me` secrets in both of the _newly created_ files. You can get the values from SCM and Azure secrets key vault (the new files are in .gitignore and should ***not*** be committed to git)
 * Start the app with AAT config using `./gradlew clean bootRunAat`
 * Start the test with AAT config using `./gradlew clean functional`
+
+**Faster PR builds**
+
+If you're making a very small change which does not require ExtendTests to run, you may put `[FAST]` at the start of the pull request title to only run non-extended testes
+If you have already created the PR without `[FAST]` in the title, you can add it but need to make a code change for Jenkins to pick it up
+You can also run non-extended test only locally by setting the `CHANGE_TITLE` env variable to `[FAST]` (i.e simulating a PR with a title starting with `[FAST]`)
 
 ## Developing
 

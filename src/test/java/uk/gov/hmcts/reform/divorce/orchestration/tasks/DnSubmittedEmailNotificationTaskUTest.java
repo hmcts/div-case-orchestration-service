@@ -15,14 +15,14 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
@@ -36,7 +36,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMAIL_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
@@ -94,8 +93,9 @@ public class DnSubmittedEmailNotificationTaskUTest {
         payload.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
 
         TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         Map<String, String> notificationTemplateVars = ImmutableMap.of(
-            NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_FAMILY_MAN_ID,
+            NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID,
             NOTIFICATION_EMAIL, TEST_USER_EMAIL,
             NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME,
             NOTIFICATION_RESP_NAME, TEST_USER_FIRST_NAME + " " + TEST_USER_LAST_NAME,
@@ -111,7 +111,7 @@ public class DnSubmittedEmailNotificationTaskUTest {
     }
 
     @Test
-    public void givenNotificationError_whenExecuteEmailNotificationTask_thenReturnEmailError() throws NotificationClientException {
+    public void givenNotificationError_whenExecuteEmailNotificationTask_thenReturnData() throws NotificationClientException {
 
         TaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
@@ -122,8 +122,7 @@ public class DnSubmittedEmailNotificationTaskUTest {
 
         Map<String, Object> taskResponse = target.execute(context, payload);
 
-        assertTrue(taskResponse.isEmpty());
-        assertNotNull(context.getTransientObject(EMAIL_ERROR_KEY));
+        assertEquals(taskResponse, payload);
     }
 
     @Test
