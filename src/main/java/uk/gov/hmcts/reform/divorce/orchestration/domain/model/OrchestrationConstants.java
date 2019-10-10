@@ -16,6 +16,7 @@ public class OrchestrationConstants {
     public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String DN_COURT_DETAILS = "dnCourtDetails";
     public static final String BULK_LINK_CASE_ID = "bulkLinkCaseId";
+    public static final String DIVORCE_PARTY = "divorceParty";
 
     // Authentication
     public static final String ACCESS_CODE = "access_code";
@@ -69,6 +70,7 @@ public class OrchestrationConstants {
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
+    public static final String RESP_IS_USING_DIGITAL_CHANNEL = "RespContactMethodIsDigital";
     public static final String DN_COSTS_OPTIONS_CCD_FIELD = "DivorceCostsOptionDN";
     public static final String DN_COSTS_ENDCLAIM_VALUE = "endClaim";
     public static final String DIVORCE_COSTS_CLAIM_CCD_FIELD = "D8DivorceCostsClaim";
@@ -178,6 +180,7 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_DUE_DATE = "DueDateCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED = "ReceivedAnswerFromCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED_DATE = "ReceivedAnswerFromCoRespDate";
+    public static final String CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL = "CoRespContactMethodIsDigital";
     public static final String DN_DECISION_DATE_FIELD = "DNApprovalDate";
 
     // Divorce Session
@@ -250,6 +253,11 @@ public class OrchestrationConstants {
     public static final String PHONE_LABEL = "Phone:";
 
     // Document Generator
+    public static final String DOCUMENT_TYPE_JSON_KEY = "DocumentType";
+    public static final String DOCUMENT_FILENAME_JSON_KEY = "DocumentFileName";
+    public static final String DOCUMENT_LINK_JSON_KEY = "DocumentLink";
+    public static final String DOCUMENT_LINK_FILENAME_JSON_KEY = "document_filename";
+    public static final String DOCUMENT_EXTENSION = ".pdf";
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";
     public static final String DOCUMENT_TYPE_RESPONDENT_INVITATION = "aos";
     public static final String DOCUMENT_TYPE_RESPONDENT_ANSWERS = "respondentAnswers";
@@ -282,8 +290,9 @@ public class OrchestrationConstants {
     public static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
     public static final String DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00098.docx";
     public static final String DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE = "d79";
-    public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME = "decreeNisiRefusalOrder";
-    public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD = "previousDecreeNisiRefusalOrder";
+    public static final String DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME = "decreeNisiRefusalOrderClarification";
+    public static final String DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME = "decreeNisiRefusalOrderRejection";
+    public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD = "PreviousDNClarificationRefusalOrder";
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
     public static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";

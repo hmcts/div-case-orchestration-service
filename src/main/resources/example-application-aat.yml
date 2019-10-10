@@ -26,6 +26,10 @@ feature-toggle:
   service:
     api:
       baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://rpe-feature-toggle-api-aat.service.core-compute-aat.internal}
+  toggle:
+    bulk-printer-toggle-name: "divorce_bulk_print"
+    feature_resp_solicitor_details: true
+    dn_refusal: true
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://rpe-send-letter-service-aat.service.core-compute-aat.internal}
