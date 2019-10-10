@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.divorce.dataextraction;
 
 import io.restassured.response.Response;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Value;
+import uk.gov.hmcts.reform.divorce.category.ExtendedTest;
 import uk.gov.hmcts.reform.divorce.support.cos.RetrieveCaseSupport;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
@@ -37,6 +39,7 @@ public class FamilyManDataExtractionIT extends RetrieveCaseSupport {
      * Please look into class-level comment if this test is not passing locally.
      */
     @Test
+    @Category(ExtendedTest.class)
     public void shouldEmailCsvFiles() {
         Response response = RestUtil.postToRestService(
             serverUrl + testDataExtractionEndPoint,
@@ -51,6 +54,7 @@ public class FamilyManDataExtractionIT extends RetrieveCaseSupport {
      * Please look into class-level comment if this test is not passing locally.
      */
     @Test
+    @Category(ExtendedTest.class)
     public void shouldEmailCsvFiles_ForGivenStatusAndDate() {
         Response response = RestUtil.postToRestService(
             serverUrl + testDataExtractionEndPoint + "/status/DA/lastModifiedDate/2019-10-01",
