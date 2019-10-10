@@ -304,7 +304,7 @@ idam:
   client:
     redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:8080/authenticated}
     port: 4503
-    secret: ${SERVICE_AUTH_SECRET:dummysecret}
+    secret: ${IDAM_CLIENT_SECRET:dummysecret}
     id: divorce
     health:
       context-path: /health

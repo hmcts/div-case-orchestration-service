@@ -40,7 +40,7 @@ idam:
   client:
     redirect_uri: ${IDAM_API_REDIRECT_URL:https://div-pfe-aat.service.core-compute-aat.internal/authenticated}
     port: 4503
-    secret: ${SERVICE_AUTH_SECRET:replace_me}
+    secret: ${IDAM_CLIENT_SECRET:replace_me}
     id: divorce
     health:
       context-path: /health
