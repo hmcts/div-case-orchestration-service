@@ -16,6 +16,7 @@ public class OrchestrationConstants {
     public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String DN_COURT_DETAILS = "dnCourtDetails";
     public static final String BULK_LINK_CASE_ID = "bulkLinkCaseId";
+    public static final String DIVORCE_PARTY = "divorceParty";
 
     // Authentication
     public static final String ACCESS_CODE = "access_code";
@@ -69,6 +70,7 @@ public class OrchestrationConstants {
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
+    public static final String RESP_IS_USING_DIGITAL_CHANNEL = "RespContactMethodIsDigital";
     public static final String DN_COSTS_OPTIONS_CCD_FIELD = "DivorceCostsOptionDN";
     public static final String DN_COSTS_ENDCLAIM_VALUE = "endClaim";
     public static final String DIVORCE_COSTS_CLAIM_CCD_FIELD = "D8DivorceCostsClaim";
@@ -178,6 +180,7 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_DUE_DATE = "DueDateCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED = "ReceivedAnswerFromCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED_DATE = "ReceivedAnswerFromCoRespDate";
+    public static final String CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL = "CoRespContactMethodIsDigital";
     public static final String DN_DECISION_DATE_FIELD = "DNApprovalDate";
 
     // Divorce Session
