@@ -62,6 +62,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOffl
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
@@ -126,6 +127,7 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
             .andExpect(status().isOk())
             .andExpect(content().string(allOf(
                 isJson(),
+                hasJsonPath("$.data.RespContactMethodIsDigital", is(NO_VALUE)),
                 hasJsonPath("$.data.D8DocumentsGenerated", hasSize(2)),
                 hasJsonPath("$.data.D8DocumentsGenerated", hasItems(
                     hasJsonPath("value.DocumentFileName", is(invitationLetterFilename)),
@@ -180,6 +182,7 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
             .andExpect(status().isOk())
             .andExpect(content().string(allOf(
                 isJson(),
+                hasJsonPath("$.data.CoRespContactMethodIsDigital", is(NO_VALUE)),
                 hasJsonPath("$.data.D8DocumentsGenerated", hasSize(2)),
                 hasJsonPath("$.data.D8DocumentsGenerated", hasItems(
                     hasJsonPath("value.DocumentFileName", is(invitationLetterFilename)),
