@@ -99,6 +99,7 @@ public class FamilyManDataExtractionIT extends RetrieveCaseSupport {
     private void checkEmailHasBeenSent() {
         if (isTestRunningLocally()) {
             assertThat(simpleSmtpServer.getReceivedEmails(), hasSize(greaterThan(0)));
+            simpleSmtpServer.reset();
         }
     }
 
