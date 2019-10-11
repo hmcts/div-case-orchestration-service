@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -27,6 +28,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -37,9 +40,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECREE_ABSOLUTE_GRANTED_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PRONOUNCEMENT_JUDGE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
@@ -48,9 +53,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -62,29 +69,33 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.<String, Object>builder()
-        .put(PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_PRONOUNCEMENT_JUDGE)
-        .put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
-        .put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
-        .put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME)
-        .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
-        .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
-        .put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE)
-        .build();
+            .put(PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_PRONOUNCEMENT_JUDGE)
+            .put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
+            .put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
+            .put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL)
+            .put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME)
+            .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
+            .put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL)
+            .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
+            .put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE)
+            .build();
 
     private final LocalDateTime grantedDate = LocalDateTime.parse(TEST_DECREE_ABSOLUTE_GRANTED_DATE);
 
-
     private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
-        .caseData(CASE_DATA)
-        .caseId(TEST_CASE_ID)
-        .build();
+            .caseData(CASE_DATA)
+            .caseId(TEST_CASE_ID)
+            .build();
 
     private static final CcdCallbackRequest CCD_CALLBACK_REQUEST = CcdCallbackRequest.builder()
-        .caseDetails(CASE_DETAILS)
-        .build();
+            .caseDetails(CASE_DETAILS)
+            .build();
 
     @Autowired
     private MockMvc webClient;
+
+    @MockBean
+    EmailService mockEmailService;
 
     @MockBean
     private Clock clock;
@@ -99,76 +110,78 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
     public void assertCallBackFromDaAboutToBeGrantedRequest() throws Exception {
 
         final GenerateDocumentRequest daDocumentGenerationRequest =
-            GenerateDocumentRequest.builder()
-                .template(DECREE_ABSOLUTE_TEMPLATE_ID)
-                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
-                .build();
+                GenerateDocumentRequest.builder()
+                        .template(DECREE_ABSOLUTE_TEMPLATE_ID)
+                        .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS))
+                        .build();
 
         final GeneratedDocumentInfo daDocumentGenerationResponse =
-            GeneratedDocumentInfo.builder()
-                .documentType(DECREE_ABSOLUTE_DOCUMENT_TYPE)
-                .fileName(DECREE_ABSOLUTE_FILENAME + TEST_CASE_ID)
-                .build();
+                GeneratedDocumentInfo.builder()
+                        .documentType(DECREE_ABSOLUTE_DOCUMENT_TYPE)
+                        .fileName(DECREE_ABSOLUTE_FILENAME + TEST_CASE_ID)
+                        .build();
 
         final DocumentUpdateRequest daDocumentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .documents(asList(daDocumentGenerationResponse))
-                .caseData(CASE_DATA)
-                .build();
+                DocumentUpdateRequest.builder()
+                        .documents(asList(daDocumentGenerationResponse))
+                        .caseData(CASE_DATA)
+                        .build();
 
         stubDocumentGeneratorServerEndpoint(daDocumentGenerationRequest, daDocumentGenerationResponse);
         stubFormatterServerEndpoint(daDocumentUpdateRequest, CASE_DATA);
+        when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString()))
+                .thenReturn(null);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
 
         webClient.perform(post(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
     }
 
     @Test
     public void givenBodyIsNull_whenEndpointInvoked_thenReturnBadRequest()
-        throws Exception {
+            throws Exception {
         webClient.perform(post(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     public void givenAuthHeaderIsNull_whenEndpointInvoked_thenReturnBadRequest()
-        throws Exception {
+            throws Exception {
         webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
+                .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest generateDocumentRequest,
-        GeneratedDocumentInfo response) {
+                                                     GeneratedDocumentInfo response) {
         documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
-            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
+                .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
+                .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+                .willReturn(aResponse()
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                        .withStatus(HttpStatus.OK.value())
+                        .withBody(convertObjectToJsonString(response))));
     }
 
     private void stubFormatterServerEndpoint(DocumentUpdateRequest documentUpdateRequest,
-        Map<String, Object> response) {
+                                             Map<String, Object> response) {
         formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
+                .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
+                .willReturn(aResponse()
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                        .withStatus(HttpStatus.OK.value())
+                        .withBody(convertObjectToJsonString(response))));
     }
 
 }
