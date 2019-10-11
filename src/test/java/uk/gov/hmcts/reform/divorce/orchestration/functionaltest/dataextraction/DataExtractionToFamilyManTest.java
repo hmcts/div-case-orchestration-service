@@ -47,7 +47,7 @@ import static org.mockito.Mockito.when;
  */
 public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
 
-    protected static final String DA_DESIRED_STATES = "[\"divorcegranted\"]";
+    private static final String DA_DESIRED_STATES = "[\"divorcegranted\"]";
     private static final String AOS_DESIRED_STATES = "[\"awaitinglegaladvisorreferral\"]";
     private static final String DN_DESIRED_STATES = "[\"dnisrefused\", \"dnpronounced\"]";
 
@@ -112,7 +112,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
             + "          }"
             + "        }"
             + "      ],"
-            + "      \"CourtName\": \"This Court\","
+            + "      \"CourtName\": \"banana\","
             + "      \"D8DivorceCostsClaim\": \"Yes\","
             + "      \"WhoPaysCosts\": \"Respondent\","
             + "      \"costs claim granted\": \"Yes\","
@@ -149,7 +149,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
             DN_DESIRED_STATES,
             "CaseReferenceNumber,CofEGrantedDate,HearingDate,HearingTime,PlaceOfHearing,OrderForCosts,"
                 + "PartyToPayCosts,CostsToBeAssessed,OrderForAncilliaryRelief,OrderOrCauseList,JudgesName",
-            "LV17D90909,15/12/2020,10/12/2020,15:30,This Court,Yes,Respondent,Yes,No,Order,Judge Dave"
+            "LV17D90909,15/12/2020,10/12/2020,15:30,banana,Yes,Respondent,Yes,No,Order,Judge Dave"
         );
     }
 

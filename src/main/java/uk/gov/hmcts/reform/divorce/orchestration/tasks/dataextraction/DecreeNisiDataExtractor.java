@@ -1,10 +1,14 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
 
 import java.util.List;
 import java.util.Map;
@@ -37,9 +41,13 @@ public class DecreeNisiDataExtractor implements CSVExtractor {
 
     private final String destinationEmailAddress;
 
+    private final TaskCommons taskCommons;
+
     public DecreeNisiDataExtractor(
-        @Value("${dataExtraction.status.DN.emailTo}") String destinationEmailAddress) {
+        @Value("${dataExtraction.status.DN.emailTo}") String destinationEmailAddress,
+        @Autowired TaskCommons taskCommons) {
         this.destinationEmailAddress = destinationEmailAddress;
+        this.taskCommons = taskCommons;
     }
 
     @Override
@@ -88,15 +96,19 @@ public class DecreeNisiDataExtractor implements CSVExtractor {
             csvLine.append(COMMA);
             csvLine.append(hearingTime);
             csvLine.append(COMMA);
-            csvLine.append(getMandatoryPropertyValueAsString(caseData, COURT_NAME_CCD_FIELD));
+
+            String ccdCourtName = getMandatoryPropertyValueAsString(caseData, COURT_NAME_CCD_FIELD);
+            String dnCourtName = getDnCourtName(ccdCourtName);
+            csvLine.append(dnCourtName);
             csvLine.append(COMMA);
+
             csvLine.append(getMandatoryPropertyValueAsString(caseData, DIVORCE_COSTS_CLAIM_CCD_FIELD));
             csvLine.append(COMMA);
             csvLine.append(getOptionalPropertyValueAsString(caseData, WHO_PAYS_COSTS_CCD_FIELD, ""));
             csvLine.append(COMMA);
             csvLine.append(getOptionalPropertyValueAsString(caseData, COSTS_CLAIM_GRANTED, "No"));
             csvLine.append(COMMA);
-            csvLine.append("No"); // OrderForAncilliaryRelief will always "no"
+            csvLine.append("No"); // OrderForAncilliaryRelief will always be "no"
             csvLine.append(COMMA);
             csvLine.append("Order"); //OrderOrCauseList will always be "order"
             csvLine.append(COMMA);
@@ -107,13 +119,26 @@ public class DecreeNisiDataExtractor implements CSVExtractor {
         } catch (TaskException exception) {
             log.error(format("Ignoring case %s because of missing mandatory fields.", caseDetails.getCaseId()), exception);
             transformedCaseData = Optional.empty();
-        } catch (Throwable throwable) {
-            TaskException taskException = new TaskException("CSV extraction failed for case id " + caseDetails.getCaseId(), throwable);
+        } catch (Exception exception) {
+            TaskException taskException = new TaskException("CSV extraction failed for case id " + caseDetails.getCaseId(), exception);
             log.error("Failed to extract CSV", taskException);
             throw taskException;
         }
 
         return transformedCaseData;
+    }
+
+    private String getDnCourtName(String shortCourtName) {
+        String dnCourtName;
+
+        try {
+            DnCourt dnCourt = taskCommons.getDnCourt(shortCourtName);
+            dnCourtName = dnCourt.getName();
+        } catch (CourtDetailsNotFound courtDetailsNotFound) {
+            dnCourtName = shortCourtName;
+        }
+
+        return dnCourtName;
     }
 
     private Map<String, Object> getHearingDateTime(Map<String, Object> caseData) throws TaskException {
