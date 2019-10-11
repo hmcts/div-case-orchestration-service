@@ -71,7 +71,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyApplicantCanFinaliseDivorceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyForRefusalOrderWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendDaGrantedNotificationEmailWorkflow;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -129,6 +132,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SubmitDnCaseWorkflow submitDnCaseWorkflow;
     private final SubmitDaCaseWorkflow submitDaCaseWorkflow;
     private final DNSubmittedWorkflow dnSubmittedWorkflow;
+    private final DnSubmittedEmailNotificationWorkflow dnSubmittedEmailNotificationWorkflow;
     private final SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
     private final GetCaseWorkflow getCaseWorkflow;
     private final AuthUtil authUtil;
@@ -151,7 +155,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
     private final MakeCaseEligibleForDecreeAbsoluteWorkflow makeCaseEligibleForDecreeAbsoluteWorkflow;
     private final DecreeAbsoluteAboutToBeGrantedWorkflow decreeAbsoluteAboutToBeGrantedWorkflow;
+    private final SendDaGrantedNotificationEmailWorkflow sendDaGrantedNotificationEmailWorkflow;
     private final ApplicantDecreeAbsoluteEligibilityWorkflow applicantDecreeAbsoluteEligibilityWorkflow;
+    private final NotifyApplicantCanFinaliseDivorceWorkflow notifyApplicantCanFinaliseDivorceWorkflow;
     private final RemoveLinkWorkflow removeLinkWorkflow;
     private final BulkCaseRemoveCasesWorkflow bulkCaseRemoveCasesWorkflow;
     private final PetitionerSolicitorRoleWorkflow petitionerSolicitorRoleWorkflow;
@@ -530,6 +536,16 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
+    public Map<String, Object> handleDnSubmitted(CcdCallbackRequest ccdCallbackRequest)
+        throws WorkflowException {
+
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        String caseId = caseDetails.getCaseId();
+
+        return dnSubmittedEmailNotificationWorkflow.run(caseId, caseDetails.getCaseData());
+    }
+
+    @Override
     public Map<String, Object> amendPetition(String caseId, String authorisation) throws WorkflowException {
         Map<String, Object> response = amendPetitionWorkflow.run(caseId, authorisation);
         if (response != null) {
@@ -636,6 +652,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
+    public Map<String, Object> handleDaGranted(CcdCallbackRequest ccdCallbackRequest)
+        throws WorkflowException {
+
+        return sendDaGrantedNotificationEmailWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+    }
+
+    @Override
     public Map<String, Object> processSeparationFields(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException {
 
@@ -735,6 +758,16 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         } catch (WorkflowException exception) {
             throw new CaseOrchestrationServiceException(exception);
         }
+    }
+
+    @Override
+    public Map<String, Object> handleMakeCaseEligibleForDaSubmitted(CcdCallbackRequest ccdCallbackRequest)
+        throws WorkflowException {
+
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        String caseId = caseDetails.getCaseId();
+
+        return notifyApplicantCanFinaliseDivorceWorkflow.run(caseId, caseDetails.getCaseData());
     }
 
     @Override

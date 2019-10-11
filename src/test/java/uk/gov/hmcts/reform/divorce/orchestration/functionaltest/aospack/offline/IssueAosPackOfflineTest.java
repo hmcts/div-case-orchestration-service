@@ -21,6 +21,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ff4j.FeatureToggle;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -34,6 +37,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -68,6 +72,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOffl
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
@@ -76,9 +81,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
 @DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
-public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
+public class IssueAosPackOfflineTest extends MockedFunctionalTest {
 
-    private static final String API_URL = "/issue-aos-pack-offline/party/%s";
+    private static final String API_URL = "/issue-aos-pack-offline/parties/%s";
     private static final String USER_TOKEN = "anytoken";
 
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
@@ -123,28 +128,12 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         caseDetails.getCaseData().put("D8ReasonForDivorce", SEPARATION_TWO_YEARS);
 
-        //Stubbing DGS mock for invitation letter
-        GenerateDocumentRequest invitationLetterDocumentRequest = GenerateDocumentRequest.builder()
-            .template(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID)
-            .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
-            .build();
-        GeneratedDocumentInfo invitationLetterDocumentInfo = GeneratedDocumentInfo.builder()
-            .documentType(RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE)
-            .fileName(RESPONDENT_AOS_INVITATION_LETTER_FILENAME)
-            .build();
-        stubDocumentGeneratorServerEndpoint(invitationLetterDocumentRequest, invitationLetterDocumentInfo);
+        final GenerateDocumentRequest invitationLetterDocumentRequest = stubDgsInvitationLetterUsing(
+                RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID, RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, caseDetails);
         String invitationLetterFilename = RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
 
-        //Stubbing DGS mock for form
-        GenerateDocumentRequest formDocumentRequest = GenerateDocumentRequest.builder()
-            .template(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID)
-            .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
-            .build();
-        GeneratedDocumentInfo formDocumentInfo = GeneratedDocumentInfo.builder()
-            .documentType(AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE)
-            .fileName(AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME)
-            .build();
-        stubDocumentGeneratorServerEndpoint(formDocumentRequest, formDocumentInfo);
+        final GenerateDocumentRequest formDocumentRequest = stubDgsFormUsing(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
+                AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE, AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME, caseDetails);
         String formFilename = AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME + caseDetails.getCaseId();
 
         //Stubbing CFS
@@ -160,6 +149,7 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
             .andExpect(status().isOk())
             .andExpect(content().string(allOf(
                 isJson(),
+                hasJsonPath("$.data.RespContactMethodIsDigital", is(NO_VALUE)),
                 hasJsonPath("$.data.D8DocumentsGenerated", hasSize(2)),
                 hasJsonPath("$.data.D8DocumentsGenerated", hasItems(
                     hasJsonPath("value.DocumentFileName", is(invitationLetterFilename)),
@@ -192,28 +182,12 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         caseDetails.getCaseData().put("D8ReasonForDivorce", ADULTERY);
 
-        //Stubbing DGS mock for invitation letter
-        GenerateDocumentRequest invitationLetterDocumentRequest = GenerateDocumentRequest.builder()
-            .template(CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID)
-            .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
-            .build();
-        GeneratedDocumentInfo invitationLetterDocumentInfo = GeneratedDocumentInfo.builder()
-            .documentType(CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE)
-            .fileName(CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME)
-            .build();
-        stubDocumentGeneratorServerEndpoint(invitationLetterDocumentRequest, invitationLetterDocumentInfo);
+        final GenerateDocumentRequest invitationLetterDocumentRequest = stubDgsInvitationLetterUsing(
+                CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID, CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, caseDetails);
         String invitationLetterFilename = CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
 
-        //Stubbing DGS mock for form
-        GenerateDocumentRequest formDocumentRequest = GenerateDocumentRequest.builder()
-            .template(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID)
-            .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
-            .build();
-        GeneratedDocumentInfo formDocumentInfo = GeneratedDocumentInfo.builder()
-            .documentType(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE)
-            .fileName(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME)
-            .build();
-        stubDocumentGeneratorServerEndpoint(formDocumentRequest, formDocumentInfo);
+        final GenerateDocumentRequest formDocumentRequest = stubDgsFormUsing(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
+                AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE, AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME, caseDetails);
         String formFilename = AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME + caseDetails.getCaseId();
 
         //Stubbing CFS
@@ -229,6 +203,7 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
             .andExpect(status().isOk())
             .andExpect(content().string(allOf(
                 isJson(),
+                hasJsonPath("$.data.CoRespContactMethodIsDigital", is(NO_VALUE)),
                 hasJsonPath("$.data.D8DocumentsGenerated", hasSize(2)),
                 hasJsonPath("$.data.D8DocumentsGenerated", hasItems(
                     hasJsonPath("value.DocumentFileName", is(invitationLetterFilename)),
@@ -267,6 +242,98 @@ public class AosPackRespondentOfflineTest extends MockedFunctionalTest {
 
         documentGeneratorServiceServer.verify(0, postRequestedFor(urlEqualTo(GENERATE_DOCUMENT_CONTEXT_PATH)));
         formatterServiceServer.verify(0, postRequestedFor(urlEqualTo(ADD_DOCUMENTS_CONTEXT_PATH)));
+    }
+
+    @Test
+    public void testEndpointReturnsExpectedDueDateInResponse_ForRespondent() throws Exception {
+
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        caseDetails.getCaseData().put("D8ReasonForDivorce", SEPARATION_TWO_YEARS);
+
+        GenerateDocumentRequest invitationLetterDocumentRequest = stubDgsInvitationLetterUsing(
+                RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID, RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, caseDetails);
+        String invitationLetterFilename = RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
+
+        GenerateDocumentRequest formDocumentRequest = stubDgsFormUsing(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
+                AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE, AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME, caseDetails);
+        String formFilename = AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME + caseDetails.getCaseId();
+
+        //Stubbing CFS
+        stubFormatterServerEndpoint(asList(
+                ImmutablePair.of(invitationLetterFilename, RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE),
+                ImmutablePair.of(formFilename, AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE)
+        ));
+
+        String expectedDueDate = LocalDate.now().plus(9, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        webClient.perform(post(format(API_URL, RESPONDENT.getDescription()))
+                .content(convertObjectToJsonString(ccdCallbackRequest))
+                .header(AUTHORIZATION, USER_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(
+                        isJson(),
+                        hasJsonPath("$.data.dueDate", is(expectedDueDate)))));
+    }
+
+    @Test
+    public void testEndpointReturnsNoDueDateInResponse_ForCoRespondent() throws Exception {
+
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+                "/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        caseDetails.getCaseData().put("D8ReasonForDivorce", ADULTERY);
+
+        GenerateDocumentRequest invitationLetterDocumentRequest = stubDgsInvitationLetterUsing(
+                CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID, CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, caseDetails);
+        String invitationLetterFilename = CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
+
+        GenerateDocumentRequest formDocumentRequest = stubDgsFormUsing(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
+                AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE, AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME, caseDetails);
+        String formFilename = AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME + caseDetails.getCaseId();
+
+        //Stubbing CFS
+        stubFormatterServerEndpoint(asList(
+                ImmutablePair.of(invitationLetterFilename, CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE),
+                ImmutablePair.of(formFilename, AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE)
+        ));
+
+        webClient.perform(post(format(API_URL, CO_RESPONDENT.getDescription()))
+                .content(convertObjectToJsonString(ccdCallbackRequest))
+                .header(AUTHORIZATION, USER_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(allOf(isJson())))
+                .andExpect(content().string(hasNoJsonPath("$.data.dueDate")));
+    }
+
+    private GenerateDocumentRequest stubDgsInvitationLetterUsing(String templateId, String documentType, CaseDetails caseDetails) {
+        GenerateDocumentRequest invitationLetterDocumentRequest = GenerateDocumentRequest.builder()
+                .template(templateId)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                .build();
+        GeneratedDocumentInfo invitationLetterDocumentInfo = GeneratedDocumentInfo.builder()
+                .documentType(documentType)
+                .fileName(RESPONDENT_AOS_INVITATION_LETTER_FILENAME)
+                .build();
+        stubDocumentGeneratorServerEndpoint(invitationLetterDocumentRequest, invitationLetterDocumentInfo);
+        return invitationLetterDocumentRequest;
+    }
+
+    private GenerateDocumentRequest stubDgsFormUsing(String templateId, String documentType, String filename, CaseDetails caseDetails) {
+        GenerateDocumentRequest formDocumentRequest = GenerateDocumentRequest.builder()
+                .template(templateId)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                .build();
+        GeneratedDocumentInfo formDocumentInfo = GeneratedDocumentInfo.builder()
+                .documentType(documentType)
+                .fileName(filename)
+                .build();
+        stubDocumentGeneratorServerEndpoint(formDocumentRequest, formDocumentInfo);
+        return formDocumentRequest;
     }
 
     private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest documentRequest, GeneratedDocumentInfo documentInfo) {
