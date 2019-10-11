@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDaGrantedDetailsTask;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -88,6 +89,7 @@ public class DecreeAbsoluteAboutToBeGrantedTest extends MockedFunctionalTest {
     public void setup() {
         when(clock.instant()).thenReturn(LocalDateTime.of(2019, 6, 30, 10, 0,0).toInstant(UTC));
         when(clock.getZone()).thenReturn(UTC);
+        when(clock.withZone(SetDaGrantedDetailsTask.LONDON_TIME_ZONE)).thenReturn(clock);
     }
 
     @Test
