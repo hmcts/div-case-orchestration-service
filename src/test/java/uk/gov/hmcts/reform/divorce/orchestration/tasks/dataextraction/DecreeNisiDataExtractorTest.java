@@ -91,8 +91,10 @@ public class DecreeNisiDataExtractorTest {
         Optional<String> firstTransformedCaseData = classUnderTest.mapCaseData(firstCaseDetails);
         Optional<String> secondTransformedCaseData = classUnderTest.mapCaseData(secondCaseDetails);
 
-        assertThat(firstTransformedCaseData.get(), is("LV17D80101,15/12/2020,10/12/2020,15:30,Courts & Tribunals Service Centre,Yes,Respondent,Yes,No,Order,Judge name"));
-        assertThat(secondTransformedCaseData.get(), is("Test2,15/12/2020,10/12/2020,15:30,Courts & Tribunals Service Centre,Yes,Respondent,Yes,No,Order,Judge name"));
+        assertThat(firstTransformedCaseData.get(), is("LV17D80101,15/12/2020,10/12/2020,15:30,"
+                + "Courts & Tribunals Service Centre,Yes,Respondent,Yes,No,Order,Judge name"));
+        assertThat(secondTransformedCaseData.get(), is("Test2,15/12/2020,10/12/2020,15:30,"
+                + "Courts & Tribunals Service Centre,Yes,Respondent,Yes,No,Order,Judge name"));
     }
 
     @Test
@@ -103,7 +105,8 @@ public class DecreeNisiDataExtractorTest {
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
         Optional<String> transformedCaseData = classUnderTest.mapCaseData(caseDetails);
 
-        assertThat(transformedCaseData.get(), is("LV17D80101,15/12/2020,10/12/2020,15:30,Courts & Tribunals Service Centre,Yes,,Yes,No,Order,Judge name"));
+        assertThat(transformedCaseData.get(), is("LV17D80101,15/12/2020,10/12/2020,15:30,"
+                + "Courts & Tribunals Service Centre,Yes,,Yes,No,Order,Judge name"));
     }
 
     @Test
@@ -138,7 +141,8 @@ public class DecreeNisiDataExtractorTest {
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
         Optional<String> transformedCaseData = classUnderTest.mapCaseData(caseDetails);
 
-        assertThat(transformedCaseData.get(), is("LV17D80101,15/12/2020,10/12/2020,15:30,Courts & Tribunals Service Centre,Yes,Respondent,No,No,Order,Judge name"));
+        assertThat(transformedCaseData.get(), is("LV17D80101,15/12/2020,10/12/2020,15:30,"
+                + "Courts & Tribunals Service Centre,Yes,Respondent,No,No,Order,Judge name"));
 
     }
 
@@ -150,7 +154,8 @@ public class DecreeNisiDataExtractorTest {
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
         Optional<String> transformedCaseData = classUnderTest.mapCaseData(caseDetails);
 
-        assertThat(transformedCaseData.get(), is("LV17D80101,15/12/2020,10/12/2020,15:30,invalid-court-name,Yes,Respondent,Yes,No,Order,Judge name"));
+        assertThat(transformedCaseData.get(), is("LV17D80101,15/12/2020,10/12/2020,15:30,invalid-court-name,"
+                + "Yes,Respondent,Yes,No,Order,Judge name"));
     }
 
     private Map<String, Object> getTestCaseData() {
