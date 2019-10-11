@@ -14,6 +14,8 @@ import java.io.IOException;
 
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -40,18 +42,11 @@ public class FamilyManDataExtractionIT extends RetrieveCaseSupport {
          * Set up a local SMTP server when running this test locally. In the pipeline, we'll use the actual SMTP server.
          * The reason for this is because a firewall prevents us from connecting to the actual SMTP server from our local machines.
          */
-        if (LOCAL_ENVIRONMENT_NAME.equalsIgnoreCase(environment)) {
-            setUpLocalSMTPServer();
+        if (isTestRunningLocally()) {
+            setUpLocalEmailServer();
             log.info("Starting local SMTP server");
         } else {
             log.info("Using actual SMTP server");
-        }
-    }
-
-    private static void setUpLocalSMTPServer() throws IOException {
-        //TODO - Consider building a Rule for re-use - do it last
-        if (simpleSmtpServer == null) {
-            simpleSmtpServer = SimpleSmtpServer.start(LOCAL_SMTP_SERVER_PORT);
         }
     }
 
@@ -67,6 +62,7 @@ public class FamilyManDataExtractionIT extends RetrieveCaseSupport {
         );
 
         assertThat(response.getStatusCode(), is(OK.value()));
+        checkEmailHasBeenSent();
     }
 
     /**
@@ -87,6 +83,22 @@ public class FamilyManDataExtractionIT extends RetrieveCaseSupport {
     public static void cleanUp() {
         if (simpleSmtpServer != null) {
             simpleSmtpServer.close();
+        }
+    }
+
+    private boolean isTestRunningLocally() {
+        return LOCAL_ENVIRONMENT_NAME.equalsIgnoreCase(environment);
+    }
+
+    private static void setUpLocalEmailServer() throws IOException {
+        if (simpleSmtpServer == null) {
+            simpleSmtpServer = SimpleSmtpServer.start(LOCAL_SMTP_SERVER_PORT);
+        }
+    }
+
+    private void checkEmailHasBeenSent() {
+        if (isTestRunningLocally()) {
+            assertThat(simpleSmtpServer.getReceivedEmails(), hasSize(greaterThan(0)));
         }
     }
 
