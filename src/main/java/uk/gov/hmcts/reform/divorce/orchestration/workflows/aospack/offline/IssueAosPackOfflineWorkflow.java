@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter;
 
@@ -44,6 +46,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOffl
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_PARTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_GENERATION_REQUESTS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
@@ -82,6 +85,12 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
     @Autowired
     private BulkPrinter bulkPrinter;
 
+    @Autowired
+    private MarkJourneyAsOffline markJourneyAsOffline;
+
+    @Autowired
+    private ModifyDueDate modifyDueDate;
+
     public Map<String, Object> run(String authToken, CaseDetails caseDetails, DivorceParty divorceParty) throws WorkflowException {
         final Map<String, Object> caseData = caseDetails.getCaseData();
         final String reasonForDivorce = (String) caseData.get(D_8_REASON_FOR_DIVORCE);
@@ -92,19 +101,25 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
             .map(DocumentGenerationRequest::getDocumentType)
             .collect(Collectors.toList());
 
-        return execute(
-            new Task[] {
-                documentsGenerationTask,
-                caseFormatterAddDocuments,
-                fetchPrintDocsFromDmStore,
-                bulkPrinter
-            },
+        final List<Task> tasks = new ArrayList<>();
+
+        tasks.add(documentsGenerationTask);
+        tasks.add(caseFormatterAddDocuments);
+        tasks.add(fetchPrintDocsFromDmStore);
+        tasks.add(bulkPrinter);
+        tasks.add(markJourneyAsOffline);
+        if (divorceParty.equals(RESPONDENT)) {
+            tasks.add(modifyDueDate);
+        }
+
+        return execute(tasks.toArray(new Task[0]),
             caseData,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
             ImmutablePair.of(DOCUMENT_GENERATION_REQUESTS_KEY, documentGenerationRequestsList),
             ImmutablePair.of(BULK_PRINT_LETTER_TYPE, letterType),
-            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, documentTypesToPrint)
+            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, documentTypesToPrint),
+            ImmutablePair.of(DIVORCE_PARTY, divorceParty)
         );
     }
 

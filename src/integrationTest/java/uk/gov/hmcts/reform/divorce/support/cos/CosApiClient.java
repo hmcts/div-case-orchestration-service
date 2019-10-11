@@ -173,7 +173,7 @@ public interface CosApiClient {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/issue-aos-pack-offline/party/{party}"
+        value = "/issue-aos-pack-offline/parties/{party}"
     )
     Map<String, Object> issueAosPackOffline(@RequestHeader(AUTHORIZATION) String authorisation,
                                             @PathVariable("party") String party,
