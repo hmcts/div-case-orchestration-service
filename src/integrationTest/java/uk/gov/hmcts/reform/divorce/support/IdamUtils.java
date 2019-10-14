@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.support;
 
-import feign.FeignException;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
@@ -111,10 +110,6 @@ public class IdamUtils {
             .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .relaxedHTTPSValidation()
             .post(idamCodeUrl());
-
-        if (response.getStatusCode() == 401) {
-            throw new FeignException.Unauthorized("User not authorised", response.asByteArray());
-        }
 
         if (response.getStatusCode() >= 300) {
             throw new IllegalStateException("Token generation failed with code: " + response.getStatusCode()
