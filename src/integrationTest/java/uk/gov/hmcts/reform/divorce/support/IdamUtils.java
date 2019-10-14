@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.support;
 
 import feign.FeignException;
 import io.restassured.response.Response;
+import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Slf4j
 public class IdamUtils {
 
     @Value("${auth.idam.client.baseUrl}")
@@ -90,7 +92,7 @@ public class IdamUtils {
 
     public void deleteUser(final UserDetails user) {
         Thread userDeletionThread = new Thread(() -> {
-            System.out.println("Deleting user " + user.getEmailAddress());
+            log.info("Deleting user " + user.getEmailAddress());
 
             SerenityRest.given()
                 .relaxedHTTPSValidation()

@@ -107,13 +107,9 @@ public abstract class IntegrationTest {
     protected UserDetails createCaseWorkerUser() {
         synchronized (this) {
             if (caseWorkerUser == null) {
-                try {
-                    caseWorkerUser = getCreatedUserDetails(
-                        CASE_WORKER_USERNAME + EMAIL_DOMAIN
-                    );
-                } catch (FeignException.Unauthorized ex) {
-                    log.error("Error getting user details ", ex);
-                }
+                caseWorkerUser = wrapInRetry(() -> getCreatedUserDetails(
+                    CASE_WORKER_USERNAME +  EMAIL_DOMAIN
+                ));
             }
             return caseWorkerUser;
         }
@@ -138,7 +134,6 @@ public abstract class IntegrationTest {
 
     private UserDetails getUserDetails(String username, String userGroup,boolean keepUser, String... role) {
         synchronized (this) {
-            System.out.println("Created " + username);
             idamTestSupportUtil.createUser(username, PASSWORD, userGroup, role);
 
             final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, PASSWORD);
@@ -169,7 +164,6 @@ public abstract class IntegrationTest {
             final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, PASSWORD);
 
             final String userId = idamTestSupportUtil.getUserId(authToken);
-            System.out.println("get Created user " + username);
 
             UserDetails userDetails = UserDetails.builder()
                 .username(username)
