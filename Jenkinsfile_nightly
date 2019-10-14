@@ -22,5 +22,9 @@ withNightlyPipeline(type, product, component) {
     env.Rules = params.SecurityRules
     enableMutationTest()
     enableSecurityScan()
-
+    after('mutationTest') {
+        stage('Functional Nightly') {
+            gradle('functionalNightly')
+        }
+    }
 }
