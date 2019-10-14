@@ -9,6 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToDnCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitDnCase;
 
 import java.util.Map;
@@ -23,6 +24,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 public class SubmitDnCaseWorkflowUTest {
+
+    @Mock
+    private GetCaseWithIdTask getCaseWithIdTask;
+
     @Mock
     private FormatDivorceSessionToDnCaseData formatDivorceSessionToDnCaseData;
 
