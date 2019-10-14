@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.context;
 
-import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationMethodRule;
