@@ -12,9 +12,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAosPackPrinter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinter;
 
 import java.util.ArrayList;
 import java.util.List;

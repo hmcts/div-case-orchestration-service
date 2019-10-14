@@ -1,10 +1,10 @@
 java:
+    applicationInsightsInstrumentKey: "63c30ef9-a27b-4d38-8afc-4c180fb6ac33"
     environment:
         IDAM_API_URL: "https://idam-api.aat.platform.hmcts.net"
         FEATURE_DN_REFUSAL: "true"
         FEATURE_RESP_SOLICITOR_DETAILS: "true"
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: false
-        SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_ENABLED: true
         DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
         DATAEXTRACTION_STATUS_AOS_EMAILTO: aos_data_extraction@sharklasers.com
         DATAEXTRACTION_STATUS_DN_EMAILTO: dn_data_extraction@sharklasers.com

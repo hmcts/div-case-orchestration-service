@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseCancelPronouncementEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
@@ -44,6 +45,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDNDocumentsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDnOutcomeCaseFlagWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLegalAdvisorMakeDecisionFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkFromListedWorkflow;
@@ -71,7 +73,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCas
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyApplicantCanFinaliseDivorceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyForRefusalOrderWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendDaGrantedNotificationEmailWorkflow;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -285,6 +290,21 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private NotifyForRefusalOrderWorkflow notifyForRefusalOrderWorkflow;
+
+    @Mock
+    private RemoveDNDocumentsWorkflow removeDNDocumentsWorkflow;
+
+    @Mock
+    private BulkCaseCancelPronouncementEventWorkflow bulkCaseCancelPronouncementEventWorkflow;
+
+    @Mock
+    private NotifyApplicantCanFinaliseDivorceWorkflow notifyApplicantCanFinaliseDivorceWorkflow;
+
+    @Mock
+    private SendDaGrantedNotificationEmailWorkflow sendDaGrantedNotificationEmailWorkflow;
+
+    @Mock
+    private DnSubmittedEmailNotificationWorkflow dnSubmittedEmailNotificationWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -835,6 +855,16 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
+    public void shouldCallTheRightWorkflow_forHandleDnSubmitted() throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(dnSubmittedEmailNotificationWorkflow.run(caseDetails.getCaseId(), caseDetails.getCaseData())).thenReturn(requestPayload);
+
+        classUnderTest.handleDnSubmitted(ccdCallbackRequest);
+
+        verify(dnSubmittedEmailNotificationWorkflow).run(caseDetails.getCaseId(), caseDetails.getCaseData());
+    }
+
+    @Test
     public void givenNoError_whenExecuteCoRespReceivedWorkflow_thenReturnCaseData() throws WorkflowException {
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
             .data(ccdCallbackRequest.getCaseDetails().getCaseData())
@@ -1143,7 +1173,15 @@ public class CaseOrchestrationServiceImplTest {
         classUnderTest.handleGrantDACallback(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(decreeAbsoluteAboutToBeGrantedWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
+    }
 
+    @Test
+    public void shouldCallTheRightWorkflow_forHandleDaGranted() throws WorkflowException {
+        when(sendDaGrantedNotificationEmailWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData())).thenReturn(requestPayload);
+
+        classUnderTest.handleDaGranted(ccdCallbackRequest);
+
+        verify(sendDaGrantedNotificationEmailWorkflow).run(ccdCallbackRequest.getCaseDetails().getCaseData());
     }
 
     @Test(expected = WorkflowException.class)
@@ -1171,6 +1209,24 @@ public class CaseOrchestrationServiceImplTest {
             .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.processBulkCaseScheduleForHearing(ccdCallbackRequest, AUTH_TOKEN);
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_ForProcessCancelBulkCasePronouncement() throws WorkflowException {
+        when(bulkCaseCancelPronouncementEventWorkflow.run(eq(ccdCallbackRequest), eq(AUTH_TOKEN)))
+            .thenReturn(requestPayload);
+
+        assertThat(classUnderTest.processCancelBulkCasePronouncement(ccdCallbackRequest, AUTH_TOKEN),
+            is(equalTo(requestPayload)));
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldThrowException_ForProcessCancelBulkCasePronouncement_WhenWorkflowExceptionIsCaught()
+        throws WorkflowException {
+        when(bulkCaseCancelPronouncementEventWorkflow.run(eq(ccdCallbackRequest), eq(AUTH_TOKEN)))
+            .thenThrow(new WorkflowException("This operation threw an exception"));
+
+        classUnderTest.processCancelBulkCasePronouncement(ccdCallbackRequest, AUTH_TOKEN);
     }
 
     @Test
@@ -1332,6 +1388,17 @@ public class CaseOrchestrationServiceImplTest {
         expectedException.expectCause(equalTo(testFailureCause));
 
         classUnderTest.processApplicantDecreeAbsoluteEligibility(ccdCallbackRequest);
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_forHandleMakeCaseEligibleForDaSubmitted() throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(notifyApplicantCanFinaliseDivorceWorkflow.run(caseDetails.getCaseId(), caseDetails.getCaseData()))
+            .thenReturn(requestPayload);
+
+        classUnderTest.handleMakeCaseEligibleForDaSubmitted(ccdCallbackRequest);
+
+        verify(notifyApplicantCanFinaliseDivorceWorkflow).run(caseDetails.getCaseId(), caseDetails.getCaseData());
     }
 
     @Test
@@ -1520,6 +1587,26 @@ public class CaseOrchestrationServiceImplTest {
         classUnderTest.notifyForRefusalOrder(ccdCallbackRequest);
 
         verify(notifyForRefusalOrderWorkflow).run(eq(requestPayload));
+    }
+
+    @Test
+    public void shouldCallRemoveDNGrantedDocumentsWorkflow() throws WorkflowException {
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(
+                CaseDetails.builder()
+                    .caseData(requestPayload)
+                    .caseId(TEST_CASE_ID)
+                    .state(TEST_STATE)
+                    .build())
+            .eventId(TEST_EVENT_ID)
+            .token(TEST_TOKEN)
+            .build();
+
+        when(removeDNDocumentsWorkflow.run(eq(requestPayload))).thenReturn(requestPayload);
+
+        classUnderTest.removeDNGrantedDocuments(ccdCallbackRequest);
+
+        verify(removeDNDocumentsWorkflow).run(eq(requestPayload));
     }
 
     @After

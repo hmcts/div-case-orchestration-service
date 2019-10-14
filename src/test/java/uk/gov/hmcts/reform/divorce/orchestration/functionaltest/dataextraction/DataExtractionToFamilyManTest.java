@@ -42,14 +42,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * This test uses the service (just like the scheduled job will).
+ */
 public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
 
-    private static final String DA_DESIRED_STATES = "[\"darequested\", \"divorcegranted\"]";
+    protected static final String DA_DESIRED_STATES = "[\"divorcegranted\"]";
     private static final String AOS_DESIRED_STATES = "[\"awaitinglegaladvisorreferral\"]";
     private static final String DN_DESIRED_STATES = "[\"dnisrefused\", \"dnpronounced\"]";
 
     private static final DateTimeFormatter FILE_NAME_DATE_FORMAT = ofPattern("ddMMyyyy000000");
-    private static final String TEST_AUTH_TOKEN = "testAuthToken";
+    protected static final String TEST_AUTH_TOKEN = "testAuthToken";
 
     private String yesterday;
 
@@ -57,25 +60,25 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
     private DataExtractionService dataExtractionService;
 
     @MockBean
-    private DataExtractionEmailClient mockEmailClient;
+    protected DataExtractionEmailClient mockEmailClient;
 
     @MockBean
-    private AuthUtil authUtil;
+    protected AuthUtil authUtil;
 
     @Captor
     private ArgumentCaptor<File> attachmentCaptor;
 
     @Before
     public void setUp() {
+        maintenanceServiceServer.resetAll();
+
         when(authUtil.getCaseworkerToken()).thenReturn(TEST_AUTH_TOKEN);
         yesterday = LocalDate.now().minusDays(1).format(FILE_NAME_DATE_FORMAT);
-    }
 
-    @Test
-    public void shouldEmailCsvFileWithCase_ForDecreeAbsoluteIssued() throws Exception {
         //Mock CMS to return a case like Elastic search will
         stubJsonResponse(DA_DESIRED_STATES, "{"
             + "  \"cases\": [{"
+            + "    \"id\": 123,"
             + "    \"case_data\": {"
             + "      \"D8caseReference\": \"CR12345\","
             + "      \"DecreeAbsoluteApplicationDate\": \"2017-03-06T16:49:00.015\","
@@ -85,6 +88,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
             + "}");
         stubJsonResponse(AOS_DESIRED_STATES, "{"
             + "  \"cases\": [{"
+            + "    \"id\": 456,"
             + "    \"case_data\": {"
             + "      \"D8caseReference\": \"LV17D90909\","
             + "      \"ReceivedAOSfromRespDate\": \"2019-07-06\","
@@ -95,10 +99,19 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
             + "}");
         stubJsonResponse(DN_DESIRED_STATES, "{"
             + "  \"cases\": [{"
+            + "    \"id\": 789,"
             + "    \"case_data\": {"
             + "      \"D8caseReference\": \"LV17D90909\","
             + "      \"DNApprovalDate\": \"2020-12-15\","
-            + "      \"DateAndTimeOfHearing\": \"2020-12-10T15:30\","
+            + "      \"DateAndTimeOfHearing\": ["
+            + "        {"
+            + "          \"id\": \"8bde74de-7a69-411f-aaef-1a5ea8018743\","
+            + "          \"value\": {"
+            + "            \"DateOfHearing\": \"2020-12-10\","
+            + "            \"TimeOfHearing\": \"15:30\""
+            + "          }"
+            + "        }"
+            + "      ],"
             + "      \"CourtName\": \"This Court\","
             + "      \"D8DivorceCostsClaim\": \"Yes\","
             + "      \"WhoPaysCosts\": \"Respondent\","
@@ -109,7 +122,10 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
             + "    }"
             + "  }]"
             + "}");
+    }
 
+    @Test
+    public void shouldEmailCsvFileWithCase_ForDecreeAbsoluteIssued() throws Exception {
         dataExtractionService.requestDataExtractionForPreviousDay();
 
         await().untilAsserted(() -> {

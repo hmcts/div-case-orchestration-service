@@ -53,12 +53,12 @@ public class SolicitorCreateITest extends MockedFunctionalTest {
     private MockMvc webClient;
 
     @Test
-    public void givenCaseData_whenSolicitorCreate_thenReturnEastMidlandsCourtAllocation() throws Exception {
+    public void givenCaseData_whenSolicitorCreate_thenReturnServiceCentreCourtAllocation() throws Exception {
         final String caseId = "my-case-1";
         Map<String, Object> expectedData = new HashMap<>();
         expectedData.put(CREATED_DATE_JSON_KEY, ccdUtil.getCurrentDateCcdFormat());
-        expectedData.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getId());
-        expectedData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.EASTMIDLANDS.getSiteId());
+        expectedData.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.SERVICE_CENTER.getId());
+        expectedData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.SERVICE_CENTER.getSiteId());
 
         CaseDetails fullCase = CaseDetails.builder()
                 .caseId(caseId)

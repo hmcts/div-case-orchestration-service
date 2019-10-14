@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.divorce.category.ExtendedTest;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
@@ -33,6 +35,7 @@ public class CoRespReceivedCallbackTest extends IntegrationTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    @Category(ExtendedTest.class)
     public void givenCaseWithoutCoRespEmail_whenSubmitAOS_thenReturnNotificationError() {
 
         Map<String, Object> aosCaseWithoutCoRespEmailAddress = ResourceLoader

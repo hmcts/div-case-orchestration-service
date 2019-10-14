@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
@@ -24,11 +23,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_2_YR_CONSENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADMIT_ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEPARATION_2YRS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 
 @Slf4j
 @Service
@@ -66,10 +66,10 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
 
         log.info("Secondary AoS event to be fired is {} for case {}", eventId, caseID);
 
-        if ((SEPARATION_2YRS.equalsIgnoreCase(reasonForDivorce)
-                && YES_VALUE.equalsIgnoreCase(respAos2yrConsent))
+        if ((SEPARATION_TWO_YEARS.equalsIgnoreCase(reasonForDivorce)
+            && YES_VALUE.equalsIgnoreCase(respAos2yrConsent))
             || (ADULTERY.equalsIgnoreCase(reasonForDivorce)
-                && YES_VALUE.equalsIgnoreCase(respAosAdmitAdultery))) {
+            && YES_VALUE.equalsIgnoreCase(respAosAdmitAdultery))) {
 
             caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
             caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
@@ -89,7 +89,7 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
     }
 
     private boolean respondentIsDefending(Map<String, Object> submissionData) {
-        final String respWillDefendDivorce = (String)submissionData.get(RESP_WILL_DEFEND_DIVORCE);
+        final String respWillDefendDivorce = (String) submissionData.get(RESP_WILL_DEFEND_DIVORCE);
         return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
     }
 }

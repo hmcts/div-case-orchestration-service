@@ -4,9 +4,11 @@ import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.divorce.category.ExtendedTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
@@ -32,7 +34,6 @@ import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
 @Slf4j
 public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
-    private static final String SUBMIT_COMPLETE_RDC_CASE = "submit-complete-case.json";
     private static final String SUBMIT_COMPLETE_SERVICE_CENTRE_CASE = "submit-complete-service-centre-case.json";
     private static final String SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE = "submit-complete-service-centre-coRespondent-case.json";
     private static final String RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-aos/";
@@ -73,6 +74,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     }
 
     @Test
+    @Category(ExtendedTest.class)
     public void givenServiceCentreCaseSubmittedWithCoRespondent_whenIssueEventFiredOnCCD_thenDocumentsAreGenerated() {
         final UserDetails petitionerUserDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE, petitionerUserDetails);
@@ -86,6 +88,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     }
 
     @Test
+    @Category(ExtendedTest.class)
     public void givenAosSubmitted_whenReissuing_thenAosLinkingFieldsAreReset() throws Exception {
         final UserDetails petitionerUserDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE, petitionerUserDetails);

@@ -60,7 +60,6 @@ public class CallbackController {
     @Autowired
     private AosPackOfflineService aosPackOfflineService;
 
-
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Request clarification from petitioner via notification ")
     @ApiResponses(value = {
@@ -76,7 +75,7 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/dn-submitted")
-    @ApiOperation(value = "Decree nisi submitted confirmation notification ")
+    @ApiOperation(value = "Decree nisi submitted confirmation notification")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Notification sent successful"),
         @ApiResponse(code = 401, message = "User Not Authenticated"),
@@ -86,6 +85,18 @@ public class CallbackController {
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.dnSubmitted(ccdCallbackRequest, authorizationToken));
+    }
+
+    @PostMapping(path = "/handle-post-dn-submitted")
+    @ApiOperation(value = "Callback to run after DN Submit event has finished")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed")})
+    public ResponseEntity<CcdCallbackResponse> handleDnSubmitted(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(caseOrchestrationService.handleDnSubmitted(ccdCallbackRequest))
+            .build());
     }
 
     @PostMapping(path = "/dn-pronounced",
@@ -225,9 +236,9 @@ public class CallbackController {
         } catch (WorkflowException e) {
             log.error("Failed to complete service for caseId {}", caseId, e);
             return ResponseEntity.ok(CcdCallbackResponse.builder()
-                    .data(ccdCallbackRequest.getCaseDetails().getCaseData())
-                    .errors(singletonList(e.getMessage()))
-                    .build());
+                .data(ccdCallbackRequest.getCaseDetails().getCaseData())
+                .errors(singletonList(e.getMessage()))
+                .build());
         }
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
@@ -301,29 +312,29 @@ public class CallbackController {
 
         try {
             Map<String, Object> response = caseOrchestrationService.ccdCallbackBulkPrintHandler(ccdCallbackRequest,
-                    authorizationToken);
+                authorizationToken);
 
             if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
                 return ResponseEntity.ok(
-                        CcdCallbackResponse.builder()
-                                .data(ImmutableMap.of())
-                                .warnings(ImmutableList.of())
-                                .errors(singletonList("Failed to bulk print documents"))
-                                .build());
+                    CcdCallbackResponse.builder()
+                        .data(ImmutableMap.of())
+                        .warnings(ImmutableList.of())
+                        .errors(singletonList("Failed to bulk print documents"))
+                        .build());
             }
             return ResponseEntity.ok(
-                    CcdCallbackResponse.builder()
-                            .data(response)
-                            .errors(Collections.emptyList())
-                            .warnings(Collections.emptyList())
-                            .build());
+                CcdCallbackResponse.builder()
+                    .data(response)
+                    .errors(Collections.emptyList())
+                    .warnings(Collections.emptyList())
+                    .build());
         } catch (WorkflowException e) {
             return ResponseEntity.ok(
-                    CcdCallbackResponse.builder()
-                            .data(ImmutableMap.of())
-                            .warnings(ImmutableList.of())
-                            .errors(singletonList("Failed to bulk print documents - " + e.getMessage()))
-                            .build());
+                CcdCallbackResponse.builder()
+                    .data(ImmutableMap.of())
+                    .warnings(ImmutableList.of())
+                    .errors(singletonList("Failed to bulk print documents - " + e.getMessage()))
+                    .build());
         }
     }
 
@@ -613,27 +624,39 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    @PostMapping(path = "/handle-post-da-granted")
+    @ApiOperation(value = "Callback to run after DA Grant event has finished")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed")})
+    public ResponseEntity<CcdCallbackResponse> handleDaGranted(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(caseOrchestrationService.handleDaGranted(ccdCallbackRequest))
+            .build());
+    }
+
     @PostMapping(path = "/aos-received")
     @ApiOperation(value = "Respondent confirmation notification ")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Notification sent successful"),
-            @ApiResponse(code = 401, message = "User Not Authenticated"),
-            @ApiResponse(code = 400, message = "Bad Request")})
+        @ApiResponse(code = 200, message = "Notification sent successful"),
+        @ApiResponse(code = 401, message = "User Not Authenticated"),
+        @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> aosReceived(
-            @RequestHeader("Authorization")
-            @ApiParam(value = "JWT authorisation token issued by IDAM",
-                    required = true) final String authorizationToken,
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestHeader("Authorization")
+        @ApiParam(value = "JWT authorisation token issued by IDAM",
+            required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.aosReceived(ccdCallbackRequest, authorizationToken));
     }
 
     @PostMapping(path = "/co-respondent-received")
     @ApiOperation(value = "Co-Respondent confirmation notification ")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Notification sent successful"),
-            @ApiResponse(code = 400, message = "Bad Request")})
+        @ApiResponse(code = 200, message = "Notification sent successful"),
+        @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> corespReceived(
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest));
     }
 
@@ -730,7 +753,6 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-
     @PostMapping(path = "/solicitor-link-case")
     @ApiOperation(value = "Authorize the solicitor's respondent to the case")
     @ApiResponses(value = {
@@ -760,7 +782,6 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @Deprecated // Replaced by below dn-decision-made endpoint. This must remain in code until production ccd config is updated.
     @PostMapping(path = "/clean-state")
     @ApiOperation(value = "Clear state from case data")
     @ApiResponses(value = {
@@ -825,6 +846,18 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    @PostMapping(path = "/handle-post-make-case-eligible-for-da-submitted")
+    @ApiOperation(value = "Callback to run after Make Case Eligible For DA event has finished")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed")})
+    public ResponseEntity<CcdCallbackResponse> handleMakeCaseEligibleForDaSubmitted(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(caseOrchestrationService.handleMakeCaseEligibleForDaSubmitted(ccdCallbackRequest))
+            .build());
+    }
+
     @PostMapping(path = "/remove-bulk-link")
     @ApiOperation(value = "Callback to set bulk link to null")
     @ApiResponses(value = {
@@ -840,7 +873,7 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/issue-aos-pack-offline/party/{party}")
+    @PostMapping(path = "/issue-aos-pack-offline/parties/{party}")
     @ApiOperation(value = "Callback to issue AOS pack (offline)")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed")})
@@ -868,6 +901,30 @@ public class CallbackController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping(path = "/processAosOfflineAnswers/parties/{party}")
+    @ApiOperation(value = "Callback to issue AOS pack (offline)")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed")})
+    public ResponseEntity<CcdCallbackResponse> processAosPackOfflineAnswers(
+        @RequestBody @ApiParam("CaseData")
+            CcdCallbackRequest ccdCallbackRequest,
+        @PathVariable("party") @ApiParam("Party in divorce (respondent or co-respondent")
+            DivorceParty party) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+            responseBuilder.data(aosPackOfflineService.processAosPackOfflineAnswers(caseDetails.getCaseData(), party));
+            log.info("Processed AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());
+        } catch (CaseOrchestrationServiceException exception) {
+            log.error(exception.getMessage(), exception);
+            responseBuilder.errors(singletonList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(responseBuilder.build());
+    }
+
     @PostMapping(path = "/listing/remove-bulk-link")
     @ApiOperation(value = "Callback to unlink case from bulk case listed")
     @ApiResponses(value = {
@@ -893,21 +950,43 @@ public class CallbackController {
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
                 .data(caseOrchestrationService.removeDnOutcomeCaseFlag(ccdCallbackRequest))
-            .build());
+                .build());
     }
 
     @PostMapping(path = "/remove-la-make-decision-fields")
     @ApiOperation(value = "Callback to remove the fields set by the legal advsior when they make a decision.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Callback processed.")})
+        @ApiResponse(code = 200, message = "Callback processed.")})
     public ResponseEntity<CcdCallbackResponse> removeLegalAdvisorMakeDecisionFields(
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
                 .data(caseOrchestrationService.removeLegalAdvisorMakeDecisionFields(ccdCallbackRequest))
-            .build());
+                .build());
     }
+
+    @PostMapping(path = "/pronouncement/cancel")
+    @ApiOperation(value = "Callback to cancel dn pronouncement.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> removeDNGrantedDocuments(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder response = CcdCallbackResponse.builder();
+
+        try {
+            response.data(caseOrchestrationService.removeDNGrantedDocuments(ccdCallbackRequest))
+                .build();
+            log.info("Delete DN granted documents for case id [{}]", ccdCallbackRequest.getCaseDetails().getCaseId());
+        } catch (WorkflowException exception) {
+            response.errors(singletonList(exception.getMessage()))
+                .build();
+            log.error("Delete DN granted documents for case id [{}]", ccdCallbackRequest.getCaseDetails().getCaseId(), exception);
+        }
+        return ResponseEntity.ok(response.build());
+    }
+
 
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);

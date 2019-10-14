@@ -16,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_STARTED;
@@ -96,7 +97,7 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
     }
 
     private String getCoRespondentSubmissionEventForCaseState(final String currentCaseState) {
-        if (AOS_AWAITING.equals(currentCaseState)) {
+        if (AOS_AWAITING.equals(currentCaseState) || AOS_AWAITING_SOLICITOR.equals(currentCaseState)) {
             // Co-respondent can respond even if the respondent has not yet responded.
             return CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID;
         }
