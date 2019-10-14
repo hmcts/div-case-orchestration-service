@@ -56,7 +56,8 @@ public class PetitionerClarificationSubmittedNotificationEmailTask implements Ta
             templateVars.put(NOTIFICATION_REFERENCE_KEY, caseReference);
 
             try {
-                emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail, DECREE_NISI_CLARIFICATION_SUBMISSION.name(), templateVars, EMAIL_DESC);
+                emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
+                    DECREE_NISI_CLARIFICATION_SUBMISSION.name(), templateVars, EMAIL_DESC);
             } catch (NotificationClientException e) {
                 log.warn("Notification fail for case id: {}", caseReference, e);
                 context.setTransientObject(EMAIL_ERROR_KEY, e.getMessage());
