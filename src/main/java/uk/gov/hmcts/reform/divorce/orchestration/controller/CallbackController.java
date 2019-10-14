@@ -119,7 +119,7 @@ public class CallbackController {
     @PostMapping(path = "/clarification-submitted",
         consumes = MediaType.APPLICATION_JSON,
         produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Generate/dispatch a notification email to the petitioner when the clarification has been pronounced")
+    @ApiOperation(value = "Generate/dispatch a notification email to the petitioner when the clarification has been submitted")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
             response = CcdCallbackResponse.class),
