@@ -31,10 +31,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_NAME_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -76,7 +76,7 @@ public class PetitionerClarificationSubmittedNotificationTest {
         incomingPayload.put(D_8_PETITIONER_FIRST_NAME, PETITIONER_FIRST_NAME);
         incomingPayload.put(D_8_PETITIONER_LAST_NAME, PETITIONER_LAST_NAME);
         incomingPayload.put(D_8_CASE_REFERENCE, TEST_CASE_REFERENCE);
-        incomingPayload.put(COURT_NAME_CCD_FIELD, COURT_NAME);
+        incomingPayload.put(DIVORCE_UNIT_JSON_KEY, COURT_NAME);
 
         taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AMEND_PETITION_FEE_JSON_KEY, COURT_NAME);

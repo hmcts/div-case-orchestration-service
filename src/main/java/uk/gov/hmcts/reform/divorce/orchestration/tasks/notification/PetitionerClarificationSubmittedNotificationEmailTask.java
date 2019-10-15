@@ -14,8 +14,8 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_NAME_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
@@ -45,7 +45,7 @@ public class PetitionerClarificationSubmittedNotificationEmailTask implements Ta
 
         String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
-        String courtName = getMandatoryPropertyValueAsString(caseData, COURT_NAME_CCD_FIELD);
+        String courtName = getMandatoryPropertyValueAsString(caseData, DIVORCE_UNIT_JSON_KEY);
         String caseReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
         Map<String, String> templateVars = new HashMap<>();
         if (StringUtils.isNotBlank(petitionerEmail)) {
