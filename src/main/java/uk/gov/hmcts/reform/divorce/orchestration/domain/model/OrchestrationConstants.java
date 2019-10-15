@@ -123,11 +123,13 @@ public class OrchestrationConstants {
     public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
     public static final String REFUSAL_DECISION_MORE_INFO_VALUE = "moreInfo";
     public static final String DN_REFUSED_REJECT_OPTION = "reject";
+    public static final String DN_REFUSED_ADMIN_ERROR_OPTION = "adminError";
     public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
     public static final String DN_RECEIVED_AOS_COMPLETE = "dnReceivedAosCompleted";
+    public static final String DN_RECEIVED_CLARIFICATION = "submitDnClarification";
     public static final String AMEND_PETITION_EVENT = "amendPetition";
     public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
     public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
@@ -163,6 +165,7 @@ public class OrchestrationConstants {
     public static final String DN_PRONOUNCED = "DNPronounced";
     public static final String AWAITING_DA = "AwaitingDecreeAbsolute";
     public static final String DN_REFUSED = "DNisRefused";
+    public static final String AWAITING_ADMIN_CLARIFICATION = "AwaitingAdminClarification";
     public static final String DA_REQUESTED = "DARequested";
     public static final String DA_OVERDUE = "DAOverdue";
     public static final String DIVORCE_GRANTED = "DivorceGranted";
@@ -382,4 +385,8 @@ public class OrchestrationConstants {
     // Elastic Search
     public static final String ES_CASE_ID_KEY = "reference";
     public static final String QUERY_BUILDERS = "queryBuilders";
+
+    // Case Data Formatter Meta Fields
+    public static final String FORMATTER_CASE_DATA_KEY = "caseData";
+    public static final String FORMATTER_DIVORCE_SESSION_KEY = "divorceSession";
 }
