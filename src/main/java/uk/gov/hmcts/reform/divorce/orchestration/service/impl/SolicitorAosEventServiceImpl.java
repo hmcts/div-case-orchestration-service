@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.service.SolicitorAosEventService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -48,6 +49,7 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
         // Due to limitation on CCD UI, UI_ONLY_RESP_WILL_DEFEND_DIVORCE is used for
         // 2yr separation, 5yr separation and adultery to match the journey requirements
         String eventId;
+        final Map<String, Object> updateData = new HashMap<>();
         final TaskContext context = (TaskContext) event.getSource();
         final String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
         final String caseID = context.getTransientObject(CASE_ID_JSON_KEY);
@@ -59,37 +61,38 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
         if (SEPARATION_TWO_YEARS.equalsIgnoreCase(reasonForDivorce) || ADULTERY.equalsIgnoreCase(reasonForDivorce)) {
             if (YES_VALUE.equalsIgnoreCase(respAos2yrConsent) || YES_VALUE.equalsIgnoreCase(respAosAdmitAdultery)) {
                 // for 2yr separation and adultery, if respondent admits fact, assume not defended
-                caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
-                caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+                updateData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+                updateData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
             } else {
                 // if respondent does not admit fact, take secondary UI_ONLY_RESP_WILL_DEFEND_DIVORCE
                 // value and map directly onto existing RESP_WILL_DEFEND_DIVORCE
-                caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
-                caseData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(UI_ONLY_RESP_WILL_DEFEND_DIVORCE));
+                updateData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+                updateData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(UI_ONLY_RESP_WILL_DEFEND_DIVORCE));
             }
-        }
-
-        if (SEPARATION_FIVE_YEARS.equalsIgnoreCase(reasonForDivorce)) {
+        } else if (SEPARATION_FIVE_YEARS.equalsIgnoreCase(reasonForDivorce)) {
             // for 5 yr separation, no consent is asked, we just map over
             // UI_ONLY_RESP_WILL_DEFEND_DIVORCE to RESP_WILL_DEFEND_DIVORCE
-            caseData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(UI_ONLY_RESP_WILL_DEFEND_DIVORCE));
+            updateData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(UI_ONLY_RESP_WILL_DEFEND_DIVORCE));
+        } else {
+            // default is to copy value to update data from case data submission
+            updateData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(RESP_WILL_DEFEND_DIVORCE));
         }
 
         eventId = getEventId(caseData);
 
         log.info("Secondary AoS event to be fired is {} for case {}", eventId, caseID);
 
-        caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
-        caseData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
+        updateData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        updateData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
 
         caseMaintenanceClient.updateCase(
             authToken,
             caseID,
             eventId,
-            caseData
+            updateData
         );
 
-        return caseData;
+        return updateData;
     }
 
     private String getEventId(Map<String, Object> caseData) {
@@ -109,7 +112,8 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
     }
 
     private boolean respondentIsDefending(Map<String, Object> submissionData) {
+        final String respWillDefendDivorceUiOnly = (String) submissionData.get(UI_ONLY_RESP_WILL_DEFEND_DIVORCE);
         final String respWillDefendDivorce = (String) submissionData.get(RESP_WILL_DEFEND_DIVORCE);
-        return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
+        return YES_VALUE.equalsIgnoreCase(respWillDefendDivorceUiOnly) || YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
     }
 }
