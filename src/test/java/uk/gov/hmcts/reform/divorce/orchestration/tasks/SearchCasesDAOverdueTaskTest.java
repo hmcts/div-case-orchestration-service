@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static wiremock.org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SearchCasesDAOverdueTest {
+public class SearchCasesDAOverdueTaskTest {
 
     private static final String DN_GRANTED_DATE = String.format("data.%s", DECREE_NISI_GRANTED_DATE_CCD_FIELD);
 
@@ -92,7 +92,7 @@ public class SearchCasesDAOverdueTest {
 
         verify(cmsElasticSearchSupport).searchCMSCases(eq(start), eq(pageSize), eq(AUTH_TOKEN),
             eq(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_DA)),
-            eq(QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildCoolOffPeriodInDNBoundary(timeSinceDAWasPronounced))));
+            eq(QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildDateQueryExpression(timeSinceDAWasPronounced))));
     }
 
     @Test
@@ -153,8 +153,6 @@ public class SearchCasesDAOverdueTest {
 
     @Test
     public void execute_exceptionDuringSearch_searchStops() throws TaskException {
-        final int totalSearchResults = 20;
-
         when(cmsElasticSearchSupport.searchCMSCases(
             eq(start),
             eq(pageSize),
@@ -182,7 +180,7 @@ public class SearchCasesDAOverdueTest {
         return streamBuilder.build();
     }
 
-    private static String buildCoolOffPeriodInDNBoundary(final String coolOffPeriodInDN) {
+    private String buildDateQueryExpression(final String coolOffPeriodInDN) {
         String timeUnit = String.valueOf(coolOffPeriodInDN.charAt(coolOffPeriodInDN.length() - 1));
         return String.format("now/%s-%s", timeUnit, coolOffPeriodInDN);
     }
