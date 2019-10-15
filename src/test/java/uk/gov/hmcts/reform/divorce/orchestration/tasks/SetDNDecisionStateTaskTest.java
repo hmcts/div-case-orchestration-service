@@ -16,10 +16,12 @@ import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features.DN_REFUSAL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ADMIN_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_ADMIN_ERROR_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
@@ -79,6 +81,20 @@ public class SetDNDecisionStateTaskTest {
             hasEntry(STATE_CCD_FIELD, DN_REFUSED),
             hasEntry(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE),
             hasEntry(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION)
+        ));
+    }
+
+    @Test
+    public void givenDnAdminError_whenSetDnDecisionState_thenReturnDnAdminClarificationState() {
+        Map<String, Object> caseData = ImmutableMap.of(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
+            REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_ADMIN_ERROR_OPTION);
+
+        Map<String, Object> returnedPayload = classToTest.execute(null, caseData);
+
+        assertThat(returnedPayload, allOf(
+            hasEntry(STATE_CCD_FIELD, AWAITING_ADMIN_CLARIFICATION),
+            hasEntry(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE),
+            hasEntry(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_ADMIN_ERROR_OPTION)
         ));
     }
 
