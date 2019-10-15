@@ -36,7 +36,7 @@ public class AmendPetitionForRefusalTest extends CcdSubmissionSupport {
     private static final String PAYMENT_REFERENCE_EVENT = "paymentReferenceGenerated";
 
     //Superuser event to move to correct state with expected data
-    private static final String SUPERUSER_AWAITING_CLARIFICATION_EVENT = "SUAwaitingClarification";
+    private static final String SUPERUSER_DN_REFUSED_EVENT = "SUDNRefused";
 
     private static final String PREVIOUS_CASE_ID_KEY = "previousCaseId";
     private static final String PREVIOUS_ISSUE_DATE_KEY = "previousIssueDate";
@@ -80,9 +80,9 @@ public class AmendPetitionForRefusalTest extends CcdSubmissionSupport {
         updateCaseForCitizen(caseId, null, TEST_AOS_STARTED_EVENT_ID, citizenUser);
         updateCaseForCitizen(caseId, null, AOS_RECEIVED_NO_ADMIT_EVENT_ID, citizenUser);
         submitDnCase(citizenUser.getAuthToken(), issuedCase.getId(), "dn-submit.json");
-        updateCaseWithSuperuser(caseId, null, SUPERUSER_AWAITING_CLARIFICATION_EVENT,
+        updateCaseWithSuperuser(caseId, null, SUPERUSER_DN_REFUSED_EVENT,
             ImmutablePair.of(REASONS_FOR_REFUSAL_REJECTION_KEY, REASONS_FOR_REFUSAL_REJECTION_VALUES));
-
+        
         Response cosResponse = amendPetition(citizenUser.getAuthToken(), caseId);
         assertThat(cosResponse.getStatusCode(), is(HttpStatus.OK.value()));
         Map<String, Object> newDraftDocument = cosResponse.getBody().as(Map.class);
