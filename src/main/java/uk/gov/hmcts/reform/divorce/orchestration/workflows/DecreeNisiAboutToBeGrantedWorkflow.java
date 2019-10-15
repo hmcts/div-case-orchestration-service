@@ -63,7 +63,6 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
 
         Map<String, Object> caseData = caseDetails.getCaseData();
         if (isDNApproval(caseData)) {
-            tasksToRun.add(addDnOutcomeFlagFieldTask);
             Object costsClaimGranted = caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD);
             if (YES_VALUE.equals(costsClaimGranted)) {
                 tasksToRun.add(defineWhoPaysCostsOrderTask);

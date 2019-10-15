@@ -222,6 +222,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         dataInput.putAll(caseData);
         // Additional fields
         dataInput.putAll(ImmutableMap.of(
+            DN_OUTCOME_FLAG_CCD_FIELD, YES_VALUE,
             STATE_CCD_FIELD, AWAITING_CLARIFICATION,
             DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
         ));
