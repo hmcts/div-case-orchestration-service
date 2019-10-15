@@ -59,6 +59,7 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
         tasksToRun.add(setDNDecisionStateTask);
         tasksToRun.add(validateDNDecisionTask);
         tasksToRun.add(addDecreeNisiDecisionDateTask);
+        tasksToRun.add(addDnOutcomeFlagFieldTask);
 
         Map<String, Object> caseData = caseDetails.getCaseData();
         if (isDNApproval(caseData)) {

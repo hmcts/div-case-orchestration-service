@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Map;
 
 import static java.util.Objects.nonNull;
@@ -23,6 +24,8 @@ public class SetDaGrantedDetailsTask implements Task<Map<String,Object>> {
 
     @Autowired Clock clock;
 
+    public static final ZoneId LONDON_TIME_ZONE = ZoneId.of("Europe/London");
+
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
@@ -30,7 +33,7 @@ public class SetDaGrantedDetailsTask implements Task<Map<String,Object>> {
             throw new TaskException("Judge who pronounced field must be set.");
         }
 
-        LocalDateTime grantedDateTime = LocalDateTime.now(clock);
+        LocalDateTime grantedDateTime = LocalDateTime.now(clock.withZone(LONDON_TIME_ZONE));
         String formattedGrantedDateTime = mapDivorceDateTimeToCCDDateTime(grantedDateTime);
 
         caseData.put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, formattedGrantedDateTime);

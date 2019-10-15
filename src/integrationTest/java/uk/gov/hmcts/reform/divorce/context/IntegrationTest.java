@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationMethodRule;
 import org.assertj.core.util.Strings;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,9 @@ import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 import java.util.UUID;
 import java.util.function.Supplier;
 import javax.annotation.PostConstruct;
@@ -57,6 +62,9 @@ public abstract class IntegrationTest {
         this.springMethodIntegration = new SpringIntegrationMethodRule();
     }
 
+    private Stack<List<UserDetails>> listStack = new Stack<>();
+    private List<UserDetails> createdUsers;
+
     @PostConstruct
     public void init() {
         if (!Strings.isNullOrEmpty(httpProxy)) {
@@ -74,6 +82,25 @@ public abstract class IntegrationTest {
                 throw new RuntimeException("Error setting up proxy", e);
             }
         }
+    }
+
+    @Before
+    public void initUsers() {
+        createdUsers = new ArrayList<>();
+        listStack.add(createdUsers);
+
+    }
+
+    @After
+    public void onDestroy() {
+        List<UserDetails> createdUsersOnTest = listStack.pop();
+        createdUsersOnTest.forEach(userDetails -> {
+            try {
+                deleteUser(userDetails);
+            } catch (Exception e) {
+                log.error("User deletion failed " + userDetails.getEmailAddress(), e);
+            }
+        });
     }
 
     protected UserDetails createCaseWorkerUser() {
@@ -99,13 +126,12 @@ public abstract class IntegrationTest {
     }
 
     protected UserDetails createSolicitorUser() {
-        return wrapInRetry(() -> {
-            final String username = SOLICITOR_USER_NAME + EMAIL_DOMAIN;
-            return getCreatedUserDetails(username);
-        });
+
+        final String username = SOLICITOR_USER_NAME + EMAIL_DOMAIN;
+        return getCreatedUserDetails(username);
     }
 
-    private UserDetails getUserDetails(String username, String userGroup, String... role) {
+    private UserDetails getUserDetails(String username, String userGroup,boolean keepUser, String... role) {
         synchronized (this) {
             idamTestSupportUtil.createUser(username, PASSWORD, userGroup, role);
 
@@ -119,8 +145,17 @@ public abstract class IntegrationTest {
                 .authToken(authToken)
                 .id(userId)
                 .build();
+
+            if (!keepUser) {
+                createdUsers.add(userDetails);
+            }
+
             return userDetails;
         }
+    }
+
+    private UserDetails getUserDetails(String username, String userGroup, String... role) {
+        return getUserDetails(username, userGroup, false, role);
     }
 
     private UserDetails getCreatedUserDetails(String username) {
@@ -128,6 +163,7 @@ public abstract class IntegrationTest {
             final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, PASSWORD);
 
             final String userId = idamTestSupportUtil.getUserId(authToken);
+
             UserDetails userDetails = UserDetails.builder()
                 .username(username)
                 .emailAddress(username)
@@ -137,6 +173,10 @@ public abstract class IntegrationTest {
                 .build();
             return userDetails;
         }
+    }
+
+    private void deleteUser(UserDetails userDetails) {
+        idamTestSupportUtil.deleteUser(userDetails);
     }
 
     private UserDetails wrapInRetry(Supplier<UserDetails> supplier) {

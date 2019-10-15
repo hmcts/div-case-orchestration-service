@@ -180,8 +180,8 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(NO_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(AWAITING_CLARIFICATION)),
                     hasJsonPath(DN_DECISION_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat())),
-                    hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD),
-                    hasNoJsonPath(DN_OUTCOME_FLAG_CCD_FIELD)
+                    hasJsonPath(DN_OUTCOME_FLAG_CCD_FIELD, equalTo(YES_VALUE)),
+                    hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD)
                 ))
             )));
     }
@@ -200,7 +200,8 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         expectedRequestData.putAll(caseData);
         expectedRequestData.putAll(ImmutableMap.of(
             STATE_CCD_FIELD, AWAITING_CLARIFICATION,
-            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
+            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat(),
+            DN_OUTCOME_FLAG_CCD_FIELD, YES_VALUE
         ));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(expectedRequestData).build();
@@ -252,8 +253,8 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(NO_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(AWAITING_CLARIFICATION)),
                     hasJsonPath(DN_DECISION_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat())),
-                    hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD),
-                    hasNoJsonPath(DN_OUTCOME_FLAG_CCD_FIELD)
+                    hasJsonPath(DN_OUTCOME_FLAG_CCD_FIELD, equalTo(YES_VALUE)),
+                    hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD)
                 ))
             )));
     }
@@ -278,7 +279,8 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
             D8DOCUMENTS_GENERATED, buildDocumentCollection(DOCUMENT_TYPE_OTHER,
             DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + FIXED_DATE),
             STATE_CCD_FIELD, AWAITING_CLARIFICATION,
-            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
+            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat(),
+            DN_OUTCOME_FLAG_CCD_FIELD, YES_VALUE
         ));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(documentGenerationRequestCaseData).build();
@@ -332,8 +334,8 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(NO_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(AWAITING_CLARIFICATION)),
                     hasJsonPath(DN_DECISION_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat())),
-                    hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD),
-                    hasNoJsonPath(DN_OUTCOME_FLAG_CCD_FIELD)
+                    hasJsonPath(DN_OUTCOME_FLAG_CCD_FIELD, equalTo(YES_VALUE)),
+                    hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD)
                 ))
             )));
     }
@@ -388,7 +390,8 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         Map<String, Object> expectedRequestData = new HashMap<>(caseData);
         expectedRequestData.putAll(ImmutableMap.of(
             STATE_CCD_FIELD, DN_REFUSED,
-            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
+            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat(),
+            DN_OUTCOME_FLAG_CCD_FIELD, YES_VALUE
         ));
 
         Map<String, Object> expectedDocumentRequestData = new HashMap<>(expectedRequestData);
@@ -438,8 +441,8 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(NO_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(DN_REFUSED)),
                     hasJsonPath(DN_DECISION_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat())),
-                    hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD),
-                    hasNoJsonPath(DN_OUTCOME_FLAG_CCD_FIELD)
+                    hasJsonPath(DN_OUTCOME_FLAG_CCD_FIELD, equalTo(YES_VALUE)),
+                    hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD)
                 ))
             )));
     }
