@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_DRAFT_KEY;
 
@@ -33,8 +34,7 @@ public class CaseDataDraftToDivorceFormatterTask implements Task<Map<String, Obj
     }
 
     private boolean isDraft(Map<String, Object> caseData) {
-        Object isDraftObject = caseData.get(IS_DRAFT_KEY);
-        return isDraftObject == null || !(Boolean) isDraftObject;
+        return !Optional.ofNullable((Boolean) caseData.get(IS_DRAFT_KEY)).orElse(false);
     }
 
     @SuppressWarnings("unchecked")

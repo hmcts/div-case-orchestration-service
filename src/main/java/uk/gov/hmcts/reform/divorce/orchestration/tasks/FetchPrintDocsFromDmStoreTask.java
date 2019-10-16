@@ -86,22 +86,22 @@ public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> 
     }
 
     private Map<String, GeneratedDocumentInfo> extractGeneratedDocumentList(Map<String, Object> caseData) {
-        if (isListOfLinkedHashMap(caseData)) {
-            return fromLinkedHashMap(caseData);
+        if (isListOfMap(caseData)) {
+            return fromMap(caseData);
         }
 
         return fromCollectionMember(caseData);
     }
 
     @SuppressWarnings("unchecked")
-    private boolean isListOfLinkedHashMap(Map<String, Object> caseData) {
+    private boolean isListOfMap(Map<String, Object> caseData) {
         List<Object> list = (List<Object>) caseData.get(D8DOCUMENTS_GENERATED);
 
         return list != null && !list.isEmpty() && list.get(0) instanceof LinkedHashMap;
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, GeneratedDocumentInfo> fromLinkedHashMap(Map<String, Object> caseData) {
+    private Map<String, GeneratedDocumentInfo> fromMap(Map<String, Object> caseData) {
         List<Map> documentList =
             ofNullable(caseData.get(D8DOCUMENTS_GENERATED)).map(i -> (List<Map>) i).orElse(new ArrayList<>());
         Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = new HashMap<>();
@@ -137,7 +137,7 @@ public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> 
             String documentType = value.getDocumentType();
             DocumentLink documentLink = ofNullable(value.getDocumentLink()).orElse(null);
 
-            if (ofNullable(documentLink).isPresent()) {
+            if (documentLink != null) {
                 GeneratedDocumentInfo gdi = GeneratedDocumentInfo.builder()
                     .url(getStringValue(documentLink.getDocumentBinaryUrl()))
                     .documentType(documentType)
