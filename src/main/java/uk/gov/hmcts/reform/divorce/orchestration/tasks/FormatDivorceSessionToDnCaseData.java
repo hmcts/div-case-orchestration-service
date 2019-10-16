@@ -36,9 +36,9 @@ public class FormatDivorceSessionToDnCaseData implements Task<Map<String, Object
             DnRefusalCaseData dnRefusalCaseData = caseFormatterService.getDnRefusalCaseData(divorceCaseWrapper);
 
             return objectMapper.convertValue(dnRefusalCaseData, Map.class);
-        } else {
-            DnCaseData dnCaseData = caseFormatterService.getDnCaseData(divorceSession);
-            return objectMapper.convertValue(dnCaseData, Map.class);
         }
+
+        DnCaseData dnCaseData = caseFormatterService.getDnCaseData(divorceSession);
+        return objectMapper.convertValue(dnCaseData, Map.class);
     }
 }
