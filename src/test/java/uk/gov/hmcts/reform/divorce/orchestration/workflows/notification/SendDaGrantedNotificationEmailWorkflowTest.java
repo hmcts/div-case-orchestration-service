@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendDaGrantedNotificationEmailWorkflowTest {
@@ -32,7 +33,7 @@ public class SendDaGrantedNotificationEmailWorkflowTest {
 
         when(sendDaGrantedNotificationEmail.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
 
-        sendDaGrantedNotificationEmailWorkflow.run(casePayload);
+        sendDaGrantedNotificationEmailWorkflow.run(casePayload, TEST_CASE_ID);
 
         verify(sendDaGrantedNotificationEmail).execute(any(TaskContext.class), eq(casePayload));
     }
