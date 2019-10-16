@@ -129,6 +129,7 @@ public class OrchestrationConstants {
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
     public static final String DN_RECEIVED_AOS_COMPLETE = "dnReceivedAosCompleted";
+    public static final String DN_RECEIVED_CLARIFICATION = "submitDnClarification";
     public static final String AMEND_PETITION_EVENT = "amendPetition";
     public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
     public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
@@ -384,4 +385,8 @@ public class OrchestrationConstants {
     // Elastic Search
     public static final String ES_CASE_ID_KEY = "reference";
     public static final String QUERY_BUILDERS = "queryBuilders";
+
+    // Case Data Formatter Meta Fields
+    public static final String FORMATTER_CASE_DATA_KEY = "caseData";
+    public static final String FORMATTER_DIVORCE_SESSION_KEY = "divorceSession";
 }

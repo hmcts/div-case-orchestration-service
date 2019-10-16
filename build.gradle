@@ -71,7 +71,7 @@ def versions = [
         hibernateTypes               : '2.4.0',
         flyway                       : '5.2.4',
         elasticsearch                : '7.3.0',
-        divCommonLib                 : '1.1.8',
+        divCommonLib                 : '1.1.15',
         dumbster                     : '1.7.1'
 ]
 
