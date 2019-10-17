@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE_OFFLINE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
@@ -38,7 +38,8 @@ public class RespondentAosAnswersProcessor implements Task<Map<String, Object>> 
     private String returnNewStateForCase(Map<String, Object> payload) throws TaskException {
         String newState;
 
-        boolean respondentDefendingDivorce = Optional.ofNullable(payload.get(RESP_WILL_DEFEND_DIVORCE))
+        //This field (RESP_WILL_DEFEND_DIVORCE_OFFLINE) if used only for the offline journey (AOS offline)
+        boolean respondentDefendingDivorce = Optional.ofNullable(payload.get(RESP_WILL_DEFEND_DIVORCE_OFFLINE))
             .map(String.class::cast)
             .map(YES_VALUE::equalsIgnoreCase)
             .orElse(false);
