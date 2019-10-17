@@ -9,14 +9,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Optional.ofNullable;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_DRAFT_LINK_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getGeneratedDocumentListOfCm;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getGeneratedDocumentListOfMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.isListOfMap;
 
 @Component
@@ -43,8 +42,7 @@ public class PopulateDocLink implements Task<Map<String, Object>> {
     @SuppressWarnings("unchecked")
     private Map<String, Object> fromMap(Map<String, Object> payload, String documentType, String docLinkFieldName)
         throws TaskException {
-        List<Map> documentList =
-            ofNullable(payload.get(D8DOCUMENTS_GENERATED)).map(i -> (List<Map>) i).orElse(new ArrayList<>());
+        List<Map> documentList = getGeneratedDocumentListOfMap(payload);
 
         if (StringUtils.isNotBlank(documentType)) {
             Map<String, Object> petitionDocument = documentList
@@ -62,11 +60,10 @@ public class PopulateDocLink implements Task<Map<String, Object>> {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> fromCollectionMember(Map<String, Object> payload, String documentType, String docLinkFieldName)
-        throws TaskException {
-        List<CollectionMember<Document>> documentList = ofNullable(payload.get(D8DOCUMENTS_GENERATED))
-            .map(i -> (List<CollectionMember<Document>>) i)
-            .orElse(new ArrayList<>());
+    private Map<String, Object> fromCollectionMember(Map<String, Object> payload,
+                                                     String documentType,
+                                                     String docLinkFieldName) throws TaskException {
+        List<CollectionMember<Document>> documentList = getGeneratedDocumentListOfCm(payload);
 
         if (StringUtils.isNotBlank(documentType)) {
             CollectionMember<Document> petitionDocument = documentList

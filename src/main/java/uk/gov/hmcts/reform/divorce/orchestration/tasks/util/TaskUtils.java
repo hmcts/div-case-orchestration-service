@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.util;
 
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +15,7 @@ import java.util.Optional;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.parseDateUsingCcdFormat;
@@ -72,6 +76,16 @@ public class TaskUtils {
         List<Object> list = (List<Object>) caseData.get(D8DOCUMENTS_GENERATED);
 
         return list != null && !list.isEmpty() && list.get(0) instanceof LinkedHashMap;
+    }
+
+    public static List<Map> getGeneratedDocumentListOfMap(Map<String, Object> caseData) {
+        return ofNullable(caseData.get(D8DOCUMENTS_GENERATED)).map(i -> (List<Map>) i).orElse(new ArrayList<>());
+    }
+
+    public static List<CollectionMember<Document>> getGeneratedDocumentListOfCm(Map<String, Object> caseData) {
+        return ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
+            .map(i -> (List<CollectionMember<Document>>) i)
+            .orElse(new ArrayList<>());
     }
 
     private static TaskException buildTaskExceptionForMandatoryProperty(String key) {

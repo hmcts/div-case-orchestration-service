@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +26,8 @@ import java.util.Map;
 
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getGeneratedDocumentListOfCm;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getGeneratedDocumentListOfMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.isListOfMap;
 
 @Component
@@ -95,8 +95,7 @@ public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> 
 
     @SuppressWarnings("unchecked")
     private Map<String, GeneratedDocumentInfo> fromMap(Map<String, Object> caseData) {
-        List<Map> documentList =
-            ofNullable(caseData.get(D8DOCUMENTS_GENERATED)).map(i -> (List<Map>) i).orElse(new ArrayList<>());
+        List<Map> documentList = getGeneratedDocumentListOfMap(caseData);
         Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = new HashMap<>();
 
         for (Map<String, Object> document : documentList) {
@@ -120,9 +119,7 @@ public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> 
 
     @SuppressWarnings("unchecked")
     private Map<String, GeneratedDocumentInfo> fromCollectionMember(Map<String, Object> caseData) {
-        List<CollectionMember<Document>> documentList = ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
-            .map(i -> (List<CollectionMember<Document>>) i)
-            .orElse(new ArrayList<>());
+        List<CollectionMember<Document>> documentList = getGeneratedDocumentListOfCm(caseData);
         Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = new HashMap<>();
 
         for (CollectionMember<Document> document : documentList) {
