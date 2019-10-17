@@ -487,6 +487,7 @@ public class CallbackControllerTest {
     public void testSolDnReviewPetitionPopulatesErrorsIfExceptionIsThrown() throws CaseOrchestrationServiceException {
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
                 .build())
             .build();
 
@@ -529,6 +530,7 @@ public class CallbackControllerTest {
     public void testSolDnRespAnswersDocPopulatesErrorsIfExceptionIsThrown() throws CaseOrchestrationServiceException {
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
                 .build())
             .build();
 
@@ -572,6 +574,7 @@ public class CallbackControllerTest {
     public void testSolDnCoRespAnswersDocPopulatesErrorsIfExceptionIsThrown() throws CaseOrchestrationServiceException {
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
                 .build())
             .build();
 
