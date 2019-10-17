@@ -137,4 +137,9 @@ public class TaskUtilsTest {
         TaskUtils.getMandatoryPropertyValueAsLocalDateFromCCD(caseDataPayload, "testKey");
     }
 
+    @Test
+    public void shoudl() {
+
+    }
+
 }

@@ -90,7 +90,6 @@ allprojects {
     group = 'uk.gov.hmcts.reform.divorce'
     version = '0.0.1'
 
-
     checkstyle {
         maxWarnings = 0
 

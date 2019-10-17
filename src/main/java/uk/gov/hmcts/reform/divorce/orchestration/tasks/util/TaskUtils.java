@@ -5,12 +5,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.parseDateUsingCcdFormat;
 
 public class TaskUtils {
@@ -62,6 +65,13 @@ public class TaskUtils {
         }
 
         return caseId;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static boolean isListOfMap(Map<String, Object> caseData) {
+        List<Object> list = (List<Object>) caseData.get(D8DOCUMENTS_GENERATED);
+
+        return list != null && !list.isEmpty() && list.get(0) instanceof LinkedHashMap;
     }
 
     private static TaskException buildTaskExceptionForMandatoryProperty(String key) {

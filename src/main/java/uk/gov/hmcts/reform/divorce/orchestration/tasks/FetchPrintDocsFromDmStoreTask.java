@@ -22,13 +22,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.isListOfMap;
 
 @Component
 @Slf4j
@@ -91,13 +91,6 @@ public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> 
         }
 
         return fromCollectionMember(caseData);
-    }
-
-    @SuppressWarnings("unchecked")
-    private boolean isListOfMap(Map<String, Object> caseData) {
-        List<Object> list = (List<Object>) caseData.get(D8DOCUMENTS_GENERATED);
-
-        return list != null && !list.isEmpty() && list.get(0) instanceof LinkedHashMap;
     }
 
     @SuppressWarnings("unchecked")
