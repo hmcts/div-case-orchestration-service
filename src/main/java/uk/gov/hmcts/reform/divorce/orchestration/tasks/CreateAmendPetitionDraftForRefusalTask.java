@@ -13,12 +13,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NEW_AMENDED_PETITION_DRAFT_KEY;
 
 @Component
-public class CreateAmendPetitionDraftForRefusal implements Task<Map<String, Object>> {
+public class CreateAmendPetitionDraftForRefusalTask implements Task<Map<String, Object>> {
 
     private final CaseMaintenanceClient caseMaintenanceClient;
 
     @Autowired
-    public CreateAmendPetitionDraftForRefusal(CaseMaintenanceClient caseMaintenanceClient) {
+    public CreateAmendPetitionDraftForRefusalTask(CaseMaintenanceClient caseMaintenanceClient) {
         this.caseMaintenanceClient = caseMaintenanceClient;
     }
 

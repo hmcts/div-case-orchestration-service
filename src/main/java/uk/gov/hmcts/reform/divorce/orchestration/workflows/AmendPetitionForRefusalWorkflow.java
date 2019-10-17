@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraftForRefusal;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraftForRefusalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
 import java.util.HashMap;
@@ -22,12 +22,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class AmendPetitionForRefusalWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
 
-    private final CreateAmendPetitionDraftForRefusal amendPetitionDraftForRefusal;
+    private final CreateAmendPetitionDraftForRefusalTask amendPetitionDraftForRefusal;
     private final UpdateCaseInCCD updateCaseInCCD;
 
     @Autowired
-    public AmendPetitionForRefusalWorkflow(CreateAmendPetitionDraftForRefusal amendPetitionDraftForRefusal,
-                                 UpdateCaseInCCD updateCaseInCCD) {
+    public AmendPetitionForRefusalWorkflow(CreateAmendPetitionDraftForRefusalTask amendPetitionDraftForRefusal,
+                                           UpdateCaseInCCD updateCaseInCCD) {
         this.amendPetitionDraftForRefusal = amendPetitionDraftForRefusal;
         this.updateCaseInCCD = updateCaseInCCD;
     }

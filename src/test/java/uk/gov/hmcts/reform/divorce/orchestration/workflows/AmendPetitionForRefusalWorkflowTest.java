@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraftForRefusal;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraftForRefusalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
 import java.util.Collections;
@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 public class AmendPetitionForRefusalWorkflowTest {
 
     @Mock
-    private CreateAmendPetitionDraftForRefusal amendPetitionDraftForRefusal;
+    private CreateAmendPetitionDraftForRefusalTask amendPetitionDraftForRefusal;
 
     @Mock
     private UpdateCaseInCCD updateCaseInCCD;

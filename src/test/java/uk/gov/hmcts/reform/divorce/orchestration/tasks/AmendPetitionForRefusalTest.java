@@ -25,7 +25,7 @@ public class AmendPetitionForRefusalTest {
     private CaseMaintenanceClient caseMaintenanceClient;
 
     @InjectMocks
-    private CreateAmendPetitionDraftForRefusal classUnderTest;
+    private CreateAmendPetitionDraftForRefusalTask classUnderTest;
 
     @SuppressWarnings("unchecked")
     @Test
