@@ -126,4 +126,9 @@ public class CcdUtilUTest {
         assertThat(localDateTime.getSecond(), is(0));
     }
 
+    @Test
+    public void shouldReturnCurrentLocalDateTime() {
+        assertEquals(FIXED_DATE_TIME, ccdUtil.getCurrentLocalDateTime());
+    }
+
 }

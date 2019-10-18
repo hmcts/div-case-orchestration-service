@@ -30,8 +30,13 @@ public class SetDnPronouncementDetailsTask implements Task<Map<String,Object>> {
             throw new TaskException("Judge who pronounced field must be set.");
         }
 
-        // Decree Nisi Granted Date is the same date as the Court Hearing Date at the time of Pronouncement
         LocalDateTime hearingDateTime = LocalDateTime.parse((String) caseData.get(COURT_HEARING_DATE_CCD_FIELD));
+
+        if (hearingDateTime.isAfter(ccdUtil.getCurrentLocalDateTime())) {
+            throw new TaskException("Hearing date can not be in the future for pronouncement");
+        }
+
+        // Decree Nisi Granted Date is the same date as the Court Hearing Date at the time of Pronouncement
         caseData.put(DECREE_NISI_GRANTED_DATE_CCD_FIELD, DateUtils.formatDateFromDateTime(hearingDateTime));
 
         // Decree Absolute Eligible Date is 6 weeks and 1 day from the Pronouncement date
