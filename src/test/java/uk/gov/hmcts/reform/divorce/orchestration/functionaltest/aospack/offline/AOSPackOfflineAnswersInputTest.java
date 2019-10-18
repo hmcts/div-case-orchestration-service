@@ -25,6 +25,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADMIT_ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
@@ -54,6 +56,8 @@ public class AOSPackOfflineAnswersInputTest {
 
     @Test
     public void shouldReturnNewStateAndAutomaticFields_ForRespondent() throws Exception {
+        ccdCallbackRequest.getCaseDetails().getCaseData().put(RESP_AOS_ADMIT_ADULTERY, YES_VALUE);
+
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", "respondent")
             .contentType(MediaType.APPLICATION_JSON)
             .content(convertObjectToJsonString(ccdCallbackRequest)))
@@ -62,7 +66,8 @@ public class AOSPackOfflineAnswersInputTest {
                 isJson(),
                 hasJsonPath(CCD_RESPONSE_DATA_FIELD, allOf(
                     hasJsonPath(STATE_CCD_FIELD, is(notNullValue())),
-                    hasJsonPath(RECEIVED_AOS_FROM_RESP, is(YES_VALUE))
+                    hasJsonPath(RECEIVED_AOS_FROM_RESP, is(YES_VALUE)),
+                    hasJsonPath(RESP_ADMIT_OR_CONSENT_TO_FACT, is(YES_VALUE))
                 ))
             )));
     }
