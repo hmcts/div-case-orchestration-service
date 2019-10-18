@@ -33,7 +33,7 @@ public class SetDnPronouncementDetailsTask implements Task<Map<String,Object>> {
         LocalDateTime hearingDateTime = LocalDateTime.parse((String) caseData.get(COURT_HEARING_DATE_CCD_FIELD));
 
         if (hearingDateTime.isAfter(ccdUtil.getCurrentLocalDateTime())) {
-            throw new TaskException("Hearing date can not be in the future for pronouncement");
+            throw new TaskException("You cannot pronounce a bulk case that has a scheduled pronouncement date that is in the future.");
         }
 
         // Decree Nisi Granted Date is the same date as the Court Hearing Date at the time of Pronouncement
