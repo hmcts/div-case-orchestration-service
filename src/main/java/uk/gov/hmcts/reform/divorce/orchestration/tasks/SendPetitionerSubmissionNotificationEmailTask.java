@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 
 @Component
-public class SendPetitionerSubmissionNotificationEmail implements Task<Map<String, Object>> {
+public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESC = "Submission Notification - Petitioner";
     private static final String AMEND_DESC = "Submission Notification For Amend - Petitioner";
@@ -37,7 +37,7 @@ public class SendPetitionerSubmissionNotificationEmail implements Task<Map<Strin
     private final TaskCommons taskCommons;
 
     @Autowired
-    public SendPetitionerSubmissionNotificationEmail(EmailService emailService, TaskCommons taskCommons) {
+    public SendPetitionerSubmissionNotificationEmailTask(EmailService emailService, TaskCommons taskCommons) {
         this.emailService = emailService;
         this.taskCommons = taskCommons;
     }

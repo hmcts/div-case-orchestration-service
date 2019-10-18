@@ -49,7 +49,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(SpringRunner.class)
-public class SendPetitionerSubmissionNotificationEmailTest {
+public class SendPetitionerSubmissionNotificationEmailTaskTest {
 
     private static final String TEST_COURT_KEY = "westMidlands";
     private static final String TEST_COURT_DISPLAY_NAME = "West Midlands Regional Divorce Centre";
@@ -63,7 +63,7 @@ public class SendPetitionerSubmissionNotificationEmailTest {
     private TaskCommons taskCommons;
 
     @InjectMocks
-    SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail;
+    SendPetitionerSubmissionNotificationEmailTask sendPetitionerSubmissionNotificationEmailTask;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -110,7 +110,7 @@ public class SendPetitionerSubmissionNotificationEmailTest {
 
     @Test
     public void shouldNotCallEmailServiceForGenericUpdateIfPetitionerEmailDoesNotExist() throws TaskException {
-        sendPetitionerSubmissionNotificationEmail.execute(context, testData);
+        sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
 
         verifyZeroInteractions(emailService);
     }
@@ -122,7 +122,7 @@ public class SendPetitionerSubmissionNotificationEmailTest {
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, TEST_COURT_DISPLAY_NAME);
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
 
-        Map returnPayload = sendPetitionerSubmissionNotificationEmail.execute(context, testData);
+        Map returnPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
 
         assertEquals(testData, returnPayload);
 
@@ -140,7 +140,7 @@ public class SendPetitionerSubmissionNotificationEmailTest {
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, SERVICE_CENTRE_DISPLAY_NAME);
 
-        Map returnPayload = sendPetitionerSubmissionNotificationEmail.execute(context, testData);
+        Map returnPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
 
         assertEquals(testData, returnPayload);
 
@@ -157,7 +157,7 @@ public class SendPetitionerSubmissionNotificationEmailTest {
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, TEST_COURT_DISPLAY_NAME);
 
-        Map returnPayload = sendPetitionerSubmissionNotificationEmail.execute(context, testData);
+        Map returnPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
 
         assertEquals(testData, returnPayload);
 
@@ -176,7 +176,7 @@ public class SendPetitionerSubmissionNotificationEmailTest {
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, SERVICE_CENTRE_DISPLAY_NAME);
 
-        Map returnPayload = sendPetitionerSubmissionNotificationEmail.execute(context, testData);
+        Map returnPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
 
         assertEquals(testData, returnPayload);
 

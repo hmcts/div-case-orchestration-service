@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerUpdateNotificationsEmail;
 
 import java.util.Collections;
@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SendPetitionerEmailNotificationWorkflowTest {
 
     @Mock
-    private SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail;
+    private SendPetitionerSubmissionNotificationEmailTask sendPetitionerSubmissionNotificationEmailTask;
 
     @Mock
     private SendPetitionerUpdateNotificationsEmail sendPetitionerUpdateNotificationsEmail;
@@ -79,10 +79,10 @@ public class SendPetitionerEmailNotificationWorkflowTest {
 
     @Test
     public void submissionEmailTaskShouldExecuteAndReturnPayload() throws Exception {
-        when(sendPetitionerSubmissionNotificationEmail.execute(context, testData)).thenReturn(testData);
+        when(sendPetitionerSubmissionNotificationEmailTask.execute(context, testData)).thenReturn(testData);
 
         assertEquals(testData, sendPetitionerSubmissionNotificationWorkflow.run(ccdCallbackRequestRequest));
 
-        verify(sendPetitionerSubmissionNotificationEmail).execute(context, testData);
+        verify(sendPetitionerSubmissionNotificationEmailTask).execute(context, testData);
     }
 }
