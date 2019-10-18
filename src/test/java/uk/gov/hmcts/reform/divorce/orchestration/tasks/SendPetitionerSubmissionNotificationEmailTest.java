@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_REASON_UNREASONABLE_BEHAVIOUR;
@@ -43,6 +44,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -164,5 +166,24 @@ public class SendPetitionerSubmissionNotificationEmailTest {
                 eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
                 eq(expectedTemplateVars),
                 any());
+    }
+
+    @Test
+    public void shouldCallEmailService_WithAmendTemplate_WhenPreviousCaseIdExists() throws TaskException {
+        addTestData();
+        testData.put(DIVORCE_UNIT_JSON_KEY, SERVICE_CENTRE_KEY);
+        testData.put(PREVIOUS_CASE_ID_JSON_KEY, TEST_CASE_ID);
+        expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
+        expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, SERVICE_CENTRE_DISPLAY_NAME);
+
+        Map returnPayload = sendPetitionerSubmissionNotificationEmail.execute(context, testData);
+
+        assertEquals(testData, returnPayload);
+
+        verify(emailService).sendEmail(
+            eq(TEST_USER_EMAIL),
+            eq(EmailTemplateNames.APPLIC_SUBMISSION_AMEND.name()),
+            eq(expectedTemplateVars),
+            any());
     }
 }
