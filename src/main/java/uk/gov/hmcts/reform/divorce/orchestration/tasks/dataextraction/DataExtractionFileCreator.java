@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.DATE_TO_EXTRACT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.FILE_TO_PUBLISH;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.FamilyManDataExtractionWorkflow.STATUS_KEY;
@@ -49,7 +50,7 @@ public class DataExtractionFileCreator implements Task<Void> {
             .collect(Collectors.toList());
         QueryBuilder[] queryBuilders = {
             QueryBuilders.termQuery("last_modified", lastModifiedDate),
-            QueryBuilders.termsQuery("state", relevantStates)
+            QueryBuilders.termsQuery(STATE_CCD_FIELD, relevantStates)
         };
 
         StringBuilder csvFileContent = new StringBuilder();

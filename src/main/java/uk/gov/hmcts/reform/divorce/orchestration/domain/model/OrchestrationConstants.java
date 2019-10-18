@@ -68,6 +68,7 @@ public class OrchestrationConstants {
     public static final String RESP_AOS_ADMIT_ADULTERY = "RespAOSAdultery";
     public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "RespAdmitOrConsentToFact";
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
+    public static final String RESP_WILL_DEFEND_DIVORCE_OFFLINE = "UiOnly_RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
     public static final String RESP_IS_USING_DIGITAL_CHANNEL = "RespContactMethodIsDigital";
@@ -125,10 +126,12 @@ public class OrchestrationConstants {
     public static final String DN_REFUSED_REJECT_OPTION = "reject";
     public static final String DN_REFUSED_ADMIN_ERROR_OPTION = "adminError";
     public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
+    public static final String DN_REFUSAL_DRAFT = "DNRefusalDraft";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
     public static final String DN_RECEIVED_AOS_COMPLETE = "dnReceivedAosCompleted";
+    public static final String DN_RECEIVED_CLARIFICATION = "submitDnClarification";
     public static final String AMEND_PETITION_EVENT = "amendPetition";
     public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
     public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
@@ -306,7 +309,7 @@ public class OrchestrationConstants {
     public static final String DOCUMENT_TYPE_COE = "coe";
     public static final String DOCUMENT_TYPE_OTHER = "other";
 
-    public static final String SOL_DOCUMENT_LINK_FIELD = "solDocumentLinkFieldName";
+    public static final String DOCUMENT_DRAFT_LINK_FIELD = "DocumentDraftLinkFieldName";
     public static final String MINI_PETITION_LINK = "minipetitionlink";
     public static final String RESP_ANSWERS_LINK = "respondentanswerslink";
     public static final String CO_RESP_ANSWERS_LINK = "corespondentanswerslink";
@@ -384,4 +387,8 @@ public class OrchestrationConstants {
     // Elastic Search
     public static final String ES_CASE_ID_KEY = "reference";
     public static final String QUERY_BUILDERS = "queryBuilders";
+
+    // Case Data Formatter Meta Fields
+    public static final String FORMATTER_CASE_DATA_KEY = "caseData";
+    public static final String FORMATTER_DIVORCE_SESSION_KEY = "divorceSession";
 }
