@@ -45,7 +45,7 @@ feign:
         readTimeout: 60000
         requestInterceptors:
           - uk.gov.hmcts.reform.divorce.orchestration.config.FeignRequestInterceptor
-          -
+
 quartzProperties:
   org.quartz:
     scheduler:
