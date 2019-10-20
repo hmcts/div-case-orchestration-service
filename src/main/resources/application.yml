@@ -37,6 +37,15 @@ spring:
     default-encoding: UTF-8
     test-connection: false
 
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 60000
+        requestInterceptors:
+          - uk.gov.hmcts.reform.divorce.orchestration.config.FeignRequestInterceptor
+          -
 quartzProperties:
   org.quartz:
     scheduler:
