@@ -38,8 +38,8 @@ public class AosPackOfflineAnswersWorkflowTest {
     @Test
     public void shouldCallRespondentTask_ForRespondent() throws WorkflowException, TaskException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
-        when(respondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(payload);
-        when(formFieldValuesToCoreFieldsRelay.execute(any(), eq(payload))).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(respondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(formFieldValuesToCoreFieldsRelay.execute(any(), eq(payload))).thenReturn(payload);
 
         Map<String, Object> returnedPayload = classUnderTest.run(payload, RESPONDENT);
 
