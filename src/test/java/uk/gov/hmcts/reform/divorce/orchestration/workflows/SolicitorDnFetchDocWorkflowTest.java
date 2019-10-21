@@ -18,10 +18,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_DRAFT_LINK_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_LINK;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_DOCUMENT_LINK_FIELD;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorDnFetchDocWorkflowTest {
@@ -38,7 +38,7 @@ public class SolicitorDnFetchDocWorkflowTest {
     public void setup() {
         taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(DOCUMENT_TYPE, DOCUMENT_TYPE_PETITION);
-        taskContext.setTransientObject(SOL_DOCUMENT_LINK_FIELD, MINI_PETITION_LINK);
+        taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, MINI_PETITION_LINK);
     }
 
     @Test

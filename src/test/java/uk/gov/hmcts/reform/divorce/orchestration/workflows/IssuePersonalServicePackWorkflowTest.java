@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PersonalServiceValidationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSolicitorPersonalServiceEmailTask;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,9 +47,6 @@ public class IssuePersonalServicePackWorkflowTest {
     @Mock
     CaseFormatterAddDocuments caseFormatterAddDocuments;
 
-    @Mock
-    SendSolicitorPersonalServiceEmailTask sendSolicitorPersonalServiceEmailTask;
-
     @InjectMocks
     IssuePersonalServicePackWorkflow issuePersonalServicePackWorkflow;
 
@@ -83,7 +79,6 @@ public class IssuePersonalServicePackWorkflowTest {
         when(personalServiceValidationTask.execute(context, caseData)).thenReturn(caseData);
         when(documentGenerationTask.execute(context, caseData)).thenReturn(caseData);
         when(caseFormatterAddDocuments.execute(context, caseData)).thenReturn(caseData);
-        when(sendSolicitorPersonalServiceEmailTask.execute(context, caseData)).thenReturn(caseData);
         Map<String, Object> response = issuePersonalServicePackWorkflow.run(request, TEST_TOKEN);
 
         //then
@@ -91,12 +86,10 @@ public class IssuePersonalServicePackWorkflowTest {
         InOrder inOrder = inOrder(
                 personalServiceValidationTask,
                 documentGenerationTask,
-                caseFormatterAddDocuments,
-                sendSolicitorPersonalServiceEmailTask
+                caseFormatterAddDocuments
         );
         inOrder.verify(personalServiceValidationTask).execute(context, caseData);
         inOrder.verify(documentGenerationTask).execute(context, caseData);
         inOrder.verify(caseFormatterAddDocuments).execute(context, caseData);
-        inOrder.verify(sendSolicitorPersonalServiceEmailTask).execute(context, caseData);
     }
 }

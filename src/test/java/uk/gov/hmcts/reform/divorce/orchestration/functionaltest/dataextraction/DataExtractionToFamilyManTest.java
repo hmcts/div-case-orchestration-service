@@ -42,14 +42,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * This test uses the service (just like the scheduled job will).
+ */
 public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
 
-    private static final String DA_DESIRED_STATES = "[\"darequested\", \"divorcegranted\"]";
+    private static final String DA_DESIRED_STATES = "[\"divorcegranted\"]";
     private static final String AOS_DESIRED_STATES = "[\"awaitinglegaladvisorreferral\"]";
     private static final String DN_DESIRED_STATES = "[\"dnisrefused\", \"dnpronounced\"]";
 
     private static final DateTimeFormatter FILE_NAME_DATE_FORMAT = ofPattern("ddMMyyyy000000");
-    private static final String TEST_AUTH_TOKEN = "testAuthToken";
+    protected static final String TEST_AUTH_TOKEN = "testAuthToken";
 
     private String yesterday;
 
@@ -57,22 +60,21 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
     private DataExtractionService dataExtractionService;
 
     @MockBean
-    private DataExtractionEmailClient mockEmailClient;
+    protected DataExtractionEmailClient mockEmailClient;
 
     @MockBean
-    private AuthUtil authUtil;
+    protected AuthUtil authUtil;
 
     @Captor
     private ArgumentCaptor<File> attachmentCaptor;
 
     @Before
     public void setUp() {
+        maintenanceServiceServer.resetAll();
+
         when(authUtil.getCaseworkerToken()).thenReturn(TEST_AUTH_TOKEN);
         yesterday = LocalDate.now().minusDays(1).format(FILE_NAME_DATE_FORMAT);
-    }
 
-    @Test
-    public void shouldEmailCsvFileWithCase_ForDecreeAbsoluteIssued() throws Exception {
         //Mock CMS to return a case like Elastic search will
         stubJsonResponse(DA_DESIRED_STATES, "{"
             + "  \"cases\": [{"
@@ -96,10 +98,11 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
             + "  }]"
             + "}");
         stubJsonResponse(DN_DESIRED_STATES, "{"
-            + "  \"cases\": [{"
+            + "  \"cases\": ["
+            + " {"
             + "    \"id\": 789,"
             + "    \"case_data\": {"
-            + "      \"D8caseReference\": \"LV17D90909\","
+            + "      \"D8caseReference\": \"LV17D90910\","
             + "      \"DNApprovalDate\": \"2020-12-15\","
             + "      \"DateAndTimeOfHearing\": ["
             + "        {"
@@ -110,7 +113,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
             + "          }"
             + "        }"
             + "      ],"
-            + "      \"CourtName\": \"This Court\","
+            + "      \"CourtName\": \"invalid-court-name\","
             + "      \"D8DivorceCostsClaim\": \"Yes\","
             + "      \"WhoPaysCosts\": \"Respondent\","
             + "      \"costs claim granted\": \"Yes\","
@@ -118,9 +121,36 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
             + "      \"OrderOrCauseList\": \"Order\","
             + "      \"PronouncementJudge\": \"Judge Dave\""
             + "    }"
-            + "  }]"
+            + " },"
+            + " {"
+            + "    \"id\": 101,"
+            + "    \"case_data\": {"
+            + "      \"D8caseReference\": \"LV17D90911\","
+            + "      \"DNApprovalDate\": \"2020-12-15\","
+            + "      \"DateAndTimeOfHearing\": ["
+            + "        {"
+            + "          \"id\": \"8bde74de-7a69-411f-aaef-1a5ea8018743\","
+            + "          \"value\": {"
+            + "            \"DateOfHearing\": \"2020-12-10\","
+            + "            \"TimeOfHearing\": \"15:30\""
+            + "          }"
+            + "        }"
+            + "      ],"
+            + "      \"CourtName\": \"bradford\","
+            + "      \"D8DivorceCostsClaim\": \"Yes\","
+            + "      \"WhoPaysCosts\": \"Respondent\","
+            + "      \"costs claim granted\": \"Yes\","
+            + "      \"OrderForAncilliaryRelief\": \"No\","
+            + "      \"OrderOrCauseList\": \"Order\","
+            + "      \"PronouncementJudge\": \"Judge Dave\""
+            + "    }"
+            + "  }"
+            + "]"
             + "}");
+    }
 
+    @Test
+    public void shouldEmailCsvFileWithCase_ForDecreeAbsoluteIssued() throws Exception {
         dataExtractionService.requestDataExtractionForPreviousDay();
 
         await().untilAsserted(() -> {
@@ -144,7 +174,8 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
             DN_DESIRED_STATES,
             "CaseReferenceNumber,CofEGrantedDate,HearingDate,HearingTime,PlaceOfHearing,OrderForCosts,"
                 + "PartyToPayCosts,CostsToBeAssessed,OrderForAncilliaryRelief,OrderOrCauseList,JudgesName",
-            "LV17D90909,15/12/2020,10/12/2020,15:30,This Court,Yes,Respondent,Yes,No,Order,Judge Dave"
+            "LV17D90910,15/12/2020,10/12/2020,15:30,invalid-court-name,Yes,Respondent,Yes,No,Order,Judge Dave",
+            "LV17D90911,15/12/2020,10/12/2020,15:30,Bradford Law Courts,Yes,Respondent,Yes,No,Order,Judge Dave"
         );
     }
 
@@ -160,8 +191,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
     private void verifyExtractionInteractions(String filePrefix,
                                               String destinationEmailAddress,
                                               String desiredStates,
-                                              String header,
-                                              String contentFirstLine) throws MessagingException, IOException {
+                                              String... contentLines) throws MessagingException, IOException {
         maintenanceServiceServer.verify(1, postRequestedFor(urlEqualTo("/casemaintenance/version/1/search"))
             .withRequestBody(matchingJsonPath("$.query.bool.filter[*].terms.state[*]",
                 equalToJson(desiredStates, true, false))));
@@ -174,8 +204,9 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
         assertThat(attachmentFile, is(notNullValue()));
         List<String> csvLines = Files.readAllLines(attachmentFile.toPath());
         assertThat(csvLines, hasSize(greaterThan(1)));
-        assertThat(csvLines.get(0), Matchers.equalTo(header));
-        assertThat(csvLines.get(1), Matchers.equalTo(contentFirstLine));
+        for (int i = 0; i < contentLines.length; i++) {
+            assertThat(csvLines.get(i), Matchers.equalTo(contentLines[i]));
+        }
     }
 
 }

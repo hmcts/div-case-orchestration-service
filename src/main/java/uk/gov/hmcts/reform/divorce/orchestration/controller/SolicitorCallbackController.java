@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.SolicitorService;
 
 import java.util.Map;
@@ -57,5 +58,17 @@ public class SolicitorCallbackController {
                 CcdCallbackResponse.builder()
                         .data(response)
                         .build());
+    }
+
+    @PostMapping(path = "/handle-post-personal-service-pack")
+    @ApiOperation(value = "Callback to notify solicitor that personal service pack has been issued")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed")})
+    public ResponseEntity<CcdCallbackResponse> sendSolicitorPersonalServiceEmail(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(solicitorService.sendSolicitorPersonalServiceEmail(ccdCallbackRequest))
+            .build());
     }
 }
