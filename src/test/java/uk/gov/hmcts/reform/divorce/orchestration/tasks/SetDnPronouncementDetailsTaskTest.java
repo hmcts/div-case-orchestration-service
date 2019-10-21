@@ -34,6 +34,8 @@ public class SetDnPronouncementDetailsTaskTest {
         payload.put(PRONOUNCEMENT_JUDGE_CCD_FIELD, "District Judge");
         payload.put(COURT_HEARING_DATE_CCD_FIELD, "2000-01-01T10:20:55.000");
 
+        when(ccdUtil.getCurrentLocalDateTime()).thenReturn(LocalDate.of(2000, 10, 10).atStartOfDay());
+
         LocalDate courtHearingLocalDate = LocalDate.of(2000, 1, 1);
         when(ccdUtil.parseDecreeAbsoluteEligibleDate(courtHearingLocalDate)).thenCallRealMethod();
 
@@ -51,6 +53,17 @@ public class SetDnPronouncementDetailsTaskTest {
     public void testSetDnPronouncementDetailsThrowsExceptionWithMissingPronouncementJudge() throws TaskException {
         HashMap<String, Object> payload = new HashMap<>();
         payload.put(COURT_HEARING_DATE_CCD_FIELD, "2000-01-01T10:20:55.000");
+
+        setDnPronouncementDetailsTask.execute(null, payload);
+    }
+
+    @Test(expected = TaskException.class)
+    public void testSetDnPronouncementDetailsThrowsExceptionWithFutureHearingDate() throws TaskException {
+        HashMap<String, Object> payload = new HashMap<>();
+        payload.put(PRONOUNCEMENT_JUDGE_CCD_FIELD, "District Judge");
+        payload.put(COURT_HEARING_DATE_CCD_FIELD, "2000-11-11T10:20:55.000");
+
+        when(ccdUtil.getCurrentLocalDateTime()).thenReturn(LocalDate.of(2000, 10, 10).atStartOfDay());
 
         setDnPronouncementDetailsTask.execute(null, payload);
     }
