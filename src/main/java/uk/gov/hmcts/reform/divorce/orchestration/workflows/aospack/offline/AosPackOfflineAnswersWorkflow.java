@@ -27,10 +27,12 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
     public Map<String, Object> run(Map<String, Object> payload, DivorceParty divorceParty) throws WorkflowException {
 
         List<Task> tasks = new ArrayList<>();
+
+        tasks.add(formFieldValuesToCoreFieldsRelay);
+
         if (RESPONDENT.equals(divorceParty)) {
             tasks.add(respondentAosAnswersProcessor);
         }
-        tasks.add(formFieldValuesToCoreFieldsRelay);
 
         return execute(tasks.toArray(new Task[] {}), payload);
     }
