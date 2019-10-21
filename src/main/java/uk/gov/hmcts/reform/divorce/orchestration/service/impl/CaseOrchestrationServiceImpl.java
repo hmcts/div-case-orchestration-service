@@ -52,6 +52,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCa
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendClarificationSubmittedNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendDnPronouncedNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
@@ -167,6 +168,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RemoveLegalAdvisorMakeDecisionFieldsWorkflow removeLegalAdvisorMakeDecisionFieldsWorkflow;
     private final NotifyForRefusalOrderWorkflow notifyForRefusalOrderWorkflow;
     private final RemoveDNDocumentsWorkflow removeDNDocumentsWorkflow;
+    private final SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -432,6 +434,27 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> sendDnPronouncedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return sendDnPronouncedNotificationWorkflow.run(ccdCallbackRequest);
+    }
+
+    @Override
+    public CcdCallbackResponse sendClarificationSubmittedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        Map<String, Object> workflowResponse = sendClarificationSubmittedNotificationWorkflow.run(ccdCallbackRequest);
+
+        final String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        if (sendClarificationSubmittedNotificationWorkflow.errors().isEmpty()) {
+            log.info("Clarification submitted notification for CASE ID: {} successfully completed", caseId);
+            return CcdCallbackResponse.builder()
+                .data(workflowResponse)
+                .build();
+        } else {
+            log.error("Clarification submitted notification for  CASE ID: {} failed. ", caseId);
+            List<String> errors = sendClarificationSubmittedNotificationWorkflow.errors().values().stream()
+                .map(x -> (String) x)
+                .collect(Collectors.toList());
+            return CcdCallbackResponse.builder()
+                .errors(errors)
+                .build();
+        }
     }
 
     @Override
