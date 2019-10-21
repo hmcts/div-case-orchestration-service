@@ -7,7 +7,6 @@ java:
     DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
     DATAEXTRACTION_STATUS_AOS_EMAILTO: aos_data_extraction@sharklasers.com
     DATAEXTRACTION_STATUS_DN_EMAILTO: dn_data_extraction@sharklasers.com
-    DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-java.divorce"
     DIV_SCHEDULER_DB_HOST : "{{ .Release.Name }}-postgresql"
     DIV_SCHEDULER_DB_NAME : "{{ .Values.postgresql.postgresqlDatabase}}"
     DIV_SCHEDULER_DB_USER_NAME : "{{ .Values.postgresql.postgresqlUsername}}"
