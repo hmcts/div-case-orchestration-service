@@ -80,6 +80,12 @@ scheduler:
       description: 'Cron job to extract and publish cases updated on the previous day'
       jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.DataExtractionJob'
       cron: ${SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_CRON:0 0 2 ? * * *} #Every day at 2:00
+    - name: 'UpdateDAOverdueCase'
+      enabled: ${SCHEDULER_MAKE_CASES_DA_OVERDUE_ENABLED:false}
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Cron job to move cases to Decree Absolute Overdue'
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.MakeCasesDAOverdueJob'
+      cron: ${SCHEDULER_MAKE_CASES_DA_OVERDUE_CRON:0 0 */12 ? * * *} #Every 12 hours
 
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}

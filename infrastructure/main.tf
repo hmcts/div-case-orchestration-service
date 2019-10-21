@@ -77,6 +77,8 @@ module "div-cos" {
     AWAITING_DA_PERIOD                              = "${var.awaiting_da_period}"
     DA_OVERDUE_PERIOD                              = "${var.da_overdue_period}"
     FEATURE_DN_REFUSAL                              = "${var.feature_dn_refusal}"
+    SCHEDULER_MAKE_CASES_DA_OVERDUE_ENABLED         = "${var.scheduler_make_cases_da_overdue_enabled}"
+    SCHEDULER_MAKE_CASES_DA_OVERDUE_CRON            = "${var.scheduler_make_cases_da_overdue_cron}"
 
     DOCUMENTATION_SWAGGER_ENABLED                   = "${var.documentation_swagger_enabled}"
 

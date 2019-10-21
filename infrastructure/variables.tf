@@ -118,6 +118,16 @@ variable "feature_dn_refusal" {
   default = "false"
 }
 
+variable "scheduler_make_cases_da_overdue_enabled" {
+  default = "false"
+}
+
+variable "scheduler_make_cases_da_overdue_cron" {
+  type    = "string"
+  default = "0 0 */12 ? * * *"
+  description = "The scheduler job runs every 12 hours"
+}
+
 variable "documentation_swagger_enabled" {
   default = "true"
 }
