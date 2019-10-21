@@ -55,6 +55,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendClarificationSubmittedNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
@@ -305,6 +306,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private DnSubmittedEmailNotificationWorkflow dnSubmittedEmailNotificationWorkflow;
+
+    @Mock
+    private SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1612,6 +1616,25 @@ public class CaseOrchestrationServiceImplTest {
         classUnderTest.removeDNGrantedDocuments(ccdCallbackRequest);
 
         verify(removeDNDocumentsWorkflow).run(eq(requestPayload));
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_whenClarificationSubmitted() throws WorkflowException {
+        when(sendClarificationSubmittedNotificationWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
+
+        assertThat(classUnderTest.sendClarificationSubmittedNotificationEmail(ccdCallbackRequest),
+            is(CcdCallbackResponse.builder().data(requestPayload).build()));
+    }
+
+    @Test
+    public void shouldReturnError_whenWorkflowExecutedWithErrors() throws WorkflowException {
+        Map<String, Object> errorMap = ImmutableMap.of("ErrorKey", "ErrorValue");
+        when(sendClarificationSubmittedNotificationWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
+        when(sendClarificationSubmittedNotificationWorkflow.errors()).thenReturn(errorMap);
+        assertThat(classUnderTest.sendClarificationSubmittedNotificationEmail(ccdCallbackRequest),
+            is(CcdCallbackResponse.builder()
+                .errors(Arrays.asList("ErrorValue"))
+                .build()));
     }
 
     @After
