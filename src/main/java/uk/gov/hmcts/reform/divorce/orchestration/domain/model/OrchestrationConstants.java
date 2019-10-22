@@ -68,7 +68,7 @@ public class OrchestrationConstants {
     public static final String RESP_AOS_ADMIT_ADULTERY = "RespAOSAdultery";
     public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "RespAdmitOrConsentToFact";
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
-    public static final String RESP_WILL_DEFEND_DIVORCE_OFFLINE = "UiOnly_RespWillDefendDivorce";
+    public static final String UI_ONLY_RESP_WILL_DEFEND_DIVORCE = "UiOnly_RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
     public static final String RESP_IS_USING_DIGITAL_CHANNEL = "RespContactMethodIsDigital";
