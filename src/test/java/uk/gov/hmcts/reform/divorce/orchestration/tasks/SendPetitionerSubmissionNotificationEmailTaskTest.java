@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -55,6 +56,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
     private static final String TEST_COURT_DISPLAY_NAME = "West Midlands Regional Divorce Centre";
     private static final String SERVICE_CENTRE_KEY = "serviceCentre";
     private static final String SERVICE_CENTRE_DISPLAY_NAME = "Courts and Tribunals Service Centre";
+    private static final String CASE_REFERENCE_KEY = "CaseReference";
 
     @Mock
     EmailService emailService;
@@ -172,7 +174,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
     public void shouldCallEmailService_WithAmendTemplate_WhenPreviousCaseIdExists() throws TaskException {
         addTestData();
         testData.put(DIVORCE_UNIT_JSON_KEY, SERVICE_CENTRE_KEY);
-        testData.put(PREVIOUS_CASE_ID_JSON_KEY, TEST_CASE_ID);
+        testData.put(PREVIOUS_CASE_ID_CCD_KEY, Collections.singletonMap(CASE_REFERENCE_KEY, TEST_CASE_ID));
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, SERVICE_CENTRE_DISPLAY_NAME);
 

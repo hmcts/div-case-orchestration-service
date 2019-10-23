@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 
 @Component
@@ -61,7 +61,7 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
             String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, formatCaseIdToReferenceNumber(caseId));
 
-            String previousCaseId = (String) caseData.get(PREVIOUS_CASE_ID_JSON_KEY);
+            Map<String, Object> previousCaseId = (Map<String, Object>) caseData.get(PREVIOUS_CASE_ID_CCD_KEY);
 
             if (previousCaseId != null) {
                 emailService.sendEmail(petitionerEmail, EmailTemplateNames.APPLIC_SUBMISSION_AMEND.name(), templateVars, AMEND_DESC);
