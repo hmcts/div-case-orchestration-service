@@ -41,8 +41,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UI_ONLY_RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_FIVE_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -67,12 +69,14 @@ public class SolicitorAosEventServiceImplUTest {
     }
 
     @Test
-    public void givenSolicitorIsRepresenting_whenValuesReceived_caseIsUpdated() {
-        final Map<String, Object> caseData = buildSolicitorResponse(false);
+    public void givenSolicitorIsDefending_whenValuesReceived_caseIsUpdated() {
+        final Map<String, Object> caseData = buildSolicitorResponse();
+        caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
-        final Map<String, Object> expectedData = new HashMap<>(caseData);
+        final Map<String, Object> expectedData = new HashMap<>();
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
 
         SubmitSolicitorAosEvent event = new SubmitSolicitorAosEvent(TASK_CONTEXT);
@@ -92,12 +96,9 @@ public class SolicitorAosEventServiceImplUTest {
         caseData.put(RESP_AOS_2_YR_CONSENT, YES_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
-        final Map<String, Object> expectedData = new HashMap<>();
-        expectedData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        Map<String, Object> expectedData = new HashMap<>();
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
-        expectedData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
-        expectedData.put(RESP_AOS_2_YR_CONSENT, YES_VALUE);
         expectedData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
         expectedData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
@@ -119,11 +120,8 @@ public class SolicitorAosEventServiceImplUTest {
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
         final Map<String, Object> expectedData = new HashMap<>();
-        expectedData.put(RESP_SOL_REPRESENTED, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
-        expectedData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
-        expectedData.put(RESP_AOS_ADMIT_ADULTERY, YES_VALUE);
         expectedData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
         expectedData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
@@ -136,11 +134,13 @@ public class SolicitorAosEventServiceImplUTest {
 
     @Test
     public void givenDefendedDivorce_whenEventIsTriggered_solAosSubmittedDefendedEventFired() {
-        final Map<String, Object> caseData = buildSolicitorResponse(true);
+        final Map<String, Object> caseData = buildSolicitorResponse();
+        caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
-        Map<String, Object> expectedData = buildSolicitorResponse(true);
+        Map<String, Object> expectedData = new HashMap<>();
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
 
         SubmitSolicitorAosEvent event = new SubmitSolicitorAosEvent(TASK_CONTEXT);
@@ -152,10 +152,12 @@ public class SolicitorAosEventServiceImplUTest {
 
     @Test
     public void givenNotDefended_whenEventTriggered_solAosSubmittedUndefendedEventFired() {
-        final Map<String, Object> caseData = buildSolicitorResponse(false);
+        final Map<String, Object> caseData = buildSolicitorResponse();
+        caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
-        Map<String, Object> expectedData = buildSolicitorResponse(false);
+        Map<String, Object> expectedData = new HashMap<>();
+        expectedData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
 
@@ -167,14 +169,16 @@ public class SolicitorAosEventServiceImplUTest {
     }
 
     @Test
-    public void givenDoesNotConsentTo2YearSep_whenEventTriggered_solAosReceivedNoAdConStartedEventFired() {
-        final Map<String, Object> caseData = buildSolicitorResponse(true);
-
+    public void givenDoesNotConsentTo2YearSepAndDefends_whenEventTriggered_solAosReceivedNoAdConStartedEventFired() {
+        final Map<String, Object> caseData = buildSolicitorResponse();
+        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
         caseData.put(RESP_AOS_2_YR_CONSENT, NO_VALUE);
+        caseData.put(UI_ONLY_RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
-        Map<String, Object> expectedData = buildSolicitorResponse(true);
-        expectedData.put(RESP_AOS_2_YR_CONSENT, NO_VALUE);
+        Map<String, Object> expectedData = new HashMap<>();
+        expectedData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
+        expectedData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
 
@@ -186,15 +190,57 @@ public class SolicitorAosEventServiceImplUTest {
     }
 
     @Test
-    public void givenDoesNotAdmitAdultery_whenEventTriggered_SolAosReceivedNoAdConStarted() {
-        final Map<String, Object> caseData = buildSolicitorResponse(true);
-        caseData.put(RESP_AOS_ADMIT_ADULTERY, NO_VALUE);
-        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+    public void giveConsentTo2YearSep_whenEventTriggered_assumeNotDefended() {
+        final Map<String, Object> caseData = buildSolicitorResponse();
+        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+        caseData.put(RESP_AOS_2_YR_CONSENT, YES_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
-        Map<String, Object> expectedData = buildSolicitorResponse(true);
-        expectedData.put(RESP_AOS_ADMIT_ADULTERY, NO_VALUE);
-        expectedData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        Map<String, Object> expectedData = new HashMap<>();
+        expectedData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
+
+        SubmitSolicitorAosEvent event = new SubmitSolicitorAosEvent(TASK_CONTEXT);
+        assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
+
+        verify(caseMaintenanceClient).updateCase(
+            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
+    }
+
+    @Test
+    public void giveAdulteryCaseDoesConsent_whenEventTriggered_assumeNotDefended() {
+        final Map<String, Object> caseData = buildSolicitorResponse();
+        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseData.put(RESP_AOS_ADMIT_ADULTERY, YES_VALUE);
+        TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
+
+        Map<String, Object> expectedData = new HashMap<>();
+        expectedData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
+
+        SubmitSolicitorAosEvent event = new SubmitSolicitorAosEvent(TASK_CONTEXT);
+        assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
+
+        verify(caseMaintenanceClient).updateCase(
+            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
+    }
+
+    @Test
+    public void givenDoesNotAdmitAdulteryAndDoesDefend_whenEventTriggered_SolAosReceivedNoAdConStartedAndValuesMapped() {
+        final Map<String, Object> caseData = buildSolicitorResponse();
+        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseData.put(RESP_AOS_ADMIT_ADULTERY, NO_VALUE);
+        caseData.put(UI_ONLY_RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
+        caseData.put(RESP_WILL_DEFEND_DIVORCE, null);
+        TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
+
+        Map<String, Object> expectedData = new HashMap<>();
+        expectedData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
+        expectedData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
 
@@ -205,7 +251,45 @@ public class SolicitorAosEventServiceImplUTest {
             eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID), eq(expectedData));
     }
 
-    private Map<String, Object> buildSolicitorResponse(boolean defended) {
+    @Test
+    public void given5yrSeparationAndDoesDefend_whenEventTriggered_triggersDefendEventMapsData() {
+        final Map<String, Object> caseData = buildSolicitorResponse();
+        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS);
+        caseData.put(UI_ONLY_RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
+        TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
+
+        Map<String, Object> expectedData = new HashMap<>();
+        expectedData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
+
+        SubmitSolicitorAosEvent event = new SubmitSolicitorAosEvent(TASK_CONTEXT);
+        assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
+
+        verify(caseMaintenanceClient).updateCase(
+            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID), eq(expectedData));
+    }
+
+    @Test
+    public void given5yrSeparationAndDoesNotDefend_whenEventTriggered_triggersUndefendedEventMapsData() {
+        final Map<String, Object> caseData = buildSolicitorResponse();
+        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS);
+        caseData.put(UI_ONLY_RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+        TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
+
+        Map<String, Object> expectedData = new HashMap<>();
+        expectedData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
+        expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
+
+        SubmitSolicitorAosEvent event = new SubmitSolicitorAosEvent(TASK_CONTEXT);
+        assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
+
+        verify(caseMaintenanceClient).updateCase(
+            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
+    }
+
+    private Map<String, Object> buildSolicitorResponse() {
         Map<String, Object> caseData = new HashMap<>();
 
         caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
@@ -214,12 +298,6 @@ public class SolicitorAosEventServiceImplUTest {
         caseData.put(D8_RESPONDENT_SOLICITOR_EMAIL, "solicitor@localhost.local");
         caseData.put(D8_RESPONDENT_SOLICITOR_PHONE, "2222222222");
         caseData.put(D8_RESPONDENT_SOLICITOR_REFERENCE, "2334234");
-
-        if (defended) {
-            caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
-        } else {
-            caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
-        }
 
         return caseData;
     }

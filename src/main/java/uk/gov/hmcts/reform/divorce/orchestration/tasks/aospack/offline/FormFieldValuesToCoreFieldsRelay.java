@@ -14,7 +14,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_2_YR_CONSENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADMIT_ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE_OFFLINE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UI_ONLY_RESP_WILL_DEFEND_DIVORCE;
 
 /**
  * Some fields were created in the CCD form for usability reasons, but they need to have
@@ -30,7 +30,7 @@ public class FormFieldValuesToCoreFieldsRelay implements Task<Map<String, Object
         Optional.ofNullable(payload.get(RESP_AOS_2_YR_CONSENT)).ifPresent(relayValueToField(payloadToReturn, RESP_ADMIT_OR_CONSENT_TO_FACT));
         Optional.ofNullable(payload.get(RESP_AOS_ADMIT_ADULTERY)).ifPresent(relayValueToField(payloadToReturn, RESP_ADMIT_OR_CONSENT_TO_FACT));
 
-        Optional.ofNullable(payload.get(RESP_WILL_DEFEND_DIVORCE_OFFLINE)).ifPresent(relayValueToField(payloadToReturn, RESP_WILL_DEFEND_DIVORCE));
+        Optional.ofNullable(payload.get(UI_ONLY_RESP_WILL_DEFEND_DIVORCE)).ifPresent(relayValueToField(payloadToReturn, RESP_WILL_DEFEND_DIVORCE));
 
         return payloadToReturn;
     }
