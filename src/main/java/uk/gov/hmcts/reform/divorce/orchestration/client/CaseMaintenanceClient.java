@@ -29,6 +29,15 @@ public interface CaseMaintenanceClient {
     );
 
     @RequestMapping(
+        method = RequestMethod.PUT,
+        value = "/casemaintenance/version/1/amended-petition-draft-refusal",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
+    )
+    Map<String, Object> amendPetitionForRefusal(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken
+    );
+
+    @RequestMapping(
         method = RequestMethod.POST,
         value = "/casemaintenance/version/1/submit",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
