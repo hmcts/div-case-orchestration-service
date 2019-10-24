@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
@@ -138,6 +139,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final GetCaseWorkflow getCaseWorkflow;
     private final AuthUtil authUtil;
     private final AmendPetitionWorkflow amendPetitionWorkflow;
+    private final AmendPetitionForRefusalWorkflow amendPetitionForRefusalWorkflow;
     private final CaseLinkedForHearingWorkflow caseLinkedForHearingWorkflow;
     private final CoRespondentAnswerReceivedWorkflow coRespondentAnswerReceivedWorkflow;
     private final ProcessAwaitingPronouncementCasesWorkflow processAwaitingPronouncementCasesWorkflow;
@@ -580,6 +582,17 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             log.info("Successfully created a new draft to amend, and updated old case {}", caseId);
         } else {
             log.error("Unable to create new amendment petition for case {}", caseId);
+        }
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> amendPetitionForRefusal(String caseId, String authorisation) throws WorkflowException {
+        Map<String, Object> response = amendPetitionForRefusalWorkflow.run(caseId, authorisation);
+        if (response != null) {
+            log.info("Successfully created a new draft to amend for DN Refusal, and updated old case {}", caseId);
+        } else {
+            log.error("Unable to create new DN Refusal amendment petition for case {}", caseId);
         }
         return response;
     }
