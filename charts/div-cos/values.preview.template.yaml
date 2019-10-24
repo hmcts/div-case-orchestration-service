@@ -1,6 +1,7 @@
 java:
   environment:
     IDAM_API_URL: "https://idam-api.aat.platform.hmcts.net"
+    CASE_MAINTENANCE_SERVICE_API_BASEURL: "http://div-cms-pr-189.service.core-compute-preview.internal"
     FEATURE_DN_REFUSAL: "true"
     FEATURE_RESP_SOLICITOR_DETAILS: "true"
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: false

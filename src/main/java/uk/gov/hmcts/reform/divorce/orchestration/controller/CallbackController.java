@@ -116,6 +116,21 @@ public class CallbackController {
             .build());
     }
 
+    @PostMapping(path = "/clarification-submitted",
+        consumes = MediaType.APPLICATION_JSON,
+        produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Generate/dispatch a notification email to the petitioner when the clarification has been submitted")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> clarificationSubmitted(
+        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        CcdCallbackResponse workflowResponse = caseOrchestrationService.sendClarificationSubmittedNotificationEmail(ccdCallbackRequest);
+        return ResponseEntity.ok(workflowResponse);
+    }
+
     @PostMapping(path = "/petition-issue-fees",
         consumes = MediaType.APPLICATION_JSON,
         produces = MediaType.APPLICATION_JSON)
@@ -743,6 +758,35 @@ public class CallbackController {
             callbackResponseBuilder.data(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest, authToken));
             log.info("Processed case successfully. Case id: {}", caseId);
         } catch (CaseOrchestrationServiceException exception) {
+            log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
+            callbackResponseBuilder.errors(asList(exception.getMessage()));
+        } catch (Exception exception) {
+            log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
+            callbackResponseBuilder.errors(asList(GENERIC_ERROR_MESSAGE));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/dn-about-to-be-granted-state",
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Handles case data state just before Decree Nisi is granted")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
+            + "attached to the case",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> decreeNisiDecisionState(
+        @RequestBody @ApiParam("CaseData")
+            CcdCallbackRequest ccdCallbackRequest) {
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+        try {
+            callbackResponseBuilder.data(caseOrchestrationService.decreeNisiDecisionState(ccdCallbackRequest));
+        } catch (WorkflowException exception) {
             log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
             callbackResponseBuilder.errors(asList(exception.getMessage()));
         } catch (Exception exception) {

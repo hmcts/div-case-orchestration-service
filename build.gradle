@@ -72,7 +72,8 @@ def versions = [
         flyway                       : '5.2.4',
         elasticsearch                : '7.3.0',
         divCommonLib                 : '1.0.7',
-        idamClient                   : '1.2.1'
+        dumbster                     : '1.7.1',
+        idamClient                   : '1.2.2'
 ]
 
 allprojects {
@@ -327,6 +328,8 @@ dependencies {
     compile group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
     compile group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
 
+    compile group: 'com.github.kirviq', name: 'dumbster', version: versions.dumbster
+
     compile(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson) {
         force = true
     }
@@ -442,7 +445,7 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
-    if(System.getenv('CHANGE_TITLE')?.startsWith('[FAST]')) {
+    if (System.getenv('CHANGE_TITLE')?.startsWith('[FAST]')) {
         useJUnit {
             excludeCategories 'uk.gov.hmcts.reform.divorce.category.ExtendedTest'
         }
