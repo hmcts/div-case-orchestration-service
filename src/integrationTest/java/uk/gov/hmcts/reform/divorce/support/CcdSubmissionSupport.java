@@ -94,6 +94,11 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         return ccdClientSupport.submitBulkCase(caseData, createCaseWorkerUser());
     }
 
+    protected CaseDetails updateCaseWithSuperuser(String caseId, String fileName, String eventId,
+                                                  Pair<String, Object>... additionalCaseData) {
+        return updateCase(caseId, fileName, eventId, createCaseWorkerSuperUser(), false, additionalCaseData);
+    }
+
     protected CaseDetails updateCase(String caseId, String fileName, String eventId,
                                      Pair<String, Object>... additionalCaseData) {
         return updateCase(caseId, fileName, eventId, createCaseWorkerUser(), false, additionalCaseData);

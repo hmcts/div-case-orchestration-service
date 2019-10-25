@@ -305,13 +305,30 @@ public class OrchestrationController {
                 + "The previous case has been updated to case state: AmendPetition"),
         @ApiResponse(code = 404,
             message = "No draft was created as no existing case found.")})
-    public ResponseEntity<Map<String, Object>> amendPetition(@RequestHeader("Authorization")
-                                                             @ApiParam(value = "JWT authorisation token issued by IDAM",
-                                                                 required = true) final String authorizationToken,
-                                                             @PathVariable String caseId)
-        throws WorkflowException {
+    public ResponseEntity<Map<String, Object>> amendPetition(
+            @RequestHeader("Authorization")
+            @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+            @PathVariable String caseId)
+            throws WorkflowException {
 
         return ResponseEntity.ok(orchestrationService.amendPetition(caseId, authorizationToken));
     }
 
+    @PutMapping(path = "/amend-petition-dn-rejection/{caseId}")
+    @ApiOperation(
+        value = "Creates a new draft copy of user's old case to be amended for DN Refusal Rejection, updates old case to AmendPetition state")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200,
+            message = "The amended petition draft has been created successfully. "
+                + "The previous case has been updated to case state: AmendPetition"),
+        @ApiResponse(code = 404,
+            message = "No draft was created as no existing case found.")})
+    public ResponseEntity<Map<String, Object>> amendPetitionForRefusal(
+            @RequestHeader("Authorization")
+            @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+            @PathVariable String caseId)
+            throws WorkflowException {
+
+        return ResponseEntity.ok(orchestrationService.amendPetitionForRefusal(caseId, authorizationToken));
+    }
 }
