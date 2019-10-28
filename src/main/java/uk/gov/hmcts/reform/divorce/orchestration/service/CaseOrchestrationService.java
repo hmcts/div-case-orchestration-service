@@ -85,6 +85,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> amendPetition(String caseId, String authorisation) throws WorkflowException;
 
+    Map<String, Object> amendPetitionForRefusal(String caseId, String authorisation) throws WorkflowException;
+
     CcdCallbackResponse sendCoRespReceivedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> sendDnPronouncedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
@@ -151,6 +153,10 @@ public interface CaseOrchestrationService {
     Map<String, Object> notifyForRefusalOrder(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> removeDNGrantedDocuments(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    CcdCallbackResponse sendClarificationSubmittedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    Map<String, Object> decreeNisiDecisionState(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> processDnDecisionMade(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 }

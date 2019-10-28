@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpd
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
@@ -56,6 +57,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendClarificationSubmittedNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
@@ -221,6 +223,9 @@ public class CaseOrchestrationServiceImplTest {
     private AmendPetitionWorkflow amendPetitionWorkflow;
 
     @Mock
+    private AmendPetitionForRefusalWorkflow amendPetitionForRefusalWorkflow;
+
+    @Mock
     private CaseLinkedForHearingWorkflow caseLinkedForHearingWorkflow;
 
     @Mock
@@ -309,6 +314,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private DnSubmittedEmailNotificationWorkflow dnSubmittedEmailNotificationWorkflow;
+
+    @Mock
+    private SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -912,6 +920,15 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
+    public void givenCaseId_whenAmendPetitionForRefusal_thenReturnDraft() throws Exception {
+        when(amendPetitionForRefusalWorkflow.run(TEST_CASE_ID, AUTH_TOKEN)).thenReturn(requestPayload);
+
+        assertEquals(requestPayload, classUnderTest.amendPetitionForRefusal(TEST_CASE_ID, AUTH_TOKEN));
+
+        verify(amendPetitionForRefusalWorkflow).run(TEST_CASE_ID, AUTH_TOKEN);
+    }
+
+    @Test
     public void testServiceCallsRightWorkflowWithRightData_ForProcessingCaseLinkedBackEvent()
         throws WorkflowException, CaseOrchestrationServiceException {
         when(caseLinkedForHearingWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()))).thenReturn(requestPayload);
@@ -1181,11 +1198,16 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldCallTheRightWorkflow_forHandleDaGranted() throws WorkflowException {
-        when(sendDaGrantedNotificationEmailWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData())).thenReturn(requestPayload);
+        when(sendDaGrantedNotificationEmailWorkflow.run(
+                ccdCallbackRequest.getCaseDetails().getCaseData(),
+                ccdCallbackRequest.getCaseDetails().getCaseId()))
+                .thenReturn(requestPayload);
 
         classUnderTest.handleDaGranted(ccdCallbackRequest);
 
-        verify(sendDaGrantedNotificationEmailWorkflow).run(ccdCallbackRequest.getCaseDetails().getCaseData());
+        verify(sendDaGrantedNotificationEmailWorkflow).run(
+                ccdCallbackRequest.getCaseDetails().getCaseData(),
+                ccdCallbackRequest.getCaseDetails().getCaseId());
     }
 
     @Test(expected = WorkflowException.class)
@@ -1611,6 +1633,25 @@ public class CaseOrchestrationServiceImplTest {
         classUnderTest.removeDNGrantedDocuments(ccdCallbackRequest);
 
         verify(removeDNDocumentsWorkflow).run(eq(requestPayload));
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_whenClarificationSubmitted() throws WorkflowException {
+        when(sendClarificationSubmittedNotificationWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
+
+        assertThat(classUnderTest.sendClarificationSubmittedNotificationEmail(ccdCallbackRequest),
+            is(CcdCallbackResponse.builder().data(requestPayload).build()));
+    }
+
+    @Test
+    public void shouldReturnError_whenWorkflowExecutedWithErrors() throws WorkflowException {
+        Map<String, Object> errorMap = ImmutableMap.of("ErrorKey", "ErrorValue");
+        when(sendClarificationSubmittedNotificationWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
+        when(sendClarificationSubmittedNotificationWorkflow.errors()).thenReturn(errorMap);
+        assertThat(classUnderTest.sendClarificationSubmittedNotificationEmail(ccdCallbackRequest),
+            is(CcdCallbackResponse.builder()
+                .errors(Arrays.asList("ErrorValue"))
+                .build()));
     }
 
     @Test

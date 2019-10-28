@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.FormFieldValuesToCoreFieldsRelay;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.RespondentAosAnswersProcessor;
 
 import java.util.Map;
@@ -28,6 +29,9 @@ public class AosPackOfflineAnswersWorkflowTest {
     @Mock
     private RespondentAosAnswersProcessor respondentAosAnswersProcessor;
 
+    @Mock
+    private FormFieldValuesToCoreFieldsRelay formFieldValuesToCoreFieldsRelay;
+
     @InjectMocks
     private AosPackOfflineAnswersWorkflow classUnderTest;
 
@@ -35,20 +39,25 @@ public class AosPackOfflineAnswersWorkflowTest {
     public void shouldCallRespondentTask_ForRespondent() throws WorkflowException, TaskException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         when(respondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(formFieldValuesToCoreFieldsRelay.execute(any(), eq(payload))).thenReturn(payload);
 
         Map<String, Object> returnedPayload = classUnderTest.run(payload, RESPONDENT);
 
         verify(respondentAosAnswersProcessor).execute(any(), eq(payload));
+        verify(formFieldValuesToCoreFieldsRelay).execute(any(), eq(payload));
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
     }
 
     @Test
     public void shouldCallNoTasks_ForCoRespondent() throws WorkflowException, TaskException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
+        when(formFieldValuesToCoreFieldsRelay.execute(any(), eq(payload))).thenReturn(singletonMap("returnedKey", "returnedValue"));
+
         Map<String, Object> returnedPayload = classUnderTest.run(payload, CO_RESPONDENT);
 
         verify(respondentAosAnswersProcessor, never()).execute(any(), any());
-        assertThat(returnedPayload, hasEntry("testKey", "testValue"));
+        verify(formFieldValuesToCoreFieldsRelay).execute(any(), eq(payload));
+        assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
     }
 
 }
