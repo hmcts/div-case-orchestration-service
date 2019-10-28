@@ -203,6 +203,11 @@ public class OrchestrationConstants {
     public static final String RESPONDENT_PIN = "pin";
     public static final String CO_RESPONDENT_PIN = "coRespondentPin";
     public static final String SUCCESS_STATUS = "success";
+    /*
+       Unfortunately, "court" is the name that is already used in the Divorce session format in many places, although it holds a list of courts.
+       Changing it now would probably be more trouble than it's worth. At least our constant can be called the right thing.
+    */
+    public static final String COURTS = "court";
 
     // Hearing
     public static final String COURT_NAME_TEMPLATE_ID = "court name";

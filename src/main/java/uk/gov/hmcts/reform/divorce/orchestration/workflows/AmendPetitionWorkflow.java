@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayload;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraft;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
@@ -24,26 +25,31 @@ public class AmendPetitionWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
     private final CreateAmendPetitionDraft amendPetitionDraft;
     private final UpdateCaseInCCD updateCaseInCCD;
+    private final AddCourtsToPayload addCourtsToPayload;
 
     @Autowired
     public AmendPetitionWorkflow(CreateAmendPetitionDraft amendPetitionDraft,
-                                 UpdateCaseInCCD updateCaseInCCD) {
+                                 UpdateCaseInCCD updateCaseInCCD,
+                                 AddCourtsToPayload addCourtsToPayload) {
         this.amendPetitionDraft = amendPetitionDraft;
         this.updateCaseInCCD = updateCaseInCCD;
+        this.addCourtsToPayload = addCourtsToPayload;
     }
 
     public Map<String, Object> run(String caseId, String authToken) throws WorkflowException {
-        this.execute(
-                new Task[]{
-                    amendPetitionDraft,
-                    updateCaseInCCD
-                },
+        execute(
+            new Task[] {
+                amendPetitionDraft,
+                updateCaseInCCD
+            },
             new HashMap<>(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, AMEND_PETITION_EVENT)
         );
 
-        return getContext().getTransientObject(NEW_AMENDED_PETITION_DRAFT_KEY);
+        Map<String, Object> newDraft = getContext().getTransientObject(NEW_AMENDED_PETITION_DRAFT_KEY);
+
+        return execute(new Task[] {addCourtsToPayload}, newDraft);
     }
 }

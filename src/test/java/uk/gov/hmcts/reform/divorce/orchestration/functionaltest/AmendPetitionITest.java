@@ -11,7 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.core.Is.is;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -20,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CourtsMatcher.isExpectedCourtsList;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class AmendPetitionITest extends MockedFunctionalTest {
@@ -39,30 +42,30 @@ public class AmendPetitionITest extends MockedFunctionalTest {
 
     @Test
     public void givenJWTTokenIsNull_whenSaveDraft_thenReturnBadRequest()
-            throws Exception {
+        throws Exception {
         webClient.perform(put(API_URL + "/" + CASE_ID)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
     public void givenAmendPetitionDraftFails_thenReturnBadGateway()
-            throws Exception {
+        throws Exception {
         final String errorMessage = "{\"error\":\"error message\"}";
 
         stubCmsAmendPetitionDraftEndpoint(HttpStatus.BAD_GATEWAY, errorMessage);
-        stubCmsUpdateCaseEndpoint(HttpStatus.OK, "");
+        stubCmsUpdateCaseEndpoint(HttpStatus.OK, "{}");
 
         webClient.perform(put(API_URL + "/" + CASE_ID)
-                .header(AUTHORIZATION, USER_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadGateway())
-                .andExpect(content().string(containsString(errorMessage)));
+            .header(AUTHORIZATION, USER_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadGateway())
+            .andExpect(content().string(containsString(errorMessage)));
     }
 
     @Test
     public void givenUpdateCaseFails_thenReturnBadGateway()
-            throws Exception {
+        throws Exception {
         final String errorMessage = "error message";
 
         Map<String, Object> draftData = new HashMap<>();
@@ -74,60 +77,59 @@ public class AmendPetitionITest extends MockedFunctionalTest {
         stubCmsUpdateCaseEndpoint(HttpStatus.BAD_GATEWAY, errorMessage);
 
         webClient.perform(put(API_URL + "/" + CASE_ID)
-                .header(AUTHORIZATION, USER_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadGateway())
-                .andExpect(content().string(containsString(errorMessage)));
+            .header(AUTHORIZATION, USER_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadGateway())
+            .andExpect(content().string(containsString(errorMessage)));
     }
 
     @Test
     public void givenNoCaseExists_thenReturnNotFound()
-            throws Exception {
+        throws Exception {
         final String errorMessage = "error message";
 
         stubCmsAmendPetitionDraftEndpoint(HttpStatus.NOT_FOUND, errorMessage);
         stubCmsUpdateCaseEndpoint(HttpStatus.NOT_FOUND, errorMessage);
 
         webClient.perform(put(API_URL + "/" + CASE_ID)
-                .header(AUTHORIZATION, USER_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string(containsString(errorMessage)));
+            .header(AUTHORIZATION, USER_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andExpect(content().string(containsString(errorMessage)));
     }
 
     @Test
     public void givenEverythingWorksAsExpected_whenCmsCalled_thenSaveDraft()
-            throws Exception {
+        throws Exception {
 
         Map<String, Object> draftData = new HashMap<>();
         draftData.put(PREVIOUS_CASE_ID_JSON_KEY, PREVIOUS_ID);
 
-        String content = convertObjectToJsonString(draftData);
-
-        stubCmsAmendPetitionDraftEndpoint(HttpStatus.OK, content);
-        stubCmsUpdateCaseEndpoint(HttpStatus.OK, "");
+        stubCmsAmendPetitionDraftEndpoint(HttpStatus.OK, convertObjectToJsonString(draftData));
+        stubCmsUpdateCaseEndpoint(HttpStatus.OK, "{}");
 
         webClient.perform(put(API_URL + "/" + CASE_ID)
-                .header(AUTHORIZATION, USER_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(content));
+            .header(AUTHORIZATION, USER_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(hasJsonPath(PREVIOUS_CASE_ID_JSON_KEY, is(PREVIOUS_ID))))
+            .andExpect(content().string(hasJsonPath("court", isExpectedCourtsList())));
     }
 
     private void stubCmsAmendPetitionDraftEndpoint(HttpStatus status, String body) {
         maintenanceServiceServer.stubFor(WireMock.put(CMS_AMEND_PETITION_CONTEXT_PATH)
-                .willReturn(aResponse()
-                        .withStatus(status.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(body)));
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(body)));
     }
 
     private void stubCmsUpdateCaseEndpoint(HttpStatus status, String body) {
         maintenanceServiceServer.stubFor(WireMock.post(CMS_UPDATE_CONTEXT_PATH)
-                .willReturn(aResponse()
-                        .withStatus(status.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(body)));
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(body)));
     }
 }
 

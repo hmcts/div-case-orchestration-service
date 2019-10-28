@@ -22,6 +22,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -31,6 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_DRAFT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CourtsMatcher.isExpectedCourtsList;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class RetrieveDraftITest extends MockedFunctionalTest {
@@ -110,7 +113,8 @@ public class RetrieveDraftITest extends MockedFunctionalTest {
             .header(AUTHORIZATION, USER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+            .andExpect(content().json(convertObjectToJsonString(expectedResponse)))
+            .andExpect(content().string(hasJsonPath("$.court", isExpectedCourtsList())));
     }
 
     @Test
@@ -128,7 +132,8 @@ public class RetrieveDraftITest extends MockedFunctionalTest {
             .header(AUTHORIZATION, USER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+            .andExpect(content().json(convertObjectToJsonString(expectedResponse)))
+            .andExpect(content().string(hasJsonPath("$.court", isExpectedCourtsList())));
     }
 
     @Test
@@ -155,10 +160,10 @@ public class RetrieveDraftITest extends MockedFunctionalTest {
             .header(AUTHORIZATION, USER_TOKEN)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+            .andExpect(content().json(convertObjectToJsonString(expectedResponse)))
+            .andExpect(content().string(hasJsonPath("$.court", isExpectedCourtsList())));
         maintenanceServiceServer.verify(2, getRequestedFor(urlEqualTo(CMS_CONTEXT_PATH)));
         maintenanceServiceServer.verify(1, postRequestedFor(urlEqualTo(CMS_UPDATE_CASE_PATH)));
-
     }
 
     private void stubCmsServerEndpoint(String path, HttpStatus status, String body, HttpMethod method) {

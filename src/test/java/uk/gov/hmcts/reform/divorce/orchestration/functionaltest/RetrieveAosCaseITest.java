@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CourtsMatcher.isExpectedCourtsList;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class RetrieveAosCaseITest extends MockedFunctionalTest {
@@ -97,14 +99,15 @@ public class RetrieveAosCaseITest extends MockedFunctionalTest {
             .data(CASE_DATA)
             .caseId(TEST_CASE_ID)
             .state(TEST_STATE)
-            .courts(TEST_COURT)
+            .court(TEST_COURT)
             .build();
 
         webClient.perform(get(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(expected)));
+            .andExpect(content().json(convertObjectToJsonString(expected)))
+            .andExpect(content().string(hasJsonPath("$.data.court", isExpectedCourtsList())));
     }
 
     private void stubRetrieveAosCaseFromCMS(CaseDetails caseDetails) {

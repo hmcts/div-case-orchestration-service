@@ -15,14 +15,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayload;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataToDivorceFormatter;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveAosCase;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCase;
 
 import java.util.Map;
 
 import static java.util.Collections.singletonMap;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
+import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -32,13 +32,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RetrieveAosCaseWorkflowUTest {
+public class GetCaseWorkflowTest {
 
     @Rule
     public ExpectedException expectedException = none();
 
     @Mock
-    private RetrieveAosCase retrieveAosCase;
+    private GetCase getCase;
 
     @Mock
     private CaseDataToDivorceFormatter caseDataToDivorceFormatter;
@@ -47,30 +47,29 @@ public class RetrieveAosCaseWorkflowUTest {
     private AddCourtsToPayload addCourtsToPayload;
 
     @InjectMocks
-    private RetrieveAosCaseWorkflow classUnderTest;
+    private GetCaseWorkflow classUnderTest;
 
     private Task[] mainTasks;
-    private final ImmutablePair<String, Object> authTokenPair = new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+    private ImmutablePair<String, Object> testAuthTokenPair = new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         mainTasks = new Task[] {
-            retrieveAosCase,
+            getCase,
             caseDataToDivorceFormatter
         };
     }
 
     @Test
-    public void whenRetrieveAos_thenProcessAsExpected() throws WorkflowException, TaskException {
-        Map<String, Object> retrievedCaseData = singletonMap("retrievedKey", "retrievedValue");
-        final CaseDataResponse caseDataResponse = CaseDataResponse.builder().data(retrievedCaseData).build();
-        when(classUnderTest.execute(mainTasks, null, authTokenPair)).thenReturn(caseDataResponse);
-        when(addCourtsToPayload.execute(any(), eq(retrievedCaseData))).thenReturn(singletonMap("modifiedKey", "modifiedValue"));
+    public void whenGetCase_thenProcessAsExpected() throws WorkflowException, TaskException {
+        Map<String, Object> fetchedCaseData = singletonMap("fetchedKey", "fetchedValue");
+        when(classUnderTest.execute(mainTasks, null, testAuthTokenPair)).thenReturn(CaseDataResponse.builder().data(fetchedCaseData).build());
+        when(addCourtsToPayload.execute(any(), eq(fetchedCaseData))).thenReturn(singletonMap("modifiedKey", "modifiedValue"));
 
-        CaseDataResponse returnedCaseDataResponse = classUnderTest.run(AUTH_TOKEN);
+        CaseDataResponse returnedCaseResponse = classUnderTest.run(AUTH_TOKEN);
 
-        assertThat(returnedCaseDataResponse.getData(), hasEntry("modifiedKey", "modifiedValue"));
-        verify(addCourtsToPayload).execute(any(), eq(retrievedCaseData));
+        assertThat(returnedCaseResponse.getData(), hasEntry("modifiedKey", "modifiedValue"));
+        verify(addCourtsToPayload).execute(any(), eq(fetchedCaseData));
     }
 
     @Test
@@ -78,10 +77,9 @@ public class RetrieveAosCaseWorkflowUTest {
         expectedException.expect(WorkflowException.class);
         expectedException.expectCause(instanceOf(TaskException.class));
 
-        Map<String, Object> retrievedCaseData = singletonMap("retrievedKey", "retrievedValue");
-        final CaseDataResponse caseDataResponse = CaseDataResponse.builder().data(retrievedCaseData).build();
-        when(classUnderTest.execute(mainTasks, null, authTokenPair)).thenReturn(caseDataResponse);
-        when(addCourtsToPayload.execute(any(), eq(retrievedCaseData))).thenThrow(TaskException.class);
+        Map<String, Object> fetchedCaseData = singletonMap("fetchedKey", "fetchedValue");
+        when(classUnderTest.execute(mainTasks, null, testAuthTokenPair)).thenReturn(CaseDataResponse.builder().data(fetchedCaseData).build());
+        when(addCourtsToPayload.execute(any(), eq(fetchedCaseData))).thenThrow(TaskException.class);
 
         classUnderTest.run(AUTH_TOKEN);
     }

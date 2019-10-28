@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.config.CourtDetailsConfig;
@@ -15,6 +16,11 @@ public class CourtLookupService {
 
     private final Map<String, Court> courts;
     private final Map<String, DnCourt> dnCourts;
+
+    private static String courtsAsJson;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     public CourtLookupService(CourtDetailsConfig courtDetailsConfig, DnCourtDetailsConfig dnCourtDetailsConfig) {
@@ -37,4 +43,9 @@ public class CourtLookupService {
 
         return dnCourts.get(courtId);
     }
+
+    public Map<String, Court> getAllCourts() {
+        return courts;
+    }
+
 }

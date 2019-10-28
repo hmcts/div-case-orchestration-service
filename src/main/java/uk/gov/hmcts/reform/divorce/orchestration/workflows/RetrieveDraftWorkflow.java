@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayload;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetInconsistentPaymentInfo;
@@ -14,7 +15,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCaseIdAndStateOnSession;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdatePaymentMadeCase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -27,6 +30,7 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
     private final RetrieveDraft retrieveDraft;
     private final CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
     private final SetCaseIdAndStateOnSession setCaseIdAndStateOnSession;
+    private final AddCourtsToPayload addCourtsToPayload;
 
     private final GetInconsistentPaymentInfo getPaymentOnSession;
     private final UpdatePaymentMadeCase paymentMadeEvent;
@@ -42,16 +46,16 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
         );
         DefaultTaskContext mainContext = getContext();
         boolean paymentDataUpdated = updatePaymentEvent(caseData);
-        Task[] taskPending = paymentDataUpdated ? new Task[] {
-            retrieveDraft,
-            caseDataToDivorceFormatter,
-            setCaseIdAndStateOnSession
-        } : new Task[] {
-            caseDataToDivorceFormatter,
-            setCaseIdAndStateOnSession
-        };
+
+        List<Task> pendingTasks = new ArrayList<>();
+        if (paymentDataUpdated) {
+            pendingTasks.add(retrieveDraft);
+        }
+        pendingTasks.add(caseDataToDivorceFormatter);
+        pendingTasks.add(setCaseIdAndStateOnSession);
+        pendingTasks.add(addCourtsToPayload);
         return this.execute(
-            taskPending,
+            pendingTasks.toArray(new Task[0]),
             mainContext,
             caseData
         );
