@@ -137,7 +137,7 @@ allprojects {
         }
         dependencies {
             // spring fox swagger needs a certain version
-            dependencySet(group: 'com.google.guava', version: '20.0') {
+            dependencySet(group: 'com.google.guava', version: '23.0') {
                 entry 'guava'
             }
             dependencySet(
