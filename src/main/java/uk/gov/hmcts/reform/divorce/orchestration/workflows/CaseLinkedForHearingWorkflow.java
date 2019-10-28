@@ -8,9 +8,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCertificateOfEntitlementNotificationEmail;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCertificateOfEntitlementNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentCertificateOfEntitlementNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCertificateOfEntitlementNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCertificateOfEntitlementNotificationEmailTask;
 
 import java.util.Map;
 
@@ -21,21 +21,21 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
     public static final String CASE_ID_KEY = "caseId";
 
     @Autowired
-    private SendPetitionerCertificateOfEntitlementNotificationEmail sendPetitionerCertificateOfEntitlementNotificationEmail;
+    private SendPetitionerCertificateOfEntitlementNotificationEmailTask sendPetitionerCertificateOfEntitlementNotificationEmailTask;
 
     @Autowired
-    private SendRespondentCertificateOfEntitlementNotificationEmail sendRespondentCertificateOfEntitlementNotificationEmail;
+    private SendRespondentCertificateOfEntitlementNotificationEmailTask sendRespondentCertificateOfEntitlementNotificationEmailTask;
 
     @Autowired
-    SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
+    private SendCoRespondentCertificateOfEntitlementNotificationEmailTask sendCoRespondentCertificateOfEntitlementNotificationEmailTask;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
 
         Map<String, Object> returnedPayload = this.execute(
                 new Task[]{
-                    sendPetitionerCertificateOfEntitlementNotificationEmail,
-                    sendRespondentCertificateOfEntitlementNotificationEmail,
-                    sendCoRespondentGenericUpdateNotificationEmail
+                    sendPetitionerCertificateOfEntitlementNotificationEmailTask,
+                    sendRespondentCertificateOfEntitlementNotificationEmailTask,
+                    sendCoRespondentCertificateOfEntitlementNotificationEmailTask
                 },
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_KEY, caseDetails.getCaseId()));

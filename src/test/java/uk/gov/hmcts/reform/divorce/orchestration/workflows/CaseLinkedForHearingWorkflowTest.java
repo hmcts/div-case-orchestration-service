@@ -12,9 +12,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCertificateOfEntitlementNotificationEmail;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCertificateOfEntitlementNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentCertificateOfEntitlementNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCertificateOfEntitlementNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCertificateOfEntitlementNotificationEmailTask;
 
 import java.util.Map;
 
@@ -32,13 +32,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForH
 public class CaseLinkedForHearingWorkflowTest {
 
     @Mock
-    private SendPetitionerCertificateOfEntitlementNotificationEmail sendPetitionerCertificateOfEntitlementNotificationEmail;
+    private SendPetitionerCertificateOfEntitlementNotificationEmailTask sendPetitionerCertificateOfEntitlementNotificationEmailTask;
 
     @Mock
-    private SendRespondentCertificateOfEntitlementNotificationEmail sendRespondentCertificateOfEntitlementNotificationEmail;
+    private SendRespondentCertificateOfEntitlementNotificationEmailTask sendRespondentCertificateOfEntitlementNotificationEmailTask;
 
     @Mock
-    private SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
+    private SendCoRespondentCertificateOfEntitlementNotificationEmailTask sendCoRespondentCertificateOfEntitlementNotificationEmailTask;
 
     @InjectMocks
     private CaseLinkedForHearingWorkflow caseLinkedForHearingWorkflow;
@@ -50,13 +50,13 @@ public class CaseLinkedForHearingWorkflowTest {
 
     @Before
     public void setUp() throws TaskException {
-        when(sendPetitionerCertificateOfEntitlementNotificationEmail.execute(notNull(), eq(testPayload)))
+        when(sendPetitionerCertificateOfEntitlementNotificationEmailTask.execute(notNull(), eq(testPayload)))
             .thenReturn(testPayload);
 
-        when(sendRespondentCertificateOfEntitlementNotificationEmail.execute(notNull(), eq(testPayload)))
+        when(sendRespondentCertificateOfEntitlementNotificationEmailTask.execute(notNull(), eq(testPayload)))
                 .thenReturn(testPayload);
 
-        when(sendCoRespondentGenericUpdateNotificationEmail.execute(notNull(), eq(testPayload)))
+        when(sendCoRespondentCertificateOfEntitlementNotificationEmailTask.execute(notNull(), eq(testPayload)))
                 .thenReturn(testPayload);
     }
 
@@ -71,11 +71,11 @@ public class CaseLinkedForHearingWorkflowTest {
 
         assertThat(returnedPayload, is(equalTo(testPayload)));
 
-        verify(sendPetitionerCertificateOfEntitlementNotificationEmail)
+        verify(sendPetitionerCertificateOfEntitlementNotificationEmailTask)
                 .execute(contextCaptor.capture(), eq(caseDetails.getCaseData()));
-        verify(sendRespondentCertificateOfEntitlementNotificationEmail)
+        verify(sendRespondentCertificateOfEntitlementNotificationEmailTask)
                 .execute(contextCaptor.capture(), eq(caseDetails.getCaseData()));
-        verify(sendCoRespondentGenericUpdateNotificationEmail)
+        verify(sendCoRespondentCertificateOfEntitlementNotificationEmailTask)
                 .execute(contextCaptor.capture(), eq(caseDetails.getCaseData()));
 
         assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_KEY), is(equalTo("testCaseId")));

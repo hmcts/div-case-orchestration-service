@@ -43,6 +43,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_BOTH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
@@ -50,7 +53,7 @@ import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomer
 
 @Component
 @Slf4j
-public class SendRespondentCertificateOfEntitlementNotificationEmail implements Task<Map<String, Object>> {
+public class SendRespondentCertificateOfEntitlementNotificationEmailTask implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESCRIPTION = "Respondent Notification - Certificate of Entitlement";
 
@@ -81,7 +84,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
         templateParameters.put(LIMIT_DATE_TO_CONTACT_COURT,
             formatDateWithCustomerFacingFormat(limitDateToContactCourt));
 
-        if (wasCostsClaimGranted(caseDataPayload)) {
+        if (wasCostsClaimGranted(caseDataPayload) && wasCostsClaimedFromRespondent(caseDataPayload)) {
             templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE);
         } else {
             templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE);
@@ -136,6 +139,14 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
         return Optional.ofNullable(payload.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD))
             .map(String.class::cast)
             .map(YES_VALUE::equalsIgnoreCase)
+            .orElse(false);
+    }
+
+    private boolean wasCostsClaimedFromRespondent(Map<String, Object> payload) {
+        return Optional.ofNullable(payload.get(WHO_PAYS_COSTS_CCD_FIELD))
+            .map(String.class::cast)
+            .map(value -> WHO_PAYS_CCD_CODE_FOR_RESPONDENT.equalsIgnoreCase(value)
+                || WHO_PAYS_CCD_CODE_FOR_BOTH.equalsIgnoreCase(value))
             .orElse(false);
     }
 }

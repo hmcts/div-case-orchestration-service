@@ -12,6 +12,7 @@
       "D8DivorceCostsClaim": "YES",
       "D8InferredPetitionerGender": "male",
       "CostsClaimGranted": "YES",
+      "WhoPaysCosts": "respondentAndCoRespondent",
       "CourtName": "liverpool",
       "DateAndTimeOfHearing": [
         {

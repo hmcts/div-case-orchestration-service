@@ -66,7 +66,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.Email
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
+public class SendRespondentCertificateOfEntitlementNotificationEmailTaskTest {
 
     private static final String CASE_LISTED_FOR_HEARING_JSON = "/jsonExamples/payloads/caseListedForHearing.json";
     private static final String SOL_CASE_LISTED_FOR_HEARING_JSON = "/jsonExamples/payloads/solCaseListedForHearing.json";
@@ -75,7 +75,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
     private TaskCommons taskCommons;
 
     @InjectMocks
-    private SendRespondentCertificateOfEntitlementNotificationEmail sendRespondentCertificateOfEntitlementNotificationEmail;
+    private SendRespondentCertificateOfEntitlementNotificationEmailTask sendRespondentCertificateOfEntitlementNotificationEmailTask;
 
     private DefaultTaskContext testContext;
 
@@ -110,7 +110,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
         Map<String, Object> incomingPayload = getJsonFromResourceFile(
                 CASE_LISTED_FOR_HEARING_JSON, CcdCallbackRequest.class).getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayload = sendRespondentCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
+        Map<String, Object> returnedPayload = sendRespondentCertificateOfEntitlementNotificationEmailTask.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
                 hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE)
@@ -124,7 +124,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
         Map<String, Object> incomingPayload = getJsonFromResourceFile(
             SOL_CASE_LISTED_FOR_HEARING_JSON, CcdCallbackRequest.class).getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayload = sendRespondentCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
+        Map<String, Object> returnedPayload = sendRespondentCertificateOfEntitlementNotificationEmailTask.execute(testContext, incomingPayload);
 
         verifySolEmailParameters(allOf(
             hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE)
@@ -140,10 +140,26 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
 
         incomingPayload.put("CostsClaimGranted", "No");
 
-        Map<String, Object> returnedPayload = sendRespondentCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
+        Map<String, Object> returnedPayload = sendRespondentCertificateOfEntitlementNotificationEmailTask.execute(testContext, incomingPayload);
 
         verifyEmailParameters(allOf(
                 hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
+        ));
+
+        assertThat(returnedPayload, is(equalTo(incomingPayload)));
+    }
+
+    @Test
+    public void testThatNotificationServiceIsCalled_WhenCostsClaimIsGrantedForCoRespondentOnly() throws TaskException, IOException {
+        Map<String, Object> incomingPayload = getJsonFromResourceFile(
+            CASE_LISTED_FOR_HEARING_JSON, CcdCallbackRequest.class).getCaseDetails().getCaseData();
+
+        incomingPayload.put("WhoPaysCosts", "coRespondent");
+
+        Map<String, Object> returnedPayload = sendRespondentCertificateOfEntitlementNotificationEmailTask.execute(testContext, incomingPayload);
+
+        verifyEmailParameters(allOf(
+            hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
         ));
 
         assertThat(returnedPayload, is(equalTo(incomingPayload)));
@@ -156,7 +172,23 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
 
         incomingPayload.put("CostsClaimGranted", "No");
 
-        Map<String, Object> returnedPayload = sendRespondentCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
+        Map<String, Object> returnedPayload = sendRespondentCertificateOfEntitlementNotificationEmailTask.execute(testContext, incomingPayload);
+
+        verifySolEmailParameters(allOf(
+            hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
+        ));
+
+        assertThat(returnedPayload, is(equalTo(incomingPayload)));
+    }
+
+    @Test
+    public void testThatSolNotificationServiceIsCalled_WhenCostsClaimIsGrantedForCoRespondentOnly() throws TaskException, IOException {
+        Map<String, Object> incomingPayload = getJsonFromResourceFile(
+            SOL_CASE_LISTED_FOR_HEARING_JSON, CcdCallbackRequest.class).getCaseDetails().getCaseData();
+
+        incomingPayload.put("WhoPaysCosts", "coRespondent");
+
+        Map<String, Object> returnedPayload = sendRespondentCertificateOfEntitlementNotificationEmailTask.execute(testContext, incomingPayload);
 
         verifySolEmailParameters(allOf(
             hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
@@ -175,7 +207,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
             payloadToBeModified.remove(mandatoryFieldToRemove);
 
             try {
-                sendRespondentCertificateOfEntitlementNotificationEmail.execute(testContext, payloadToBeModified);
+                sendRespondentCertificateOfEntitlementNotificationEmailTask.execute(testContext, payloadToBeModified);
                 fail("Should have caught exception");
             } catch (TaskException taskException) {
                 assertThat(taskException.getMessage(), is(format("Could not evaluate value of mandatory property \"%s\"", mandatoryFieldToRemove)));
@@ -198,7 +230,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
             payloadToBeModified.remove(mandatoryFieldToRemove);
 
             try {
-                sendRespondentCertificateOfEntitlementNotificationEmail.execute(testContext, payloadToBeModified);
+                sendRespondentCertificateOfEntitlementNotificationEmailTask.execute(testContext, payloadToBeModified);
                 fail("Should have caught exception");
             } catch (TaskException taskException) {
                 assertThat(taskException.getMessage(), is(format("Could not evaluate value of mandatory property \"%s\"", mandatoryFieldToRemove)));
