@@ -34,14 +34,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_OVERDUE_PERIOD_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SearchAwaitingDATest {
+public class SearchCasesDAOverdueTaskTest {
 
-    private static final String DA_OVERDUE_DATE = String.format("data.%s", DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA_CCD_FIELD);
+    private static final String DN_GRANTED_DATE = String.format("data.%s", DECREE_NISI_GRANTED_DATE_CCD_FIELD);
 
     @Mock
     private CMSElasticSearchSupport cmsElasticSearchSupport;
@@ -92,7 +92,7 @@ public class SearchAwaitingDATest {
 
         verify(cmsElasticSearchSupport).searchCMSCases(eq(start), eq(pageSize), eq(AUTH_TOKEN),
             eq(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_DA)),
-            eq(QueryBuilders.rangeQuery(DA_OVERDUE_DATE).lte(buildCoolOffPeriodInDNBoundary(timeSinceDAWasPronounced))));
+            eq(QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildDateQueryExpression(timeSinceDAWasPronounced))));
     }
 
     @Test
@@ -153,8 +153,6 @@ public class SearchAwaitingDATest {
 
     @Test
     public void execute_exceptionDuringSearch_searchStops() throws TaskException {
-        final int totalSearchResults = 20;
-
         when(cmsElasticSearchSupport.searchCMSCases(
             eq(start),
             eq(pageSize),
@@ -182,7 +180,7 @@ public class SearchAwaitingDATest {
         return streamBuilder.build();
     }
 
-    private static String buildCoolOffPeriodInDNBoundary(final String coolOffPeriodInDN) {
+    private String buildDateQueryExpression(final String coolOffPeriodInDN) {
         String timeUnit = String.valueOf(coolOffPeriodInDN.charAt(coolOffPeriodInDN.length() - 1));
         return String.format("now/%s-%s", timeUnit, coolOffPeriodInDN);
     }

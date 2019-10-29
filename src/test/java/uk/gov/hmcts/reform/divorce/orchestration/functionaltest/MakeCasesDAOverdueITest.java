@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
+import uk.gov.hmcts.reform.divorce.orchestration.service.SearchSourceFactory;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -34,7 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -46,10 +50,12 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
     private static final String CASE_MAINTENANCE_CLIENT_SEARCH_URL = "/casemaintenance/version/1/search";
     private static final String TEST_CASE_REFERENCE_ONE = "1519-8183-5982-2007";
     private static final String TEST_CASE_REFERENCE_TWO = "1519-8183-5982-2008";
-    private static final String NO_LONGER_ELIGIBLE_FOR_DA_DATE = "2019-03-31";
+    private static final String DN_GRANTED_DATE = "2019-03-31";
+    private static final String DN_GRANTED_DATA_REFERENCE = "data.DecreeNisiGrantedDate";
     private SearchResult searchResult;
     private List<String> caseIds = new ArrayList<>();
     private List<CaseDetails> cases = new ArrayList<>();
+    String expectedRequestBody;
 
     @Autowired
     private MockMvc webClient;
@@ -61,12 +67,12 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
     public void setup() {
         maintenanceServiceServer.resetAll();
         Map<String, Object> caseData1 = new HashMap<>();
-        caseData1.put(DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA_CCD_FIELD, NO_LONGER_ELIGIBLE_FOR_DA_DATE);
+        caseData1.put(DECREE_NISI_GRANTED_DATE_CCD_FIELD, DN_GRANTED_DATE);
         caseData1.put(CASE_STATE_JSON_KEY, AWAITING_DA);
         caseData1.put(CASE_ID_JSON_KEY, TEST_CASE_REFERENCE_ONE);
 
         Map<String, Object> caseData2 = new HashMap<>();
-        caseData2.put(DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA_CCD_FIELD, NO_LONGER_ELIGIBLE_FOR_DA_DATE);
+        caseData2.put(DECREE_NISI_GRANTED_DATE_CCD_FIELD, DN_GRANTED_DATE);
         caseData2.put(CASE_STATE_JSON_KEY, AWAITING_DA);
         caseData2.put(CCD_CASE_ID, TEST_CASE_REFERENCE_TWO);
 
@@ -87,6 +93,11 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
 
         caseIds.add((String) caseData1.get(CASE_ID_JSON_KEY));
         caseIds.add((String) caseData2.get(CASE_ID_JSON_KEY));
+
+        QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_DA);
+        QueryBuilder dateFilter = QueryBuilders.rangeQuery(DN_GRANTED_DATA_REFERENCE).lte(buildCoolOffPeriodForDAOverdue("1y"));
+
+        expectedRequestBody = SearchSourceFactory.buildCMSBooleanSearchSource(0, 50, stateQuery, dateFilter);
     }
 
     @Test
@@ -99,7 +110,7 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
 
         Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
         stubCaseMaintenanceUpdateEndpoint(responseData);
-        stubCaseMaintenanceSearchEndpoint(searchResult);
+        stubCaseMaintenanceSearchEndpoint(expectedRequestBody, searchResult);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -120,7 +131,7 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
             .build();
 
         stubCaseMaintenanceUpdateEndpoint(Collections.emptyMap());
-        stubCaseMaintenanceSearchEndpoint(searchResult);
+        stubCaseMaintenanceSearchEndpoint(expectedRequestBody, searchResult);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -161,8 +172,9 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
                 .withBody(convertObjectToJsonString(response))));
     }
 
-    private void stubCaseMaintenanceSearchEndpoint(SearchResult response) {
+    private void stubCaseMaintenanceSearchEndpoint(String body, SearchResult response) {
         maintenanceServiceServer.stubFor(WireMock.post(CASE_MAINTENANCE_CLIENT_SEARCH_URL)
+            .withRequestBody(equalTo(body))
             .willReturn(aResponse()
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withStatus(HttpStatus.OK.value())
@@ -174,5 +186,10 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
             .willReturn(aResponse()
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())));
+    }
+
+    private static String buildCoolOffPeriodForDAOverdue(final String coolOffPeriod) {
+        String timeUnit = String.valueOf(coolOffPeriod.charAt(coolOffPeriod.length() - 1));
+        return String.format("now/%s-%s", timeUnit, coolOffPeriod);
     }
 }

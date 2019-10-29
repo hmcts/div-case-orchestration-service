@@ -68,7 +68,7 @@ public class OrchestrationConstants {
     public static final String RESP_AOS_ADMIT_ADULTERY = "RespAOSAdultery";
     public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "RespAdmitOrConsentToFact";
     public static final String RESP_WILL_DEFEND_DIVORCE = "RespWillDefendDivorce";
-    public static final String RESP_WILL_DEFEND_DIVORCE_OFFLINE = "UiOnly_RespWillDefendDivorce";
+    public static final String UI_ONLY_RESP_WILL_DEFEND_DIVORCE = "UiOnly_RespWillDefendDivorce";
     public static final String RESP_FIRST_NAME_CCD_FIELD = "D8RespondentFirstName";
     public static final String RESP_LAST_NAME_CCD_FIELD = "D8RespondentLastName";
     public static final String RESP_IS_USING_DIGITAL_CHANNEL = "RespContactMethodIsDigital";
@@ -115,6 +115,7 @@ public class OrchestrationConstants {
     public static final String SOL_SERVICE_METHOD_CCD_FIELD = "SolServiceMethod";
     public static final String PERSONAL_SERVICE_VALUE = "personalService";
     public static final String NOT_DEFENDING_NOT_ADMITTING = "NoNoAdmission";
+    public static final String PREVIOUS_CASE_ID_CCD_KEY = "PreviousCaseId";
 
     public static final String PET_SOL_EMAIL = "PetitionerSolicitorEmail";
     public static final String PET_SOL_NAME = "PetitionerSolicitorName";
@@ -133,6 +134,7 @@ public class OrchestrationConstants {
     public static final String DN_RECEIVED_AOS_COMPLETE = "dnReceivedAosCompleted";
     public static final String DN_RECEIVED_CLARIFICATION = "submitDnClarification";
     public static final String AMEND_PETITION_EVENT = "amendPetition";
+    public static final String AMEND_PETITION_FOR_REFUSAL_EVENT = "amendPetitionForRefusalRejection";
     public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
     public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
     public static final String AWAITING_DN_AOS_EVENT_ID = "aosSubmittedUndefended";

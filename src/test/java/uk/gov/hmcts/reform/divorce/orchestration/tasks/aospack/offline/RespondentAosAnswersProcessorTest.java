@@ -13,10 +13,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_SUBMITTED_AWAITING_ANSWER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_DEFENDING_NOT_ADMITTING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE_OFFLINE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
@@ -33,7 +34,7 @@ public class RespondentAosAnswersProcessorTest {
             {
                 put("testKey", "testValue");
                 put(D_8_REASON_FOR_DIVORCE, ADULTERY);
-                put(RESP_WILL_DEFEND_DIVORCE_OFFLINE, YES_VALUE);
+                put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
             }
         };
         Map<String, Object> returnedPayload = respondentAosAnswersProcessor.execute(null, payload);
@@ -51,6 +52,7 @@ public class RespondentAosAnswersProcessorTest {
             {
                 put("testKey", "testValue");
                 put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+                put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
                 put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
             }
         };
@@ -60,6 +62,25 @@ public class RespondentAosAnswersProcessorTest {
             hasEntry("testKey", "testValue"),
             hasEntry(RECEIVED_AOS_FROM_RESP, YES_VALUE),
             hasEntry(STATE_CCD_FIELD, AOS_COMPLETED)
+        ));
+    }
+
+    @Test
+    public void shouldReturnNewField_AndState_WhenRespondentDoesNotDefend_AndAdmitsAdultery() throws TaskException {
+        Map<String, Object> payload = new HashMap<String, Object>() {
+            {
+                put("testKey", "testValue");
+                put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+                put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+                put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+            }
+        };
+        Map<String, Object> returnedPayload = respondentAosAnswersProcessor.execute(null, payload);
+
+        assertThat(returnedPayload, allOf(
+            hasEntry("testKey", "testValue"),
+            hasEntry(RECEIVED_AOS_FROM_RESP, YES_VALUE),
+            hasEntry(STATE_CCD_FIELD, AWAITING_DECREE_NISI)
         ));
     }
 
@@ -82,6 +103,26 @@ public class RespondentAosAnswersProcessorTest {
     }
 
     @Test
+    public void shouldReturnNewField_AndState_WhenRespondentDefends_AndReasonIsNotAdultery_OrTwoYearsSeparation()
+        throws TaskException {
+
+        Map<String, Object> payload = new HashMap<String, Object>() {
+            {
+                put("testKey", "testValue");
+                put(D_8_REASON_FOR_DIVORCE, DESERTION);
+                put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
+            }
+        };
+        Map<String, Object> returnedPayload = respondentAosAnswersProcessor.execute(null, payload);
+
+        assertThat(returnedPayload, allOf(
+            hasEntry("testKey", "testValue"),
+            hasEntry(RECEIVED_AOS_FROM_RESP, YES_VALUE),
+            hasEntry(STATE_CCD_FIELD, AOS_SUBMITTED_AWAITING_ANSWER)
+        ));
+    }
+
+    @Test
     public void shouldReturnNewField_AndState_WhenRespondentDoesNotDefend_ButDoesNotAdmit_AndReasonIsNotAdultery_OrTwoYearsSeparation()
         throws TaskException {
 
@@ -90,6 +131,28 @@ public class RespondentAosAnswersProcessorTest {
                 put("testKey", "testValue");
                 put(D_8_REASON_FOR_DIVORCE, DESERTION);
                 put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+                put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+            }
+        };
+        Map<String, Object> returnedPayload = respondentAosAnswersProcessor.execute(null, payload);
+
+        assertThat(returnedPayload, allOf(
+            hasEntry("testKey", "testValue"),
+            hasEntry(RECEIVED_AOS_FROM_RESP, YES_VALUE),
+            hasEntry(STATE_CCD_FIELD, AWAITING_DECREE_NISI)
+        ));
+    }
+
+    @Test
+    public void shouldReturnNewField_AndState_WhenRespondentDoesNotDefendNorAdmits_ButDoesNotAdmit_AndReasonIsNotAdultery_OrTwoYearsSeparation()
+        throws TaskException {
+
+        Map<String, Object> payload = new HashMap<String, Object>() {
+            {
+                put("testKey", "testValue");
+                put(D_8_REASON_FOR_DIVORCE, DESERTION);
+                put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+                put(RESP_WILL_DEFEND_DIVORCE, NOT_DEFENDING_NOT_ADMITTING);
             }
         };
         Map<String, Object> returnedPayload = respondentAosAnswersProcessor.execute(null, payload);
