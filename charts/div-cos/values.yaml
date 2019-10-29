@@ -16,8 +16,8 @@ java:
         MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE: "30000"
         SCHEDULER_RE_CREATE: true
         SCHEDULER_ENABLED: true
-        FEATURE_DN_REFUSAL: false
-        FEATURE_RESP_SOLICITOR_DETAILS: false
+        FEATURE_DN_REFUSAL: "true"
+        FEATURE_RESP_SOLICITOR_DETAILS: true
         DIV_SCHEDULER_DB_HOST : "div-cos-{{ .Values.global.environment }}.postgres.database.azure.com"
         DIV_SCHEDULER_DB_PORT : "5432"
         DIV_SCHEDULER_DB_NAME : "div_scheduler"
