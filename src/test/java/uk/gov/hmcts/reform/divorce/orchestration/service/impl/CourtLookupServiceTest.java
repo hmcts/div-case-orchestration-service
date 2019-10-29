@@ -84,10 +84,10 @@ public class CourtLookupServiceTest {
     public void testDnCourtIsReturnedWithCorrectDetails() throws CourtDetailsNotFound {
         DnCourt foundCourt = courtLookupService.getDnCourtByKey("liverpool");
 
-        assertEquals(foundCourt.getName(), "Liverpool Civil and Family Court Hearing Centre");
-        assertEquals(foundCourt.getAddress(), "35 Vernon Street\nLiverpool\nL2 2BX");
-        assertEquals(foundCourt.getEmail(), "divorcecase@justice.gov.uk");
-        assertEquals(foundCourt.getPhone(), "0300 303 0642");
+        assertEquals("Liverpool Civil and Family Court Hearing Centre", foundCourt.getName());
+        assertEquals("35 Vernon Street\nLiverpool\nL2 2BX", foundCourt.getAddress());
+        assertEquals("divorcecase@justice.gov.uk", foundCourt.getEmail());
+        assertEquals("0300 303 0642", foundCourt.getPhone());
 
         String expectedContactDetails = CARE_OF_PREFIX + SPACE_SEPARATOR + foundCourt.getName() + LINE_SEPARATOR
                 + foundCourt.getAddress() + LINE_SEPARATOR + LINE_SEPARATOR

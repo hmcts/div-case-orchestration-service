@@ -53,6 +53,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class CallbackController {
 
     private static final String GENERIC_ERROR_MESSAGE = "An error happened when processing this request.";
+    private static final String FAILED_TO_PROCESS_SOL_DN_ERROR = "Failed to process solicitor DN review petition for Case ID: %s";
+    private static final String FAILED_TO_EXECUTE_SERVICE_ERROR = "Failed to execute service. Case id:  %s";
 
     @Autowired
     private CaseOrchestrationService caseOrchestrationService;
@@ -464,7 +466,7 @@ public class CallbackController {
                 )
             );
         } catch (CaseOrchestrationServiceException exception) {
-            log.error(format("Failed to process solicitor DN review petition for Case ID: %s", caseId), exception);
+            log.error(format(FAILED_TO_PROCESS_SOL_DN_ERROR, caseId), exception);
             callbackResponseBuilder.errors(ImmutableList.of(exception.getMessage()));
         }
 
@@ -494,7 +496,7 @@ public class CallbackController {
                 )
             );
         } catch (CaseOrchestrationServiceException exception) {
-            log.error(format("Failed to process solicitor DN review petition for Case ID: %s", caseId), exception);
+            log.error(format(FAILED_TO_PROCESS_SOL_DN_ERROR, caseId), exception);
             callbackResponseBuilder.errors(ImmutableList.of(exception.getMessage()));
         }
 
@@ -524,7 +526,7 @@ public class CallbackController {
                 )
             );
         } catch (CaseOrchestrationServiceException exception) {
-            log.error(format("Failed to process solicitor DN review petition for Case ID: %s", caseId), exception);
+            log.error(format(FAILED_TO_PROCESS_SOL_DN_ERROR, caseId), exception);
             callbackResponseBuilder.errors(ImmutableList.of(exception.getMessage()));
         }
 
@@ -758,10 +760,10 @@ public class CallbackController {
             callbackResponseBuilder.data(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest, authToken));
             log.info("Processed case successfully. Case id: {}", caseId);
         } catch (CaseOrchestrationServiceException exception) {
-            log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
+            log.error(format(FAILED_TO_EXECUTE_SERVICE_ERROR, caseId), exception);
             callbackResponseBuilder.errors(asList(exception.getMessage()));
         } catch (Exception exception) {
-            log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
+            log.error(format(FAILED_TO_EXECUTE_SERVICE_ERROR, caseId), exception);
             callbackResponseBuilder.errors(asList(GENERIC_ERROR_MESSAGE));
         }
 
@@ -787,10 +789,10 @@ public class CallbackController {
         try {
             callbackResponseBuilder.data(caseOrchestrationService.decreeNisiDecisionState(ccdCallbackRequest));
         } catch (WorkflowException exception) {
-            log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
+            log.error(format(FAILED_TO_EXECUTE_SERVICE_ERROR, caseId), exception);
             callbackResponseBuilder.errors(asList(exception.getMessage()));
         } catch (Exception exception) {
-            log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
+            log.error(format(FAILED_TO_EXECUTE_SERVICE_ERROR, caseId), exception);
             callbackResponseBuilder.errors(asList(GENERIC_ERROR_MESSAGE));
         }
 
@@ -885,7 +887,7 @@ public class CallbackController {
             callbackResponseBuilder.data(caseOrchestrationService.processApplicantDecreeAbsoluteEligibility(ccdCallbackRequest));
             log.info("Processed decree absolute grant callback request for case ID: {}", caseId);
         } catch (CaseOrchestrationServiceException exception) {
-            log.error(format("Failed to execute service. Case id:  %s", caseId), exception);
+            log.error(format(FAILED_TO_EXECUTE_SERVICE_ERROR, caseId), exception);
             callbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 

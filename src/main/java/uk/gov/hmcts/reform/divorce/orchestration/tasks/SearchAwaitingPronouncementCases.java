@@ -32,10 +32,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SearchAwaitingPronouncementCases implements Task<Map<String, Object>> {
 
-    private static final String HEARING_DATE = String.format("data.%s", DATETIME_OF_HEARING_CCD_FIELD);
-    private static final String BULK_LISTING_CASE_ID = String.format("data.%s",BULK_LISTING_CASE_ID_FIELD);
-    private static final String IS_DN_OUTCOME_CASE = String.format("data.%s", DN_OUTCOME_FLAG_CCD_FIELD);
-    private static final String DN_DECISION_DATE_DATA_FIELD = String.format("data.%s", DN_DECISION_DATE_FIELD);
+    private static final String DATA = "data.%s";
+    private static final String HEARING_DATE = String.format(DATA, DATETIME_OF_HEARING_CCD_FIELD);
+    private static final String BULK_LISTING_CASE_ID = String.format(DATA,BULK_LISTING_CASE_ID_FIELD);
+    private static final String IS_DN_OUTCOME_CASE = String.format(DATA, DN_OUTCOME_FLAG_CCD_FIELD);
+    private static final String DN_DECISION_DATE_DATA_FIELD = String.format(DATA, DN_DECISION_DATE_FIELD);
 
     @Value("${bulk-action.page-size:50}")
     @Setter
@@ -101,5 +102,4 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
         return payload;
 
     }
-
 }
