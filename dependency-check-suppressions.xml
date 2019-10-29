@@ -2,23 +2,6 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
     <suppress>
         <notes><![CDATA[
-            This suppresses an issue in Guava which affects up to version >24.1.1 however
-            currently we require version 20.0 as spring fox swagger depends on it ]]>
-        </notes>
-        <gav regex="true">.*</gav>
-        <cve>CVE-2018-10237</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-            The HTTP client in the Build tool in Gradle before 5.6 sends authentication credentials originally
-            destined for the configured host. If that host returns a 30x redirect, Gradle also sends those
-            credentials to all subsequent hosts that the request redirects to. ]]>
-        </notes>
-        <gav regex="true">.*</gav>
-        <cve>CVE-2019-15052</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
             This appears to be a false-positive as this is only exploitable in
             Spring Framework 5.0.5.RELEASE which we don't use ]]>
         </notes>
@@ -42,16 +25,6 @@
         <cve>CVE-2019-15052</cve>
         <cve>CVE-2019-16370</cve>
 
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-            This is exploitable in com.zaxxer.hisrc/test/resources/application.ymlkari.HikariConfig and com.zaxxer.hikari.HikariDataSource
-            which we do not use. Pending the release of a stable jackson databind version (>2.9.9.3)
-            Suppression added on the 19/09/2019. ]]>
-        </notes>
-        <gav regex="true">.*</gav>
-        <cve>CVE-2019-14540</cve>
-        <cve>CVE-2019-16335</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[

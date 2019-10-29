@@ -19,14 +19,13 @@ compileTestJava {
 }
 
 def versions = [
-  reformJavaLogging : '5.0.1',
-  jacksonDatabind   : '2.10.0',
-  flyway            : '5.2.4',
-  postgresql        : '42.2.5',
-  lombok            : '1.16.16',
   assertj           : '3.11.1',
-  quartz            : '2.3.2'
-
+  flyway            : '6.0.7',
+  jacksonDatabind   : '2.10.0',
+  lombok            : '1.16.16',
+  postgresql        : '42.2.8',
+  quartz            : '2.3.2',
+  reformJavaLogging : '5.0.1'
 ]
 
 dependencies {
