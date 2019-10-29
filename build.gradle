@@ -2,7 +2,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 buildscript {
     ext {
-        springBootVersion = '2.1.2.RELEASE'
+        springBootVersion = '2.2.0.RELEASE'
     }
     repositories {
         mavenLocal()
@@ -81,7 +81,7 @@ def versions = [
 
 allprojects {
 
-    def springBootVersion = '2.1.2.RELEASE'
+    def springBootVersion = '2.2.0.RELEASE'
     def springCloudVersion = 'Finchley.RELEASE'
 
     apply plugin: 'java'
