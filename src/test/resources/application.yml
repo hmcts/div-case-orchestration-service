@@ -182,6 +182,7 @@ uk:
           SOL_PERSONAL_SERVICE: 1e2f2ac5-ce4c-4fce-aca0-47a876eda089
           SOL_DA_GRANTED_NOTIFICATION: fc8f7343-8f07-42b7-a3c5-52543a21015d
 
+          SOL_DN_DECISION_MADE: fd6d9667-527f-4c22-b1f1-d095c412ab2c
 
 court-distribution-config:
   distribution:

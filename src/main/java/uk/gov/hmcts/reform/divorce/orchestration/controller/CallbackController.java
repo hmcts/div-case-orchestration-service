@@ -858,14 +858,16 @@ public class CallbackController {
         @RequestHeader("Authorization")
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.info("DN Decision made - Notifying refusal order. Case ID: {}", caseId);
         caseOrchestrationService.notifyForRefusalOrder(ccdCallbackRequest);
 
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
-
+        log.info("DN Decision made - cleaning state. Case ID: {}", caseId);
         callbackResponseBuilder.data(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, authorizationToken));
 
-        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-        log.debug("Cleared case state. Case ID: {}", caseId);
+        log.info("DN Decision made - process other tasks. Case ID: {}", caseId);
+        caseOrchestrationService.processDnDecisionMade(ccdCallbackRequest);
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
