@@ -277,7 +277,7 @@ dependencies {
 
     compile('org.elasticsearch.client:transport:7.1.1')
 
-    compile group: 'javax.mail', name: 'mail', version: '1.4'
+    compile group: 'javax.mail', name: 'mail', version: '1.4.7'
 
     compile group: 'com.puppycrawl.tools', name: 'checkstyle', version: versions.puppyCrawl
     compile group: 'commons-io', name: 'commons-io', version: versions.commonsIo
