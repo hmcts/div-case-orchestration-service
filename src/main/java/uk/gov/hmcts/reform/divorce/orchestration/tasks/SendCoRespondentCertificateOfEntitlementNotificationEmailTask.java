@@ -87,7 +87,7 @@ public class SendCoRespondentCertificateOfEntitlementNotificationEmailTask imple
             templateParameters.put(LIMIT_DATE_TO_CONTACT_COURT,
                 formatDateWithCustomerFacingFormat(limitDateToContactCourt));
 
-            if (wasCostsClaimGranted(caseDataPayload) && wasCostsClaimedFromCoRespondent(caseDataPayload)) {
+            if (wasCostsClaimGrantedForCoRespondent(caseDataPayload)) {
                 templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE);
             } else {
                 templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE);
@@ -108,9 +108,6 @@ public class SendCoRespondentCertificateOfEntitlementNotificationEmailTask imple
 
                 taskCommons.sendEmail(template, EMAIL_DESCRIPTION, emailToBeSentTo, templateParameters);
                 log.info("Co-Respondent notification sent for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));
-            } catch (TaskException exception) {
-                log.error("Failed to send Co-Respondent notification for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));
-                throw exception;
             } catch (Exception exception) {
                 log.error("Failed to send Co-Respondent notification for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));
                 throw new TaskException(exception.getMessage(), exception);
@@ -120,18 +117,18 @@ public class SendCoRespondentCertificateOfEntitlementNotificationEmailTask imple
         return caseDataPayload;
     }
 
-    private boolean wasCostsClaimGranted(Map<String, Object> payload) {
-        return Optional.ofNullable(payload.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD))
+    private boolean wasCostsClaimGrantedForCoRespondent(Map<String, Object> payload) {
+        boolean costsGranted = Optional.ofNullable(payload.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD))
             .map(String.class::cast)
             .map(YES_VALUE::equalsIgnoreCase)
             .orElse(false);
-    }
 
-    private boolean wasCostsClaimedFromCoRespondent(Map<String, Object> payload) {
-        return Optional.ofNullable(payload.get(WHO_PAYS_COSTS_CCD_FIELD))
+        boolean claimFromCoRespondent = Optional.ofNullable(payload.get(WHO_PAYS_COSTS_CCD_FIELD))
             .map(String.class::cast)
             .map(value -> WHO_PAYS_CCD_CODE_FOR_CORESPONDENT.equalsIgnoreCase(value)
                 || WHO_PAYS_CCD_CODE_FOR_BOTH.equalsIgnoreCase(value))
             .orElse(false);
+
+        return costsGranted && claimFromCoRespondent;
     }
 }

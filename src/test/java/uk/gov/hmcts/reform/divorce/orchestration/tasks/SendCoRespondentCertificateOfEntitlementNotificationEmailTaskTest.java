@@ -109,6 +109,28 @@ public class SendCoRespondentCertificateOfEntitlementNotificationEmailTaskTest {
     }
 
     @Test
+    public void testThatNotificationServiceIsNotCalled_WhenCoRespEmailIsMissing() throws TaskException {
+        incomingPayload.remove(CO_RESP_EMAIL_ADDRESS);
+
+        Map<String, Object> returnedPayload = sendCoRespondentCertificateOfEntitlementNotificationEmailTask.execute(testContext, incomingPayload);
+
+        verify(taskCommons, never()).sendEmail(any(), any(), any(), any());
+
+        assertThat(returnedPayload, is(equalTo(incomingPayload)));
+    }
+
+    @Test
+    public void testThatNotificationServiceIsNotCalled_WhenReasonForDivorceIsNotAdultery() throws TaskException {
+        incomingPayload.remove(D_8_REASON_FOR_DIVORCE);
+
+        Map<String, Object> returnedPayload = sendCoRespondentCertificateOfEntitlementNotificationEmailTask.execute(testContext, incomingPayload);
+
+        verify(taskCommons, never()).sendEmail(any(), any(), any(), any());
+
+        assertThat(returnedPayload, is(equalTo(incomingPayload)));
+    }
+
+    @Test
     public void testThatNotificationServiceIsCalled_WhenCostsClaimIsGranted() throws TaskException {
         Map<String, Object> returnedPayload = sendCoRespondentCertificateOfEntitlementNotificationEmailTask.execute(testContext, incomingPayload);
 

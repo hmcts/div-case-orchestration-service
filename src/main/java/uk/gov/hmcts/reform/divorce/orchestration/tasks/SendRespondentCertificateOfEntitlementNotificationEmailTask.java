@@ -84,7 +84,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTask impleme
         templateParameters.put(LIMIT_DATE_TO_CONTACT_COURT,
             formatDateWithCustomerFacingFormat(limitDateToContactCourt));
 
-        if (wasCostsClaimGranted(caseDataPayload) && wasCostsClaimedFromRespondent(caseDataPayload)) {
+        if (wasCostsClaimGrantedForRespondent(caseDataPayload)) {
             templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE);
         } else {
             templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE);
@@ -135,18 +135,18 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTask impleme
         return caseDataPayload;
     }
 
-    private boolean wasCostsClaimGranted(Map<String, Object> payload) {
-        return Optional.ofNullable(payload.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD))
+    private boolean wasCostsClaimGrantedForRespondent(Map<String, Object> payload) {
+        boolean costsGranted = Optional.ofNullable(payload.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD))
             .map(String.class::cast)
             .map(YES_VALUE::equalsIgnoreCase)
             .orElse(false);
-    }
 
-    private boolean wasCostsClaimedFromRespondent(Map<String, Object> payload) {
-        return Optional.ofNullable(payload.get(WHO_PAYS_COSTS_CCD_FIELD))
+        boolean claimFromRespondent = Optional.ofNullable(payload.get(WHO_PAYS_COSTS_CCD_FIELD))
             .map(String.class::cast)
             .map(value -> WHO_PAYS_CCD_CODE_FOR_RESPONDENT.equalsIgnoreCase(value)
                 || WHO_PAYS_CCD_CODE_FOR_BOTH.equalsIgnoreCase(value))
             .orElse(false);
+
+        return costsGranted && claimFromRespondent;
     }
 }
