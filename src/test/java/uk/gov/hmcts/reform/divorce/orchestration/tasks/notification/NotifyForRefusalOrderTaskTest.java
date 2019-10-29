@@ -147,4 +147,20 @@ public class NotifyForRefusalOrderTaskTest {
             anyString()
         );
     }
+
+
+    @Test
+    public void testNotificationServiceIsNotCalledWhenNoPetitioner() throws TaskException {
+        incomingPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
+        incomingPayload.put(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE);
+        incomingPayload.remove(D_8_PETITIONER_EMAIL);
+        Map returnedPayload = notifyForRefusalOrderTask.execute(taskContext, incomingPayload);
+
+        assertThat(returnedPayload, equalTo(incomingPayload));
+        verify(emailService, never()).sendEmail(eq(PETITIONER_EMAIL),
+            eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name()),
+            anyMap(),
+            anyString()
+        );
+    }
 }
