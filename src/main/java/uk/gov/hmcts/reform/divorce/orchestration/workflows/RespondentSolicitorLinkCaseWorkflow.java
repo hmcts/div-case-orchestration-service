@@ -7,7 +7,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -16,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorLinkedField;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateExistingSolicitorLink;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Map;
 
@@ -39,7 +39,7 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
     private final SetSolicitorLinkedField setSolicitorLinkedField;
 
     public UserDetails run(CaseDetails caseDetails, String authToken) throws WorkflowException {
-        final UserDetails userDetails = UserDetails.builder().authToken(authToken).build();
+        final UserDetails userDetails = UserDetails.builder().build();
         final Map<String, String> respondentSolicitorCaseLink = (Map<String, String>) caseDetails.getCaseData().get(RESPONDENT_SOLICITOR_CASE_NO);
         final String caseId = respondentSolicitorCaseLink.get(CASE_REFERENCE);
         final String pin = (String) caseDetails.getCaseData().get(RESPONDENT_SOLICITOR_PIN);

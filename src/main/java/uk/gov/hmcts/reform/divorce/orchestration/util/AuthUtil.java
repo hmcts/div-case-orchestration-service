@@ -4,13 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.AuthenticateUserResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.TokenExchangeResponse;
-
-import java.util.Base64;
-
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BASIC;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 @SuppressWarnings("squid:S1118")
 @Component
@@ -20,13 +14,13 @@ public class AuthUtil {
     private static final String AUTHORIZATION_CODE = "authorization_code";
     private static final String CODE = "code";
 
-    @Value("${idam.api.redirect-url}")
+    @Value("${idam.client.redirect_uri}")
     private String authRedirectUrl;
 
-    @Value("${auth2.client.id}")
+    @Value("${idam.client.id}")
     private String authClientId;
 
-    @Value("${auth2.client.secret}")
+    @Value("${idam.client.secret}")
     private String authClientSecret;
 
     @Value("${idam.citizen.username}")
@@ -56,29 +50,8 @@ public class AuthUtil {
         return getIdamOauth2Token(caseworkerUserName, caseworkerPassword);
     }
 
-    public String getIdamOauth2Token(String username, String password) {
-        String basicAuthHeader = getBasicAuthHeader(username, password);
-        AuthenticateUserResponse authenticateUserResponse = idamClient.authenticateUser(
-            basicAuthHeader,
-            CODE,
-            authClientId,
-            authRedirectUrl
-        );
-
-        TokenExchangeResponse tokenExchangeResponse = idamClient.exchangeCode(
-            authenticateUserResponse.getCode(),
-            AUTHORIZATION_CODE,
-            authRedirectUrl,
-            authClientId,
-            authClientSecret
-        );
-
-        return BEARER + tokenExchangeResponse.getAccessToken();
-    }
-
-    private String getBasicAuthHeader(String username, String password) {
-        String authorisation = username + ":" + password;
-        return BASIC + Base64.getEncoder().encodeToString(authorisation.getBytes());
+    private String getIdamOauth2Token(String username, String password) {
+        return idamClient.authenticateUser(username, password);
     }
 
     public String getBearToken(String token) {

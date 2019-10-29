@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.AuthenticateUserResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.TokenExchangeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -30,7 +30,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BASIC;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LOCATION_HEADER;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PIN_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public abstract class IdamTestSupport extends MockedFunctionalTest {
@@ -38,44 +37,40 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     private static final String IDAM_AUTHORIZE_CONTEXT_PATH = "/oauth2/authorize";
     private static final String IDAM_EXCHANGE_CODE_CONTEXT_PATH = "/oauth2/token";
     private static final String IDAM_USER_DETAILS_CONTEXT_PATH = "/details";
-    private static final String CODE = "code";
-    private static final String AUTHORIZATION_CODE = "authorization_code";
-    private static final String PIN_AUTHORIZATION =
-        PIN_PREFIX + new String(Base64.getEncoder().encode(TEST_PIN.getBytes()));
     private static final String PIN_AUTH_URL_WITH_REDIRECT = "http://www.redirect.url?code=" + TEST_CODE;
-
-
-    protected  static final AuthenticateUserResponse AUTHENTICATE_USER_RESPONSE =
+    private static final String APP_FORM_DATA_UTF8_HEADER = MediaType.APPLICATION_FORM_URLENCODED_VALUE + "; charset=UTF-8";
+    private static final String APP_JSON_DATA_UTF8_HEADER = APPLICATION_JSON_VALUE + "; charset=UTF-8";
+    private static final AuthenticateUserResponse AUTHENTICATE_USER_RESPONSE =
         AuthenticateUserResponse.builder()
             .code(TEST_CODE)
             .build();
 
-    protected static final String AUTHENTICATE_USER_RESPONSE_JSON = convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE);
+    static final String AUTHENTICATE_USER_RESPONSE_JSON = convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE);
 
     private static final UserDetails USER_DETAILS_PIN_USER =
         UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
 
-    protected static final String USER_DETAILS_PIN_USER_JSON = convertObjectToJsonString(USER_DETAILS_PIN_USER);
+    static final String USER_DETAILS_PIN_USER_JSON = convertObjectToJsonString(USER_DETAILS_PIN_USER);
 
-    protected  static final UserDetails USER_DETAILS =
+    private static final UserDetails USER_DETAILS =
         UserDetails.builder().id(TEST_USER_ID).email(TEST_EMAIL).build();
 
-    protected  static final String USER_DETAILS_JSON = convertObjectToJsonString(USER_DETAILS);
+    static final String USER_DETAILS_JSON = convertObjectToJsonString(USER_DETAILS);
 
-    protected  static final TokenExchangeResponse TOKEN_EXCHANGE_RESPONSE =
+    private static final TokenExchangeResponse TOKEN_EXCHANGE_RESPONSE =
         TokenExchangeResponse.builder()
             .accessToken(AUTH_TOKEN_1)
             .build();
 
     static final String TOKEN_EXCHANGE_RESPONSE_1_JSON = convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE);
 
-    @Value("${idam.api.redirect-url}")
+    @Value("${idam.client.redirect_uri}")
     private String authRedirectUrl;
 
-    @Value("${auth2.client.id}")
+    @Value("${idam.client.id}")
     private String authClientId;
 
-    @Value("${auth2.client.secret}")
+    @Value("${idam.client.secret}")
     private String authClientSecret;
 
     @Value("${idam.citizen.username}")
@@ -90,7 +85,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     @Value("${idam.caseworker.password}")
     private String caseworkerPassword;
 
-    protected void stubUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
+    void stubUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
         idamServer.stubFor(get(IDAM_USER_DETAILS_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
             .willReturn(aResponse()
@@ -99,10 +94,11 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
                 .withBody(message)));
     }
 
-    protected void stubPinDetailsEndpoint(String authHeader, PinRequest pinRequest, Pin response) {
+    void stubPinDetailsEndpoint(String authHeader, GeneratePinRequest pinRequest, Pin response) {
+        final String AppJsonUtf8 = APPLICATION_JSON_VALUE + ";charset=UTF-8";
         idamServer.stubFor(post(IDAM_PIN_DETAILS_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
-            .withHeader(CONTENT_TYPE, new EqualToPattern(APPLICATION_JSON_VALUE))
+            .withHeader(CONTENT_TYPE, new EqualToPattern(AppJsonUtf8))
             .withRequestBody(equalToJson(convertObjectToJsonString(pinRequest)))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
@@ -110,12 +106,12 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
                 .withBody(convertObjectToJsonString(response))));
     }
 
-    protected void stubSignIn() {
+    void stubSignIn() {
         try {
             stubAuthoriseEndpoint(getBasicAuthHeader(citizenUserName, citizenPassword),
                 convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
 
-            stubTokenExchangeEndpoint(HttpStatus.OK, TEST_CODE, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
+            stubTokenExchangeEndpoint(HttpStatus.OK, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -127,21 +123,17 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
             stubAuthoriseEndpoint(getBasicAuthHeader(caseworkerUserName, caseworkerPassword),
                     convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
 
-            stubTokenExchangeEndpoint(HttpStatus.OK, TEST_CODE, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
+            stubTokenExchangeEndpoint(HttpStatus.OK, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void stubAuthoriseEndpoint(String authorisation, String responseBody)
-        throws UnsupportedEncodingException {
-        idamServer.stubFor(post(IDAM_AUTHORIZE_CONTEXT_PATH
-            + "?response_type=" + CODE
-            + "&client_id=" + authClientId
-            + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name()))
+    private void stubAuthoriseEndpoint(String authorisation, String responseBody) {
+        idamServer.stubFor(post(IDAM_AUTHORIZE_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authorisation))
-            .withHeader(CONTENT_TYPE, new EqualToPattern(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+            .withHeader(CONTENT_TYPE, new EqualToPattern(APP_FORM_DATA_UTF8_HEADER))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
@@ -156,20 +148,14 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
             .withHeader("pin", new EqualToPattern(TEST_PIN))
             .willReturn(aResponse()
                 .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .withHeader(CONTENT_TYPE, APP_JSON_DATA_UTF8_HEADER)
                 .withHeader(LOCATION_HEADER, PIN_AUTH_URL_WITH_REDIRECT)
                 .withBody(responseBody)));
     }
 
-    void stubTokenExchangeEndpoint(HttpStatus status, String authCode, String responseBody)
-        throws UnsupportedEncodingException {
-        idamServer.stubFor(post(IDAM_EXCHANGE_CODE_CONTEXT_PATH
-            + "?code=" + authCode
-            + "&grant_type=" + AUTHORIZATION_CODE
-            + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name())
-            + "&client_id=" + authClientId
-            + "&client_secret=" + authClientSecret)
-            .withHeader(CONTENT_TYPE, new EqualToPattern(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    void stubTokenExchangeEndpoint(HttpStatus status, String responseBody) {
+        idamServer.stubFor(post(IDAM_EXCHANGE_CODE_CONTEXT_PATH)
+            .withHeader(CONTENT_TYPE, new EqualToPattern(APP_FORM_DATA_UTF8_HEADER))
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)

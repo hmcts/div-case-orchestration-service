@@ -60,7 +60,7 @@ module "div-cos" {
     SERVICE_AUTH_SECRET                             = "${data.azurerm_key_vault_secret.frontend_secret.value}"
     IDAM_API_URL                                    = "${var.idam_api_baseurl}"
     IDAM_API_REDIRECT_URL                           = "${local.petitioner_fe_baseurl}/authenticated"
-    AUTH2_CLIENT_SECRET                             = "${data.azurerm_key_vault_secret.auth-idam-client-secret.value}"
+    IDAM_CLIENT_SECRET                              = "${data.azurerm_key_vault_secret.auth-idam-client-secret.value}"
     IDAM_CITIZEN_USERNAME                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-username.value}"
     IDAM_CITIZEN_PASSWORD                           = "${data.azurerm_key_vault_secret.auth-idam-citizen-password.value}"
     IDAM_CASEWORKER_USERNAME                        = "${data.azurerm_key_vault_secret.auth-idam-caseworker-username.value}"
