@@ -22,7 +22,7 @@ buildscript {
 plugins {
     id 'application'
     id 'checkstyle'
-    id 'com.github.ben-manes.versions' version '0.17.0'
+    id 'com.github.ben-manes.versions' version '0.27.0'
     id 'io.spring.dependency-management' version '1.0.6.RELEASE'
     id 'jacoco'
     id 'org.owasp.dependencycheck' version '5.1.1'
