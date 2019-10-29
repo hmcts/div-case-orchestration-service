@@ -6,18 +6,16 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.AuthenticateUserResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.TokenExchangeResponse;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.AuthenticateUserResponse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
+import static uk.gov.hmcts.reform.idam.client.IdamClient.BEARER_AUTH_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthUtilUTest {
@@ -37,22 +35,15 @@ public class AuthUtilUTest {
         setField(authUtil, "authClientSecret", "authClientSecret");
     }
 
-
     @Test
     public void testGetCitizenToken() {
-        AuthenticateUserResponse authenticateResponse = AuthenticateUserResponse.builder().build();
-        authenticateResponse.setCode("mycode");
+        AuthenticateUserResponse authenticateResponse = new AuthenticateUserResponse(TEST_PIN_CODE);
+        when(idamClient.authenticateUser(anyString(), anyString()))
+            .thenReturn(BEARER_AUTH_TYPE + " " + authenticateResponse.getCode());
 
-        when(idamClient.authenticateUser(any(), any(), any(), any()))
-            .thenReturn(authenticateResponse);
-
-        TokenExchangeResponse tokenExchangeResponse = spy(TokenExchangeResponse.builder().build());
-        when(idamClient.exchangeCode(eq("mycode"), anyString(), anyString(), anyString(), anyString()))
-            .thenReturn(tokenExchangeResponse);
         String token = authUtil.getCitizenToken();
         assertTrue(token.startsWith("Bearer"));
     }
-
 
     @Test
     public void givenTokenIsNull_whenGetBearToken_thenReturnNull() {

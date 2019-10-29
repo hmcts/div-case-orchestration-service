@@ -21,8 +21,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
 import uk.gov.hmcts.reform.divorce.validation.service.ValidationService;
+import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -232,8 +232,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
     @Test
     public void givenGenerateInvitationIsTrue_whenPetitionIssued_thenReturnCaseExpectedChanges()
         throws Exception {
-        final PinRequest pinRequest =
-            PinRequest.builder()
+        final GeneratePinRequest pinRequest =
+            GeneratePinRequest.builder()
                 .firstName(TEST_USER_FIRST_NAME)
                 .lastName(TEST_USER_LAST_NAME)
                 .build();
@@ -283,8 +283,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
         ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_DIVORCE_UNIT,
             CourtEnum.SERVICE_CENTER.getId());
 
-        final PinRequest pinRequest =
-            PinRequest.builder()
+        final GeneratePinRequest pinRequest =
+            GeneratePinRequest.builder()
                 .firstName(TEST_USER_FIRST_NAME)
                 .lastName(TEST_USER_LAST_NAME)
                 .build();
@@ -352,8 +352,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
         ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
         ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_CO_RESPONDENT_NAMED, "YES");
 
-        final PinRequest pinRequest =
-            PinRequest.builder()
+        final GeneratePinRequest pinRequest =
+            GeneratePinRequest.builder()
                 .firstName(TEST_USER_FIRST_NAME)
                 .lastName(TEST_USER_LAST_NAME)
                 .build();

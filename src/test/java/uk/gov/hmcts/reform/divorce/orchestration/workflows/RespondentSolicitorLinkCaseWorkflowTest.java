@@ -9,7 +9,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -19,6 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorLinkedField;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateExistingSolicitorLink;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -85,7 +85,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
 
     @Test
     public void runCallsTheFiveCorrectTasksInTheRightOrder() throws WorkflowException, TaskException {
-        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+        final UserDetails userDetails = UserDetails.builder().build();
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(validateExistingSolicitorLink.execute(any(), eq(userDetails))).thenReturn(userDetails);
@@ -106,7 +106,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
 
     @Test(expected = WorkflowException.class)
     public void caseNotFoundIsWrappedInWorkflowException() throws WorkflowException, TaskException {
-        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+        final UserDetails userDetails = UserDetails.builder().build();
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.NotFound("test", null));
 
@@ -115,7 +115,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
 
     @Test(expected = WorkflowException.class)
     public void authorisationErrorIsWrappedInWorkflowException() throws WorkflowException, TaskException {
-        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+        final UserDetails userDetails = UserDetails.builder().build();
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(validateExistingSolicitorLink.execute(any(), eq(userDetails))).thenReturn(userDetails);
@@ -127,7 +127,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
 
     @Test(expected = FeignException.class)
     public void otherExceptionsNotWrappedInWorkflowException() throws WorkflowException, TaskException {
-        final UserDetails userDetails = UserDetails.builder().authToken(TEST_TOKEN).build();
+        final UserDetails userDetails = UserDetails.builder().build();
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.GatewayTimeout("test", null));
 

@@ -1,53 +1,50 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import feign.Request;
-import feign.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.TokenExchangeResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.AuthenticateUserResponse;
+import uk.gov.hmcts.reform.idam.client.models.ExchangeCodeRequest;
+import uk.gov.hmcts.reform.idam.client.models.TokenExchangeResponse;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
-import java.util.Collections;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.FOUND;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_CLIENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_CLIENT_SECRET;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_REDIRECT_URL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_CODE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LOCATION_HEADER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GRANT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RetrievePinUserDetailsUTest {
-    private static final String AUTH_CLIENT_ID = "authClientId";
-    private static final String AUTH_CLIENT_SECRET = "authClientSecret";
-    private static final String AUTH_REDIRECT_URL = "authRedirectUrl";
-    private static final String AUTH_URL_WITH_REDIRECT = "http://www.redirect.url?code=" + TEST_PIN_CODE;
 
     @Mock
     private IdamClient idamClient;
@@ -64,20 +61,18 @@ public class RetrievePinUserDetailsUTest {
         ReflectionTestUtils.setField(classUnderTest, "authUtil", authUtil);
         ReflectionTestUtils.setField(classUnderTest, "authClientId", AUTH_CLIENT_ID);
         ReflectionTestUtils.setField(classUnderTest, "authClientSecret", AUTH_CLIENT_SECRET);
-        ReflectionTestUtils.setField(classUnderTest, "authRedirectUrl", AUTH_REDIRECT_URL);
+        ReflectionTestUtils.setField(classUnderTest, "authRedirectUrl", AUTH_REDIRECT_URL, null);
     }
 
     @Test
-    public void givenHttpStatusIsNotFoundOrOK_whenExecute_thenThrowException() {
-        final Response idamRedirectResponse = buildResponse(UNAUTHORIZED, Collections.emptyList());
-
+    public void givenHttpStatusIsNotFoundOrOK_whenExecute_thenThrowException() throws UnsupportedEncodingException {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
-        when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL))
-            .thenReturn(idamRedirectResponse);
+        when(idamClient.authenticatePinUser(TEST_PIN, null))
+            .thenReturn(null);
 
         try {
             classUnderTest.execute(taskContext, payload);
@@ -85,66 +80,66 @@ public class RetrievePinUserDetailsUTest {
             assertTrue(e.getCause() instanceof AuthenticationError);
         }
 
-        verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL);
+        verify(idamClient).authenticatePinUser(TEST_PIN, null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void givenLocationKeyNotFound_whenExecute_thenThrowException() throws TaskException {
-        final Response idamRedirectResponse = buildResponse(OK, Collections.emptyList());
-
+    @Test(expected = TaskException.class)
+    public void givenPinUserAuth_whenDataIsNull_thenThrowException() throws TaskException, UnsupportedEncodingException {
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
-        when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL))
-            .thenReturn(idamRedirectResponse);
+        when(idamClient.authenticatePinUser(TEST_PIN, null))
+            .thenReturn(null);
 
         classUnderTest.execute(taskContext, payload);
 
-        verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL);
+        verify(idamClient).authenticatePinUser(TEST_PIN, null);
     }
 
-    @Test
-    public void givenPinUserNotFound_whenExecute_thenThrowException() {
-        final Response idamRedirectResponse = buildResponse(FOUND, Collections.singletonList(AUTH_URL_WITH_REDIRECT));
-        final TokenExchangeResponse tokenExchangeResponse =
-            TokenExchangeResponse.builder()
-                .accessToken(BEARER_AUTH_TOKEN)
-                .build();
+    @Test(expected = TaskException.class)
+    public void givenInvalidRedirectUrlEncoding_whenAuthenticatePinUser_thenThrowException() throws TaskException {
+        final UserDetails payload = UserDetails.builder().build();
+        final TaskContext taskContext = new DefaultTaskContext();
+        ReflectionTestUtils.setField(classUnderTest, "authRedirectUrl", "������", null);
+        classUnderTest.execute(taskContext, payload);
+    }
+
+    @Test(expected = TaskException.class)
+    public void givenPinUserNotFound_whenExecute_thenThrowException() throws TaskException, UnsupportedEncodingException {
+        final AuthenticateUserResponse authenticateUserResponse = new AuthenticateUserResponse(TEST_PIN_CODE);
+        final TokenExchangeResponse tokenExchangeResponse = new TokenExchangeResponse(BEARER_AUTH_TOKEN);
 
         final UserDetails payload = UserDetails.builder().build();
 
         final TaskContext taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
-        when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL))
-            .thenReturn(idamRedirectResponse);
-        when(
-            idamClient.exchangeCode(
-                TEST_PIN_CODE, AUTHORIZATION_CODE, AUTH_REDIRECT_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET)
-        ).thenReturn(tokenExchangeResponse);
-        when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(null);
+        when(idamClient.authenticatePinUser(TEST_PIN, null))
+            .thenReturn(authenticateUserResponse);
+        when(idamClient.exchangeCode(any(ExchangeCodeRequest.class)))
+            .thenReturn(tokenExchangeResponse);
+        when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(null);
 
-        try {
-            classUnderTest.execute(taskContext, payload);
-        } catch (TaskException taskException) {
-            assertTrue(taskException.getCause() instanceof AuthenticationError);
-        }
+        classUnderTest.execute(taskContext, payload);
 
-        verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL);
-        verify(idamClient)
-            .exchangeCode(TEST_PIN_CODE, AUTHORIZATION_CODE, AUTH_REDIRECT_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET);
-        verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);
+        verify(idamClient).authenticatePinUser(TEST_PIN, null);
+        ArgumentCaptor<ExchangeCodeRequest> captor = ArgumentCaptor.forClass(ExchangeCodeRequest.class);
+        verify(idamClient).exchangeCode(captor.capture());
+        ExchangeCodeRequest actualExchangeCodeRequest = captor.getValue();
+        assertThat(actualExchangeCodeRequest.getCode(), is(TEST_PIN_CODE));
+        assertThat(actualExchangeCodeRequest.getGrantType(), is(GRANT_TYPE));
+        assertThat(actualExchangeCodeRequest.getRedirectUri(), is(AUTH_REDIRECT_URL));
+        assertThat(actualExchangeCodeRequest.getClientId(), is(AUTH_CLIENT_ID));
+        assertThat(actualExchangeCodeRequest.getClientSecret(), is(AUTH_CLIENT_SECRET));
+        verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
     }
 
     @Test
-    public void givenPinUserExists_whenExecute_thenProceedAsExpected() throws TaskException {
-        final Response idamRedirectResponse = buildResponse(FOUND, Collections.singletonList(AUTH_URL_WITH_REDIRECT));
-        final TokenExchangeResponse tokenExchangeResponse =
-            TokenExchangeResponse.builder()
-                .accessToken(BEARER_AUTH_TOKEN)
-                .build();
+    public void givenPinUserExists_whenExecute_thenProceedAsExpected() throws TaskException, UnsupportedEncodingException {
+        final AuthenticateUserResponse authenticateUserResponse = new AuthenticateUserResponse(TEST_PIN_CODE);
+        final TokenExchangeResponse tokenExchangeResponse = new TokenExchangeResponse(BEARER_AUTH_TOKEN);
 
         final UserDetails payload = UserDetails.builder().build();
         Map<String, Object> caseData = new HashMap<>();
@@ -156,31 +151,25 @@ public class RetrievePinUserDetailsUTest {
         taskContext.setTransientObject(RESPONDENT_PIN, TEST_PIN);
 
         final UserDetails pinUserDetails = UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
-
-        when(idamClient.authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL))
-            .thenReturn(idamRedirectResponse);
-        when(
-            idamClient.exchangeCode(
-                TEST_PIN_CODE, AUTHORIZATION_CODE, AUTH_REDIRECT_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET)
-        ).thenReturn(tokenExchangeResponse);
-        when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(pinUserDetails);
+        when(idamClient.authenticatePinUser(TEST_PIN, null))
+            .thenReturn(authenticateUserResponse);
+        when(idamClient.exchangeCode(any(ExchangeCodeRequest.class))).thenReturn(tokenExchangeResponse);
+        when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(pinUserDetails);
 
         UserDetails actual = classUnderTest.execute(taskContext, payload);
 
         assertEquals(pinUserDetails, actual);
         assertEquals(TEST_LETTER_HOLDER_ID_CODE, taskContext.getTransientObject(RESPONDENT_LETTER_HOLDER_ID));
 
-        verify(idamClient).authenticatePinUser(TEST_PIN, AUTH_CLIENT_ID, AUTH_REDIRECT_URL);
-        verify(idamClient)
-            .exchangeCode(TEST_PIN_CODE, AUTHORIZATION_CODE, AUTH_REDIRECT_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET);
-        verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);
-    }
-
-    private Response buildResponse(HttpStatus status, List<String> locationHeaders) {
-        return Response.builder()
-            .request(Request.create(Request.HttpMethod.GET, "http//example.com", Collections.emptyMap(), null))
-            .status(status.value())
-            .headers(Collections.singletonMap(LOCATION_HEADER, locationHeaders))
-            .build();
+        verify(idamClient).authenticatePinUser(TEST_PIN, null);
+        ArgumentCaptor<ExchangeCodeRequest> captor = ArgumentCaptor.forClass(ExchangeCodeRequest.class);
+        verify(idamClient).exchangeCode(captor.capture());
+        ExchangeCodeRequest actualExchangeCodeRequest = captor.getValue();
+        assertThat(actualExchangeCodeRequest.getCode(), is(TEST_PIN_CODE));
+        assertThat(actualExchangeCodeRequest.getGrantType(), is(GRANT_TYPE));
+        assertThat(actualExchangeCodeRequest.getRedirectUri(), is(AUTH_REDIRECT_URL));
+        assertThat(actualExchangeCodeRequest.getClientId(), is(AUTH_CLIENT_ID));
+        assertThat(actualExchangeCodeRequest.getClientSecret(), is(AUTH_CLIENT_SECRET));
+        verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
     }
 }

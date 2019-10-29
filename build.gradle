@@ -43,7 +43,6 @@ def versions = [
         commonsMath3                 : '3.6.1',
         divCommonLib                 : '1.0.7',
         dumbster                     : '1.7.1',
-        elasticsearch                : '7.3.0',
         elasticsearch                : '7.4.1',
         feignHttpClient              : '10.2.0',
         flyway                       : '5.2.4',
@@ -51,6 +50,7 @@ def versions = [
         guava                        : '28.1-jre',
         hibernateTypes               : '2.4.0',
         hmctsNotify                  : '3.14.1-RELEASE',
+        idamClient                   : '1.2.2',
         jackson                      : '2.10.0',
         jacksonDatatypeJsr           : '2.10.0',
         javaxWsRs                    : '2.1.1',
@@ -317,6 +317,7 @@ dependencies {
     compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformsJavaLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'div-common-lib', version: versions.divCommonLib

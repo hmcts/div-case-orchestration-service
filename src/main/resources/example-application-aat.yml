@@ -41,9 +41,13 @@ uk:
         key: ${UK_GOV_NOTIFY_API_KEY:replace_me}
 
 idam:
-  api:
-    url: ${IDAM_API_URL:https://idam-api.aat.platform.hmcts.net}
-    redirect-url: ${IDAM_API_REDIRECT_URL:https://div-pfe-aat.service.core-compute-aat.internal/authenticated}
+  client:
+    redirect_uri: ${IDAM_API_REDIRECT_URL:https://div-pfe-aat.service.core-compute-aat.internal/authenticated}
+    port: 4503
+    secret: ${IDAM_CLIENT_SECRET:replace_me}
+    id: divorce
+    health:
+      context-path: /health
   citizen:
     username: ${IDAM_CITIZEN_USERNAME:replace_me}
     password: ${IDAM_CITIZEN_PASSWORD:replace_me}
@@ -52,12 +56,10 @@ idam:
     password: ${IDAM_CASEWORKER_PASSWORD:replace_me}
   s2s-auth:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
+    microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
     secret: ${SERVICE_AUTH_SECRET:replace_me}
-
-auth2:
-  client:
-    id: divorce
-    secret: ${AUTH2_CLIENT_SECRET:replace_me}
+  api:
+    url: ${IDAM_API_URL:https://idam-api.aat.platform.hmcts.net}
 
 document:
   generator:

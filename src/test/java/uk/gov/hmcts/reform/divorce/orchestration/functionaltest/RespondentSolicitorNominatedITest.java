@@ -10,14 +10,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -59,13 +58,12 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
     private static final String FORMAT_ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
 
-
     @Autowired
     private MockMvc webClient;
 
     @Test
     public void givenRespondentSolicitorNominated_whenCallbackCalled_linkingFieldsAreReset() throws Exception {
-        final PinRequest pinRequest = PinRequest.builder()
+        final GeneratePinRequest pinRequest = GeneratePinRequest.builder()
                         .firstName("")
                         .lastName("")
                         .build();
@@ -76,9 +74,6 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
                 AOS_SOL_NOMINATED_JSON, CcdCallbackRequest.class);
 
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
-        CcdCallbackResponse expected = CcdCallbackResponse.builder()
-                .data(caseData)
-                .build();
 
         caseData.put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
 
