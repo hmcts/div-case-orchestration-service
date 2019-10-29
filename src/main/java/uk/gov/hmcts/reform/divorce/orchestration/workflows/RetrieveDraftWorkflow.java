@@ -47,13 +47,7 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
         DefaultTaskContext mainContext = getContext();
         boolean paymentDataUpdated = updatePaymentEvent(caseData);
 
-        List<Task> pendingTasks = new ArrayList<>();
-        if (paymentDataUpdated) {
-            pendingTasks.add(retrieveDraft);
-        }
-        pendingTasks.add(caseDataToDivorceFormatter);
-        pendingTasks.add(setCaseIdAndStateOnSession);
-        pendingTasks.add(addCourtsToPayload);
+        List<Task> pendingTasks = getPendingTasks(paymentDataUpdated);
         return this.execute(
             pendingTasks.toArray(new Task[0]),
             mainContext,
@@ -73,4 +67,16 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
                 caseData
             ));
     }
+
+    private List<Task> getPendingTasks(boolean paymentDataUpdated) {
+        List<Task> pendingTasks = new ArrayList<>();
+        if (paymentDataUpdated) {
+            pendingTasks.add(retrieveDraft);
+        }
+        pendingTasks.add(caseDataToDivorceFormatter);
+        pendingTasks.add(setCaseIdAndStateOnSession);
+        pendingTasks.add(addCourtsToPayload);
+        return pendingTasks;
+    }
+
 }
