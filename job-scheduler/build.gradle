@@ -20,7 +20,7 @@ compileTestJava {
 
 def versions = [
   assertj           : '3.11.1',
-  flyway            : '6.0.7',
+  flyway            : '5.2.4',
   jacksonDatabind   : '2.10.0',
   lombok            : '1.16.16',
   postgresql        : '42.2.8',
