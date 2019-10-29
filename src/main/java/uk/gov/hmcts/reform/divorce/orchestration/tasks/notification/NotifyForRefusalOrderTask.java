@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
 
 @Slf4j
@@ -48,7 +49,11 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
             personalisation.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME));
             personalisation.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_LAST_NAME));
 
-            final String petitionerEmail = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_EMAIL);
+            final String petitionerEmail = getOptionalPropertyValueAsString(payload, D_8_PETITIONER_EMAIL,  null);
+            if  (petitionerEmail == null) {
+                log.debug("There is no petitioner email, It's solicitor journey");
+                return payload;
+            }
             String refusalReason = (String) payload.get(REFUSAL_DECISION_CCD_FIELD);
             if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase(refusalReason)) {
                 emailService.sendEmail(
@@ -70,8 +75,6 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
                     personalisation,
                     "Decree Nisi Refusal Order - Rejection"
                 );
-            } else {
-                throw new TaskException("Unexpected refusal decision: " + refusalReason);
             }
         }
 
