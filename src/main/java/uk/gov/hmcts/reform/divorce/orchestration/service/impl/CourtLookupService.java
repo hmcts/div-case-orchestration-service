@@ -17,8 +17,6 @@ public class CourtLookupService {
     private final Map<String, Court> courts;
     private final Map<String, DnCourt> dnCourts;
 
-    private static String courtsAsJson;
-
     @Autowired
     private ObjectMapper objectMapper;
 
