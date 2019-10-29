@@ -21,7 +21,7 @@ import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AddCourtsToPayloadTest {
+public class AddCourtsToPayloadTaskTest {
 
     //"court" is, unfortunately, the name that is already used in the Divorce session format in many places.
     //Changing it now would probably be more trouble than it's worth
@@ -34,7 +34,7 @@ public class AddCourtsToPayloadTest {
     private CourtLookupService courtLookupService;
 
     @InjectMocks
-    private AddCourtsToPayload classUnderTest;
+    private AddCourtsToPayloadTask classUnderTest;
 
     private static final Map MOCKED_ALL_COURTS_JSON = singletonMap("allCourts", emptyMap());
 

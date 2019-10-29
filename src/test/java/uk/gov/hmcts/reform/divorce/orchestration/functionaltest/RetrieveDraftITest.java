@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.CourtsMatcher;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader;
 
 import java.time.ZonedDateTime;
@@ -32,7 +33,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_DRAFT_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CourtsMatcher.isExpectedCourtsList;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class RetrieveDraftITest extends MockedFunctionalTest {
@@ -113,7 +113,7 @@ public class RetrieveDraftITest extends MockedFunctionalTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)))
-            .andExpect(content().string(hasJsonPath("$.court", isExpectedCourtsList())));
+            .andExpect(content().string(hasJsonPath("$.court", CourtsMatcher.isExpectedCourtsList())));
     }
 
     @Test
@@ -132,7 +132,7 @@ public class RetrieveDraftITest extends MockedFunctionalTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)))
-            .andExpect(content().string(hasJsonPath("$.court", isExpectedCourtsList())));
+            .andExpect(content().string(hasJsonPath("$.court", CourtsMatcher.isExpectedCourtsList())));
     }
 
     @Test
@@ -160,7 +160,7 @@ public class RetrieveDraftITest extends MockedFunctionalTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)))
-            .andExpect(content().string(hasJsonPath("$.court", isExpectedCourtsList())));
+            .andExpect(content().string(hasJsonPath("$.court", CourtsMatcher.isExpectedCourtsList())));
         maintenanceServiceServer.verify(2, getRequestedFor(urlEqualTo(CMS_CONTEXT_PATH)));
         maintenanceServiceServer.verify(1, postRequestedFor(urlEqualTo(CMS_UPDATE_CASE_PATH)));
     }

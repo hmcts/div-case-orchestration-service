@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayload;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraft;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
@@ -39,7 +39,7 @@ public class AmendPetitionWorkflowTest {
     private UpdateCaseInCCD updateCaseInCCD;
 
     @Mock
-    private AddCourtsToPayload addCourtsToPayload;
+    private AddCourtsToPayloadTask addCourtsToPayloadTask;
 
     @InjectMocks
     @Spy
@@ -55,7 +55,7 @@ public class AmendPetitionWorkflowTest {
                 .ifPresent(c -> c.setTransientObject(NEW_AMENDED_PETITION_DRAFT_KEY, singletonMap("draftKey", "draftValue")));
             return emptyMap();
         });
-        when(addCourtsToPayload.execute(any(), any())).then(invocationOnMock -> {
+        when(addCourtsToPayloadTask.execute(any(), any())).then(invocationOnMock -> {
             Map mapParameter = Arrays.stream(invocationOnMock.getArguments())
                 .filter(o -> o instanceof Map)
                 .map(Map.class::cast)

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.CourtsMatcher;
 
 import java.util.Collections;
 import java.util.Map;
@@ -29,7 +30,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CourtsMatcher.isExpectedCourtsList;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class RetrieveAosCaseITest extends MockedFunctionalTest {
@@ -107,7 +107,7 @@ public class RetrieveAosCaseITest extends MockedFunctionalTest {
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expected)))
-            .andExpect(content().string(hasJsonPath("$.data.court", isExpectedCourtsList())));
+            .andExpect(content().string(hasJsonPath("$.data.court", CourtsMatcher.isExpectedCourtsList())));
     }
 
     private void stubRetrieveAosCaseFromCMS(CaseDetails caseDetails) {

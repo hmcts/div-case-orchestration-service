@@ -13,7 +13,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURTS;
 
 @Component
-public class AddCourtsToPayload implements Task<Map<String, Object>> {
+public class AddCourtsToPayloadTask implements Task<Map<String, Object>> {
 
     @Autowired
     private CourtLookupService courtLookupService;

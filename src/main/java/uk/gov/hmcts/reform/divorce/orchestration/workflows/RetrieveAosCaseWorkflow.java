@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayload;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveAosCase;
 
@@ -21,15 +21,15 @@ public class RetrieveAosCaseWorkflow extends DefaultWorkflow<CaseDataResponse> {
 
     private final RetrieveAosCase retrieveAosCase;
     private final CaseDataToDivorceFormatter caseDataToDivorceFormatter;
-    private final AddCourtsToPayload addCourtsToPayload;
+    private final AddCourtsToPayloadTask addCourtsToPayloadTask;
 
     @Autowired
     public RetrieveAosCaseWorkflow(RetrieveAosCase retrieveAosCase,
                                    CaseDataToDivorceFormatter caseDataToDivorceFormatter,
-                                   AddCourtsToPayload addCourtsToPayload) {
+                                   AddCourtsToPayloadTask addCourtsToPayloadTask) {
         this.retrieveAosCase = retrieveAosCase;
         this.caseDataToDivorceFormatter = caseDataToDivorceFormatter;
-        this.addCourtsToPayload = addCourtsToPayload;
+        this.addCourtsToPayloadTask = addCourtsToPayloadTask;
     }
 
     public CaseDataResponse run(String authToken) throws WorkflowException {
@@ -43,7 +43,7 @@ public class RetrieveAosCaseWorkflow extends DefaultWorkflow<CaseDataResponse> {
         );
 
         try {
-            Map<String, Object> modifiedPayload = addCourtsToPayload.execute(getContext(), caseDataResponse.getData());
+            Map<String, Object> modifiedPayload = addCourtsToPayloadTask.execute(getContext(), caseDataResponse.getData());
             caseDataResponse.setData(modifiedPayload);
         } catch (TaskException taskException) {
             throw new WorkflowException(taskException.getMessage(), taskException);

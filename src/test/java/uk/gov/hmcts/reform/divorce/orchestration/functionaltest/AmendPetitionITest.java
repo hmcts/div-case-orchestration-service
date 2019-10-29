@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.CourtsMatcher;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CourtsMatcher.isExpectedCourtsList;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class AmendPetitionITest extends MockedFunctionalTest {
@@ -113,7 +113,7 @@ public class AmendPetitionITest extends MockedFunctionalTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(hasJsonPath(PREVIOUS_CASE_ID_JSON_KEY, is(PREVIOUS_ID))))
-            .andExpect(content().string(hasJsonPath("court", isExpectedCourtsList())));
+            .andExpect(content().string(hasJsonPath("court", CourtsMatcher.isExpectedCourtsList())));
     }
 
     private void stubCmsAmendPetitionDraftEndpoint(HttpStatus status, String body) {

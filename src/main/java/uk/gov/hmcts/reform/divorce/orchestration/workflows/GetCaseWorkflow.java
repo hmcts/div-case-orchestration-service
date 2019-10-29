@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayload;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCase;
 
@@ -21,15 +21,15 @@ public class GetCaseWorkflow extends DefaultWorkflow<CaseDataResponse> {
 
     private final GetCase getCase;
     private final CaseDataToDivorceFormatter caseDataToDivorceFormatter;
-    private final AddCourtsToPayload addCourtsToPayload;
+    private final AddCourtsToPayloadTask addCourtsToPayloadTask;
 
     @Autowired
     public GetCaseWorkflow(GetCase getCase,
                            CaseDataToDivorceFormatter caseDataToDivorceFormatter,
-                           AddCourtsToPayload addCourtsToPayload) {
+                           AddCourtsToPayloadTask addCourtsToPayloadTask) {
         this.getCase = getCase;
         this.caseDataToDivorceFormatter = caseDataToDivorceFormatter;
-        this.addCourtsToPayload = addCourtsToPayload;
+        this.addCourtsToPayloadTask = addCourtsToPayloadTask;
     }
 
     public CaseDataResponse run(String authToken) throws WorkflowException {
@@ -43,7 +43,7 @@ public class GetCaseWorkflow extends DefaultWorkflow<CaseDataResponse> {
         );
 
         try {
-            Map<String, Object> modifiedCaseData = addCourtsToPayload.execute(getContext(), caseDataResponse.getData());
+            Map<String, Object> modifiedCaseData = addCourtsToPayloadTask.execute(getContext(), caseDataResponse.getData());
             caseDataResponse.setData(modifiedCaseData);
         } catch (TaskException taskException) {
             throw new WorkflowException(taskException.getMessage(), taskException);

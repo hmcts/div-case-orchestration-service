@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayload;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetInconsistentPaymentInfo;
@@ -30,7 +30,7 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
     private final RetrieveDraft retrieveDraft;
     private final CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
     private final SetCaseIdAndStateOnSession setCaseIdAndStateOnSession;
-    private final AddCourtsToPayload addCourtsToPayload;
+    private final AddCourtsToPayloadTask addCourtsToPayloadTask;
 
     private final GetInconsistentPaymentInfo getPaymentOnSession;
     private final UpdatePaymentMadeCase paymentMadeEvent;
@@ -75,7 +75,7 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
         }
         pendingTasks.add(caseDataToDivorceFormatter);
         pendingTasks.add(setCaseIdAndStateOnSession);
-        pendingTasks.add(addCourtsToPayload);
+        pendingTasks.add(addCourtsToPayloadTask);
         return pendingTasks;
     }
 

@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayload;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveAosCase;
 
@@ -44,7 +44,7 @@ public class RetrieveAosCaseWorkflowUTest {
     private CaseDataToDivorceFormatter caseDataToDivorceFormatter;
 
     @Mock
-    private AddCourtsToPayload addCourtsToPayload;
+    private AddCourtsToPayloadTask addCourtsToPayloadTask;
 
     @InjectMocks
     private RetrieveAosCaseWorkflow classUnderTest;
@@ -65,12 +65,12 @@ public class RetrieveAosCaseWorkflowUTest {
         Map<String, Object> retrievedCaseData = singletonMap("retrievedKey", "retrievedValue");
         final CaseDataResponse caseDataResponse = CaseDataResponse.builder().data(retrievedCaseData).build();
         when(classUnderTest.execute(mainTasks, null, authTokenPair)).thenReturn(caseDataResponse);
-        when(addCourtsToPayload.execute(any(), eq(retrievedCaseData))).thenReturn(singletonMap("modifiedKey", "modifiedValue"));
+        when(addCourtsToPayloadTask.execute(any(), eq(retrievedCaseData))).thenReturn(singletonMap("modifiedKey", "modifiedValue"));
 
         CaseDataResponse returnedCaseDataResponse = classUnderTest.run(AUTH_TOKEN);
 
         assertThat(returnedCaseDataResponse.getData(), hasEntry("modifiedKey", "modifiedValue"));
-        verify(addCourtsToPayload).execute(any(), eq(retrievedCaseData));
+        verify(addCourtsToPayloadTask).execute(any(), eq(retrievedCaseData));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class RetrieveAosCaseWorkflowUTest {
         Map<String, Object> retrievedCaseData = singletonMap("retrievedKey", "retrievedValue");
         final CaseDataResponse caseDataResponse = CaseDataResponse.builder().data(retrievedCaseData).build();
         when(classUnderTest.execute(mainTasks, null, authTokenPair)).thenReturn(caseDataResponse);
-        when(addCourtsToPayload.execute(any(), eq(retrievedCaseData))).thenThrow(TaskException.class);
+        when(addCourtsToPayloadTask.execute(any(), eq(retrievedCaseData))).thenThrow(TaskException.class);
 
         classUnderTest.run(AUTH_TOKEN);
     }

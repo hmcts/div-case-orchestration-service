@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayload;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraft;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
@@ -25,15 +25,15 @@ public class AmendPetitionWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
     private final CreateAmendPetitionDraft amendPetitionDraft;
     private final UpdateCaseInCCD updateCaseInCCD;
-    private final AddCourtsToPayload addCourtsToPayload;
+    private final AddCourtsToPayloadTask addCourtsToPayloadTask;
 
     @Autowired
     public AmendPetitionWorkflow(CreateAmendPetitionDraft amendPetitionDraft,
                                  UpdateCaseInCCD updateCaseInCCD,
-                                 AddCourtsToPayload addCourtsToPayload) {
+                                 AddCourtsToPayloadTask addCourtsToPayloadTask) {
         this.amendPetitionDraft = amendPetitionDraft;
         this.updateCaseInCCD = updateCaseInCCD;
-        this.addCourtsToPayload = addCourtsToPayload;
+        this.addCourtsToPayloadTask = addCourtsToPayloadTask;
     }
 
     public Map<String, Object> run(String caseId, String authToken) throws WorkflowException {
@@ -50,6 +50,6 @@ public class AmendPetitionWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
         Map<String, Object> newDraft = getContext().getTransientObject(NEW_AMENDED_PETITION_DRAFT_KEY);
 
-        return execute(new Task[] {addCourtsToPayload}, newDraft);
+        return execute(new Task[] {addCourtsToPayloadTask}, newDraft);
     }
 }
