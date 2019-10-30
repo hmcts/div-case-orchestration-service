@@ -61,7 +61,7 @@ def versions = [
         postgresql                   : '42.2.8',
         puppyCrawl                   : '8.25',
         quartz                       : '2.3.2',
-        reformHealth                 : '0.0.3',
+        reformHealth                 : '0.0.5',
         reformPropertiesVolume       : '0.0.4',
         reformsJavaLogging           : '5.0.1',
         reformSpringBootAutoConfigure: '1.1.0',
