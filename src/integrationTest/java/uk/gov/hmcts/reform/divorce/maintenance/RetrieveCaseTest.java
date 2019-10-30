@@ -44,8 +44,7 @@ public class RetrieveCaseTest extends RetrieveCaseSupport {
             .toString();
         String expectedResponse = loadJson(PAYLOAD_CONTEXT_PATH + "divorce-session.json")
             .replace(USER_DEFAULT_EMAIL, userDetails.getEmailAddress());
-        JSONAssert.assertEquals(expectedResponse,
-            responseJsonData, true);
+        JSONAssert.assertEquals(expectedResponse, responseJsonData, false);
     }
 
 

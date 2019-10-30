@@ -25,6 +25,7 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -86,6 +87,9 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         Response cosResponse = amendPetition(citizenUser.getAuthToken(), caseId);
         assertThat(cosResponse.getStatusCode(), is(HttpStatus.OK.value()));
         Map<String, Object> newDraftDocument = cosResponse.getBody().as(Map.class);
+
+        //Assert fields added in transformation
+        assertThat(newDraftDocument.get("court"), is(instanceOf(Map.class)));
 
         //Compare old case and new amended case
         uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails oldCase;
