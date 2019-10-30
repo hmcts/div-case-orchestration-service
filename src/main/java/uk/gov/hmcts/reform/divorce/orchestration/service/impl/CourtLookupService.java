@@ -37,4 +37,9 @@ public class CourtLookupService {
 
         return dnCourts.get(courtId);
     }
+
+    public Map<String, Court> getAllCourts() {
+        return courts;
+    }
+
 }

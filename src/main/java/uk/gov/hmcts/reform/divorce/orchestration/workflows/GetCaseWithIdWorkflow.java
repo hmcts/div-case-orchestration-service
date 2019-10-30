@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class GetCaseWithIdWorkflow extends DefaultWorkflow<CaseDetails> {
+
     private final GetCaseWithIdTask getCaseWithId;
 
     @Autowired

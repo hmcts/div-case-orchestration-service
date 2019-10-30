@@ -48,6 +48,6 @@ public class RetrieveAosTest extends RetrieveAosCaseSupport {
 
         String expectedResponse = loadJson(PAYLOAD_CONTEXT_PATH + "aos-divorce-session.json")
             .replaceAll(RESPONDENT_DEFAULT_EMAIL, userDetails.getEmailAddress());
-        JSONAssert.assertEquals(expectedResponse, responseJsonData, true);
+        JSONAssert.assertEquals(expectedResponse, responseJsonData, false);
     }
 }

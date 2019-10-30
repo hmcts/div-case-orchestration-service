@@ -37,4 +37,5 @@ public class CleanStateFromCaseDataWorkflow extends DefaultWorkflow<Map<String, 
                 ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, CLEAN_CASE_STATE_EVENT)
         );
     }
+
 }

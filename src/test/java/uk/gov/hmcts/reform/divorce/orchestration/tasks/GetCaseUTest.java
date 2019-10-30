@@ -70,7 +70,7 @@ public class GetCaseUTest {
         CaseDataResponse actual = classUnderTest.execute(context, null);
 
         assertEquals(TEST_CASE_ID, actual.getCaseId());
-        assertEquals(TEST_COURT, actual.getCourts());
+        assertEquals(TEST_COURT, actual.getCourt());
         assertEquals(TEST_STATE, actual.getState());
         assertEquals(caseData, context.getTransientObject(CCD_CASE_DATA));
 

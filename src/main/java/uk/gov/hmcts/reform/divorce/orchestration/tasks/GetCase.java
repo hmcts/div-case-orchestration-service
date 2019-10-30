@@ -36,7 +36,7 @@ public class GetCase implements Task<CaseDataResponse> {
         return CaseDataResponse.builder()
             .caseId(caseDetails.getCaseId())
             .state(caseDetails.getState())
-            .courts(String.valueOf(caseDetails.getCaseData().get(D_8_DIVORCE_UNIT)))
+            .court(String.valueOf(caseDetails.getCaseData().get(D_8_DIVORCE_UNIT)))
             .build();
     }
 }
