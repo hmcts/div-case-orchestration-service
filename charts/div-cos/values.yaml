@@ -7,7 +7,7 @@ java:
         FEATURE_TOGGLE_SERVICE_API_BASEURL: "http://rpe-feature-toggle-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         SEND_LETTER_SERIVCE_BASEURL: "http://rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         IDAM_API_REDIRECT_URL: "https://div-pfe-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/authenticated"
-        CASE_FORMATTER_SERVICE_API_BASEURL: "http://div-cfs-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        CASE_FORMATTER_SERVICE_API_BASEURL: "http://div-cfs-pr-185.service.core-compute-preview.internal"
         SERVICE_AUTH_PROVIDER_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         CASE_VALIDATION_SERVICE_API_BASEURL: "http://div-vs-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
