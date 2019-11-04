@@ -87,4 +87,7 @@ public class CcdUtil {
             .orElse(defaultValue);
     }
 
+    public LocalDateTime getCurrentLocalDateTime() {
+        return LocalDateTime.now(clock);
+    }
 }

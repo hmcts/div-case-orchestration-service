@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_REASON_UNREASONABLE_BEHAVIOUR;
@@ -43,16 +45,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(SpringRunner.class)
-public class SendPetitionerSubmissionNotificationEmailTest {
+public class SendPetitionerSubmissionNotificationEmailTaskTest {
 
     private static final String TEST_COURT_KEY = "westMidlands";
     private static final String TEST_COURT_DISPLAY_NAME = "West Midlands Regional Divorce Centre";
     private static final String SERVICE_CENTRE_KEY = "serviceCentre";
     private static final String SERVICE_CENTRE_DISPLAY_NAME = "Courts and Tribunals Service Centre";
+    private static final String CASE_REFERENCE_KEY = "CaseReference";
 
     @Mock
     EmailService emailService;
@@ -61,7 +65,7 @@ public class SendPetitionerSubmissionNotificationEmailTest {
     private TaskCommons taskCommons;
 
     @InjectMocks
-    SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail;
+    SendPetitionerSubmissionNotificationEmailTask sendPetitionerSubmissionNotificationEmailTask;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -108,7 +112,7 @@ public class SendPetitionerSubmissionNotificationEmailTest {
 
     @Test
     public void shouldNotCallEmailServiceForGenericUpdateIfPetitionerEmailDoesNotExist() throws TaskException {
-        sendPetitionerSubmissionNotificationEmail.execute(context, testData);
+        sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
 
         verifyZeroInteractions(emailService);
     }
@@ -120,7 +124,7 @@ public class SendPetitionerSubmissionNotificationEmailTest {
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, TEST_COURT_DISPLAY_NAME);
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
 
-        Map returnPayload = sendPetitionerSubmissionNotificationEmail.execute(context, testData);
+        Map returnPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
 
         assertEquals(testData, returnPayload);
 
@@ -138,7 +142,7 @@ public class SendPetitionerSubmissionNotificationEmailTest {
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, SERVICE_CENTRE_DISPLAY_NAME);
 
-        Map returnPayload = sendPetitionerSubmissionNotificationEmail.execute(context, testData);
+        Map returnPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
 
         assertEquals(testData, returnPayload);
 
@@ -155,7 +159,7 @@ public class SendPetitionerSubmissionNotificationEmailTest {
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, TEST_COURT_DISPLAY_NAME);
 
-        Map returnPayload = sendPetitionerSubmissionNotificationEmail.execute(context, testData);
+        Map returnPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
 
         assertEquals(testData, returnPayload);
 
@@ -164,5 +168,24 @@ public class SendPetitionerSubmissionNotificationEmailTest {
                 eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
                 eq(expectedTemplateVars),
                 any());
+    }
+
+    @Test
+    public void shouldCallEmailService_WithAmendTemplate_WhenPreviousCaseIdExists() throws TaskException {
+        addTestData();
+        testData.put(DIVORCE_UNIT_JSON_KEY, SERVICE_CENTRE_KEY);
+        testData.put(PREVIOUS_CASE_ID_CCD_KEY, Collections.singletonMap(CASE_REFERENCE_KEY, TEST_CASE_ID));
+        expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
+        expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, SERVICE_CENTRE_DISPLAY_NAME);
+
+        Map returnPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
+
+        assertEquals(testData, returnPayload);
+
+        verify(emailService).sendEmail(
+            eq(TEST_USER_EMAIL),
+            eq(EmailTemplateNames.APPLIC_SUBMISSION_AMEND.name()),
+            eq(expectedTemplateVars),
+            any());
     }
 }

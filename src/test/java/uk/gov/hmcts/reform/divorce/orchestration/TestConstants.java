@@ -30,12 +30,15 @@ public class TestConstants {
     public static final String TEST_FEE_DESCRIPTION = "Test Fee";
     public static final String TEST_SOLICITOR_ACCOUNT_NUMBER = "test.solicitor.account";
     public static final String TEST_SOLICITOR_FIRM_NAME = "test.solicitor.firm";
+    public static final String TEST_SOLICITOR_COMPANY = "Awesome Solicitors LLP";
     public static final String TEST_SOLICITOR_REFERENCE = "test.solicitor.reference";
     public static final String TEST_SERVICE_AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
             + ".eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ"
             + ".SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
     public static final String TEST_SOLICITOR_NAME = "Solicitor name";
     public static final String TEST_SOLICITOR_EMAIL = "testSolicitor@email.com";
+    public static final String TEST_RESP_SOLICITOR_NAME = "Respondent Solicitor name";
+    public static final String TEST_RESP_SOLICITOR_EMAIL = "testRespondentSolicitor@email.com";
     public static final String TEST_SERVICE_TOKEN = "testServiceToken";
     public static final String TEST_PETITIONER_FIRST_NAME = "First";
     public static final String TEST_PETITIONER_LAST_NAME = "Last";
@@ -74,4 +77,7 @@ public class TestConstants {
     public static final String FILE_NAME = "testFileName";
     public static final String SOL_SERVICE_METHOD_CCD_FIELD = "SolServiceMethod";
     public static final String PERSONAL_SERVICE_VALUE = "personalService";
+    public static final String AUTH_CLIENT_ID = "authClientId";
+    public static final String AUTH_CLIENT_SECRET = "authClientSecret";
+    public static final String AUTH_REDIRECT_URL = "authRedirectUrl";
 }

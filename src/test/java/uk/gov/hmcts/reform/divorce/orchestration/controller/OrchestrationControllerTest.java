@@ -12,10 +12,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseCreationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -301,6 +301,22 @@ public class OrchestrationControllerTest {
 
         ResponseEntity<Map<String, Object>> response = classUnderTest
             .amendPetition(AUTH_TOKEN, caseId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(caseData, response.getBody());
+    }
+
+    @Test
+    public void whenAmendPetitionForRefusal_thenReturnDraftAndUpdateState() throws Exception {
+        final String caseId = "test.id";
+        final Map<String, Object> caseData = Collections.singletonMap(
+            "previousCaseId", caseId
+        );
+
+        when(caseOrchestrationService.amendPetitionForRefusal(caseId, AUTH_TOKEN)).thenReturn(caseData);
+
+        ResponseEntity<Map<String, Object>> response = classUnderTest
+            .amendPetitionForRefusal(AUTH_TOKEN, caseId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(caseData, response.getBody());

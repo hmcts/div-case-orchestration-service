@@ -38,6 +38,7 @@ public class RespondentAosAnswersProcessor implements Task<Map<String, Object>> 
     private String returnNewStateForCase(Map<String, Object> payload) throws TaskException {
         String newState;
 
+        //This field (UI_ONLY_RESP_WILL_DEFEND_DIVORCE) if used only for the offline journey (AOS offline)
         boolean respondentDefendingDivorce = Optional.ofNullable(payload.get(RESP_WILL_DEFEND_DIVORCE))
             .map(String.class::cast)
             .map(YES_VALUE::equalsIgnoreCase)

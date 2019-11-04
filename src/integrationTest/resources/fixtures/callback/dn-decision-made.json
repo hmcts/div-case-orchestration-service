@@ -1,0 +1,20 @@
+{
+  "token": "token",
+  "event_id": "eventId",
+  "case_details": {
+    "id": "0123456789012345",
+    "state": "state",
+    "case_data": {
+      "DecreeNisiGranted": "No",
+      "RefusalDecision": "moreInfo",
+      "D8caseReference": "LV88D85000",
+      "D8PetitionerFirstName": "John",
+      "D8PetitionerLastName": "Smith",
+      "D8RespondentFirstName": "Mary",
+      "D8RespondentLastName": "Smith",
+      "PetitionerSolicitorName": "Mr solicitor",
+      "D8PetitionerEmail": "simulate-delivered@notifications.service.gov.uk",
+      "PetitionerSolicitorEmail": "simulate-delivered@notifications.service.gov.uk"
+    }
+  }
+}

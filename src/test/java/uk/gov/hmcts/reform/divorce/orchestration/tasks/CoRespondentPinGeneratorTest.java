@@ -6,11 +6,11 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.GeneratePinResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,11 +42,11 @@ public class CoRespondentPinGeneratorTest {
 
     private Map<String, Object> caseData;
     private TaskContext context;
-    private Pin pin;
+    private GeneratePinResponse pin;
 
     @Before
     public void setUp() {
-        pin = Pin.builder()
+        pin = GeneratePinResponse.builder()
                 .userId(TEST_USER_ID)
                 .pin(TEST_PIN)
                 .build();
@@ -58,7 +58,7 @@ public class CoRespondentPinGeneratorTest {
     @Test
     public void executeShouldPopulatePinAndLetterHolderId() {
         //given
-        when(idamClient.createPin(any(), anyString())).thenReturn(pin);
+        when(idamClient.generatePin(any(), anyString())).thenReturn(pin);
         when(authUtil.getCitizenToken())
             .thenReturn(BEARER_AUTH_TOKEN);
 

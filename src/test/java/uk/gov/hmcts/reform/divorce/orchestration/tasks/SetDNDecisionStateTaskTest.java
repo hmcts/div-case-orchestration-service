@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 
 import java.util.Map;
@@ -16,10 +17,12 @@ import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features.DN_REFUSAL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ADMIN_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_ADMIN_ERROR_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
@@ -34,6 +37,9 @@ public class SetDNDecisionStateTaskTest {
     @Mock
     private FeatureToggleService featureToggleService;
 
+    @Mock
+    private TaskContext taskContext;
+
     @InjectMocks
     private SetDNDecisionStateTask classToTest;
 
@@ -47,7 +53,7 @@ public class SetDNDecisionStateTaskTest {
 
         Map<String, Object> caseData = ImmutableMap.of(DECREE_NISI_GRANTED_CCD_FIELD, YES_VALUE);
 
-        Map<String, Object> returnedPayload = classToTest.execute(null, caseData);
+        Map<String, Object> returnedPayload = classToTest.execute(taskContext, caseData);
 
         assertThat(returnedPayload, allOf(
             hasEntry(STATE_CCD_FIELD, AWAITING_PRONOUNCEMENT),
@@ -60,7 +66,7 @@ public class SetDNDecisionStateTaskTest {
 
         Map<String, Object> caseData = ImmutableMap.of(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
 
-        Map<String, Object> returnedPayload = classToTest.execute(null, caseData);
+        Map<String, Object> returnedPayload = classToTest.execute(taskContext, caseData);
 
         assertThat(returnedPayload, allOf(
             hasEntry(STATE_CCD_FIELD, AWAITING_CLARIFICATION),
@@ -73,7 +79,7 @@ public class SetDNDecisionStateTaskTest {
         Map<String, Object> caseData = ImmutableMap.of(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
             REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
 
-        Map<String, Object> returnedPayload = classToTest.execute(null, caseData);
+        Map<String, Object> returnedPayload = classToTest.execute(taskContext, caseData);
 
         assertThat(returnedPayload, allOf(
             hasEntry(STATE_CCD_FIELD, DN_REFUSED),
@@ -83,11 +89,25 @@ public class SetDNDecisionStateTaskTest {
     }
 
     @Test
+    public void givenDnAdminError_whenSetDnDecisionState_thenReturnDnAdminClarificationState() {
+        Map<String, Object> caseData = ImmutableMap.of(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
+            REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_ADMIN_ERROR_OPTION);
+
+        Map<String, Object> returnedPayload = classToTest.execute(taskContext, caseData);
+
+        assertThat(returnedPayload, allOf(
+            hasEntry(STATE_CCD_FIELD, AWAITING_ADMIN_CLARIFICATION),
+            hasEntry(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE),
+            hasEntry(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_ADMIN_ERROR_OPTION)
+        ));
+    }
+
+    @Test
     public void givenDnAskMoreInfo_whenSetDnDecisionState_thenReturnDnAwaitingClarificationState() {
         Map<String, Object> caseData = ImmutableMap.of(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
             REFUSAL_DECISION_CCD_FIELD, DN_ASK_MORE_INFO_OPTION);
 
-        Map<String, Object> returnedPayload = classToTest.execute(null, caseData);
+        Map<String, Object> returnedPayload = classToTest.execute(taskContext, caseData);
 
         assertThat(returnedPayload, allOf(
             hasEntry(STATE_CCD_FIELD, AWAITING_CLARIFICATION),
@@ -103,7 +123,7 @@ public class SetDNDecisionStateTaskTest {
         Map<String, Object> caseData = ImmutableMap.of(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
             REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
 
-        Map<String, Object> returnedPayload = classToTest.execute(null, caseData);
+        Map<String, Object> returnedPayload = classToTest.execute(taskContext, caseData);
 
         assertThat(returnedPayload, allOf(
             hasEntry(STATE_CCD_FIELD, AWAITING_CLARIFICATION),

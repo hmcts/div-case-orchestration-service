@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 
 @Component
 @Slf4j
@@ -30,7 +30,7 @@ public class SearchCasesDAOverdueTask implements Task<Map<String, Object>> {
     @Value("${case.event.da-overdue-period:1y}")
     private String daOverduePeriod;
 
-    private static final String DA_OVERDUE_DATE = String.format("data.%s", DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA_CCD_FIELD);
+    private static final String DN_GRANTED_DATE = String.format("data.%s", DECREE_NISI_GRANTED_DATE_CCD_FIELD);
 
     private final CMSElasticSearchSupport cmsElasticSearchSupport;
 
@@ -47,7 +47,7 @@ public class SearchCasesDAOverdueTask implements Task<Map<String, Object>> {
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
 
         QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_DA);
-        QueryBuilder dateFilter = QueryBuilders.rangeQuery(DA_OVERDUE_DATE).lte(buildCoolOffPeriod(daOverduePeriod));
+        QueryBuilder dateFilter = QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildDateFilterExpression(daOverduePeriod));
 
         try {
             List<String> caseIdList = cmsElasticSearchSupport.searchCMSCases(start, pageSize, authToken, stateQuery, dateFilter)
@@ -62,8 +62,8 @@ public class SearchCasesDAOverdueTask implements Task<Map<String, Object>> {
         return payload;
     }
 
-    private static String buildCoolOffPeriod(final String coolOffPeriod) {
-        String timeUnit = String.valueOf(coolOffPeriod.charAt(coolOffPeriod.length() - 1));
-        return String.format("now/%s-%s", timeUnit, coolOffPeriod);
+    private static String buildDateFilterExpression(final String durationExp) {
+        String timeUnit = String.valueOf(durationExp.charAt(durationExp.length() - 1));
+        return String.format("now/%s-%s", timeUnit, durationExp);
     }
 }

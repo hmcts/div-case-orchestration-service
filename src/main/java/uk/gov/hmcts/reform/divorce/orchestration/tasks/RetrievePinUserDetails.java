@@ -1,80 +1,84 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import feign.Response;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
-import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.AuthenticateUserResponse;
+import uk.gov.hmcts.reform.idam.client.models.ExchangeCodeRequest;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GRANT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LOCATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class RetrievePinUserDetails implements Task<UserDetails> {
-    @Value("${auth2.client.id}")
+    @Value("${idam.client.id}")
     private String authClientId;
 
-    @Value("${auth2.client.secret}")
+    @Value("${idam.client.secret}")
     private String authClientSecret;
 
-    @Value("${idam.api.redirect-url}")
+    @Value("${idam.client.redirect_uri}")
     private String authRedirectUrl;
 
-    @Autowired
-    private AuthUtil authUtil;
+    private final AuthUtil authUtil;
 
-    @Autowired
-    private IdamClient idamClient;
+    private final IdamClient idamClient;
 
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) throws TaskException {
-        String pinCode = authenticatePinUser(
-            context.getTransientObject(RESPONDENT_PIN),
-            authClientId,
-            authRedirectUrl);
+        final String pinError = "Invalid pin";
+        AuthenticateUserResponse pinResponse;
+
+        try {
+            pinResponse = idamClient.authenticatePinUser(
+                context.getTransientObject(RESPONDENT_PIN),
+                null);
+        } catch (UnsupportedEncodingException ex) {
+            log.error("Problem encoding callback URL for IDAM. Check config to ensure this is set correctly.");
+            throw new TaskException("Problem with IDAM config");
+        }
+
+        if (pinResponse == null) {
+            throw new TaskException(new AuthenticationError(pinError));
+        }
+
+        ExchangeCodeRequest exchangeCodeRequest =
+            new ExchangeCodeRequest(
+                pinResponse.getCode(), GRANT_TYPE, authRedirectUrl, authClientId, authClientSecret);
 
         String pinAuthToken = authUtil.getBearToken(
-            getIdamClient().exchangeCode(
-                pinCode,
-                AUTHORIZATION_CODE,
-                authRedirectUrl,
-                authClientId,
-                authClientSecret
-            ).getAccessToken()
+            idamClient.exchangeCode(exchangeCodeRequest).getAccessToken()
         );
 
-        UserDetails pinUserDetails = getIdamClient().retrieveUserDetails(pinAuthToken);
+        UserDetails pinUserDetails = idamClient.getUserDetails(pinAuthToken);
 
         if (pinUserDetails == null) {
-            throw new TaskException(new AuthenticationError("Invalid pin"));
+            throw new TaskException(new AuthenticationError(pinError));
         }
 
         final String letterHolderId = pinUserDetails.getId();
         final Map<String, Object> caseData = ((CaseDetails) context
             .getTransientObject(CASE_DETAILS_JSON_KEY))
             .getCaseData();
-
         final String coRespondentLetterHolderId = (String) caseData.get(CO_RESPONDENT_LETTER_HOLDER_ID);
         final String respondentLetterHolderId = (String) caseData.get(RESPONDENT_LETTER_HOLDER_ID);
         final boolean isRespondent = letterHolderId.equals(respondentLetterHolderId);
@@ -96,28 +100,5 @@ public class RetrievePinUserDetails implements Task<UserDetails> {
         }
 
         return pinUserDetails;
-    }
-
-    protected String authenticatePinUser(String pin, String authClientId, String authRedirectUrl) throws TaskException {
-        Response authenticateResponse = getIdamClient().authenticatePinUser(pin, authClientId, authRedirectUrl);
-
-        if (authenticateResponse.status() == HttpStatus.OK.value()
-            || authenticateResponse.status() == HttpStatus.FOUND.value()) {
-            return getCodeFromRedirect(authenticateResponse);
-        }
-
-        throw new TaskException(new AuthenticationError(String.format("Error authenticating RESPONDENT_PIN [%s]", pin)));
-    }
-
-    private String getCodeFromRedirect(Response response) {
-        String location = response.headers().get(LOCATION_HEADER).stream().findFirst()
-            .orElseThrow(IllegalArgumentException::new);
-
-        UriComponents build = UriComponentsBuilder.fromUriString(location).build();
-        return build.getQueryParams().getFirst(CODE);
-    }
-
-    protected IdamClient getIdamClient() {
-        return idamClient;
     }
 }

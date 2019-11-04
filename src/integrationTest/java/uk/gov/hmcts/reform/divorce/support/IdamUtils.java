@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.support;
 
 import io.restassured.response.Response;
+import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +10,7 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.divorce.model.GeneratePinRequest;
 import uk.gov.hmcts.reform.divorce.model.PinResponse;
 import uk.gov.hmcts.reform.divorce.model.RegisterUserRequest;
+import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.model.UserGroup;
 
 import java.util.ArrayList;
@@ -16,15 +18,16 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Slf4j
 public class IdamUtils {
 
-    @Value("${auth.idam.client.baseUrl}")
+    @Value("${idam.client.baseUrl}")
     private String idamUserBaseUrl;
 
-    @Value("${auth.idam.client.redirectUri}")
+    @Value("${idam.client.redirectUri}")
     private String idamRedirectUri;
 
-    @Value("${auth2.client.secret}")
+    @Value("${idam.client.secret}")
     private String idamSecret;
 
     public PinResponse generatePin(String firstName, String lastName, String authToken) {
@@ -86,6 +89,18 @@ public class IdamUtils {
             .asString();
     }
 
+    public void deleteUser(final UserDetails user) {
+        Thread userDeletionThread = new Thread(() -> {
+            log.info("Deleting user " + user.getEmailAddress());
+
+            SerenityRest.given()
+                .relaxedHTTPSValidation()
+                .delete(idamDeleteUrl(user.getEmailAddress()));
+        });
+        userDeletionThread.setDaemon(true);
+        userDeletionThread.start();
+    }
+
     public String generateUserTokenWithNoRoles(String username, String password) {
         String userLoginDetails = String.join(":", username, password);
         final String authHeader = "Basic " + new String(Base64.getEncoder().encode(userLoginDetails.getBytes()));
@@ -110,6 +125,10 @@ public class IdamUtils {
 
         String token = response.getBody().path("access_token");
         return "Bearer " + token;
+    }
+
+    private String idamDeleteUrl(String accountEmail) {
+        return idamUserBaseUrl + "/testing-support/accounts/" + accountEmail;
     }
 
     private String idamCreateUrl() {
