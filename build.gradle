@@ -63,7 +63,7 @@ def versions = [
         quartz                       : '2.3.2',
         reformHealth                 : '0.0.3',
         reformPropertiesVolume       : '0.0.4',
-        reformsJavaLogging           : '5.0.1',
+        reformsJavaLogging           : '5.1.1',
         reformSpringBootAutoConfigure: '1.1.0',
         restAssured                  : '3.0.3',
         sendLetterClient             : '2.1.1',
