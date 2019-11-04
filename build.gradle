@@ -315,11 +315,11 @@ dependencies {
 
     compile group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
     compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
-    compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformsJavaLogging
-    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformsJavaLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformsJavaLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
-    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: versions.reformsJavaLogging
-    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: versions.reformsJavaLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'logging-httpcomponents', version: versions.reformsJavaLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'div-common-lib', version: versions.divCommonLib
     compile(group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.serviceTokenGenerator)
             {
