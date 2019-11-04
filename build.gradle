@@ -279,7 +279,7 @@ dependencies {
     compile group: 'org.jdbi', name: 'jdbi', version: '2.78'
     compile('org.springframework.boot:spring-boot-starter-web')
 
-    compile('org.elasticsearch.client:transport:7.1.1')
+    compile('org.elasticsearch.client:transport:7.4.2')
 
     compile group: 'javax.mail', name: 'mail', version: '1.4'
 
