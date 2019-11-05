@@ -15,7 +15,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.81")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.83")
     }
 }
 
