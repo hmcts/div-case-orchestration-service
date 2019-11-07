@@ -29,7 +29,7 @@ java:
         SPRING_MAIL_TEST_CONNECTION: false
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
-        SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_CRON: "0 0 2 ? * * *"
+        SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_CRON: "0 0 2 ? * * *"  # This is setup in cnp-flux-config repo
     keyVaults:
         "div":
             resourceGroup: div
