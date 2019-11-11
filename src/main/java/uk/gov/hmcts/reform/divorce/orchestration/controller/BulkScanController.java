@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.out.OcrValidationResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
 
 import javax.validation.Valid;
 
 import static java.util.Collections.emptyList;
 import static org.springframework.http.ResponseEntity.ok;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.out.ValidationStatus.SUCCESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.ValidationStatus.SUCCESS;
 
 @Slf4j
 @Controller
