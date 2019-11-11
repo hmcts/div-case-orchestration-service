@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.out;
+package uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
