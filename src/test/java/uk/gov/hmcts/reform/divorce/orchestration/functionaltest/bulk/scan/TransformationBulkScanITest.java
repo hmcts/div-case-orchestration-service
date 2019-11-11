@@ -12,9 +12,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.core.Is.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.ResultMatcher.matchAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,26 +30,24 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.
 @PropertySource(value = "classpath:application.yml")
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
-public class ValidationBulkScanITest {
-
-    private static final String SUCCESS_STATUS = "SUCCESS";
+public class TransformationBulkScanITest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void shouldReturnSuccessResponseForValidationEndpoint() throws Exception {
+    public void shouldReturnSuccessResponseForTransformationEndpoint() throws Exception {
         String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk.scan/basicForm.json");
 
-        mockMvc.perform(post("/forms/{form-type}/validate-ocr", "justAnotherForm")
+        mockMvc.perform(post("/transform-exception-record")
             .contentType(APPLICATION_JSON)
             .content(formToValidate)
         ).andExpect(matchAll(
             status().isOk(),
             content().string(allOf(
-                hasJsonPath("$.status", equalTo(SUCCESS_STATUS)),
+                isJson(),
                 hasJsonPath("$.warnings", equalTo(emptyList())),
-                hasJsonPath("$.errors", equalTo(emptyList()))
+                hasJsonPath("$.case_creation_details", is(notNullValue()))
             ))
         ));
     }

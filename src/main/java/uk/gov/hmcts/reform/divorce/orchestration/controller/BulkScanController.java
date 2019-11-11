@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.in.ExceptionRecord;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.CaseCreationDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.ExampleD8Case;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.SuccessfulTransformationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
 
@@ -38,6 +42,7 @@ public class BulkScanController {
         @ApiResponse(code = 403, message = "S2S token is not authorized to use the service"),
         @ApiResponse(code = 404, message = "Form type not found")
     })
+
     public ResponseEntity<OcrValidationResponse> validateOcrData(
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
         @PathVariable(name = "form-type", required = false) String formType,
@@ -48,4 +53,26 @@ public class BulkScanController {
         return ok().body(new OcrValidationResponse(emptyList(), emptyList(), SUCCESS));
     }
 
+    @PostMapping("/transform-exception-record")
+    @ApiOperation("Transforms Excela data to CCD compatible format")
+    @ApiResponses( {
+            @ApiResponse(
+                    code = 200, response = SuccessfulTransformationResponse.class, message = "Transformation executed successfully"
+            ),
+            @ApiResponse(code = 401, message = "Provided S2S token is missing or invalid"),
+            @ApiResponse(code = 403, message = "S2S token is not authorized to use the service"),
+            @ApiResponse(code = 404, message = "Form type not found")
+    })
+    public ResponseEntity<SuccessfulTransformationResponse> transform(
+            @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
+            @Valid @RequestBody ExceptionRecord exceptionRecord
+    ) {
+        log.info("Transforming data from Excela to CCD data for form {}", exceptionRecord);
+
+        // Temporary just for the PoC obviously
+        CaseCreationDetails caseCreationDetails = new CaseCreationDetails(
+                "", "", new ExampleD8Case("", "", ""));
+
+        return ok().body(new SuccessfulTransformationResponse(caseCreationDetails, emptyList()));
+    }
 }
