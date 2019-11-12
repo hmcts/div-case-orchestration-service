@@ -36,7 +36,7 @@ public class ValidationBulkScanITest {
 
     @Test
     public void shouldReturnSuccessResponseForValidationEndpoint() throws Exception {
-        String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk.scan/basicForm.json");
+        String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/basicForm.json");
 
         mockMvc.perform(post("/forms/{form-type}/validate-ocr", "justAnotherForm")
             .contentType(APPLICATION_JSON)

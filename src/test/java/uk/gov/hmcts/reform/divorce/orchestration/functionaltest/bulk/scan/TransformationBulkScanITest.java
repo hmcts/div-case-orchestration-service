@@ -37,7 +37,7 @@ public class TransformationBulkScanITest {
 
     @Test
     public void shouldReturnSuccessResponseForTransformationEndpoint() throws Exception {
-        String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk.scan/basicForm.json");
+        String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/basicForm.json");
 
         mockMvc.perform(post("/transform-exception-record")
             .contentType(APPLICATION_JSON)

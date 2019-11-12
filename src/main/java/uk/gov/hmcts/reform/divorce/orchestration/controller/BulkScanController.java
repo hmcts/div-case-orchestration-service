@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.in.ExceptionRecord;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.CaseCreationDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.ExampleD8Case;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.SuccessfulTransformationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
@@ -21,6 +20,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validati
 import javax.validation.Valid;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static org.springframework.http.ResponseEntity.ok;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.ValidationStatus.SUCCESS;
 
@@ -69,10 +69,7 @@ public class BulkScanController {
     ) {
         log.info("Transforming data from Excela to CCD data for form {}", exceptionRecord);
 
-        // Temporary just for the PoC obviously
-        CaseCreationDetails caseCreationDetails = new CaseCreationDetails(
-                "", "", new ExampleD8Case("", "", ""));
-
-        return ok().body(new SuccessfulTransformationResponse(caseCreationDetails, emptyList()));
+        return ok().body(new SuccessfulTransformationResponse(new CaseCreationDetails("", "", emptyMap()),
+                emptyList()));
     }
 }
