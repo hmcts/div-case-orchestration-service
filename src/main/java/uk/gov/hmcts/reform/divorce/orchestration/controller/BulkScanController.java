@@ -59,30 +59,35 @@ public class BulkScanController {
         BulkScanFormValidator formValidator = bulkScanFormValidatorFactory.getValidator(formType);
         OcrValidationResult ocrValidationResult = formValidator.validateBulkScanForm(request.getOcrDataFields());
 
-        return ok().body(new OcrValidationResponse(ocrValidationResult.getWarnings(),
-            ocrValidationResult.getErrors(),
-            ocrValidationResult.getStatus()
-        ));
+        return ok().body(
+            new OcrValidationResponse(
+                ocrValidationResult.getWarnings(),
+                ocrValidationResult.getErrors(),
+                ocrValidationResult.getStatus()
+            ));
     }
 
     @PostMapping("/transform-exception-record")
     @ApiOperation("Transforms Excela data to CCD compatible format")
     @ApiResponses( {
-            @ApiResponse(
-                    code = 200, response = SuccessfulTransformationResponse.class, message = "Transformation executed successfully"
-            ),
-            @ApiResponse(code = 401, message = "Provided S2S token is missing or invalid"),
-            @ApiResponse(code = 403, message = "S2S token is not authorized to use the service"),
-            @ApiResponse(code = 404, message = "Form type not found")
+        @ApiResponse(
+            code = 200, response = SuccessfulTransformationResponse.class, message = "Transformation executed successfully"
+        ),
+        @ApiResponse(code = 401, message = "Provided S2S token is missing or invalid"),
+        @ApiResponse(code = 403, message = "S2S token is not authorized to use the service"),
+        @ApiResponse(code = 404, message = "Form type not found")
     })
 
     public ResponseEntity<SuccessfulTransformationResponse> transform(
-            @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
-            @Valid @RequestBody ExceptionRecord exceptionRecord
+        @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
+        @Valid @RequestBody ExceptionRecord exceptionRecord
     ) {
         log.info("Transforming data from Excela to CCD data for form {}", exceptionRecord);
 
-        return ok().body(new SuccessfulTransformationResponse(new CaseCreationDetails("", "", emptyMap()),
-                emptyList()));
+        return ok().body(
+            new SuccessfulTransformationResponse(
+                new CaseCreationDetails("", "", emptyMap()), emptyList()
+            )
+        );
     }
 }
