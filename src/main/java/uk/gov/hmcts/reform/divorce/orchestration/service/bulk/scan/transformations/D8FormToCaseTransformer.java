@@ -25,7 +25,7 @@ public class D8FormToCaseTransformer implements ExceptionRecordToCaseTransformer
     }
 
     @Override
-    public Map<String, Object> toCase(ExceptionRecord exceptionRecord) {
+    public Map<String, Object> transformIntoCaseData(ExceptionRecord exceptionRecord) {
         return exceptionRecord.getOcrDataFields().stream()
             .collect(Collectors.toMap(
                 ocrDataField -> ocrToCCDMapping.get(ocrDataField.getName()),

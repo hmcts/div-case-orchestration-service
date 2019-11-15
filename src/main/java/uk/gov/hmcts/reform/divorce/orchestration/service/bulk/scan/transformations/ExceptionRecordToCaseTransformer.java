@@ -5,5 +5,5 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transfor
 import java.util.Map;
 
 public interface ExceptionRecordToCaseTransformer {
-    Map<String, Object> toCase(ExceptionRecord exceptionRecord);
+    Map<String, Object> transformIntoCaseData(ExceptionRecord exceptionRecord);
 }

@@ -41,7 +41,7 @@ public class BulkScanController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @ApiOperation("Validates Excela OCR form data based on form type")
+    @ApiOperation("Validates OCR form data based on form type")
     @ApiResponses( {
         @ApiResponse(
             code = 200, response = OcrValidationResponse.class, message = "Validation executed successfully"
@@ -81,7 +81,7 @@ public class BulkScanController {
     ) {
         log.info("Transforming exception record to case");
 
-        Map<String, Object> transformedCaseData = d8FormToCaseTransformer.toCase(exceptionRecord);
+        Map<String, Object> transformedCaseData = d8FormToCaseTransformer.transformIntoCaseData(exceptionRecord);
 
         SuccessfulTransformationResponse callbackResponse = SuccessfulTransformationResponse.builder()
                 .caseCreationDetails(
