@@ -2,14 +2,13 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.bulk.scan.UnsupportedFormTypeException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-
-import static java.lang.String.format;
 
 @Component
 public class BulkScanFormValidatorFactory {
@@ -25,9 +24,9 @@ public class BulkScanFormValidatorFactory {
         validators.put(BulkScanForms.NEW_DIVORCE_CASE, newDivorceCaseValidator);
     }
 
-    public BulkScanFormValidator getValidator(final String formType) {
+    public BulkScanFormValidator getValidator(final String formType) throws UnsupportedFormTypeException {
         if (!validators.containsKey(formType)) {
-            throw new UnsupportedOperationException(format("\"%s\" form type is not supported", formType));
+            throw new UnsupportedFormTypeException(formType);
         }
 
         return validators.get(formType);

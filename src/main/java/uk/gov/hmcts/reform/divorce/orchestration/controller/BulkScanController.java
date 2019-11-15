@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transfor
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.bulk.scan.UnsupportedFormTypeException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidator;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidatorFactory;
 
@@ -48,7 +49,6 @@ public class BulkScanController {
         @ApiResponse(code = 403, message = "S2S token is not authorized to use the service"),
         @ApiResponse(code = 404, message = "Form type not found")
     })
-
     public ResponseEntity<OcrValidationResponse> validateOcrData(
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
         @PathVariable(name = "form-type", required = false) String formType,
@@ -56,15 +56,17 @@ public class BulkScanController {
     ) {
         log.info("Validating form {} for bulk scanning operation", formType);
 
-        BulkScanFormValidator formValidator = bulkScanFormValidatorFactory.getValidator(formType);
-        OcrValidationResult ocrValidationResult = formValidator.validateBulkScanForm(request.getOcrDataFields());
+        ResponseEntity<OcrValidationResponse> response;
 
-        return ok().body(
-            new OcrValidationResponse(
-                ocrValidationResult.getWarnings(),
-                ocrValidationResult.getErrors(),
-                ocrValidationResult.getStatus()
-            ));
+        try {
+            OcrValidationResponse validationResponse = validateRequest(formType, request);
+            response = ok().body(validationResponse);
+        } catch (UnsupportedFormTypeException unsupportedFormTypeException) {
+            log.error(unsupportedFormTypeException.getMessage(), unsupportedFormTypeException);
+            response = ResponseEntity.notFound().build();
+        }
+
+        return response;
     }
 
     @PostMapping("/transform-exception-record")
@@ -77,7 +79,6 @@ public class BulkScanController {
         @ApiResponse(code = 403, message = "S2S token is not authorized to use the service"),
         @ApiResponse(code = 404, message = "Form type not found")
     })
-
     public ResponseEntity<SuccessfulTransformationResponse> transform(
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
         @Valid @RequestBody ExceptionRecord exceptionRecord
@@ -90,4 +91,11 @@ public class BulkScanController {
             )
         );
     }
+
+    private OcrValidationResponse validateRequest(String formType, OcrDataValidationRequest request) throws UnsupportedFormTypeException {
+        BulkScanFormValidator formValidator = bulkScanFormValidatorFactory.getValidator(formType);
+        OcrValidationResult ocrValidationResult = formValidator.validateBulkScanForm(request.getOcrDataFields());
+        return new OcrValidationResponse(ocrValidationResult);
+    }
+
 }

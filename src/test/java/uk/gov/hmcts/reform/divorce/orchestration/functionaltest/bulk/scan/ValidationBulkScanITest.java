@@ -16,6 +16,7 @@ import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.ResultMatcher.matchAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,13 +34,14 @@ public class ValidationBulkScanITest {
 
     private static final String SUCCESS_STATUS = "SUCCESS";
     private static final String ERRORS = "ERRORS";
+    private static final String BASIC_FORM_JSON = "jsonExamples/payloads/bulk/scan/basicForm.json";
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
     public void shouldReturnSuccessResponseForValidationEndpoint() throws Exception {
-        String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/basicForm.json");
+        String formToValidate = loadResourceAsString(BASIC_FORM_JSON);
 
         mockMvc.perform(post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
             .contentType(APPLICATION_JSON)
@@ -70,4 +72,18 @@ public class ValidationBulkScanITest {
             ))
         ));
     }
+
+    @Test
+    public void shouldReturnResourceNotFoundResponseForUnsupportedFormType() throws Exception {
+        String formToValidate = loadResourceAsString(BASIC_FORM_JSON);
+
+        mockMvc.perform(post("/forms/{form-type}/validate-ocr", "unsupportedFormType")
+            .contentType(APPLICATION_JSON)
+            .content(formToValidate)
+        ).andExpect(matchAll(
+            status().isNotFound(),
+            content().string(isEmptyString())
+        ));
+    }
+
 }
