@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,17 +17,22 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transfor
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.SuccessfulTransformationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidator;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidatorFactory;
 
 import javax.validation.Valid;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.springframework.http.ResponseEntity.ok;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.ValidationStatus.SUCCESS;
 
 @Slf4j
 @Controller
 public class BulkScanController {
+
+    @Autowired
+    private BulkScanFormValidatorFactory bulkScanFormValidatorFactory;
 
     @PostMapping(
         path = "/forms/{form-type}/validate-ocr",
@@ -50,27 +56,38 @@ public class BulkScanController {
     ) {
         log.info("Validating form {} for bulk scanning operation", formType);
 
-        return ok().body(new OcrValidationResponse(emptyList(), emptyList(), SUCCESS));
+        BulkScanFormValidator formValidator = bulkScanFormValidatorFactory.getValidator(formType);
+        OcrValidationResult ocrValidationResult = formValidator.validateBulkScanForm(request.getOcrDataFields());
+
+        return ok().body(
+            new OcrValidationResponse(
+                ocrValidationResult.getWarnings(),
+                ocrValidationResult.getErrors(),
+                ocrValidationResult.getStatus()
+            ));
     }
 
     @PostMapping("/transform-exception-record")
     @ApiOperation("Transforms Excela data to CCD compatible format")
     @ApiResponses( {
-            @ApiResponse(
-                    code = 200, response = SuccessfulTransformationResponse.class, message = "Transformation executed successfully"
-            ),
-            @ApiResponse(code = 401, message = "Provided S2S token is missing or invalid"),
-            @ApiResponse(code = 403, message = "S2S token is not authorized to use the service"),
-            @ApiResponse(code = 404, message = "Form type not found")
+        @ApiResponse(
+            code = 200, response = SuccessfulTransformationResponse.class, message = "Transformation executed successfully"
+        ),
+        @ApiResponse(code = 401, message = "Provided S2S token is missing or invalid"),
+        @ApiResponse(code = 403, message = "S2S token is not authorized to use the service"),
+        @ApiResponse(code = 404, message = "Form type not found")
     })
 
     public ResponseEntity<SuccessfulTransformationResponse> transform(
-            @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
-            @Valid @RequestBody ExceptionRecord exceptionRecord
+        @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
+        @Valid @RequestBody ExceptionRecord exceptionRecord
     ) {
         log.info("Transforming data from Excela to CCD data for form {}", exceptionRecord);
 
-        return ok().body(new SuccessfulTransformationResponse(new CaseCreationDetails("", "", emptyMap()),
-                emptyList()));
+        return ok().body(
+            new SuccessfulTransformationResponse(
+                new CaseCreationDetails("", "", emptyMap()), emptyList()
+            )
+        );
     }
 }

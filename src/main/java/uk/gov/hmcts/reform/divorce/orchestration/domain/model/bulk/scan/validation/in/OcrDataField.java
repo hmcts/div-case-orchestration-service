@@ -2,14 +2,16 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validat
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
+@Getter
 public class OcrDataField {
 
     @JsonProperty
-    public final String name;
+    private final String name;
 
     @JsonProperty
-    public final String value;
+    private final String value;
 
     @JsonCreator
     public OcrDataField(
