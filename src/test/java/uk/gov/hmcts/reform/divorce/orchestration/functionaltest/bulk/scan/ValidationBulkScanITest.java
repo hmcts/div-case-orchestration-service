@@ -15,11 +15,13 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.ResultMatcher.matchAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.NEW_DIVORCE_CASE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
 @ContextConfiguration(classes = OrchestrationServiceApplication.class)
@@ -30,6 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.
 public class ValidationBulkScanITest {
 
     private static final String SUCCESS_STATUS = "SUCCESS";
+    private static final String ERRORS = "ERRORS";
 
     @Autowired
     private MockMvc mockMvc;
@@ -38,15 +41,32 @@ public class ValidationBulkScanITest {
     public void shouldReturnSuccessResponseForValidationEndpoint() throws Exception {
         String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/basicForm.json");
 
-        mockMvc.perform(post("/forms/{form-type}/validate-ocr", "justAnotherForm")
+        mockMvc.perform(post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
             .contentType(APPLICATION_JSON)
             .content(formToValidate)
         ).andExpect(matchAll(
             status().isOk(),
             content().string(allOf(
-                hasJsonPath("$.status", equalTo(SUCCESS_STATUS)),
                 hasJsonPath("$.warnings", equalTo(emptyList())),
-                hasJsonPath("$.errors", equalTo(emptyList()))
+                hasJsonPath("$.errors", equalTo(emptyList())),
+                hasJsonPath("$.status", equalTo(SUCCESS_STATUS))
+            ))
+        ));
+    }
+
+    @Test
+    public void shouldReturnErrorResponseForValidationEndpoint() throws Exception {
+        String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/validation/incompleteForm.json");
+
+        mockMvc.perform(post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
+            .contentType(APPLICATION_JSON)
+            .content(formToValidate)
+        ).andExpect(matchAll(
+            status().isOk(),
+            content().string(allOf(
+                hasJsonPath("$.warnings", equalTo(emptyList())),
+                hasJsonPath("$.errors", hasItem("Mandatory field \"PetitionerFirstName\" is missing")),
+                hasJsonPath("$.status", equalTo(ERRORS))
             ))
         ));
     }

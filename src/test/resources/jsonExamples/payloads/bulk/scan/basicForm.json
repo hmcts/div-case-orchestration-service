@@ -1,8 +1,12 @@
 {
   "ocr_data_fields": [
     {
-      "name": "firstName",
+      "name": "PetitionerFirstName",
       "value": "Christopher"
+    },
+    {
+      "name": "PetitionerLastName",
+      "value": "Lambert"
     }
   ]
 }
