@@ -21,7 +21,7 @@ public class OrchestrationConstants {
     // Authentication
     public static final String ACCESS_CODE = "access_code";
     public static final String AUTH_TOKEN_JSON_KEY = "authToken";
-    public static final String AUTHORIZATION_CODE = "authorization_code";
+    public static final String GRANT_TYPE = "authorization_code";
     public static final String BASIC = "Basic ";
     public static final String PIN_PREFIX = "Pin ";
     public static final String CODE = "code";
@@ -115,6 +115,7 @@ public class OrchestrationConstants {
     public static final String SOL_SERVICE_METHOD_CCD_FIELD = "SolServiceMethod";
     public static final String PERSONAL_SERVICE_VALUE = "personalService";
     public static final String NOT_DEFENDING_NOT_ADMITTING = "NoNoAdmission";
+    public static final String PREVIOUS_CASE_ID_CCD_KEY = "PreviousCaseId";
 
     public static final String PET_SOL_EMAIL = "PetitionerSolicitorEmail";
     public static final String PET_SOL_NAME = "PetitionerSolicitorName";
@@ -202,6 +203,11 @@ public class OrchestrationConstants {
     public static final String RESPONDENT_PIN = "pin";
     public static final String CO_RESPONDENT_PIN = "coRespondentPin";
     public static final String SUCCESS_STATUS = "success";
+    /*
+       Unfortunately, "court" is the name that is already used in the Divorce session format in many places, although it holds a list of courts.
+       Changing it now would probably be more trouble than it's worth. At least our constant can be called the right thing.
+    */
+    public static final String COURTS = "court";
 
     // Hearing
     public static final String COURT_NAME_TEMPLATE_ID = "court name";
@@ -296,8 +302,8 @@ public class OrchestrationConstants {
     public static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
     public static final String DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00098.docx";
     public static final String DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE = "d79";
-    public static final String DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME = "decreeNisiRefusalOrderClarification";
-    public static final String DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME = "decreeNisiRefusalOrderRejection";
+    public static final String DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME = "clarificationDnRefusalOrder";
+    public static final String DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME = "rejectionDnRefusalOrder";
     public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD = "PreviousDNClarificationRefusalOrder";
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";

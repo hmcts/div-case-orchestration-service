@@ -82,7 +82,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         Set<String> removableCaseIds = Optional.ofNullable(result.getRemovableCaseIds()).orElse(Collections.emptySet());
         Map<String, Object> updatePayload = new HashMap<>();
 
-        if (removableCaseIds.size() > 0) {
+        if (!removableCaseIds.isEmpty()) {
             updatePayload.put(CASE_LIST_KEY, filterBulkCases(caseResponse, result.getRemovableCaseIds()));
             updatePayload.put(BULK_CASE_ACCEPTED_LIST_KEY, filterAcceptedCases(caseResponse, result.getRemovableCaseIds()));
         }
@@ -212,7 +212,6 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         log.info("Completed bulk case remove pronouncement details from cases with bulk case Id:{} in:{} millis", bulkCaseId, endTime - startTime);
     }
 
-
     @Override
     @EventListener
     public void handleBulkCaseCancelPronouncementDetailsEvent(BulkCaseCancelPronouncementEvent event) throws WorkflowException {
@@ -233,9 +232,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         log.info("Completed bulk case cancel pronouncement with bulk cased Id:{} in:{} millis", bulkCaseId, endTime - startTime);
     }
 
-
     public Map<String, Object> removeFromBulkListed(CcdCallbackRequest callbackRequest, String auth) throws WorkflowException {
         return listForPronouncementDocGenerationWorkflow.run(callbackRequest, auth);
     }
-
 }

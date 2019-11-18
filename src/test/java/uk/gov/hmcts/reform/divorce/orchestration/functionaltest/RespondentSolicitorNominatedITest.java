@@ -14,9 +14,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.PinRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
 
 import java.util.Map;
 
@@ -73,10 +73,10 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
 
     @Test
     public void givenRespondentSolicitorNominated_whenCallbackCalled_linkingFieldsAreReset() throws Exception {
-        final PinRequest pinRequest = PinRequest.builder()
-            .firstName("")
-            .lastName("")
-            .build();
+        final GeneratePinRequest pinRequest = GeneratePinRequest.builder()
+                        .firstName("")
+                        .lastName("")
+                        .build();
 
         final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
 
@@ -85,6 +85,7 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
         );
 
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
         caseData.put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();

@@ -70,7 +70,7 @@ public class UpdateDNPronouncedCaseEventListenerTest {
         classToTest.onApplicationEvent(event);
 
         verify(caseOrchestrationService, times(1)).makeCaseEligibleForDA(TEST_AUTH_TOKEN, TEST_CASE_ID);
-        assertEquals(casesProcessedCountInContext(), TEST_CASES_PROCESSED_COUNT);
+        assertEquals(TEST_CASES_PROCESSED_COUNT, casesProcessedCountInContext());
     }
 
     private int casesProcessedCountInContext() {
@@ -80,5 +80,4 @@ public class UpdateDNPronouncedCaseEventListenerTest {
     private void resetCassesProcessedCountInContext() {
         context.setTransientObject(CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT, TEST_CASES_PROCESSED_COUNT);
     }
-
 }

@@ -116,7 +116,7 @@ feature-toggle:
   toggle:
     bulk-printer-toggle-name: "divorce_bulk_print"
     feature_resp_solicitor_details: ${FEATURE_RESP_SOLICITOR_DETAILS:false}
-    dn_refusal: ${FEATURE_DN_REFUSAL:false}
+    dn_refusal: ${FEATURE_DN_REFUSAL:true}
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
@@ -139,6 +139,7 @@ uk:
           AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: bc6ee2ec-f62b-4321-b19f-65e868f849eb
           AOS_RECEIVED_NO_CONSENT_2_YEARS: 845d0114-0f74-43a4-b11c-8ebeceb01c5b
           APPLIC_SUBMISSION: c323844c-5fb9-4ba4-8290-b84139eb033c
+          APPLIC_SUBMISSION_AMEND: dafe6549-3b6d-4dca-a7bc-1ab2b1b1b9d6
           APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED: e07cbeb8-c2e0-4ba5-84ba-b9bd1ab04b0a
           APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND: 369169ef-c6cb-428c-abbd-427aaa50c2a3
           APPLICANT_DA_ELIGIBLE: 71fd2e7e-42dc-4dcf-a9bb-007ae9d4b27f
@@ -175,6 +176,7 @@ uk:
           SOL_GENERAL_CASE_UPDATE: 951d26d9-e5fc-40de-a9da-d3ab957cb5e3
           SOL_RESP_COE_NOTIFICATION: e7117ed4-83ff-43f9-8521-e70d31063c7e
           SOL_PERSONAL_SERVICE: 1e2f2ac5-ce4c-4fce-aca0-47a876eda089
+          SOL_DN_DECISION_MADE: fd6d9667-527f-4c22-b1f1-d095c412ab2c
           SOL_DA_GRANTED_NOTIFICATION: fc8f7343-8f07-42b7-a3c5-52543a21015d
 
 court-distribution-config:
@@ -362,10 +364,11 @@ dncourt:
 cohort: onlineSubmissionPrivateBeta
 
 idam:
-  api:
-    url: ${IDAM_API_URL:http://localhost:4503}
-    redirect-url: ${IDAM_API_REDIRECT_URL:http://localhost:8080/authenticated}
+  client:
+    redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:8080/authenticated}
     port: 4503
+    secret: ${IDAM_CLIENT_SECRET:dummysecret}
+    id: divorce
     health:
       context-path: /health
   citizen:
@@ -378,11 +381,8 @@ idam:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
     secret: ${SERVICE_AUTH_SECRET:dummysecret}
-
-auth2:
-  client:
-    id: divorce
-    secret: ${AUTH2_CLIENT_SECRET:dummysecret}
+  api:
+    url: ${IDAM_API_URL:http://localhost:4503}
 
 document:
   generator:
@@ -398,6 +398,7 @@ http:
     timeout: 60000
     request:
       timeout: 60000
+
 health:
   check:
     http:

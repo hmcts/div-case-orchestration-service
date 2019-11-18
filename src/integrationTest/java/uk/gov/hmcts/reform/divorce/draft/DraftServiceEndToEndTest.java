@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.draft;
 import feign.FeignException;
 import org.junit.After;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
@@ -14,9 +15,13 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class DraftServiceEndToEndTest extends IntegrationTest {
 
@@ -113,9 +118,11 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
 
     private void assertUserDraft(String draftFile, UserDetails user) {
         final Map<String, Object> expectedDraft = getDraftResponseResource(draftFile);
-        Map<String, Object> userDraft = draftsSubmissionSupport.getUserDraft(user);
+        final Map<String, Object> actualUserDraft = draftsSubmissionSupport.getUserDraft(user);
 
-        assertEquals(expectedDraft, userDraft);
+        //Assert transformation fields
+        assertThat(actualUserDraft.get("court"), is(notNullValue()));
+        JSONAssert.assertEquals(convertObjectToJsonString(expectedDraft), convertObjectToJsonString(actualUserDraft), false);
     }
 
     @SuppressWarnings("unchecked")

@@ -59,7 +59,7 @@ public class SetFormattedDnCourtDetailsTest {
 
         Map<String, Object> contextDnCourtDetails = context.getTransientObject(DN_COURT_DETAILS);
 
-        assertEquals(contextDnCourtDetails.get(COURT_NAME_CCD_FIELD), TEST_COURT_NAME);
+        assertEquals(TEST_COURT_NAME, contextDnCourtDetails.get(COURT_NAME_CCD_FIELD));
         assertEquals(contextDnCourtDetails.get(COURT_CONTACT_JSON_KEY),
                 CARE_OF_PREFIX + SPACE_SEPARATOR + TEST_COURT_NAME + LINE_SEPARATOR
                 + TEST_COURT_ADDRESS + LINE_SEPARATOR + LINE_SEPARATOR

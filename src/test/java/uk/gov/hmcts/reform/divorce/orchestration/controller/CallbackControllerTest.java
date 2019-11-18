@@ -495,6 +495,7 @@ public class CallbackControllerTest {
     public void testSolDnReviewPetitionPopulatesErrorsIfExceptionIsThrown() throws CaseOrchestrationServiceException {
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
                 .build())
             .build();
 
@@ -549,6 +550,7 @@ public class CallbackControllerTest {
     public void testSolDnRespAnswersDocPopulatesErrorsIfExceptionIsThrown() throws CaseOrchestrationServiceException {
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
                 .build())
             .build();
 
@@ -606,6 +608,7 @@ public class CallbackControllerTest {
     public void testSolDnCoRespAnswersDocPopulatesErrorsIfExceptionIsThrown() throws CaseOrchestrationServiceException {
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
                 .build())
             .build();
 
@@ -990,6 +993,7 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getErrors(), is(nullValue()));
         verify(caseOrchestrationService).notifyForRefusalOrder(eq(ccdCallbackRequest));
         verify(caseOrchestrationService).cleanStateCallback(eq(ccdCallbackRequest), eq(AUTH_TOKEN));
+        verify(caseOrchestrationService).processDnDecisionMade(eq(ccdCallbackRequest));
     }
 
     @Test

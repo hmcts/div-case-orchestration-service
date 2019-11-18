@@ -75,10 +75,10 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     @Autowired
     private MockMvc webClient;
 
-    @Value("${auth2.client.id}")
+    @Value("${idam.client.id}")
     private String authClientId;
 
-    @Value("${idam.api.redirect-url}")
+    @Value("${idam.client.redirect_uri}")
     private String authRedirectUrl;
 
     @Before

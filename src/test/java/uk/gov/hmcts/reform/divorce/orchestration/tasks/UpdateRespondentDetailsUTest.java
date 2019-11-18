@@ -9,14 +9,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
-import uk.gov.hmcts.reform.divorce.orchestration.client.IdamClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Collections;
 import java.util.Map;
@@ -104,13 +104,13 @@ public class UpdateRespondentDetailsUTest {
         taskContext.setTransientObject(IS_RESPONDENT, true);
         taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
+        when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS_EVENT_ID, dataToUpdate))
             .thenReturn(null);
 
         Assert.assertEquals(payload, classUnderTest.execute(taskContext, payload));
 
-        verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);
+        verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS_EVENT_ID, dataToUpdate);
     }
 
@@ -144,11 +144,11 @@ public class UpdateRespondentDetailsUTest {
         taskContext.setTransientObject(IS_RESPONDENT, true);
         taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
+        when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
 
         Assert.assertEquals(payload, classUnderTest.execute(taskContext, payload));
 
-        verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);
+        verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID,
             LINK_RESPONDENT_GENERIC_EVENT_ID, dataToUpdate);
     }
@@ -169,7 +169,7 @@ public class UpdateRespondentDetailsUTest {
         taskContext.setTransientObject(IS_RESPONDENT, true);
         taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN))
+        when(idamClient.getUserDetails(BEARER_AUTH_TOKEN))
             .thenReturn(respondentDetails);
 
         UserDetails result = classUnderTest.execute(taskContext, payload);
@@ -194,7 +194,7 @@ public class UpdateRespondentDetailsUTest {
         taskContext.setTransientObject(IS_RESPONDENT, true);
         taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
+        when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
 
         UserDetails result = classUnderTest.execute(taskContext, payload);
         Assert.assertEquals(payload, result);
@@ -226,7 +226,7 @@ public class UpdateRespondentDetailsUTest {
         taskContext.setTransientObject(IS_RESPONDENT, false);
         taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        when(idamClient.retrieveUserDetails(BEARER_AUTH_TOKEN)).thenReturn(coRespondentDetails);
+        when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(coRespondentDetails);
 
         Assert.assertEquals(payload, classUnderTest.execute(taskContext, payload));
 
@@ -237,7 +237,7 @@ public class UpdateRespondentDetailsUTest {
                 CO_RESP_LINKED_TO_CASE_DATE, FIXED_DATE
             );
 
-        verify(idamClient).retrieveUserDetails(BEARER_AUTH_TOKEN);
+        verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
         verify(caseMaintenanceClient).updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(LINK_RESPONDENT_GENERIC_EVENT_ID), eq(expectedDataToUpdate));
     }
 

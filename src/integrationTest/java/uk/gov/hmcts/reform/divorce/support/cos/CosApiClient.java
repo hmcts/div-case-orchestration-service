@@ -208,4 +208,13 @@ public interface CosApiClient {
             @RequestHeader(AUTHORIZATION) String authorisation,
             @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/dn-decision-made"
+    )
+    CcdCallbackResponse dnDecisionMade(
+            @RequestHeader(AUTHORIZATION) String authorisation,
+            @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
 }

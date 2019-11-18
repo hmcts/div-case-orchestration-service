@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask;
 
 import java.util.Map;
 
@@ -16,18 +16,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SendPetitionerSubmissionNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail;
+    private final SendPetitionerSubmissionNotificationEmailTask sendPetitionerSubmissionNotificationEmailTask;
 
     @Autowired
     public SendPetitionerSubmissionNotificationWorkflow(
-            SendPetitionerSubmissionNotificationEmail sendPetitionerSubmissionNotificationEmail) {
-        this.sendPetitionerSubmissionNotificationEmail = sendPetitionerSubmissionNotificationEmail;
+            SendPetitionerSubmissionNotificationEmailTask sendPetitionerSubmissionNotificationEmailTask) {
+        this.sendPetitionerSubmissionNotificationEmailTask = sendPetitionerSubmissionNotificationEmailTask;
     }
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return this.execute(
             new Task[] {
-                sendPetitionerSubmissionNotificationEmail,
+                sendPetitionerSubmissionNotificationEmailTask,
             },
             ccdCallbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId())

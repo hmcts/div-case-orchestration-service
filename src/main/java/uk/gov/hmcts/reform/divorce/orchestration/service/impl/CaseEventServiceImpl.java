@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.CleanStatusEvent;
@@ -16,6 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CaseEventServiceImpl implements CaseEventService {
     private final CleanStateFromCaseDataWorkflow cleanStateFromCaseDataWorkflow;
 
@@ -25,6 +27,11 @@ public class CaseEventServiceImpl implements CaseEventService {
         DefaultTaskContext context = (DefaultTaskContext) event.getSource();
         String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
-        return cleanStateFromCaseDataWorkflow.run(caseId, authToken);
+
+        log.debug("Listened to {} for case {}", event.getClass().getName(), caseId);
+        Map<String, Object> returnedPayload = cleanStateFromCaseDataWorkflow.run(caseId, authToken);
+        log.debug("State cleared for case {}", caseId);
+
+        return returnedPayload;
     }
 }

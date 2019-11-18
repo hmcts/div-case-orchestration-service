@@ -6,12 +6,15 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.CourtsMatcher;
 
 import java.util.Collections;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -76,10 +79,19 @@ public class RetrieveAosCaseITest extends MockedFunctionalTest {
     public void givenAllGoesWellProceedAsExpected() throws Exception {
         stubRetrieveAosCaseFromCMS(CASE_DETAILS);
 
+        CaseDataResponse expected = CaseDataResponse.builder()
+            .data(CASE_DATA)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .court(TEST_COURT)
+            .build();
+
         webClient.perform(get(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .accept(APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)))
+            .andExpect(content().string(hasJsonPath("$.data.court", CourtsMatcher.isExpectedCourtsList())));
     }
 
     private void stubRetrieveAosCaseFromCMS(CaseDetails caseDetails) {

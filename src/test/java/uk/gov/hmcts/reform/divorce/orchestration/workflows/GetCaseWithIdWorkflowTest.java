@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdTask;
 
@@ -31,10 +30,6 @@ public class GetCaseWithIdWorkflowTest {
 
     @Test
     public void whenGetCase_thenProcessAsExpected() throws WorkflowException, TaskException {
-        final Task[] tasks = new Task[] {
-            getCaseWithId
-        };
-
         final CaseDetails caseDetails = CaseDetails.builder().build();
 
         final DefaultTaskContext context = new DefaultTaskContext();

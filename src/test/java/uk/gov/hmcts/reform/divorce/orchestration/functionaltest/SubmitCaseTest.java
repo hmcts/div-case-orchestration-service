@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.Before;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -114,23 +114,11 @@ public class SubmitCaseTest extends MockedFunctionalTest {
             )
         ));
 
-        String allocatedCourtId = JsonPath.read(responseBody, "$.allocatedCourt.courtId");
-        Court allocatedCourt = courtLookupService.getCourtByKey(allocatedCourtId);
-        assertThat(responseBody, hasJsonPath("$.allocatedCourt", allOf(
-            hasJsonPath("courtId", is(allocatedCourtId)),
-            hasJsonPath("serviceCentreName", is(allocatedCourt.getServiceCentreName())),
-            hasJsonPath("divorceCentre", is(allocatedCourt.getDivorceCentreName())),
-            hasJsonPath("divorceCentreAddressName", is(allocatedCourt.getDivorceCentreAddressName())),
-            hasJsonPath("street", is(allocatedCourt.getStreet())),
-            hasJsonPath("courtCity", is(allocatedCourt.getCourtCity())),
-            hasJsonPath("poBox", is(allocatedCourt.getPoBox())),
-            hasJsonPath("postCode", is(allocatedCourt.getPostCode())),
-            hasJsonPath("openingHours", is(allocatedCourt.getOpeningHours())),
-            hasJsonPath("email", is(allocatedCourt.getEmail())),
-            hasJsonPath("phoneNumber", is(allocatedCourt.getPhoneNumber())),
-            hasJsonPath("siteId", is(allocatedCourt.getSiteId())),
-            hasNoJsonPath("formattedAddress")
-        )));
+        Map actualAllocatedCourt = JsonPath.read(responseBody, "$.allocatedCourt");
+        String allocatedCourtId = JsonPath.read(actualAllocatedCourt, "$.courtId");
+        Court expectedAllocatedCourt = courtLookupService.getCourtByKey(allocatedCourtId);
+
+        JSONAssert.assertEquals(convertObjectToJsonString(expectedAllocatedCourt), convertObjectToJsonString(actualAllocatedCourt), true);
     }
 
     @Test

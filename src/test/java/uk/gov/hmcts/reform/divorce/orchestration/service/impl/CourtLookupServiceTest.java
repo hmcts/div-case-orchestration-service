@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 
+import java.util.Map;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -38,9 +40,9 @@ public class CourtLookupServiceTest {
         assertThat(foundCourt.getCourtId(), is("eastMidlands"));
         assertThat(foundCourt.getIdentifiableCentreName(), is("East Midlands Regional Divorce Centre"));
         String expectedAddress = "East Midlands Regional Divorce Centre" + LINE_SEPARATOR
-                + "PO Box 10447" + LINE_SEPARATOR
-                + "Nottingham" + LINE_SEPARATOR
-                + "NG2 9QN";
+            + "PO Box 10447" + LINE_SEPARATOR
+            + "Nottingham" + LINE_SEPARATOR
+            + "NG2 9QN";
         assertThat(foundCourt.getFormattedAddress(), is(expectedAddress));
     }
 
@@ -51,10 +53,10 @@ public class CourtLookupServiceTest {
         assertThat(foundCourt.getCourtId(), is("northWest"));
         assertThat(foundCourt.getIdentifiableCentreName(), is("North West Regional Divorce Centre"));
         String expectedAddress = "North West Regional Divorce Centre" + LINE_SEPARATOR
-                + "Liverpool Civil & Family Court" + LINE_SEPARATOR
-                + "35 Vernon Street" + LINE_SEPARATOR
-                + "Liverpool" + LINE_SEPARATOR
-                + "L2 2BX";
+            + "Liverpool Civil & Family Court" + LINE_SEPARATOR
+            + "35 Vernon Street" + LINE_SEPARATOR
+            + "Liverpool" + LINE_SEPARATOR
+            + "L2 2BX";
         assertThat(foundCourt.getFormattedAddress(), is(expectedAddress));
     }
 
@@ -65,10 +67,10 @@ public class CourtLookupServiceTest {
         assertThat(foundCourt.getCourtId(), is("serviceCentre"));
         assertThat(foundCourt.getIdentifiableCentreName(), is("Courts and Tribunals Service Centre"));
         String expectedAddress = "Courts and Tribunals Service Centre" + LINE_SEPARATOR
-                + "c/o HMCTS Digital Divorce" + LINE_SEPARATOR
-                + "PO Box 12706" + LINE_SEPARATOR
-                + "Harlow" + LINE_SEPARATOR
-                + "CM20 9QT";
+            + "c/o HMCTS Digital Divorce" + LINE_SEPARATOR
+            + "PO Box 12706" + LINE_SEPARATOR
+            + "Harlow" + LINE_SEPARATOR
+            + "CM20 9QT";
         assertThat(foundCourt.getFormattedAddress(), is(expectedAddress));
     }
 
@@ -84,15 +86,15 @@ public class CourtLookupServiceTest {
     public void testDnCourtIsReturnedWithCorrectDetails() throws CourtDetailsNotFound {
         DnCourt foundCourt = courtLookupService.getDnCourtByKey("liverpool");
 
-        assertEquals(foundCourt.getName(), "Liverpool Civil and Family Court Hearing Centre");
-        assertEquals(foundCourt.getAddress(), "35 Vernon Street\nLiverpool\nL2 2BX");
-        assertEquals(foundCourt.getEmail(), "divorcecase@justice.gov.uk");
-        assertEquals(foundCourt.getPhone(), "0300 303 0642");
+        assertEquals("Liverpool Civil and Family Court Hearing Centre", foundCourt.getName());
+        assertEquals("35 Vernon Street\nLiverpool\nL2 2BX", foundCourt.getAddress());
+        assertEquals("divorcecase@justice.gov.uk", foundCourt.getEmail());
+        assertEquals("0300 303 0642", foundCourt.getPhone());
 
         String expectedContactDetails = CARE_OF_PREFIX + SPACE_SEPARATOR + foundCourt.getName() + LINE_SEPARATOR
-                + foundCourt.getAddress() + LINE_SEPARATOR + LINE_SEPARATOR
-                + EMAIL_LABEL + SPACE_SEPARATOR + foundCourt.getEmail() + LINE_SEPARATOR
-                + PHONE_LABEL + SPACE_SEPARATOR + foundCourt.getPhone();
+            + foundCourt.getAddress() + LINE_SEPARATOR + LINE_SEPARATOR
+            + EMAIL_LABEL + SPACE_SEPARATOR + foundCourt.getEmail() + LINE_SEPARATOR
+            + PHONE_LABEL + SPACE_SEPARATOR + foundCourt.getPhone();
         assertEquals(foundCourt.getFormattedContactDetails(), expectedContactDetails);
     }
 
@@ -103,4 +105,11 @@ public class CourtLookupServiceTest {
 
         courtLookupService.getDnCourtByKey("unknownCourt");
     }
+
+    @Test
+    public void shouldReturnAllCourts() {
+        Map allCourts = courtLookupService.getAllCourts();
+        assertThat(allCourts.size(), is(5));
+    }
+
 }
