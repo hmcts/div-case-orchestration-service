@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.bulk.scan.UnsupportedFormTypeException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.instanceOf;
@@ -32,7 +33,7 @@ public class BulkScanFormValidatorFactoryTest {
     }
 
     @Test
-    public void shouldReturnValidatorForNewDivorceCaseForm() {
+    public void shouldReturnValidatorForNewDivorceCaseForm() throws UnsupportedFormTypeException {
         BulkScanFormValidator validator = classUnderTest.getValidator("newDivorceCase");
 
         assertThat(validator, is(instanceOf(NewDivorceCaseValidator.class)));
@@ -40,8 +41,8 @@ public class BulkScanFormValidatorFactoryTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenFormTypeIsNotSupported() {
-        expectedException.expect(UnsupportedOperationException.class);
+    public void shouldThrowExceptionWhenFormTypeIsNotSupported() throws UnsupportedFormTypeException {
+        expectedException.expect(UnsupportedFormTypeException.class);
         expectedException.expectMessage("\"unsupportedFormType\" form type is not supported");
 
         classUnderTest.getValidator("unsupportedFormType");
