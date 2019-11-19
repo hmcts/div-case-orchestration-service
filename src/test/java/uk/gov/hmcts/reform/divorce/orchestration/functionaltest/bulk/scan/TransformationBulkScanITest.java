@@ -53,10 +53,14 @@ public class TransformationBulkScanITest {
                     hasJsonPath("$.case_creation_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
                         hasJsonPath("event_id", is("EVENT_ID")),
-                        hasJsonPath("case_data.*", hasSize(2)),
+                        hasJsonPath("case_data.*", hasSize(6)),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("D8FirstName", is("Christopher")),
-                            hasJsonPath("D8LastName", is("O'John"))
+                            hasJsonPath("D8LastName", is("O'John")),
+                            hasJsonPath("D8PetitionerEmail", is("test.testerson@mailinator.com")),
+                            hasJsonPath("D8legalProcess", is("Divorce")),
+                            hasJsonPath("D8ScreenHasMarriageCert", is("True")),
+                            hasJsonPath("D8CertificateInEnglish", is("True"))
                         ))
                     ))
                 )));

@@ -18,8 +18,12 @@ public class D8FormToCaseTransformer implements ExceptionRecordToCaseTransformer
     private static Map<String, String> d8ExceptionRecordToCcdMap() {
         Map<String, String> erToCcdFieldsMap = new HashMap<>();
 
-        erToCcdFieldsMap.put("firstName", "D8FirstName");
-        erToCcdFieldsMap.put("lastName", "D8LastName");
+        erToCcdFieldsMap.put("PetitionerFirstName", "D8FirstName");
+        erToCcdFieldsMap.put("PetitionerLastName", "D8LastName");
+        erToCcdFieldsMap.put("email", "D8PetitionerEmail");
+        erToCcdFieldsMap.put("D8legalProcess", "D8legalProcess");
+        erToCcdFieldsMap.put("D8ScreenHasMarriageCert", "D8ScreenHasMarriageCert");
+        erToCcdFieldsMap.put("D8CertificateInEnglish", "D8CertificateInEnglish");
 
         return erToCcdFieldsMap;
     }

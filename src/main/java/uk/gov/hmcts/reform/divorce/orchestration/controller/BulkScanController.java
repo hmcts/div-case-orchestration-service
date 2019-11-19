@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,16 +17,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transfor
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.SuccessfulTransformationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations.D8FormToCaseTransformer;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidator;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidatorFactory;
 
 import java.util.Collections;
 import java.util.Map;
 import javax.validation.Valid;
 
-import static java.util.Collections.emptyList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.springframework.http.ResponseEntity.ok;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.ValidationStatus.SUCCESS;
 
 @Slf4j
 @Controller
@@ -34,7 +36,10 @@ public class BulkScanController {
     private static final String CASE_TYPE_ID = "DIVORCE";
     private static final String EVENT_ID = "EVENT_ID";
 
-    D8FormToCaseTransformer d8FormToCaseTransformer = new D8FormToCaseTransformer();
+    private D8FormToCaseTransformer d8FormToCaseTransformer = new D8FormToCaseTransformer();
+
+    @Autowired
+    private BulkScanFormValidatorFactory bulkScanFormValidatorFactory;
 
     @PostMapping(
         path = "/forms/{form-type}/validate-ocr",
@@ -57,7 +62,15 @@ public class BulkScanController {
     ) {
         log.info("Validating form {} for bulk scanning operation", formType);
 
-        return ok().body(new OcrValidationResponse(emptyList(), emptyList(), SUCCESS));
+        BulkScanFormValidator formValidator = bulkScanFormValidatorFactory.getValidator(formType);
+        OcrValidationResult ocrValidationResult = formValidator.validateBulkScanForm(request.getOcrDataFields());
+
+        return ok().body(
+            new OcrValidationResponse(
+                ocrValidationResult.getWarnings(),
+                ocrValidationResult.getErrors(),
+                ocrValidationResult.getStatus()
+            ));
     }
 
     @PostMapping(
@@ -84,13 +97,13 @@ public class BulkScanController {
         Map<String, Object> transformedCaseData = d8FormToCaseTransformer.transformIntoCaseData(exceptionRecord);
 
         SuccessfulTransformationResponse callbackResponse = SuccessfulTransformationResponse.builder()
-                .caseCreationDetails(
-                        new CaseCreationDetails(
-                                CASE_TYPE_ID,
-                                EVENT_ID,
-                                transformedCaseData))
-                .warnings(Collections.emptyList())
-                .build();
+            .caseCreationDetails(
+                new CaseCreationDetails(
+                    CASE_TYPE_ID,
+                    EVENT_ID,
+                    transformedCaseData))
+            .warnings(Collections.emptyList())
+            .build();
 
         return ResponseEntity.ok(callbackResponse);
     }
