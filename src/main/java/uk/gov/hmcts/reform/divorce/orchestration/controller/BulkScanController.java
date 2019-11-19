@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transfor
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.bulk.scan.UnsupportedFormTypeException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations.D8FormToCaseTransformer;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidator;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidatorFactory;
@@ -62,15 +63,17 @@ public class BulkScanController {
     ) {
         log.info("Validating form {} for bulk scanning operation", formType);
 
-        BulkScanFormValidator formValidator = bulkScanFormValidatorFactory.getValidator(formType);
-        OcrValidationResult ocrValidationResult = formValidator.validateBulkScanForm(request.getOcrDataFields());
+        ResponseEntity<OcrValidationResponse> response;
 
-        return ok().body(
-            new OcrValidationResponse(
-                ocrValidationResult.getWarnings(),
-                ocrValidationResult.getErrors(),
-                ocrValidationResult.getStatus()
-            ));
+        try {
+            OcrValidationResponse validationResponse = validateRequest(formType, request);
+            response = ok().body(validationResponse);
+        } catch (UnsupportedFormTypeException unsupportedFormTypeException) {
+            log.error(unsupportedFormTypeException.getMessage(), unsupportedFormTypeException);
+            response = ResponseEntity.notFound().build();
+        }
+
+        return response;
     }
 
     @PostMapping(
@@ -106,5 +109,11 @@ public class BulkScanController {
             .build();
 
         return ResponseEntity.ok(callbackResponse);
+    }
+
+    private OcrValidationResponse validateRequest(String formType, OcrDataValidationRequest request) throws UnsupportedFormTypeException {
+        BulkScanFormValidator formValidator = bulkScanFormValidatorFactory.getValidator(formType);
+        OcrValidationResult ocrValidationResult = formValidator.validateBulkScanForm(request.getOcrDataFields());
+        return new OcrValidationResponse(ocrValidationResult);
     }
 }
