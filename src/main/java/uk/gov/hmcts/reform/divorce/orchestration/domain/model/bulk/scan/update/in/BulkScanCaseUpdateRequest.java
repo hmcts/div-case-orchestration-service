@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.in.ExceptionRecord;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -15,7 +14,7 @@ public class BulkScanCaseUpdateRequest {
 
     public BulkScanCaseUpdateRequest(
         @JsonProperty("exception_record") ExceptionRecord exceptionRecord,
-        @JsonProperty("case_details") HashMap<String, Object> caseData
+        @JsonProperty("case_details") Map<String, Object> caseData
     ) {
         this.exceptionRecord = exceptionRecord;
         this.caseData = caseData;

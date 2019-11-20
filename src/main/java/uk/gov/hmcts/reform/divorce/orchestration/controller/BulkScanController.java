@@ -132,7 +132,7 @@ public class BulkScanController {
     })
     public ResponseEntity<SuccessfulUpdateResponse> updateCase(
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
-        @Valid @RequestBody BulkScanCaseUpdateRequest input
+        @Valid @RequestBody BulkScanCaseUpdateRequest request
     ) {
         log.info("Updates existing case based on exception record");
 
@@ -140,7 +140,7 @@ public class BulkScanController {
             .caseUpdateDetails(
                 CaseCreationDetails
                     .builder()
-                    .caseData(input.getCaseData())
+                    .caseData(request.getCaseData())
                     .caseTypeId(CASE_TYPE_ID)
                     .eventId(UPDATE_EVENT_ID)
                     .build()
