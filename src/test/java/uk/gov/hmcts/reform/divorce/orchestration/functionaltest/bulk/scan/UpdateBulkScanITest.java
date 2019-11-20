@@ -10,6 +10,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.update.in.BulkScanCaseUpdateRequest;
+
+import java.util.HashMap;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
@@ -22,47 +25,37 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @ContextConfiguration(classes = OrchestrationServiceApplication.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @PropertySource(value = "classpath:application.yml")
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
-public class TransformationBulkScanITest {
+public class UpdateBulkScanITest {
 
-    private static final String EXCEPTION_RECORD_JSON_PATH = "jsonExamples/payloads/bulk/scan/basicForm.json";
-    private static final String TRANSFORMATION_URL = "/transform-exception-record";
+    private static final String UPDATE_URL = "/update-case";
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
     public void shouldReturnSuccessResponseForTransformationEndpoint() throws Exception {
-        String formToValidate = loadResourceAsString(EXCEPTION_RECORD_JSON_PATH);
+        BulkScanCaseUpdateRequest requestBody = new BulkScanCaseUpdateRequest(null, new HashMap<>());
 
         mockMvc.perform(
-            post(TRANSFORMATION_URL)
+            post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
-                .content(formToValidate))
+                .content(convertObjectToJsonString(requestBody)))
             .andExpect(status().isOk())
             .andExpect(content().string(
                 allOf(
                     isJson(),
                     hasJsonPath("$.warnings", equalTo(emptyList())),
-                    hasJsonPath("$.case_creation_details.*", hasSize(3)),
-                    hasJsonPath("$.case_creation_details", allOf(
+                    hasJsonPath("$.case_update_details.*", hasSize(3)),
+                    hasJsonPath("$.case_update_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
-                        hasJsonPath("event_id", is("bulkScanCaseCreate")),
-                        hasJsonPath("case_data.*", hasSize(6)),
-                        hasJsonPath("case_data", allOf(
-                            hasJsonPath("D8FirstName", is("Christopher")),
-                            hasJsonPath("D8LastName", is("O'John")),
-                            hasJsonPath("D8PetitionerEmail", is("test.testerson@mailinator.com")),
-                            hasJsonPath("D8legalProcess", is("Divorce")),
-                            hasJsonPath("D8ScreenHasMarriageCert", is("True")),
-                            hasJsonPath("D8CertificateInEnglish", is("True"))
-                        ))
+                        hasJsonPath("event_id", is("bulkScanCaseUpdate"))
                     ))
                 )));
     }
