@@ -19,18 +19,25 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validati
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.bulk.scan.UnsupportedFormTypeException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations.D8FormToCaseTransformer;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidator;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidatorFactory;
 
+import java.util.Collections;
+import java.util.Map;
 import javax.validation.Valid;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @Controller
 public class BulkScanController {
+
+    private static final String CASE_TYPE_ID = "DIVORCE";
+    private static final String EVENT_ID = "EVENT_ID";
+
+    private D8FormToCaseTransformer d8FormToCaseTransformer = new D8FormToCaseTransformer();
 
     @Autowired
     private BulkScanFormValidatorFactory bulkScanFormValidatorFactory;
@@ -69,27 +76,39 @@ public class BulkScanController {
         return response;
     }
 
-    @PostMapping("/transform-exception-record")
-    @ApiOperation("Transforms Excela data to CCD compatible format")
-    @ApiResponses( {
-        @ApiResponse(
-            code = 200, response = SuccessfulTransformationResponse.class, message = "Transformation executed successfully"
-        ),
-        @ApiResponse(code = 401, message = "Provided S2S token is missing or invalid"),
-        @ApiResponse(code = 403, message = "S2S token is not authorized to use the service"),
-        @ApiResponse(code = 404, message = "Form type not found")
+    @PostMapping(
+            path = "/transform-exception-record",
+            consumes = APPLICATION_JSON,
+            produces = APPLICATION_JSON
+    )
+    @ApiOperation(value = "Transform exception record into CCD case data")
+    @ApiResponses({
+            @ApiResponse(code = 200, response = SuccessfulTransformationResponse.class,
+                    message = "Transformation of exception record into case data has been successful"
+            ),
+            @ApiResponse(code = 400, message = "Request failed due to malformed syntax (and only for that reason)"),
+            @ApiResponse(code = 401, message = "Provided S2S token is missing or invalid"),
+            @ApiResponse(code = 403, message = "Calling service is not authorised to use the endpoint"),
+            @ApiResponse(code = 422, message = "Exception record is well-formed, but contains invalid data.")
     })
-    public ResponseEntity<SuccessfulTransformationResponse> transform(
-        @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
-        @Valid @RequestBody ExceptionRecord exceptionRecord
+    public ResponseEntity<SuccessfulTransformationResponse> transformExceptionRecordToCase(
+            @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
+            @Valid @RequestBody ExceptionRecord exceptionRecord
     ) {
-        log.info("Transforming data from Excela to CCD data for form {}", exceptionRecord);
+        log.info("Transforming exception record to case");
 
-        return ok().body(
-            new SuccessfulTransformationResponse(
-                new CaseCreationDetails("", "", emptyMap()), emptyList()
-            )
-        );
+        Map<String, Object> transformedCaseData = d8FormToCaseTransformer.transformIntoCaseData(exceptionRecord);
+
+        SuccessfulTransformationResponse callbackResponse = SuccessfulTransformationResponse.builder()
+            .caseCreationDetails(
+                new CaseCreationDetails(
+                    CASE_TYPE_ID,
+                    EVENT_ID,
+                    transformedCaseData))
+            .warnings(Collections.emptyList())
+            .build();
+
+        return ResponseEntity.ok(callbackResponse);
     }
 
     private OcrValidationResponse validateRequest(String formType, OcrDataValidationRequest request) throws UnsupportedFormTypeException {
@@ -97,5 +116,4 @@ public class BulkScanController {
         OcrValidationResult ocrValidationResult = formValidator.validateBulkScanForm(request.getOcrDataFields());
         return new OcrValidationResponse(ocrValidationResult);
     }
-
 }

@@ -84,5 +84,4 @@ public class BulkScanControllerTest {
         assertThat(responseBody, is(nullValue()));
         verify(bulkScanFormValidatorFactory).getValidator(eq(unsupportedFormType));
     }
-
 }
