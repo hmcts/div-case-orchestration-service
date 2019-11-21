@@ -3,6 +3,8 @@
   "id": "LV481297",
   "po_box": "PO 17",
   "ocr_data_fields": [
+    { "name": "D8HelpWithFeesReferenceNumber", "value": "123456" },
+    { "name": "D8PaymentMethod", "value": "debit/credit card" },
     { "name": "PetitionerFirstName", "value": "Christopher" },
     { "name": "PetitionerLastName", "value": "O'John" },
     { "name": "email", "value": "test.testerson@mailinator.com" },
