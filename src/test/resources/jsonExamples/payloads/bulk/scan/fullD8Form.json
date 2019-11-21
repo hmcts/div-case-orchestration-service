@@ -1,0 +1,16 @@
+{
+  "case_type_id": "blah",
+  "id": "LV481297",
+  "po_box": "PO 17",
+  "ocr_data_fields": [
+    { "name": "PetitionerFirstName", "value": "Christopher" },
+    { "name": "PetitionerLastName", "value": "O'John" },
+    { "name": "email", "value": "test.testerson@mailinator.com" },
+    { "name": "D8legalProcess", "value": "Divorce" },
+    { "name": "D8ScreenHasMarriageCert", "value": "True" },
+    { "name": "D8CertificateInEnglish", "value": "True" },
+    { "name": "D8RespondentFirstName", "value": "Jane" },
+    { "name": "D8RespondentLastName", "value": "Doe" },
+    { "name": "D8RespondentPhoneNumber", "value": "22222222222" }
+  ]
+}
