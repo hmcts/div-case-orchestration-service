@@ -9,7 +9,7 @@ import static java.util.Arrays.asList;
 @Component
 public class NewDivorceCaseValidator extends BulkScanFormValidator {
 
-    private static final List<String> MANDATORY_FIELDS = asList("PetitionerFirstName", "PetitionerLastName");
+    private static final List<String> MANDATORY_FIELDS = asList("D8PetitionerFirstName", "D8PetitionerLastName");
 
     protected List<String> getMandatoryFields() {
         return MANDATORY_FIELDS;

@@ -67,7 +67,7 @@ public class ValidationBulkScanITest {
             status().isOk(),
             content().string(allOf(
                 hasJsonPath("$.warnings", equalTo(emptyList())),
-                hasJsonPath("$.errors", hasItem("Mandatory field \"PetitionerFirstName\" is missing")),
+                hasJsonPath("$.errors", hasItem("Mandatory field \"D8PetitionerFirstName\" is missing")),
                 hasJsonPath("$.status", equalTo(ERRORS))
             ))
         ));
