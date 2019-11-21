@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 
 import java.util.Map;
 
+@Builder
 public class CaseCreationDetails {
 
     @JsonProperty("case_type_id")
