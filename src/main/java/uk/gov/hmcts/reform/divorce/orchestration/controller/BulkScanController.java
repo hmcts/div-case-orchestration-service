@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.in.ExceptionRecord;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.CaseCreationDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.SuccessfulTransformationResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.update.in.BulkScanCaseUpdateRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.update.out.SuccessfulUpdateResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
@@ -35,7 +37,8 @@ import static org.springframework.http.ResponseEntity.ok;
 public class BulkScanController {
 
     private static final String CASE_TYPE_ID = "DIVORCE";
-    private static final String EVENT_ID = "EVENT_ID";
+    private static final String CREATE_EVENT_ID = "bulkScanCaseCreate";
+    private static final String UPDATE_EVENT_ID = "bulkScanCaseUpdate";
 
     private D8FormToCaseTransformer d8FormToCaseTransformer = new D8FormToCaseTransformer();
 
@@ -48,7 +51,7 @@ public class BulkScanController {
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ApiOperation("Validates OCR form data based on form type")
-    @ApiResponses( {
+    @ApiResponses({
         @ApiResponse(
             code = 200, response = OcrValidationResponse.class, message = "Validation executed successfully"
         ),
@@ -77,9 +80,9 @@ public class BulkScanController {
     }
 
     @PostMapping(
-            path = "/transform-exception-record",
-            consumes = APPLICATION_JSON,
-            produces = APPLICATION_JSON
+        path = "/transform-exception-record",
+        consumes = APPLICATION_JSON,
+        produces = APPLICATION_JSON
     )
     @ApiOperation(value = "Transform exception record into CCD case data")
     @ApiResponses({
@@ -103,9 +106,45 @@ public class BulkScanController {
             .caseCreationDetails(
                 new CaseCreationDetails(
                     CASE_TYPE_ID,
-                    EVENT_ID,
+                    CREATE_EVENT_ID,
                     transformedCaseData))
             .warnings(Collections.emptyList())
+            .build();
+
+        return ResponseEntity.ok(callbackResponse);
+    }
+
+    @PostMapping(
+        path = "/update-case",
+        consumes = APPLICATION_JSON,
+        produces = APPLICATION_JSON
+    )
+    @ApiOperation(value = "API to update Divorce case data by bulk scan")
+    @ApiResponses({
+        @ApiResponse(code = 200, response = SuccessfulTransformationResponse.class,
+            message = "Update of case data has been successful"
+        ),
+        @ApiResponse(code = 400, message = "Request failed due to malformed syntax (and only for that reason). "
+            + "This response results in a general error presented to the caseworker in CCD"),
+        @ApiResponse(code = 401, message = "Provided S2S token is missing or invalid"),
+        @ApiResponse(code = 403, message = "Calling service is not authorised to use the endpoint"),
+        @ApiResponse(code = 422, message = "Exception record is well-formed, but contains invalid data.")
+    })
+    public ResponseEntity<SuccessfulUpdateResponse> updateCase(
+        @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
+        @Valid @RequestBody BulkScanCaseUpdateRequest request
+    ) {
+        log.info("Updates existing case based on exception record");
+
+        SuccessfulUpdateResponse callbackResponse = SuccessfulUpdateResponse.builder()
+            .caseUpdateDetails(
+                CaseCreationDetails
+                    .builder()
+                    .caseData(request.getCaseData())
+                    .caseTypeId(CASE_TYPE_ID)
+                    .eventId(UPDATE_EVENT_ID)
+                    .build()
+            ).warnings(Collections.emptyList())
             .build();
 
         return ResponseEntity.ok(callbackResponse);
