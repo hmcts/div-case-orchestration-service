@@ -25,6 +25,11 @@ public class D8FormToCaseTransformer implements ExceptionRecordToCaseTransformer
         erToCcdFieldsMap.put("D8ScreenHasMarriageCert", "D8ScreenHasMarriageCert");
         erToCcdFieldsMap.put("D8CertificateInEnglish", "D8CertificateInEnglish");
 
+        // Section 3 - About your spouse/civil partner (the respondent)
+        erToCcdFieldsMap.put("D8RespondentFirstName", "D8RespondentFirstName");
+        erToCcdFieldsMap.put("D8RespondentLastName", "D8RespondentLastName");
+        erToCcdFieldsMap.put("D8RespondentPhoneNumber", "D8RespondentPhoneNumber");
+
         return erToCcdFieldsMap;
     }
 
