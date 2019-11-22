@@ -20,7 +20,9 @@ public class NewDivorceCaseValidatorTest {
     public void shouldPassValidationWhenMandatoryFieldsArePresent() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
             new OcrDataField("PetitionerFirstName", "Peter"),
-            new OcrDataField("PetitionerLastName", "Griffin")
+            new OcrDataField("PetitionerLastName", "Griffin"),
+            new OcrDataField("D8LegalProcess", "Dissolution"),
+            new OcrDataField("D8ScreenHasMarriageCert", "True")
         ));
 
         assertThat(validationResult.getStatus(), is(SUCCESS));
@@ -36,7 +38,9 @@ public class NewDivorceCaseValidatorTest {
         assertThat(validationResult.getWarnings(), is(emptyList()));
         assertThat(validationResult.getErrors(), hasItems(
             "Mandatory field \"PetitionerFirstName\" is missing",
-            "Mandatory field \"PetitionerLastName\" is missing"
+            "Mandatory field \"PetitionerLastName\" is missing",
+            "Mandatory field \"D8LegalProcess\" is missing",
+            "Mandatory field \"D8ScreenHasMarriageCert\" is missing"
         ));
     }
 
@@ -51,6 +55,23 @@ public class NewDivorceCaseValidatorTest {
         assertThat(validationResult.getWarnings(), is(emptyList()));
         assertThat(validationResult.getErrors(), hasItems(
             "Mandatory field \"PetitionerLastName\" is missing"
+        ));
+    }
+
+    @Test
+    public void shouldFailFieldsHavingInvalidValues() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8LegalProcess", "Bankruptcy"),
+            new OcrDataField("D8ScreenHasMarriageCert", "Que?"),
+            new OcrDataField("D8CertificateInEnglish", "What?")
+        ));
+
+        assertThat(validationResult.getStatus(), is(ERRORS));
+        assertThat(validationResult.getWarnings(), is(emptyList()));
+        assertThat(validationResult.getErrors(), hasItems(
+            "D8LegalProcess must be \"Divorce\", \"Dissolution\" or \"Judicial (separation)\"",
+            "D8ScreenHasMarriageCert must be \"True\"",
+            "D8CertificateInEnglish must be \"True\" or left blank"
         ));
     }
 

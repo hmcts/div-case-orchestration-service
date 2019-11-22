@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -12,10 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validati
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.ValidationStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.bulk.scan.UnsupportedFormTypeException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidator;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidatorFactory;
+import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanValidationService;
 
 import java.util.List;
 
@@ -25,9 +22,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.ValidationStatus.ERRORS;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkScanControllerTest {
@@ -35,26 +32,19 @@ public class BulkScanControllerTest {
     private static final String TEST_FORM_TYPE = "testFormType";
 
     @Mock
-    private BulkScanFormValidatorFactory bulkScanFormValidatorFactory;
+    private BulkScanValidationService bulkScanValidationService;
 
     @InjectMocks
     private BulkScanController bulkScanController;
 
-    private BulkScanFormValidator bulkScanFormValidator;
-
-    @Before
-    public void setUp() {
-        bulkScanFormValidator = mock(BulkScanFormValidator.class);
-    }
-
     @Test
     public void shouldReturnValidatorResults() throws UnsupportedFormTypeException {
         List<OcrDataField> testOcrDataFields = singletonList(new OcrDataField("testName", "testValue"));
-        when(bulkScanFormValidator.validateBulkScanForm(eq(testOcrDataFields))).thenReturn(new OcrValidationResult(
-            singletonList("this is a warning"),
-            singletonList("this is an error"))
+        when(bulkScanValidationService.validateBulkScanForm(eq(TEST_FORM_TYPE), eq(testOcrDataFields))).thenReturn(OcrValidationResult.builder()
+            .addError("this is an error")
+            .addWarning("this is a warning")
+            .build()
         );
-        when(bulkScanFormValidatorFactory.getValidator(eq(TEST_FORM_TYPE))).thenReturn(bulkScanFormValidator);
 
         ResponseEntity<OcrValidationResponse> response = bulkScanController.validateOcrData(null, TEST_FORM_TYPE, new OcrDataValidationRequest(
             testOcrDataFields
@@ -64,16 +54,16 @@ public class BulkScanControllerTest {
         OcrValidationResponse responseBody = response.getBody();
         assertThat(responseBody.getErrors(), hasItem("this is an error"));
         assertThat(responseBody.getWarnings(), hasItem("this is a warning"));
-        assertThat(responseBody.getStatus(), is(ValidationStatus.ERRORS));
-        verify(bulkScanFormValidatorFactory).getValidator(eq(TEST_FORM_TYPE));
-        verify(bulkScanFormValidator).validateBulkScanForm(eq(testOcrDataFields));
+        assertThat(responseBody.getStatus(), is(ERRORS));
+        verify(bulkScanValidationService).validateBulkScanForm(eq(TEST_FORM_TYPE), eq(testOcrDataFields));
     }
 
     @Test
     public void shouldReturnResourceNotFoundForUnsupportedFormType() throws UnsupportedFormTypeException {
         List<OcrDataField> testOcrDataFields = singletonList(new OcrDataField("testName", "testValue"));
         String unsupportedFormType = "unsupportedFormType";
-        when(bulkScanFormValidatorFactory.getValidator(eq(unsupportedFormType))).thenThrow(UnsupportedFormTypeException.class);
+        when(bulkScanValidationService.validateBulkScanForm(eq(unsupportedFormType), eq(testOcrDataFields)))
+            .thenThrow(UnsupportedFormTypeException.class);
 
         ResponseEntity<OcrValidationResponse> response = bulkScanController.validateOcrData(null, unsupportedFormType, new OcrDataValidationRequest(
             testOcrDataFields
@@ -82,6 +72,6 @@ public class BulkScanControllerTest {
         assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
         OcrValidationResponse responseBody = response.getBody();
         assertThat(responseBody, is(nullValue()));
-        verify(bulkScanFormValidatorFactory).getValidator(eq(unsupportedFormType));
+        verify(bulkScanValidationService).validateBulkScanForm(eq(unsupportedFormType), eq(testOcrDataFields));
     }
 }

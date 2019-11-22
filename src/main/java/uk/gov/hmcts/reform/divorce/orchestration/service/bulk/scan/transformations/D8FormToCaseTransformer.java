@@ -21,7 +21,7 @@ public class D8FormToCaseTransformer implements ExceptionRecordToCaseTransformer
         erToCcdFieldsMap.put("PetitionerFirstName", "D8FirstName");
         erToCcdFieldsMap.put("PetitionerLastName", "D8LastName");
         erToCcdFieldsMap.put("email", "D8PetitionerEmail");
-        erToCcdFieldsMap.put("D8legalProcess", "D8legalProcess");
+        erToCcdFieldsMap.put("D8LegalProcess", "D8legalProcess");
         erToCcdFieldsMap.put("D8ScreenHasMarriageCert", "D8ScreenHasMarriageCert");
         erToCcdFieldsMap.put("D8CertificateInEnglish", "D8CertificateInEnglish");
 
@@ -36,4 +36,5 @@ public class D8FormToCaseTransformer implements ExceptionRecordToCaseTransformer
                 OcrDataField::getValue
             ));
     }
+
 }
