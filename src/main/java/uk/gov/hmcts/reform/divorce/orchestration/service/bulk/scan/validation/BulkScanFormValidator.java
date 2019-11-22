@@ -25,10 +25,10 @@ public abstract class BulkScanFormValidator {
         Map<String, String> fieldsMap = produceMapWithoutEmptyEntries(ocrDataFields);
 
         List<String> errorsForMissingMandatory = produceErrorsForMissingMandatoryFields(fieldsMap);
-        errorsForMissingMandatory.forEach(validationResultBuilder::addError);
+        errorsForMissingMandatory.forEach(validationResultBuilder::addWarning);
 
         List<String> errorsForValuesNotAllowed = produceErrorsForValuesNotAllowed(fieldsMap);
-        errorsForValuesNotAllowed.forEach(validationResultBuilder::addError);
+        errorsForValuesNotAllowed.forEach(validationResultBuilder::addWarning);
 
         return validationResultBuilder.build();
     }

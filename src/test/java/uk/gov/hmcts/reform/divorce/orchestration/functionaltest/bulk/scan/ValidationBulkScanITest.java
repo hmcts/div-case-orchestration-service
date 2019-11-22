@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.
 public class ValidationBulkScanITest {
 
     private static final String SUCCESS_STATUS = "SUCCESS";
-    private static final String ERRORS = "ERRORS";
+    private static final String WARNINGS_STATUS = "WARNINGS";
     private static final String FULL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/fullD8Form.json";
 
     @Autowired
@@ -66,9 +66,9 @@ public class ValidationBulkScanITest {
         ).andExpect(matchAll(
             status().isOk(),
             content().string(allOf(
-                hasJsonPath("$.warnings", equalTo(emptyList())),
-                hasJsonPath("$.errors", hasItem("Mandatory field \"D8PetitionerFirstName\" is missing")),
-                hasJsonPath("$.status", equalTo(ERRORS))
+                hasJsonPath("$.warnings", hasItem("Mandatory field \"D8PetitionerFirstName\" is missing")),
+                hasJsonPath("$.errors", equalTo(emptyList())),
+                hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
             ))
         ));
     }

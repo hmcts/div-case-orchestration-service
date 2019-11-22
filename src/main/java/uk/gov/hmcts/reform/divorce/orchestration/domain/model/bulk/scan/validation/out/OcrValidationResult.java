@@ -38,11 +38,17 @@ public class OcrValidationResult {
         }
 
         private ValidationStatus determineStatus() {
+            ValidationStatus correctStatus;
+
             if (isNotEmpty(this.errors)) {
-                return ValidationStatus.ERRORS;
+                correctStatus = ValidationStatus.ERRORS;
+            } else if (isNotEmpty(this.warnings)) {
+                correctStatus = ValidationStatus.WARNINGS;
             } else {
-                return ValidationStatus.SUCCESS;
+                correctStatus = ValidationStatus.SUCCESS;
             }
+
+            return correctStatus;
         }
 
         public Builder addError(String errorMessage) {

@@ -9,8 +9,8 @@ import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.ValidationStatus.ERRORS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.ValidationStatus.SUCCESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.ValidationStatus.WARNINGS;
 
 public class NewDivorceCaseValidatorTest {
 
@@ -36,9 +36,9 @@ public class NewDivorceCaseValidatorTest {
     public void shouldFailValidationWhenMandatoryFieldsAreMissing() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(emptyList());
 
-        assertThat(validationResult.getStatus(), is(ERRORS));
-        assertThat(validationResult.getWarnings(), is(emptyList()));
-        assertThat(validationResult.getErrors(), hasItems(
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
             "Mandatory field \"D8PetitionerFirstName\" is missing",
             "Mandatory field \"D8PetitionerLastName\" is missing",
             "Mandatory field \"D8LegalProcess\" is missing",
@@ -57,9 +57,9 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8RespondentLastName", "")
         ));
 
-        assertThat(validationResult.getStatus(), is(ERRORS));
-        assertThat(validationResult.getWarnings(), is(emptyList()));
-        assertThat(validationResult.getErrors(), hasItems(
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
             "Mandatory field \"D8PetitionerLastName\" is missing",
             "Mandatory field \"D8RespondentFirstName\" is missing",
             "Mandatory field \"D8RespondentLastName\" is missing"
@@ -74,12 +74,13 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8CertificateInEnglish", "What?")
         ));
 
-        assertThat(validationResult.getStatus(), is(ERRORS));
-        assertThat(validationResult.getWarnings(), is(emptyList()));
-        assertThat(validationResult.getErrors(), hasItems(
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
             "D8LegalProcess must be \"Divorce\", \"Dissolution\" or \"Judicial (separation)\"",
             "D8ScreenHasMarriageCert must be \"True\"",
             "D8CertificateInEnglish must be \"True\" or left blank"
         ));
     }
+
 }
