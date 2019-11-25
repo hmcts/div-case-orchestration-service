@@ -63,7 +63,7 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8PetitionerLastName", is("O'John")),
                             hasJsonPath("D8PetitionerPhoneNumber", is("1111111111")),
                             hasJsonPath("D8PetitionerEmail", is("test.testerson@mailinator.com")),
-                            hasJsonPath("D8legalProcess", is("Divorce")),
+                            hasJsonPath("D8LegalProcess", is("Divorce")),
                             hasJsonPath("D8ScreenHasMarriageCert", is("True")),
                             hasJsonPath("D8CertificateInEnglish", is("True")),
                             hasJsonPath("D8RespondentFirstName", is("Jane")),
@@ -99,7 +99,7 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8PetitionerLastName", is("O'John")),
                             hasJsonPath("D8PetitionerPhoneNumber", is("1111111111")),
                             hasJsonPath("D8PetitionerEmail", is("test.testerson@mailinator.com")),
-                            hasJsonPath("D8legalProcess", is("Divorce"))
+                            hasJsonPath("D8LegalProcess", is("Divorce"))
                         ))
                     ))
                 )));

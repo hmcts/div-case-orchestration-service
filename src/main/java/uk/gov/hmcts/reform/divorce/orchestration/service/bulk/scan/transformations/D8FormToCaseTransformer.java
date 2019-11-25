@@ -1,18 +1,27 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations;
 
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.in.ExceptionRecord;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataField;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-public class D8FormToCaseTransformer implements ExceptionRecordToCaseTransformer {
+public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
 
     private static Map<String, String> ocrToCCDMapping;
 
-    public D8FormToCaseTransformer() {
+    static {
         ocrToCCDMapping = d8ExceptionRecordToCcdMap();
+    }
+
+    @Override
+    protected Map<String, String> getOcrToCCDMapping() {
+        return ocrToCCDMapping;
+    }
+
+    @Override
+    protected Map<String, Object> runPostMappingTransformation(Map<String, Object> ccdTransformedFields) {
+
+        ccdTransformedFields.replace("D8PaymentMethod", "debit/credit card", "card");
+
+        return  ccdTransformedFields;
     }
 
     private static Map<String, String> d8ExceptionRecordToCcdMap() {
@@ -23,7 +32,7 @@ public class D8FormToCaseTransformer implements ExceptionRecordToCaseTransformer
         erToCcdFieldsMap.put("D8PaymentMethod", "D8PaymentMethod");
 
         // Section 1 - Your application (known as a petition in divorce and judicial separation)
-        erToCcdFieldsMap.put("D8legalProcess", "D8legalProcess");
+        erToCcdFieldsMap.put("D8LegalProcess", "D8LegalProcess");
         erToCcdFieldsMap.put("D8ScreenHasMarriageCert", "D8ScreenHasMarriageCert");
         erToCcdFieldsMap.put("D8CertificateInEnglish", "D8CertificateInEnglish");
 
@@ -39,22 +48,5 @@ public class D8FormToCaseTransformer implements ExceptionRecordToCaseTransformer
         erToCcdFieldsMap.put("D8RespondentPhoneNumber", "D8RespondentPhoneNumber");
 
         return erToCcdFieldsMap;
-    }
-
-    private Map<String, Object> mapOcrFieldsToCcdFields(ExceptionRecord exceptionRecord) {
-        return exceptionRecord.getOcrDataFields().stream()
-            .collect(Collectors.toMap(
-                ocrDataField -> ocrToCCDMapping.get(ocrDataField.getName()),
-                OcrDataField::getValue
-            ));
-    }
-
-    @Override
-    public Map<String, Object> transformIntoCaseData(ExceptionRecord exceptionRecord) {
-
-        Map<String, Object> ccdTransformedFields = mapOcrFieldsToCcdFields(exceptionRecord);
-        ccdTransformedFields.replace("D8PaymentMethod", "debit/credit card", "card");
-
-        return ccdTransformedFields;
     }
 }
