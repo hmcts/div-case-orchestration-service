@@ -19,10 +19,12 @@ public class NewDivorceCaseValidatorTest {
     @Test
     public void shouldPassValidationWhenMandatoryFieldsArePresent() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
-            new OcrDataField("PetitionerFirstName", "Peter"),
-            new OcrDataField("PetitionerLastName", "Griffin"),
+            new OcrDataField("D8PetitionerFirstName", "Peter"),
+            new OcrDataField("D8PetitionerLastName", "Griffin"),
             new OcrDataField("D8LegalProcess", "Dissolution"),
-            new OcrDataField("D8ScreenHasMarriageCert", "True")
+            new OcrDataField("D8ScreenHasMarriageCert", "True"),
+            new OcrDataField("D8RespondentFirstName", "Louis"),
+            new OcrDataField("D8RespondentLastName", "Griffin")
         ));
 
         assertThat(validationResult.getStatus(), is(SUCCESS));
@@ -37,24 +39,30 @@ public class NewDivorceCaseValidatorTest {
         assertThat(validationResult.getStatus(), is(ERRORS));
         assertThat(validationResult.getWarnings(), is(emptyList()));
         assertThat(validationResult.getErrors(), hasItems(
-            "Mandatory field \"PetitionerFirstName\" is missing",
-            "Mandatory field \"PetitionerLastName\" is missing",
+            "Mandatory field \"D8PetitionerFirstName\" is missing",
+            "Mandatory field \"D8PetitionerLastName\" is missing",
             "Mandatory field \"D8LegalProcess\" is missing",
-            "Mandatory field \"D8ScreenHasMarriageCert\" is missing"
+            "Mandatory field \"D8ScreenHasMarriageCert\" is missing",
+            "Mandatory field \"D8RespondentFirstName\" is missing",
+            "Mandatory field \"D8RespondentLastName\" is missing"
         ));
     }
 
     @Test
     public void shouldFailValidationWhenMandatoryFieldIsPresentButEmpty() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
-            new OcrDataField("PetitionerFirstName", "Kratos"),
-            new OcrDataField("PetitionerLastName", "")
+            new OcrDataField("D8PetitionerFirstName", "Kratos"),
+            new OcrDataField("D8PetitionerLastName", ""),
+            new OcrDataField("D8RespondentFirstName", ""),
+            new OcrDataField("D8RespondentLastName", "")
         ));
 
         assertThat(validationResult.getStatus(), is(ERRORS));
         assertThat(validationResult.getWarnings(), is(emptyList()));
         assertThat(validationResult.getErrors(), hasItems(
-            "Mandatory field \"PetitionerLastName\" is missing"
+            "Mandatory field \"D8PetitionerLastName\" is missing",
+            "Mandatory field \"D8RespondentFirstName\" is missing",
+            "Mandatory field \"D8RespondentLastName\" is missing"
         ));
     }
 
@@ -74,5 +82,4 @@ public class NewDivorceCaseValidatorTest {
             "D8CertificateInEnglish must be \"True\" or left blank"
         ));
     }
-
 }
