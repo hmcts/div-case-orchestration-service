@@ -31,15 +31,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.
 @RunWith(SpringRunner.class)
 public class TransformationBulkScanITest {
 
-    private static final String EXCEPTION_RECORD_JSON_PATH = "jsonExamples/payloads/bulk/scan/basicForm.json";
+    private static final String PARTIAL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/partialD8Form.json";
+    private static final String FULL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/fullD8Form.json";
     private static final String TRANSFORMATION_URL = "/transform-exception-record";
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void shouldReturnSuccessResponseForTransformationEndpoint() throws Exception {
-        String formToValidate = loadResourceAsString(EXCEPTION_RECORD_JSON_PATH);
+    public void shouldReturnSuccessResponseForTransformationEndpointWhenUsingFullDataSet() throws Exception {
+        String formToValidate = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
 
         mockMvc.perform(
             post(TRANSFORMATION_URL)
@@ -54,14 +55,51 @@ public class TransformationBulkScanITest {
                     hasJsonPath("$.case_creation_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
                         hasJsonPath("event_id", is("bulkScanCaseCreate")),
-                        hasJsonPath("case_data.*", hasSize(6)),
+                        hasJsonPath("case_data.*", hasSize(12)),
                         hasJsonPath("case_data", allOf(
-                            hasJsonPath("D8FirstName", is("Christopher")),
-                            hasJsonPath("D8LastName", is("O'John")),
+                            hasJsonPath("D8HelpWithFeesReferenceNumber", is("123456")),
+                            hasJsonPath("D8PaymentMethod", is("card")),
+                            hasJsonPath("D8PetitionerFirstName", is("Christopher")),
+                            hasJsonPath("D8PetitionerLastName", is("O'John")),
+                            hasJsonPath("D8PetitionerPhoneNumber", is("1111111111")),
                             hasJsonPath("D8PetitionerEmail", is("test.testerson@mailinator.com")),
-                            hasJsonPath("D8legalProcess", is("Divorce")),
+                            hasJsonPath("D8LegalProcess", is("Divorce")),
                             hasJsonPath("D8ScreenHasMarriageCert", is("True")),
-                            hasJsonPath("D8CertificateInEnglish", is("True"))
+                            hasJsonPath("D8CertificateInEnglish", is("True")),
+                            hasJsonPath("D8RespondentFirstName", is("Jane")),
+                            hasJsonPath("D8RespondentLastName", is("Doe")),
+                            hasJsonPath("D8RespondentPhoneNumber", is("22222222222"))
+                        ))
+                    ))
+                )));
+    }
+
+    @Test
+    public void shouldReturnSuccessResponseForTransformationEndpointWhenUsingOnlyASubsetOfData() throws Exception {
+        String formToValidate = loadResourceAsString(PARTIAL_D8_FORM_JSON_PATH);
+
+        mockMvc.perform(
+            post(TRANSFORMATION_URL)
+                .contentType(APPLICATION_JSON)
+                .content(formToValidate))
+            .andExpect(status().isOk())
+            .andExpect(content().string(
+                allOf(
+                    isJson(),
+                    hasJsonPath("$.warnings", equalTo(emptyList())),
+                    hasJsonPath("$.case_creation_details.*", hasSize(3)),
+                    hasJsonPath("$.case_creation_details", allOf(
+                        hasJsonPath("case_type_id", is("DIVORCE")),
+                        hasJsonPath("event_id", is("bulkScanCaseCreate")),
+                        hasJsonPath("case_data.*", hasSize(7)),
+                        hasJsonPath("case_data", allOf(
+                            hasJsonPath("D8HelpWithFeesReferenceNumber", is("123456")),
+                            hasJsonPath("D8PaymentMethod", is("card")),
+                            hasJsonPath("D8PetitionerFirstName", is("Christopher")),
+                            hasJsonPath("D8PetitionerLastName", is("O'John")),
+                            hasJsonPath("D8PetitionerPhoneNumber", is("1111111111")),
+                            hasJsonPath("D8PetitionerEmail", is("test.testerson@mailinator.com")),
+                            hasJsonPath("D8LegalProcess", is("Divorce"))
                         ))
                     ))
                 )));

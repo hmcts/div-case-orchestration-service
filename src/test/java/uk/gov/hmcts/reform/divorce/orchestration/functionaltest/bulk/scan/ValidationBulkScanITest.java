@@ -34,14 +34,14 @@ public class ValidationBulkScanITest {
 
     private static final String SUCCESS_STATUS = "SUCCESS";
     private static final String ERRORS = "ERRORS";
-    private static final String BASIC_FORM_JSON = "jsonExamples/payloads/bulk/scan/basicForm.json";
+    private static final String FULL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/fullD8Form.json";
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
     public void shouldReturnSuccessResponseForValidationEndpoint() throws Exception {
-        String formToValidate = loadResourceAsString(BASIC_FORM_JSON);
+        String formToValidate = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
 
         mockMvc.perform(post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
             .contentType(APPLICATION_JSON)
@@ -67,7 +67,7 @@ public class ValidationBulkScanITest {
             status().isOk(),
             content().string(allOf(
                 hasJsonPath("$.warnings", equalTo(emptyList())),
-                hasJsonPath("$.errors", hasItem("Mandatory field \"PetitionerFirstName\" is missing")),
+                hasJsonPath("$.errors", hasItem("Mandatory field \"D8PetitionerFirstName\" is missing")),
                 hasJsonPath("$.status", equalTo(ERRORS))
             ))
         ));
@@ -75,7 +75,7 @@ public class ValidationBulkScanITest {
 
     @Test
     public void shouldReturnResourceNotFoundResponseForUnsupportedFormType() throws Exception {
-        String formToValidate = loadResourceAsString(BASIC_FORM_JSON);
+        String formToValidate = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
 
         mockMvc.perform(post("/forms/{form-type}/validate-ocr", "unsupportedFormType")
             .contentType(APPLICATION_JSON)

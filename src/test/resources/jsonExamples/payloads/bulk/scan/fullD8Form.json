@@ -1,0 +1,19 @@
+{
+  "case_type_id": "DIVORCE",
+  "id": "LV481297",
+  "po_box": "PO 17",
+  "ocr_data_fields": [
+    { "name": "D8HelpWithFeesReferenceNumber", "value": "123456" },
+    { "name": "D8PaymentMethod", "value": "debit/credit card" },
+    { "name": "D8PetitionerFirstName", "value": "Christopher" },
+    { "name": "D8PetitionerLastName", "value": "O'John" },
+    { "name": "D8PetitionerPhoneNumber", "value": "1111111111" },
+    { "name": "D8PetitionerEmail", "value": "test.testerson@mailinator.com" },
+    { "name": "D8LegalProcess", "value": "Divorce" },
+    { "name": "D8ScreenHasMarriageCert", "value": "True" },
+    { "name": "D8CertificateInEnglish", "value": "True" },
+    { "name": "D8RespondentFirstName", "value": "Jane" },
+    { "name": "D8RespondentLastName", "value": "Doe" },
+    { "name": "D8RespondentPhoneNumber", "value": "22222222222" }
+  ]
+}
