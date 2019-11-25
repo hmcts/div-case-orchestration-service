@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 public abstract class ExceptionRecordToCaseTransformer {
 
+    public static String BULK_SCAN_CASE_REFERENCE = "bulkScanCaseReference";
+
     public Map<String, Object> transformIntoCaseData(ExceptionRecord exceptionRecord) {
         Map<String, String> ocrToCCDMapping = getOcrToCCDMapping();
 
@@ -17,6 +19,9 @@ public abstract class ExceptionRecordToCaseTransformer {
                 ));
 
         ccdTransformedFields = runPostMappingTransformation(ccdTransformedFields);
+
+        // Need to store the Exception Record ID as part of the CCD data
+        ccdTransformedFields.put(BULK_SCAN_CASE_REFERENCE, exceptionRecord.getId());
 
         return ccdTransformedFields;
     }

@@ -41,4 +41,19 @@ public class D8FormToCaseTransformerTest {
 
         assertEquals(transformedCaseData.get("D8PaymentMethod"), "cheque");
     }
+
+    @Test
+    public void shouldAddBulkScanCaseReferenceFromErToCcdData() {
+
+        ExceptionRecord incomingExceptionRecord = new ExceptionRecord(
+                "",
+                "test_case_id",
+                "",
+                Collections.singletonList(new OcrDataField("D8PetitionerFirstName", "Christopher")));
+
+        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(incomingExceptionRecord);
+
+        assertEquals(transformedCaseData.get("D8PetitionerFirstName"), "Christopher");
+        assertEquals(transformedCaseData.get("bulkScanCaseReference"), "test_case_id");
+    }
 }
