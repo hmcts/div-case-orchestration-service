@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validat
 
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
@@ -13,18 +14,47 @@ public class OcrValidationResult {
     private final List<String> errors;
     private final ValidationStatus status;
 
-    public OcrValidationResult(
-        List<String> warnings,
-        List<String> errors
-    ) {
-        if (isNotEmpty(errors)) {
-            this.status = ValidationStatus.ERRORS;
-        } else {
-            this.status = ValidationStatus.SUCCESS;
-        }
-
+    private OcrValidationResult(List<String> warnings, List<String> errors, ValidationStatus status) {
         this.warnings = warnings;
         this.errors = errors;
+        this.status = status;
+    }
+
+    public static Builder builder() {
+        return new OcrValidationResult.Builder();
+    }
+
+    public static class Builder {
+        private List<String> warnings = new ArrayList<>();
+        private List<String> errors = new ArrayList<>();
+        private ValidationStatus status;
+
+        private Builder() {
+        }
+
+        public OcrValidationResult build() {
+            this.status = determineStatus();
+            return new OcrValidationResult(this.warnings, this.errors, this.status);
+        }
+
+        private ValidationStatus determineStatus() {
+            if (isNotEmpty(this.errors)) {
+                return ValidationStatus.ERRORS;
+            } else {
+                return ValidationStatus.SUCCESS;
+            }
+        }
+
+        public Builder addError(String errorMessage) {
+            this.errors.add(errorMessage);
+            return this;
+        }
+
+        public Builder addWarning(String warningMessage) {
+            this.warnings.add(warningMessage);
+            return this;
+        }
+
     }
 
 }
