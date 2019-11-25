@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
 
-    private static Map<String, String> ocrToCCDMapping;
+    private static final Map<String, String> ocrToCCDMapping;
 
     static {
         ocrToCCDMapping = d8ExceptionRecordToCcdMap();
