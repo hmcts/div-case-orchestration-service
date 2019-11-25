@@ -30,6 +30,9 @@ public abstract class BulkScanFormValidator {
         List<String> errorsForValuesNotAllowed = produceErrorsForValuesNotAllowed(fieldsMap);
         errorsForValuesNotAllowed.forEach(validationResultBuilder::addError);
 
+        List<String> errorsForCustomValidation = runPostProcessingValidation(fieldsMap);
+        errorsForCustomValidation.forEach(validationResultBuilder::addError);
+
         return validationResultBuilder.build();
     }
 
@@ -58,6 +61,8 @@ public abstract class BulkScanFormValidator {
 
     protected abstract Map<String, List<String>> getAllowedValuesPerField();
 
+    protected abstract List<String> runPostProcessingValidation(Map<String, String> fieldsMap);
+
     private String produceErrorMessageForValueNotAllowed(String fieldName, List<String> allowedValues) {
         StringBuilder errorMessage = new StringBuilder();
 
@@ -82,10 +87,8 @@ public abstract class BulkScanFormValidator {
                     errorMessage.append(" or ");
                 }
             }
-
         }
 
         return format("%s must be %s", fieldName, errorMessage.toString());
     }
-
 }
