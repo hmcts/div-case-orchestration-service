@@ -6,7 +6,7 @@
     { "name": "PetitionerFirstName", "value": "Christopher" },
     { "name": "PetitionerLastName", "value": "O'John" },
     { "name": "email", "value": "test.testerson@mailinator.com" },
-    { "name": "D8legalProcess", "value": "Divorce" },
+    { "name": "D8LegalProcess", "value": "Divorce" },
     { "name": "D8ScreenHasMarriageCert", "value": "True" },
     { "name": "D8CertificateInEnglish", "value": "True" }
   ]
