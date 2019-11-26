@@ -37,7 +37,7 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         ALLOWED_VALUES_PER_FIELD.put("D8LegalProcess", asList("Divorce", "Dissolution", "Judicial (separation)"));
         ALLOWED_VALUES_PER_FIELD.put("D8ScreenHasMarriageCert", asList(TRUE));
         ALLOWED_VALUES_PER_FIELD.put("D8CertificateInEnglish", asList(TRUE, BLANK));
-        //ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("cheque", "card", BLANK));
+        ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("cheque", "debit/credit card", BLANK));
         // add here phone number regex
     }
 

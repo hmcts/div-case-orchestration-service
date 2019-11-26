@@ -71,7 +71,8 @@ public class NewDivorceCaseValidatorTest {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
             new OcrDataField("D8LegalProcess", "Bankruptcy"),
             new OcrDataField("D8ScreenHasMarriageCert", "Que?"),
-            new OcrDataField("D8CertificateInEnglish", "What?")
+            new OcrDataField("D8CertificateInEnglish", "What?"),
+            new OcrDataField("D8PaymentMethod", "Bitcoin")
         ));
 
         assertThat(validationResult.getStatus(), is(ERRORS));
@@ -79,7 +80,10 @@ public class NewDivorceCaseValidatorTest {
         assertThat(validationResult.getErrors(), hasItems(
             "D8LegalProcess must be \"Divorce\", \"Dissolution\" or \"Judicial (separation)\"",
             "D8ScreenHasMarriageCert must be \"True\"",
-            "D8CertificateInEnglish must be \"True\" or left blank"
+            "D8CertificateInEnglish must be \"True\" or left blank",
+            "D8PaymentMethod must be \"cheque\", \"debit/credit card\" or left blank"
         ));
     }
+
+    // Add in unit tests for combinations of payments
 }
