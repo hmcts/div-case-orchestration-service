@@ -87,8 +87,10 @@ public abstract class BulkScanFormValidator {
                     errorMessage.append(" or ");
                 }
             }
+
         }
 
         return format("%s must be %s", fieldName, errorMessage.toString());
     }
+
 }
