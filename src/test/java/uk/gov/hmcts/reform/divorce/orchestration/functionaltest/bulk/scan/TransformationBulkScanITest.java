@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.allOf;
@@ -99,7 +100,8 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8PetitionerLastName", is("O'John")),
                             hasJsonPath("D8PetitionerPhoneNumber", is("1111111111")),
                             hasJsonPath("D8PetitionerEmail", is("test.testerson@mailinator.com")),
-                            hasJsonPath("D8LegalProcess", is("Divorce"))
+                            hasJsonPath("D8LegalProcess", is("Divorce")),
+                            hasNoJsonPath("D8CertificateInEnglish")
                         ))
                     ))
                 )));
