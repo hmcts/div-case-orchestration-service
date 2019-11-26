@@ -57,18 +57,14 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
 
         List<String> validationWarningMessages = new ArrayList<>();
 
-        String hwfReferenceNumber = fieldsMap.get("D8HelpWithFeesReferenceNumber");
-        String d8PaymentMethod = fieldsMap.get("D8PaymentMethod");
+        String hwfReferenceNumber = fieldsMap.getOrDefault("D8HelpWithFeesReferenceNumber", "");
+        String d8PaymentMethod = fieldsMap.getOrDefault("D8PaymentMethod", "");
 
         boolean multiplePaymentMethodsProvided =
                 ((StringUtils.isNotEmpty(hwfReferenceNumber) && StringUtils.isNotEmpty(d8PaymentMethod)));
 
         boolean noPaymentMethodProvided = StringUtils.isEmpty(hwfReferenceNumber)
                 && StringUtils.isEmpty(d8PaymentMethod);
-
-        if ((StringUtils.isNotEmpty(hwfReferenceNumber) && hwfReferenceNumber.length() !=  6)) {
-            validationWarningMessages.add(HWF_WRONG_LENGTH_ERROR_MESSAGE);
-        }
 
         if (noPaymentMethodProvided) {
             validationWarningMessages.add(EMPTY_PAYMENT_METHOD_ERROR_MESSAGE);
@@ -78,6 +74,15 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
             validationWarningMessages.add(MULTIPLE_PAYMENT_METHODS_ERROR_MESSAGE);
         }
 
+        if (d8PaymentMethod.isEmpty() && !isHwfValid(hwfReferenceNumber)) {
+            validationWarningMessages.add(HWF_WRONG_LENGTH_ERROR_MESSAGE);
+        }
+
         return validationWarningMessages;
+    }
+
+    private static boolean isHwfValid(String hwfReferenceNumber) {
+
+        return (StringUtils.isNumeric(hwfReferenceNumber) && (hwfReferenceNumber.length() == 6));
     }
 }

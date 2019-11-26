@@ -104,6 +104,25 @@ public class NewDivorceCaseValidatorTest {
     }
 
     @Test
+    public void shouldFailIfUsingInvalidHelpWithFeesNumberAndNoOtherPaymentMethod() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+                new OcrDataField("D8PetitionerFirstName", "Peter"),
+                new OcrDataField("D8PetitionerLastName", "Griffin"),
+                new OcrDataField("D8LegalProcess", "Dissolution"),
+                new OcrDataField("D8HelpWithFeesReferenceNumber", "ABCDEF"),
+                new OcrDataField("D8ScreenHasMarriageCert", "True"),
+                new OcrDataField("D8RespondentFirstName", "Louis"),
+                new OcrDataField("D8RespondentLastName", "Griffin")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getWarnings(), hasItems(
+                "D8HelpWithFeesReferenceNumber is usually 6 digits"
+        ));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+    }
+
+    @Test
     public void shouldFailIfUsingMultipleValidPaymentMethods() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
                 new OcrDataField("D8PetitionerFirstName", "Peter"),
