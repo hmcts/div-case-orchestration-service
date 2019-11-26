@@ -116,11 +116,11 @@ public class NewDivorceCaseValidatorTest {
                 new OcrDataField("D8RespondentLastName", "Griffin")
         ));
 
-        assertThat(validationResult.getStatus(), is(ERRORS));
-        assertThat(validationResult.getWarnings(), is(emptyList()));
-        assertThat(validationResult.getErrors(), hasItems(
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getWarnings(), hasItems(
                 "D8PaymentMethod and D8HelpWithFeesReferenceNumber should not both be populated"
         ));
+        assertThat(validationResult.getErrors(), is(emptyList()));
     }
 
     @Test
@@ -134,11 +134,10 @@ public class NewDivorceCaseValidatorTest {
                 new OcrDataField("D8RespondentLastName", "Griffin")
         ));
 
-        assertThat(validationResult.getStatus(), is(ERRORS));
-        assertThat(validationResult.getWarnings(), is(emptyList()));
-        assertThat(validationResult.getErrors(), hasItems(
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getWarnings(), hasItems(
                 "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value"
         ));
+        assertThat(validationResult.getErrors(), is(emptyList()));
     }
-
 }
