@@ -17,7 +17,10 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         "D8LegalProcess",
         "D8ScreenHasMarriageCert",
         "D8RespondentFirstName",
-        "D8RespondentLastName"
+        "D8RespondentLastName",
+        "D8MarriagePetitionerName",
+        "D8MarriageRespondentName"
+
     );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
