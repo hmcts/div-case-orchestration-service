@@ -20,8 +20,6 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
     private static String HWF_WRONG_LENGTH_ERROR_MESSAGE =
             "D8HelpWithFeesReferenceNumber is usually 6 digits";
 
-    private static List<String> VALIDATION_ERROR_MESSAGES = new ArrayList<>();
-
     private static final List<String> MANDATORY_FIELDS = asList(
         "D8PetitionerFirstName",
         "D8PetitionerLastName",
@@ -37,7 +35,7 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         ALLOWED_VALUES_PER_FIELD.put("D8LegalProcess", asList("Divorce", "Dissolution", "Judicial (separation)"));
         ALLOWED_VALUES_PER_FIELD.put("D8ScreenHasMarriageCert", asList(TRUE));
         ALLOWED_VALUES_PER_FIELD.put("D8CertificateInEnglish", asList(TRUE, BLANK));
-        ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("cheque", "debit/credit card", BLANK));
+        ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("Cheque", "Debit/Credit Card", BLANK));
         // add here phone number regex
     }
 
@@ -52,12 +50,14 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
 
     @Override
     protected List<String> runPostProcessingValidation(Map<String, String> fieldsMap) {
-        //validatePayment(fieldsMap);
 
-        return VALIDATION_ERROR_MESSAGES;
+        return validatePayment(fieldsMap);
     }
 
-    private static void validatePayment(Map<String, String> fieldsMap) {
+    private static List<String> validatePayment(Map<String, String> fieldsMap) {
+
+        List<String> validationErrorMessages = new ArrayList<>();
+
         String hwfReferenceNumber = fieldsMap.get("D8HelpWithFeesReferenceNumber");
         String d8PaymentMethod = fieldsMap.get("D8PaymentMethod");
 
@@ -68,19 +68,18 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         boolean noPaymentMethodProvided = StringUtils.isNotEmpty(hwfReferenceNumber)
                 && StringUtils.isNotEmpty(d8PaymentMethod);
 
-        if (hwfReferenceNumber.length() !=  6) {
-            // HWF length should only be 6 digits
-            VALIDATION_ERROR_MESSAGES.add(HWF_WRONG_LENGTH_ERROR_MESSAGE);
+        if ((StringUtils.isNotEmpty(hwfReferenceNumber) && hwfReferenceNumber.length() !=  6)) {
+            validationErrorMessages.add(HWF_WRONG_LENGTH_ERROR_MESSAGE);
         }
 
         if (noPaymentMethodProvided) {
-            // if neither exist then fail
-            VALIDATION_ERROR_MESSAGES.add(EMPTY_PAYMENT_METHOD_ERROR_MESSAGE);
+            validationErrorMessages.add(EMPTY_PAYMENT_METHOD_ERROR_MESSAGE);
         }
 
         if (!onlySinglePaymentMethodProvided) {
-            // if multiple payment methods exist then fail
-            VALIDATION_ERROR_MESSAGES.add(MULTIPLE_PAYMENT_METHODS_ERROR_MESSAGE);
+            validationErrorMessages.add(MULTIPLE_PAYMENT_METHODS_ERROR_MESSAGE);
         }
+
+        return validationErrorMessages;
     }
 }

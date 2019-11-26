@@ -22,6 +22,7 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8PetitionerFirstName", "Peter"),
             new OcrDataField("D8PetitionerLastName", "Griffin"),
             new OcrDataField("D8LegalProcess", "Dissolution"),
+            new OcrDataField("D8PaymentMethod", "Cheque"),
             new OcrDataField("D8ScreenHasMarriageCert", "True"),
             new OcrDataField("D8RespondentFirstName", "Louis"),
             new OcrDataField("D8RespondentLastName", "Griffin")
@@ -81,9 +82,33 @@ public class NewDivorceCaseValidatorTest {
             "D8LegalProcess must be \"Divorce\", \"Dissolution\" or \"Judicial (separation)\"",
             "D8ScreenHasMarriageCert must be \"True\"",
             "D8CertificateInEnglish must be \"True\" or left blank",
-            "D8PaymentMethod must be \"cheque\", \"debit/credit card\" or left blank"
+            "D8PaymentMethod must be \"Cheque\", \"Debit/Credit Card\" or left blank"
         ));
     }
 
+    @Test
+    public void shouldPassIfUsingValidHelpWithFeesNumber() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+                new OcrDataField("D8PetitionerFirstName", "Peter"),
+                new OcrDataField("D8PetitionerLastName", "Griffin"),
+                new OcrDataField("D8LegalProcess", "Dissolution"),
+                new OcrDataField("D8HelpWithFeesReferenceNumber", "123456"),
+                new OcrDataField("D8ScreenHasMarriageCert", "True"),
+                new OcrDataField("D8RespondentFirstName", "Louis"),
+                new OcrDataField("D8RespondentLastName", "Griffin")
+        ));
+
+        assertThat(validationResult.getStatus(), is(SUCCESS));
+        assertThat(validationResult.getWarnings(), is(emptyList()));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+    }
+
+    @Test
+    public void shouldFailIfUsingValidPaymentMethodAndHelpWithFees() {
+
+    }
+
     // Add in unit tests for combinations of payments
+    // Payment method valid - but fails - e.g. invalid HWF number
+    //
 }
