@@ -56,7 +56,7 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
 
     private static List<String> validatePayment(Map<String, String> fieldsMap) {
 
-        List<String> validationErrorMessages = new ArrayList<>();
+        List<String> validationWarningMessages = new ArrayList<>();
 
         String hwfReferenceNumber = fieldsMap.get("D8HelpWithFeesReferenceNumber");
         String d8PaymentMethod = fieldsMap.get("D8PaymentMethod");
@@ -68,17 +68,17 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
                 && StringUtils.isEmpty(d8PaymentMethod);
 
         if ((StringUtils.isNotEmpty(hwfReferenceNumber) && hwfReferenceNumber.length() !=  6)) {
-            validationErrorMessages.add(HWF_WRONG_LENGTH_ERROR_MESSAGE);
+            validationWarningMessages.add(HWF_WRONG_LENGTH_ERROR_MESSAGE);
         }
 
         if (noPaymentMethodProvided) {
-            validationErrorMessages.add(EMPTY_PAYMENT_METHOD_ERROR_MESSAGE);
+            validationWarningMessages.add(EMPTY_PAYMENT_METHOD_ERROR_MESSAGE);
         }
 
         if (multiplePaymentMethodsProvided) {
-            validationErrorMessages.add(MULTIPLE_PAYMENT_METHODS_ERROR_MESSAGE);
+            validationWarningMessages.add(MULTIPLE_PAYMENT_METHODS_ERROR_MESSAGE);
         }
 
-        return validationErrorMessages;
+        return validationWarningMessages;
     }
 }

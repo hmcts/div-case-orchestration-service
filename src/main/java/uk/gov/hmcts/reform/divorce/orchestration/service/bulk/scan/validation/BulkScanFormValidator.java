@@ -30,8 +30,8 @@ public abstract class BulkScanFormValidator {
         List<String> validationMessagesForValuesNotAllowed = produceErrorsForValuesNotAllowed(fieldsMap);
         validationMessagesForValuesNotAllowed.forEach(validationResultBuilder::addWarning);
 
-        List<String> errorsForCustomValidation = runPostProcessingValidation(fieldsMap);
-        errorsForCustomValidation.forEach(validationResultBuilder::addError);
+        List<String> warningsForCustomValidation = runPostProcessingValidation(fieldsMap);
+        warningsForCustomValidation.forEach(validationResultBuilder::addWarning);
 
         return validationResultBuilder.build();
     }
