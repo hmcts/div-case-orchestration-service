@@ -35,8 +35,6 @@ public class ValidationBulkScanITest {
     private static final String SUCCESS_STATUS = "SUCCESS";
     private static final String WARNINGS_STATUS = "WARNINGS";
     private static final String FULL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/fullD8Form.json";
-    private static final String INCOMPLETE_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/validation/incompleteForm.json";
-    private static final String VALIDATE_OCR_ENDPOINT = "/forms/{form-type}/validate-ocr";
 
     @Autowired
     private MockMvc mockMvc;
@@ -45,7 +43,7 @@ public class ValidationBulkScanITest {
     public void shouldReturnSuccessResponseForValidationEndpoint() throws Exception {
         String formToValidate = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
 
-        mockMvc.perform(post(VALIDATE_OCR_ENDPOINT, NEW_DIVORCE_CASE)
+        mockMvc.perform(post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
             .contentType(APPLICATION_JSON)
             .content(formToValidate)
         ).andExpect(matchAll(
@@ -60,9 +58,9 @@ public class ValidationBulkScanITest {
 
     @Test
     public void shouldReturnErrorResponseForValidationEndpoint() throws Exception {
-        String formToValidate = loadResourceAsString(INCOMPLETE_D8_FORM_JSON_PATH);
+        String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/validation/incompleteForm.json");
 
-        mockMvc.perform(post(VALIDATE_OCR_ENDPOINT, NEW_DIVORCE_CASE)
+        mockMvc.perform(post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
             .contentType(APPLICATION_JSON)
             .content(formToValidate)
         ).andExpect(matchAll(
@@ -70,8 +68,7 @@ public class ValidationBulkScanITest {
             content().string(allOf(
                 hasJsonPath("$.warnings", hasItems(
                         "Mandatory field \"D8PetitionerFirstName\" is missing",
-                        "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value"
-                )),
+                        "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value")),
                 hasJsonPath("$.errors", equalTo(emptyList())),
                 hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
             ))
@@ -82,7 +79,7 @@ public class ValidationBulkScanITest {
     public void shouldReturnResourceNotFoundResponseForUnsupportedFormType() throws Exception {
         String formToValidate = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
 
-        mockMvc.perform(post(VALIDATE_OCR_ENDPOINT, "unsupportedFormType")
+        mockMvc.perform(post("/forms/{form-type}/validate-ocr", "unsupportedFormType")
             .contentType(APPLICATION_JSON)
             .content(formToValidate)
         ).andExpect(matchAll(
@@ -90,4 +87,5 @@ public class ValidationBulkScanITest {
             content().string(isEmptyString())
         ));
     }
+
 }
