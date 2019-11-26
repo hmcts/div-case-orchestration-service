@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public abstract class ExceptionRecordToCaseTransformer {
 
-    public static String BULK_SCAN_CASE_REFERENCE = "bulkScanCaseReference";
+    private static final String BULK_SCAN_CASE_REFERENCE = "bulkScanCaseReference";
 
     public Map<String, Object> transformIntoCaseData(ExceptionRecord exceptionRecord) {
         Map<String, String> ocrToCCDMapping = getOcrToCCDMapping();

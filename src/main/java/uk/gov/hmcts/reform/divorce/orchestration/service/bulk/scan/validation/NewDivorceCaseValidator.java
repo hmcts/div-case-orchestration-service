@@ -61,12 +61,11 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         String hwfReferenceNumber = fieldsMap.get("D8HelpWithFeesReferenceNumber");
         String d8PaymentMethod = fieldsMap.get("D8PaymentMethod");
 
-        boolean onlySinglePaymentMethodProvided =
-                ((StringUtils.isNotEmpty(hwfReferenceNumber) && StringUtils.isEmpty(d8PaymentMethod))
-                        || (StringUtils.isEmpty(hwfReferenceNumber) && StringUtils.isNotEmpty(d8PaymentMethod)));
+        boolean multiplePaymentMethodsProvided =
+                ((StringUtils.isNotEmpty(hwfReferenceNumber) && StringUtils.isNotEmpty(d8PaymentMethod)));
 
-        boolean noPaymentMethodProvided = StringUtils.isNotEmpty(hwfReferenceNumber)
-                && StringUtils.isNotEmpty(d8PaymentMethod);
+        boolean noPaymentMethodProvided = StringUtils.isEmpty(hwfReferenceNumber)
+                && StringUtils.isEmpty(d8PaymentMethod);
 
         if ((StringUtils.isNotEmpty(hwfReferenceNumber) && hwfReferenceNumber.length() !=  6)) {
             validationErrorMessages.add(HWF_WRONG_LENGTH_ERROR_MESSAGE);
@@ -76,7 +75,7 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
             validationErrorMessages.add(EMPTY_PAYMENT_METHOD_ERROR_MESSAGE);
         }
 
-        if (!onlySinglePaymentMethodProvided) {
+        if (multiplePaymentMethodsProvided) {
             validationErrorMessages.add(MULTIPLE_PAYMENT_METHODS_ERROR_MESSAGE);
         }
 
