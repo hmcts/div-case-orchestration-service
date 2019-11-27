@@ -103,7 +103,9 @@ public class NewDivorceCaseValidatorTest {
                 new OcrDataField("D8HelpWithFeesReferenceNumber", "123456"),
                 new OcrDataField("D8ScreenHasMarriageCert", "True"),
                 new OcrDataField("D8RespondentFirstName", "Louis"),
-                new OcrDataField("D8RespondentLastName", "Griffin")
+                new OcrDataField("D8RespondentLastName", "Griffin"),
+                new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
+                new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
         ));
 
         assertThat(validationResult.getStatus(), is(SUCCESS));
@@ -120,7 +122,9 @@ public class NewDivorceCaseValidatorTest {
                 new OcrDataField("D8HelpWithFeesReferenceNumber", "ABCDEF"),
                 new OcrDataField("D8ScreenHasMarriageCert", "True"),
                 new OcrDataField("D8RespondentFirstName", "Louis"),
-                new OcrDataField("D8RespondentLastName", "Griffin")
+                new OcrDataField("D8RespondentLastName", "Griffin"),
+                new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
+                new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -140,7 +144,9 @@ public class NewDivorceCaseValidatorTest {
                 new OcrDataField("D8HelpWithFeesReferenceNumber", "123456"),
                 new OcrDataField("D8ScreenHasMarriageCert", "True"),
                 new OcrDataField("D8RespondentFirstName", "Louis"),
-                new OcrDataField("D8RespondentLastName", "Griffin")
+                new OcrDataField("D8RespondentLastName", "Griffin"),
+                new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
+                new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -158,7 +164,9 @@ public class NewDivorceCaseValidatorTest {
                 new OcrDataField("D8LegalProcess", "Dissolution"),
                 new OcrDataField("D8ScreenHasMarriageCert", "True"),
                 new OcrDataField("D8RespondentFirstName", "Louis"),
-                new OcrDataField("D8RespondentLastName", "Griffin")
+                new OcrDataField("D8RespondentLastName", "Griffin"),
+                new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
+                new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
