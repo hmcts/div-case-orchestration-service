@@ -117,6 +117,11 @@ public class OrchestrationConstants {
     public static final String NOT_DEFENDING_NOT_ADMITTING = "NoNoAdmission";
     public static final String PREVIOUS_CASE_ID_CCD_KEY = "PreviousCaseId";
 
+    //This is misspelled in the CCD definition file
+    public static final String D_8_REASON_FOR_DIVORCE_SEPARATION_DAY = "D8ReasonForDivorceSeperationDay";
+    public static final String D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH = "D8ReasonForDivorceSeperationMonth";
+    public static final String D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR = "D8ReasonForDivorceSeperationYear";
+
     public static final String PET_SOL_EMAIL = "PetitionerSolicitorEmail";
     public static final String PET_SOL_NAME = "PetitionerSolicitorName";
 

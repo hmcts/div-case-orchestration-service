@@ -28,6 +28,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.BulkScanController.SERVICE_AUTHORISATION_HEADER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_DAY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.ALLOWED_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.I_AM_NOT_ALLOWED_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
@@ -39,8 +44,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.
 @RunWith(SpringRunner.class)
 public class TransformationBulkScanITest {
 
-    private static final String PARTIAL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/partialD8Form.json";
     private static final String FULL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/fullD8Form.json";
+    private static final String PARTIAL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/partialD8Form.json";
     private static final String TRANSFORMATION_URL = "/transform-exception-record";
 
     private static String VALID_BODY;
@@ -95,12 +100,12 @@ public class TransformationBulkScanITest {
                     hasJsonPath("$.case_creation_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
                         hasJsonPath("event_id", is("bulkScanCaseCreate")),
-                        hasJsonPath("case_data.*", hasSize(14)),
+                        hasJsonPath("case_data.*", hasSize(17)),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),
                             hasJsonPath("D8PaymentMethod", is("Card")),
-                            hasJsonPath("D8PetitionerFirstName", is("Christopher")),
-                            hasJsonPath("D8PetitionerLastName", is("O'John")),
+                            hasJsonPath(D_8_PETITIONER_FIRST_NAME, is("Christopher")),
+                            hasJsonPath(D_8_PETITIONER_LAST_NAME, is("O'John")),
                             hasJsonPath("D8PetitionerPhoneNumber", is("1111111111")),
                             hasJsonPath("D8PetitionerEmail", is("test.testerson@mailinator.com")),
                             hasJsonPath("D8LegalProcess", is("Divorce")),
@@ -110,7 +115,10 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8RespondentLastName", is("Doe")),
                             hasJsonPath("D8RespondentPhoneNumber", is("22222222222")),
                             hasJsonPath("D8MarriagePetitionerName", is("Christopher O'John")),
-                            hasJsonPath("D8MarriageRespondentName", is("Jane Doe"))
+                            hasJsonPath("D8MarriageRespondentName", is("Jane Doe")),
+                            hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_DAY, is("20")),
+                            hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH, is("11")),
+                            hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR, is("2008"))
                         ))
                     ))
                 )));
@@ -139,8 +147,8 @@ public class TransformationBulkScanITest {
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),
                             hasJsonPath("D8PaymentMethod", is("Card")),
-                            hasJsonPath("D8PetitionerFirstName", is("Christopher")),
-                            hasJsonPath("D8PetitionerLastName", is("O'John")),
+                            hasJsonPath(D_8_PETITIONER_FIRST_NAME, is("Christopher")),
+                            hasJsonPath(D_8_PETITIONER_LAST_NAME, is("O'John")),
                             hasJsonPath("D8PetitionerPhoneNumber", is("1111111111")),
                             hasJsonPath("D8PetitionerEmail", is("test.testerson@mailinator.com")),
                             hasJsonPath("D8LegalProcess", is("Divorce")),
