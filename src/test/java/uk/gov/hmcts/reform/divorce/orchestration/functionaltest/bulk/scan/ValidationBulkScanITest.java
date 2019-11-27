@@ -15,7 +15,7 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.ResultMatcher.matchAll;
@@ -66,7 +66,9 @@ public class ValidationBulkScanITest {
         ).andExpect(matchAll(
             status().isOk(),
             content().string(allOf(
-                hasJsonPath("$.warnings", hasItem("Mandatory field \"D8PetitionerFirstName\" is missing")),
+                hasJsonPath("$.warnings", hasItems(
+                        "Mandatory field \"D8PetitionerFirstName\" is missing",
+                        "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value")),
                 hasJsonPath("$.errors", equalTo(emptyList())),
                 hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
             ))
