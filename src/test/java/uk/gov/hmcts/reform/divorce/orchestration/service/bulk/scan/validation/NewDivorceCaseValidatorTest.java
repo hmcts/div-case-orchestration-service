@@ -25,7 +25,9 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8PaymentMethod", "Cheque"),
             new OcrDataField("D8ScreenHasMarriageCert", "True"),
             new OcrDataField("D8RespondentFirstName", "Louis"),
-            new OcrDataField("D8RespondentLastName", "Griffin")
+            new OcrDataField("D8RespondentLastName", "Griffin"),
+            new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
+            new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
         ));
 
         assertThat(validationResult.getStatus(), is(SUCCESS));
@@ -45,7 +47,9 @@ public class NewDivorceCaseValidatorTest {
             "Mandatory field \"D8LegalProcess\" is missing",
             "Mandatory field \"D8ScreenHasMarriageCert\" is missing",
             "Mandatory field \"D8RespondentFirstName\" is missing",
-            "Mandatory field \"D8RespondentLastName\" is missing"
+            "Mandatory field \"D8RespondentLastName\" is missing",
+            "Mandatory field \"D8MarriagePetitionerName\" is missing",
+            "Mandatory field \"D8MarriageRespondentName\" is missing"
         ));
     }
 
@@ -55,7 +59,9 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8PetitionerFirstName", "Kratos"),
             new OcrDataField("D8PetitionerLastName", ""),
             new OcrDataField("D8RespondentFirstName", ""),
-            new OcrDataField("D8RespondentLastName", "")
+            new OcrDataField("D8RespondentLastName", ""),
+            new OcrDataField("D8MarriagePetitionerName", ""),
+            new OcrDataField("D8MarriageRespondentName", "")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -63,7 +69,9 @@ public class NewDivorceCaseValidatorTest {
         assertThat(validationResult.getWarnings(), hasItems(
             "Mandatory field \"D8PetitionerLastName\" is missing",
             "Mandatory field \"D8RespondentFirstName\" is missing",
-            "Mandatory field \"D8RespondentLastName\" is missing"
+            "Mandatory field \"D8RespondentLastName\" is missing",
+            "Mandatory field \"D8MarriagePetitionerName\" is missing",
+            "Mandatory field \"D8MarriageRespondentName\" is missing"
         ));
     }
 
@@ -95,7 +103,9 @@ public class NewDivorceCaseValidatorTest {
                 new OcrDataField("D8HelpWithFeesReferenceNumber", "123456"),
                 new OcrDataField("D8ScreenHasMarriageCert", "True"),
                 new OcrDataField("D8RespondentFirstName", "Louis"),
-                new OcrDataField("D8RespondentLastName", "Griffin")
+                new OcrDataField("D8RespondentLastName", "Griffin"),
+                new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
+                new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
         ));
 
         assertThat(validationResult.getStatus(), is(SUCCESS));
@@ -112,7 +122,9 @@ public class NewDivorceCaseValidatorTest {
                 new OcrDataField("D8HelpWithFeesReferenceNumber", "ABCDEF"),
                 new OcrDataField("D8ScreenHasMarriageCert", "True"),
                 new OcrDataField("D8RespondentFirstName", "Louis"),
-                new OcrDataField("D8RespondentLastName", "Griffin")
+                new OcrDataField("D8RespondentLastName", "Griffin"),
+                new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
+                new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -132,7 +144,9 @@ public class NewDivorceCaseValidatorTest {
                 new OcrDataField("D8HelpWithFeesReferenceNumber", "123456"),
                 new OcrDataField("D8ScreenHasMarriageCert", "True"),
                 new OcrDataField("D8RespondentFirstName", "Louis"),
-                new OcrDataField("D8RespondentLastName", "Griffin")
+                new OcrDataField("D8RespondentLastName", "Griffin"),
+                new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
+                new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -150,7 +164,9 @@ public class NewDivorceCaseValidatorTest {
                 new OcrDataField("D8LegalProcess", "Dissolution"),
                 new OcrDataField("D8ScreenHasMarriageCert", "True"),
                 new OcrDataField("D8RespondentFirstName", "Louis"),
-                new OcrDataField("D8RespondentLastName", "Griffin")
+                new OcrDataField("D8RespondentLastName", "Griffin"),
+                new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
+                new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
