@@ -1,7 +1,15 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations;
 
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataField;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_DAY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR;
 
 public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
 
@@ -17,11 +25,29 @@ public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
     }
 
     @Override
-    protected Map<String, Object> runPostMappingTransformation(Map<String, Object> ccdTransformedFields) {
+    protected Map<String, Object> runFormSpecificTransformation(List<OcrDataField> ocrDataFields) {
+        Map<String, Object> modifiedMap = new HashMap<>();
 
-        ccdTransformedFields.replace("D8PaymentMethod", "Debit/Credit Card", "Card");
+        ocrDataFields.stream()
+            .filter(f -> f.getName().equals("D8ReasonForDivorceSeparationDate"))
+            .map(OcrDataField::getValue)
+            .map(BulkScanHelper::transformFormDateIntoLocalDate)
+            .findFirst()
+            .ifPresent(localDate -> {
+                modifiedMap.put(D_8_REASON_FOR_DIVORCE_SEPARATION_DAY, String.valueOf(localDate.getDayOfMonth()));
+                modifiedMap.put(D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH, String.valueOf(localDate.getMonthValue()));
+                modifiedMap.put(D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR, String.valueOf(localDate.getYear()));
+            });
 
-        return  ccdTransformedFields;
+
+        return modifiedMap;
+    }
+
+    @Override
+    Map<String, Object> runPostMappingModification(Map<String, Object> transformedCaseData) {
+        transformedCaseData.replace("D8PaymentMethod", "Debit/Credit Card", "Card");
+
+        return transformedCaseData;
     }
 
     private static Map<String, String> d8ExceptionRecordToCcdMap() {
