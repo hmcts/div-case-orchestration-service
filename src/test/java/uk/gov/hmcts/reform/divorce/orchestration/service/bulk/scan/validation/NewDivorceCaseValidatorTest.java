@@ -27,7 +27,8 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8RespondentFirstName", "Louis"),
             new OcrDataField("D8RespondentLastName", "Griffin"),
             new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
-            new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
+            new OcrDataField("D8MarriageRespondentName", "Louis Griffin"),
+            new OcrDataField("D8ReasonForDivorceSeparationDate", "20/11/2008")
         ));
 
         assertThat(validationResult.getStatus(), is(SUCCESS));
@@ -81,7 +82,8 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8LegalProcess", "Bankruptcy"),
             new OcrDataField("D8ScreenHasMarriageCert", "Que?"),
             new OcrDataField("D8CertificateInEnglish", "What?"),
-            new OcrDataField("D8PaymentMethod", "Bitcoin")
+            new OcrDataField("D8PaymentMethod", "Bitcoin"),
+            new OcrDataField("D8ReasonForDivorceSeparationDate", "this should be a date")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -90,6 +92,7 @@ public class NewDivorceCaseValidatorTest {
             "D8LegalProcess must be \"Divorce\", \"Dissolution\" or \"Judicial (separation)\"",
             "D8ScreenHasMarriageCert must be \"True\"",
             "D8CertificateInEnglish must be \"True\" or left blank",
+            "D8ReasonForDivorceSeparationDate must be a valid date",
             "D8PaymentMethod must be \"Cheque\", \"Debit/Credit Card\" or left blank"
         ));
     }
@@ -97,15 +100,15 @@ public class NewDivorceCaseValidatorTest {
     @Test
     public void shouldPassIfUsingValidHelpWithFeesNumberAndNoOtherPaymentMethod() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
-                new OcrDataField("D8PetitionerFirstName", "Peter"),
-                new OcrDataField("D8PetitionerLastName", "Griffin"),
-                new OcrDataField("D8LegalProcess", "Dissolution"),
-                new OcrDataField("D8HelpWithFeesReferenceNumber", "123456"),
-                new OcrDataField("D8ScreenHasMarriageCert", "True"),
-                new OcrDataField("D8RespondentFirstName", "Louis"),
-                new OcrDataField("D8RespondentLastName", "Griffin"),
-                new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
-                new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
+            new OcrDataField("D8PetitionerFirstName", "Peter"),
+            new OcrDataField("D8PetitionerLastName", "Griffin"),
+            new OcrDataField("D8LegalProcess", "Dissolution"),
+            new OcrDataField("D8HelpWithFeesReferenceNumber", "123456"),
+            new OcrDataField("D8ScreenHasMarriageCert", "True"),
+            new OcrDataField("D8RespondentFirstName", "Louis"),
+            new OcrDataField("D8RespondentLastName", "Griffin"),
+            new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
+            new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
         ));
 
         assertThat(validationResult.getStatus(), is(SUCCESS));
@@ -116,20 +119,20 @@ public class NewDivorceCaseValidatorTest {
     @Test
     public void shouldFailIfUsingInvalidHelpWithFeesNumberAndNoOtherPaymentMethod() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
-                new OcrDataField("D8PetitionerFirstName", "Peter"),
-                new OcrDataField("D8PetitionerLastName", "Griffin"),
-                new OcrDataField("D8LegalProcess", "Dissolution"),
-                new OcrDataField("D8HelpWithFeesReferenceNumber", "ABCDEF"),
-                new OcrDataField("D8ScreenHasMarriageCert", "True"),
-                new OcrDataField("D8RespondentFirstName", "Louis"),
-                new OcrDataField("D8RespondentLastName", "Griffin"),
-                new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
-                new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
+            new OcrDataField("D8PetitionerFirstName", "Peter"),
+            new OcrDataField("D8PetitionerLastName", "Griffin"),
+            new OcrDataField("D8LegalProcess", "Dissolution"),
+            new OcrDataField("D8HelpWithFeesReferenceNumber", "ABCDEF"),
+            new OcrDataField("D8ScreenHasMarriageCert", "True"),
+            new OcrDataField("D8RespondentFirstName", "Louis"),
+            new OcrDataField("D8RespondentLastName", "Griffin"),
+            new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
+            new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
         assertThat(validationResult.getWarnings(), hasItems(
-                "D8HelpWithFeesReferenceNumber is usually 6 digits"
+            "D8HelpWithFeesReferenceNumber is usually 6 digits"
         ));
         assertThat(validationResult.getErrors(), is(emptyList()));
     }
@@ -137,21 +140,21 @@ public class NewDivorceCaseValidatorTest {
     @Test
     public void shouldFailIfUsingMultipleValidPaymentMethods() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
-                new OcrDataField("D8PetitionerFirstName", "Peter"),
-                new OcrDataField("D8PetitionerLastName", "Griffin"),
-                new OcrDataField("D8LegalProcess", "Dissolution"),
-                new OcrDataField("D8PaymentMethod", "Cheque"),
-                new OcrDataField("D8HelpWithFeesReferenceNumber", "123456"),
-                new OcrDataField("D8ScreenHasMarriageCert", "True"),
-                new OcrDataField("D8RespondentFirstName", "Louis"),
-                new OcrDataField("D8RespondentLastName", "Griffin"),
-                new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
-                new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
+            new OcrDataField("D8PetitionerFirstName", "Peter"),
+            new OcrDataField("D8PetitionerLastName", "Griffin"),
+            new OcrDataField("D8LegalProcess", "Dissolution"),
+            new OcrDataField("D8PaymentMethod", "Cheque"),
+            new OcrDataField("D8HelpWithFeesReferenceNumber", "123456"),
+            new OcrDataField("D8ScreenHasMarriageCert", "True"),
+            new OcrDataField("D8RespondentFirstName", "Louis"),
+            new OcrDataField("D8RespondentLastName", "Griffin"),
+            new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
+            new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
         assertThat(validationResult.getWarnings(), hasItems(
-                "D8PaymentMethod and D8HelpWithFeesReferenceNumber should not both be populated"
+            "D8PaymentMethod and D8HelpWithFeesReferenceNumber should not both be populated"
         ));
         assertThat(validationResult.getErrors(), is(emptyList()));
     }
@@ -159,19 +162,19 @@ public class NewDivorceCaseValidatorTest {
     @Test
     public void shouldFailIfNoPaymentMethodsProvided() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
-                new OcrDataField("D8PetitionerFirstName", "Peter"),
-                new OcrDataField("D8PetitionerLastName", "Griffin"),
-                new OcrDataField("D8LegalProcess", "Dissolution"),
-                new OcrDataField("D8ScreenHasMarriageCert", "True"),
-                new OcrDataField("D8RespondentFirstName", "Louis"),
-                new OcrDataField("D8RespondentLastName", "Griffin"),
-                new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
-                new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
+            new OcrDataField("D8PetitionerFirstName", "Peter"),
+            new OcrDataField("D8PetitionerLastName", "Griffin"),
+            new OcrDataField("D8LegalProcess", "Dissolution"),
+            new OcrDataField("D8ScreenHasMarriageCert", "True"),
+            new OcrDataField("D8RespondentFirstName", "Louis"),
+            new OcrDataField("D8RespondentLastName", "Griffin"),
+            new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
+            new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
         assertThat(validationResult.getWarnings(), hasItems(
-                "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value"
+            "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value"
         ));
         assertThat(validationResult.getErrors(), is(emptyList()));
     }
