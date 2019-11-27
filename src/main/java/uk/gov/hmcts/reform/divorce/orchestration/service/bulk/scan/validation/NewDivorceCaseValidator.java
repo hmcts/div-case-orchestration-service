@@ -23,6 +23,8 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
     private static final String HWF_WRONG_LENGTH_ERROR_MESSAGE =
         "D8HelpWithFeesReferenceNumber is usually 6 digits";
 
+    private static final int HELP_WITH_FEES_LENGTH = 6;
+
     private static final List<String> MANDATORY_FIELDS = asList(
         "D8PetitionerFirstName",
         "D8PetitionerLastName",
@@ -95,7 +97,7 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
     }
 
     private static boolean isHelpWithFeesValid(String hwfReferenceNumber) {
-        return (StringUtils.isNumeric(hwfReferenceNumber) && (hwfReferenceNumber.length() == 6));
+        return (StringUtils.isNumeric(hwfReferenceNumber) && (hwfReferenceNumber.length() == HELP_WITH_FEES_LENGTH));
     }
 
 }
