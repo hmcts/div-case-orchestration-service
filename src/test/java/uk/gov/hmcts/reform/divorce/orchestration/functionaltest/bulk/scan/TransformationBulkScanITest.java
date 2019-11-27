@@ -95,7 +95,7 @@ public class TransformationBulkScanITest {
                     hasJsonPath("$.case_creation_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
                         hasJsonPath("event_id", is("bulkScanCaseCreate")),
-                        hasJsonPath("case_data.*", hasSize(12)),
+                        hasJsonPath("case_data.*", hasSize(14)),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),
                             hasJsonPath("D8PaymentMethod", is("Card")),
@@ -108,7 +108,9 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8CertificateInEnglish", is("True")),
                             hasJsonPath("D8RespondentFirstName", is("Jane")),
                             hasJsonPath("D8RespondentLastName", is("Doe")),
-                            hasJsonPath("D8RespondentPhoneNumber", is("22222222222"))
+                            hasJsonPath("D8RespondentPhoneNumber", is("22222222222")),
+                            hasJsonPath("D8MarriagePetitionerName", is("Christopher O'John")),
+                            hasJsonPath("D8MarriageRespondentName", is("Jane Doe"))
                         ))
                     ))
                 )));
@@ -133,7 +135,7 @@ public class TransformationBulkScanITest {
                     hasJsonPath("$.case_creation_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
                         hasJsonPath("event_id", is("bulkScanCaseCreate")),
-                        hasJsonPath("case_data.*", hasSize(7)),
+                        hasJsonPath("case_data.*", hasSize(9)),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),
                             hasJsonPath("D8PaymentMethod", is("Card")),
@@ -142,6 +144,8 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8PetitionerPhoneNumber", is("1111111111")),
                             hasJsonPath("D8PetitionerEmail", is("test.testerson@mailinator.com")),
                             hasJsonPath("D8LegalProcess", is("Divorce")),
+                            hasJsonPath("D8MarriagePetitionerName", is("Christopher O'John")),
+                            hasJsonPath("D8MarriageRespondentName", is("Jane Doe")),
                             hasNoJsonPath("D8CertificateInEnglish")
                         ))
                     ))

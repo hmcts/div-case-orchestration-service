@@ -26,7 +26,9 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         "D8LegalProcess",
         "D8ScreenHasMarriageCert",
         "D8RespondentFirstName",
-        "D8RespondentLastName"
+        "D8RespondentLastName",
+        "D8MarriagePetitionerName",
+        "D8MarriageRespondentName"
     );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
@@ -60,17 +62,17 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         String hwfReferenceNumber = fieldsMap.getOrDefault("D8HelpWithFeesReferenceNumber", "");
         String d8PaymentMethod = fieldsMap.getOrDefault("D8PaymentMethod", "");
 
-        boolean multiplePaymentMethodsProvided =
+        boolean isMultiplePaymentMethodsProvided =
                 ((StringUtils.isNotEmpty(hwfReferenceNumber) && StringUtils.isNotEmpty(d8PaymentMethod)));
 
-        boolean noPaymentMethodProvided = StringUtils.isEmpty(hwfReferenceNumber)
+        boolean isNoPaymentMethodProvided = StringUtils.isEmpty(hwfReferenceNumber)
                 && StringUtils.isEmpty(d8PaymentMethod);
 
-        if (noPaymentMethodProvided) {
+        if (isNoPaymentMethodProvided) {
             validationWarningMessages.add(EMPTY_PAYMENT_METHOD_ERROR_MESSAGE);
         }
 
-        if (multiplePaymentMethodsProvided) {
+        if (isMultiplePaymentMethodsProvided) {
             validationWarningMessages.add(MULTIPLE_PAYMENT_METHODS_ERROR_MESSAGE);
         }
 
