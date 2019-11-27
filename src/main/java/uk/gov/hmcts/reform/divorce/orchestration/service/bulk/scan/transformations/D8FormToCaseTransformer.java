@@ -19,7 +19,7 @@ public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
     @Override
     protected Map<String, Object> runPostMappingTransformation(Map<String, Object> ccdTransformedFields) {
 
-        ccdTransformedFields.replace("D8PaymentMethod", "debit/credit card", "card");
+        ccdTransformedFields.replace("D8PaymentMethod", "Debit/Credit Card", "Card");
 
         return  ccdTransformedFields;
     }

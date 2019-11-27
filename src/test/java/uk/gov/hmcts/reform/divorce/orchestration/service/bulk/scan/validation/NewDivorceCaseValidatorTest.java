@@ -22,6 +22,7 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8PetitionerFirstName", "Peter"),
             new OcrDataField("D8PetitionerLastName", "Griffin"),
             new OcrDataField("D8LegalProcess", "Dissolution"),
+            new OcrDataField("D8PaymentMethod", "Cheque"),
             new OcrDataField("D8ScreenHasMarriageCert", "True"),
             new OcrDataField("D8RespondentFirstName", "Louis"),
             new OcrDataField("D8RespondentLastName", "Griffin"),
@@ -80,7 +81,8 @@ public class NewDivorceCaseValidatorTest {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
             new OcrDataField("D8LegalProcess", "Bankruptcy"),
             new OcrDataField("D8ScreenHasMarriageCert", "Que?"),
-            new OcrDataField("D8CertificateInEnglish", "What?")
+            new OcrDataField("D8CertificateInEnglish", "What?"),
+            new OcrDataField("D8PaymentMethod", "Bitcoin")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -88,8 +90,82 @@ public class NewDivorceCaseValidatorTest {
         assertThat(validationResult.getWarnings(), hasItems(
             "D8LegalProcess must be \"Divorce\", \"Dissolution\" or \"Judicial (separation)\"",
             "D8ScreenHasMarriageCert must be \"True\"",
-            "D8CertificateInEnglish must be \"True\" or left blank"
+            "D8CertificateInEnglish must be \"True\" or left blank",
+            "D8PaymentMethod must be \"Cheque\", \"Debit/Credit Card\" or left blank"
         ));
     }
 
+    @Test
+    public void shouldPassIfUsingValidHelpWithFeesNumberAndNoOtherPaymentMethod() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+                new OcrDataField("D8PetitionerFirstName", "Peter"),
+                new OcrDataField("D8PetitionerLastName", "Griffin"),
+                new OcrDataField("D8LegalProcess", "Dissolution"),
+                new OcrDataField("D8HelpWithFeesReferenceNumber", "123456"),
+                new OcrDataField("D8ScreenHasMarriageCert", "True"),
+                new OcrDataField("D8RespondentFirstName", "Louis"),
+                new OcrDataField("D8RespondentLastName", "Griffin")
+        ));
+
+        assertThat(validationResult.getStatus(), is(SUCCESS));
+        assertThat(validationResult.getWarnings(), is(emptyList()));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+    }
+
+    @Test
+    public void shouldFailIfUsingInvalidHelpWithFeesNumberAndNoOtherPaymentMethod() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+                new OcrDataField("D8PetitionerFirstName", "Peter"),
+                new OcrDataField("D8PetitionerLastName", "Griffin"),
+                new OcrDataField("D8LegalProcess", "Dissolution"),
+                new OcrDataField("D8HelpWithFeesReferenceNumber", "ABCDEF"),
+                new OcrDataField("D8ScreenHasMarriageCert", "True"),
+                new OcrDataField("D8RespondentFirstName", "Louis"),
+                new OcrDataField("D8RespondentLastName", "Griffin")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getWarnings(), hasItems(
+                "D8HelpWithFeesReferenceNumber is usually 6 digits"
+        ));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+    }
+
+    @Test
+    public void shouldFailIfUsingMultipleValidPaymentMethods() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+                new OcrDataField("D8PetitionerFirstName", "Peter"),
+                new OcrDataField("D8PetitionerLastName", "Griffin"),
+                new OcrDataField("D8LegalProcess", "Dissolution"),
+                new OcrDataField("D8PaymentMethod", "Cheque"),
+                new OcrDataField("D8HelpWithFeesReferenceNumber", "123456"),
+                new OcrDataField("D8ScreenHasMarriageCert", "True"),
+                new OcrDataField("D8RespondentFirstName", "Louis"),
+                new OcrDataField("D8RespondentLastName", "Griffin")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getWarnings(), hasItems(
+                "D8PaymentMethod and D8HelpWithFeesReferenceNumber should not both be populated"
+        ));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+    }
+
+    @Test
+    public void shouldFailIfNoPaymentMethodsProvided() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+                new OcrDataField("D8PetitionerFirstName", "Peter"),
+                new OcrDataField("D8PetitionerLastName", "Griffin"),
+                new OcrDataField("D8LegalProcess", "Dissolution"),
+                new OcrDataField("D8ScreenHasMarriageCert", "True"),
+                new OcrDataField("D8RespondentFirstName", "Louis"),
+                new OcrDataField("D8RespondentLastName", "Griffin")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getWarnings(), hasItems(
+                "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value"
+        ));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+    }
 }
