@@ -28,7 +28,6 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8RespondentLastName", "Griffin"),
             new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
             new OcrDataField("D8MarriageRespondentName", "Louis Griffin")
-
         ));
 
         assertThat(validationResult.getStatus(), is(SUCCESS));
