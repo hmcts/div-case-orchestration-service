@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.authorisation.validators.ServiceAuthTokenValidator;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.common.AuthService;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.common.ForbiddenException;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.common.UnauthenticatedException;
-s
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.when;
