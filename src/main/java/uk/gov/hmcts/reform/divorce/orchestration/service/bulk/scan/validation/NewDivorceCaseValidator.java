@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.exception.FormFieldValidationException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformFormDateIntoLocalDate;
 
 @Component
 public class NewDivorceCaseValidator extends BulkScanFormValidator {
@@ -60,7 +60,7 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
 
         try {
             Optional.ofNullable(fieldsMap.get("D8ReasonForDivorceSeparationDate"))
-                .ifPresent(BulkScanHelper::transformFormDateIntoLocalDate);
+                .ifPresent(formDate -> transformFormDateIntoLocalDate("D8ReasonForDivorceSeparationDate", formDate));
         } catch (FormFieldValidationException exception) {
             errorMessages.add(exception.getMessage());
         }
