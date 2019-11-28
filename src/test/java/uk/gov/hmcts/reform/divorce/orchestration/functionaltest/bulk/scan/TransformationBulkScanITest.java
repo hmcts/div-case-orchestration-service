@@ -116,7 +116,8 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8RespondentPhoneNumber", is("22222222222")),
                             hasJsonPath("D8PetitionerNameChangedHow", is("Yes")),
                             hasJsonPath("D8PetitionerContactDetailsConfidential", is("No")),
-                            hasJsonPath("D8PetitionerPostCode", is("SE1 2BP")),
+                            hasJsonPath("D8PetitionerHomeAddress", allOf(
+                                hasJsonPath("PostCode", is("SE1 2BP")))),
                             hasJsonPath("D8MarriagePetitionerName", is("Christopher O'John")),
                             hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_DAY, is("20")),
                             hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH, is("11")),
