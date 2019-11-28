@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations;
 
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataField;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper;
 
 import java.util.HashMap;
 import java.util.List;
