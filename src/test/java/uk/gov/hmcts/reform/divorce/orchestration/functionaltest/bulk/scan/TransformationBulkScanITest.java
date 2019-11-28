@@ -100,7 +100,7 @@ public class TransformationBulkScanITest {
                     hasJsonPath("$.case_creation_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
                         hasJsonPath("event_id", is("bulkScanCaseCreate")),
-                        hasJsonPath("case_data.*", hasSize(17)),
+                        hasJsonPath("case_data.*", hasSize(20)),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),
                             hasJsonPath("D8PaymentMethod", is("Card")),
@@ -114,8 +114,10 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8RespondentFirstName", is("Jane")),
                             hasJsonPath("D8RespondentLastName", is("Doe")),
                             hasJsonPath("D8RespondentPhoneNumber", is("22222222222")),
+                            hasJsonPath("D8PetitionerNameChangedHow", is("Yes")),
+                            hasJsonPath("D8PetitionerContactDetailsConfidential", is("No")),
+                            hasJsonPath("D8PetitionerPostCode", is("SE1 2BP")),
                             hasJsonPath("D8MarriagePetitionerName", is("Christopher O'John")),
-                            hasJsonPath("D8MarriageRespondentName", is("Jane Doe")),
                             hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_DAY, is("20")),
                             hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH, is("11")),
                             hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR, is("2008"))
@@ -143,15 +145,16 @@ public class TransformationBulkScanITest {
                     hasJsonPath("$.case_creation_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
                         hasJsonPath("event_id", is("bulkScanCaseCreate")),
-                        hasJsonPath("case_data.*", hasSize(9)),
+                        hasJsonPath("case_data.*", hasSize(10)),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),
                             hasJsonPath("D8PaymentMethod", is("Card")),
                             hasJsonPath(D_8_PETITIONER_FIRST_NAME, is("Christopher")),
                             hasJsonPath(D_8_PETITIONER_LAST_NAME, is("O'John")),
-                            hasJsonPath("D8PetitionerPhoneNumber", is("1111111111")),
+                            hasJsonPath("D8PetitionerPhoneNumber", is("07456 78 90 11")),
                             hasJsonPath("D8PetitionerEmail", is("test.testerson@mailinator.com")),
                             hasJsonPath("D8LegalProcess", is("Divorce")),
+                            hasJsonPath("D8PetitionerContactDetailsConfidential", is("Yes")),
                             hasJsonPath("D8MarriagePetitionerName", is("Christopher O'John")),
                             hasJsonPath("D8MarriageRespondentName", is("Jane Doe")),
                             hasNoJsonPath("D8CertificateInEnglish")

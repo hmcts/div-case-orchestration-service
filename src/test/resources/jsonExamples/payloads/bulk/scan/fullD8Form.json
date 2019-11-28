@@ -16,6 +16,9 @@
     { "name": "D8RespondentPhoneNumber", "value": "22222222222" },
     { "name": "D8MarriagePetitionerName", "value": "Christopher O'John" },
     { "name": "D8MarriageRespondentName", "value": "Jane Doe" },
-    { "name": "D8ReasonForDivorceSeparationDate", "value": "20/11/2008" }
+    { "name": "D8ReasonForDivorceSeparationDate", "value": "20/11/2008" },
+    { "name": "D8PetitionerNameChangedHow", "value": "Yes" },
+    { "name": "D8PetitionerContactDetailsConfidential", "value": "No" },
+    { "name": "D8PetitionerPostCode", "value": "SE1 2BP" }
   ]
 }
