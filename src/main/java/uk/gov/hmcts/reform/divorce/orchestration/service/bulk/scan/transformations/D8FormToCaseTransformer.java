@@ -67,6 +67,10 @@ public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
         erToCcdFieldsMap.put("D8PetitionerLastName", "D8PetitionerLastName");
         erToCcdFieldsMap.put("D8PetitionerPhoneNumber", "D8PetitionerPhoneNumber");
         erToCcdFieldsMap.put("D8PetitionerEmail", "D8PetitionerEmail");
+        erToCcdFieldsMap.put("D8PetitionerNameChangedHow", "D8PetitionerNameChangedHow");
+        erToCcdFieldsMap.put("D8PetitionerContactDetailsConfidential", "D8PetitionerContactDetailsConfidential");
+        // Postcode needs to map to the home address - pending another PR, placeholder for now
+        erToCcdFieldsMap.put("D8PetitionerPostCode", "D8PetitionerPostCode");
 
         // Section 3 - About your spouse/civil partner (the respondent)
         erToCcdFieldsMap.put("D8RespondentFirstName", "D8RespondentFirstName");

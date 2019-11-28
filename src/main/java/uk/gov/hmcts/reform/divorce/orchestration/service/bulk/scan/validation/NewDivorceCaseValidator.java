@@ -6,12 +6,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.exception.For
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
 public class NewDivorceCaseValidator extends BulkScanFormValidator {
@@ -28,12 +33,15 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
     private static final List<String> MANDATORY_FIELDS = asList(
         "D8PetitionerFirstName",
         "D8PetitionerLastName",
+        "D8PetitionerNameChangedHow",
         "D8LegalProcess",
         "D8ScreenHasMarriageCert",
         "D8RespondentFirstName",
         "D8RespondentLastName",
         "D8MarriagePetitionerName",
-        "D8MarriageRespondentName"
+        "D8MarriageRespondentName",
+        "D8PetitionerContactDetailsConfidential",
+        "D8PetitionerPostCode"
     );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
@@ -42,8 +50,13 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         ALLOWED_VALUES_PER_FIELD.put("D8LegalProcess", asList("Divorce", "Dissolution", "Judicial (separation)"));
         ALLOWED_VALUES_PER_FIELD.put("D8ScreenHasMarriageCert", asList(TRUE));
         ALLOWED_VALUES_PER_FIELD.put("D8CertificateInEnglish", asList(TRUE, BLANK));
+        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameChangedHow", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerContactDetailsConfidential", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("Cheque", "Debit/Credit Card", BLANK));
     }
+
+    private static final String ccdEmailValidationRegex = "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$";
+    private static final String ccdPhoneNumberValidationRegex = "^[0-9 +().-]{9,}$";
 
     public List<String> getMandatoryFields() {
         return MANDATORY_FIELDS;
@@ -56,7 +69,15 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
 
     @Override
     protected List<String> runPostProcessingValidation(Map<String, String> fieldsMap) {
-        List<String> errorMessages = validatePayment(fieldsMap);
+        List<String> errorMessages = Stream.of(
+            validateFieldMatchesRegex(fieldsMap, "D8PetitionerPhoneNumber", ccdPhoneNumberValidationRegex),
+            validatePostcode(fieldsMap, "D8PetitionerPostCode"),
+            validateFieldMatchesRegex(fieldsMap, "D8PetitionerEmail", ccdEmailValidationRegex),
+            validatePayment(fieldsMap)
+        )
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+
 
         try {
             Optional.ofNullable(fieldsMap.get("D8ReasonForDivorceSeparationDate"))
@@ -98,6 +119,31 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
 
     private static boolean isHelpWithFeesValid(String hwfReferenceNumber) {
         return (StringUtils.isNumeric(hwfReferenceNumber) && (hwfReferenceNumber.length() == HELP_WITH_FEES_LENGTH));
+    }
+
+    private static List<String> validateFieldMatchesRegex(Map<String, String> fieldsMap, String fieldKey, String validationRegex) {
+        List<String> validationMessages = new ArrayList<>();
+
+        if (fieldsMap.containsKey(fieldKey)) {
+            String valueToValidate = fieldsMap.get(fieldKey);
+            if (!valueToValidate.matches(validationRegex)) {
+                validationMessages.add(fieldKey + " is not in a valid format");
+            }
+        }
+        return validationMessages;
+    }
+
+    private static List<String> validatePostcode(Map<String, String> fieldsMap, String postcodeKey) {
+        List<String> validationMessages = new ArrayList<>();
+        if (fieldsMap.containsKey(postcodeKey)) {
+            String postcodeValue = fieldsMap.get(postcodeKey);
+            int postcodeLength = postcodeValue.length();
+            // postcodes range between 6 and 8 characters including the space inbetween
+            if (postcodeLength < 6 || postcodeLength > 8) {
+                validationMessages.add(postcodeKey + " is usually 6 or 7 characters long");
+            }
+        }
+        return validationMessages;
     }
 
 }

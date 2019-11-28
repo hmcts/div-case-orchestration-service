@@ -6,10 +6,11 @@
     { "name": "D8PaymentMethod", "value": "Debit/Credit Card" },
     { "name": "D8PetitionerFirstName", "value": "Christopher" },
     { "name": "D8PetitionerLastName", "value": "O'John" },
-    { "name": "D8PetitionerPhoneNumber", "value": "1111111111" },
+    { "name": "D8PetitionerPhoneNumber", "value": "07456 78 90 11" },
     { "name": "D8PetitionerEmail", "value": "test.testerson@mailinator.com" },
     { "name": "D8LegalProcess", "value": "Divorce" },
     { "name": "D8MarriagePetitionerName", "value": "Christopher O'John" },
-    { "name": "D8MarriageRespondentName", "value": "Jane Doe" }
+    { "name": "D8MarriageRespondentName", "value": "Jane Doe" },
+    { "name": "D8PetitionerContactDetailsConfidential", "value": "Yes" }
   ]
 }

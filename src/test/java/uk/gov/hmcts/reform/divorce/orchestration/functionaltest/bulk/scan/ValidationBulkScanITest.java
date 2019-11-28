@@ -110,8 +110,30 @@ public class ValidationBulkScanITest {
             content().string(allOf(
                 hasJsonPath("$.warnings", hasItems(
                         "Mandatory field \"D8PetitionerFirstName\" is missing",
-                        "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value")),
+                        "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value",
+                        "Mandatory field \"D8PetitionerNameChangedHow\" is missing"
+                )),
                 hasJsonPath("$.errors", equalTo(emptyList())),
+                hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
+            ))
+        ));
+    }
+
+    @Test
+    public void shouldReturnWarningResponseForValidationEndpoint() throws Exception {
+        String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/validation/warningsD8Form.json");
+
+        mockMvc.perform(post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
+            .contentType(APPLICATION_JSON)
+            .content(formToValidate)
+            .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(matchAll(
+            status().isOk(),
+            content().string(allOf(
+                hasJsonPath("$.warnings", hasItems(
+                    "D8PetitionerPhoneNumber is not in a valid format",
+                    "D8PetitionerEmail is not in a valid format"
+                )),
                 hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
             ))
         ));
