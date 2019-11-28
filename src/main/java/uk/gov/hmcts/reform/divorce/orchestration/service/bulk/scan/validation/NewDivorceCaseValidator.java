@@ -73,6 +73,7 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
             validateFieldMatchesRegex(fieldsMap, "D8PetitionerPhoneNumber", CCD_PHONE_NUMBER_REGEX),
             validatePostcode(fieldsMap, "D8PetitionerPostCode"),
             validateFieldMatchesRegex(fieldsMap, "D8PetitionerEmail", CCD_EMAIL_REGEX),
+            validateFieldMatchesRegex(fieldsMap, "D8RespondentPhoneNumber", CCD_PHONE_NUMBER_REGEX),
             validatePayment(fieldsMap)
         )
             .flatMap(Collection::stream)
