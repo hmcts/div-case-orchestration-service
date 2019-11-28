@@ -9,12 +9,13 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 
+import static java.time.format.ResolverStyle.STRICT;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class BulkScanHelper {
 
-    private static final DateTimeFormatter EXPECTED_DATE_FORMAT_FROM_FORM = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter EXPECTED_DATE_FORMAT_FROM_FORM = DateTimeFormatter.ofPattern("dd/MM/uuuu").withResolverStyle(STRICT);
 
     /**
      * Returns map with only the fields that were not blank from the OCR data.
@@ -25,11 +26,11 @@ public class BulkScanHelper {
             .collect(toMap(OcrDataField::getName, OcrDataField::getValue));
     }
 
-    public static LocalDate transformFormDateIntoLocalDate(String formDate) throws FormFieldValidationException {
+    public static LocalDate transformFormDateIntoLocalDate(String formFieldName, String formDate) throws FormFieldValidationException {
         try {
             return LocalDate.parse(formDate, EXPECTED_DATE_FORMAT_FROM_FORM);
         } catch (DateTimeParseException exception) {
-            throw new FormFieldValidationException("D8ReasonForDivorceSeparationDate must be a valid date");
+            throw new FormFieldValidationException(String.format("%s must be a valid date", formFieldName));
         }
     }
 

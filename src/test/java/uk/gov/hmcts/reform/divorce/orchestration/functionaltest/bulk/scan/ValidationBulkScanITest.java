@@ -97,7 +97,7 @@ public class ValidationBulkScanITest {
     }
 
     @Test
-    public void shouldReturnErrorResponseForValidationEndpoint() throws Exception {
+    public void shouldReturnFailureResponseForValidationEndpoint() throws Exception {
         String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/validation/incompleteForm.json");
 
         mockMvc.perform(
@@ -109,8 +109,8 @@ public class ValidationBulkScanITest {
             status().isOk(),
             content().string(allOf(
                 hasJsonPath("$.warnings", hasItems(
-                        "Mandatory field \"D8PetitionerFirstName\" is missing",
-                        "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value")),
+                    "Mandatory field \"D8PetitionerFirstName\" is missing",
+                    "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value")),
                 hasJsonPath("$.errors", equalTo(emptyList())),
                 hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
             ))
@@ -129,4 +129,5 @@ public class ValidationBulkScanITest {
             content().string(isEmptyString())
         ));
     }
+
 }

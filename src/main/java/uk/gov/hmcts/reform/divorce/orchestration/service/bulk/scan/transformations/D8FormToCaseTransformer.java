@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations;
 
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataField;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +9,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_DAY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformFormDateIntoLocalDate;
 
 public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
 
@@ -31,7 +31,7 @@ public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
         ocrDataFields.stream()
             .filter(f -> f.getName().equals("D8ReasonForDivorceSeparationDate"))
             .map(OcrDataField::getValue)
-            .map(BulkScanHelper::transformFormDateIntoLocalDate)
+            .map(formDate -> transformFormDateIntoLocalDate("D8ReasonForDivorceSeparationDate", formDate))
             .findFirst()
             .ifPresent(localDate -> {
                 modifiedMap.put(D_8_REASON_FOR_DIVORCE_SEPARATION_DAY, String.valueOf(localDate.getDayOfMonth()));
