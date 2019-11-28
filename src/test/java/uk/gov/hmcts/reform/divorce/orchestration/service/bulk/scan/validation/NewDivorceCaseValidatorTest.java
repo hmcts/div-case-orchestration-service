@@ -178,4 +178,18 @@ public class NewDivorceCaseValidatorTest {
         ));
         assertThat(validationResult.getErrors(), is(emptyList()));
     }
+
+    @Test
+    public void shouldFailValidationWithWrongLeapYearDate() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8ReasonForDivorceSeparationDate", "29/02/2019")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
+            "D8ReasonForDivorceSeparationDate must be a valid date"
+        ));
+    }
+
 }

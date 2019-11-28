@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformFormDateIntoLocalDate;
 
 @Component
 public class NewDivorceCaseValidator extends BulkScanFormValidator {
@@ -60,7 +61,7 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
 
         try {
             Optional.ofNullable(fieldsMap.get("D8ReasonForDivorceSeparationDate"))
-                .ifPresent(BulkScanHelper::transformFormDateIntoLocalDate);
+                .ifPresent(formDate -> transformFormDateIntoLocalDate("D8ReasonForDivorceSeparationDate", formDate));
         } catch (FormFieldValidationException exception) {
             errorMessages.add(exception.getMessage());
         }
