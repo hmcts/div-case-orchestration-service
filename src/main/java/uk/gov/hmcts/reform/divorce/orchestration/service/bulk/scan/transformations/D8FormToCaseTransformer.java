@@ -39,6 +39,15 @@ public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
                 modifiedMap.put(D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR, String.valueOf(localDate.getYear()));
             });
 
+        ocrDataFields.stream()
+            .filter(f -> f.getName().equals("D8PetitionerPostCode"))
+            .map(OcrDataField::getValue)
+            .findFirst()
+            .ifPresent(petitionerPostCode -> {
+                HashMap<String, Object> d8petitionerHomeAddressObject = new HashMap<>();
+                d8petitionerHomeAddressObject.put("PostCode", petitionerPostCode);
+                modifiedMap.put("D8PetitionerHomeAddress", d8petitionerHomeAddressObject);
+            });
 
         return modifiedMap;
     }
@@ -69,8 +78,6 @@ public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
         erToCcdFieldsMap.put("D8PetitionerEmail", "D8PetitionerEmail");
         erToCcdFieldsMap.put("D8PetitionerNameChangedHow", "D8PetitionerNameChangedHow");
         erToCcdFieldsMap.put("D8PetitionerContactDetailsConfidential", "D8PetitionerContactDetailsConfidential");
-        // Postcode needs to map to the home address - pending another PR, placeholder for now
-        erToCcdFieldsMap.put("D8PetitionerPostCode", "D8PetitionerPostCode");
 
         // Section 3 - About your spouse/civil partner (the respondent)
         erToCcdFieldsMap.put("D8RespondentFirstName", "D8RespondentFirstName");

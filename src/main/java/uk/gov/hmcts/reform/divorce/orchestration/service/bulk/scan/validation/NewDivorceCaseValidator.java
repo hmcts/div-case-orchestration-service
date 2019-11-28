@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkScanVal
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformFormDateIntoLocalDate;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.PostcodeValidator.validatePostcode;
 
 @Component
 public class NewDivorceCaseValidator extends BulkScanFormValidator {
@@ -130,21 +131,5 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
             }
         }
         return validationMessages;
-    }
-
-    private static List<String> validatePostcode(Map<String, String> fieldsMap, String postcodeKey) {
-        List<String> validationMessages = new ArrayList<>();
-        if (fieldsMap.containsKey(postcodeKey)) {
-            String postcodeValue = fieldsMap.get(postcodeKey);
-            if (isPostcodeLengthValid(postcodeValue)) {
-                validationMessages.add(postcodeKey + " is usually 6 or 7 characters long");
-            }
-        }
-        return validationMessages;
-    }
-
-    private static boolean isPostcodeLengthValid(String postcode) {
-        int postcodeLength = postcode.length();
-        return postcodeLength < 6 || postcodeLength > 8;
     }
 }
