@@ -1,7 +1,15 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations;
 
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataField;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_DAY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformFormDateIntoLocalDate;
 
 public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
 
@@ -17,11 +25,29 @@ public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
     }
 
     @Override
-    protected Map<String, Object> runPostMappingTransformation(Map<String, Object> ccdTransformedFields) {
+    protected Map<String, Object> runFormSpecificTransformation(List<OcrDataField> ocrDataFields) {
+        Map<String, Object> modifiedMap = new HashMap<>();
 
-        ccdTransformedFields.replace("D8PaymentMethod", "debit/credit card", "card");
+        ocrDataFields.stream()
+            .filter(f -> f.getName().equals("D8ReasonForDivorceSeparationDate"))
+            .map(OcrDataField::getValue)
+            .map(formDate -> transformFormDateIntoLocalDate("D8ReasonForDivorceSeparationDate", formDate))
+            .findFirst()
+            .ifPresent(localDate -> {
+                modifiedMap.put(D_8_REASON_FOR_DIVORCE_SEPARATION_DAY, String.valueOf(localDate.getDayOfMonth()));
+                modifiedMap.put(D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH, String.valueOf(localDate.getMonthValue()));
+                modifiedMap.put(D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR, String.valueOf(localDate.getYear()));
+            });
 
-        return  ccdTransformedFields;
+
+        return modifiedMap;
+    }
+
+    @Override
+    Map<String, Object> runPostMappingModification(Map<String, Object> transformedCaseData) {
+        transformedCaseData.replace("D8PaymentMethod", "Debit/Credit Card", "Card");
+
+        return transformedCaseData;
     }
 
     private static Map<String, String> d8ExceptionRecordToCcdMap() {
@@ -41,11 +67,19 @@ public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
         erToCcdFieldsMap.put("D8PetitionerLastName", "D8PetitionerLastName");
         erToCcdFieldsMap.put("D8PetitionerPhoneNumber", "D8PetitionerPhoneNumber");
         erToCcdFieldsMap.put("D8PetitionerEmail", "D8PetitionerEmail");
+        erToCcdFieldsMap.put("D8PetitionerNameChangedHow", "D8PetitionerNameChangedHow");
+        erToCcdFieldsMap.put("D8PetitionerContactDetailsConfidential", "D8PetitionerContactDetailsConfidential");
+        // Postcode needs to map to the home address - pending another PR, placeholder for now
+        erToCcdFieldsMap.put("D8PetitionerPostCode", "D8PetitionerPostCode");
 
         // Section 3 - About your spouse/civil partner (the respondent)
         erToCcdFieldsMap.put("D8RespondentFirstName", "D8RespondentFirstName");
         erToCcdFieldsMap.put("D8RespondentLastName", "D8RespondentLastName");
         erToCcdFieldsMap.put("D8RespondentPhoneNumber", "D8RespondentPhoneNumber");
+
+        // Section 4 - Details of marriage/civil partnership
+        erToCcdFieldsMap.put("D8MarriagePetitionerName", "D8MarriagePetitionerName");
+        erToCcdFieldsMap.put("D8MarriageRespondentName", "D8MarriageRespondentName");
 
         return erToCcdFieldsMap;
     }

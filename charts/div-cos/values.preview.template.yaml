@@ -31,9 +31,9 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
 
-postgresql:
-  enabled: true
-  service:
-    port: 5432
-  persistence:
-    enabled: false
+  postgresql:
+    enabled: true
+    service:
+      port: 5432
+    persistence:
+      enabled: false

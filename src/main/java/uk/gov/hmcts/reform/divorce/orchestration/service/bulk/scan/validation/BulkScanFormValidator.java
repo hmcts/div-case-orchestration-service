@@ -19,6 +19,8 @@ public abstract class BulkScanFormValidator {
 
     protected abstract List<String> getMandatoryFields();
 
+    protected abstract List<String> runPostProcessingValidation(Map<String, String> fieldsMap);
+
     public OcrValidationResult validateBulkScanForm(List<OcrDataField> ocrDataFields) {
         OcrValidationResult.Builder validationResultBuilder = OcrValidationResult.builder();
 
@@ -29,6 +31,9 @@ public abstract class BulkScanFormValidator {
 
         List<String> validationMessagesForValuesNotAllowed = produceErrorsForValuesNotAllowed(fieldsMap);
         validationMessagesForValuesNotAllowed.forEach(validationResultBuilder::addWarning);
+
+        List<String> validationMessagesFromPostProcessingValidation = runPostProcessingValidation(fieldsMap);
+        validationMessagesFromPostProcessingValidation.forEach(validationResultBuilder::addWarning);
 
         return validationResultBuilder.build();
     }

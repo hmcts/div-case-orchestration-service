@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.common.AuthService;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataField;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
@@ -34,6 +35,9 @@ public class BulkScanControllerTest {
     @Mock
     private BulkScanValidationService bulkScanValidationService;
 
+    @Mock
+    private AuthService authService;
+
     @InjectMocks
     private BulkScanController bulkScanController;
 
@@ -46,9 +50,8 @@ public class BulkScanControllerTest {
             .build()
         );
 
-        ResponseEntity<OcrValidationResponse> response = bulkScanController.validateOcrData(null, TEST_FORM_TYPE, new OcrDataValidationRequest(
-            testOcrDataFields
-        ));
+        ResponseEntity<OcrValidationResponse> response = bulkScanController
+            .validateOcrData(null, TEST_FORM_TYPE, new OcrDataValidationRequest(testOcrDataFields));
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         OcrValidationResponse responseBody = response.getBody();
@@ -65,9 +68,8 @@ public class BulkScanControllerTest {
         when(bulkScanValidationService.validateBulkScanForm(eq(unsupportedFormType), eq(testOcrDataFields)))
             .thenThrow(UnsupportedFormTypeException.class);
 
-        ResponseEntity<OcrValidationResponse> response = bulkScanController.validateOcrData(null, unsupportedFormType, new OcrDataValidationRequest(
-            testOcrDataFields
-        ));
+        ResponseEntity<OcrValidationResponse> response = bulkScanController
+            .validateOcrData(null, unsupportedFormType, new OcrDataValidationRequest(testOcrDataFields));
 
         assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
         OcrValidationResponse responseBody = response.getBody();
