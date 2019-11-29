@@ -83,8 +83,8 @@ public class D8FormToCaseTransformerTest {
 
         Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(incomingExceptionRecord);
 
+        Map petitionerHomeAddress = (Map) transformedCaseData.get("D8PetitionerHomeAddress");
 
-        assertThat(((Map)transformedCaseData.get("D8PetitionerHomeAddress")).get("PostCode"), is("SE1 2PT"));
+        assertThat(petitionerHomeAddress.get("PostCode"), is("SE1 2PT"));
     }
-
 }

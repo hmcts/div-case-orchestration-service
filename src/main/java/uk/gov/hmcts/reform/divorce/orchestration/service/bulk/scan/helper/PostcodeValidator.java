@@ -10,15 +10,15 @@ public class PostcodeValidator {
         List<String> validationMessages = new ArrayList<>();
         if (fieldsMap.containsKey(postcodeKey)) {
             String postcodeValue = fieldsMap.get(postcodeKey);
-            if (isPostcodeLengthValid(postcodeValue)) {
+            if (isPostcodeLengthInvalid(postcodeValue)) {
                 validationMessages.add(postcodeKey + " is usually 6 or 7 characters long");
             }
         }
         return validationMessages;
     }
 
-    private static boolean isPostcodeLengthValid(String postcode) {
+    private static boolean isPostcodeLengthInvalid(String postcode) {
         int postcodeLength = postcode.length();
-        return postcodeLength < 6 || postcodeLength > 8;
+        return postcodeLength > 8 || postcodeLength < 6;
     }
 }

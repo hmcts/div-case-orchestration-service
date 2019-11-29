@@ -18,8 +18,8 @@ public class PostcodeValidatorTest {
     private static final String postcodeValidationErrorMessage = "is usually 6 or 7 characters long";
 
     @Test
-    public void shouldNotProduceErrorMessagesWhenPostcodeIsValid() {
-        String[] validPostcodes = {"SW15 5PU", "M1 1AA", "B151TT", "SE279TU", "L1 0AP"};
+    public void shouldNotProduceErrorMessagesWhenPostcodeLengthIsValid() {
+        String[] validPostcodes = {"M1 1AA", "L1 0AP", "B151TT", "SW15 5PU", "CH5 3QW", "SE279TU", "GL51 0EX"};
         for (String validPostcode : validPostcodes) {
             Map<String, String> validPostcodeFieldMap = new HashMap<>();
             validPostcodeFieldMap.put(d8PetitionerPostcodeKey, validPostcode);
@@ -31,8 +31,8 @@ public class PostcodeValidatorTest {
     }
 
     @Test
-    public void shouldFailPostcodesWithLessThan6Characters() {
-        String[] invalidPostcodes = {"SW15P", "M11 A", "B1", "SE4", "CV30A", "BT7"};
+    public void shouldProduceWarningWhenPostcodeHasLessThan6Characters() {
+        String[] invalidPostcodes = {"N", "B1", "SE4", "BT7Q", "SW15P", "M11 A", "CV30A"};
 
         for (String invalidPostcode : invalidPostcodes) {
             Map<String, String> invalidPostcodeFieldMap = new HashMap<>();
@@ -45,8 +45,8 @@ public class PostcodeValidatorTest {
     }
 
     @Test
-    public void shouldFailPostcodesWithMoreThan8Characters() {
-        String[] invalidPostcodes = {"SW15 1PXX", "M11 12HEQ", "BT12  8TR", "BIRMINGHAM", "LT1REEEEE"};
+    public void shouldProduceWarningWhenPostcodeHasMoreThan8Characters() {
+        String[] invalidPostcodes = {"SW15 1PXX", "M11 12HEQ", "BT12   8TR", "BIRMINGHAM1", "LT1REEEEE"};
 
         for (String invalidPostcode : invalidPostcodes) {
             Map<String, String> invalidPostcodeFieldMap = new HashMap<>();
