@@ -188,11 +188,11 @@ public class NewDivorceCaseValidatorTest {
         String[] validPhoneNumbers = {"07231334455", "+44 20 8356 3333", "01213334444", "0909 8790000",
             "(0131) 496 0645", "0044 117496 0813", "07700 90 09 99"};
         for (String validPhoneNumber : validPhoneNumbers) {
-            List<OcrDataField> tempCopy = new ArrayList<>(listOfAllMandatoryFields);
-            tempCopy.add(new OcrDataField("D8PetitionerPhoneNumber", validPhoneNumber));
-            tempCopy.add(new OcrDataField("D8RespondentPhoneNumber", validPhoneNumber));
+            List<OcrDataField> mandatoryFieldsCopy = new ArrayList<>(listOfAllMandatoryFields);
+            mandatoryFieldsCopy.add(new OcrDataField("D8PetitionerPhoneNumber", validPhoneNumber));
+            mandatoryFieldsCopy.add(new OcrDataField("D8RespondentPhoneNumber", validPhoneNumber));
 
-            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(tempCopy);
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(mandatoryFieldsCopy);
 
             assertThat(validationResult.getStatus(), is(SUCCESS));
             assertThat(validationResult.getWarnings(), is(emptyList()));
@@ -204,11 +204,11 @@ public class NewDivorceCaseValidatorTest {
     public void shouldFailPhoneNumberNotMatchingCustomValidationRules() {
         String[] validPhoneNumbers = {"0723155", "+44 2083", "044(121)", "newphonewhodis", "se14Tp"};
         for (String validPhoneNumber : validPhoneNumbers) {
-            List<OcrDataField> tempCopy = new ArrayList<>(listOfAllMandatoryFields);
-            tempCopy.add(new OcrDataField("D8PetitionerPhoneNumber", validPhoneNumber));
-            tempCopy.add(new OcrDataField("D8RespondentPhoneNumber", validPhoneNumber));
+            List<OcrDataField> mandatoryFieldsCopy = new ArrayList<>(listOfAllMandatoryFields);
+            mandatoryFieldsCopy.add(new OcrDataField("D8PetitionerPhoneNumber", validPhoneNumber));
+            mandatoryFieldsCopy.add(new OcrDataField("D8RespondentPhoneNumber", validPhoneNumber));
 
-            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(tempCopy);
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(mandatoryFieldsCopy);
 
             assertThat(validationResult.getStatus(), is(WARNINGS));
             assertThat(validationResult.getWarnings(), hasItems(
@@ -223,10 +223,10 @@ public class NewDivorceCaseValidatorTest {
     public void shouldPassPetitionerEmailsMatchingCustomValidationRules() {
         String[] validEmailAddresses = {"aaa@gmail.com", "john.doe@mail.pl", "akjl2489.rq23@a.co.uk"};
         for (String validEmailAddress : validEmailAddresses) {
-            List<OcrDataField> tempCopy = new ArrayList<>(listOfAllMandatoryFields);
-            tempCopy.add(new OcrDataField("D8PetitionerEmail", validEmailAddress));
+            List<OcrDataField> mandatoryFieldsCopy = new ArrayList<>(listOfAllMandatoryFields);
+            mandatoryFieldsCopy.add(new OcrDataField("D8PetitionerEmail", validEmailAddress));
 
-            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(tempCopy);
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(mandatoryFieldsCopy);
 
             assertThat(validationResult.getStatus(), is(SUCCESS));
             assertThat(validationResult.getWarnings(), is(emptyList()));
@@ -238,10 +238,10 @@ public class NewDivorceCaseValidatorTest {
     public void shouldFailPetitionerEmailsNotMatchingCustomValidationRules() {
         String[] validEmailAddresses = {"aaa@gmail.", "john.doe@mai", "akjl2489.rq23@", " @ ", "adada@sfwe"};
         for (String validEmailAddress : validEmailAddresses) {
-            List<OcrDataField> tempCopy = new ArrayList<>(listOfAllMandatoryFields);
-            tempCopy.add(new OcrDataField("D8PetitionerEmail", validEmailAddress));
+            List<OcrDataField> mandatoryFieldsCopy = new ArrayList<>(listOfAllMandatoryFields);
+            mandatoryFieldsCopy.add(new OcrDataField("D8PetitionerEmail", validEmailAddress));
 
-            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(tempCopy);
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(mandatoryFieldsCopy);
 
             assertThat(validationResult.getStatus(), is(WARNINGS));
             assertThat(validationResult.getWarnings(), hasItem("D8PetitionerEmail is not in a valid format"));

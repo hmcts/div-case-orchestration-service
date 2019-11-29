@@ -14,12 +14,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper
 
 public class PostcodeValidatorTest {
 
+    private static final String d8PetitionerPostcodeKey = "D8PetitionerPostcode";
+    private static final String postcodeValidationErrorMessage = "is usually 6 or 7 characters long";
+
     @Test
     public void shouldNotProduceErrorMessagesWhenPostcodeIsValid() {
         String[] validPostcodes = {"SW15 5PU", "M1 1AA", "B151TT", "SE279TU", "L1 0AP"};
         for (String validPostcode : validPostcodes) {
             Map<String, String> validPostcodeFieldMap = new HashMap<>();
-            String d8PetitionerPostcodeKey = "D8PetitionerPostcode";
             validPostcodeFieldMap.put(d8PetitionerPostcodeKey, validPostcode);
 
             List<String> actualValidationMessages = validatePostcode(validPostcodeFieldMap, d8PetitionerPostcodeKey);
@@ -34,12 +36,11 @@ public class PostcodeValidatorTest {
 
         for (String invalidPostcode : invalidPostcodes) {
             Map<String, String> invalidPostcodeFieldMap = new HashMap<>();
-            String d8PetitionerPostcodeKey = "D8PetitionerPostcode";
             invalidPostcodeFieldMap.put(d8PetitionerPostcodeKey, invalidPostcode);
 
             List<String> actualValidationMessages = validatePostcode(invalidPostcodeFieldMap, d8PetitionerPostcodeKey);
 
-            assertThat(actualValidationMessages, hasItem(d8PetitionerPostcodeKey + " is usually 6 or 7 characters long"));
+            assertThat(actualValidationMessages, hasItem(String.format("%s %s", d8PetitionerPostcodeKey, postcodeValidationErrorMessage)));
         }
     }
 
@@ -49,12 +50,11 @@ public class PostcodeValidatorTest {
 
         for (String invalidPostcode : invalidPostcodes) {
             Map<String, String> invalidPostcodeFieldMap = new HashMap<>();
-            String d8PetitionerPostcodeKey = "D8PetitionerPostcode";
             invalidPostcodeFieldMap.put(d8PetitionerPostcodeKey, invalidPostcode);
 
             List<String> actualValidationMessages = validatePostcode(invalidPostcodeFieldMap, d8PetitionerPostcodeKey);
 
-            assertThat(actualValidationMessages, hasItem(d8PetitionerPostcodeKey + " is usually 6 or 7 characters long"));
+            assertThat(actualValidationMessages, hasItem(String.format("%s %s", d8PetitionerPostcodeKey, postcodeValidationErrorMessage)));
         }
     }
 }
