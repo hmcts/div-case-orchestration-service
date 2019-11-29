@@ -132,7 +132,10 @@ public class ValidationBulkScanITest {
             content().string(allOf(
                 hasJsonPath("$.warnings", hasItems(
                     "D8PetitionerPhoneNumber is not in a valid format",
-                    "D8PetitionerEmail is not in a valid format"
+                    "D8PetitionerEmail is not in a valid format",
+                    "PetitionerSolicitorPhone is not in a valid format",
+                    "PetitionerSolicitorEmail is not in a valid format",
+                    "D8PetitionerCorrespondencePostcode is usually 6 or 7 characters long"
                 )),
                 hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
             ))

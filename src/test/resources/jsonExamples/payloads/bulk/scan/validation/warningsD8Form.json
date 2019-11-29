@@ -15,6 +15,14 @@
     { "name": "D8RespondentFirstName", "value": "Jane" },
     { "name": "D8RespondentLastName", "value": "Doe" },
     { "name": "D8RespondentPhoneNumber", "value": "22222222222" },
-    { "name": "D8PetitionerNameChangedHow", "value": "Yes" }
+    { "name": "D8PetitionerNameChangedHow", "value": "Yes" },
+    { "name": "PetitionerSolicitor", "value": "No" },
+    { "name": "D8SolicitorReference", "value": "" },
+    { "name": "PetitionerSolicitorFirm", "value": "anything here" },
+    { "name": "PetitionerSolicitorAddressPostCode", "value": "" },
+    { "name": "PetitionerSolicitorPhone", "value": "oofrwiprw" },
+    { "name": "PetitionerSolicitorEmail", "value": "aaaa@aewk" },
+    { "name": "D8PetitionerCorrespondenceUseHomeAddress", "value": "Yes" },
+    { "name": "D8PetitionerCorrespondencePostcode", "value": "m2 e4" }
   ]
 }
