@@ -58,7 +58,6 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameChangedHow", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerContactDetailsConfidential", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("Cheque", "Debit/Credit Card", BLANK));
-
         ALLOWED_VALUES_PER_FIELD.put("PetitionerSolicitor", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerCorrespondenceUseHomeAddress", asList(YES_VALUE, NO_VALUE));
     }

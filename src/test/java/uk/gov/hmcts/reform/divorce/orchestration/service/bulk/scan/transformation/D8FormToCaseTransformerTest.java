@@ -74,7 +74,6 @@ public class D8FormToCaseTransformerTest {
 
     @Test
     public void verifyPetitionerPostcodeIsCorrectlyAddedToPetitionerHomeAddress() {
-
         ExceptionRecord incomingExceptionRecord = new ExceptionRecord(
             "",
             "",
@@ -82,8 +81,35 @@ public class D8FormToCaseTransformerTest {
             Collections.singletonList(new OcrDataField("D8PetitionerPostCode", "SE1 2PT")));
 
         Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(incomingExceptionRecord);
-
         Map petitionerHomeAddress = (Map) transformedCaseData.get("D8PetitionerHomeAddress");
+
+        assertThat(petitionerHomeAddress.get("PostCode"), is("SE1 2PT"));
+    }
+
+    @Test
+    public void verifyPetitionerSolicitorAddressPostCodeIsCorrectlyAddedToPetitionerSolicitorAddress() {
+        ExceptionRecord incomingExceptionRecord = new ExceptionRecord(
+            "",
+            "",
+            "",
+            Collections.singletonList(new OcrDataField("PetitionerSolicitorAddressPostCode", "SE1 2PT")));
+
+        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(incomingExceptionRecord);
+        Map petitionerHomeAddress = (Map) transformedCaseData.get("PetitionerSolicitorAddress");
+
+        assertThat(petitionerHomeAddress.get("PostCode"), is("SE1 2PT"));
+    }
+
+    @Test
+    public void verifyD8PetitionerCorrespondencePostcodeIsCorrectlyAddedToD8PetitionerCorrespondenceAddress() {
+        ExceptionRecord incomingExceptionRecord = new ExceptionRecord(
+            "",
+            "",
+            "",
+            Collections.singletonList(new OcrDataField("D8PetitionerCorrespondencePostcode", "SE1 2PT")));
+
+        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(incomingExceptionRecord);
+        Map petitionerHomeAddress = (Map) transformedCaseData.get("D8PetitionerCorrespondenceAddress");
 
         assertThat(petitionerHomeAddress.get("PostCode"), is("SE1 2PT"));
     }
