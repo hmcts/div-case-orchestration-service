@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transfor
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataField;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations.D8FormToCaseTransformer;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -71,4 +72,19 @@ public class D8FormToCaseTransformerTest {
             ocrDataFields);
     }
 
+    @Test
+    public void verifyPetitionerPostcodeIsCorrectlyAddedToPetitionerHomeAddress() {
+
+        ExceptionRecord incomingExceptionRecord = new ExceptionRecord(
+            "",
+            "",
+            "",
+            Collections.singletonList(new OcrDataField("D8PetitionerPostCode", "SE1 2PT")));
+
+        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(incomingExceptionRecord);
+
+        Map petitionerHomeAddress = (Map) transformedCaseData.get("D8PetitionerHomeAddress");
+
+        assertThat(petitionerHomeAddress.get("PostCode"), is("SE1 2PT"));
+    }
 }
