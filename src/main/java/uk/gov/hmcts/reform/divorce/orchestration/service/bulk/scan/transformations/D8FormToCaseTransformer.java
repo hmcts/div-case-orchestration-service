@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations;
 
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataField;
 
 import java.util.HashMap;
@@ -12,7 +13,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformFormDateIntoLocalDate;
 
-public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
+@Component
+public class D8FormToCaseTransformer extends BulkScanFormTransformer {
 
     private static final Map<String, String> ocrToCCDMapping;
 

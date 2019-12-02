@@ -2,16 +2,17 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformati
 
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.in.ExceptionRecord;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataField;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.bulk.scan.UnsupportedFormTypeException;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public abstract class ExceptionRecordToCaseTransformer {
+public abstract class BulkScanFormTransformer {
 
     private static final String BULK_SCAN_CASE_REFERENCE = "bulkScanCaseReference";
 
-    public Map<String, Object> transformIntoCaseData(ExceptionRecord exceptionRecord) {
+    public Map<String, Object> transformIntoCaseData(ExceptionRecord exceptionRecord) throws UnsupportedFormTypeException {
         List<OcrDataField> ocrDataFields = exceptionRecord.getOcrDataFields();
 
         Map<String, Object> caseData = mapOcrFieldsToCaseData(ocrDataFields);
