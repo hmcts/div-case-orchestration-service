@@ -11,20 +11,19 @@ import java.util.List;
 @Builder
 public class ExceptionRecord {
 
+    @JsonProperty("case_type_id")
     private final String caseTypeId;
+
+    @JsonProperty("id")
     private final String id;
+
+    @JsonProperty("po_box")
     private final String poBox;
+
+    @JsonProperty("form_type")
+    private final String formType;
+
+    @JsonProperty("ocr_data_fields")
     private final List<OcrDataField> ocrDataFields;
 
-    public ExceptionRecord(
-        @JsonProperty("case_type_id") String caseTypeId,
-        @JsonProperty("id") String id,
-        @JsonProperty("po_box") String poBox,
-        @JsonProperty("ocr_data_fields") List<OcrDataField> ocrDataFields
-    ) {
-        this.caseTypeId = caseTypeId;
-        this.id = id;
-        this.poBox = poBox;
-        this.ocrDataFields = ocrDataFields;
-    }
 }

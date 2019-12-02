@@ -2,20 +2,22 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transfo
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.util.Map;
 
 @Builder
+@Getter
 public class CaseCreationDetails {
 
     @JsonProperty("case_type_id")
-    public final String caseTypeId;
+    private final String caseTypeId;
 
     @JsonProperty("event_id")
-    public final String eventId;
+    private final String eventId;
 
     @JsonProperty("case_data")
-    public final Map<String, Object> caseData;
+    private final Map<String, Object> caseData;
 
     public CaseCreationDetails(
         String caseTypeId,

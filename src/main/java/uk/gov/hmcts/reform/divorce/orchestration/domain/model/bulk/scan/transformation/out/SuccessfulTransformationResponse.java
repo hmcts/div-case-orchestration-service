@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -11,15 +12,9 @@ import java.util.List;
 public class SuccessfulTransformationResponse {
 
     @JsonProperty("case_creation_details")
-    public final CaseCreationDetails caseCreationDetails;
+    private final CaseCreationDetails caseCreationDetails;
 
     @JsonProperty("warnings")
-    public final List<String> warnings;
+    private final List<String> warnings = new ArrayList<>();
 
-    public SuccessfulTransformationResponse(
-            CaseCreationDetails caseCreationDetails,
-            List<String> warnings) {
-        this.caseCreationDetails = caseCreationDetails;
-        this.warnings = warnings;
-    }
 }
