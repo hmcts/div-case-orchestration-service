@@ -100,7 +100,7 @@ public class TransformationBulkScanITest {
                     hasJsonPath("$.case_creation_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
                         hasJsonPath("event_id", is("bulkScanCaseCreate")),
-                        hasJsonPath("case_data.*", hasSize(20)),
+                        hasJsonPath("case_data.*", hasSize(29)),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),
                             hasJsonPath("D8PaymentMethod", is("Card")),
@@ -121,7 +121,18 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8MarriagePetitionerName", is("Christopher O'John")),
                             hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_DAY, is("20")),
                             hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH, is("11")),
-                            hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR, is("2008"))
+                            hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR, is("2008")),
+                            hasJsonPath("PetitionerSolicitor", is("Yes")),
+                            hasJsonPath("PetitionerSolicitorName", is("Homer Simpson")),
+                            hasJsonPath("D8SolicitorReference", is("SolicitorReference")),
+                            hasJsonPath("PetitionerSolicitorFirm", is("DivorceIn30Mins Ltd")),
+                            hasJsonPath("PetitionerSolicitorPhone", is("0121 465 2141")),
+                            hasJsonPath("PetitionerSolicitorEmail", is("homer.solicitor@quickdivorce.org")),
+                            hasJsonPath("D8PetitionerCorrespondenceUseHomeAddress", is("No")),
+                            hasJsonPath("PetitionerSolicitorAddress",
+                                hasJsonPath("PostCode", is("GL51 0EX"))),
+                            hasJsonPath("D8PetitionerCorrespondenceAddress",
+                                hasJsonPath("PostCode", is("SE12BP")))
                         ))
                     ))
                 )));

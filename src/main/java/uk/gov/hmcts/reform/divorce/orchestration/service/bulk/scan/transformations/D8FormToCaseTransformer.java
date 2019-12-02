@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validati
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_DAY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH;
@@ -39,14 +40,25 @@ public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
                 modifiedMap.put(D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR, String.valueOf(localDate.getYear()));
             });
 
-        ocrDataFields.stream()
-            .filter(f -> f.getName().equals("D8PetitionerPostCode"))
-            .map(OcrDataField::getValue)
-            .findFirst()
+        getValueFromOcrDataFields("D8PetitionerPostCode", ocrDataFields)
             .ifPresent(petitionerPostCode -> {
                 HashMap<String, Object> d8petitionerHomeAddressObject = new HashMap<>();
                 d8petitionerHomeAddressObject.put("PostCode", petitionerPostCode);
                 modifiedMap.put("D8PetitionerHomeAddress", d8petitionerHomeAddressObject);
+            });
+
+        getValueFromOcrDataFields("PetitionerSolicitorAddressPostCode", ocrDataFields)
+            .ifPresent(petitionerSolicitorPostcode -> {
+                HashMap<String, Object> petitionerSolicitorAddressObject = new HashMap<>();
+                petitionerSolicitorAddressObject.put("PostCode", petitionerSolicitorPostcode);
+                modifiedMap.put("PetitionerSolicitorAddress", petitionerSolicitorAddressObject);
+            });
+
+        getValueFromOcrDataFields("D8PetitionerCorrespondencePostcode", ocrDataFields)
+            .ifPresent(petitionerCorrespondencePostcode -> {
+                HashMap<String, Object> d8PetitionerCorrespondenceAddressObject = new HashMap<>();
+                d8PetitionerCorrespondenceAddressObject.put("PostCode", petitionerCorrespondencePostcode);
+                modifiedMap.put("D8PetitionerCorrespondenceAddress", d8PetitionerCorrespondenceAddressObject);
             });
 
         return modifiedMap;
@@ -57,6 +69,13 @@ public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
         transformedCaseData.replace("D8PaymentMethod", "Debit/Credit Card", "Card");
 
         return transformedCaseData;
+    }
+
+    private Optional<String> getValueFromOcrDataFields(String fieldName, List<OcrDataField> ocrDataFields) {
+        return ocrDataFields.stream()
+            .filter(f -> f.getName().equals(fieldName))
+            .map(OcrDataField::getValue)
+            .findFirst();
     }
 
     private static Map<String, String> d8ExceptionRecordToCcdMap() {
@@ -78,6 +97,14 @@ public class D8FormToCaseTransformer extends ExceptionRecordToCaseTransformer {
         erToCcdFieldsMap.put("D8PetitionerEmail", "D8PetitionerEmail");
         erToCcdFieldsMap.put("D8PetitionerNameChangedHow", "D8PetitionerNameChangedHow");
         erToCcdFieldsMap.put("D8PetitionerContactDetailsConfidential", "D8PetitionerContactDetailsConfidential");
+
+        erToCcdFieldsMap.put("PetitionerSolicitor", "PetitionerSolicitor");
+        erToCcdFieldsMap.put("PetitionerSolicitorName", "PetitionerSolicitorName");
+        erToCcdFieldsMap.put("D8SolicitorReference", "D8SolicitorReference");
+        erToCcdFieldsMap.put("PetitionerSolicitorFirm", "PetitionerSolicitorFirm");
+        erToCcdFieldsMap.put("PetitionerSolicitorPhone", "PetitionerSolicitorPhone");
+        erToCcdFieldsMap.put("PetitionerSolicitorEmail", "PetitionerSolicitorEmail");
+        erToCcdFieldsMap.put("D8PetitionerCorrespondenceUseHomeAddress", "D8PetitionerCorrespondenceUseHomeAddress");
 
         // Section 3 - About your spouse/civil partner (the respondent)
         erToCcdFieldsMap.put("D8RespondentFirstName", "D8RespondentFirstName");
