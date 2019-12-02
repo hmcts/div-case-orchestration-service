@@ -44,7 +44,9 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         "D8MarriagePetitionerName",
         "D8MarriageRespondentName",
         "D8PetitionerContactDetailsConfidential",
-        "D8PetitionerPostCode"
+        "D8PetitionerPostCode",
+        "PetitionerSolicitor",
+        "D8PetitionerCorrespondenceUseHomeAddress"
     );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
@@ -56,6 +58,8 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameChangedHow", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerContactDetailsConfidential", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("Cheque", "Debit/Credit Card", BLANK));
+        ALLOWED_VALUES_PER_FIELD.put("PetitionerSolicitor", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerCorrespondenceUseHomeAddress", asList(YES_VALUE, NO_VALUE));
     }
 
     public List<String> getMandatoryFields() {
@@ -71,9 +75,13 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
     protected List<String> runPostProcessingValidation(Map<String, String> fieldsMap) {
         List<String> errorMessages = Stream.of(
             validateFieldMatchesRegex(fieldsMap, "D8PetitionerPhoneNumber", CCD_PHONE_NUMBER_REGEX),
-            validatePostcode(fieldsMap, "D8PetitionerPostCode"),
-            validateFieldMatchesRegex(fieldsMap, "D8PetitionerEmail", CCD_EMAIL_REGEX),
             validateFieldMatchesRegex(fieldsMap, "D8RespondentPhoneNumber", CCD_PHONE_NUMBER_REGEX),
+            validateFieldMatchesRegex(fieldsMap, "PetitionerSolicitorPhone", CCD_PHONE_NUMBER_REGEX),
+            validateFieldMatchesRegex(fieldsMap, "D8PetitionerEmail", CCD_EMAIL_REGEX),
+            validateFieldMatchesRegex(fieldsMap, "PetitionerSolicitorEmail", CCD_EMAIL_REGEX),
+            validatePostcode(fieldsMap, "D8PetitionerPostCode"),
+            validatePostcode(fieldsMap, "PetitionerSolicitorAddressPostCode"),
+            validatePostcode(fieldsMap, "D8PetitionerCorrespondencePostcode"),
             validatePayment(fieldsMap)
         )
             .flatMap(Collection::stream)

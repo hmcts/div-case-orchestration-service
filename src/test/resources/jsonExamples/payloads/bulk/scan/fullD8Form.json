@@ -19,6 +19,15 @@
     { "name": "D8ReasonForDivorceSeparationDate", "value": "20/11/2008" },
     { "name": "D8PetitionerNameChangedHow", "value": "Yes" },
     { "name": "D8PetitionerContactDetailsConfidential", "value": "No" },
-    { "name": "D8PetitionerPostCode", "value": "SE1 2BP" }
+    { "name": "D8PetitionerPostCode", "value": "SE1 2BP" },
+    { "name": "PetitionerSolicitor", "value": "Yes" },
+    { "name": "PetitionerSolicitorName", "value": "Homer Simpson" },
+    { "name": "D8SolicitorReference", "value": "SolicitorReference" },
+    { "name": "PetitionerSolicitorFirm", "value": "DivorceIn30Mins Ltd" },
+    { "name": "PetitionerSolicitorAddressPostCode", "value": "GL51 0EX" },
+    { "name": "PetitionerSolicitorPhone", "value": "0121 465 2141" },
+    { "name": "PetitionerSolicitorEmail", "value": "homer.solicitor@quickdivorce.org" },
+    { "name": "D8PetitionerCorrespondenceUseHomeAddress", "value": "No" },
+    { "name": "D8PetitionerCorrespondencePostcode", "value": "SE12BP" }
   ]
 }
