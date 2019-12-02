@@ -22,11 +22,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validati
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.bulk.scan.UnsupportedFormTypeException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations.D8FormToCaseTransformer;
-import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanValidationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanService;
 
 import java.util.Collections;
 import java.util.Map;
+
 import javax.validation.Valid;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -41,10 +41,9 @@ public class BulkScanController {
     private static final String UPDATE_EVENT_ID = "bulkScanCaseUpdate";
     public static final String SERVICE_AUTHORISATION_HEADER = "ServiceAuthorization";
 
-    private D8FormToCaseTransformer d8FormToCaseTransformer = new D8FormToCaseTransformer();
-
     @Autowired
-    private BulkScanValidationService bulkScanValidationService;
+    private BulkScanService bulkScanService;
+
     @Autowired
     private AuthService authService;
 
@@ -54,7 +53,7 @@ public class BulkScanController {
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ApiOperation("Validates OCR form data based on form type")
-    @ApiResponses({
+    @ApiResponses( {
         @ApiResponse(
             code = 200, response = OcrValidationResponse.class, message = "Validation executed successfully"
         ),
@@ -74,7 +73,7 @@ public class BulkScanController {
         ResponseEntity<OcrValidationResponse> response;
 
         try {
-            OcrValidationResult ocrValidationResult = bulkScanValidationService
+            OcrValidationResult ocrValidationResult = bulkScanService
                 .validateBulkScanForm(formType, request.getOcrDataFields());
             OcrValidationResponse ocrValidationResponse = new OcrValidationResponse(ocrValidationResult);
             response = ok().body(ocrValidationResponse);
@@ -92,7 +91,7 @@ public class BulkScanController {
         produces = APPLICATION_JSON
     )
     @ApiOperation(value = "Transform exception record into CCD case data")
-    @ApiResponses({
+    @ApiResponses( {
         @ApiResponse(code = 200, response = SuccessfulTransformationResponse.class,
             message = "Transformation of exception record into case data has been successful"
         ),
@@ -101,7 +100,7 @@ public class BulkScanController {
         @ApiResponse(code = 403, message = "Calling service is not authorised to use the endpoint"),
         @ApiResponse(code = 422, message = "Exception record is well-formed, but contains invalid data.")
     })
-    public ResponseEntity<SuccessfulTransformationResponse> transformExceptionRecordToCase(
+    public ResponseEntity<SuccessfulTransformationResponse> transformExceptionRecordIntoCase(
         @RequestHeader(name = SERVICE_AUTHORISATION_HEADER, required = false) String s2sAuthToken,
         @Valid @RequestBody ExceptionRecord exceptionRecord
     ) {
@@ -109,18 +108,24 @@ public class BulkScanController {
 
         authService.assertIsServiceAllowedToUpdate(s2sAuthToken);
 
-        Map<String, Object> transformedCaseData = d8FormToCaseTransformer.transformIntoCaseData(exceptionRecord);
+        ResponseEntity<SuccessfulTransformationResponse> controllerResponse;
+        try {
+            Map<String, Object> transformedCaseData = bulkScanService.transformBulkScanForm(exceptionRecord);
 
-        SuccessfulTransformationResponse callbackResponse = SuccessfulTransformationResponse.builder()
-            .caseCreationDetails(
-                new CaseCreationDetails(
-                    CASE_TYPE_ID,
-                    CREATE_EVENT_ID,
-                    transformedCaseData))
-            .warnings(Collections.emptyList())
-            .build();
+            SuccessfulTransformationResponse callbackResponse = SuccessfulTransformationResponse.builder()
+                .caseCreationDetails(
+                    new CaseCreationDetails(
+                        CASE_TYPE_ID,
+                        CREATE_EVENT_ID,
+                        transformedCaseData))
+                .build();
 
-        return ResponseEntity.ok(callbackResponse);
+            controllerResponse = ok(callbackResponse);
+        } catch (UnsupportedFormTypeException exception) {
+            controllerResponse = ResponseEntity.unprocessableEntity().build();
+        }
+
+        return controllerResponse;
     }
 
     @PostMapping(
@@ -129,7 +134,7 @@ public class BulkScanController {
         produces = APPLICATION_JSON
     )
     @ApiOperation(value = "API to update Divorce case data by bulk scan")
-    @ApiResponses({
+    @ApiResponses( {
         @ApiResponse(code = 200, response = SuccessfulTransformationResponse.class,
             message = "Update of case data has been successful"
         ),

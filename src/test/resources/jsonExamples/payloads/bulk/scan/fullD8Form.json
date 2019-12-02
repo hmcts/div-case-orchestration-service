@@ -2,6 +2,7 @@
   "case_type_id": "DIVORCE",
   "id": "LV481297",
   "po_box": "PO 17",
+  "form_type": "newDivorceCase",
   "ocr_data_fields": [
     { "name": "D8PaymentMethod", "value": "Debit/Credit Card" },
     { "name": "D8PetitionerFirstName", "value": "Christopher" },

@@ -2,23 +2,35 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.in.ExceptionRecord;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataField;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.bulk.scan.UnsupportedFormTypeException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations.BulkScanFormTransformer;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations.BulkScanFormTransformerFactory;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidator;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidatorFactory;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
-public class BulkScanValidationService {
+public class BulkScanService {
 
     @Autowired
-    BulkScanFormValidatorFactory bulkScanFormValidatorFactory;
+    private BulkScanFormValidatorFactory bulkScanFormValidatorFactory;
+
+    @Autowired
+    private BulkScanFormTransformerFactory bulkScanFormTransformerFactory;
 
     public OcrValidationResult validateBulkScanForm(String formType, List<OcrDataField> ocrDataFields) throws UnsupportedFormTypeException {
         BulkScanFormValidator formValidator = bulkScanFormValidatorFactory.getValidator(formType);
         return formValidator.validateBulkScanForm(ocrDataFields);
+    }
+
+    public Map<String, Object> transformBulkScanForm(ExceptionRecord exceptionRecord) throws UnsupportedFormTypeException {
+        BulkScanFormTransformer bulkScanFormTransformer = bulkScanFormTransformerFactory.getTransformer(exceptionRecord.getFormType());
+        return bulkScanFormTransformer.transformIntoCaseData(exceptionRecord);
     }
 
 }

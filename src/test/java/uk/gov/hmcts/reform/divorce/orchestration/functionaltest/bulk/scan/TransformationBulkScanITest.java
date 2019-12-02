@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -140,12 +141,12 @@ public class TransformationBulkScanITest {
 
     @Test
     public void shouldReturnSuccessResponseForTransformationEndpointWhenUsingOnlyASubsetOfData() throws Exception {
-        String formToValidate = loadResourceAsString(PARTIAL_D8_FORM_JSON_PATH);
+        String formToTransform = loadResourceAsString(PARTIAL_D8_FORM_JSON_PATH);
 
         mockMvc.perform(
             post(TRANSFORMATION_URL)
                 .contentType(APPLICATION_JSON)
-                .content(formToValidate)
+                .content(formToTransform)
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
         )
             .andExpect(status().isOk())
@@ -174,4 +175,19 @@ public class TransformationBulkScanITest {
                     ))
                 )));
     }
+
+    @Test
+    public void shouldReturnErrorResponseForUnsupportedFormType() throws Exception {
+        String jsonToTransform = new ObjectMapper().createObjectNode()
+            .put("form_type", "unsupportedFormType")
+            .toPrettyString();
+
+        mockMvc.perform(
+            post(TRANSFORMATION_URL)
+                .contentType(APPLICATION_JSON)
+                .content(jsonToTransform)
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(status().isUnprocessableEntity());
+    }
+
 }
