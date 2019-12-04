@@ -62,6 +62,21 @@ public class ServiceContextConfiguration {
         return new CmsClientSupport();
     }
 
+    @Bean("bulkScanValidatorTokenGenerator")
+    public AuthTokenGenerator bulkScanAuthTokenGenerator(
+        @Value("${auth.provider.ccdsubmission.client.key}") final String secret,//TODO - possibly remove this
+        @Value("${auth.provider.bulkscan.validate.microservice}") final String microService,
+        @Value("${idam.s2s-auth.url}") final String s2sUrl
+    ) {
+        //It seems this service doesn't use one time password - TODO confirm
+        final ServiceAuthorisationApi serviceAuthorisationApi = Feign.builder()
+            .encoder(new JacksonEncoder())
+            .contract(new SpringMvcContract())
+            .target(ServiceAuthorisationApi.class, s2sUrl);
+
+        return new ServiceAuthTokenGenerator(secret, microService, serviceAuthorisationApi);
+    }
+
     @Bean("ccdSubmissionTokenGenerator")
     public AuthTokenGenerator ccdSubmissionAuthTokenGenerator(
         @Value("${auth.provider.ccdsubmission.client.key}") final String secret,
