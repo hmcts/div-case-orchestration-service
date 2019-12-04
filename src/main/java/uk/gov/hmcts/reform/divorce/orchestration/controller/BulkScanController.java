@@ -5,13 +5,17 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.common.AuthService;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.in.ExceptionRecord;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.CaseCreationDetails;
@@ -62,8 +66,8 @@ public class BulkScanController {
         @ApiResponse(code = 404, message = "Form type not found")
     })
     public ResponseEntity<OcrValidationResponse> validateOcrData(
-        @RequestHeader(name = SERVICE_AUTHORISATION_HEADER, required = false) String s2sAuthToken,
-        @PathVariable(name = "form-type", required = false) String formType,
+        @RequestHeader(name = SERVICE_AUTHORISATION_HEADER) String s2sAuthToken,
+        @PathVariable(name = "form-type") String formType,
         @Valid @RequestBody OcrDataValidationRequest request
     ) {
         log.info("Validating form {} for bulk scanning operation", formType);
@@ -101,7 +105,7 @@ public class BulkScanController {
         @ApiResponse(code = 422, message = "Exception record is well-formed, but contains invalid data.")
     })
     public ResponseEntity<SuccessfulTransformationResponse> transformExceptionRecordIntoCase(
-        @RequestHeader(name = SERVICE_AUTHORISATION_HEADER, required = false) String s2sAuthToken,
+        @RequestHeader(name = SERVICE_AUTHORISATION_HEADER) String s2sAuthToken,
         @Valid @RequestBody ExceptionRecord exceptionRecord
     ) {
         log.info("Transforming exception record to case");
@@ -145,7 +149,7 @@ public class BulkScanController {
         @ApiResponse(code = 422, message = "Exception record is well-formed, but contains invalid data.")
     })
     public ResponseEntity<SuccessfulUpdateResponse> updateCase(
-        @RequestHeader(name = SERVICE_AUTHORISATION_HEADER, required = false) String s2sAuthToken,
+        @RequestHeader(name = SERVICE_AUTHORISATION_HEADER) String s2sAuthToken,
         @Valid @RequestBody BulkScanCaseUpdateRequest request
     ) {
         log.info("Updates existing case based on exception record");
