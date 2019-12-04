@@ -42,12 +42,7 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
                 modifiedMap.put(D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR, String.valueOf(localDate.getYear()));
             });
 
-        getValueFromOcrDataFields("D8PetitionerPostCode", ocrDataFields)
-            .ifPresent(petitionerPostCode -> {
-                HashMap<String, Object> d8petitionerHomeAddressObject = new HashMap<>();
-                d8petitionerHomeAddressObject.put("PostCode", petitionerPostCode);
-                modifiedMap.put("D8PetitionerHomeAddress", d8petitionerHomeAddressObject);
-            });
+        transformPetitionerHomeAddressFieldsIn(ocrDataFields, modifiedMap);
 
         getValueFromOcrDataFields("PetitionerSolicitorAddressPostCode", ocrDataFields)
             .ifPresent(petitionerSolicitorPostcode -> {
@@ -118,5 +113,22 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         erToCcdFieldsMap.put("D8MarriageRespondentName", "D8MarriageRespondentName");
 
         return erToCcdFieldsMap;
+    }
+
+    private void transformPetitionerHomeAddressFieldsIn(List<OcrDataField> ocrDataFields, Map<String, Object> modifiedMap) {
+        HashMap<String, Object> d8petitionerHomeAddressObject = new HashMap<>();
+
+        getValueFromOcrDataFields("D8PetitionerHomeAddressStreet", ocrDataFields)
+            .ifPresent(petitionerHomeAddressStreet -> {
+                d8petitionerHomeAddressObject.put("AddressLine1", petitionerHomeAddressStreet);
+            });
+        getValueFromOcrDataFields("D8PetitionerPostCode", ocrDataFields)
+            .ifPresent(petitionerPostCode -> {
+                d8petitionerHomeAddressObject.put("PostCode", petitionerPostCode);
+            });
+
+        if (d8petitionerHomeAddressObject.size() > 0) {
+            modifiedMap.put("D8PetitionerHomeAddress", d8petitionerHomeAddressObject);
+        }
     }
 }

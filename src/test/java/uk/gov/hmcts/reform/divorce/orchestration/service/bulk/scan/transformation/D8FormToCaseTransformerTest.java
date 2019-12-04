@@ -64,6 +64,16 @@ public class D8FormToCaseTransformerTest {
     }
 
     @Test
+    public void verifyPetitionerHomeAddressStreetIsCorrectlyAddedToPetitionerHomeAddress() {
+        assertIsCorrectlyAddedToParentField(
+                "D8PetitionerHomeAddress",
+                "AddressLine1",
+                "19 West Park Road",
+                "D8PetitionerHomeAddressStreet"
+        );
+    }
+
+    @Test
     public void verifyPetitionerPostcodeIsCorrectlyAddedToPetitionerHomeAddress() {
         ExceptionRecord incomingExceptionRecord =
             createExceptionRecord(singletonList(new OcrDataField("D8PetitionerPostCode", "SE1 2PT")));
@@ -94,6 +104,16 @@ public class D8FormToCaseTransformerTest {
         Map petitionerHomeAddress = (Map) transformedCaseData.get("D8PetitionerCorrespondenceAddress");
 
         assertThat(petitionerHomeAddress.get("PostCode"), is("SE1 2PT"));
+    }
+
+    private void assertIsCorrectlyAddedToParentField(String targetParentField, String targetChildField, String testValue, String sourceField) {
+        ExceptionRecord incomingExceptionRecord =
+                createExceptionRecord(singletonList(new OcrDataField(sourceField, testValue)));
+
+        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(incomingExceptionRecord);
+        Map parentField = (Map) transformedCaseData.get(targetParentField);
+
+        assertThat(parentField.get(targetChildField), is(testValue));
     }
 
     private ExceptionRecord createExceptionRecord(List<OcrDataField> ocrDataFields) {
