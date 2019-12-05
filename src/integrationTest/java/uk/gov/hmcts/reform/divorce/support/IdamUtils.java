@@ -24,6 +24,9 @@ public class IdamUtils {
     @Value("${idam.client.baseUrl}")
     private String idamUserBaseUrl;
 
+    @Value("${idam.s2s-auth.url}")
+    private String idamS2sAuthUrl;
+
     @Value("${idam.client.redirectUri}")
     private String idamRedirectUri;
 
@@ -127,6 +130,24 @@ public class IdamUtils {
         return "Bearer " + token;
     }
 
+    public String generateUserTokenWithValidMicroService(String microServiceName) {
+
+        Response response = SerenityRest.given()
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .relaxedHTTPSValidation()
+            .body(String.format("{\"microservice\": \"%s\"}", microServiceName))
+            .post(idamS2sAuthUrl + "/testing-support/lease");
+
+        if (response.getStatusCode() >= 300) {
+            throw new IllegalStateException("Token generation failed with code: " + response.getStatusCode()
+                + " body: " + response.getBody().prettyPrint());
+        }
+
+        assert response.getStatusCode() == 200 : "Error generating code from IDAM: " + response.getStatusCode();
+        String token = response.getBody().asString();
+        return "Bearer " + token;
+    }
+
     private String idamDeleteUrl(String accountEmail) {
         return idamUserBaseUrl + "/testing-support/accounts/" + accountEmail;
     }
@@ -150,4 +171,5 @@ public class IdamUtils {
             + "&redirect_uri=" + idamRedirectUri
             + "&grant_type=authorization_code";
     }
+
 }
