@@ -41,7 +41,9 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8PetitionerPostCode", "HD7 5UZ"),
             new OcrDataField("PetitionerSolicitor", "Yes"),
             new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", "No"),
-            new OcrDataField("D8PetitionerHomeAddressStreet", "19 West Park Road")
+            new OcrDataField("D8PetitionerHomeAddressStreet", "19 West Park Road"),
+            new OcrDataField("D8PetitionerHomeAddressTown", "Smethwick"),
+            new OcrDataField("D8PetitionerHomeAddressCounty", "West Midlands")
         );
 
         listOfAllMandatoryFields = new ArrayList<>(listOfAllMandatoryFieldsImmutable);
@@ -76,7 +78,9 @@ public class NewDivorceCaseValidatorTest {
             "Mandatory field \"D8PetitionerPostCode\" is missing",
             "Mandatory field \"PetitionerSolicitor\" is missing",
             "Mandatory field \"D8PetitionerCorrespondenceUseHomeAddress\" is missing",
-            "Mandatory field \"D8PetitionerHomeAddressStreet\" is missing"
+            "Mandatory field \"D8PetitionerHomeAddressStreet\" is missing",
+            "Mandatory field \"D8PetitionerHomeAddressTown\" is missing",
+            "Mandatory field \"D8PetitionerHomeAddressCounty\" is missing"
         ));
     }
 
@@ -94,7 +98,9 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8PetitionerContactDetailsConfidential", ""),
             new OcrDataField("PetitionerSolicitor", ""),
             new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", ""),
-            new OcrDataField("D8PetitionerHomeAddressStreet", "")
+            new OcrDataField("D8PetitionerHomeAddressStreet", ""),
+            new OcrDataField("D8PetitionerHomeAddressTown", ""),
+            new OcrDataField("D8PetitionerHomeAddressCounty", "")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -110,7 +116,9 @@ public class NewDivorceCaseValidatorTest {
             "Mandatory field \"D8PetitionerPostCode\" is missing",
             "Mandatory field \"PetitionerSolicitor\" is missing",
             "Mandatory field \"D8PetitionerCorrespondenceUseHomeAddress\" is missing",
-            "Mandatory field \"D8PetitionerHomeAddressStreet\" is missing"
+            "Mandatory field \"D8PetitionerHomeAddressStreet\" is missing",
+            "Mandatory field \"D8PetitionerHomeAddressTown\" is missing",
+            "Mandatory field \"D8PetitionerHomeAddressCounty\" is missing"
         ));
     }
 

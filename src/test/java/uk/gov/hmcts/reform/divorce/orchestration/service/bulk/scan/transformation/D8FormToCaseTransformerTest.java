@@ -64,12 +64,32 @@ public class D8FormToCaseTransformerTest {
     }
 
     @Test
+    public void verifyPetitionerHomeAddressCountyIsCorrectlyAddedToPetitionerHomeAddress() {
+        assertIsCorrectlyAddedToParentField(
+                "D8PetitionerHomeAddress",
+                "County",
+                "West Midlands",
+                "D8PetitionerHomeAddressCounty"
+        );
+    }
+
+    @Test
     public void verifyPetitionerHomeAddressStreetIsCorrectlyAddedToPetitionerHomeAddress() {
         assertIsCorrectlyAddedToParentField(
                 "D8PetitionerHomeAddress",
                 "AddressLine1",
                 "19 West Park Road",
                 "D8PetitionerHomeAddressStreet"
+        );
+    }
+
+    @Test
+    public void verifyPetitionerHomeAddressTownIsCorrectlyAddedToPetitionerHomeAddress() {
+        assertIsCorrectlyAddedToParentField(
+                "D8PetitionerHomeAddress",
+                "PostTown",
+                "Smethwick",
+                "D8PetitionerHomeAddressTown"
         );
     }
 

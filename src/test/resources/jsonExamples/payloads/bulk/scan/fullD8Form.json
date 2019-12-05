@@ -30,6 +30,8 @@
     { "name": "PetitionerSolicitorEmail", "value": "homer.solicitor@quickdivorce.org" },
     { "name": "D8PetitionerCorrespondenceUseHomeAddress", "value": "No" },
     { "name": "D8PetitionerCorrespondencePostcode", "value": "SE12BP" },
-    { "name": "D8PetitionerHomeAddressStreet", "value": "19 West Park Road" }
+    { "name": "D8PetitionerHomeAddressStreet", "value": "19 West Park Road" },
+    { "name": "D8PetitionerHomeAddressTown", "value": "Smethwick" },
+    { "name": "D8PetitionerHomeAddressCounty", "value": "West Midlands" }
   ]
 }

@@ -120,7 +120,9 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8PetitionerContactDetailsConfidential", is("No")),
                             hasJsonPath("D8PetitionerHomeAddress", allOf(
                                 hasJsonPath("AddressLine1", is("19 West Park Road")),
-                                hasJsonPath("PostCode", is("SE1 2BP"))
+                                hasJsonPath("County", is("West Midlands")),
+                                hasJsonPath("PostCode", is("SE1 2BP")),
+                                hasJsonPath("PostTown", is("Smethwick"))
                             )),
                             hasJsonPath("D8MarriagePetitionerName", is("Christopher O'John")),
                             hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_DAY, is("20")),
