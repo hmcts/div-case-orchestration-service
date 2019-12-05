@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
+
+import static uk.gov.hmcts.reform.divorce.orchestration.controller.BulkScanController.SERVICE_AUTHORISATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.NEW_DIVORCE_CASE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
-import static uk.gov.hmcts.reform.divorce.orchestration.controller.BulkScanController.SERVICE_AUTHORISATION_HEADER;
+
 
 @Slf4j
 public class BulkScanIntegrationTest extends IntegrationTest {
@@ -40,7 +42,8 @@ public class BulkScanIntegrationTest extends IntegrationTest {
         Response forValidationEndpoint = responseForValidationEndpoint(token,"/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE);
 
 
-        assert forValidationEndpoint.getStatusCode() == 200 : "Service is not authorised to OCR validation " + forValidationEndpoint.getStatusCode();
+        assert forValidationEndpoint.getStatusCode() == 200 : "Service is not authorised to OCR validation "
+            + forValidationEndpoint.getStatusCode();
 
     }
 
@@ -52,7 +55,8 @@ public class BulkScanIntegrationTest extends IntegrationTest {
 
         Response forValidationEndpoint = responseForValidationEndpoint(token,"/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE);
 
-        assert forValidationEndpoint.getStatusCode() == 403 : "Not matching with expected Error code " + forValidationEndpoint.getStatusCode();
+        assert forValidationEndpoint.getStatusCode() == 403 : "Not matching with expected Error code "
+            + forValidationEndpoint.getStatusCode();
     }
 
     @Test
@@ -62,7 +66,8 @@ public class BulkScanIntegrationTest extends IntegrationTest {
         VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
         Response forTransformationEndpoint = responseForEndpoint(token,"/transform-exception-record");
 
-        assert forTransformationEndpoint.getStatusCode() == 200 : "Service is not authorised to transform OCR data to case" + forTransformationEndpoint.getStatusCode();
+        assert forTransformationEndpoint.getStatusCode() == 200 : "Service is not authorised to transform OCR data to case"
+            + forTransformationEndpoint.getStatusCode();
 
     }
 
@@ -74,7 +79,8 @@ public class BulkScanIntegrationTest extends IntegrationTest {
 
         Response forTransformationEndpoint = responseForEndpoint(token,"/transform-exception-record");
 
-        assert forTransformationEndpoint.getStatusCode() == 403 : "Not matching with expected error Code " + forTransformationEndpoint.getStatusCode();
+        assert forTransformationEndpoint.getStatusCode() == 403 : "Not matching with expected error Code "
+            + forTransformationEndpoint.getStatusCode();
     }
 
     @Test
@@ -84,7 +90,8 @@ public class BulkScanIntegrationTest extends IntegrationTest {
         VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
         Response forUpdateEndpoint = responseForEndpoint(token,"/update-case");
 
-        assert forUpdateEndpoint.getStatusCode() == 200 : "Service is not authorised to transform OCR data to case" + forUpdateEndpoint.getStatusCode();
+        assert forUpdateEndpoint.getStatusCode() == 200 : "Service is not authorised to transform OCR data to case"
+            + forUpdateEndpoint.getStatusCode();
 
     }
 
@@ -99,24 +106,25 @@ public class BulkScanIntegrationTest extends IntegrationTest {
         assert forUpdateEndpoint.getStatusCode() == 403 : "Not matching with expected error Code " + forUpdateEndpoint.getStatusCode();
     }
 
-    private Response responseForEndpoint(String token, String endpointName){
-
-           Response  response = SerenityRest.given()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTHORISATION_HEADER, token)
-            .relaxedHTTPSValidation()
-            .body(VALID_BODY)
-            .post(cosBaseURL+ endpointName);
-           return response;
-    }
-    private Response responseForValidationEndpoint(String token, String endpointName, String formType){
+    private Response responseForEndpoint(String token, String endpointName) {
 
         Response  response = SerenityRest.given()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .header(SERVICE_AUTHORISATION_HEADER, token)
             .relaxedHTTPSValidation()
             .body(VALID_BODY)
-            .post(cosBaseURL+ endpointName, formType);
+            .post(cosBaseURL + endpointName);
+        return response;
+    }
+
+    private Response responseForValidationEndpoint(String token, String endpointName, String formType) {
+
+        Response  response = SerenityRest.given()
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .header(SERVICE_AUTHORISATION_HEADER, token)
+            .relaxedHTTPSValidation()
+            .body(VALID_BODY)
+            .post(cosBaseURL + endpointName, formType);
         return response;
     }
 }
