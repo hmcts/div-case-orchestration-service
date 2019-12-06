@@ -32,6 +32,12 @@
     { "name": "D8PetitionerCorrespondencePostcode", "value": "SE12BP" },
     { "name": "D8PetitionerHomeAddressStreet", "value": "19 West Park Road" },
     { "name": "D8PetitionerHomeAddressTown", "value": "Smethwick" },
-    { "name": "D8PetitionerHomeAddressCounty", "value": "West Midlands" }
+    { "name": "D8PetitionerHomeAddressCounty", "value": "West Midlands" },
+    { "name": "PetitionerSolicitorAddressStreet", "value": "20 solicitors road" },
+    { "name": "PetitionerSolicitorAddressTown", "value": "Soltown" },
+    { "name": "PetitionerSolicitorAddressCounty", "value": "East Midlands" },
+    { "name": "D8PetitionerCorrespondenceAddressStreet", "value": "20 correspondence road" },
+    { "name": "D8PetitionerCorrespondenceAddressTown", "value": "Correspondencetown" },
+    { "name": "D8PetitionerCorrespondenceAddressCounty", "value": "South Midlands" }
   ]
 }

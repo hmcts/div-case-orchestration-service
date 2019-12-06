@@ -49,7 +49,14 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         "D8PetitionerCorrespondenceUseHomeAddress",
         "D8PetitionerHomeAddressStreet",
         "D8PetitionerHomeAddressTown",
-        "D8PetitionerHomeAddressCounty"
+        "D8PetitionerHomeAddressCounty",
+        "PetitionerSolicitorAddressStreet",
+        "PetitionerSolicitorAddressTown",
+        "PetitionerSolicitorAddressCounty",
+        "D8PetitionerCorrespondenceAddressStreet",
+        "D8PetitionerCorrespondenceAddressTown",
+        "D8PetitionerCorrespondenceAddressCounty"
+
     );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();

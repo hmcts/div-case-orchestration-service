@@ -44,20 +44,8 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
             });
 
         applyMappingsForPetitionerHomeAddress(ocrDataFields, modifiedMap);
-
-        getValueFromOcrDataFields("PetitionerSolicitorAddressPostCode", ocrDataFields)
-            .ifPresent(petitionerSolicitorPostcode -> {
-                HashMap<String, Object> petitionerSolicitorAddressObject = new HashMap<>();
-                petitionerSolicitorAddressObject.put("PostCode", petitionerSolicitorPostcode);
-                modifiedMap.put("PetitionerSolicitorAddress", petitionerSolicitorAddressObject);
-            });
-
-        getValueFromOcrDataFields("D8PetitionerCorrespondencePostcode", ocrDataFields)
-            .ifPresent(petitionerCorrespondencePostcode -> {
-                HashMap<String, Object> d8PetitionerCorrespondenceAddressObject = new HashMap<>();
-                d8PetitionerCorrespondenceAddressObject.put("PostCode", petitionerCorrespondencePostcode);
-                modifiedMap.put("D8PetitionerCorrespondenceAddress", d8PetitionerCorrespondenceAddressObject);
-            });
+        applyMappingsForPetitionerSolicitorAddress(ocrDataFields, modifiedMap);
+        applyMappingsForPetitionerCorrespondenceAddress(ocrDataFields, modifiedMap);
 
         return modifiedMap;
     }
@@ -125,6 +113,34 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
                         "D8PetitionerHomeAddressCounty", "County",
                         "D8PetitionerPostCode", "PostCode",
                         "D8PetitionerHomeAddressTown", "PostTown"
+                ),
+                modifiedMap,
+                ocrDataFields);
+    }
+
+    private void applyMappingsForPetitionerSolicitorAddress(List<OcrDataField> ocrDataFields,
+                                                       Map<String, Object> modifiedMap) {
+        addMappingsTo(
+                "PetitionerSolicitorAddress",
+                ImmutableMap.of(
+                        "PetitionerSolicitorAddressStreet", "AddressLine1",
+                        "PetitionerSolicitorAddressCounty", "County",
+                        "PetitionerSolicitorAddressPostCode", "PostCode",
+                        "PetitionerSolicitorAddressTown", "PostTown"
+                ),
+                modifiedMap,
+                ocrDataFields);
+    }
+
+    private void applyMappingsForPetitionerCorrespondenceAddress(List<OcrDataField> ocrDataFields,
+                                                            Map<String, Object> modifiedMap) {
+        addMappingsTo(
+                "D8PetitionerCorrespondenceAddress",
+                ImmutableMap.of(
+                        "D8PetitionerCorrespondenceAddressStreet", "AddressLine1",
+                        "D8PetitionerCorrespondenceAddressCounty", "County",
+                        "D8PetitionerCorrespondencePostcode", "PostCode",
+                        "D8PetitionerCorrespondenceAddressTown", "PostTown"
                 ),
                 modifiedMap,
                 ocrDataFields);

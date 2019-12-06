@@ -95,35 +95,92 @@ public class D8FormToCaseTransformerTest {
 
     @Test
     public void verifyPetitionerPostcodeIsCorrectlyAddedToPetitionerHomeAddress() {
-        ExceptionRecord incomingExceptionRecord =
-            createExceptionRecord(singletonList(new OcrDataField("D8PetitionerPostCode", "SE1 2PT")));
+        assertIsCorrectlyAddedToParentField(
+                "D8PetitionerHomeAddress",
+                "PostCode",
+                "SE1 2PT",
+                "D8PetitionerPostCode"
+        );
+    }
 
-        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(incomingExceptionRecord);
-        Map petitionerHomeAddress = (Map) transformedCaseData.get("D8PetitionerHomeAddress");
+    @Test
+    public void verifyPetitionerSolicitorAddressCountyIsCorrectlyAddedToPetitionerSolicitorAddress() {
+        assertIsCorrectlyAddedToParentField(
+                "PetitionerSolicitorAddress",
+                "County",
+                "East Midlands",
+                "PetitionerSolicitorAddressCounty"
+        );
+    }
 
-        assertThat(petitionerHomeAddress.get("PostCode"), is("SE1 2PT"));
+    @Test
+    public void verifyPetitionerSolicitorAddressStreetIsCorrectlyAddedToPetitionerSolicitorAddress() {
+        assertIsCorrectlyAddedToParentField(
+                "PetitionerSolicitorAddress",
+                "AddressLine1",
+                "20 solicitors road",
+                "PetitionerSolicitorAddressStreet"
+        );
+    }
+
+    @Test
+    public void verifyPetitionerSolicitorAddressTownIsCorrectlyAddedToPetitionerSolicitorAddress() {
+        assertIsCorrectlyAddedToParentField(
+                "PetitionerSolicitorAddress",
+                "PostTown",
+                "Soltown",
+                "PetitionerSolicitorAddressTown"
+        );
     }
 
     @Test
     public void verifyPetitionerSolicitorAddressPostCodeIsCorrectlyAddedToPetitionerSolicitorAddress() {
-        ExceptionRecord incomingExceptionRecord =
-            createExceptionRecord(singletonList(new OcrDataField("PetitionerSolicitorAddressPostCode", "SE1 2PT")));
+        assertIsCorrectlyAddedToParentField(
+                "PetitionerSolicitorAddress",
+                "PostCode",
+                "SE1 2PT",
+                "PetitionerSolicitorAddressPostCode"
+        );
+    }
 
-        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(incomingExceptionRecord);
-        Map petitionerHomeAddress = (Map) transformedCaseData.get("PetitionerSolicitorAddress");
+    @Test
+    public void verifyD8PetitionerCorrespondenceAddressCountyIsCorrectlyAddedToD8PetitionerCorrespondenceAddress() {
+        assertIsCorrectlyAddedToParentField(
+                "D8PetitionerCorrespondenceAddress",
+                "County",
+                "South Midlands",
+                "D8PetitionerCorrespondenceAddressCounty"
+        );
+    }
 
-        assertThat(petitionerHomeAddress.get("PostCode"), is("SE1 2PT"));
+    @Test
+    public void verifyD8PetitionerCorrespondenceAddressStreetIsCorrectlyAddedToD8PetitionerCorrespondenceAddress() {
+        assertIsCorrectlyAddedToParentField(
+                "D8PetitionerCorrespondenceAddress",
+                "AddressLine1",
+                "20 correspondence road",
+                "D8PetitionerCorrespondenceAddressStreet"
+        );
+    }
+
+    @Test
+    public void verifyD8PetitionerCorrespondenceAddressTownIsCorrectlyAddedToD8PetitionerCorrespondenceAddress() {
+        assertIsCorrectlyAddedToParentField(
+                "D8PetitionerCorrespondenceAddress",
+                "PostTown",
+                "Correspondencetown",
+                "D8PetitionerCorrespondenceAddressTown"
+        );
     }
 
     @Test
     public void verifyD8PetitionerCorrespondencePostcodeIsCorrectlyAddedToD8PetitionerCorrespondenceAddress() {
-        ExceptionRecord incomingExceptionRecord =
-            createExceptionRecord(singletonList(new OcrDataField("D8PetitionerCorrespondencePostcode", "SE1 2PT")));
-
-        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(incomingExceptionRecord);
-        Map petitionerHomeAddress = (Map) transformedCaseData.get("D8PetitionerCorrespondenceAddress");
-
-        assertThat(petitionerHomeAddress.get("PostCode"), is("SE1 2PT"));
+        assertIsCorrectlyAddedToParentField(
+                "D8PetitionerCorrespondenceAddress",
+                "PostCode",
+                "SE12BP",
+                "D8PetitionerCorrespondencePostcode"
+        );
     }
 
     private void assertIsCorrectlyAddedToParentField(String targetParentField, String targetChildField, String testValue, String sourceField) {
