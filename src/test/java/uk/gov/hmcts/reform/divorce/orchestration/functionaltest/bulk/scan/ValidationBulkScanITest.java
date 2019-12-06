@@ -75,6 +75,7 @@ public class ValidationBulkScanITest {
             post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
                 .contentType(APPLICATION_JSON)
                 .content(VALID_BODY)
+                .header(SERVICE_AUTHORISATION_HEADER, "")
         ).andExpect(matchAll(status().isUnauthorized()));
     }
 
