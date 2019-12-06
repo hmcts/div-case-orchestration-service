@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.divorce.context.ServiceContextConfiguration;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.in.ExceptionRecord;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.SuccessfulTransformationResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.update.in.BulkScanCaseUpdateRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.update.out.SuccessfulUpdateResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 
@@ -16,6 +21,7 @@ import java.util.Map;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.controller.BulkScanController.SERVICE_AUTHORISATION_HEADER;
 
 @FeignClient(name = "case-orchestration-api", url = "${case.orchestration.service.base.uri}",
     configuration = ServiceContextConfiguration.class)
@@ -180,41 +186,70 @@ public interface CosApiClient {
                                             @RequestBody CcdCallbackRequest ccdCallbackRequest);
 
     @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/personal-service-pack"
+        method = RequestMethod.POST,
+        value = "/personal-service-pack"
     )
     CcdCallbackResponse processPersonalServicePack(
-            @RequestHeader(AUTHORIZATION) String authorisation,
-            @RequestBody CcdCallbackRequest ccdCallbackRequest
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
     @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/remove-dn-outcome-case-flag"
+        method = RequestMethod.POST,
+        value = "/remove-dn-outcome-case-flag"
     )
     Map<String, Object> removeDnOutcomeCaseFlag(@RequestBody CcdCallbackRequest ccdCallbackRequest);
 
     @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/remove-la-make-decision-fields"
+        method = RequestMethod.POST,
+        value = "/remove-la-make-decision-fields"
     )
     Map<String, Object> removeLegalAdvisorMakeDecisionFields(@RequestBody CcdCallbackRequest ccdCallbackRequest);
 
     @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/dn-about-to-be-granted"
+        method = RequestMethod.POST,
+        value = "/dn-about-to-be-granted"
     )
     CcdCallbackResponse processDnAboutToBeGranted(
-            @RequestHeader(AUTHORIZATION) String authorisation,
-            @RequestBody CcdCallbackRequest ccdCallbackRequest
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
     @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/dn-decision-made"
+        method = RequestMethod.POST,
+        value = "/dn-decision-made"
     )
     CcdCallbackResponse dnDecisionMade(
-            @RequestHeader(AUTHORIZATION) String authorisation,
-            @RequestBody CcdCallbackRequest ccdCallbackRequest
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/forms/{form-type}/validate-ocr"
+    )
+    SuccessfulUpdateResponse validateBulkScannedFields(
+        @RequestHeader(SERVICE_AUTHORISATION_HEADER) String s2sAuthToken,
+        @PathVariable("form-type") String formType,
+        @RequestBody OcrDataValidationRequest request
+    );
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/transform-exception-record"
+    )
+    SuccessfulTransformationResponse transformBulkScannedFields(
+        @RequestHeader(SERVICE_AUTHORISATION_HEADER) String s2sAuthToken,
+        @RequestBody ExceptionRecord exceptionRecord
+    );
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/update-case"
+    )
+    SuccessfulUpdateResponse transformBulkScannedFieldsForUpdatingCase(
+        @RequestHeader(SERVICE_AUTHORISATION_HEADER) String s2sAuthToken,
+        @RequestBody BulkScanCaseUpdateRequest request
+    );
+
 }

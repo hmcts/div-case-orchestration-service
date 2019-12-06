@@ -73,6 +73,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(convertObjectToJsonString(VALID_BODY))
+                .header(SERVICE_AUTHORISATION_HEADER, "")
         ).andExpect(status().isUnauthorized());
     }
 

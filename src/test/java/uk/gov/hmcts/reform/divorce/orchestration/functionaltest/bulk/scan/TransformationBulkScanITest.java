@@ -81,6 +81,7 @@ public class TransformationBulkScanITest {
             post(TRANSFORMATION_URL)
                 .contentType(APPLICATION_JSON)
                 .content(VALID_BODY)
+                .header(SERVICE_AUTHORISATION_HEADER, "")
         ).andExpect(status().isUnauthorized());
     }
 
