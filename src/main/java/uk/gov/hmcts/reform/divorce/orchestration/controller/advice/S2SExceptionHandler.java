@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.common.ForbiddenException;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.common.UnauthenticatedException;
+import uk.gov.hmcts.reform.bsp.common.error.ForbiddenException;
+import uk.gov.hmcts.reform.bsp.common.error.UnauthenticatedException;
 
 @ControllerAdvice
 @Slf4j

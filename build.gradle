@@ -315,6 +315,7 @@ dependencies {
 
     compile group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
     compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
+    compile group: 'uk.gov.hmcts.reform', name: 'bsp-common-lib', version: '0.0.2'
     compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
