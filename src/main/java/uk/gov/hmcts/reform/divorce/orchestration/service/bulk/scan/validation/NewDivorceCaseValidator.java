@@ -49,13 +49,7 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         "D8PetitionerCorrespondenceUseHomeAddress",
         "D8PetitionerHomeAddressStreet",
         "D8PetitionerHomeAddressTown",
-        "D8PetitionerHomeAddressCounty",
-        "PetitionerSolicitorAddressStreet",
-        "PetitionerSolicitorAddressTown",
-        "PetitionerSolicitorAddressCounty",
-        "D8PetitionerCorrespondenceAddressStreet",
-        "D8PetitionerCorrespondenceAddressTown",
-        "D8PetitionerCorrespondenceAddressCounty"
+        "D8PetitionerHomeAddressCounty"
 
     );
 

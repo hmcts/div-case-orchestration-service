@@ -43,13 +43,7 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", "No"),
             new OcrDataField("D8PetitionerHomeAddressStreet", "19 West Park Road"),
             new OcrDataField("D8PetitionerHomeAddressTown", "Smethwick"),
-            new OcrDataField("D8PetitionerHomeAddressCounty", "West Midlands"),
-            new OcrDataField("PetitionerSolicitorAddressStreet", "20 solicitors road"),
-            new OcrDataField("PetitionerSolicitorAddressTown", "Soltown"),
-            new OcrDataField("PetitionerSolicitorAddressCounty", "East Midlands"),
-            new OcrDataField("D8PetitionerCorrespondenceAddressStreet", "20 correspondence road"),
-            new OcrDataField("D8PetitionerCorrespondenceAddressTown", "Correspondencetown"),
-            new OcrDataField("D8PetitionerCorrespondenceAddressCounty", "South Midlands")
+            new OcrDataField("D8PetitionerHomeAddressCounty", "West Midlands")
         );
 
         listOfAllMandatoryFields = new ArrayList<>(listOfAllMandatoryFieldsImmutable);
@@ -86,13 +80,7 @@ public class NewDivorceCaseValidatorTest {
             "Mandatory field \"D8PetitionerCorrespondenceUseHomeAddress\" is missing",
             "Mandatory field \"D8PetitionerHomeAddressStreet\" is missing",
             "Mandatory field \"D8PetitionerHomeAddressTown\" is missing",
-            "Mandatory field \"D8PetitionerHomeAddressCounty\" is missing",
-            "Mandatory field \"PetitionerSolicitorAddressStreet\" is missing",
-            "Mandatory field \"PetitionerSolicitorAddressTown\" is missing",
-            "Mandatory field \"PetitionerSolicitorAddressCounty\" is missing",
-            "Mandatory field \"D8PetitionerCorrespondenceAddressStreet\" is missing",
-            "Mandatory field \"D8PetitionerCorrespondenceAddressTown\" is missing",
-            "Mandatory field \"D8PetitionerCorrespondenceAddressCounty\" is missing"
+            "Mandatory field \"D8PetitionerHomeAddressCounty\" is missing"
         ));
     }
 
@@ -112,13 +100,7 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", ""),
             new OcrDataField("D8PetitionerHomeAddressStreet", ""),
             new OcrDataField("D8PetitionerHomeAddressTown", ""),
-            new OcrDataField("D8PetitionerHomeAddressCounty", ""),
-            new OcrDataField("PetitionerSolicitorAddressStreet", ""),
-            new OcrDataField("PetitionerSolicitorAddressTown", ""),
-            new OcrDataField("PetitionerSolicitorAddressCounty", ""),
-            new OcrDataField("D8PetitionerCorrespondenceAddressStreet", ""),
-            new OcrDataField("D8PetitionerCorrespondenceAddressTown", ""),
-            new OcrDataField("D8PetitionerCorrespondenceAddressCounty", "")
+            new OcrDataField("D8PetitionerHomeAddressCounty", "")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -136,13 +118,7 @@ public class NewDivorceCaseValidatorTest {
             "Mandatory field \"D8PetitionerCorrespondenceUseHomeAddress\" is missing",
             "Mandatory field \"D8PetitionerHomeAddressStreet\" is missing",
             "Mandatory field \"D8PetitionerHomeAddressTown\" is missing",
-            "Mandatory field \"D8PetitionerHomeAddressCounty\" is missing",
-            "Mandatory field \"PetitionerSolicitorAddressStreet\" is missing",
-            "Mandatory field \"PetitionerSolicitorAddressTown\" is missing",
-            "Mandatory field \"PetitionerSolicitorAddressCounty\" is missing",
-            "Mandatory field \"D8PetitionerCorrespondenceAddressStreet\" is missing",
-            "Mandatory field \"D8PetitionerCorrespondenceAddressTown\" is missing",
-            "Mandatory field \"D8PetitionerCorrespondenceAddressCounty\" is missing"
+            "Mandatory field \"D8PetitionerHomeAddressCounty\" is missing"
         ));
     }
 
@@ -201,7 +177,13 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("PetitionerSolicitorAddressPostCode", ""),
             new OcrDataField("PetitionerSolicitorPhone", ""),
             new OcrDataField("PetitionerSolicitorEmail", ""),
-            new OcrDataField("D8PetitionerCorrespondencePostcode", "")
+            new OcrDataField("D8PetitionerCorrespondencePostcode", ""),
+            new OcrDataField("PetitionerSolicitorAddressStreet", ""),
+            new OcrDataField("PetitionerSolicitorAddressTown", ""),
+            new OcrDataField("PetitionerSolicitorAddressCounty", ""),
+            new OcrDataField("D8PetitionerCorrespondenceAddressStreet", ""),
+            new OcrDataField("D8PetitionerCorrespondenceAddressTown", ""),
+            new OcrDataField("D8PetitionerCorrespondenceAddressCounty", "")
         );
 
         listOfAllMandatoryFields.addAll(nonMandatoryFieldsWithEmptyValues);
