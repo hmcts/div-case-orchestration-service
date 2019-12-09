@@ -322,13 +322,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'logging-httpcomponents', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.reformsJavaLogging
     compile group: 'uk.gov.hmcts.reform', name: 'div-common-lib', version: versions.divCommonLib
-    compile(group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.serviceTokenGenerator)
-            {
-                exclude group: 'io.reactivex', module: 'io.reactivex'
-                exclude group: 'io.reactivex', module: 'rxnetty'
-                exclude group: 'io.reactivex', module: 'rxnetty-contexts'
-                exclude group: 'io.reactivex', module: 'rxnetty-servo'
-            }
+    compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.serviceTokenGenerator
     compile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: versions.jsonPathAssert
     compile group: 'org.pitest', name: 'pitest', version: versions.pitest
     compile group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
