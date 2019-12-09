@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthAutoConfiguration;
-import uk.gov.hmcts.reform.bsp.common.config.AuthConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.config.CourtDetailsConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.config.courtallocation.CourtDistributionConfig;
