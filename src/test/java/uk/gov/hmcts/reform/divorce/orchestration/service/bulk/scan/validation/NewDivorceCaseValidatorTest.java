@@ -141,7 +141,8 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("PetitionerSolicitorPhone", "07700900four"),
             new OcrDataField("PetitionerSolicitorEmail", "nece28ssito@no."),
             new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", "Where"),
-            new OcrDataField("D8PetitionerCorrespondencePostcode", "TR13 8BCD1")
+            new OcrDataField("D8PetitionerCorrespondencePostcode", "TR13 8BCD1"),
+            new OcrDataField("D8ReasonForDivorceAdultery3rdPartyPostCode", "CR13 6BF81")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -164,7 +165,8 @@ public class NewDivorceCaseValidatorTest {
             "PetitionerSolicitorPhone is not in a valid format",
             "PetitionerSolicitorEmail is not in a valid format",
             "D8PetitionerCorrespondenceUseHomeAddress must be \"Yes\" or \"No\"",
-            "D8PetitionerCorrespondencePostcode is usually 6 or 7 characters long"
+            "D8PetitionerCorrespondencePostcode is usually 6 or 7 characters long",
+            "D8ReasonForDivorceAdultery3rdPartyPostCode is usually 6 or 7 characters long"
         ));
     }
 
@@ -183,7 +185,13 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("PetitionerSolicitorAddressCounty", ""),
             new OcrDataField("D8PetitionerCorrespondenceAddressStreet", ""),
             new OcrDataField("D8PetitionerCorrespondenceAddressTown", ""),
-            new OcrDataField("D8PetitionerCorrespondenceAddressCounty", "")
+            new OcrDataField("D8PetitionerCorrespondenceAddressCounty", ""),
+            new OcrDataField("D8ReasonForDivorceAdultery3rdPartyFName", ""),
+            new OcrDataField("D8ReasonForDivorceAdultery3rdPartyLName", ""),
+            new OcrDataField("D8ReasonForDivorceAdultery3rdPartyAddressStreet", ""),
+            new OcrDataField("D8ReasonForDivorceAdultery3rdPartyTown", ""),
+            new OcrDataField("D8ReasonForDivorceAdultery3rdPartyCounty", ""),
+            new OcrDataField("D8ReasonForDivorceAdultery3rdPartyPostCode", "")
         );
 
         listOfAllMandatoryFields.addAll(nonMandatoryFieldsWithEmptyValues);
