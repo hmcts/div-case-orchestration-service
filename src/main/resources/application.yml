@@ -36,6 +36,8 @@ spring:
     port: 32773
     default-encoding: UTF-8
     test-connection: false
+  main:
+    allow-bean-definition-overriding: true
 
 feign:
   client:
