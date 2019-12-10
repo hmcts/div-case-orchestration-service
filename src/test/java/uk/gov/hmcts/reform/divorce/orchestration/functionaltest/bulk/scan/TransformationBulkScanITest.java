@@ -118,8 +118,12 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8RespondentPhoneNumber", is("22222222222")),
                             hasJsonPath("D8PetitionerNameChangedHow", is("Yes")),
                             hasJsonPath("D8PetitionerContactDetailsConfidential", is("No")),
-                            hasJsonPath("D8PetitionerHomeAddress",
-                                hasJsonPath("PostCode", is("SE1 2BP"))),
+                            hasJsonPath("D8PetitionerHomeAddress", allOf(
+                                hasJsonPath("AddressLine1", is("19 West Park Road")),
+                                hasJsonPath("County", is("West Midlands")),
+                                hasJsonPath("PostCode", is("SE1 2BP")),
+                                hasJsonPath("PostTown", is("Smethwick"))
+                            )),
                             hasJsonPath("D8MarriagePetitionerName", is("Christopher O'John")),
                             hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_DAY, is("20")),
                             hasJsonPath(D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH, is("11")),
@@ -131,10 +135,18 @@ public class TransformationBulkScanITest {
                             hasJsonPath("PetitionerSolicitorPhone", is("0121 465 2141")),
                             hasJsonPath("PetitionerSolicitorEmail", is("homer.solicitor@quickdivorce.org")),
                             hasJsonPath("D8PetitionerCorrespondenceUseHomeAddress", is("No")),
-                            hasJsonPath("PetitionerSolicitorAddress",
-                                hasJsonPath("PostCode", is("GL51 0EX"))),
-                            hasJsonPath("D8PetitionerCorrespondenceAddress",
-                                hasJsonPath("PostCode", is("SE12BP")))
+                            hasJsonPath("PetitionerSolicitorAddress", allOf(
+                                hasJsonPath("AddressLine1", is("20 solicitors road")),
+                                hasJsonPath("County", is("East Midlands")),
+                                hasJsonPath("PostCode", is("GL51 0EX")),
+                                hasJsonPath("PostTown", is("Soltown"))
+                            )),
+                            hasJsonPath("D8PetitionerCorrespondenceAddress", allOf(
+                                hasJsonPath("AddressLine1", is("20 correspondence road")),
+                                hasJsonPath("County", is("South Midlands")),
+                                hasJsonPath("PostCode", is("SE12BP")),
+                                hasJsonPath("PostTown", is("Correspondencetown"))
+                            ))
                         ))
                     ))
                 )));
