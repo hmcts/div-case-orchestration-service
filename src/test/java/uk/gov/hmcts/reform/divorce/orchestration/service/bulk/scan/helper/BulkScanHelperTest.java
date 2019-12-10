@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.exception.FormFieldValidationException;
+import uk.gov.hmcts.reform.bsp.common.error.FormFieldValidationException;
 
 import java.time.LocalDate;
 
