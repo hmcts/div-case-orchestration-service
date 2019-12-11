@@ -6,12 +6,16 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validati
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.ValidationStatus.SUCCESS;
@@ -43,7 +47,14 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", "No"),
             new OcrDataField("D8PetitionerHomeAddressStreet", "19 West Park Road"),
             new OcrDataField("D8PetitionerHomeAddressTown", "Smethwick"),
-            new OcrDataField("D8PetitionerHomeAddressCounty", "West Midlands")
+            new OcrDataField("D8PetitionerHomeAddressCounty", "West Midlands"),
+            new OcrDataField("D8MarriedInUk", "Yes"),
+            new OcrDataField("D8ApplicationToIssueWithoutCertificate", "Yes"),
+            new OcrDataField("D8MarriagePlaceOfMarriage", "Slough"),
+            new OcrDataField("D8MarriageDateDay", "19"),
+            new OcrDataField("D8MarriageDateMonth", "03"),
+            new OcrDataField("D8MarriageDateYear", "2006"),
+            new OcrDataField("D8MarriageCertificateCorrect", "Yes")
         );
 
         listOfAllMandatoryFields = new ArrayList<>(listOfAllMandatoryFieldsImmutable);
@@ -80,7 +91,13 @@ public class NewDivorceCaseValidatorTest {
             "Mandatory field \"D8PetitionerCorrespondenceUseHomeAddress\" is missing",
             "Mandatory field \"D8PetitionerHomeAddressStreet\" is missing",
             "Mandatory field \"D8PetitionerHomeAddressTown\" is missing",
-            "Mandatory field \"D8PetitionerHomeAddressCounty\" is missing"
+            "Mandatory field \"D8PetitionerHomeAddressCounty\" is missing",
+            "Mandatory field \"D8MarriedInUk\" is missing",
+            "Mandatory field \"D8ApplicationToIssueWithoutCertificate\" is missing",
+            "Mandatory field \"D8MarriageDateDay\" is missing",
+            "Mandatory field \"D8MarriageDateMonth\" is missing",
+            "Mandatory field \"D8MarriageDateYear\" is missing",
+            "Mandatory field \"D8MarriageCertificateCorrect\" is missing"
         ));
     }
 
@@ -100,7 +117,10 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", ""),
             new OcrDataField("D8PetitionerHomeAddressStreet", ""),
             new OcrDataField("D8PetitionerHomeAddressTown", ""),
-            new OcrDataField("D8PetitionerHomeAddressCounty", "")
+            new OcrDataField("D8PetitionerHomeAddressCounty", ""),
+            new OcrDataField("D8MarriedInUk", ""),
+            new OcrDataField("D8ApplicationToIssueWithoutCertificate", ""),
+            new OcrDataField("D8MarriageCertificateCorrect", "")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -118,7 +138,10 @@ public class NewDivorceCaseValidatorTest {
             "Mandatory field \"D8PetitionerCorrespondenceUseHomeAddress\" is missing",
             "Mandatory field \"D8PetitionerHomeAddressStreet\" is missing",
             "Mandatory field \"D8PetitionerHomeAddressTown\" is missing",
-            "Mandatory field \"D8PetitionerHomeAddressCounty\" is missing"
+            "Mandatory field \"D8PetitionerHomeAddressCounty\" is missing",
+            "Mandatory field \"D8MarriedInUk\" is missing",
+            "Mandatory field \"D8ApplicationToIssueWithoutCertificate\" is missing",
+            "Mandatory field \"D8MarriageCertificateCorrect\" is missing"
         ));
     }
 
@@ -142,7 +165,10 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("PetitionerSolicitorEmail", "nece28ssito@no."),
             new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", "Where"),
             new OcrDataField("D8PetitionerCorrespondencePostcode", "TR13 8BCD1"),
-            new OcrDataField("D8ReasonForDivorceAdultery3rdPartyPostCode", "CR13 6BF81")
+            new OcrDataField("D8ReasonForDivorceAdultery3rdPartyPostCode", "CR13 6BF81"),
+            new OcrDataField("D8MarriedInUk", "does the isle of man count?"),
+            new OcrDataField("D8ApplicationToIssueWithoutCertificate", "check"),
+            new OcrDataField("D8MarriageCertificateCorrect", "fake")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -166,7 +192,10 @@ public class NewDivorceCaseValidatorTest {
             "PetitionerSolicitorEmail is not in a valid format",
             "D8PetitionerCorrespondenceUseHomeAddress must be \"Yes\" or \"No\"",
             "D8PetitionerCorrespondencePostcode is usually 6 or 7 characters long",
-            "D8ReasonForDivorceAdultery3rdPartyPostCode is usually 6 or 7 characters long"
+            "D8ReasonForDivorceAdultery3rdPartyPostCode is usually 6 or 7 characters long",
+            "D8MarriedInUk must be \"Yes\" or \"No\"",
+            "D8ApplicationToIssueWithoutCertificate must be \"Yes\" or \"No\"",
+            "D8MarriageCertificateCorrect must be \"Yes\" or \"No\""
         ));
     }
 
@@ -323,7 +352,7 @@ public class NewDivorceCaseValidatorTest {
     }
 
     @Test
-    public void shouldFailValidationWithWrongLeapYearDate() {
+    public void shouldFailValidationWithWrongLeapYearReasonForDivorceSeparationDate() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
             new OcrDataField("D8ReasonForDivorceSeparationDate", "29/02/2019")
         ));
@@ -331,5 +360,299 @@ public class NewDivorceCaseValidatorTest {
         assertThat(validationResult.getStatus(), is(WARNINGS));
         assertThat(validationResult.getErrors(), is(emptyList()));
         assertThat(validationResult.getWarnings(), hasItem("D8ReasonForDivorceSeparationDate must be a valid date"));
+    }
+
+    @Test
+    public void shouldNotProduceWarningsForPlaceOfMarriageWhenBothPrerequsitesAreEmpty() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8MarriedInUk", ""),
+            new OcrDataField("D8ApplicationToIssueWithoutCertificate", "")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), not(hasItem(
+            "\"D8MarriagePlaceOfMarriage\" can't be empty for any values of \"D8MarriedInUk\" and "
+                + "\"D8ApplicationToIssueWithoutCertificate\""
+            ))
+        );
+    }
+
+    @Test
+    public void shouldNotProduceWarningsForPlaceOfMarriageWhenBothPrerequsitesAreEmptyAndPlaceOfMarriageExists() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8MarriedInUk", ""),
+            new OcrDataField("D8ApplicationToIssueWithoutCertificate", ""),
+            new OcrDataField("D8MarriagePlaceOfMarriage", "Slough")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), not(hasItem(
+            "\"D8MarriagePlaceOfMarriage\" can't be empty for any values of \"D8MarriedInUk\" and "
+                + "\"D8ApplicationToIssueWithoutCertificate\""
+            ))
+        );
+    }
+
+    @Test
+    public void shouldNotProduceWarningsForPlaceOfMarriageIfOnlyOnePrerequsiteIsNoOrNullAndPlaceOfMarriageExists() {
+        Map<String, String> notMarriedInUkOnly = new HashMap<String, String>() {{
+                put("D8MarriedInUk", "No");
+            }};
+
+        Map<String, String> issueWithoutCertOnly = new HashMap<String, String>() {{
+                put("D8ApplicationToIssueWithoutCertificate", "Yes");
+            }};
+
+        List<Map<String, String>> incompletePrerequisites = asList(notMarriedInUkOnly, issueWithoutCertOnly);
+
+        for (Map<String, String> incompleteCombination : incompletePrerequisites) {
+
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+                new OcrDataField("D8MarriedInUk", incompleteCombination.get("D8MarriedInUk")),
+                new OcrDataField("D8ApplicationToIssueWithoutCertificate", incompleteCombination.get("D8ApplicationToIssueWithoutCertificate")),
+                new OcrDataField("D8MarriagePlaceOfMarriage", "Slough")
+            ));
+
+            assertThat(validationResult.getStatus(), is(WARNINGS));
+            assertThat(validationResult.getErrors(), is(emptyList()));
+            assertThat(validationResult.getWarnings(), not(hasItem(
+                "\"D8MarriagePlaceOfMarriage\" can't be empty for any values of \"D8MarriedInUk\" and "
+                    + "\"D8ApplicationToIssueWithoutCertificate\""
+                ))
+            );
+        }
+    }
+
+    @Test
+    public void shouldProduceWarningsForPlaceOfMarriageForAllPrerequisiteCombinationsAndNoPlaceOfMarriage() {
+        Map<String, String> marriedInUkNotWithoutCert = new HashMap<String, String>() {{
+                put("D8MarriedInUk", "Yes");
+                put("D8ApplicationToIssueWithoutCertificate", "No");
+            }};
+
+        Map<String, String> notMarriedInUkWithoutCert = new HashMap<String, String>() {{
+                put("D8MarriedInUk", "No");
+                put("D8ApplicationToIssueWithoutCertificate", "Yes");
+            }};
+
+        Map<String, String> notMarriedInUkNotWithoutCert = new HashMap<String, String>() {{
+                put("D8MarriedInUk", "No");
+                put("D8ApplicationToIssueWithoutCertificate", "No");
+            }};
+
+        Map<String, String> marriedInUkWithoutCert = new HashMap<String, String>() {{
+                put("D8MarriedInUk", "Yes");
+                put("D8ApplicationToIssueWithoutCertificate", "Yes");
+            }};
+
+        List<Map<String, String>> invalidMarriedInUkIssueWithoutCertCombinations =
+            asList(marriedInUkNotWithoutCert, notMarriedInUkWithoutCert, notMarriedInUkNotWithoutCert, marriedInUkWithoutCert);
+
+        for (Map<String, String> invalidCombination : invalidMarriedInUkIssueWithoutCertCombinations) {
+
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+                new OcrDataField("D8MarriedInUk", invalidCombination.get("D8MarriedInUk")),
+                new OcrDataField("D8ApplicationToIssueWithoutCertificate", invalidCombination.get("D8ApplicationToIssueWithoutCertificate")),
+                new OcrDataField("D8MarriagePlaceOfMarriage", "")
+            ));
+
+            assertThat(validationResult.getStatus(), is(WARNINGS));
+            assertThat(validationResult.getErrors(), is(emptyList()));
+            assertThat(validationResult.getWarnings(), hasItem(
+                "\"D8MarriagePlaceOfMarriage\" can't be empty for any values of \"D8MarriedInUk\" and "
+                    + "\"D8ApplicationToIssueWithoutCertificate\""
+            ));
+        }
+    }
+
+    @Test
+    public void shouldNotProduceWarningsForPlaceOfMarriageForAllPrerequisiteCombinationsAndPlaceOfMarriageExists() {
+        Map<String, String> marriedInUkNotWithoutCert = new HashMap<String, String>() {{
+                put("D8MarriedInUk", "Yes");
+                put("D8ApplicationToIssueWithoutCertificate", "No");
+            }};
+
+        Map<String, String> notMarriedInUkWithoutCert = new HashMap<String, String>() {{
+                put("D8MarriedInUk", "No");
+                put("D8ApplicationToIssueWithoutCertificate", "Yes");
+            }};
+
+        Map<String, String> notMarriedInUkNotWithoutCert = new HashMap<String, String>() {{
+                put("D8MarriedInUk", "No");
+                put("D8ApplicationToIssueWithoutCertificate", "No");
+            }};
+
+        Map<String, String> marriedInUkWithoutCert = new HashMap<String, String>() {{
+                put("D8MarriedInUk", "Yes");
+                put("D8ApplicationToIssueWithoutCertificate", "Yes");
+            }};
+
+        List<Map<String, String>> validMarriedInUkIssueWithoutCertCombinations =
+            asList(marriedInUkNotWithoutCert, notMarriedInUkWithoutCert, notMarriedInUkNotWithoutCert, marriedInUkWithoutCert);
+
+        for (Map<String, String> correctCombination : validMarriedInUkIssueWithoutCertCombinations) {
+
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+                new OcrDataField("D8MarriedInUk", correctCombination.get("D8MarriedInUk")),
+                new OcrDataField("D8ApplicationToIssueWithoutCertificate", correctCombination.get("D8ApplicationToIssueWithoutCertificate")),
+                new OcrDataField("D8MarriagePlaceOfMarriage", "Slough")
+            ));
+
+            assertThat(validationResult.getStatus(), is(WARNINGS));
+            assertThat(validationResult.getErrors(), is(emptyList()));
+            assertThat(validationResult.getWarnings(), not(hasItem(
+                "\"D8MarriagePlaceOfMarriage\" can't be empty for any values of \"D8MarriedInUk\" and "
+                    + "\"D8ApplicationToIssueWithoutCertificate\""
+                ))
+            );
+        }
+    }
+
+    @Test
+    public void shouldNotProduceWarningsForD8MarriageCertificateCorrectExplainIfMarriageCertificateCorrectDoesNotExist() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8MarriageCertificateCorrectExplain", "no reasons")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), allOf(
+            hasItem("Mandatory field \"D8MarriageCertificateCorrect\" is missing"),
+            not(hasItems("If D8MarriageCertificateCorrect is \"Yes\", then D8MarriageCertificateCorrectExplain should be empty",
+                "If D8MarriageCertificateCorrect is \"No\", then D8MarriageCertificateCorrectExplain should not be empty"
+            ))
+        ));
+    }
+
+    @Test
+    public void shouldNotProduceWarningsForD8MarriageCertificateCorrectExplainIfPrerequisitesCombinationsAreValid() {
+        Map<String, String> marriageCertCorrectEmptyExplain = new HashMap<String, String>() {{
+                put("D8MarriageCertificateCorrect", "Yes");
+                put("D8MarriageCertificateCorrectExplain", "");
+            }};
+
+        Map<String, String> marriageCertCorrectNullExplain = new HashMap<String, String>() {{
+                put("D8MarriageCertificateCorrect", "Yes");
+            }};
+
+        Map<String, String> marriageCertNotCorrectExplain = new HashMap<String, String>() {{
+                put("D8MarriageCertificateCorrect", "No");
+                put("D8MarriageCertificateCorrectExplain", "insert reason here");
+            }};
+
+        List<Map<String, String>> validMarriageCertOptions =
+            asList(marriageCertCorrectEmptyExplain, marriageCertCorrectNullExplain, marriageCertNotCorrectExplain);
+
+        for (Map<String, String> marriageCertCorrectCombination : validMarriageCertOptions) {
+
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+                new OcrDataField("D8MarriageCertificateCorrect", marriageCertCorrectCombination.get("D8MarriageCertificateCorrect")),
+                new OcrDataField("D8MarriageCertificateCorrectExplain", marriageCertCorrectCombination.get("D8MarriageCertificateCorrectExplain"))
+            ));
+
+            assertThat(validationResult.getStatus(), is(WARNINGS));
+            assertThat(validationResult.getErrors(), is(emptyList()));
+            assertThat(validationResult.getWarnings(), not(hasItems(
+                "If D8MarriageCertificateCorrect is \"Yes\", then D8MarriageCertificateCorrectExplain should be empty",
+                "If D8MarriageCertificateCorrect is \"No\", then D8MarriageCertificateCorrectExplain should not be empty"
+                ))
+            );
+        }
+    }
+
+    @Test
+    public void shouldProduceWarningsForEmptyD8MarriageCertificateCorrectExplainIfMarriageCertificateCorrectNo() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8MarriageCertificateCorrect", "No")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), allOf(
+            hasItem("If D8MarriageCertificateCorrect is \"No\", then D8MarriageCertificateCorrectExplain should not be empty"),
+            not(hasItem("If D8MarriageCertificateCorrect is \"Yes\", then D8MarriageCertificateCorrectExplain should be empty")
+            ))
+        );
+    }
+
+    @Test
+    public void shouldProduceWarningsForNonEmptyD8MarriageCertificateCorrectExplainIfMarriageCertificateCorrectYes() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8MarriageCertificateCorrect", "Yes"),
+            new OcrDataField("D8MarriageCertificateCorrectExplain", "insert reason here")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), allOf(
+            hasItem("If D8MarriageCertificateCorrect is \"Yes\", then D8MarriageCertificateCorrectExplain should be empty"),
+            not(hasItem("If D8MarriageCertificateCorrect is \"No\", then D8MarriageCertificateCorrectExplain should not be empty")
+            ))
+        );
+    }
+
+    @Test
+    public void shouldFailValidationIfNotAllMarriageDateComponentsArePresent() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8MarriageDateDay", "05"),
+            new OcrDataField("D8MarriageDateYear", "2014")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), allOf(
+            hasItems(
+                "Mandatory field \"D8MarriageDateMonth\" is missing",
+                "Not all date components are present"),
+            not(hasItems(
+                "D8MarriageDateDay is invalid",
+                "D8MarriageDateYear needs to be 4 digits e.g. 2011"
+            ))
+        ));
+    }
+
+    @Test
+    public void shouldFailValidationIfMarriageDateMonthComponentIsNotParsable() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8MarriageDateDay", "28"),
+            new OcrDataField("D8MarriageDateMonth", "Feb"),
+            new OcrDataField("D8MarriageDateYear", "2014")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), allOf(
+            hasItem(
+                "One or more of D8MarriageDateDay, D8MarriageDateMonth, D8MarriageDateYear "
+                    + "contain invalid characters that can't be converted into a date"),
+            not(hasItems(
+                "Mandatory field \"D8MarriageDateDay\" is missing",
+                "Mandatory field \"D8MarriageDateMonth\" is missing",
+                "Mandatory field \"D8MarriageDateYear\" is missing",
+                "Not all date components are present")
+            ))
+        );
+    }
+
+    @Test
+    public void shouldFailValidationIfMarriageDateInvalidLeapYear() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8MarriageDateDay", "29"),
+            new OcrDataField("D8MarriageDateMonth", "02"),
+            new OcrDataField("D8MarriageDateYear", "2013")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), allOf(
+            hasItem(
+                "Invalid date made up of D8MarriageDateDay, D8MarriageDateMonth, D8MarriageDateYear"),
+            not(hasItems(
+                "Not all date components are present",
+                "D8MarriageDateMonth is not a valid month e.g. 03 for March")
+            ))
+        );
     }
 }

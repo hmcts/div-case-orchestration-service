@@ -8,10 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_DAY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformDateFromComponentsToCcdDate;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformFormDateIntoLocalDate;
 
 @Component
@@ -47,6 +49,21 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         applyMappingsForPetitionerSolicitorAddress(ocrDataFields, modifiedMap);
         applyMappingsForPetitionerCorrespondenceAddress(ocrDataFields, modifiedMap);
         applyMappingsForDivorceAdultery3rdPartyAddress(ocrDataFields, modifiedMap);
+
+        Optional<String> d8MarriageDateDay = getValueFromOcrDataFields("D8MarriageDateDay", ocrDataFields);
+        Optional<String> d8MarriageDateMonth = getValueFromOcrDataFields("D8MarriageDateMonth", ocrDataFields);
+        Optional<String> d8MarriageDateYear = getValueFromOcrDataFields("D8MarriageDateYear", ocrDataFields);
+
+        if (Stream.of(d8MarriageDateDay, d8MarriageDateMonth, d8MarriageDateYear)
+            .map(Optional::isPresent)
+            .reduce(Boolean::logicalAnd)
+            .orElse(false)) {
+            String transformedMarriageDate = transformDateFromComponentsToCcdDate(d8MarriageDateDay.get(),
+                d8MarriageDateMonth.get(), d8MarriageDateYear.get());
+
+            modifiedMap.put("D8MarriageDate", transformedMarriageDate);
+        }
+
 
         return modifiedMap;
     }
@@ -101,6 +118,11 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         // Section 4 - Details of marriage/civil partnership
         erToCcdFieldsMap.put("D8MarriagePetitionerName", "D8MarriagePetitionerName");
         erToCcdFieldsMap.put("D8MarriageRespondentName", "D8MarriageRespondentName");
+        erToCcdFieldsMap.put("D8MarriedInUk", "D8MarriedInUk");
+        erToCcdFieldsMap.put("D8ApplicationToIssueWithoutCertificate", "D8ApplicationToIssueWithoutCertificate");
+        erToCcdFieldsMap.put("D8MarriagePlaceOfMarriage", "D8MarriagePlaceOfMarriage");
+        erToCcdFieldsMap.put("D8MarriageCertificateCorrect", "D8MarriageCertificateCorrect");
+        erToCcdFieldsMap.put("D8MarriageCertificateCorrectExplain", "D8MarriageCertificateCorrectExplain");
 
         // Section 8 - Details of the person your partner committed adultery with (co-respondent)
         erToCcdFieldsMap.put("D8ReasonForDivorceAdultery3rdPartyFName", "D8ReasonForDivorceAdultery3rdPartyFName");
