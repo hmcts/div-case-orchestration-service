@@ -54,7 +54,8 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8MarriageDateDay", "19"),
             new OcrDataField("D8MarriageDateMonth", "03"),
             new OcrDataField("D8MarriageDateYear", "2006"),
-            new OcrDataField("D8MarriageCertificateCorrect", "Yes")
+            new OcrDataField("D8MarriageCertificateCorrect", "Yes"),
+            new OcrDataField("D8FinancialOrder", "Yes")
         );
 
         listOfAllMandatoryFields = new ArrayList<>(listOfAllMandatoryFieldsImmutable);
@@ -97,7 +98,8 @@ public class NewDivorceCaseValidatorTest {
             "Mandatory field \"D8MarriageDateDay\" is missing",
             "Mandatory field \"D8MarriageDateMonth\" is missing",
             "Mandatory field \"D8MarriageDateYear\" is missing",
-            "Mandatory field \"D8MarriageCertificateCorrect\" is missing"
+            "Mandatory field \"D8MarriageCertificateCorrect\" is missing",
+            "Mandatory field \"D8FinancialOrder\" is missing"
         ));
     }
 
@@ -123,7 +125,8 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8MarriageCertificateCorrect", ""),
             new OcrDataField("D8MarriageDateDay", ""),
             new OcrDataField("D8MarriageDateMonth", ""),
-            new OcrDataField("D8MarriageDateYear", "")
+            new OcrDataField("D8MarriageDateYear", ""),
+            new OcrDataField("D8FinancialOrder", "")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -147,7 +150,8 @@ public class NewDivorceCaseValidatorTest {
             "Mandatory field \"D8MarriageCertificateCorrect\" is missing",
             "Mandatory field \"D8MarriageDateDay\" is missing",
             "Mandatory field \"D8MarriageDateMonth\" is missing",
-            "Mandatory field \"D8MarriageDateYear\" is missing"
+            "Mandatory field \"D8MarriageDateYear\" is missing",
+            "Mandatory field \"D8FinancialOrder\" is missing"
         ));
     }
 
@@ -174,7 +178,9 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8ReasonForDivorceAdultery3rdPartyPostCode", "CR13 6BF81"),
             new OcrDataField("D8MarriedInUk", "does the isle of man count?"),
             new OcrDataField("D8ApplicationToIssueWithoutCertificate", "check"),
-            new OcrDataField("D8MarriageCertificateCorrect", "fake")
+            new OcrDataField("D8MarriageCertificateCorrect", "fake"),
+            new OcrDataField("D8FinancialOrder", "Not sure"),
+            new OcrDataField("D8FinancialOrderFor", "someone else")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -201,7 +207,9 @@ public class NewDivorceCaseValidatorTest {
             "D8ReasonForDivorceAdultery3rdPartyPostCode is usually 6 or 7 characters long",
             "D8MarriedInUk must be \"Yes\" or \"No\"",
             "D8ApplicationToIssueWithoutCertificate must be \"Yes\" or \"No\"",
-            "D8MarriageCertificateCorrect must be \"Yes\" or \"No\""
+            "D8MarriageCertificateCorrect must be \"Yes\" or \"No\"",
+            "D8FinancialOrder must be \"Yes\" or \"No\"",
+            "D8FinancialOrderFor only accepts values of \"myself\", \"my children\", \"myself, my children\" or should be left blank"
         ));
     }
 
@@ -716,4 +724,26 @@ public class NewDivorceCaseValidatorTest {
             ))
         );
     }
+
+/*
+    @Test
+    public void shouldFailEmptyD8FinancialOrderForWhenD8FinancialOrderIsNo() {
+        Object[] invalidD8FinancialOrderFors = {null, new String[]{""}, ""};
+        for (String invalidD8FinancialOrderFor : invalidD8FinancialOrderFors) {
+            List<OcrDataField> mandatoryFieldsCopy = new ArrayList<>(listOfAllMandatoryFields);
+            mandatoryFieldsCopy.add(new OcrDataField("D8PetitionerPhoneNumber", invalidPhoneNumber));
+            mandatoryFieldsCopy.add(new OcrDataField("D8RespondentPhoneNumber", invalidPhoneNumber));
+            mandatoryFieldsCopy.add(new OcrDataField("PetitionerSolicitorPhone", invalidPhoneNumber));
+
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(mandatoryFieldsCopy);
+
+            assertThat(validationResult.getStatus(), is(WARNINGS));
+            assertThat(validationResult.getWarnings(), hasItems(
+                "D8PetitionerPhoneNumber is not in a valid format",
+                "D8RespondentPhoneNumber is not in a valid format",
+                "PetitionerSolicitorPhone is not in a valid format"
+            ));
+            assertThat(validationResult.getErrors(), is(emptyList()));
+        }
+    }*/
 }

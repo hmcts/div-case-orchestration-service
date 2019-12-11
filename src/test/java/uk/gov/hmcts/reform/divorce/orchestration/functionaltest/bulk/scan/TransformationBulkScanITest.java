@@ -160,7 +160,8 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8MarriagePlaceOfMarriage", is("Slough")),
                             hasJsonPath("D8MarriageDate", is("1998-01-07")),
                             hasJsonPath("D8MarriageCertificateCorrect", is("No")),
-                            hasJsonPath("D8MarriageCertificateCorrectExplain", is("Providing a scanned copy from registry office."))
+                            hasJsonPath("D8MarriageCertificateCorrectExplain", is("Providing a scanned copy from registry office.")),
+                            hasJsonPath("D8FinancialOrder", is("Yes"))
                         ))
                     ))
                 )));
