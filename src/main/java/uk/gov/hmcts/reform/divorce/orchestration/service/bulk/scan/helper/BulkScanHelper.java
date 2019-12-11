@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper;
 
+import uk.gov.hmcts.reform.bsp.common.error.FormFieldValidationException;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataField;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.exception.FormFieldValidationException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

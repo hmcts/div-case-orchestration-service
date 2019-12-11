@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformati
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.exception.bulk.scan.UnsupportedFormTypeException;
+import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
 
 import java.util.HashMap;
 import java.util.Map;

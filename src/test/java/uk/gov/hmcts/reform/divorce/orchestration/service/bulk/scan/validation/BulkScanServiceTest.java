@@ -7,10 +7,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.in.ExceptionRecord;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataField;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
-import uk.gov.hmcts.reform.divorce.orchestration.exception.bulk.scan.UnsupportedFormTypeException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations.BulkScanFormTransformer;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations.BulkScanFormTransformerFactory;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanService;
@@ -49,7 +49,7 @@ public class BulkScanServiceTest {
     private BulkScanService bulkScanService;
 
     @Test
-    public void shouldCallReturnedValidator() throws UnsupportedFormTypeException {
+    public void shouldCallReturnedValidator() {
         OcrValidationResult resultFromValidator = OcrValidationResult.builder().build();
         List<OcrDataField> ocrDataFields = singletonList(new OcrDataField("myName", "myValue"));
         when(factory.getValidator("testForm")).thenReturn(validator);
@@ -71,7 +71,7 @@ public class BulkScanServiceTest {
     }
 
     @Test
-    public void shouldCallReturnedTransformer() throws UnsupportedFormTypeException {
+    public void shouldCallReturnedTransformer() {
         ExceptionRecord exceptionRecord = ExceptionRecord.builder()
             .formType("testFormType")
             .ocrDataFields(singletonList(new OcrDataField("myName", "myValue")))

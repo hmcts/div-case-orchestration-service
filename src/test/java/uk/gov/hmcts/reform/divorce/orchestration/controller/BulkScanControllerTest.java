@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
 import uk.gov.hmcts.reform.bsp.common.service.AuthService;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.in.ExceptionRecord;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.CaseCreationDetails;
@@ -15,7 +16,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validati
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
-import uk.gov.hmcts.reform.divorce.orchestration.exception.bulk.scan.UnsupportedFormTypeException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanService;
 
 import java.util.List;
@@ -51,7 +51,7 @@ public class BulkScanControllerTest {
     private BulkScanController bulkScanController;
 
     @Test
-    public void shouldReturnValidatorResults() throws UnsupportedFormTypeException {
+    public void shouldReturnValidatorResults() {
         List<OcrDataField> testOcrDataFields = singletonList(new OcrDataField("testName", "testValue"));
         when(bulkScanService.validateBulkScanForm(eq(TEST_FORM_TYPE), eq(testOcrDataFields))).thenReturn(OcrValidationResult.builder()
             .addError("this is an error")
@@ -73,7 +73,7 @@ public class BulkScanControllerTest {
     }
 
     @Test
-    public void shouldReturnResourceNotFoundForUnsupportedFormType_ForValidation() throws UnsupportedFormTypeException {
+    public void shouldReturnResourceNotFoundForUnsupportedFormType_ForValidation() {
         List<OcrDataField> testOcrDataFields = singletonList(new OcrDataField("testName", "testValue"));
         String unsupportedFormType = "unsupportedFormType";
         when(bulkScanService.validateBulkScanForm(eq(unsupportedFormType), eq(testOcrDataFields)))
