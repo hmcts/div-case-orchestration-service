@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.exception.FormFieldValidationException;
+import uk.gov.hmcts.reform.bsp.common.error.FormFieldValidationException;
 
 import java.util.ArrayList;
 import java.util.Collection;
