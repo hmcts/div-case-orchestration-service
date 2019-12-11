@@ -38,6 +38,12 @@
     { "name": "PetitionerSolicitorAddressCounty", "value": "East Midlands" },
     { "name": "D8PetitionerCorrespondenceAddressStreet", "value": "20 correspondence road" },
     { "name": "D8PetitionerCorrespondenceAddressTown", "value": "Correspondencetown" },
-    { "name": "D8PetitionerCorrespondenceAddressCounty", "value": "South Midlands" }
+    { "name": "D8PetitionerCorrespondenceAddressCounty", "value": "South Midlands" },
+    { "name": "D8ReasonForDivorceAdultery3rdPartyFName", "value": "Alex" },
+    { "name": "D8ReasonForDivorceAdultery3rdPartyLName", "value": "Third" },
+    { "name": "D8ReasonForDivorceAdultery3rdPartyAddressStreet", "value": "third party street" },
+    { "name": "D8ReasonForDivorceAdultery3rdPartyTown", "value": "Thirdtown" },
+    { "name": "D8ReasonForDivorceAdultery3rdPartyCounty", "value": "North Midlands" },
+    { "name": "D8ReasonForDivorceAdultery3rdPartyPostCode", "value": "SE3 5PP" }
   ]
 }

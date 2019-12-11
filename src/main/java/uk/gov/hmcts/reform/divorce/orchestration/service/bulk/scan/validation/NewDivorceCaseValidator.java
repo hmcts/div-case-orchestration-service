@@ -86,6 +86,7 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
             validatePostcode(fieldsMap, "D8PetitionerPostCode"),
             validatePostcode(fieldsMap, "PetitionerSolicitorAddressPostCode"),
             validatePostcode(fieldsMap, "D8PetitionerCorrespondencePostcode"),
+            validatePostcode(fieldsMap, "D8ReasonForDivorceAdultery3rdPartyPostCode"),
             validatePayment(fieldsMap)
         )
             .flatMap(Collection::stream)

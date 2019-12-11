@@ -102,7 +102,7 @@ public class TransformationBulkScanITest {
                     hasJsonPath("$.case_creation_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
                         hasJsonPath("event_id", is("bulkScanCaseCreate")),
-                        hasJsonPath("case_data.*", hasSize(29)),
+                        hasJsonPath("case_data.*", hasSize(32)),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),
                             hasJsonPath("D8PaymentMethod", is("Card")),
@@ -146,6 +146,14 @@ public class TransformationBulkScanITest {
                                 hasJsonPath("County", is("South Midlands")),
                                 hasJsonPath("PostCode", is("SE12BP")),
                                 hasJsonPath("PostTown", is("Correspondencetown"))
+                            )),
+                            hasJsonPath("D8ReasonForDivorceAdultery3rdPartyFName", is("Alex")),
+                            hasJsonPath("D8ReasonForDivorceAdultery3rdPartyLName", is("Third")),
+                            hasJsonPath("D8ReasonForDivorceAdultery3rdAddress", allOf(
+                                hasJsonPath("AddressLine1", is("third party street")),
+                                hasJsonPath("County", is("North Midlands")),
+                                hasJsonPath("PostCode", is("SE3 5PP")),
+                                hasJsonPath("PostTown", is("Thirdtown"))
                             ))
                         ))
                     ))

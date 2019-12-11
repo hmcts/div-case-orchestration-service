@@ -66,126 +66,166 @@ public class D8FormToCaseTransformerTest {
     @Test
     public void verifyPetitionerHomeAddressCountyIsCorrectlyAddedToPetitionerHomeAddress() {
         assertIsCorrectlyAddedToParentField(
-                "D8PetitionerHomeAddress",
-                "County",
-                "West Midlands",
-                "D8PetitionerHomeAddressCounty"
+            "D8PetitionerHomeAddress",
+            "County",
+            "West Midlands",
+            "D8PetitionerHomeAddressCounty"
         );
     }
 
     @Test
     public void verifyPetitionerHomeAddressStreetIsCorrectlyAddedToPetitionerHomeAddress() {
         assertIsCorrectlyAddedToParentField(
-                "D8PetitionerHomeAddress",
-                "AddressLine1",
-                "19 West Park Road",
-                "D8PetitionerHomeAddressStreet"
+            "D8PetitionerHomeAddress",
+            "AddressLine1",
+            "19 West Park Road",
+            "D8PetitionerHomeAddressStreet"
         );
     }
 
     @Test
     public void verifyPetitionerHomeAddressTownIsCorrectlyAddedToPetitionerHomeAddress() {
         assertIsCorrectlyAddedToParentField(
-                "D8PetitionerHomeAddress",
-                "PostTown",
-                "Smethwick",
-                "D8PetitionerHomeAddressTown"
+            "D8PetitionerHomeAddress",
+            "PostTown",
+            "Smethwick",
+            "D8PetitionerHomeAddressTown"
         );
     }
 
     @Test
     public void verifyPetitionerPostcodeIsCorrectlyAddedToPetitionerHomeAddress() {
         assertIsCorrectlyAddedToParentField(
-                "D8PetitionerHomeAddress",
-                "PostCode",
-                "SE1 2PT",
-                "D8PetitionerPostCode"
+            "D8PetitionerHomeAddress",
+            "PostCode",
+            "SE1 2PT",
+            "D8PetitionerPostCode"
         );
     }
 
     @Test
     public void verifyPetitionerSolicitorAddressCountyIsCorrectlyAddedToPetitionerSolicitorAddress() {
         assertIsCorrectlyAddedToParentField(
-                "PetitionerSolicitorAddress",
-                "County",
-                "East Midlands",
-                "PetitionerSolicitorAddressCounty"
+            "PetitionerSolicitorAddress",
+            "County",
+            "East Midlands",
+            "PetitionerSolicitorAddressCounty"
         );
     }
 
     @Test
     public void verifyPetitionerSolicitorAddressStreetIsCorrectlyAddedToPetitionerSolicitorAddress() {
         assertIsCorrectlyAddedToParentField(
-                "PetitionerSolicitorAddress",
-                "AddressLine1",
-                "20 solicitors road",
-                "PetitionerSolicitorAddressStreet"
+            "PetitionerSolicitorAddress",
+            "AddressLine1",
+            "20 solicitors road",
+            "PetitionerSolicitorAddressStreet"
         );
     }
 
     @Test
     public void verifyPetitionerSolicitorAddressTownIsCorrectlyAddedToPetitionerSolicitorAddress() {
         assertIsCorrectlyAddedToParentField(
-                "PetitionerSolicitorAddress",
-                "PostTown",
-                "Soltown",
-                "PetitionerSolicitorAddressTown"
+            "PetitionerSolicitorAddress",
+            "PostTown",
+            "Soltown",
+            "PetitionerSolicitorAddressTown"
         );
     }
 
     @Test
     public void verifyPetitionerSolicitorAddressPostCodeIsCorrectlyAddedToPetitionerSolicitorAddress() {
         assertIsCorrectlyAddedToParentField(
-                "PetitionerSolicitorAddress",
-                "PostCode",
-                "SE1 2PT",
-                "PetitionerSolicitorAddressPostCode"
+            "PetitionerSolicitorAddress",
+            "PostCode",
+            "SE1 2PT",
+            "PetitionerSolicitorAddressPostCode"
         );
     }
 
     @Test
     public void verifyD8PetitionerCorrespondenceAddressCountyIsCorrectlyAddedToD8PetitionerCorrespondenceAddress() {
         assertIsCorrectlyAddedToParentField(
-                "D8PetitionerCorrespondenceAddress",
-                "County",
-                "South Midlands",
-                "D8PetitionerCorrespondenceAddressCounty"
+            "D8PetitionerCorrespondenceAddress",
+            "County",
+            "South Midlands",
+            "D8PetitionerCorrespondenceAddressCounty"
         );
     }
 
     @Test
     public void verifyD8PetitionerCorrespondenceAddressStreetIsCorrectlyAddedToD8PetitionerCorrespondenceAddress() {
         assertIsCorrectlyAddedToParentField(
-                "D8PetitionerCorrespondenceAddress",
-                "AddressLine1",
-                "20 correspondence road",
-                "D8PetitionerCorrespondenceAddressStreet"
+            "D8PetitionerCorrespondenceAddress",
+            "AddressLine1",
+            "20 correspondence road",
+            "D8PetitionerCorrespondenceAddressStreet"
         );
     }
 
     @Test
     public void verifyD8PetitionerCorrespondenceAddressTownIsCorrectlyAddedToD8PetitionerCorrespondenceAddress() {
         assertIsCorrectlyAddedToParentField(
-                "D8PetitionerCorrespondenceAddress",
-                "PostTown",
-                "Correspondencetown",
-                "D8PetitionerCorrespondenceAddressTown"
+            "D8PetitionerCorrespondenceAddress",
+            "PostTown",
+            "Correspondencetown",
+            "D8PetitionerCorrespondenceAddressTown"
         );
     }
 
     @Test
     public void verifyD8PetitionerCorrespondencePostcodeIsCorrectlyAddedToD8PetitionerCorrespondenceAddress() {
         assertIsCorrectlyAddedToParentField(
-                "D8PetitionerCorrespondenceAddress",
-                "PostCode",
-                "SE12BP",
-                "D8PetitionerCorrespondencePostcode"
+            "D8PetitionerCorrespondenceAddress",
+            "PostCode",
+            "SE12BP",
+            "D8PetitionerCorrespondencePostcode"
+        );
+    }
+
+    @Test
+    public void verifyD8ReasonForDivorceAdultery3rdPartyAddressStreetIsCorrectlyAddedToD8ReasonForDivorceAdultery3rdAddress() {
+        assertIsCorrectlyAddedToParentField(
+            "D8ReasonForDivorceAdultery3rdAddress",
+            "AddressLine1",
+            "third party street",
+            "D8ReasonForDivorceAdultery3rdPartyAddressStreet"
+        );
+    }
+
+    @Test
+    public void verifyD8ReasonForDivorceAdultery3rdPartyTownIsCorrectlyAddedToD8ReasonForDivorceAdultery3rdAddress() {
+        assertIsCorrectlyAddedToParentField(
+            "D8ReasonForDivorceAdultery3rdAddress",
+            "PostTown",
+            "Thirdtown",
+            "D8ReasonForDivorceAdultery3rdPartyTown"
+        );
+    }
+
+    @Test
+    public void verifyD8ReasonForDivorceAdultery3rdPartyCountyIsCorrectlyAddedToD8ReasonForDivorceAdultery3rdAddress() {
+        assertIsCorrectlyAddedToParentField(
+            "D8ReasonForDivorceAdultery3rdAddress",
+            "County",
+            "North Midlands",
+            "D8ReasonForDivorceAdultery3rdPartyCounty"
+        );
+    }
+
+    @Test
+    public void verifyD8ReasonForDivorceAdultery3rdPartyPostCodeIsCorrectlyAddedToD8ReasonForDivorceAdultery3rdAddress() {
+        assertIsCorrectlyAddedToParentField(
+            "D8ReasonForDivorceAdultery3rdAddress",
+            "PostCode",
+            "SE3 5PP",
+            "D8ReasonForDivorceAdultery3rdPartyPostCode"
         );
     }
 
     private void assertIsCorrectlyAddedToParentField(String targetParentField, String targetChildField, String testValue, String sourceField) {
         ExceptionRecord incomingExceptionRecord =
-                createExceptionRecord(singletonList(new OcrDataField(sourceField, testValue)));
+            createExceptionRecord(singletonList(new OcrDataField(sourceField, testValue)));
 
         Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(incomingExceptionRecord);
         Map parentField = (Map) transformedCaseData.get(targetParentField);
