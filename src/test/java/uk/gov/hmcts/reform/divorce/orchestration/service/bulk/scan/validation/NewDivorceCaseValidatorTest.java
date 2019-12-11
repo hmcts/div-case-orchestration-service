@@ -725,7 +725,6 @@ public class NewDivorceCaseValidatorTest {
         );
     }
 
-
     @Test
     public void shouldFailIfD8FinancialOrderForIsEmptyWhenD8FinancialOrderIsYes() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
