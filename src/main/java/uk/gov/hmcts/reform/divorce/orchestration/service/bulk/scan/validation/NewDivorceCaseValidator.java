@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.bsp.common.error.FormFieldValidationException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkScanVal
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformFormDateIntoLocalDate;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.validateDateComponents;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.PostcodeValidator.validatePostcode;
 
 @Component
@@ -49,8 +51,13 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         "D8PetitionerCorrespondenceUseHomeAddress",
         "D8PetitionerHomeAddressStreet",
         "D8PetitionerHomeAddressTown",
-        "D8PetitionerHomeAddressCounty"
-
+        "D8PetitionerHomeAddressCounty",
+        "D8MarriedInUk",
+        "D8ApplicationToIssueWithoutCertificate",
+        "D8MarriageDateDay",
+        "D8MarriageDateMonth",
+        "D8MarriageDateYear",
+        "D8MarriageCertificateCorrect"
     );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
@@ -64,6 +71,9 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("Cheque", "Debit/Credit Card", BLANK));
         ALLOWED_VALUES_PER_FIELD.put("PetitionerSolicitor", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerCorrespondenceUseHomeAddress", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("D8MarriedInUk", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("D8ApplicationToIssueWithoutCertificate", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("D8MarriageCertificateCorrect", asList(YES_VALUE, NO_VALUE));
     }
 
     public List<String> getMandatoryFields() {
@@ -87,7 +97,10 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
             validatePostcode(fieldsMap, "PetitionerSolicitorAddressPostCode"),
             validatePostcode(fieldsMap, "D8PetitionerCorrespondencePostcode"),
             validatePostcode(fieldsMap, "D8ReasonForDivorceAdultery3rdPartyPostCode"),
-            validatePayment(fieldsMap)
+            validatePayment(fieldsMap),
+            validatePlaceOfMarriage(fieldsMap),
+            validateMarriageCertificateCorrect(fieldsMap),
+            validateDateSplitIntoComponents(fieldsMap, "D8MarriageDateDay", "D8MarriageDateMonth", "D8MarriageDateYear")
         )
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
@@ -146,4 +159,61 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         }
         return validationMessages;
     }
+
+    private static List<String> validatePlaceOfMarriage(Map<String, String> fieldsMap) {
+        List<String> validationWarningMessages = new ArrayList<>();
+
+        String marriedInTheUk = fieldsMap.getOrDefault("D8MarriedInUk", "");
+        String d8ApplicationToIssueWithoutCertificate = fieldsMap.getOrDefault("D8ApplicationToIssueWithoutCertificate", "");
+        String d8MarriagePlaceOfMarriage = fieldsMap.getOrDefault("D8MarriagePlaceOfMarriage", "");
+
+        boolean bothMandatoryPresent =
+            Stream.of(marriedInTheUk, d8ApplicationToIssueWithoutCertificate)
+                .map(StringUtils::isNotEmpty)
+                .reduce(Boolean::logicalAnd)
+                .orElse(false);
+
+        if (bothMandatoryPresent) {
+            if (StringUtils.isEmpty(d8MarriagePlaceOfMarriage)) {
+                validationWarningMessages.add(
+                    "\"D8MarriagePlaceOfMarriage\" can't be empty for any values of \"D8MarriedInUk\" and "
+                        + "\"D8ApplicationToIssueWithoutCertificate\"");
+            }
+        }
+
+        return validationWarningMessages;
+    }
+
+    private static List<String> validateMarriageCertificateCorrect(Map<String, String> fieldsMap) {
+        List<String> validationWarningMessages = new ArrayList<>();
+
+        String d8MarriageCertificateCorrectExplain = fieldsMap.getOrDefault("D8MarriageCertificateCorrectExplain", "");
+
+        if (fieldsMap.containsKey("D8MarriageCertificateCorrect")) {
+            String d8MarriageCertificateCorrect = fieldsMap.get("D8MarriageCertificateCorrect");
+            if (d8MarriageCertificateCorrect.equals(NO_VALUE) && StringUtils.isEmpty(d8MarriageCertificateCorrectExplain)) {
+                validationWarningMessages.add(
+                    "If D8MarriageCertificateCorrect is \"No\", then D8MarriageCertificateCorrectExplain should not be empty");
+            }
+            if (d8MarriageCertificateCorrect.equals(YES_VALUE) && StringUtils.isNotEmpty(d8MarriageCertificateCorrectExplain)) {
+                validationWarningMessages.add(
+                    "If D8MarriageCertificateCorrect is \"Yes\", then D8MarriageCertificateCorrectExplain should be empty");
+            }
+        }
+        return validationWarningMessages;
+    }
+
+    private static List<String> validateDateSplitIntoComponents(Map<String, String> fieldsMap, String dayKey, String monthKey, String yearKey) {
+        boolean allDateComponentsPresent = Stream.of(dayKey, monthKey, yearKey)
+            .map(fieldsMap::containsKey)
+            .reduce(Boolean::logicalAnd)
+            .orElse(false);
+
+        if (!allDateComponentsPresent) {
+            return Collections.singletonList("Not all date components are present");
+        }
+
+        return validateDateComponents(fieldsMap, dayKey, monthKey, yearKey);
+    }
+
 }

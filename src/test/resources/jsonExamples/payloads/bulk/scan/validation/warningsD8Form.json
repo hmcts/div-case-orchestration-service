@@ -23,6 +23,8 @@
     { "name": "PetitionerSolicitorPhone", "value": "oofrwiprw" },
     { "name": "PetitionerSolicitorEmail", "value": "aaaa@aewk" },
     { "name": "D8PetitionerCorrespondenceUseHomeAddress", "value": "Yes" },
-    { "name": "D8PetitionerCorrespondencePostcode", "value": "m2 e4" }
+    { "name": "D8PetitionerCorrespondencePostcode", "value": "m2 e4" },
+    { "name": "D8MarriedInUk", "value": "Yes" },
+    { "name": "D8ApplicationToIssueWithoutCertificate", "value": "No" }
   ]
 }
