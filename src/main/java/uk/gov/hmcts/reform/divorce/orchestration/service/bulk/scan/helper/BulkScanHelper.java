@@ -41,13 +41,16 @@ public class BulkScanHelper {
         }
     }
 
-    public static String transformDateFromComponentsToCcdDate(String dayValue, String monthValue, String yearValue) {
+    public static String transformDateFromComponentsToCcdDate(String dayValue, String monthValue, String yearValue) throws FormFieldValidationException {
         int dayParsed = Integer.parseInt(dayValue);
         int monthParsed = Integer.parseInt(monthValue);
         int yearParsed = Integer.parseInt(yearValue);
-
-        LocalDate date = LocalDate.of(yearParsed, Month.of(monthParsed), dayParsed);
-        return formatDateForCCD(date);
+        try {
+            LocalDate date = LocalDate.of(yearParsed, Month.of(monthParsed), dayParsed);
+            return formatDateForCCD(date);
+        } catch (DateTimeException exception) {
+            throw new FormFieldValidationException(String.format("Cannot form a valid date from %s, %s, %s", dayValue, monthValue, yearValue));
+        }
     }
 
     public static List<String> validateDateComponents(Map<String, String> fieldsMap,

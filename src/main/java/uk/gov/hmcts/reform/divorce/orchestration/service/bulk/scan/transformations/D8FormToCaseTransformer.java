@@ -54,19 +54,15 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         Optional<String> d8MarriageDateMonth = getValueFromOcrDataFields("D8MarriageDateMonth", ocrDataFields);
         Optional<String> d8MarriageDateYear = getValueFromOcrDataFields("D8MarriageDateYear", ocrDataFields);
 
-        if (Stream.of(d8MarriageDateDay, d8MarriageDateMonth, d8MarriageDateYear)
-            .map(Optional::isPresent)
-            .reduce(Boolean::logicalAnd)
-            .orElse(false)) {
+        if (d8MarriageDateDay.isPresent() && d8MarriageDateMonth.isPresent() && d8MarriageDateYear.isPresent()) {
             String transformedMarriageDate = transformDateFromComponentsToCcdDate(d8MarriageDateDay.get(),
                 d8MarriageDateMonth.get(), d8MarriageDateYear.get());
 
             modifiedMap.put("D8MarriageDate", transformedMarriageDate);
         }
 
-
         return modifiedMap;
-    }
+}
 
     @Override
     Map<String, Object> runPostMappingModification(Map<String, Object> transformedCaseData) {
