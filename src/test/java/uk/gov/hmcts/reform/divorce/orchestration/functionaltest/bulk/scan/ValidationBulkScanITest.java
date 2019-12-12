@@ -112,7 +112,10 @@ public class ValidationBulkScanITest {
                 hasJsonPath("$.warnings", hasItems(
                     "Mandatory field \"D8PetitionerFirstName\" is missing",
                     "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value",
-                    "Mandatory field \"D8PetitionerNameChangedHow\" is missing"
+                    "Mandatory field \"D8PetitionerNameChangedHow\" is missing",
+                    "Mandatory field \"D8MarriedInUk\" is missing",
+                    "Mandatory field \"D8ApplicationToIssueWithoutCertificate\" is missing",
+                    "Mandatory field \"D8MarriageCertificateCorrect\" is missing"
                 )),
                 hasJsonPath("$.errors", equalTo(emptyList())),
                 hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
@@ -136,7 +139,8 @@ public class ValidationBulkScanITest {
                     "D8PetitionerEmail is not in a valid format",
                     "PetitionerSolicitorPhone is not in a valid format",
                     "PetitionerSolicitorEmail is not in a valid format",
-                    "D8PetitionerCorrespondencePostcode is usually 6 or 7 characters long"
+                    "D8PetitionerCorrespondencePostcode is usually 6 or 7 characters long",
+                    "Mandatory field \"D8MarriageCertificateCorrect\" is missing"
                 )),
                 hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
             ))

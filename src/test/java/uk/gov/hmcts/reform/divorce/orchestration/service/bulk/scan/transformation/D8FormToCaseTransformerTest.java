@@ -8,11 +8,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformatio
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.collection.IsMapWithSize.aMapWithSize;
 
 public class D8FormToCaseTransformerTest {
@@ -231,6 +234,24 @@ public class D8FormToCaseTransformerTest {
         Map parentField = (Map) transformedCaseData.get(targetParentField);
 
         assertThat(parentField.get(targetChildField), is(testValue));
+    }
+
+    @Test
+    public void verifyMarriageDateIsCorrectlyTransformedGivenSeparateComponents() {
+        ExceptionRecord exceptionRecord = createExceptionRecord(asList(
+            new OcrDataField("D8MarriageDateDay", "06"),
+            new OcrDataField("D8MarriageDateMonth", "5"),
+            new OcrDataField("D8MarriageDateYear", "2007")
+        ));
+
+        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(exceptionRecord);
+
+        assertThat(transformedCaseData, allOf(
+            hasEntry("D8MarriageDate", "2007-05-06"),
+            not(hasKey("D8MarriageDateDay")),
+            not(hasEntry("D8MarriageDate", "2007-5-6")),
+            not(hasEntry("D8MarriageDate", "2007-06-05"))
+        ));
     }
 
     private ExceptionRecord createExceptionRecord(List<OcrDataField> ocrDataFields) {
