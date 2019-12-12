@@ -98,10 +98,9 @@ public class TransformationBulkScanITest {
                 allOf(
                     isJson(),
                     hasJsonPath("$.warnings", equalTo(emptyList())),
-                    hasJsonPath("$.case_creation_details.*", hasSize(3)),
+                    hasJsonPath("$.case_creation_details.*", hasSize(2)),
                     hasJsonPath("$.case_creation_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
-                        hasJsonPath("event_id", is("bulkScanCaseCreate")),
                         hasJsonPath("case_data.*", hasSize(38)),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),
@@ -181,10 +180,9 @@ public class TransformationBulkScanITest {
                 allOf(
                     isJson(),
                     hasJsonPath("$.warnings", equalTo(emptyList())),
-                    hasJsonPath("$.case_creation_details.*", hasSize(3)),
+                    hasJsonPath("$.case_creation_details.*", hasSize(2)),
                     hasJsonPath("$.case_creation_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
-                        hasJsonPath("event_id", is("bulkScanCaseCreate")),
                         hasJsonPath("case_data.*", hasSize(10)),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),

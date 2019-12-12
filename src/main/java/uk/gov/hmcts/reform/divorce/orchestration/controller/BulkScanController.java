@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
+import uk.gov.hmcts.reform.bsp.common.model.transformation.in.ExceptionRecord;
+import uk.gov.hmcts.reform.bsp.common.model.transformation.output.CaseCreationDetails;
+import uk.gov.hmcts.reform.bsp.common.model.transformation.output.SuccessfulTransformationResponse;
+import uk.gov.hmcts.reform.bsp.common.model.update.in.BulkScanCaseUpdateRequest;
+import uk.gov.hmcts.reform.bsp.common.model.update.output.SuccessfulUpdateResponse;
+import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataValidationRequest;
+import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResponse;
+import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResult;
 import uk.gov.hmcts.reform.bsp.common.service.AuthService;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.in.ExceptionRecord;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.CaseCreationDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.SuccessfulTransformationResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.update.in.BulkScanCaseUpdateRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.update.out.SuccessfulUpdateResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanService;
 
 import java.util.Collections;
@@ -116,7 +116,6 @@ public class BulkScanController {
                 .caseCreationDetails(
                     new CaseCreationDetails(
                         CASE_TYPE_ID,
-                        CREATE_EVENT_ID,
                         transformedCaseData))
                 .build();
 
@@ -158,7 +157,6 @@ public class BulkScanController {
                     .builder()
                     .caseData(request.getCaseData())
                     .caseTypeId(CASE_TYPE_ID)
-                    .eventId(UPDATE_EVENT_ID)
                     .build()
             ).warnings(Collections.emptyList())
             .build();
