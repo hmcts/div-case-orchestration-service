@@ -89,7 +89,7 @@ public class BulkScanHelper {
         }
 
         if (yearParsed < 1900) {
-            validationWarningMessages.add(String.format("%s needs to be 4 digits e.g. 2011", yearKey));
+            validationWarningMessages.add(String.format("%s needs to be after 1900 and have 4 digits e.g. 2011", yearKey));
         }
 
         try {
