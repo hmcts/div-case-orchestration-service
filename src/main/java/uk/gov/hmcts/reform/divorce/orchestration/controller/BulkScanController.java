@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
 import uk.gov.hmcts.reform.bsp.common.model.transformation.in.ExceptionRecord;
 import uk.gov.hmcts.reform.bsp.common.model.transformation.output.CaseCreationDetails;
+import uk.gov.hmcts.reform.bsp.common.model.transformation.output.CaseUpdateDetails;
 import uk.gov.hmcts.reform.bsp.common.model.transformation.output.SuccessfulTransformationResponse;
 import uk.gov.hmcts.reform.bsp.common.model.update.in.BulkScanCaseUpdateRequest;
 import uk.gov.hmcts.reform.bsp.common.model.update.output.SuccessfulUpdateResponse;
@@ -116,6 +117,7 @@ public class BulkScanController {
                 .caseCreationDetails(
                     new CaseCreationDetails(
                         CASE_TYPE_ID,
+                        CREATE_EVENT_ID,
                         transformedCaseData))
                 .build();
 
@@ -153,12 +155,10 @@ public class BulkScanController {
 
         SuccessfulUpdateResponse callbackResponse = SuccessfulUpdateResponse.builder()
             .caseUpdateDetails(
-                CaseCreationDetails
-                    .builder()
-                    .caseData(request.getCaseData())
-                    .caseTypeId(CASE_TYPE_ID)
-                    .build()
-            ).warnings(Collections.emptyList())
+                new CaseUpdateDetails(
+                    CASE_TYPE_ID,
+                    request.getCaseData()))
+            .warnings(Collections.emptyList())
             .build();
 
         return ResponseEntity.ok(callbackResponse);
