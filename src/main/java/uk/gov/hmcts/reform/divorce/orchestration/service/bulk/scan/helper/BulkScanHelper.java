@@ -41,7 +41,8 @@ public class BulkScanHelper {
         }
     }
 
-    public static String transformDateFromComponentsToCcdDate(String dayValue, String monthValue, String yearValue) throws FormFieldValidationException {
+    public static String transformDateFromComponentsToCcdDate(String dayValue, String monthValue, String yearValue)
+            throws FormFieldValidationException {
         int dayParsed = Integer.parseInt(dayValue);
         int monthParsed = Integer.parseInt(monthValue);
         int yearParsed = Integer.parseInt(yearValue);
@@ -92,7 +93,7 @@ public class BulkScanHelper {
         }
 
         try {
-            LocalDate.of(yearParsed, Month.of(monthParsed), dayParsed);
+            LocalDate parsedDateForFurtherValidation = LocalDate.of(yearParsed, Month.of(monthParsed), dayParsed);
         } catch (DateTimeException exception) {
             validationWarningMessages.add(
                 String.format("Invalid date made up of %s, %s, %s", dayKey, monthKey, yearKey));

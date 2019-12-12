@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_DAY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH;
@@ -62,7 +61,7 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         }
 
         return modifiedMap;
-}
+    }
 
     @Override
     Map<String, Object> runPostMappingModification(Map<String, Object> transformedCaseData) {
