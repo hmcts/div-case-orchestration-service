@@ -120,7 +120,10 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8PetitionerHomeAddressCounty", ""),
             new OcrDataField("D8MarriedInUk", ""),
             new OcrDataField("D8ApplicationToIssueWithoutCertificate", ""),
-            new OcrDataField("D8MarriageCertificateCorrect", "")
+            new OcrDataField("D8MarriageCertificateCorrect", ""),
+            new OcrDataField("D8MarriageDateDay", ""),
+            new OcrDataField("D8MarriageDateMonth", ""),
+            new OcrDataField("D8MarriageDateYear", "")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -141,7 +144,10 @@ public class NewDivorceCaseValidatorTest {
             "Mandatory field \"D8PetitionerHomeAddressCounty\" is missing",
             "Mandatory field \"D8MarriedInUk\" is missing",
             "Mandatory field \"D8ApplicationToIssueWithoutCertificate\" is missing",
-            "Mandatory field \"D8MarriageCertificateCorrect\" is missing"
+            "Mandatory field \"D8MarriageCertificateCorrect\" is missing",
+            "Mandatory field \"D8MarriageDateDay\" is missing",
+            "Mandatory field \"D8MarriageDateMonth\" is missing",
+            "Mandatory field \"D8MarriageDateYear\" is missing"
         ));
     }
 
