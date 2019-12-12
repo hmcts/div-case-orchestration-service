@@ -614,7 +614,7 @@ public class NewDivorceCaseValidatorTest {
                 "Not all date components are present"),
             not(hasItems(
                 "D8MarriageDateDay is invalid",
-                "D8MarriageDateYear needs to be 4 digits e.g. 2011"
+                "D8MarriageDateYear needs to be after 1900 and have 4 digits e.g. 2011"
             ))
         ));
     }

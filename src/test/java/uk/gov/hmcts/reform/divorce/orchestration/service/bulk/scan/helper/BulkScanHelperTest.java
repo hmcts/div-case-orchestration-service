@@ -91,7 +91,7 @@ public class BulkScanHelperTest {
 
         assertThat(validationResult, hasItems(
             String.format("%s is invalid", dayKey),
-            String.format("%s needs to be 4 digits e.g. 2011", yearKey),
+            String.format("%s needs to be after 1900 and have 4 digits e.g. 2011", yearKey),
             INVALID_DATE_ERROR_MESSAGE
         ));
         assertThat(validationResult.size(), is(3));
