@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.error.FormFieldValidationException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +33,10 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         "D8PaymentMethod and D8HelpWithFeesReferenceNumber should not both be populated";
     private static final String HWF_WRONG_LENGTH_ERROR_MESSAGE =
         "D8HelpWithFeesReferenceNumber is usually 6 digits";
+    private static final String EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE =
+        "\"%s\" should not be empty if \"%s\" is \"No\"";
+    private static final String NOT_EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE =
+        "\"%s\" should be empty if \"%s\" is \"Yes\"";
 
     private static final int HELP_WITH_FEES_LENGTH = 6;
 
@@ -100,7 +105,8 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
             validatePayment(fieldsMap),
             validatePlaceOfMarriage(fieldsMap),
             validateMarriageCertificateCorrect(fieldsMap),
-            validateDateSplitIntoComponents(fieldsMap, "D8MarriageDateDay", "D8MarriageDateMonth", "D8MarriageDateYear")
+            validateDateSplitIntoComponents(fieldsMap, "D8MarriageDateDay", "D8MarriageDateMonth", "D8MarriageDateYear"),
+            validateD8PetitionerCorrespondenceAddress(fieldsMap)
         )
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
@@ -114,6 +120,50 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         }
 
         return errorMessages;
+    }
+
+    private static List<String> validateD8PetitionerCorrespondenceAddress(Map<String, String> fieldsMap) {
+
+        String conditionField = "D8PetitionerCorrespondenceUseHomeAddress";
+        List<String> fieldsToCheck = Arrays.asList(
+            "D8PetitionerCorrespondenceAddressStreet",
+            "D8PetitionerCorrespondenceAddressTown",
+            "D8PetitionerCorrespondenceAddressCounty",
+            "D8PetitionerCorrespondencePostcode"
+        );
+        String useHomeAddress = fieldsMap.getOrDefault(conditionField, "");
+        if (useHomeAddress.equals(YES_VALUE)) {
+            return validateFieldsAreEmpty(fieldsToCheck, conditionField, fieldsMap, NOT_EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE);
+        } else if (useHomeAddress.equals((NO_VALUE))) {
+            return validateFieldsAreNotEmpty(fieldsToCheck, conditionField, fieldsMap, EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE);
+        } else {
+            List<String> emptyWarningMessagesList = new ArrayList<>();
+            return emptyWarningMessagesList;
+        }
+    }
+
+    private static List<String> validateFieldsAreEmpty(List<String> fields, String conditionField, Map<String, String> fieldsMap,
+                                                       String errorMessage) {
+        List<String> validationWarningMessages = new ArrayList<>();
+        fields.forEach((fieldKey) -> {
+            String fieldValue = fieldsMap.getOrDefault(fieldKey, "");
+            if (!StringUtils.isBlank(fieldValue)) {
+                validationWarningMessages.add(String.format(errorMessage, fieldKey, conditionField));
+            }
+        });
+        return validationWarningMessages;
+    }
+
+    private static List<String> validateFieldsAreNotEmpty(List<String> fields, String conditionField, Map<String, String> fieldsMap,
+                                                       String errorMessage) {
+        List<String> validationWarningMessages = new ArrayList<>();
+        fields.forEach((fieldKey) -> {
+            String fieldValue = fieldsMap.getOrDefault(fieldKey, "");
+            if (StringUtils.isBlank(fieldValue)) {
+                validationWarningMessages.add(String.format(errorMessage, fieldKey, conditionField));
+            }
+        });
+        return validationWarningMessages;
     }
 
     private static List<String> validatePayment(Map<String, String> fieldsMap) {
