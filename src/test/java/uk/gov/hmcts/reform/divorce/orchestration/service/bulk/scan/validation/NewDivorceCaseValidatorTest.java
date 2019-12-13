@@ -44,7 +44,7 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8ReasonForDivorceSeparationDate", "20/11/2008"),
             new OcrDataField("D8PetitionerPostCode", "HD7 5UZ"),
             new OcrDataField("PetitionerSolicitor", "Yes"),
-            new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", "No"),
+            new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", "Yes"),
             new OcrDataField("D8PetitionerHomeAddressStreet", "19 West Park Road"),
             new OcrDataField("D8PetitionerHomeAddressTown", "Smethwick"),
             new OcrDataField("D8PetitionerHomeAddressCounty", "West Midlands"),
@@ -214,7 +214,6 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("PetitionerSolicitorAddressPostCode", ""),
             new OcrDataField("PetitionerSolicitorPhone", ""),
             new OcrDataField("PetitionerSolicitorEmail", ""),
-            new OcrDataField("D8PetitionerCorrespondencePostcode", ""),
             new OcrDataField("PetitionerSolicitorAddressStreet", ""),
             new OcrDataField("PetitionerSolicitorAddressTown", ""),
             new OcrDataField("PetitionerSolicitorAddressCounty", ""),
@@ -382,6 +381,26 @@ public class NewDivorceCaseValidatorTest {
                 + "\"D8ApplicationToIssueWithoutCertificate\""
             ))
         );
+    }
+
+    @Test
+    public void shouldFailIfD8PetitionerCorrespondenceAddressIsEmptyAndD8PetitionerCorrespondenceUseHomeAddressIsNo() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", "No"),
+            new OcrDataField("D8PetitionerCorrespondenceAddressStreet", ""),
+            new OcrDataField("D8PetitionerCorrespondenceAddressTown", ""),
+            new OcrDataField("D8PetitionerCorrespondenceAddressCounty", ""),
+            new OcrDataField("D8PetitionerCorrespondencePostcode", "")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
+            "\"D8PetitionerCorrespondenceAddressStreet\" should not be empty if \"D8PetitionerCorrespondenceUseHomeAddress\" is \"No\"",
+            "\"D8PetitionerCorrespondenceAddressTown\" should not be empty if \"D8PetitionerCorrespondenceUseHomeAddress\" is \"No\"",
+            "\"D8PetitionerCorrespondenceAddressCounty\" should not be empty if \"D8PetitionerCorrespondenceUseHomeAddress\" is \"No\"",
+            "\"D8PetitionerCorrespondencePostcode\" should not be empty if \"D8PetitionerCorrespondenceUseHomeAddress\" is \"No\""
+        ));
     }
 
     @Test
@@ -600,6 +619,22 @@ public class NewDivorceCaseValidatorTest {
     }
 
     @Test
+    public void shouldFailIfD8PetitionerCorrespondenceAddressIsNullAndD8PetitionerCorrespondenceUseHomeAddressIsNo() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", "No")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
+            "\"D8PetitionerCorrespondenceAddressStreet\" should not be empty if \"D8PetitionerCorrespondenceUseHomeAddress\" is \"No\"",
+            "\"D8PetitionerCorrespondenceAddressTown\" should not be empty if \"D8PetitionerCorrespondenceUseHomeAddress\" is \"No\"",
+            "\"D8PetitionerCorrespondenceAddressCounty\" should not be empty if \"D8PetitionerCorrespondenceUseHomeAddress\" is \"No\"",
+            "\"D8PetitionerCorrespondencePostcode\" should not be empty if \"D8PetitionerCorrespondenceUseHomeAddress\" is \"No\""
+        ));
+    }
+
+    @Test
     public void shouldFailValidationIfNotAllMarriageDateComponentsArePresent() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
             new OcrDataField("D8MarriageDateDay", "05"),
@@ -640,6 +675,26 @@ public class NewDivorceCaseValidatorTest {
                 "Not all date components are present")
             ))
         );
+    }
+
+    @Test
+    public void shouldFailIfD8PetitionerCorrespondenceAddressIsNotEmptyAndD8PetitionerCorrespondenceUseHomeAddressIsYes() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", "Yes"),
+            new OcrDataField("D8PetitionerCorrespondenceAddressStreet", "20 correspondence road"),
+            new OcrDataField("D8PetitionerCorrespondenceAddressTown", "Correspondencetown"),
+            new OcrDataField("D8PetitionerCorrespondenceAddressCounty", "South Midlands"),
+            new OcrDataField("D8PetitionerCorrespondencePostcode", "SE12BP")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
+            "\"D8PetitionerCorrespondenceAddressStreet\" should be empty if \"D8PetitionerCorrespondenceUseHomeAddress\" is \"Yes\"",
+            "\"D8PetitionerCorrespondenceAddressTown\" should be empty if \"D8PetitionerCorrespondenceUseHomeAddress\" is \"Yes\"",
+            "\"D8PetitionerCorrespondenceAddressCounty\" should be empty if \"D8PetitionerCorrespondenceUseHomeAddress\" is \"Yes\"",
+            "\"D8PetitionerCorrespondencePostcode\" should be empty if \"D8PetitionerCorrespondenceUseHomeAddress\" is \"Yes\""
+        ));
     }
 
     @Test
