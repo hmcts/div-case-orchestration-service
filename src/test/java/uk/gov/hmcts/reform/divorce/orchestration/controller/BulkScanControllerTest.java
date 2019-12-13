@@ -8,14 +8,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
+import uk.gov.hmcts.reform.bsp.common.model.transformation.in.ExceptionRecord;
+import uk.gov.hmcts.reform.bsp.common.model.transformation.output.CaseCreationDetails;
+import uk.gov.hmcts.reform.bsp.common.model.transformation.output.SuccessfulTransformationResponse;
+import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
+import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataValidationRequest;
+import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResponse;
+import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResult;
 import uk.gov.hmcts.reform.bsp.common.service.AuthService;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.in.ExceptionRecord;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.CaseCreationDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.SuccessfulTransformationResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataField;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanService;
 
 import java.util.List;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.ValidationStatus.ERRORS;
+import static uk.gov.hmcts.reform.bsp.common.model.validation.out.ValidationStatus.ERRORS;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkScanControllerTest {
@@ -103,7 +103,6 @@ public class BulkScanControllerTest {
         assertThat(transformationResponse.getWarnings(), is(emptyList()));
         CaseCreationDetails caseCreationDetails = transformationResponse.getCaseCreationDetails();
         assertThat(caseCreationDetails.getCaseTypeId(), is("DIVORCE"));
-        assertThat(caseCreationDetails.getEventId(), is("bulkScanCaseCreate"));
         assertThat(caseCreationDetails.getCaseData(), hasEntry("testKey", "testValue"));
 
         verify(authService).assertIsServiceAllowedToUpdate(TEST_SERVICE_TOKEN);
