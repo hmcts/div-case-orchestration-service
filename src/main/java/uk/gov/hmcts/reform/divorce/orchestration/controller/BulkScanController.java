@@ -12,16 +12,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import uk.gov.hmcts.reform.bsp.common.config.BulkScanEndpoints;
 import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
+import uk.gov.hmcts.reform.bsp.common.model.transformation.in.ExceptionRecord;
+import uk.gov.hmcts.reform.bsp.common.model.transformation.output.CaseCreationDetails;
+import uk.gov.hmcts.reform.bsp.common.model.transformation.output.CaseUpdateDetails;
+import uk.gov.hmcts.reform.bsp.common.model.transformation.output.SuccessfulTransformationResponse;
+import uk.gov.hmcts.reform.bsp.common.model.update.in.BulkScanCaseUpdateRequest;
+import uk.gov.hmcts.reform.bsp.common.model.update.output.SuccessfulUpdateResponse;
+import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataValidationRequest;
+import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResponse;
+import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResult;
 import uk.gov.hmcts.reform.bsp.common.service.AuthService;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.in.ExceptionRecord;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.CaseCreationDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.transformation.out.SuccessfulTransformationResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.update.in.BulkScanCaseUpdateRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.update.out.SuccessfulUpdateResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.in.OcrDataValidationRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.validation.out.OcrValidationResult;
+import uk.gov.hmcts.reform.divorce.orchestration.event.bulkscan.BulkScanEvents;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanService;
 
 import java.util.Collections;
@@ -37,8 +40,6 @@ import static org.springframework.http.ResponseEntity.ok;
 public class BulkScanController {
 
     private static final String CASE_TYPE_ID = "DIVORCE";
-    private static final String CREATE_EVENT_ID = "bulkScanCaseCreate";
-    private static final String UPDATE_EVENT_ID = "bulkScanCaseUpdate";
     public static final String SERVICE_AUTHORISATION_HEADER = "ServiceAuthorization";
 
     @Autowired
@@ -48,7 +49,7 @@ public class BulkScanController {
     private AuthService authService;
 
     @PostMapping(
-        path = "/forms/{form-type}/validate-ocr",
+        path = BulkScanEndpoints.VALIDATE,
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
@@ -86,7 +87,7 @@ public class BulkScanController {
     }
 
     @PostMapping(
-        path = "/transform-exception-record",
+        path = BulkScanEndpoints.TRANSFORM,
         consumes = APPLICATION_JSON,
         produces = APPLICATION_JSON
     )
@@ -116,9 +117,10 @@ public class BulkScanController {
                 .caseCreationDetails(
                     new CaseCreationDetails(
                         CASE_TYPE_ID,
-                        CREATE_EVENT_ID,
-                        transformedCaseData))
-                .build();
+                        BulkScanEvents.CREATE.getEventName(),
+                        transformedCaseData
+                    )
+                ).build();
 
             controllerResponse = ok(callbackResponse);
         } catch (UnsupportedFormTypeException exception) {
@@ -129,7 +131,7 @@ public class BulkScanController {
     }
 
     @PostMapping(
-        path = "/update-case",
+        path = BulkScanEndpoints.UPDATE,
         consumes = APPLICATION_JSON,
         produces = APPLICATION_JSON
     )
@@ -154,13 +156,10 @@ public class BulkScanController {
 
         SuccessfulUpdateResponse callbackResponse = SuccessfulUpdateResponse.builder()
             .caseUpdateDetails(
-                CaseCreationDetails
-                    .builder()
-                    .caseData(request.getCaseData())
-                    .caseTypeId(CASE_TYPE_ID)
-                    .eventId(UPDATE_EVENT_ID)
-                    .build()
-            ).warnings(Collections.emptyList())
+                new CaseUpdateDetails(
+                    CASE_TYPE_ID,
+                    request.getCaseData()))
+            .warnings(Collections.emptyList())
             .build();
 
         return ResponseEntity.ok(callbackResponse);

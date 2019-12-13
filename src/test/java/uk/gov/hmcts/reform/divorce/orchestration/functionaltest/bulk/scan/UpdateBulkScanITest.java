@@ -12,8 +12,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
+import uk.gov.hmcts.reform.bsp.common.model.update.in.BulkScanCaseUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.scan.update.in.BulkScanCaseUpdateRequest;
 
 import java.util.HashMap;
 
@@ -90,10 +90,9 @@ public class UpdateBulkScanITest {
                 allOf(
                     isJson(),
                     hasJsonPath("$.warnings", equalTo(emptyList())),
-                    hasJsonPath("$.case_update_details.*", hasSize(3)),
+                    hasJsonPath("$.case_update_details.*", hasSize(2)),
                     hasJsonPath("$.case_update_details", allOf(
-                        hasJsonPath("case_type_id", is("DIVORCE")),
-                        hasJsonPath("event_id", is("bulkScanCaseUpdate"))
+                        hasJsonPath("case_type_id", is("DIVORCE"))
                     ))
                 )));
     }
