@@ -55,7 +55,7 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8MarriageDateMonth", "03"),
             new OcrDataField("D8MarriageDateYear", "2006"),
             new OcrDataField("D8MarriageCertificateCorrect", "Yes"),
-            new OcrDataField("D8FinancialOrder", "Yes")
+            new OcrDataField("D8FinancialOrder", "No")
         );
 
         listOfAllMandatoryFields = new ArrayList<>(listOfAllMandatoryFieldsImmutable);
@@ -209,7 +209,7 @@ public class NewDivorceCaseValidatorTest {
             "D8ApplicationToIssueWithoutCertificate must be \"Yes\" or \"No\"",
             "D8MarriageCertificateCorrect must be \"Yes\" or \"No\"",
             "D8FinancialOrder must be \"Yes\" or \"No\"",
-            "D8FinancialOrderFor only accepts values of \"myself\", \"my children\", \"myself, my children\" or should be left blank"
+            "D8FinancialOrderFor must be \"myself\", \"my children\", \"myself, my children\" or left blank"
         ));
     }
 
@@ -725,25 +725,31 @@ public class NewDivorceCaseValidatorTest {
         );
     }
 
-/*
+
     @Test
-    public void shouldFailEmptyD8FinancialOrderForWhenD8FinancialOrderIsNo() {
-        Object[] invalidD8FinancialOrderFors = {null, new String[]{""}, ""};
-        for (String invalidD8FinancialOrderFor : invalidD8FinancialOrderFors) {
-            List<OcrDataField> mandatoryFieldsCopy = new ArrayList<>(listOfAllMandatoryFields);
-            mandatoryFieldsCopy.add(new OcrDataField("D8PetitionerPhoneNumber", invalidPhoneNumber));
-            mandatoryFieldsCopy.add(new OcrDataField("D8RespondentPhoneNumber", invalidPhoneNumber));
-            mandatoryFieldsCopy.add(new OcrDataField("PetitionerSolicitorPhone", invalidPhoneNumber));
+    public void shouldFailIfD8FinancialOrderForIsEmptyWhenD8FinancialOrderIsYes() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8FinancialOrder", "Yes")
+        ));
 
-            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(mandatoryFieldsCopy);
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
+            "\"D8FinancialOrderFor\" should not be empty if \"D8FinancialOrder\" is \"Yes\""
+        ));
+    }
 
-            assertThat(validationResult.getStatus(), is(WARNINGS));
-            assertThat(validationResult.getWarnings(), hasItems(
-                "D8PetitionerPhoneNumber is not in a valid format",
-                "D8RespondentPhoneNumber is not in a valid format",
-                "PetitionerSolicitorPhone is not in a valid format"
-            ));
-            assertThat(validationResult.getErrors(), is(emptyList()));
-        }
-    }*/
+    @Test
+    public void shouldFailIfD8FinancialOrderForIsNotEmptyWhenD8FinancialOrderIsNo() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8FinancialOrder", "No"),
+            new OcrDataField("D8FinancialOrderFor", "myself")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
+            "\"D8FinancialOrderFor\" should be empty if \"D8FinancialOrder\" is \"No\""
+        ));
+    }
 }

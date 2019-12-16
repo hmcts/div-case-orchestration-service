@@ -54,6 +54,6 @@
     { "name": "D8ReasonForDivorceAdultery3rdPartyCounty", "value": "North Midlands" },
     { "name": "D8ReasonForDivorceAdultery3rdPartyPostCode", "value": "SE3 5PP" },
     { "name": "D8FinancialOrder", "value": "Yes" },
-    { "name": "D8FinancialOrderFor", "value": ["myself", "my children"] }
+    { "name": "D8FinancialOrderFor", "value": "myself, my children" }
   ]
 }
