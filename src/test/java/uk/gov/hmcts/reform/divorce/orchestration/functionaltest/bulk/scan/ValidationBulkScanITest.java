@@ -141,7 +141,9 @@ public class ValidationBulkScanITest {
                     "PetitionerSolicitorEmail is not in a valid format",
                     "D8PetitionerCorrespondencePostcode is usually 6 or 7 characters long",
                     "Mandatory field \"D8MarriageCertificateCorrect\" is missing",
-                    "D8FinancialOrder must be \"Yes\" or \"No\""
+                    "D8FinancialOrder must be \"Yes\" or \"No\"",
+                    "D8ReasonForDivorce must be \"unreasonable-behaviour\", \"adultery\", \"desertion\","
+                        + " \"separation-2-years\" or \"separation-5-years\""
                 )),
                 hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
             ))
