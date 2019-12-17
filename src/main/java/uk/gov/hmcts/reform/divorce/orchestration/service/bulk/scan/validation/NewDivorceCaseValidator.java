@@ -148,10 +148,10 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         String conditionFieldValue = fieldsMap.getOrDefault(conditionField, "");
 
         if (conditionFieldValue.equals(valueForWhichFieldsShouldNotBeEmpty)) {
-            return validateFieldsAreEmptyIs(false, fieldsToCheck, conditionField, fieldsMap,
+            return validateFieldsAreNotEmpty(fieldsToCheck, conditionField, fieldsMap,
                 EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE, conditionFieldValue);
         } else {
-            return validateFieldsAreEmptyIs(true, fieldsToCheck, conditionField, fieldsMap,
+            return validateFieldsAreEmpty(fieldsToCheck, conditionField, fieldsMap,
                 NOT_EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE, conditionFieldValue);
         }
     }
@@ -167,6 +167,16 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
             }
         });
         return validationWarningMessages;
+    }
+
+    private static List<String> validateFieldsAreEmpty(List<String> fields, String conditionField, Map<String, String> fieldsMap,
+                                                       String errorMessage, String conditionFieldValue) {
+        return validateFieldsAreEmptyIs(true, fields, conditionField, fieldsMap, errorMessage, conditionFieldValue);
+    }
+
+    private static List<String> validateFieldsAreNotEmpty(List<String> fields, String conditionField, Map<String, String> fieldsMap,
+                                                       String errorMessage, String conditionFieldValue) {
+        return validateFieldsAreEmptyIs(false, fields, conditionField, fieldsMap, errorMessage, conditionFieldValue);
     }
 
     private static List<String> validatePayment(Map<String, String> fieldsMap) {
