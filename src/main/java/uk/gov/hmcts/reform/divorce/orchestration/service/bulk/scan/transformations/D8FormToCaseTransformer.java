@@ -122,6 +122,9 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         erToCcdFieldsMap.put("D8MarriageCertificateCorrect", "D8MarriageCertificateCorrect");
         erToCcdFieldsMap.put("D8MarriageCertificateCorrectExplain", "D8MarriageCertificateCorrectExplain");
 
+        // Section 6 - Give the reason for your divorce or dissolution (the facts)
+        erToCcdFieldsMap.put("D8ReasonForDivorce", "D8ReasonForDivorce");
+
         // Section 8 - Details of the person your partner committed adultery with (co-respondent)
         erToCcdFieldsMap.put("D8ReasonForDivorceAdultery3rdPartyFName", "D8ReasonForDivorceAdultery3rdPartyFName");
         erToCcdFieldsMap.put("D8ReasonForDivorceAdultery3rdPartyLName", "D8ReasonForDivorceAdultery3rdPartyLName");

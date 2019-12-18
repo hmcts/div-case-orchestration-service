@@ -55,7 +55,8 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8MarriageDateMonth", "03"),
             new OcrDataField("D8MarriageDateYear", "2006"),
             new OcrDataField("D8MarriageCertificateCorrect", "Yes"),
-            new OcrDataField("D8FinancialOrder", "No")
+            new OcrDataField("D8FinancialOrder", "No"),
+            new OcrDataField("D8ReasonForDivorce", "desertion")
         );
 
         listOfAllMandatoryFields = new ArrayList<>(listOfAllMandatoryFieldsImmutable);
@@ -99,7 +100,8 @@ public class NewDivorceCaseValidatorTest {
             "Mandatory field \"D8MarriageDateMonth\" is missing",
             "Mandatory field \"D8MarriageDateYear\" is missing",
             "Mandatory field \"D8MarriageCertificateCorrect\" is missing",
-            "Mandatory field \"D8FinancialOrder\" is missing"
+            "Mandatory field \"D8FinancialOrder\" is missing",
+            "Mandatory field \"D8ReasonForDivorce\" is missing"
         ));
     }
 
@@ -126,7 +128,8 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8MarriageDateDay", ""),
             new OcrDataField("D8MarriageDateMonth", ""),
             new OcrDataField("D8MarriageDateYear", ""),
-            new OcrDataField("D8FinancialOrder", "")
+            new OcrDataField("D8FinancialOrder", ""),
+            new OcrDataField("D8ReasonForDivorce", "")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -151,7 +154,8 @@ public class NewDivorceCaseValidatorTest {
             "Mandatory field \"D8MarriageDateDay\" is missing",
             "Mandatory field \"D8MarriageDateMonth\" is missing",
             "Mandatory field \"D8MarriageDateYear\" is missing",
-            "Mandatory field \"D8FinancialOrder\" is missing"
+            "Mandatory field \"D8FinancialOrder\" is missing",
+            "Mandatory field \"D8ReasonForDivorce\" is missing"
         ));
     }
 
@@ -180,7 +184,8 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8ApplicationToIssueWithoutCertificate", "check"),
             new OcrDataField("D8MarriageCertificateCorrect", "fake"),
             new OcrDataField("D8FinancialOrder", "Not sure"),
-            new OcrDataField("D8FinancialOrderFor", "someone else")
+            new OcrDataField("D8FinancialOrderFor", "someone else"),
+            new OcrDataField("D8ReasonForDivorce", "no reason")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -209,7 +214,8 @@ public class NewDivorceCaseValidatorTest {
             "D8ApplicationToIssueWithoutCertificate must be \"Yes\" or \"No\"",
             "D8MarriageCertificateCorrect must be \"Yes\" or \"No\"",
             "D8FinancialOrder must be \"Yes\" or \"No\"",
-            "D8FinancialOrderFor must be \"myself\", \"my children\", \"myself, my children\" or left blank"
+            "D8FinancialOrderFor must be \"myself\", \"my children\", \"myself, my children\" or left blank",
+            "D8ReasonForDivorce must be \"unreasonable-behaviour\", \"adultery\", \"desertion\", \"separation-2-years\" or \"separation-5-years\""
         ));
     }
 
@@ -724,7 +730,6 @@ public class NewDivorceCaseValidatorTest {
             ))
         );
     }
-
 
     @Test
     public void shouldFailIfD8FinancialOrderForIsEmptyWhenD8FinancialOrderIsYes() {
