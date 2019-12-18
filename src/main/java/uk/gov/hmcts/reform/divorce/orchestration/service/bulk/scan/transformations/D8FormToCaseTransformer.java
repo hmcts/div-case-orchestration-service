@@ -129,6 +129,11 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         erToCcdFieldsMap.put("D8ReasonForDivorceAdultery3rdPartyFName", "D8ReasonForDivorceAdultery3rdPartyFName");
         erToCcdFieldsMap.put("D8ReasonForDivorceAdultery3rdPartyLName", "D8ReasonForDivorceAdultery3rdPartyLName");
 
+        // Section 9 - Existing court cases
+        erToCcdFieldsMap.put("D8LegalProceedings", "D8LegalProceedings");
+        erToCcdFieldsMap.put("D8LegalProceedingsDetailsCaseNumber", "D8LegalProceedingsDetailsCaseNumber");
+        erToCcdFieldsMap.put("D8LegalProceedingsDetails", "D8LegalProceedingsDetails");
+
         // Section 10 - Dividing your money and property – Orders which are sought
         erToCcdFieldsMap.put("D8FinancialOrder", "D8FinancialOrder");
         erToCcdFieldsMap.put("D8FinancialOrderFor", "D8FinancialOrderFor");

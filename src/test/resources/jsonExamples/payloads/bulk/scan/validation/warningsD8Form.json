@@ -27,6 +27,7 @@
     { "name": "D8MarriedInUk", "value": "Yes" },
     { "name": "D8ApplicationToIssueWithoutCertificate", "value": "No" },
     { "name": "D8FinancialOrder", "value": "Not sure" },
-    { "name": "D8ReasonForDivorce", "value": "invalid reason" }
+    { "name": "D8ReasonForDivorce", "value": "invalid reason" },
+    { "name": "D8LegalProceedings", "value": "Not sure" }
   ]
 }
