@@ -102,7 +102,7 @@ public class TransformationBulkScanITest {
                     hasJsonPath("$.case_creation_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
                         hasJsonPath("event_id", is("caseCreate")),
-                        hasJsonPath("case_data.*", hasSize(40)),
+                        hasJsonPath("case_data.*", hasSize(41)),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),
                             hasJsonPath("D8PaymentMethod", is("Card")),
@@ -162,7 +162,8 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8MarriageCertificateCorrect", is("No")),
                             hasJsonPath("D8MarriageCertificateCorrectExplain", is("Providing a scanned copy from registry office.")),
                             hasJsonPath("D8FinancialOrder", is("Yes")),
-                            hasJsonPath("D8FinancialOrderFor", is("petitioner, children"))
+                            hasJsonPath("D8FinancialOrderFor", is("petitioner, children")),
+                            hasJsonPath("D8ReasonForDivorce", is("desertion"))
                         ))
                     ))
                 )));
