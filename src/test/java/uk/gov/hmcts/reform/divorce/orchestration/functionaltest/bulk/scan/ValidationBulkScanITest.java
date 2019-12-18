@@ -143,7 +143,8 @@ public class ValidationBulkScanITest {
                     "Mandatory field \"D8MarriageCertificateCorrect\" is missing",
                     "D8FinancialOrder must be \"Yes\" or \"No\"",
                     "D8ReasonForDivorce must be \"unreasonable-behaviour\", \"adultery\", \"desertion\","
-                        + " \"separation-2-years\" or \"separation-5-years\""
+                        + " \"separation-2-years\" or \"separation-5-years\"",
+                    "D8LegalProceedings must be \"Yes\" or \"No\""
                 )),
                 hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
             ))

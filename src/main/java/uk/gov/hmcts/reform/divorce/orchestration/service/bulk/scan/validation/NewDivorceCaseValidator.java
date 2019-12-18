@@ -64,7 +64,8 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         "D8MarriageDateYear",
         "D8MarriageCertificateCorrect",
         "D8FinancialOrder",
-        "D8ReasonForDivorce"
+        "D8ReasonForDivorce",
+        "D8LegalProceedings"
     );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
@@ -85,6 +86,7 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrderFor", asList("myself", "my children", "myself, my children", BLANK));
         ALLOWED_VALUES_PER_FIELD.put("D8ReasonForDivorce", asList("unreasonable-behaviour", "adultery", "desertion", "separation-2-years",
             "separation-5-years"));
+        ALLOWED_VALUES_PER_FIELD.put("D8LegalProceedings", asList(YES_VALUE, NO_VALUE));
     }
 
     public List<String> getMandatoryFields() {
