@@ -54,7 +54,8 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8MarriageDateDay", "19"),
             new OcrDataField("D8MarriageDateMonth", "03"),
             new OcrDataField("D8MarriageDateYear", "2006"),
-            new OcrDataField("D8MarriageCertificateCorrect", "Yes")
+            new OcrDataField("D8MarriageCertificateCorrect", "Yes"),
+            new OcrDataField("D8FinancialOrder", "No")
         );
 
         listOfAllMandatoryFields = new ArrayList<>(listOfAllMandatoryFieldsImmutable);
@@ -97,7 +98,8 @@ public class NewDivorceCaseValidatorTest {
             "Mandatory field \"D8MarriageDateDay\" is missing",
             "Mandatory field \"D8MarriageDateMonth\" is missing",
             "Mandatory field \"D8MarriageDateYear\" is missing",
-            "Mandatory field \"D8MarriageCertificateCorrect\" is missing"
+            "Mandatory field \"D8MarriageCertificateCorrect\" is missing",
+            "Mandatory field \"D8FinancialOrder\" is missing"
         ));
     }
 
@@ -123,7 +125,8 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8MarriageCertificateCorrect", ""),
             new OcrDataField("D8MarriageDateDay", ""),
             new OcrDataField("D8MarriageDateMonth", ""),
-            new OcrDataField("D8MarriageDateYear", "")
+            new OcrDataField("D8MarriageDateYear", ""),
+            new OcrDataField("D8FinancialOrder", "")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -147,7 +150,8 @@ public class NewDivorceCaseValidatorTest {
             "Mandatory field \"D8MarriageCertificateCorrect\" is missing",
             "Mandatory field \"D8MarriageDateDay\" is missing",
             "Mandatory field \"D8MarriageDateMonth\" is missing",
-            "Mandatory field \"D8MarriageDateYear\" is missing"
+            "Mandatory field \"D8MarriageDateYear\" is missing",
+            "Mandatory field \"D8FinancialOrder\" is missing"
         ));
     }
 
@@ -174,7 +178,9 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8ReasonForDivorceAdultery3rdPartyPostCode", "CR13 6BF81"),
             new OcrDataField("D8MarriedInUk", "does the isle of man count?"),
             new OcrDataField("D8ApplicationToIssueWithoutCertificate", "check"),
-            new OcrDataField("D8MarriageCertificateCorrect", "fake")
+            new OcrDataField("D8MarriageCertificateCorrect", "fake"),
+            new OcrDataField("D8FinancialOrder", "Not sure"),
+            new OcrDataField("D8FinancialOrderFor", "someone else")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -201,7 +207,9 @@ public class NewDivorceCaseValidatorTest {
             "D8ReasonForDivorceAdultery3rdPartyPostCode is usually 6 or 7 characters long",
             "D8MarriedInUk must be \"Yes\" or \"No\"",
             "D8ApplicationToIssueWithoutCertificate must be \"Yes\" or \"No\"",
-            "D8MarriageCertificateCorrect must be \"Yes\" or \"No\""
+            "D8MarriageCertificateCorrect must be \"Yes\" or \"No\"",
+            "D8FinancialOrder must be \"Yes\" or \"No\"",
+            "D8FinancialOrderFor must be \"myself\", \"my children\", \"myself, my children\" or left blank"
         ));
     }
 
@@ -715,5 +723,33 @@ public class NewDivorceCaseValidatorTest {
                 "D8MarriageDateMonth is not a valid month e.g. 03 for March")
             ))
         );
+    }
+
+
+    @Test
+    public void shouldFailIfD8FinancialOrderForIsEmptyWhenD8FinancialOrderIsYes() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8FinancialOrder", "Yes")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
+            "\"D8FinancialOrderFor\" should not be empty if \"D8FinancialOrder\" is \"Yes\""
+        ));
+    }
+
+    @Test
+    public void shouldFailIfD8FinancialOrderForIsNotEmptyWhenD8FinancialOrderIsNo() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8FinancialOrder", "No"),
+            new OcrDataField("D8FinancialOrderFor", "myself")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
+            "\"D8FinancialOrderFor\" should be empty if \"D8FinancialOrder\" is \"No\""
+        ));
     }
 }

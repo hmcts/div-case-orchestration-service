@@ -34,9 +34,9 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
     private static final String HWF_WRONG_LENGTH_ERROR_MESSAGE =
         "D8HelpWithFeesReferenceNumber is usually 6 digits";
     private static final String EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE =
-        "\"%s\" should not be empty if \"%s\" is \"No\"";
+        "\"%s\" should not be empty if \"%s\" is \"%s\"";
     private static final String NOT_EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE =
-        "\"%s\" should be empty if \"%s\" is \"Yes\"";
+        "\"%s\" should be empty if \"%s\" is \"%s\"";
 
     private static final int HELP_WITH_FEES_LENGTH = 6;
 
@@ -62,7 +62,8 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         "D8MarriageDateDay",
         "D8MarriageDateMonth",
         "D8MarriageDateYear",
-        "D8MarriageCertificateCorrect"
+        "D8MarriageCertificateCorrect",
+        "D8FinancialOrder"
     );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
@@ -79,6 +80,8 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         ALLOWED_VALUES_PER_FIELD.put("D8MarriedInUk", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("D8ApplicationToIssueWithoutCertificate", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("D8MarriageCertificateCorrect", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrder", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrderFor", asList("myself", "my children", "myself, my children", BLANK));
     }
 
     public List<String> getMandatoryFields() {
@@ -106,7 +109,8 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
             validatePlaceOfMarriage(fieldsMap),
             validateMarriageCertificateCorrect(fieldsMap),
             validateDateSplitIntoComponents(fieldsMap, "D8MarriageDateDay", "D8MarriageDateMonth", "D8MarriageDateYear"),
-            validateD8PetitionerCorrespondenceAddress(fieldsMap)
+            validateD8PetitionerCorrespondenceAddress(fieldsMap),
+            validateD8FinancialOrderFor(fieldsMap)
         )
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
@@ -122,48 +126,57 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         return errorMessages;
     }
 
-    private static List<String> validateD8PetitionerCorrespondenceAddress(Map<String, String> fieldsMap) {
+    private static List<String> validateD8FinancialOrderFor(Map<String, String> fieldsMap) {
+        List<String> fieldsToCheck = Arrays.asList(
+            "D8FinancialOrderFor"
+        );
+        return validateFieldsAreNotEmptyOnlyFor(YES_VALUE, "D8FinancialOrder", fieldsToCheck, fieldsMap);
+    }
 
-        String conditionField = "D8PetitionerCorrespondenceUseHomeAddress";
+    private static List<String> validateD8PetitionerCorrespondenceAddress(Map<String, String> fieldsMap) {
         List<String> fieldsToCheck = Arrays.asList(
             "D8PetitionerCorrespondenceAddressStreet",
             "D8PetitionerCorrespondenceAddressTown",
             "D8PetitionerCorrespondenceAddressCounty",
             "D8PetitionerCorrespondencePostcode"
         );
-        String useHomeAddress = fieldsMap.getOrDefault(conditionField, "");
-        if (useHomeAddress.equals(YES_VALUE)) {
-            return validateFieldsAreEmpty(fieldsToCheck, conditionField, fieldsMap, NOT_EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE);
-        } else if (useHomeAddress.equals((NO_VALUE))) {
-            return validateFieldsAreNotEmpty(fieldsToCheck, conditionField, fieldsMap, EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE);
+        return validateFieldsAreNotEmptyOnlyFor(NO_VALUE, "D8PetitionerCorrespondenceUseHomeAddress", fieldsToCheck, fieldsMap);
+    }
+
+    private static List<String> validateFieldsAreNotEmptyOnlyFor(String valueForWhichFieldsShouldNotBeEmpty, String conditionField,
+                                                                 List<String> fieldsToCheck, Map<String, String> fieldsMap) {
+        String conditionFieldValue = fieldsMap.getOrDefault(conditionField, "");
+
+        if (conditionFieldValue.equals(valueForWhichFieldsShouldNotBeEmpty)) {
+            return validateFieldsAreNotEmpty(fieldsToCheck, conditionField, fieldsMap,
+                EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE, conditionFieldValue);
         } else {
-            List<String> emptyWarningMessagesList = new ArrayList<>();
-            return emptyWarningMessagesList;
+            return validateFieldsAreEmpty(fieldsToCheck, conditionField, fieldsMap,
+                NOT_EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE, conditionFieldValue);
         }
     }
 
-    private static List<String> validateFieldsAreEmpty(List<String> fields, String conditionField, Map<String, String> fieldsMap,
-                                                       String errorMessage) {
+    private static List<String> validateFieldsAreEmptyIs(boolean expected, List<String> fields, String conditionField,
+                                                         Map<String, String> fieldsMap, String errorMessage, String conditionFieldValue) {
         List<String> validationWarningMessages = new ArrayList<>();
         fields.forEach((fieldKey) -> {
             String fieldValue = fieldsMap.getOrDefault(fieldKey, "");
-            if (!StringUtils.isBlank(fieldValue)) {
-                validationWarningMessages.add(String.format(errorMessage, fieldKey, conditionField));
+            boolean fieldValueIsAsItShould = StringUtils.isBlank(fieldValue) == expected;
+            if (!fieldValueIsAsItShould) {
+                validationWarningMessages.add(String.format(errorMessage, fieldKey, conditionField, conditionFieldValue));
             }
         });
         return validationWarningMessages;
     }
 
+    private static List<String> validateFieldsAreEmpty(List<String> fields, String conditionField, Map<String, String> fieldsMap,
+                                                       String errorMessage, String conditionFieldValue) {
+        return validateFieldsAreEmptyIs(true, fields, conditionField, fieldsMap, errorMessage, conditionFieldValue);
+    }
+
     private static List<String> validateFieldsAreNotEmpty(List<String> fields, String conditionField, Map<String, String> fieldsMap,
-                                                       String errorMessage) {
-        List<String> validationWarningMessages = new ArrayList<>();
-        fields.forEach((fieldKey) -> {
-            String fieldValue = fieldsMap.getOrDefault(fieldKey, "");
-            if (StringUtils.isBlank(fieldValue)) {
-                validationWarningMessages.add(String.format(errorMessage, fieldKey, conditionField));
-            }
-        });
-        return validationWarningMessages;
+                                                       String errorMessage, String conditionFieldValue) {
+        return validateFieldsAreEmptyIs(false, fields, conditionField, fieldsMap, errorMessage, conditionFieldValue);
     }
 
     private static List<String> validatePayment(Map<String, String> fieldsMap) {
