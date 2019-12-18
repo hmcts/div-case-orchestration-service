@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.validateDateComponents;
 
 @Component
-public class NewDivorceCaseValidator extends BulkScanFormValidator {
+public class D8FormValidator extends BulkScanFormValidator {
 
     private static final String EMPTY_PAYMENT_METHOD_ERROR_MESSAGE =
         "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value";
@@ -265,5 +265,4 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
 
         return validateDateComponents(fieldsMap, dayKey, monthKey, yearKey);
     }
-
 }

@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.BulkScanController.SERVICE_AUTHORISATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.ALLOWED_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.I_AM_NOT_ALLOWED_SERVICE_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.NEW_DIVORCE_CASE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
 @ContextConfiguration(classes = OrchestrationServiceApplication.class)
@@ -62,7 +62,7 @@ public class ValidationBulkScanITest {
     @Test
     public void shouldReturnForbiddenStatusWhenInvalidToken() throws Exception {
         mockMvc.perform(
-            post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
+            post("/forms/{form-type}/validate-ocr", D8_FORM)
                 .contentType(APPLICATION_JSON)
                 .content(VALID_BODY)
                 .header(SERVICE_AUTHORISATION_HEADER, I_AM_NOT_ALLOWED_SERVICE_TOKEN)
@@ -72,7 +72,7 @@ public class ValidationBulkScanITest {
     @Test
     public void shouldReturnUnauthorizedStatusWhenNoAuthServiceHeader() throws Exception {
         mockMvc.perform(
-            post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
+            post("/forms/{form-type}/validate-ocr", D8_FORM)
                 .contentType(APPLICATION_JSON)
                 .content(VALID_BODY)
                 .header(SERVICE_AUTHORISATION_HEADER, "")
@@ -82,7 +82,7 @@ public class ValidationBulkScanITest {
     @Test
     public void shouldReturnSuccessResponseForValidationEndpoint() throws Exception {
         mockMvc.perform(
-            post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
+            post("/forms/{form-type}/validate-ocr", D8_FORM)
                 .contentType(APPLICATION_JSON)
                 .content(VALID_BODY)
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
@@ -102,7 +102,7 @@ public class ValidationBulkScanITest {
         String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/validation/incompleteForm.json");
 
         mockMvc.perform(
-            post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
+            post("/forms/{form-type}/validate-ocr", D8_FORM)
                 .contentType(APPLICATION_JSON)
                 .content(formToValidate)
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
@@ -127,7 +127,7 @@ public class ValidationBulkScanITest {
     public void shouldReturnWarningResponseForValidationEndpoint() throws Exception {
         String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/validation/warningsD8Form.json");
 
-        mockMvc.perform(post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
+        mockMvc.perform(post("/forms/{form-type}/validate-ocr", D8_FORM)
             .contentType(APPLICATION_JSON)
             .content(formToValidate)
             .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)

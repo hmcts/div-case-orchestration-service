@@ -21,9 +21,9 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.out.ValidationStatus.SUCCESS;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.out.ValidationStatus.WARNINGS;
 
-public class NewDivorceCaseValidatorTest {
+public class D8FormValidatorTest {
 
-    private final NewDivorceCaseValidator classUnderTest = new NewDivorceCaseValidator();
+    private final D8FormValidator classUnderTest = new D8FormValidator();
     private List<OcrDataField> listOfAllMandatoryFields;
     private OcrDataField validD8paymentMethod = new OcrDataField("D8PaymentMethod", "Cheque");
 
