@@ -71,7 +71,7 @@ public class D8FormToCaseTransformerTest {
 
 
     @Test
-    public void verifyPetitionerAddressIsTransformed() {
+    public void verifyPetitionerHomeAddressIsTransformed() {
         assertAddressIsTransformed(
             "D8PetitionerHomeAddress",
             ImmutableMap.of(
