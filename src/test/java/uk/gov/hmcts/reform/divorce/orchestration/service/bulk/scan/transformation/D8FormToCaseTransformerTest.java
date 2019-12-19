@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformatio
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -43,20 +42,12 @@ public class D8FormToCaseTransformerTest {
 
     @Test
     public void shouldReplaceCcdFieldForD8PaymentMethodIfPaymentMethodIsDebitCreditCard() {
-        ExceptionRecord exceptionRecord = createExceptionRecord(singletonList(new OcrDataField("D8PaymentMethod", "Debit/Credit Card")));
-
-        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(exceptionRecord);
-
-        assertThat(transformedCaseData.get("D8PaymentMethod"), is("Card"));
+        assertIsReplacedBy("Card", "Debit/Credit Card", "D8PaymentMethod");
     }
 
     @Test
     public void shouldNotReplaceCcdFieldForD8PaymentMethodIfMethodIsCheque() {
-        ExceptionRecord incomingExceptionRecord = createExceptionRecord(singletonList(new OcrDataField("D8PaymentMethod", "Cheque")));
-
-        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(incomingExceptionRecord);
-
-        assertThat(transformedCaseData.get("D8PaymentMethod"), is("Cheque"));
+        assertIsReplacedBy("Cheque", "Cheque", "D8PaymentMethod");
     }
 
     @Test
@@ -70,6 +61,14 @@ public class D8FormToCaseTransformerTest {
             hasEntry("bulkScanCaseReference", "test_case_id")
         ));
     }
+
+    @Test
+    public void shouldReplaceCcdFieldForD8FinancialOrderForIfIsForMyselfMyChildrenOrBoth() {
+        assertIsReplacedBy("petitioner", "myself", "D8FinancialOrderFor");
+        assertIsReplacedBy("children", "my children", "D8FinancialOrderFor");
+        assertIsReplacedBy("petitioner, children", "myself, my children", "D8FinancialOrderFor");
+    }
+
 
     @Test
     public void verifyPetitionerAddressIsTransformed() {
@@ -117,6 +116,15 @@ public class D8FormToCaseTransformerTest {
                 "D8ReasonForDivorceAdultery3rdPartyPostCode", "SE3 5PP",
                 "D8ReasonForDivorceAdultery3rdPartyCounty", "North Midlands"
             ));
+    }
+
+    private void assertIsReplacedBy(String expectedValue, String inputValue, String field) {
+        ExceptionRecord exceptionRecord =
+            createExceptionRecord(singletonList(new OcrDataField(field, inputValue)));
+
+        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(exceptionRecord);
+
+        assertThat(transformedCaseData.get(field), is(expectedValue));
     }
 
     @Test

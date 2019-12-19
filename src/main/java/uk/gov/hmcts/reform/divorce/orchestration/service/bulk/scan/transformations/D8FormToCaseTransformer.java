@@ -68,6 +68,9 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
     @Override
     Map<String, Object> runPostMappingModification(Map<String, Object> transformedCaseData) {
         transformedCaseData.replace("D8PaymentMethod", "Debit/Credit Card", "Card");
+        transformedCaseData.replace("D8FinancialOrderFor", "myself", "petitioner");
+        transformedCaseData.replace("D8FinancialOrderFor", "my children", "children");
+        transformedCaseData.replace("D8FinancialOrderFor", "myself, my children", "petitioner, children");
 
         return transformedCaseData;
     }
@@ -127,9 +130,21 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         erToCcdFieldsMap.put("D8MarriageCertificateCorrect", "D8MarriageCertificateCorrect");
         erToCcdFieldsMap.put("D8MarriageCertificateCorrectExplain", "D8MarriageCertificateCorrectExplain");
 
+        // Section 6 - Give the reason for your divorce or dissolution (the facts)
+        erToCcdFieldsMap.put("D8ReasonForDivorce", "D8ReasonForDivorce");
+
         // Section 8 - Details of the person your partner committed adultery with (co-respondent)
         erToCcdFieldsMap.put("D8ReasonForDivorceAdultery3rdPartyFName", "D8ReasonForDivorceAdultery3rdPartyFName");
         erToCcdFieldsMap.put("D8ReasonForDivorceAdultery3rdPartyLName", "D8ReasonForDivorceAdultery3rdPartyLName");
+
+        // Section 9 - Existing court cases
+        erToCcdFieldsMap.put("D8LegalProceedings", "D8LegalProceedings");
+        erToCcdFieldsMap.put("D8LegalProceedingsDetailsCaseNumber", "D8LegalProceedingsDetailsCaseNumber");
+        erToCcdFieldsMap.put("D8LegalProceedingsDetails", "D8LegalProceedingsDetails");
+
+        // Section 10 - Dividing your money and property – Orders which are sought
+        erToCcdFieldsMap.put("D8FinancialOrder", "D8FinancialOrder");
+        erToCcdFieldsMap.put("D8FinancialOrderFor", "D8FinancialOrderFor");
 
         return erToCcdFieldsMap;
     }

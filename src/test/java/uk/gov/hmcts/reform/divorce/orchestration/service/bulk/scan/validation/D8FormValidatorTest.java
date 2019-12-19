@@ -67,7 +67,10 @@ public class D8FormValidatorTest {
             new OcrDataField("D8MarriageDateDay", "19"),
             new OcrDataField("D8MarriageDateMonth", "03"),
             new OcrDataField("D8MarriageDateYear", "2006"),
-            new OcrDataField("D8MarriageCertificateCorrect", "Yes")
+            new OcrDataField("D8MarriageCertificateCorrect", "Yes"),
+            new OcrDataField("D8FinancialOrder", "No"),
+            new OcrDataField("D8ReasonForDivorce", "desertion"),
+            new OcrDataField("D8LegalProceedings", "No")
         ));
     }
 
@@ -79,7 +82,7 @@ public class D8FormValidatorTest {
         assertThat(validationResult.getWarnings(), is(emptyList()));
         assertThat(validationResult.getErrors(), is(emptyList()));
     }
-    
+
     @Test
     public void shouldFailValidationWhenMandatoryFieldsAreMissing() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(emptyList());
@@ -114,12 +117,15 @@ public class D8FormValidatorTest {
             "D8MarriageDateDay",
             "D8MarriageDateMonth",
             "D8MarriageDateYear",
-            "D8MarriageCertificateCorrect"
+            "D8MarriageCertificateCorrect",
+            "D8FinancialOrder",
+            "D8ReasonForDivorce",
+            "D8LegalProceedings"
         )
             .map(mandatoryFieldIsMissing)
             .toArray(String[]::new)));
     }
-    
+
     @Test
     public void shouldFailValidationWhenMandatoryFieldIsPresentButEmpty() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(Stream.of(
@@ -148,7 +154,10 @@ public class D8FormValidatorTest {
             "D8MarriageCertificateCorrect",
             "D8MarriageDateDay",
             "D8MarriageDateMonth",
-            "D8MarriageDateYear"
+            "D8MarriageDateYear",
+            "D8FinancialOrder",
+            "D8ReasonForDivorce",
+            "D8LegalProceedings"
         )
             .map(emptyValueOcrDataField)
             .collect(Collectors.toList()));
@@ -181,7 +190,10 @@ public class D8FormValidatorTest {
             "D8MarriageCertificateCorrect",
             "D8MarriageDateDay",
             "D8MarriageDateMonth",
-            "D8MarriageDateYear"
+            "D8MarriageDateYear",
+            "D8FinancialOrder",
+            "D8ReasonForDivorce",
+            "D8LegalProceedings"
         )
             .map(mandatoryFieldIsMissing)
             .toArray(String[]::new)));
@@ -215,7 +227,11 @@ public class D8FormValidatorTest {
             new OcrDataField("D8RespondentSolicitorAddressPostCode", INVALID_POSTCODE),
             new OcrDataField("D8MarriedInUk", "does the isle of man count?"),
             new OcrDataField("D8ApplicationToIssueWithoutCertificate", "check"),
-            new OcrDataField("D8MarriageCertificateCorrect", "fake")
+            new OcrDataField("D8MarriageCertificateCorrect", "fake"),
+            new OcrDataField("D8FinancialOrder", "Not sure"),
+            new OcrDataField("D8FinancialOrderFor", "someone else"),
+            new OcrDataField("D8ReasonForDivorce", "no reason"),
+            new OcrDataField("D8LegalProceedings", "Not sure")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -247,7 +263,11 @@ public class D8FormValidatorTest {
             postcodeIsUsually6or7CharactersLong("D8RespondentSolicitorAddressPostCode"),
             mustBeYesOrNo("D8MarriedInUk"),
             mustBeYesOrNo("D8ApplicationToIssueWithoutCertificate"),
-            mustBeYesOrNo("D8MarriageCertificateCorrect")
+            mustBeYesOrNo("D8MarriageCertificateCorrect"),
+            mustBeYesOrNo("D8FinancialOrder"),
+            "D8FinancialOrderFor must be \"myself\", \"my children\", \"myself, my children\" or left blank",
+            "D8ReasonForDivorce must be \"unreasonable-behaviour\", \"adultery\", \"desertion\", \"separation-2-years\" or \"separation-5-years\"",
+            mustBeYesOrNo("D8LegalProceedings")
         ));
     }
 
@@ -280,7 +300,9 @@ public class D8FormValidatorTest {
             "D8RespondentSolicitorAddressStreet",
             "D8RespondentSolicitorAddressTown",
             "D8RespondentSolicitorAddressCounty",
-            "D8RespondentSolicitorAddressPostCode"
+            "D8RespondentSolicitorAddressPostCode",
+            "D8LegalProceedingsDetailsCaseNumber",
+            "D8LegalProceedingsDetails"
         )
             .map(emptyValueOcrDataField)
             .collect(Collectors.toList());
@@ -774,6 +796,33 @@ public class D8FormValidatorTest {
                 "D8MarriageDateMonth is not a valid month e.g. 03 for March")
             ))
         );
+    }
+
+    @Test
+    public void shouldFailIfD8FinancialOrderForIsEmptyWhenD8FinancialOrderIsYes() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8FinancialOrder", "Yes")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
+            "\"D8FinancialOrderFor\" should not be empty if \"D8FinancialOrder\" is \"Yes\""
+        ));
+    }
+
+    @Test
+    public void shouldFailIfD8FinancialOrderForIsNotEmptyWhenD8FinancialOrderIsNo() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8FinancialOrder", "No"),
+            new OcrDataField("D8FinancialOrderFor", "myself")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
+            "\"D8FinancialOrderFor\" should be empty if \"D8FinancialOrder\" is \"No\""
+        ));
     }
 
     private Function<String, String> mandatoryFieldIsMissing = fieldName -> String.format("Mandatory field \"%s\" is missing", fieldName);

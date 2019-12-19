@@ -52,6 +52,12 @@
     { "name": "D8ReasonForDivorceAdultery3rdPartyAddressStreet", "value": "third party street" },
     { "name": "D8ReasonForDivorceAdultery3rdPartyTown", "value": "Thirdtown" },
     { "name": "D8ReasonForDivorceAdultery3rdPartyCounty", "value": "North Midlands" },
-    { "name": "D8ReasonForDivorceAdultery3rdPartyPostCode", "value": "SE3 5PP" }
+    { "name": "D8ReasonForDivorceAdultery3rdPartyPostCode", "value": "SE3 5PP" },
+    { "name": "D8FinancialOrder", "value": "Yes" },
+    { "name": "D8FinancialOrderFor", "value": "myself, my children" },
+    { "name": "D8ReasonForDivorce", "value": "desertion" },
+    { "name": "D8LegalProceedings", "value": "Yes" },
+    { "name": "D8LegalProceedingsDetailsCaseNumber", "value": "case1234" },
+    { "name": "D8LegalProceedingsDetails", "value": "details of previous cases" }
   ]
 }
