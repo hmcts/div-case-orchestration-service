@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformation;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import uk.gov.hmcts.reform.bsp.common.model.transformation.in.ExceptionRecord;
 import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
@@ -7,8 +8,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformatio
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -23,7 +28,7 @@ public class D8FormToCaseTransformerTest {
     private final D8FormToCaseTransformer classUnderTest = new D8FormToCaseTransformer();
 
     @Test
-    public void shouldTransformFieldsAccordingly() {
+    public void verifySeparationDateIsTransformed() {
         ExceptionRecord exceptionRecord = createExceptionRecord(singletonList(new OcrDataField("D8ReasonForDivorceSeparationDate", "20/11/2008")));
 
         Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(exceptionRecord);
@@ -67,173 +72,51 @@ public class D8FormToCaseTransformerTest {
     }
 
     @Test
-    public void verifyPetitionerHomeAddressCountyIsCorrectlyAddedToPetitionerHomeAddress() {
-        assertIsCorrectlyAddedToParentField(
+    public void verifyPetitionerAddressIsTransformed() {
+        assertAddressIsTransformed(
             "D8PetitionerHomeAddress",
-            "County",
-            "West Midlands",
-            "D8PetitionerHomeAddressCounty"
-        );
+            ImmutableMap.of(
+                "D8PetitionerHomeAddressStreet", "19 West Park Road",
+                "D8PetitionerHomeAddressTown", "Smethwick",
+                "D8PetitionerPostCode", "SE1 2PT",
+                "D8PetitionerHomeAddressCounty", "West Midlands"
+            ));
     }
 
     @Test
-    public void verifyPetitionerHomeAddressStreetIsCorrectlyAddedToPetitionerHomeAddress() {
-        assertIsCorrectlyAddedToParentField(
-            "D8PetitionerHomeAddress",
-            "AddressLine1",
-            "19 West Park Road",
-            "D8PetitionerHomeAddressStreet"
-        );
-    }
-
-    @Test
-    public void verifyPetitionerHomeAddressTownIsCorrectlyAddedToPetitionerHomeAddress() {
-        assertIsCorrectlyAddedToParentField(
-            "D8PetitionerHomeAddress",
-            "PostTown",
-            "Smethwick",
-            "D8PetitionerHomeAddressTown"
-        );
-    }
-
-    @Test
-    public void verifyPetitionerPostcodeIsCorrectlyAddedToPetitionerHomeAddress() {
-        assertIsCorrectlyAddedToParentField(
-            "D8PetitionerHomeAddress",
-            "PostCode",
-            "SE1 2PT",
-            "D8PetitionerPostCode"
-        );
-    }
-
-    @Test
-    public void verifyPetitionerSolicitorAddressCountyIsCorrectlyAddedToPetitionerSolicitorAddress() {
-        assertIsCorrectlyAddedToParentField(
+    public void verifyPetitionerSolicitorAddressIsTransformed() {
+        assertAddressIsTransformed(
             "PetitionerSolicitorAddress",
-            "County",
-            "East Midlands",
-            "PetitionerSolicitorAddressCounty"
-        );
+            ImmutableMap.of(
+                "PetitionerSolicitorAddressStreet", "20 solicitors road",
+                "PetitionerSolicitorAddressTown", "Soltown",
+                "PetitionerSolicitorAddressPostCode", "SE1 2PT",
+                "PetitionerSolicitorAddressCounty", "East Midlands"
+            ));
     }
 
     @Test
-    public void verifyPetitionerSolicitorAddressStreetIsCorrectlyAddedToPetitionerSolicitorAddress() {
-        assertIsCorrectlyAddedToParentField(
-            "PetitionerSolicitorAddress",
-            "AddressLine1",
-            "20 solicitors road",
-            "PetitionerSolicitorAddressStreet"
-        );
-    }
-
-    @Test
-    public void verifyPetitionerSolicitorAddressTownIsCorrectlyAddedToPetitionerSolicitorAddress() {
-        assertIsCorrectlyAddedToParentField(
-            "PetitionerSolicitorAddress",
-            "PostTown",
-            "Soltown",
-            "PetitionerSolicitorAddressTown"
-        );
-    }
-
-    @Test
-    public void verifyPetitionerSolicitorAddressPostCodeIsCorrectlyAddedToPetitionerSolicitorAddress() {
-        assertIsCorrectlyAddedToParentField(
-            "PetitionerSolicitorAddress",
-            "PostCode",
-            "SE1 2PT",
-            "PetitionerSolicitorAddressPostCode"
-        );
-    }
-
-    @Test
-    public void verifyD8PetitionerCorrespondenceAddressCountyIsCorrectlyAddedToD8PetitionerCorrespondenceAddress() {
-        assertIsCorrectlyAddedToParentField(
+    public void verifyD8PetitionerCorrespondenceAddressIsTransformed() {
+        assertAddressIsTransformed(
             "D8PetitionerCorrespondenceAddress",
-            "County",
-            "South Midlands",
-            "D8PetitionerCorrespondenceAddressCounty"
-        );
+            ImmutableMap.of(
+                "D8PetitionerCorrespondenceAddressStreet", "20 correspondence road",
+                "D8PetitionerCorrespondenceAddressTown", "Correspondencetown",
+                "D8PetitionerCorrespondencePostcode", "SE12BP",
+                "D8PetitionerCorrespondenceAddressCounty", "South Midlands"
+            ));
     }
 
     @Test
-    public void verifyD8PetitionerCorrespondenceAddressStreetIsCorrectlyAddedToD8PetitionerCorrespondenceAddress() {
-        assertIsCorrectlyAddedToParentField(
-            "D8PetitionerCorrespondenceAddress",
-            "AddressLine1",
-            "20 correspondence road",
-            "D8PetitionerCorrespondenceAddressStreet"
-        );
-    }
-
-    @Test
-    public void verifyD8PetitionerCorrespondenceAddressTownIsCorrectlyAddedToD8PetitionerCorrespondenceAddress() {
-        assertIsCorrectlyAddedToParentField(
-            "D8PetitionerCorrespondenceAddress",
-            "PostTown",
-            "Correspondencetown",
-            "D8PetitionerCorrespondenceAddressTown"
-        );
-    }
-
-    @Test
-    public void verifyD8PetitionerCorrespondencePostcodeIsCorrectlyAddedToD8PetitionerCorrespondenceAddress() {
-        assertIsCorrectlyAddedToParentField(
-            "D8PetitionerCorrespondenceAddress",
-            "PostCode",
-            "SE12BP",
-            "D8PetitionerCorrespondencePostcode"
-        );
-    }
-
-    @Test
-    public void verifyD8ReasonForDivorceAdultery3rdPartyAddressStreetIsCorrectlyAddedToD8ReasonForDivorceAdultery3rdAddress() {
-        assertIsCorrectlyAddedToParentField(
+    public void verifyD8ReasonForDivorceAdultery3rdPartyAddressIsTransformed() {
+        assertAddressIsTransformed(
             "D8ReasonForDivorceAdultery3rdAddress",
-            "AddressLine1",
-            "third party street",
-            "D8ReasonForDivorceAdultery3rdPartyAddressStreet"
-        );
-    }
-
-    @Test
-    public void verifyD8ReasonForDivorceAdultery3rdPartyTownIsCorrectlyAddedToD8ReasonForDivorceAdultery3rdAddress() {
-        assertIsCorrectlyAddedToParentField(
-            "D8ReasonForDivorceAdultery3rdAddress",
-            "PostTown",
-            "Thirdtown",
-            "D8ReasonForDivorceAdultery3rdPartyTown"
-        );
-    }
-
-    @Test
-    public void verifyD8ReasonForDivorceAdultery3rdPartyCountyIsCorrectlyAddedToD8ReasonForDivorceAdultery3rdAddress() {
-        assertIsCorrectlyAddedToParentField(
-            "D8ReasonForDivorceAdultery3rdAddress",
-            "County",
-            "North Midlands",
-            "D8ReasonForDivorceAdultery3rdPartyCounty"
-        );
-    }
-
-    @Test
-    public void verifyD8ReasonForDivorceAdultery3rdPartyPostCodeIsCorrectlyAddedToD8ReasonForDivorceAdultery3rdAddress() {
-        assertIsCorrectlyAddedToParentField(
-            "D8ReasonForDivorceAdultery3rdAddress",
-            "PostCode",
-            "SE3 5PP",
-            "D8ReasonForDivorceAdultery3rdPartyPostCode"
-        );
-    }
-
-    private void assertIsCorrectlyAddedToParentField(String targetParentField, String targetChildField, String testValue, String sourceField) {
-        ExceptionRecord incomingExceptionRecord =
-            createExceptionRecord(singletonList(new OcrDataField(sourceField, testValue)));
-
-        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(incomingExceptionRecord);
-        Map parentField = (Map) transformedCaseData.get(targetParentField);
-
-        assertThat(parentField.get(targetChildField), is(testValue));
+            ImmutableMap.of(
+                "D8ReasonForDivorceAdultery3rdPartyAddressStreet", "third party street",
+                "D8ReasonForDivorceAdultery3rdPartyTown", "Thirdtown",
+                "D8ReasonForDivorceAdultery3rdPartyPostCode", "SE3 5PP",
+                "D8ReasonForDivorceAdultery3rdPartyCounty", "North Midlands"
+            ));
     }
 
     @Test
@@ -254,8 +137,80 @@ public class D8FormToCaseTransformerTest {
         ));
     }
 
+    @Test
+    public void verifySection3RespondentIsTransformed() {
+        ExceptionRecord exceptionRecord = createExceptionRecord(asList(
+            new OcrDataField("D8PetitionerNameDifferentToMarriageCert", "Yes"),
+            new OcrDataField("RespNameDifferentToMarriageCertExplain", "Dog ate the homework"),
+            new OcrDataField("D8RespondentEmailAddress", "jack@daily.mail.com"),
+            new OcrDataField("D8RespondentCorrespondenceSendToSol", "Yes"),
+            new OcrDataField("D8RespondentSolicitorName", "Judge Law"),
+            new OcrDataField("D8RespondentSolicitorReference", "JL007"),
+            new OcrDataField("D8RespondentSolicitorCompany", "A-Team")
+        ));
+
+        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(exceptionRecord);
+
+        assertThat(transformedCaseData, allOf(
+            hasEntry("D8PetitionerNameDifferentToMarriageCert", "Yes"),
+            hasEntry("RespNameDifferentToMarriageCertExplain", "Dog ate the homework"),
+            hasEntry("D8RespondentEmailAddress", "jack@daily.mail.com"),
+            hasEntry("D8RespondentCorrespondenceSendToSol", "Yes"),
+            hasEntry("D8RespondentSolicitorName", "Judge Law"),
+            hasEntry("D8RespondentSolicitorReference", "JL007"),
+            hasEntry("D8RespondentSolicitorCompany", "A-Team")
+        ));
+    }
+
+    @Test
+    public void verifyD8RespondentHomeAddressIsTransformed() {
+        assertAddressIsTransformed(
+            "D8RespondentHomeAddress",
+            ImmutableMap.of(
+                "D8RespondentHomeAddressStreet", "12 Res Pond",
+                "D8RespondentHomeAddressTown", "Divorcity",
+                "D8RespondentPostcode", "RE5 3NT",
+                "D8RespondentHomeAddressCounty", "Mid Midlands"
+            ));
+    }
+
+    @Test
+    public void verifyD8RespondentSolicitorAddressIsTransformed() {
+        assertAddressIsTransformed(
+            "D8RespondentSolicitorAddress",
+            ImmutableMap.of(
+                "D8RespondentSolicitorAddressStreet", "50 Licitor",
+                "D8RespondentSolicitorAddressTown", "Lawyerpool",
+                "D8RespondentSolicitorAddressPostCode", "SO2 7OR",
+                "D8RespondentSolicitorAddressCounty", "Higher Midlands"
+            ));
+    }
     private ExceptionRecord createExceptionRecord(List<OcrDataField> ocrDataFields) {
         return ExceptionRecord.builder().id("test_case_id").ocrDataFields(ocrDataFields).build();
     }
 
+    private void assertAddressIsTransformed(String targetParentField, Map<String, String> sourceFieldAndValueMap) {
+        ExceptionRecord incomingExceptionRecord = createExceptionRecord(sourceFieldAndValueMap.entrySet().stream()
+            .map(fieldAndValue -> new OcrDataField(fieldAndValue.getKey(), fieldAndValue.getValue()))
+            .collect(Collectors.toList()));
+
+        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(incomingExceptionRecord);
+
+        Map<String, String> sourceSuffixToTargetMap = ImmutableMap.of(
+            "AddressStreet", "AddressLine1",
+            "Town", "PostTown",
+            "PostCode", "PostCode",
+            "County", "County"
+        );
+        BiFunction<Map<String, String>, String, String> getValueForSuffix = (map, suffix) -> map.entrySet().stream()
+            .filter(entry -> entry.getKey().toLowerCase().endsWith(suffix.toLowerCase()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(String.format("Expected to find key with suffix %s in map", suffix)))
+            .getValue();
+
+        Map parentField = (Map) transformedCaseData.getOrDefault(targetParentField, emptyMap());
+        sourceSuffixToTargetMap.entrySet().forEach(suffixToTarget ->
+            assertThat(parentField.get(suffixToTarget.getValue()), is(getValueForSuffix.apply(sourceFieldAndValueMap, suffixToTarget.getKey())))
+        );
+    }
 }
