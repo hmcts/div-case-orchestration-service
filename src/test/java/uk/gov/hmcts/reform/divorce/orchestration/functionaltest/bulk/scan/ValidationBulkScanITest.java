@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
+import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
@@ -110,13 +111,19 @@ public class ValidationBulkScanITest {
             status().isOk(),
             content().string(allOf(
                 hasJsonPath("$.warnings", hasItems(
-                    "Mandatory field \"D8PetitionerFirstName\" is missing",
+                    mandatoryFieldIsMissing("D8PetitionerFirstName"),
                     "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value",
-                    "Mandatory field \"D8PetitionerNameChangedHow\" is missing",
-                    "Mandatory field \"D8MarriedInUk\" is missing",
-                    "Mandatory field \"D8ApplicationToIssueWithoutCertificate\" is missing",
-                    "Mandatory field \"D8MarriageCertificateCorrect\" is missing"
-                )),
+                    mandatoryFieldIsMissing("D8PetitionerNameChangedHow"),
+                    mandatoryFieldIsMissing("D8MarriedInUk"),
+                    mandatoryFieldIsMissing("D8ApplicationToIssueWithoutCertificate"),
+                    mandatoryFieldIsMissing("D8MarriageCertificateCorrect"),
+                    mandatoryFieldIsMissing("D8PetitionerNameDifferentToMarriageCert"),
+                    mandatoryFieldIsMissing("D8RespondentHomeAddressStreet"),
+                    mandatoryFieldIsMissing("D8RespondentHomeAddressTown"),
+                    mandatoryFieldIsMissing("D8RespondentHomeAddressCounty"),
+                    mandatoryFieldIsMissing("D8RespondentPostcode"),
+                    mandatoryFieldIsMissing("D8RespondentCorrespondenceSendToSol")
+                    )),
                 hasJsonPath("$.errors", equalTo(emptyList())),
                 hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
             ))
@@ -135,16 +142,16 @@ public class ValidationBulkScanITest {
             status().isOk(),
             content().string(allOf(
                 hasJsonPath("$.warnings", hasItems(
-                    "D8PetitionerPhoneNumber is not in a valid format",
-                    "D8PetitionerEmail is not in a valid format",
-                    "PetitionerSolicitorPhone is not in a valid format",
-                    "PetitionerSolicitorEmail is not in a valid format",
+                    notInAValidFormat("D8PetitionerPhoneNumber"),
+                    notInAValidFormat("D8PetitionerEmail"),
+                    notInAValidFormat("PetitionerSolicitorPhone"),
+                    notInAValidFormat("PetitionerSolicitorEmail"),
                     "D8PetitionerCorrespondencePostcode is usually 6 or 7 characters long",
-                    "Mandatory field \"D8MarriageCertificateCorrect\" is missing",
-                    "D8FinancialOrder must be \"Yes\" or \"No\"",
+                    mandatoryFieldIsMissing("D8MarriageCertificateCorrect"),
+                    mustBeYesOrNo("D8FinancialOrder"),
                     "D8ReasonForDivorce must be \"unreasonable-behaviour\", \"adultery\", \"desertion\","
                         + " \"separation-2-years\" or \"separation-5-years\"",
-                    "D8LegalProceedings must be \"Yes\" or \"No\""
+                    mustBeYesOrNo("D8LegalProceedings")
                 )),
                 hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
             ))
@@ -162,5 +169,17 @@ public class ValidationBulkScanITest {
             status().isNotFound(),
             content().string(isEmptyString())
         ));
+    }
+
+    private String mandatoryFieldIsMissing(String fieldName) {
+        return String.format("Mandatory field \"%s\" is missing", fieldName);
+    }
+
+    private String notInAValidFormat(String fieldName) {
+        return String.format("%s is not in a valid format", fieldName);
+    }
+
+    private String mustBeYesOrNo(String fieldName) {
+        return String.format("%s must be \"Yes\" or \"No\"", fieldName);
     }
 }

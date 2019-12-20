@@ -193,7 +193,7 @@ public class D8FormToCaseTransformerTest {
                 "D8RespondentSolicitorAddressCounty", "Higher Midlands"
             ));
     }
-    
+
     private ExceptionRecord createExceptionRecord(List<OcrDataField> ocrDataFields) {
         return ExceptionRecord.builder().id("test_case_id").ocrDataFields(ocrDataFields).build();
     }
