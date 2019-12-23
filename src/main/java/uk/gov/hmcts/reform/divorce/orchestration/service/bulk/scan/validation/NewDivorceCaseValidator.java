@@ -113,7 +113,9 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
             validatePayment(fieldsMap),
             validatePlaceOfMarriage(fieldsMap),
             validateMarriageCertificateCorrect(fieldsMap),
-            validateDateSplitIntoComponents(fieldsMap, "D8MarriageDateDay", "D8MarriageDateMonth", "D8MarriageDateYear"),
+            validateDateField(fieldsMap, "D8MarriageDate"),
+            validateDateField(fieldsMap, "D8MentalSeparationDate"),
+            validateDateField(fieldsMap, "D8PhysicalSeparationDate"),
             validateD8PetitionerCorrespondenceAddress(fieldsMap),
             validateD8FinancialOrderFor(fieldsMap)
         )
@@ -180,7 +182,7 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
     }
 
     private static List<String> validateFieldsAreNotEmpty(List<String> fields, String conditionField, Map<String, String> fieldsMap,
-                                                       String errorMessage, String conditionFieldValue) {
+                                                          String errorMessage, String conditionFieldValue) {
         return validateFieldsAreEmptyIs(false, fields, conditionField, fieldsMap, errorMessage, conditionFieldValue);
     }
 
@@ -269,6 +271,10 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
             }
         }
         return validationWarningMessages;
+    }
+
+    private static List<String> validateDateField(Map<String, String> fieldsMap, String field) {
+        return validateDateSplitIntoComponents(fieldsMap, field + "Day", field + "Month", field + "Year");
     }
 
     private static List<String> validateDateSplitIntoComponents(Map<String, String> fieldsMap, String dayKey, String monthKey, String yearKey) {

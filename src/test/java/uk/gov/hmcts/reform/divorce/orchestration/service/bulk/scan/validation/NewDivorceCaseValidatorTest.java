@@ -54,6 +54,15 @@ public class NewDivorceCaseValidatorTest {
             new OcrDataField("D8MarriageDateDay", "19"),
             new OcrDataField("D8MarriageDateMonth", "03"),
             new OcrDataField("D8MarriageDateYear", "2006"),
+
+            new OcrDataField("D8MentalSeparationDateDay", "19"),
+            new OcrDataField("D8MentalSeparationDateMonth", "03"),
+            new OcrDataField("D8MentalSeparationDateYear", "2006"),
+
+            new OcrDataField("D8PhysicalSeparationDateDay", "19"),
+            new OcrDataField("D8PhysicalSeparationDateMonth", "03"),
+            new OcrDataField("D8PhysicalSeparationDateYear", "2006"),
+
             new OcrDataField("D8MarriageCertificateCorrect", "Yes"),
             new OcrDataField("D8FinancialOrder", "No"),
             new OcrDataField("D8ReasonForDivorce", "desertion"),
