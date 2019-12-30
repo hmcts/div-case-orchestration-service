@@ -33,7 +33,8 @@ public class AosPack2CaseValidatorTest {
             new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "Yes"),
             new OcrDataField("RespLegalProceedingsExist", "No"),
-            new OcrDataField("RespAgreeToCosts", "Yes")
+            new OcrDataField("RespAgreeToCosts", "Yes"),
+            new OcrDataField("RespStatementofTruthSignedDate", "12102019")
         );
 
         listOfAllMandatoryFields = new ArrayList<>(listOfAllMandatoryFieldsImmutable);
@@ -136,8 +137,7 @@ public class AosPack2CaseValidatorTest {
     public void shouldPassForNonMandatoryEmptyFields() {
         List<OcrDataField> nonMandatoryFieldsWithEmptyValues = asList(
             new OcrDataField("RespJurisdictionDisagreeReason", ""),
-            new OcrDataField("RespLegalProceedingsDescription", ""),
-            new OcrDataField("RespStatementofTruthSignedDate", "")
+            new OcrDataField("RespLegalProceedingsDescription", "")
         );
 
         listOfAllMandatoryFields.addAll(nonMandatoryFieldsWithEmptyValues);
@@ -162,7 +162,8 @@ public class AosPack2CaseValidatorTest {
             new OcrDataField("RespJurisdictionAgree", "Yes"),
             new OcrDataField("RespJurisdictionDisagreeReason", ""),
             new OcrDataField("RespLegalProceedingsExist", "No"),
-            new OcrDataField("RespAgreeToCosts", "Yes")
+            new OcrDataField("RespAgreeToCosts", "Yes"),
+            new OcrDataField("RespStatementofTruthSignedDate", "12102019")
         );
 
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(fieldsUnderTest);
@@ -200,7 +201,8 @@ public class AosPack2CaseValidatorTest {
             new OcrDataField("RespJurisdictionAgree", "No"),
             new OcrDataField("RespJurisdictionDisagreeReason", "Here is my reason for disagreeing with the jurisdictiosssn"),
             new OcrDataField("RespLegalProceedingsExist", "No"),
-            new OcrDataField("RespAgreeToCosts", "Yes")
+            new OcrDataField("RespAgreeToCosts", "Yes"),
+            new OcrDataField("RespStatementofTruthSignedDate", "12102019")
         );
 
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(fieldsUnderTest);
@@ -250,7 +252,8 @@ public class AosPack2CaseValidatorTest {
             new OcrDataField("RespJurisdictionAgree", "Yes"),
             new OcrDataField("RespLegalProceedingsExist", "Yes"),
             new OcrDataField("RespLegalProceedingsDescription", "My description of my other legal proceedings"),
-            new OcrDataField("RespAgreeToCosts", "Yes")
+            new OcrDataField("RespAgreeToCosts", "Yes"),
+            new OcrDataField("RespStatementofTruthSignedDate", "12102019")
         );
 
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(fieldsUnderTest);
@@ -273,7 +276,8 @@ public class AosPack2CaseValidatorTest {
             new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "Yes"),
             new OcrDataField("RespLegalProceedingsExist", "No"),
-            new OcrDataField("RespAgreeToCosts", "Yes")
+            new OcrDataField("RespAgreeToCosts", "Yes"),
+            new OcrDataField("RespStatementofTruthSignedDate", "12102019")
         );
 
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(fieldsUnderTest);
@@ -297,7 +301,8 @@ public class AosPack2CaseValidatorTest {
             new OcrDataField("RespJurisdictionAgree", "Yes"),
             new OcrDataField("RespLegalProceedingsExist", "Yes"),
             new OcrDataField("RespLegalProceedingsDescription", "My description of my other legal proceedings"),
-            new OcrDataField("RespAgreeToCosts", "Yes")
+            new OcrDataField("RespAgreeToCosts", "Yes"),
+            new OcrDataField("RespStatementofTruthSignedDate", "12102019")
         );
 
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(fieldsUnderTest);

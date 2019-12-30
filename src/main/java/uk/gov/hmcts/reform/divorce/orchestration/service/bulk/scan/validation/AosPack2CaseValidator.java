@@ -20,12 +20,14 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
 
     private static final String DATE_RESP_RECEIVED_DIV_APP_WRONG_LENGTH_ERROR_MESSAGE =
         "DateRespReceivedDivorceApplication must be a valid 8 digit date";
+    private static final String RESP_STATEMENT_OF_TRUTH_WRONG_LENGTH_ERROR_MESSAGE =
+        "RespStatementofTruthSignedDate must be a valid 8 digit date";
     private static final String RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE =
         "RespJurisdictionDisagreeReason must not be empty if 'RespJurisdictionAgree' is 'No";
     private static final String RESP_LEGAL_PROCEEDINGS_ERROR_MESSAGE =
         "RespLegalProceedingsDescription must not be empty if 'RespLegalProceedingsExist' is 'No";
 
-    private static final int DATE_RESP_RECEIVED_DIVORCE_APPLICATION_LENGTH = 8;
+    private static final int AOS_FORM_DATE_LENGTH = 8;
 
     private static final List<String> MANDATORY_FIELDS = asList(
         "CaseNumber",
@@ -67,10 +69,9 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
     @Override
     protected List<String> runPostProcessingValidation(Map<String, String> fieldsMap) {
         List<String> errorMessages = Stream.of(
-            validateDateRespReceivedDivApplication(fieldsMap),
+            validateDatesRelevantToAosApplication(fieldsMap),
             validateRespJurisdictionDisagreeReason(fieldsMap),
-            validateRespLegalProceedingsDescription(fieldsMap),
-            validateRespStatementofTruthSignedDate(fieldsMap)
+            validateRespLegalProceedingsDescription(fieldsMap)
         )
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
@@ -78,23 +79,27 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
         return errorMessages;
     }
 
-    private static List<String> validateDateRespReceivedDivApplication(Map<String, String> fieldsMap) {
+    private static List<String> validateDatesRelevantToAosApplication(Map<String, String> fieldsMap) {
 
         List<String> validationWarningMessages = new ArrayList<>();
 
         String dateRespReceivedDivorceApplication = fieldsMap.getOrDefault("DateRespReceivedDivorceApplication", "");
+        String respStatementofTruthSignedDate = fieldsMap.getOrDefault("RespStatementofTruthSignedDate", "");
 
-        if (!isDateRespReceivedDivApplicationValid(dateRespReceivedDivorceApplication)) {
+        if (!isApplicationDateValid(dateRespReceivedDivorceApplication)) {
             validationWarningMessages.add(DATE_RESP_RECEIVED_DIV_APP_WRONG_LENGTH_ERROR_MESSAGE);
+        }
+
+        if (!isApplicationDateValid(respStatementofTruthSignedDate)) {
+            validationWarningMessages.add(RESP_STATEMENT_OF_TRUTH_WRONG_LENGTH_ERROR_MESSAGE);
         }
 
         return validationWarningMessages;
     }
 
-    private static boolean isDateRespReceivedDivApplicationValid(String dateRespReceivedDivorceApplication) {
-
-        return (StringUtils.isNumeric(dateRespReceivedDivorceApplication)
-            && (dateRespReceivedDivorceApplication.length() == DATE_RESP_RECEIVED_DIVORCE_APPLICATION_LENGTH));
+    private static boolean isApplicationDateValid(String date) {
+        return (StringUtils.isNumeric(date)
+            && (date.length() == AOS_FORM_DATE_LENGTH));
     }
 
     private static List<String> validateRespJurisdictionDisagreeReason(Map<String, String> fieldsMap) {
@@ -133,12 +138,5 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
         }
 
         return validationWarningMessages;
-    }
-
-    // TODO: Implement this method
-    private static List<String> validateRespStatementofTruthSignedDate(Map<String, String> fieldsMap) {
-        List<String> validationMessages = new ArrayList<>();
-
-        return validationMessages;
     }
 }
