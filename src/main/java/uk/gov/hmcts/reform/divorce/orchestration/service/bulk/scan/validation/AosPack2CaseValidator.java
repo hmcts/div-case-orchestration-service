@@ -22,6 +22,8 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
         "DateRespReceivedDivorceApplication must be a valid 8 digit date";
     private static final String RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE =
         "RespJurisdictionDisagreeReason must not be empty if 'RespJurisdictionAgree' is 'No";
+    private static final String RESP_LEGAL_PROCEEDINGS_ERROR_MESSAGE =
+        "RespLegalProceedingsDescription must not be empty if 'RespLegalProceedingsExist' is 'No";
     private static final String EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE =
         "\"%s\" should not be empty if \"%s\" is \"%s\"";
     private static final String NOT_EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE =
@@ -174,9 +176,21 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
         If RespLegalProceedingsExist is anything else,  and RespLegalProceedingsDescription is not-empty, status = success
          */
 
-        List<String> validationMessages = new ArrayList<>();
+        List<String> validationWarningMessages = new ArrayList<>();
 
-        return validationMessages;
+        String respLegalProceedingsExistField = fieldsMap.getOrDefault("RespLegalProceedingsExist", "");
+        String respLegalProceedingsDescriptionField = fieldsMap.getOrDefault("RespLegalProceedingsDescription", "");
+
+        if (respLegalProceedingsExistField.equals(YES_VALUE) && respLegalProceedingsDescriptionField.isEmpty()) {
+
+            validationWarningMessages.add(RESP_LEGAL_PROCEEDINGS_ERROR_MESSAGE);
+
+        } else if (respLegalProceedingsExistField.equals(NO_VALUE) && !respLegalProceedingsDescriptionField.isEmpty()) {
+
+            validationWarningMessages.add(RESP_LEGAL_PROCEEDINGS_ERROR_MESSAGE);
+        }
+
+        return validationWarningMessages;
     }
 
     // TODO: Implement this method

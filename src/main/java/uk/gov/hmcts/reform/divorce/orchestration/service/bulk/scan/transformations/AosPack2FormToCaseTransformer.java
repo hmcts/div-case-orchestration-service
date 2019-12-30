@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformati
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,14 +25,13 @@ public class AosPack2FormToCaseTransformer extends BulkScanFormTransformer {
 
     @Override
     Map<String, Object> runFormSpecificTransformation(List<OcrDataField> ocrDataFields) {
-        return null;
+
+        // returning an empty map as we currently have no formSpecificTransformation for AOS Pack 2
+        return Collections.emptyMap();
     }
 
     @Override
     Map<String, Object> runPostMappingModification(Map<String, Object> transformedCaseData) {
-
-        // will delete this line
-        // transformedCaseData.replace("D8PaymentMethod", "Debit/Credit Card", "Card");
 
         return transformedCaseData;
     }

@@ -142,6 +142,7 @@ public class AosPack2CaseValidatorTest {
 
         listOfAllMandatoryFields.addAll(nonMandatoryFieldsWithEmptyValues);
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(listOfAllMandatoryFields);
+
         assertThat(validationResult.getStatus(), is(SUCCESS));
         assertThat(validationResult.getWarnings(), is(emptyList()));
         assertThat(validationResult.getErrors(), is(emptyList()));
@@ -232,6 +233,120 @@ public class AosPack2CaseValidatorTest {
         assertThat(validationResult.getErrors(), is(emptyList()));
         assertThat(validationResult.getWarnings(), hasItems(
             "RespJurisdictionDisagreeReason must not be empty if 'RespJurisdictionAgree' is 'No"
+        ));
+    }
+
+    @Test
+    public void shouldPassIfRespLegalProceedingsDoNotExistAndRespLegalProceedingsDescriptionExists() {
+
+        List<OcrDataField> fieldsUnderTest = asList(
+            new OcrDataField("CaseNumber", "1234123412341234"),
+            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("RespConfirmReadPetition", "Yes"),
+            new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
+            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespWillDefendDivorce", "Proceed"),
+            new OcrDataField("RespConsiderFinancialSituation", "No"),
+            new OcrDataField("RespJurisdictionAgree", "Yes"),
+            new OcrDataField("RespLegalProceedingsExist", "Yes"),
+            new OcrDataField("RespLegalProceedingsDescription", "My description of my other legal proceedings"),
+            new OcrDataField("RespAgreeToCosts", "Yes")
+        );
+
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(fieldsUnderTest);
+
+        assertThat(validationResult.getStatus(), is(SUCCESS));
+        assertThat(validationResult.getWarnings(), is(emptyList()));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+    }
+
+    @Test
+    public void shouldPassIfRespLegalProceedingsDoNotExistAndNoRespLegalProceedingsDescriptionIsGiven() {
+
+        List<OcrDataField> fieldsUnderTest = asList(
+            new OcrDataField("CaseNumber", "1234123412341234"),
+            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("RespConfirmReadPetition", "Yes"),
+            new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
+            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespWillDefendDivorce", "Proceed"),
+            new OcrDataField("RespConsiderFinancialSituation", "No"),
+            new OcrDataField("RespJurisdictionAgree", "Yes"),
+            new OcrDataField("RespLegalProceedingsExist", "No"),
+            new OcrDataField("RespAgreeToCosts", "Yes")
+        );
+
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(fieldsUnderTest);
+
+        assertThat(validationResult.getStatus(), is(SUCCESS));
+        assertThat(validationResult.getWarnings(), is(emptyList()));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+    }
+
+    @Test
+    public void shouldPassIfRespLegalProceedingsExistAndRespLegalProceedingsDescriptionIsGiven() {
+
+        List<OcrDataField> fieldsUnderTest = asList(
+            new OcrDataField("CaseNumber", "1234123412341234"),
+            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("RespConfirmReadPetition", "Yes"),
+            new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
+            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespWillDefendDivorce", "Proceed"),
+            new OcrDataField("RespConsiderFinancialSituation", "No"),
+            new OcrDataField("RespJurisdictionAgree", "Yes"),
+            new OcrDataField("RespLegalProceedingsExist", "Yes"),
+            new OcrDataField("RespLegalProceedingsDescription", "My description of my other legal proceedings"),
+            new OcrDataField("RespAgreeToCosts", "Yes")
+        );
+
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(fieldsUnderTest);
+
+        assertThat(validationResult.getStatus(), is(SUCCESS));
+        assertThat(validationResult.getWarnings(), is(emptyList()));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+    }
+
+    @Test
+    public void shouldFailIfRespLegalProceedingsExistAndRespLegalProceedingsDescriptionIsNotGiven() {
+
+        List<OcrDataField> fieldsUnderTest = asList(
+            new OcrDataField("CaseNumber", "1234123412341234"),
+            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("RespConfirmReadPetition", "Yes"),
+            new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
+            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespWillDefendDivorce", "Proceed"),
+            new OcrDataField("RespConsiderFinancialSituation", "No"),
+            new OcrDataField("RespJurisdictionAgree", "Yes"),
+            new OcrDataField("RespLegalProceedingsExist", "Yes"),
+            new OcrDataField("RespAgreeToCosts", "Yes")
+        );
+
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(fieldsUnderTest);
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
+            "RespLegalProceedingsDescription must not be empty if 'RespLegalProceedingsExist' is 'No"
+        ));
+    }
+
+
+    @Test
+    public void shouldFailIfRespLegalProceedingsDoNotExistAndRespLegalProceedingsDescriptionIsNotGiven() {
+
+        List<OcrDataField> nonMandatoryFieldsWithEmptyValues = asList(
+            new OcrDataField("RespLegalProceedingsDescription", "My description of my other legal proceedings")
+        );
+
+        listOfAllMandatoryFields.addAll(nonMandatoryFieldsWithEmptyValues);
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(listOfAllMandatoryFields);
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
+            "RespLegalProceedingsDescription must not be empty if 'RespLegalProceedingsExist' is 'No"
         ));
     }
 }

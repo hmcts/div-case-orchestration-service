@@ -12,7 +12,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
+import uk.gov.hmcts.reform.bsp.common.model.update.in.BulkScanCaseUpdateRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
+
+import java.util.HashMap;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
@@ -30,7 +33,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.controller.BulkScanContr
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.ALLOWED_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.I_AM_NOT_ALLOWED_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
 @ContextConfiguration(classes = OrchestrationServiceApplication.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -41,9 +43,7 @@ public class UpdateBulkScanITest {
 
     private static final String UPDATE_URL = "/update-case";
 
-    private static final String FULL_AOS_PACK_2_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/aos/fullAosPack2Form.json";
-
-    private static String VALID_BODY;
+    private static final BulkScanCaseUpdateRequest VALID_BODY = new BulkScanCaseUpdateRequest(null, new HashMap<>());
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,11 +52,9 @@ public class UpdateBulkScanITest {
     AuthTokenValidator authTokenValidator;
 
     @Before
-    public void setup() throws Exception {
-        when(authTokenValidator.getServiceName(ALLOWED_SERVICE_TOKEN)).thenReturn("bulk_scan_processor");
+    public void setup() {
+        when(authTokenValidator.getServiceName(ALLOWED_SERVICE_TOKEN)).thenReturn("bulk_scan_orchestrator");
         when(authTokenValidator.getServiceName(I_AM_NOT_ALLOWED_SERVICE_TOKEN)).thenReturn("don't let me do it!");
-
-        VALID_BODY = loadResourceAsString(FULL_AOS_PACK_2_FORM_JSON_PATH);
     }
 
     @Test
