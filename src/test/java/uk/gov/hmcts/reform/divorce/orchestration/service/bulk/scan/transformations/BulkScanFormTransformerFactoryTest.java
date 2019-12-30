@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_PACK_2;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.NEW_DIVORCE_CASE;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,6 +24,9 @@ public class BulkScanFormTransformerFactoryTest {
 
     @Mock
     private D8FormToCaseTransformer d8FormToCaseTransformer;
+
+    @Mock
+    private AosPack2FormToCaseTransformer aosPack2FormToCaseTransformer;
 
     @InjectMocks
     private BulkScanFormTransformerFactory bulkScanFormTransformerFactory;
@@ -35,6 +39,7 @@ public class BulkScanFormTransformerFactoryTest {
     @Test
     public void shouldReturnRightTransformationStrategy() {
         assertThat(bulkScanFormTransformerFactory.getTransformer(NEW_DIVORCE_CASE), is(d8FormToCaseTransformer));
+        assertThat(bulkScanFormTransformerFactory.getTransformer(AOS_PACK_2), is(aosPack2FormToCaseTransformer));
     }
 
     @Test

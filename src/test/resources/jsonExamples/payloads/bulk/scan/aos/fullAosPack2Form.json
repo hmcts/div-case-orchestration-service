@@ -1,0 +1,20 @@
+{
+  "case_type_id": "DIVORCE",
+  "id": "LV481297",
+  "po_box": "PO 17",
+  "form_type": "aosPack2",
+  "ocr_data_fields": [
+    { "name": "CaseNumber", "value": "1234123412341234" },
+    { "name": "AOSReasonForDivorce", "value": "2 years separation with consent" },
+    { "name": "RespConfirmReadPetition", "value": "Yes" },
+    { "name": "DateRespReceivedDivorceApplication", "value": "10102019" },
+    { "name": "RespAOS2yrConsent", "value": "Yes" },
+    { "name": "RespWillDefendDivorce", "value": "Proceed" },
+    { "name": "RespConsiderFinancialSituation", "value": "No" },
+    { "name": "RespJurisdictionAgree", "value": "Yes" },
+    { "name": "RespLegalProceedingsExist", "value": "No" },
+    { "name": "RespAgreeToCosts", "value": "Yes" },
+    { "name": "RespStatementOfTruth", "value": "Yes" },
+    { "name": "RespStatementofTruthSignedDate", "value": "11102019" }
+  ]
+}
