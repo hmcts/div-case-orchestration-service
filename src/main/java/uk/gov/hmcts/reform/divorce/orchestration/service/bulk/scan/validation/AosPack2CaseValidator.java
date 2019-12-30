@@ -24,10 +24,6 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
         "RespJurisdictionDisagreeReason must not be empty if 'RespJurisdictionAgree' is 'No";
     private static final String RESP_LEGAL_PROCEEDINGS_ERROR_MESSAGE =
         "RespLegalProceedingsDescription must not be empty if 'RespLegalProceedingsExist' is 'No";
-    private static final String EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE =
-        "\"%s\" should not be empty if \"%s\" is \"%s\"";
-    private static final String NOT_EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE =
-        "\"%s\" should be empty if \"%s\" is \"%s\"";
 
     private static final int DATE_RESP_RECEIVED_DIVORCE_APPLICATION_LENGTH = 8;
 
@@ -82,42 +78,6 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
         return errorMessages;
     }
 
-    private static List<String> validateFieldsAreNotEmptyOnlyFor(String valueForWhichFieldsShouldNotBeEmpty, String conditionField,
-                                                                 List<String> fieldsToCheck, Map<String, String> fieldsMap) {
-        String conditionFieldValue = fieldsMap.getOrDefault(conditionField, "");
-
-        if (conditionFieldValue.equals(valueForWhichFieldsShouldNotBeEmpty)) {
-            return validateFieldsAreNotEmpty(fieldsToCheck, conditionField, fieldsMap,
-                EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE, conditionFieldValue);
-        } else {
-            return validateFieldsAreEmpty(fieldsToCheck, conditionField, fieldsMap,
-                NOT_EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE, conditionFieldValue);
-        }
-    }
-
-    private static List<String> validateFieldsAreEmptyIs(boolean expected, List<String> fields, String conditionField,
-                                                         Map<String, String> fieldsMap, String errorMessage, String conditionFieldValue) {
-        List<String> validationWarningMessages = new ArrayList<>();
-        fields.forEach((fieldKey) -> {
-            String fieldValue = fieldsMap.getOrDefault(fieldKey, "");
-            boolean fieldValueIsAsItShould = StringUtils.isBlank(fieldValue) == expected;
-            if (!fieldValueIsAsItShould) {
-                validationWarningMessages.add(String.format(errorMessage, fieldKey, conditionField, conditionFieldValue));
-            }
-        });
-        return validationWarningMessages;
-    }
-
-    private static List<String> validateFieldsAreEmpty(List<String> fields, String conditionField, Map<String, String> fieldsMap,
-                                                       String errorMessage, String conditionFieldValue) {
-        return validateFieldsAreEmptyIs(true, fields, conditionField, fieldsMap, errorMessage, conditionFieldValue);
-    }
-
-    private static List<String> validateFieldsAreNotEmpty(List<String> fields, String conditionField, Map<String, String> fieldsMap,
-                                                       String errorMessage, String conditionFieldValue) {
-        return validateFieldsAreEmptyIs(false, fields, conditionField, fieldsMap, errorMessage, conditionFieldValue);
-    }
-
     private static List<String> validateDateRespReceivedDivApplication(Map<String, String> fieldsMap) {
 
         List<String> validationWarningMessages = new ArrayList<>();
@@ -125,7 +85,6 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
         String dateRespReceivedDivorceApplication = fieldsMap.getOrDefault("DateRespReceivedDivorceApplication", "");
 
         if (!isDateRespReceivedDivApplicationValid(dateRespReceivedDivorceApplication)) {
-
             validationWarningMessages.add(DATE_RESP_RECEIVED_DIV_APP_WRONG_LENGTH_ERROR_MESSAGE);
         }
 
@@ -133,20 +92,12 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
     }
 
     private static boolean isDateRespReceivedDivApplicationValid(String dateRespReceivedDivorceApplication) {
+
         return (StringUtils.isNumeric(dateRespReceivedDivorceApplication)
             && (dateRespReceivedDivorceApplication.length() == DATE_RESP_RECEIVED_DIVORCE_APPLICATION_LENGTH));
     }
 
-    // TODO: Implement this method
     private static List<String> validateRespJurisdictionDisagreeReason(Map<String, String> fieldsMap) {
-        /*
-        If RespJurisdictionAgree is 'No',  and RespJurisdictionDisagreeReason is empty, status = warning
-        If RespJurisdictionAgree is 'No',  and RespJurisdictionDisagreeReason is not-empty, status = success
-        If RespJurisdictionAgree is 'Yes',  and RespJurisdictionDisagreeReason is empty, status = success
-        If RespJurisdictionAgree is 'Yes',  and RespJurisdictionDisagreeReason is not-empty, status = warning
-        If RespJurisdictionAgree is anything else,  and RespJurisdictionDisagreeReason is empty, status = success
-        If RespJurisdictionAgree is anything else,  and RespJurisdictionDisagreeReason is not-empty, status = success
-         */
 
         List<String> validationWarningMessages = new ArrayList<>();
 
@@ -165,16 +116,7 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
         return validationWarningMessages;
     }
 
-    // TODO: Implement this method
     private static List<String> validateRespLegalProceedingsDescription(Map<String, String> fieldsMap) {
-        /*
-        If RespLegalProceedingsExist is 'Yes', and  RespLegalProceedingsDescription is empty, status = warning
-        If RespLegalProceedingsExist is 'Yes', and  RespLegalProceedingsDescription is not-empty, status = success
-        If RespLegalProceedingsExist is 'No', and  RespLegalProceedingsDescription is empty, status = success
-        If RespLegalProceedingsExist is 'No', and  RespLegalProceedingsDescription is not-empty, status = warning
-        If RespLegalProceedingsExist is anything else,  and RespLegalProceedingsDescription is empty, status = success
-        If RespLegalProceedingsExist is anything else,  and RespLegalProceedingsDescription is not-empty, status = success
-         */
 
         List<String> validationWarningMessages = new ArrayList<>();
 
@@ -197,18 +139,6 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
     private static List<String> validateRespStatementofTruthSignedDate(Map<String, String> fieldsMap) {
         List<String> validationMessages = new ArrayList<>();
 
-        return validationMessages;
-    }
-
-    private static List<String> validateFieldMatchesRegex(Map<String, String> fieldsMap, String fieldKey, String validationRegex) {
-        List<String> validationMessages = new ArrayList<>();
-
-        if (fieldsMap.containsKey(fieldKey)) {
-            String valueToValidate = fieldsMap.get(fieldKey);
-            if (!valueToValidate.matches(validationRegex)) {
-                validationMessages.add(fieldKey + " is not in a valid format");
-            }
-        }
         return validationMessages;
     }
 }
