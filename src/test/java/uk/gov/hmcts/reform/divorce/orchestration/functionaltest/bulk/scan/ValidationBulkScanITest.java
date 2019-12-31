@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.BulkScanController.SERVICE_AUTHORISATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.ALLOWED_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.I_AM_NOT_ALLOWED_SERVICE_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.NEW_DIVORCE_CASE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
 @ContextConfiguration(classes = OrchestrationServiceApplication.class)
@@ -62,7 +62,7 @@ public class ValidationBulkScanITest {
     @Test
     public void shouldReturnForbiddenStatusWhenInvalidToken() throws Exception {
         mockMvc.perform(
-            post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
+            post("/forms/{form-type}/validate-ocr", D8_FORM)
                 .contentType(APPLICATION_JSON)
                 .content(VALID_BODY)
                 .header(SERVICE_AUTHORISATION_HEADER, I_AM_NOT_ALLOWED_SERVICE_TOKEN)
@@ -72,7 +72,7 @@ public class ValidationBulkScanITest {
     @Test
     public void shouldReturnUnauthorizedStatusWhenNoAuthServiceHeader() throws Exception {
         mockMvc.perform(
-            post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
+            post("/forms/{form-type}/validate-ocr", D8_FORM)
                 .contentType(APPLICATION_JSON)
                 .content(VALID_BODY)
                 .header(SERVICE_AUTHORISATION_HEADER, "")
@@ -82,7 +82,7 @@ public class ValidationBulkScanITest {
     @Test
     public void shouldReturnSuccessResponseForValidationEndpoint() throws Exception {
         mockMvc.perform(
-            post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
+            post("/forms/{form-type}/validate-ocr", D8_FORM)
                 .contentType(APPLICATION_JSON)
                 .content(VALID_BODY)
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
@@ -102,7 +102,7 @@ public class ValidationBulkScanITest {
         String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/d8/validation/incompleteForm.json");
 
         mockMvc.perform(
-            post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
+            post("/forms/{form-type}/validate-ocr", D8_FORM)
                 .contentType(APPLICATION_JSON)
                 .content(formToValidate)
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
@@ -110,13 +110,19 @@ public class ValidationBulkScanITest {
             status().isOk(),
             content().string(allOf(
                 hasJsonPath("$.warnings", hasItems(
-                    "Mandatory field \"D8PetitionerFirstName\" is missing",
+                    mandatoryFieldIsMissing("D8PetitionerFirstName"),
                     "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value",
-                    "Mandatory field \"D8PetitionerNameChangedHow\" is missing",
-                    "Mandatory field \"D8MarriedInUk\" is missing",
-                    "Mandatory field \"D8ApplicationToIssueWithoutCertificate\" is missing",
-                    "Mandatory field \"D8MarriageCertificateCorrect\" is missing"
-                )),
+                    mandatoryFieldIsMissing("D8PetitionerNameChangedHow"),
+                    mandatoryFieldIsMissing("D8MarriedInUk"),
+                    mandatoryFieldIsMissing("D8ApplicationToIssueWithoutCertificate"),
+                    mandatoryFieldIsMissing("D8MarriageCertificateCorrect"),
+                    mandatoryFieldIsMissing("D8PetitionerNameDifferentToMarriageCert"),
+                    mandatoryFieldIsMissing("D8RespondentHomeAddressStreet"),
+                    mandatoryFieldIsMissing("D8RespondentHomeAddressTown"),
+                    mandatoryFieldIsMissing("D8RespondentHomeAddressCounty"),
+                    mandatoryFieldIsMissing("D8RespondentPostcode"),
+                    mandatoryFieldIsMissing("D8RespondentCorrespondenceSendToSol")
+                    )),
                 hasJsonPath("$.errors", equalTo(emptyList())),
                 hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
             ))
@@ -127,7 +133,7 @@ public class ValidationBulkScanITest {
     public void shouldReturnWarningResponseForValidationEndpoint() throws Exception {
         String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/d8/validation/warningsD8Form.json");
 
-        mockMvc.perform(post("/forms/{form-type}/validate-ocr", NEW_DIVORCE_CASE)
+        mockMvc.perform(post("/forms/{form-type}/validate-ocr", D8_FORM)
             .contentType(APPLICATION_JSON)
             .content(formToValidate)
             .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
@@ -135,16 +141,16 @@ public class ValidationBulkScanITest {
             status().isOk(),
             content().string(allOf(
                 hasJsonPath("$.warnings", hasItems(
-                    "D8PetitionerPhoneNumber is not in a valid format",
-                    "D8PetitionerEmail is not in a valid format",
-                    "PetitionerSolicitorPhone is not in a valid format",
-                    "PetitionerSolicitorEmail is not in a valid format",
+                    notInAValidFormat("D8PetitionerPhoneNumber"),
+                    notInAValidFormat("D8PetitionerEmail"),
+                    notInAValidFormat("PetitionerSolicitorPhone"),
+                    notInAValidFormat("PetitionerSolicitorEmail"),
                     "D8PetitionerCorrespondencePostcode is usually 6 or 7 characters long",
-                    "Mandatory field \"D8MarriageCertificateCorrect\" is missing",
-                    "D8FinancialOrder must be \"Yes\" or \"No\"",
+                    mandatoryFieldIsMissing("D8MarriageCertificateCorrect"),
+                    mustBeYesOrNo("D8FinancialOrder"),
                     "D8ReasonForDivorce must be \"unreasonable-behaviour\", \"adultery\", \"desertion\","
                         + " \"separation-2-years\" or \"separation-5-years\"",
-                    "D8LegalProceedings must be \"Yes\" or \"No\""
+                    mustBeYesOrNo("D8LegalProceedings")
                 )),
                 hasJsonPath("$.status", equalTo(WARNINGS_STATUS))
             ))
@@ -162,5 +168,17 @@ public class ValidationBulkScanITest {
             status().isNotFound(),
             content().string(isEmptyString())
         ));
+    }
+
+    private String mandatoryFieldIsMissing(String fieldName) {
+        return String.format("Mandatory field \"%s\" is missing", fieldName);
+    }
+
+    private String notInAValidFormat(String fieldName) {
+        return String.format("%s is not in a valid format", fieldName);
+    }
+
+    private String mustBeYesOrNo(String fieldName) {
+        return String.format("%s must be \"Yes\" or \"No\"", fieldName);
     }
 }

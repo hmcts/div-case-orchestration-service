@@ -102,7 +102,7 @@ public class TransformationBulkScanITest {
                     hasJsonPath("$.case_creation_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
                         hasJsonPath("event_id", is("caseCreate")),
-                        hasJsonPath("case_data.*", hasSize(44)),
+                        hasJsonPath("case_data.*", hasSize(53)),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),
                             hasJsonPath("D8PaymentMethod", is("Card")),
@@ -166,7 +166,32 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8ReasonForDivorce", is("desertion")),
                             hasJsonPath("D8LegalProceedings", is("Yes")),
                             hasJsonPath("D8LegalProceedingsDetailsCaseNumber", is("case1234")),
-                            hasJsonPath("D8LegalProceedingsDetails", is("details of previous cases"))
+                            hasJsonPath("D8LegalProceedingsDetails", is("details of previous cases")),
+
+                            ///
+
+                            hasJsonPath("D8RespondentHomeAddress", allOf(
+                                hasJsonPath("AddressLine1", is("18 West Park Road")),
+                                hasJsonPath("County", is("West Midlands")),
+                                hasJsonPath("PostCode", is("WE1 MI2")),
+                                hasJsonPath("PostTown", is("Smethwick"))
+                            )),
+                            hasJsonPath("D8PetitionerNameDifferentToMarriageCert", is("Yes")),
+                            hasJsonPath("RespNameDifferentToMarriageCertExplain", is("Dog ate the homework")),
+                            hasJsonPath("D8RespondentEmailAddress", is("jack@daily.mail.com")),
+                            hasJsonPath("D8RespondentCorrespondenceSendToSol", is("Yes")),
+
+                            hasJsonPath("D8RespondentSolicitorName", is("Judge Law")),
+                            hasJsonPath("D8RespondentSolicitorReference", is("JL007")),
+                            hasJsonPath("D8RespondentSolicitorCompany", is("A-Team")),
+
+                            hasJsonPath("D8RespondentSolicitorAddress", allOf(
+                                hasJsonPath("AddressLine1", is("50 Licitor")),
+                                hasJsonPath("County", is("Higher Midlands")),
+                                hasJsonPath("PostCode", is("SO2 7OR")),
+                                hasJsonPath("PostTown", is("Lawyerpool"))
+                            ))
+
                         ))
                     ))
                 )));

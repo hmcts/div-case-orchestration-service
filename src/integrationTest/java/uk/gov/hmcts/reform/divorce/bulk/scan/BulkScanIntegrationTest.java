@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.BulkScanController.SERVICE_AUTHORISATION_HEADER;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.NEW_DIVORCE_CASE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
 
@@ -42,7 +42,7 @@ public class BulkScanIntegrationTest extends IntegrationTest {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanValidationMicroService);
         VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
 
-        Response forValidationEndpoint = responseForValidationEndpoint(token,VALIDATION_END_POINT, NEW_DIVORCE_CASE);
+        Response forValidationEndpoint = responseForValidationEndpoint(token,VALIDATION_END_POINT, D8_FORM);
 
 
         assert forValidationEndpoint.getStatusCode() == 200 : "Service is not authorised to OCR validation "
@@ -56,7 +56,7 @@ public class BulkScanIntegrationTest extends IntegrationTest {
 
         VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
 
-        Response forValidationEndpoint = responseForValidationEndpoint(token,VALIDATION_END_POINT, NEW_DIVORCE_CASE);
+        Response forValidationEndpoint = responseForValidationEndpoint(token,VALIDATION_END_POINT, D8_FORM);
 
         assert forValidationEndpoint.getStatusCode() == 403 : "Not matching with expected Error code "
             + forValidationEndpoint.getStatusCode();

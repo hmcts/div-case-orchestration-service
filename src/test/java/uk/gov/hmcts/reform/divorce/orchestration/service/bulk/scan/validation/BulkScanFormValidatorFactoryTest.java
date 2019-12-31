@@ -22,7 +22,7 @@ public class BulkScanFormValidatorFactoryTest {
     public ExpectedException expectedException = none();
 
     @Mock
-    private NewDivorceCaseValidator newDivorceCaseValidator;
+    private D8FormValidator d8FormValidator;
 
     @InjectMocks
     private BulkScanFormValidatorFactory classUnderTest;
@@ -33,11 +33,11 @@ public class BulkScanFormValidatorFactoryTest {
     }
 
     @Test
-    public void shouldReturnValidatorForNewDivorceCaseForm() {
-        BulkScanFormValidator validator = classUnderTest.getValidator("newDivorceCase");
+    public void shouldReturnValidatorForD8Form() {
+        BulkScanFormValidator validator = classUnderTest.getValidator("d8Form");
 
-        assertThat(validator, is(instanceOf(NewDivorceCaseValidator.class)));
-        assertThat(validator, is(newDivorceCaseValidator));
+        assertThat(validator, is(instanceOf(D8FormValidator.class)));
+        assertThat(validator, is(d8FormValidator));
     }
 
     @Test
@@ -47,5 +47,4 @@ public class BulkScanFormValidatorFactoryTest {
 
         classUnderTest.getValidator("unsupportedFormType");
     }
-
 }

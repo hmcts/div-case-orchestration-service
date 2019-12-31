@@ -9,20 +9,20 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.NEW_DIVORCE_CASE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
 
 @Component
 public class BulkScanFormValidatorFactory {
 
     @Autowired
-    private NewDivorceCaseValidator newDivorceCaseValidator;
+    private D8FormValidator d8FormValidator;
 
     private static Map<String, BulkScanFormValidator> validators;
 
     @PostConstruct
     public void initBean() {
         validators = new HashMap<>();
-        validators.put(NEW_DIVORCE_CASE, newDivorceCaseValidator);
+        validators.put(D8_FORM, d8FormValidator);
     }
 
     public BulkScanFormValidator getValidator(final String formType) throws UnsupportedFormTypeException {
@@ -32,5 +32,4 @@ public class BulkScanFormValidatorFactory {
 
         return validators.get(formType);
     }
-
 }
