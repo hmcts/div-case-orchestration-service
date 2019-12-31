@@ -2,7 +2,7 @@
   "case_type_id": "DIVORCE",
   "id": "LV481297",
   "po_box": "PO 17",
-  "form_type": "newDivorceCase",
+  "form_type": "d8Form",
   "ocr_data_fields": [
     { "name": "D8PaymentMethod", "value": "Debit/Credit Card" },
     { "name": "D8PetitionerFirstName", "value": "Christopher" },
@@ -58,6 +58,21 @@
     { "name": "D8ReasonForDivorce", "value": "desertion" },
     { "name": "D8LegalProceedings", "value": "Yes" },
     { "name": "D8LegalProceedingsDetailsCaseNumber", "value": "case1234" },
-    { "name": "D8LegalProceedingsDetails", "value": "details of previous cases" }
+    { "name": "D8LegalProceedingsDetails", "value": "details of previous cases" },
+    { "name": "D8PetitionerNameDifferentToMarriageCert", "value": "Yes" },
+    { "name": "RespNameDifferentToMarriageCertExplain", "value": "Dog ate the homework" },
+    { "name": "D8RespondentHomeAddressStreet", "value": "18 West Park Road" },
+    { "name": "D8RespondentHomeAddressTown", "value": "Smethwick" },
+    { "name": "D8RespondentPostcode", "value": "WE1 MI2" },
+    { "name": "D8RespondentHomeAddressCounty", "value": "West Midlands" },
+    { "name": "D8RespondentEmailAddress", "value": "jack@daily.mail.com" },
+    { "name": "D8RespondentCorrespondenceSendToSol", "value": "Yes" },
+    { "name": "D8RespondentSolicitorName", "value": "Judge Law" },
+    { "name": "D8RespondentSolicitorReference", "value": "JL007" },
+    { "name": "D8RespondentSolicitorCompany", "value": "A-Team" },
+    { "name": "D8RespondentSolicitorAddressStreet", "value": "50 Licitor" },
+    { "name": "D8RespondentSolicitorAddressTown", "value": "Lawyerpool" },
+    { "name": "D8RespondentSolicitorAddressPostCode", "value": "SO2 7OR" },
+    { "name": "D8RespondentSolicitorAddressCounty", "value": "Higher Midlands" }
   ]
 }
