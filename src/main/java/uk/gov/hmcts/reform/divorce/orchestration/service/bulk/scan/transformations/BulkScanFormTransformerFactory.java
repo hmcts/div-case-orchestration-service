@@ -26,7 +26,6 @@ public class BulkScanFormTransformerFactory {
 
     @PostConstruct
     public void init() {
-
         bulkScanFormTransformerMap.put(D8_FORM, d8FormToCaseTransformer);
         bulkScanFormTransformerMap.put(AOS_PACK_2, aosPack2FormToCaseTransformer);
     }
@@ -38,4 +37,5 @@ public class BulkScanFormTransformerFactory {
 
         return bulkScanFormTransformerMap.get(formType);
     }
+
 }
