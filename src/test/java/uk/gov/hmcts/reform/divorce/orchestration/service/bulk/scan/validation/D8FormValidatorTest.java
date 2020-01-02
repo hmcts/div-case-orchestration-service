@@ -66,6 +66,7 @@ public class D8FormValidatorTest {
             new OcrDataField("D8MarriedInUk", "Yes"),
             new OcrDataField("D8ApplicationToIssueWithoutCertificate", "Yes"),
             new OcrDataField("D8MarriagePlaceOfMarriage", "Slough"),
+
             new OcrDataField("D8MarriageDateDay", "19"),
             new OcrDataField("D8MarriageDateMonth", "03"),
             new OcrDataField("D8MarriageDateYear", "2006"),
@@ -81,7 +82,8 @@ public class D8FormValidatorTest {
             new OcrDataField("D8MarriageCertificateCorrect", "Yes"),
             new OcrDataField("D8FinancialOrder", "No"),
             new OcrDataField("D8ReasonForDivorce", "desertion"),
-            new OcrDataField("D8LegalProceedings", "No")
+            new OcrDataField("D8LegalProceedings", "No"),
+            new OcrDataField("SeparationLivedTogetherAsCoupleAgain", "No")
         ));
 
         mandatoryFields = mandatoryFieldsWithValues.stream().map(OcrDataField::getName).collect(Collectors.toList());
@@ -163,7 +165,8 @@ public class D8FormValidatorTest {
             new OcrDataField("D8FinancialOrder", "Not sure"),
             new OcrDataField("D8FinancialOrderFor", "someone else"),
             new OcrDataField("D8ReasonForDivorce", "no reason"),
-            new OcrDataField("D8LegalProceedings", "Not sure")
+            new OcrDataField("D8LegalProceedings", "Not sure"),
+            new OcrDataField("SeparationLivedTogetherAsCoupleAgain", "Jean told me they did")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -199,7 +202,8 @@ public class D8FormValidatorTest {
             mustBeYesOrNo("D8FinancialOrder"),
             "D8FinancialOrderFor must be \"myself\", \"my children\", \"myself, my children\" or left blank",
             "D8ReasonForDivorce must be \"unreasonable-behaviour\", \"adultery\", \"desertion\", \"separation-2-years\" or \"separation-5-years\"",
-            mustBeYesOrNo("D8LegalProceedings")
+            mustBeYesOrNo("D8LegalProceedings"),
+            mustBeYesOrNo("SeparationLivedTogetherAsCoupleAgain")
         ));
     }
 
@@ -234,7 +238,9 @@ public class D8FormValidatorTest {
             "D8RespondentSolicitorAddressCounty",
             "D8RespondentSolicitorAddressPostCode",
             "D8LegalProceedingsDetailsCaseNumber",
-            "D8LegalProceedingsDetails"
+            "D8LegalProceedingsDetails",
+            "SeparationLivedTogetherAsCoupleAgainDetails",
+            "D8ReasonForDivorceDetails"
         )
             .map(emptyValueOcrDataField)
             .collect(Collectors.toList());

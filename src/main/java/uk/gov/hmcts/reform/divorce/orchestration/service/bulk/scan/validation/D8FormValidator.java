@@ -68,10 +68,17 @@ public class D8FormValidator extends BulkScanFormValidator {
         "D8MarriageDateDay",
         "D8MarriageDateMonth",
         "D8MarriageDateYear",
+        "D8MentalSeparationDateDay",
+        "D8MentalSeparationDateMonth",
+        "D8MentalSeparationDateYear",
+        "D8PhysicalSeparationDateDay",
+        "D8PhysicalSeparationDateMonth",
+        "D8PhysicalSeparationDateYear",
         "D8MarriageCertificateCorrect",
         "D8FinancialOrder",
         "D8ReasonForDivorce",
-        "D8LegalProceedings"
+        "D8LegalProceedings",
+        "SeparationLivedTogetherAsCoupleAgain"
     );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
@@ -91,11 +98,12 @@ public class D8FormValidator extends BulkScanFormValidator {
         ALLOWED_VALUES_PER_FIELD.put("D8MarriedInUk", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8ApplicationToIssueWithoutCertificate", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8MarriageCertificateCorrect", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrder", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrder", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrderFor", asList("myself", "my children", "myself, my children", BLANK));
         ALLOWED_VALUES_PER_FIELD.put("D8ReasonForDivorce", asList("unreasonable-behaviour", "adultery", "desertion", "separation-2-years",
             "separation-5-years"));
-        ALLOWED_VALUES_PER_FIELD.put("D8LegalProceedings", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("D8LegalProceedings", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("SeparationLivedTogetherAsCoupleAgain", yesNoValues);
     }
 
     public List<String> getMandatoryFields() {
