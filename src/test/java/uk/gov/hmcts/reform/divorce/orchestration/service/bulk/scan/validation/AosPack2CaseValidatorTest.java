@@ -149,6 +149,54 @@ public class AosPack2CaseValidatorTest {
     }
 
     @Test
+    public void shouldOnlyValidateRespStatementofTruthSignedDateIfPresent() {
+
+        List<OcrDataField> testFields = asList(
+            new OcrDataField("CaseNumber", "1234123412341234"),
+            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("RespConfirmReadPetition", "Yes"),
+            new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
+            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespWillDefendDivorce", "Proceed"),
+            new OcrDataField("RespConsiderFinancialSituation", "No"),
+            new OcrDataField("RespJurisdictionAgree", "Yes"),
+            new OcrDataField("RespLegalProceedingsExist", "No"),
+            new OcrDataField("RespAgreeToCosts", "Yes"),
+            new OcrDataField("RespStatementofTruthSignedDate", "12 December 2019")
+        );
+
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(testFields);
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItems(
+            "RespStatementofTruthSignedDate must be a valid 8 digit date"
+        ));
+    }
+
+    @Test
+    public void shouldNotValidateRespStatementofTruthSignedDateIfNotPresent() {
+        List<OcrDataField> testFields = asList(
+            new OcrDataField("CaseNumber", "1234123412341234"),
+            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("RespConfirmReadPetition", "Yes"),
+            new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
+            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespWillDefendDivorce", "Proceed"),
+            new OcrDataField("RespConsiderFinancialSituation", "No"),
+            new OcrDataField("RespJurisdictionAgree", "Yes"),
+            new OcrDataField("RespLegalProceedingsExist", "No"),
+            new OcrDataField("RespAgreeToCosts", "Yes")
+        );
+
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(testFields);
+
+        assertThat(validationResult.getStatus(), is(SUCCESS));
+        assertThat(validationResult.getWarnings(), is(emptyList()));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+    }
+
+    @Test
     public void shouldPassIfRespJurisdictionIsAgreedAndNoReasonForDisagreementProvided() {
 
         List<OcrDataField> fieldsUnderTest = asList(
@@ -336,7 +384,6 @@ public class AosPack2CaseValidatorTest {
             "RespLegalProceedingsDescription must not be empty if 'RespLegalProceedingsExist' is 'No"
         ));
     }
-
 
     @Test
     public void shouldFailIfRespLegalProceedingsDoNotExistAndRespLegalProceedingsDescriptionIsNotGiven() {

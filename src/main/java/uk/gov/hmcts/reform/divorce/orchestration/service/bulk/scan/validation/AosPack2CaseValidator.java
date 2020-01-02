@@ -83,22 +83,19 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
 
         List<String> validationWarningMessages = new ArrayList<>();
 
-        /*
-        update logic as DateRespReceivedDivorceApplication is always required
-
-        we should only show the error message for RespStatementofTruthSignedDate if it is present & ignored when it is not there as
-        it is not a mandatory field
-         */
-
         String dateRespReceivedDivorceApplication = fieldsMap.getOrDefault("DateRespReceivedDivorceApplication", "");
-        String respStatementofTruthSignedDate = fieldsMap.getOrDefault("RespStatementofTruthSignedDate", "");
+        String respStatementOfTruthSignedDate = fieldsMap.getOrDefault("RespStatementofTruthSignedDate", "");
 
+        // DateRespReceivedDivorceApplication is always validated as it is a required field
         if (!isApplicationDateValid(dateRespReceivedDivorceApplication)) {
             validationWarningMessages.add(DATE_RESP_RECEIVED_DIV_APP_WRONG_LENGTH_ERROR_MESSAGE);
         }
 
-        if (!isApplicationDateValid(respStatementofTruthSignedDate)) {
-            validationWarningMessages.add(RESP_STATEMENT_OF_TRUTH_WRONG_LENGTH_ERROR_MESSAGE);
+        // RespStatementofTruthSignedDate should only be validated if it is present
+        if (!respStatementOfTruthSignedDate.isEmpty()) {
+            if (!isApplicationDateValid(respStatementOfTruthSignedDate)) {
+                validationWarningMessages.add(RESP_STATEMENT_OF_TRUTH_WRONG_LENGTH_ERROR_MESSAGE);
+            }
         }
 
         return validationWarningMessages;
@@ -119,7 +116,6 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
         if (respJurisdictionAgreeField.equals(YES_VALUE) && !respJurisdictionDisagreeReasonField.isEmpty()) {
 
             validationWarningMessages.add(RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE);
-
         } else if (respJurisdictionAgreeField.equals(NO_VALUE) && respJurisdictionDisagreeReasonField.isEmpty()) {
 
             validationWarningMessages.add(RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE);
