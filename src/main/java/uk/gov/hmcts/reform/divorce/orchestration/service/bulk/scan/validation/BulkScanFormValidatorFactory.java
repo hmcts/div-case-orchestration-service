@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_PACK_2;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
 
 @Component
@@ -17,12 +18,16 @@ public class BulkScanFormValidatorFactory {
     @Autowired
     private D8FormValidator d8FormValidator;
 
+    @Autowired
+    private AosPack2CaseValidator aosPack2CaseValidator;
+
     private static Map<String, BulkScanFormValidator> validators;
 
     @PostConstruct
     public void initBean() {
         validators = new HashMap<>();
         validators.put(D8_FORM, d8FormValidator);
+        validators.put(AOS_PACK_2, aosPack2CaseValidator);
     }
 
     public BulkScanFormValidator getValidator(final String formType) throws UnsupportedFormTypeException {

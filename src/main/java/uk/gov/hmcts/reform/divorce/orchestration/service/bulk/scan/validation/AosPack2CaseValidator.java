@@ -83,6 +83,13 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
 
         List<String> validationWarningMessages = new ArrayList<>();
 
+        /*
+        update logic as DateRespReceivedDivorceApplication is always required
+
+        we should only show the error message for RespStatementofTruthSignedDate if it is present & ignored when it is not there as
+        it is not a mandatory field
+         */
+
         String dateRespReceivedDivorceApplication = fieldsMap.getOrDefault("DateRespReceivedDivorceApplication", "");
         String respStatementofTruthSignedDate = fieldsMap.getOrDefault("RespStatementofTruthSignedDate", "");
 
