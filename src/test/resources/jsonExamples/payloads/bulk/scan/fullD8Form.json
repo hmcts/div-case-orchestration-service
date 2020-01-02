@@ -36,12 +36,12 @@
     { "name": "D8MarriageDateDay", "value": "07" },
     { "name": "D8MarriageDateMonth", "value": "01" },
     { "name": "D8MarriageDateYear", "value": "1998" },
-    { "name": "D8MentalSeparationDateDay", "value": "07" },
-    { "name": "D8MentalSeparationDateMonth", "value": "01" },
-    { "name": "D8MentalSeparationDateYear", "value": "1998" },
-    { "name": "D8PhysicalSeparationDateDay", "value": "07" },
-    { "name": "D8PhysicalSeparationDateMonth", "value": "01" },
-    { "name": "D8PhysicalSeparationDateYear", "value": "1998" },
+    { "name": "D8MentalSeparationDateDay", "value": "15" },
+    { "name": "D8MentalSeparationDateMonth", "value": "04" },
+    { "name": "D8MentalSeparationDateYear", "value": "2005" },
+    { "name": "D8PhysicalSeparationDateDay", "value": "01" },
+    { "name": "D8PhysicalSeparationDateMonth", "value": "10" },
+    { "name": "D8PhysicalSeparationDateYear", "value": "2006" },
     { "name": "D8MarriageCertificateCorrect", "value": "No" },
     { "name": "D8MarriageCertificateCorrectExplain", "value": "Providing a scanned copy from registry office." },
     { "name": "D8PetitionerHomeAddressStreet", "value": "19 West Park Road" },
@@ -64,6 +64,10 @@
     { "name": "D8ReasonForDivorce", "value": "desertion" },
     { "name": "D8LegalProceedings", "value": "Yes" },
     { "name": "D8LegalProceedingsDetailsCaseNumber", "value": "case1234" },
-    { "name": "D8LegalProceedingsDetails", "value": "details of previous cases" }
+    { "name": "D8LegalProceedingsDetails", "value": "details of previous cases" },
+
+    { "name": "SeparationLivedTogetherAsCoupleAgain", "value": "Yes" },
+    { "name": "SeparationLivedTogetherAsCoupleAgainDetails", "value": "moved in for a month" },
+    { "name": "D8ReasonForDivorceDetails", "value": "not putting the bin out" }
   ]
 }
