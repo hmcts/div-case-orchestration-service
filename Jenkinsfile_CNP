@@ -5,7 +5,7 @@ properties([
         pipelineTriggers([[$class: 'GitHubPushTrigger']])
 ])
 
-@Library("Infrastructure")
+@Library("Infrastructure@disableprdepcheck")
 
 def type = "java"
 def product = "div"
