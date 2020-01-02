@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.validateDateComponents;
 
 @Component
-public class NewDivorceCaseValidator extends BulkScanFormValidator {
+public class D8FormValidator extends BulkScanFormValidator {
 
     private static final String EMPTY_PAYMENT_METHOD_ERROR_MESSAGE =
         "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value";
@@ -57,6 +57,12 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
         "D8PetitionerHomeAddressStreet",
         "D8PetitionerHomeAddressTown",
         "D8PetitionerHomeAddressCounty",
+        "D8PetitionerNameDifferentToMarriageCert",
+        "D8RespondentHomeAddressStreet",
+        "D8RespondentHomeAddressTown",
+        "D8RespondentHomeAddressCounty",
+        "D8RespondentPostcode",
+        "D8RespondentCorrespondenceSendToSol",
         "D8MarriedInUk",
         "D8ApplicationToIssueWithoutCertificate",
         "D8MarriageDateDay",
@@ -71,17 +77,20 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
 
     static {
+        List<String> yesNoValues = asList(YES_VALUE, NO_VALUE);
         ALLOWED_VALUES_PER_FIELD.put("D8LegalProcess", asList("Divorce", "Dissolution", "Judicial (separation)"));
         ALLOWED_VALUES_PER_FIELD.put("D8ScreenHasMarriageCert", asList(TRUE));
         ALLOWED_VALUES_PER_FIELD.put("D8CertificateInEnglish", asList(TRUE, BLANK));
-        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameChangedHow", asList(YES_VALUE, NO_VALUE));
-        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerContactDetailsConfidential", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameChangedHow", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerContactDetailsConfidential", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("Cheque", "Debit/Credit Card", BLANK));
-        ALLOWED_VALUES_PER_FIELD.put("PetitionerSolicitor", asList(YES_VALUE, NO_VALUE));
-        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerCorrespondenceUseHomeAddress", asList(YES_VALUE, NO_VALUE));
-        ALLOWED_VALUES_PER_FIELD.put("D8MarriedInUk", asList(YES_VALUE, NO_VALUE));
-        ALLOWED_VALUES_PER_FIELD.put("D8ApplicationToIssueWithoutCertificate", asList(YES_VALUE, NO_VALUE));
-        ALLOWED_VALUES_PER_FIELD.put("D8MarriageCertificateCorrect", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("PetitionerSolicitor", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerCorrespondenceUseHomeAddress", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameDifferentToMarriageCert", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("D8RespondentCorrespondenceSendToSol", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("D8MarriedInUk", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("D8ApplicationToIssueWithoutCertificate", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("D8MarriageCertificateCorrect", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrder", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrderFor", asList("myself", "my children", "myself, my children", BLANK));
         ALLOWED_VALUES_PER_FIELD.put("D8ReasonForDivorce", asList("unreasonable-behaviour", "adultery", "desertion", "separation-2-years",
@@ -106,10 +115,13 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
             validateFieldMatchesRegex(fieldsMap, "PetitionerSolicitorPhone", CCD_PHONE_NUMBER_REGEX),
             validateFieldMatchesRegex(fieldsMap, "D8PetitionerEmail", CCD_EMAIL_REGEX),
             validateFieldMatchesRegex(fieldsMap, "PetitionerSolicitorEmail", CCD_EMAIL_REGEX),
+            validateFieldMatchesRegex(fieldsMap, "D8RespondentEmailAddress", CCD_EMAIL_REGEX),
             validatePostcode(fieldsMap, "D8PetitionerPostCode"),
             validatePostcode(fieldsMap, "PetitionerSolicitorAddressPostCode"),
             validatePostcode(fieldsMap, "D8PetitionerCorrespondencePostcode"),
             validatePostcode(fieldsMap, "D8ReasonForDivorceAdultery3rdPartyPostCode"),
+            validatePostcode(fieldsMap, "D8RespondentPostcode"),
+            validatePostcode(fieldsMap, "D8RespondentSolicitorAddressPostCode"),
             validatePayment(fieldsMap),
             validatePlaceOfMarriage(fieldsMap),
             validateMarriageCertificateCorrect(fieldsMap),
@@ -289,5 +301,4 @@ public class NewDivorceCaseValidator extends BulkScanFormValidator {
 
         return validateDateComponents(fieldsMap, dayKey, monthKey, yearKey);
     }
-
 }
