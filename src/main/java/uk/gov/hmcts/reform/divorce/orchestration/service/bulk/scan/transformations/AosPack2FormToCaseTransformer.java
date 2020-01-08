@@ -58,7 +58,6 @@ public class AosPack2FormToCaseTransformer extends BulkScanFormTransformer {
         erToCcdFieldsMap.put("RespAgreeToCosts", "RespAgreeToCosts");
         erToCcdFieldsMap.put("RespCostsReason", "RespCostsReason");
         erToCcdFieldsMap.put("RespStatementOfTruth", "RespStatementOfTruth");
-        // TODO: Create this new field in CCD
         erToCcdFieldsMap.put("RespStatementofTruthSignedDate", "RespStatementofTruthSignedDate");
 
         return erToCcdFieldsMap;
