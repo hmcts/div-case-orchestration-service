@@ -42,4 +42,13 @@
         <cve>CVE-2015-2156</cve>
         <cve>CVE-2019-16869</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+            Vulnerabilities in Tomcat which is an indirect dependency of ours.
+            This will be resolved once we update the SpringBoot version ]]>
+        </notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2019-12418</cve>
+        <cve>CVE-2019-17563</cve>
+    </suppress>
 </suppressions>
