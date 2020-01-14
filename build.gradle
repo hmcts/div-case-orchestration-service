@@ -75,7 +75,7 @@ def versions = [
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.0.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
-        tomcat                       : '9.0.27',
+        tomcat                       : '9.0.30',
         unirest                      : '1.4.9',
         bspCommonLib                 : '0.0.13'
 ]
