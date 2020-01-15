@@ -31,7 +31,7 @@ public class BulkScanIntegrationTest extends IntegrationTest {
     private String cosBaseURL;
 
 
-    private static final String FULL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/fullD8Form.json";
+    private static final String FULL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/d8/fullD8Form.json";
     private static String VALID_BODY;
     private static String VALIDATION_END_POINT = "/forms/{form-type}/validate-ocr";
     private static String TRANSFORMATION_END_POINT = "/transform-exception-record";
