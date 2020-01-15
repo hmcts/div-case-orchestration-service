@@ -5,5 +5,5 @@ public class BulkScanForms {
     public static final String D8_FORM = "d8Form";
 
     // TODO: Confirm with Jeremy if this matches with the form name in BSP configuration spreadsheet
-    public static final String AOS_PACK_2 = "aosPack2";
+    public static final String AOS_PACK_OFFLINE = "aosPackOffline";
 }

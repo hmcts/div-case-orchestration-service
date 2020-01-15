@@ -45,7 +45,7 @@ public class BulkScanFormValidatorFactoryTest {
 
     @Test
     public void shouldReturnValidatorForAosPack2Form() {
-        BulkScanFormValidator validator = classUnderTest.getValidator("aosPack2");
+        BulkScanFormValidator validator = classUnderTest.getValidator("aosPackOffline");
 
         assertThat(validator, is(instanceOf(AosPackOfflineCaseValidator.class)));
         assertThat(validator, is(aosPackOfflineCaseValidator));

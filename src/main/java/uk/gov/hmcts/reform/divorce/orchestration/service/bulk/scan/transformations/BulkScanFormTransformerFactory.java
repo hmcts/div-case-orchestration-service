@@ -10,7 +10,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_PACK_2;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_PACK_OFFLINE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
 
 @Component
@@ -27,7 +27,7 @@ public class BulkScanFormTransformerFactory {
     @PostConstruct
     public void init() {
         bulkScanFormTransformerMap.put(D8_FORM, d8FormToCaseTransformer);
-        bulkScanFormTransformerMap.put(AOS_PACK_2, aosPackOfflineFormToCaseTransformer);
+        bulkScanFormTransformerMap.put(AOS_PACK_OFFLINE, aosPackOfflineFormToCaseTransformer);
     }
 
     public BulkScanFormTransformer getTransformer(String formType) {
