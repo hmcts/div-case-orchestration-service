@@ -2,7 +2,7 @@
   "case_type_id": "DIVORCE",
   "id": "LV481297",
   "po_box": "PO 17",
-  "form_type": "aosPack2",
+  "form_type": "aosPackOffline",
   "ocr_data_fields": [
     { "name": "CaseNumber", "value": "1234123412341234" },
     { "name": "AOSReasonForDivorce", "value": "2 years separation with consent" },

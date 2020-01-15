@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.
 public class UpdateBulkScanITest {
 
     private static final String UPDATE_URL = "/update-case";
-    private static final String FULL_AOS_PACK_2_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/aos/fullAosPack2Form.json";
+    private static final String FULL_AOS_PACK_OFFLINE_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/aos/fullAosPackOfflineForm.json";
 
     private String validBody;
 
@@ -46,7 +46,7 @@ public class UpdateBulkScanITest {
         when(authTokenValidator.getServiceName(ALLOWED_SERVICE_TOKEN)).thenReturn("bulk_scan_orchestrator");
         when(authTokenValidator.getServiceName(I_AM_NOT_ALLOWED_SERVICE_TOKEN)).thenReturn("don't let me do it!");
 
-        validBody = loadResourceAsString(FULL_AOS_PACK_2_FORM_JSON_PATH);
+        validBody = loadResourceAsString(FULL_AOS_PACK_OFFLINE_FORM_JSON_PATH);
     }
 
     @Test
