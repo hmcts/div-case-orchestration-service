@@ -16,9 +16,9 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.out.ValidationStatus.SUCCESS;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.out.ValidationStatus.WARNINGS;
 
-public class AosPack2CaseValidatorTest {
+public class AosPackOfflineCaseValidatorTest {
 
-    private final AosPack2CaseValidator classUnderTest = new AosPack2CaseValidator();
+    private final AosPackOfflineCaseValidator classUnderTest = new AosPackOfflineCaseValidator();
     private List<OcrDataField> listOfAllMandatoryFields;
 
     @Before

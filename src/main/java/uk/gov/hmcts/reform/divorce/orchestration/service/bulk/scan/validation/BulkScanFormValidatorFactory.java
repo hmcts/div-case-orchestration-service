@@ -19,7 +19,7 @@ public class BulkScanFormValidatorFactory {
     private D8FormValidator d8FormValidator;
 
     @Autowired
-    private AosPack2CaseValidator aosPack2CaseValidator;
+    private AosPackOfflineCaseValidator aosPackOfflineCaseValidator;
 
     private static Map<String, BulkScanFormValidator> validators;
 
@@ -27,7 +27,7 @@ public class BulkScanFormValidatorFactory {
     public void initBean() {
         validators = new HashMap<>();
         validators.put(D8_FORM, d8FormValidator);
-        validators.put(AOS_PACK_2, aosPack2CaseValidator);
+        validators.put(AOS_PACK_2, aosPackOfflineCaseValidator);
     }
 
     public BulkScanFormValidator getValidator(final String formType) throws UnsupportedFormTypeException {

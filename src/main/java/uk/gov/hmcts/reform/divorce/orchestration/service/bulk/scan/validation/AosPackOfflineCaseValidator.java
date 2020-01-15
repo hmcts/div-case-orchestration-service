@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
-public class AosPack2CaseValidator extends BulkScanFormValidator {
+public class AosPackOfflineCaseValidator extends BulkScanFormValidator {
 
     private static final String DATE_RESP_RECEIVED_DIV_APP_WRONG_LENGTH_ERROR_MESSAGE =
         "DateRespReceivedDivorceApplication must be a valid 8 digit date";
@@ -72,8 +72,7 @@ public class AosPack2CaseValidator extends BulkScanFormValidator {
             validateDatesRelevantToAosApplication(fieldsMap),
             validateRespJurisdictionDisagreeReason(fieldsMap),
             validateRespLegalProceedingsDescription(fieldsMap)
-        )
-            .flatMap(Collection::stream)
+        ).flatMap(Collection::stream)
             .collect(Collectors.toList());
 
         return errorMessages;

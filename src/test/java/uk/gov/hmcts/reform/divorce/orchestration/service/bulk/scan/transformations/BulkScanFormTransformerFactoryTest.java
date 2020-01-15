@@ -26,7 +26,7 @@ public class BulkScanFormTransformerFactoryTest {
     private D8FormToCaseTransformer d8FormToCaseTransformer;
 
     @Mock
-    private AosPack2FormToCaseTransformer aosPack2FormToCaseTransformer;
+    private AosPackOfflineFormToCaseTransformer aosPackOfflineFormToCaseTransformer;
 
     @InjectMocks
     private BulkScanFormTransformerFactory bulkScanFormTransformerFactory;
@@ -39,7 +39,7 @@ public class BulkScanFormTransformerFactoryTest {
     @Test
     public void shouldReturnRightTransformationStrategy() {
         assertThat(bulkScanFormTransformerFactory.getTransformer(D8_FORM), is(d8FormToCaseTransformer));
-        assertThat(bulkScanFormTransformerFactory.getTransformer(AOS_PACK_2), is(aosPack2FormToCaseTransformer));
+        assertThat(bulkScanFormTransformerFactory.getTransformer(AOS_PACK_2), is(aosPackOfflineFormToCaseTransformer));
     }
 
     @Test

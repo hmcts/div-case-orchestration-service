@@ -25,7 +25,7 @@ public class BulkScanFormValidatorFactoryTest {
     private D8FormValidator d8FormValidator;
 
     @Mock
-    private AosPack2CaseValidator aosPack2CaseValidator;
+    private AosPackOfflineCaseValidator aosPackOfflineCaseValidator;
 
     @InjectMocks
     private BulkScanFormValidatorFactory classUnderTest;
@@ -47,8 +47,8 @@ public class BulkScanFormValidatorFactoryTest {
     public void shouldReturnValidatorForAosPack2Form() {
         BulkScanFormValidator validator = classUnderTest.getValidator("aosPack2");
 
-        assertThat(validator, is(instanceOf(AosPack2CaseValidator.class)));
-        assertThat(validator, is(aosPack2CaseValidator));
+        assertThat(validator, is(instanceOf(AosPackOfflineCaseValidator.class)));
+        assertThat(validator, is(aosPackOfflineCaseValidator));
     }
 
     @Test

@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformati
 import org.junit.Test;
 import uk.gov.hmcts.reform.bsp.common.model.transformation.in.ExceptionRecord;
 import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations.AosPack2FormToCaseTransformer;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations.AosPackOfflineFormToCaseTransformer;
 
 import java.util.List;
 import java.util.Map;
@@ -14,9 +14,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.collection.IsMapWithSize.aMapWithSize;
 
-public class AosPack2FormToCaseTransformerTest {
+public class AosPackOfflineFormToCaseTransformerTest {
 
-    private final AosPack2FormToCaseTransformer classUnderTest = new AosPack2FormToCaseTransformer();
+    private final AosPackOfflineFormToCaseTransformer classUnderTest = new AosPackOfflineFormToCaseTransformer();
 
     @Test
     public void shouldNotReturnUnexpectedField() {

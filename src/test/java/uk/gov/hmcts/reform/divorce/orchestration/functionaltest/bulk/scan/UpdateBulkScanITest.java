@@ -33,7 +33,7 @@ public class UpdateBulkScanITest {
     private static final String UPDATE_URL = "/update-case";
     private static final String FULL_AOS_PACK_2_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/aos/fullAosPack2Form.json";
 
-    private static String VALID_BODY;
+    private String validBody;
 
     @Autowired
     private MockMvc mockMvc;
@@ -46,7 +46,7 @@ public class UpdateBulkScanITest {
         when(authTokenValidator.getServiceName(ALLOWED_SERVICE_TOKEN)).thenReturn("bulk_scan_orchestrator");
         when(authTokenValidator.getServiceName(I_AM_NOT_ALLOWED_SERVICE_TOKEN)).thenReturn("don't let me do it!");
 
-        VALID_BODY = loadResourceAsString(FULL_AOS_PACK_2_FORM_JSON_PATH);
+        validBody = loadResourceAsString(FULL_AOS_PACK_2_FORM_JSON_PATH);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class UpdateBulkScanITest {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
-                .content(VALID_BODY)
+                .content(validBody)
                 .header(SERVICE_AUTHORISATION_HEADER, I_AM_NOT_ALLOWED_SERVICE_TOKEN)
         ).andExpect(status().isForbidden());
     }
@@ -64,7 +64,7 @@ public class UpdateBulkScanITest {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
-                .content(VALID_BODY)
+                .content(validBody)
                 .header(SERVICE_AUTHORISATION_HEADER, "")
         ).andExpect(status().isUnauthorized());
     }

@@ -20,14 +20,14 @@ public class BulkScanFormTransformerFactory {
     private D8FormToCaseTransformer d8FormToCaseTransformer;
 
     @Autowired
-    private AosPack2FormToCaseTransformer aosPack2FormToCaseTransformer;
+    private AosPackOfflineFormToCaseTransformer aosPackOfflineFormToCaseTransformer;
 
     private static Map<String, BulkScanFormTransformer> bulkScanFormTransformerMap = new HashMap<>();
 
     @PostConstruct
     public void init() {
         bulkScanFormTransformerMap.put(D8_FORM, d8FormToCaseTransformer);
-        bulkScanFormTransformerMap.put(AOS_PACK_2, aosPack2FormToCaseTransformer);
+        bulkScanFormTransformerMap.put(AOS_PACK_2, aosPackOfflineFormToCaseTransformer);
     }
 
     public BulkScanFormTransformer getTransformer(String formType) {

@@ -10,12 +10,12 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
-public class AosPack2FormToCaseTransformer extends BulkScanFormTransformer {
+public class AosPackOfflineFormToCaseTransformer extends BulkScanFormTransformer {
 
     private static final Map<String, String> ocrToCCDMapping;
 
     static {
-        ocrToCCDMapping = aosPack2ExceptionRecordToCcdMap();
+        ocrToCCDMapping = aosPackOfflineExceptionRecordToCcdMap();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class AosPack2FormToCaseTransformer extends BulkScanFormTransformer {
             .findFirst();
     }
 
-    private static Map<String, String> aosPack2ExceptionRecordToCcdMap() {
+    private static Map<String, String> aosPackOfflineExceptionRecordToCcdMap() {
         Map<String, String> erToCcdFieldsMap = new HashMap<>();
 
         erToCcdFieldsMap.put("RespConfirmReadPetition", "RespConfirmReadPetition");
