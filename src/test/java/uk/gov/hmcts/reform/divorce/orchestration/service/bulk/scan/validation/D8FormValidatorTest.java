@@ -72,7 +72,14 @@ public class D8FormValidatorTest {
             new OcrDataField("D8MarriageCertificateCorrect", "Yes"),
             new OcrDataField("D8FinancialOrder", "No"),
             new OcrDataField("D8ReasonForDivorce", "desertion"),
-            new OcrDataField("D8LegalProceedings", "No")
+            new OcrDataField("D8LegalProceedings", "No"),
+            new OcrDataField("D8AppliesForStatementOfTruth", "marriage"),
+            new OcrDataField("D8DivorceClaimFrom", "respondent, corespondent"),
+            new OcrDataField("D8FinancialOrderStatementOfTruth", "petitioner, children"),
+            new OcrDataField("D8FullNameStatementOfTruth", "Peter F. Griffin"),
+            new OcrDataField("D8StatementofTruthSignature", "Yes"),
+            new OcrDataField("D8StatementofTruthDate", "22/09/2018"),
+            new OcrDataField("D8SolicitorsFirmStatementOfTruth", "Quahog Family Solicitors")
         ));
 
         mandatoryFields = mandatoryFieldsWithValues.stream().map(OcrDataField::getName).collect(Collectors.toList());
@@ -100,8 +107,8 @@ public class D8FormValidatorTest {
     public void shouldFailValidationWhenMandatoryFieldIsPresentButEmpty() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(
             mandatoryFields.stream()
-            .map(emptyValueOcrDataField)
-            .collect(Collectors.toList()));
+                .map(emptyValueOcrDataField)
+                .collect(Collectors.toList()));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
         assertThat(validationResult.getErrors(), is(emptyList()));
@@ -154,7 +161,11 @@ public class D8FormValidatorTest {
             new OcrDataField("D8FinancialOrder", "Not sure"),
             new OcrDataField("D8FinancialOrderFor", "someone else"),
             new OcrDataField("D8ReasonForDivorce", "no reason"),
-            new OcrDataField("D8LegalProceedings", "Not sure")
+            new OcrDataField("D8LegalProceedings", "Not sure"),
+            new OcrDataField("D8AppliesForStatementOfTruth", "somethingElse"),
+            new OcrDataField("D8DivorceClaimFrom", "somethingElse"),
+            new OcrDataField("D8StatementofTruthSignature", "No"),
+            new OcrDataField("D8StatementofTruthDate", "29/02/2019")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -190,7 +201,11 @@ public class D8FormValidatorTest {
             mustBeYesOrNo("D8FinancialOrder"),
             "D8FinancialOrderFor must be \"myself\", \"my children\", \"myself, my children\" or left blank",
             "D8ReasonForDivorce must be \"unreasonable-behaviour\", \"adultery\", \"desertion\", \"separation-2-years\" or \"separation-5-years\"",
-            mustBeYesOrNo("D8LegalProceedings")
+            mustBeYesOrNo("D8LegalProceedings"),
+            "D8AppliesForStatementOfTruth must be \"marriage\", \"dissolution\" or \"separation\"",
+            "D8DivorceClaimFrom must be \"respondent\", \"corespondent\" or \"respondent, corespondent\"",
+            "D8StatementofTruthSignature must be \"Yes\"",
+            "D8StatementofTruthDate must be a valid date"
         ));
     }
 
@@ -425,14 +440,14 @@ public class D8FormValidatorTest {
     }
 
     @Test
-    public void shouldNotProduceWarningsForPlaceOfMarriageIfOnlyOnePrerequsiteIsNoOrNullAndPlaceOfMarriageExists() {
+    public void shouldNotProduceWarningsForPlaceOfMarriageIfOnlyOnePrerequisiteIsNoOrNullAndPlaceOfMarriageExists() {
         Map<String, String> notMarriedInUkOnly = new HashMap<String, String>() {{
-                put("D8MarriedInUk", "No");
-            }};
+            put("D8MarriedInUk", "No");
+        }};
 
         Map<String, String> issueWithoutCertOnly = new HashMap<String, String>() {{
-                put("D8ApplicationToIssueWithoutCertificate", "Yes");
-            }};
+            put("D8ApplicationToIssueWithoutCertificate", "Yes");
+        }};
 
         List<Map<String, String>> incompletePrerequisites = asList(notMarriedInUkOnly, issueWithoutCertOnly);
 
@@ -457,24 +472,24 @@ public class D8FormValidatorTest {
     @Test
     public void shouldProduceWarningsForPlaceOfMarriageForAllPrerequisiteCombinationsAndNoPlaceOfMarriage() {
         Map<String, String> marriedInUkNotWithoutCert = new HashMap<String, String>() {{
-                put("D8MarriedInUk", "Yes");
-                put("D8ApplicationToIssueWithoutCertificate", "No");
-            }};
+            put("D8MarriedInUk", "Yes");
+            put("D8ApplicationToIssueWithoutCertificate", "No");
+        }};
 
         Map<String, String> notMarriedInUkWithoutCert = new HashMap<String, String>() {{
-                put("D8MarriedInUk", "No");
-                put("D8ApplicationToIssueWithoutCertificate", "Yes");
-            }};
+            put("D8MarriedInUk", "No");
+            put("D8ApplicationToIssueWithoutCertificate", "Yes");
+        }};
 
         Map<String, String> notMarriedInUkNotWithoutCert = new HashMap<String, String>() {{
-                put("D8MarriedInUk", "No");
-                put("D8ApplicationToIssueWithoutCertificate", "No");
-            }};
+            put("D8MarriedInUk", "No");
+            put("D8ApplicationToIssueWithoutCertificate", "No");
+        }};
 
         Map<String, String> marriedInUkWithoutCert = new HashMap<String, String>() {{
-                put("D8MarriedInUk", "Yes");
-                put("D8ApplicationToIssueWithoutCertificate", "Yes");
-            }};
+            put("D8MarriedInUk", "Yes");
+            put("D8ApplicationToIssueWithoutCertificate", "Yes");
+        }};
 
         List<Map<String, String>> invalidMarriedInUkIssueWithoutCertCombinations =
             asList(marriedInUkNotWithoutCert, notMarriedInUkWithoutCert, notMarriedInUkNotWithoutCert, marriedInUkWithoutCert);
@@ -499,24 +514,24 @@ public class D8FormValidatorTest {
     @Test
     public void shouldNotProduceWarningsForPlaceOfMarriageForAllPrerequisiteCombinationsAndPlaceOfMarriageExists() {
         Map<String, String> marriedInUkNotWithoutCert = new HashMap<String, String>() {{
-                put("D8MarriedInUk", "Yes");
-                put("D8ApplicationToIssueWithoutCertificate", "No");
-            }};
+            put("D8MarriedInUk", "Yes");
+            put("D8ApplicationToIssueWithoutCertificate", "No");
+        }};
 
         Map<String, String> notMarriedInUkWithoutCert = new HashMap<String, String>() {{
-                put("D8MarriedInUk", "No");
-                put("D8ApplicationToIssueWithoutCertificate", "Yes");
-            }};
+            put("D8MarriedInUk", "No");
+            put("D8ApplicationToIssueWithoutCertificate", "Yes");
+        }};
 
         Map<String, String> notMarriedInUkNotWithoutCert = new HashMap<String, String>() {{
-                put("D8MarriedInUk", "No");
-                put("D8ApplicationToIssueWithoutCertificate", "No");
-            }};
+            put("D8MarriedInUk", "No");
+            put("D8ApplicationToIssueWithoutCertificate", "No");
+        }};
 
         Map<String, String> marriedInUkWithoutCert = new HashMap<String, String>() {{
-                put("D8MarriedInUk", "Yes");
-                put("D8ApplicationToIssueWithoutCertificate", "Yes");
-            }};
+            put("D8MarriedInUk", "Yes");
+            put("D8ApplicationToIssueWithoutCertificate", "Yes");
+        }};
 
         List<Map<String, String>> validMarriedInUkIssueWithoutCertCombinations =
             asList(marriedInUkNotWithoutCert, notMarriedInUkWithoutCert, notMarriedInUkNotWithoutCert, marriedInUkWithoutCert);
@@ -558,18 +573,18 @@ public class D8FormValidatorTest {
     @Test
     public void shouldNotProduceWarningsForD8MarriageCertificateCorrectExplainIfPrerequisitesCombinationsAreValid() {
         Map<String, String> marriageCertCorrectEmptyExplain = new HashMap<String, String>() {{
-                put("D8MarriageCertificateCorrect", "Yes");
-                put("D8MarriageCertificateCorrectExplain", "");
-            }};
+            put("D8MarriageCertificateCorrect", "Yes");
+            put("D8MarriageCertificateCorrectExplain", "");
+        }};
 
         Map<String, String> marriageCertCorrectNullExplain = new HashMap<String, String>() {{
-                put("D8MarriageCertificateCorrect", "Yes");
-            }};
+            put("D8MarriageCertificateCorrect", "Yes");
+        }};
 
         Map<String, String> marriageCertNotCorrectExplain = new HashMap<String, String>() {{
-                put("D8MarriageCertificateCorrect", "No");
-                put("D8MarriageCertificateCorrectExplain", "insert reason here");
-            }};
+            put("D8MarriageCertificateCorrect", "No");
+            put("D8MarriageCertificateCorrectExplain", "insert reason here");
+        }};
 
         List<Map<String, String>> validMarriageCertOptions =
             asList(marriageCertCorrectEmptyExplain, marriageCertCorrectNullExplain, marriageCertNotCorrectExplain);
@@ -748,6 +763,56 @@ public class D8FormValidatorTest {
         ));
     }
 
+    @Test
+    public void shouldHaveFinancialOrderBeneficiaryMatchStatementOfTruth() {
+        testValidationIsSuccessfulWithGivenPayload(createMergedList(mandatoryFieldsWithValues, asList(
+            new OcrDataField("D8FinancialOrder", "Yes"),
+            new OcrDataField("D8FinancialOrderFor", "myself"),
+            new OcrDataField("D8FinancialOrderStatementOfTruth", "petitioner")
+        )));
+
+        testValidationIsSuccessfulWithGivenPayload(createMergedList(mandatoryFieldsWithValues, asList(
+            new OcrDataField("D8FinancialOrder", "Yes"),
+            new OcrDataField("D8FinancialOrderFor", "my children"),
+            new OcrDataField("D8FinancialOrderStatementOfTruth", "children")
+        )));
+
+        testValidationIsSuccessfulWithGivenPayload(createMergedList(mandatoryFieldsWithValues, asList(
+            new OcrDataField("D8FinancialOrder", "Yes"),
+            new OcrDataField("D8FinancialOrderFor", "myself, my children"),
+            new OcrDataField("D8FinancialOrderStatementOfTruth", "petitioner, children")
+        )));
+
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(createMergedList(mandatoryFieldsWithValues, asList(
+            new OcrDataField("D8FinancialOrder", "Yes"),
+            new OcrDataField("D8FinancialOrderFor", "myself, my children"),
+            new OcrDataField("D8FinancialOrderStatementOfTruth", "somethingElse")
+        )));
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), hasItem("Fields selected for \"D8FinancialOrderStatementOfTruth\" need to be consistent with \"D8FinancialOrderFor\""));
+    }
+
+    private List<OcrDataField> createMergedList(List<OcrDataField> mainList, List<OcrDataField> listToAdd) {
+        Map<String, String> mandatoryFieldsAndValues = mainList.stream().collect(Collectors.toMap(OcrDataField::getName, OcrDataField::getValue));
+
+        for (OcrDataField fieldToAdd : listToAdd) {
+            mandatoryFieldsAndValues.put(fieldToAdd.getName(), fieldToAdd.getValue());
+        }
+
+        return mandatoryFieldsAndValues.entrySet().stream()
+            .map(entry -> new OcrDataField(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList());
+    }
+
+    private void testValidationIsSuccessfulWithGivenPayload(List<OcrDataField> payload) {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(payload);
+
+        assertThat(validationResult.getStatus(), is(SUCCESS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), is(emptyList()));
+    }
+
     private Function<String, String> mandatoryFieldIsMissing = fieldName -> String.format("Mandatory field \"%s\" is missing", fieldName);
 
     private String mustBeYesOrNo(String fieldName) {
@@ -763,4 +828,5 @@ public class D8FormValidatorTest {
     }
 
     private Function<String, OcrDataField> emptyValueOcrDataField = fieldName -> new OcrDataField(fieldName, "");
+
 }

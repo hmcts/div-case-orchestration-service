@@ -49,7 +49,7 @@ public class TransformationBulkScanITest {
     private static final String PARTIAL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/d8/partialD8Form.json";
     private static final String TRANSFORMATION_URL = "/transform-exception-record";
 
-    private static String VALID_BODY;
+    private String jsonPayload;
 
     @Autowired
     private MockMvc mockMvc;
@@ -62,7 +62,7 @@ public class TransformationBulkScanITest {
         when(authTokenValidator.getServiceName(ALLOWED_SERVICE_TOKEN)).thenReturn("bulk_scan_orchestrator");
         when(authTokenValidator.getServiceName(I_AM_NOT_ALLOWED_SERVICE_TOKEN)).thenReturn("don't let me do it!");
 
-        VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
+        jsonPayload = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
     }
 
     @Test
@@ -70,7 +70,7 @@ public class TransformationBulkScanITest {
         mockMvc.perform(
             post(TRANSFORMATION_URL)
                 .contentType(APPLICATION_JSON)
-                .content(VALID_BODY)
+                .content(jsonPayload)
                 .header(SERVICE_AUTHORISATION_HEADER, I_AM_NOT_ALLOWED_SERVICE_TOKEN)
         ).andExpect(status().isForbidden());
     }
@@ -80,7 +80,7 @@ public class TransformationBulkScanITest {
         mockMvc.perform(
             post(TRANSFORMATION_URL)
                 .contentType(APPLICATION_JSON)
-                .content(VALID_BODY)
+                .content(jsonPayload)
                 .header(SERVICE_AUTHORISATION_HEADER, "")
         ).andExpect(status().isUnauthorized());
     }
@@ -90,7 +90,7 @@ public class TransformationBulkScanITest {
         mockMvc.perform(
             post(TRANSFORMATION_URL)
                 .contentType(APPLICATION_JSON)
-                .content(VALID_BODY)
+                .content(jsonPayload)
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
         )
             .andExpect(status().isOk())
@@ -102,7 +102,6 @@ public class TransformationBulkScanITest {
                     hasJsonPath("$.case_creation_details", allOf(
                         hasJsonPath("case_type_id", is("DIVORCE")),
                         hasJsonPath("event_id", is("caseCreate")),
-                        hasJsonPath("case_data.*", hasSize(53)),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),
                             hasJsonPath("D8PaymentMethod", is("Card")),
@@ -190,7 +189,17 @@ public class TransformationBulkScanITest {
                                 hasJsonPath("County", is("Higher Midlands")),
                                 hasJsonPath("PostCode", is("SO2 7OR")),
                                 hasJsonPath("PostTown", is("Lawyerpool"))
-                            ))
+                            )),
+
+                            ///
+
+                            hasJsonPath("D8AppliesForStatementOfTruth", is("marriage")),
+                            hasJsonPath("D8DivorceClaimFrom", is("correspondent")),
+                            hasJsonPath("D8FinancialOrderStatementOfTruth", is("petitioner, children")),
+                            hasJsonPath("D8FullNameStatementOfTruth", is("Peter F. Griffin")),
+                            hasJsonPath("D8StatementOfTruthSignature", is("Yes")),
+                            hasJsonPath("D8StatementOfTruthDate", is("16/01/2020")),
+                            hasJsonPath("D8SolicitorsFirmStatementOfTruth", is("Quahog Solicitors Ltd."))
 
                         ))
                     ))
@@ -228,7 +237,8 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8PetitionerContactDetailsConfidential", is("Yes")),
                             hasJsonPath("D8MarriagePetitionerName", is("Christopher O'John")),
                             hasJsonPath("D8MarriageRespondentName", is("Jane Doe")),
-                            hasNoJsonPath("D8CertificateInEnglish")
+                            hasNoJsonPath("D8CertificateInEnglish"),
+                            hasNoJsonPath("D8SolicitorsFirmStatementOfTruth")
                         ))
                     ))
                 )));

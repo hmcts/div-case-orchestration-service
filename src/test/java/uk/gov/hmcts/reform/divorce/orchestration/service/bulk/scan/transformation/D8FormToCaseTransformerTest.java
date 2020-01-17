@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import uk.gov.hmcts.reform.bsp.common.model.transformation.in.ExceptionRecord;
 import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations.D8FormToCaseTransformer;
 
 import java.util.List;
 import java.util.Map;
@@ -42,12 +41,12 @@ public class D8FormToCaseTransformerTest {
 
     @Test
     public void shouldReplaceCcdFieldForD8PaymentMethodIfPaymentMethodIsDebitCreditCard() {
-        assertIsReplacedBy("Card", "Debit/Credit Card", "D8PaymentMethod");
+        assertFieldValueIsTransformed("D8PaymentMethod", "Debit/Credit Card", "Card");
     }
 
     @Test
     public void shouldNotReplaceCcdFieldForD8PaymentMethodIfMethodIsCheque() {
-        assertIsReplacedBy("Cheque", "Cheque", "D8PaymentMethod");
+        assertFieldValueIsTransformed("D8PaymentMethod", "Cheque", "Cheque");
     }
 
     @Test
@@ -64,11 +63,10 @@ public class D8FormToCaseTransformerTest {
 
     @Test
     public void shouldReplaceCcdFieldForD8FinancialOrderForIfIsForMyselfMyChildrenOrBoth() {
-        assertIsReplacedBy("petitioner", "myself", "D8FinancialOrderFor");
-        assertIsReplacedBy("children", "my children", "D8FinancialOrderFor");
-        assertIsReplacedBy("petitioner, children", "myself, my children", "D8FinancialOrderFor");
+        assertFieldValueIsTransformed("D8FinancialOrderFor", "myself", "petitioner");
+        assertFieldValueIsTransformed("D8FinancialOrderFor", "my children", "children");
+        assertFieldValueIsTransformed("D8FinancialOrderFor", "myself, my children", "petitioner, children");
     }
-
 
     @Test
     public void verifyPetitionerHomeAddressIsTransformed() {
@@ -118,15 +116,6 @@ public class D8FormToCaseTransformerTest {
             ));
     }
 
-    private void assertIsReplacedBy(String expectedValue, String inputValue, String field) {
-        ExceptionRecord exceptionRecord =
-            createExceptionRecord(singletonList(new OcrDataField(field, inputValue)));
-
-        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(exceptionRecord);
-
-        assertThat(transformedCaseData.get(field), is(expectedValue));
-    }
-
     @Test
     public void verifyMarriageDateIsCorrectlyTransformedGivenSeparateComponents() {
         ExceptionRecord exceptionRecord = createExceptionRecord(asList(
@@ -171,6 +160,37 @@ public class D8FormToCaseTransformerTest {
     }
 
     @Test
+    public void shouldTransformFieldsAsExpectedForSection11() {
+        //Generic test
+        ExceptionRecord exceptionRecord = createExceptionRecord(asList(
+            new OcrDataField("D8AppliesForStatementOfTruth", "marriage"),
+            new OcrDataField("D8DivorceClaimFrom", "corespondent"),
+            new OcrDataField("D8FinancialOrderStatementOfTruth", "petitioner, children"),
+            new OcrDataField("D8FullNameStatementOfTruth", "Peter F. Griffin"),
+            new OcrDataField("D8StatementofTruthSignature", "Yes"),
+            new OcrDataField("D8StatementofTruthDate", "17/01/2020"),
+            new OcrDataField("D8SolicitorsFirmStatementOfTruth", "Quahog Solicitors Ltd.")
+        ));
+
+        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(exceptionRecord);
+
+        assertThat(transformedCaseData, allOf(
+            hasEntry("D8AppliesForStatementOfTruth", "marriage"),
+            hasEntry("D8DivorceClaimFrom", "correspondent"),
+            hasEntry("D8FinancialOrderStatementOfTruth", "petitioner, children"),
+            hasEntry("D8FullNameStatementOfTruth", "Peter F. Griffin"),
+            hasEntry("D8StatementOfTruthSignature", "Yes"),
+            hasEntry("D8StatementOfTruthDate", "17/01/2020"),
+            hasEntry("D8SolicitorsFirmStatementOfTruth", "Quahog Solicitors Ltd.")
+        ));
+
+        //More granular tests
+        assertFieldValueIsTransformed("D8DivorceClaimFrom", "respondent", "respondent");
+        assertFieldValueIsTransformed("D8DivorceClaimFrom", "corespondent", "correspondent");
+        assertFieldValueIsTransformed("D8DivorceClaimFrom", "respondent, corespondent", "respondent, correspondent");
+    }
+
+    @Test
     public void verifyD8RespondentHomeAddressIsTransformed() {
         assertAddressIsTransformed(
             "D8RespondentHomeAddress",
@@ -192,6 +212,15 @@ public class D8FormToCaseTransformerTest {
                 "D8RespondentSolicitorAddressPostCode", "SO2 7OR",
                 "D8RespondentSolicitorAddressCounty", "Higher Midlands"
             ));
+    }
+
+    private void assertFieldValueIsTransformed(String field, String inputValue, String expectedNewValue) {
+        ExceptionRecord exceptionRecord =
+            createExceptionRecord(singletonList(new OcrDataField(field, inputValue)));
+
+        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(exceptionRecord);
+
+        assertThat(transformedCaseData.get(field), is(expectedNewValue));
     }
 
     private ExceptionRecord createExceptionRecord(List<OcrDataField> ocrDataFields) {
