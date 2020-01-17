@@ -23,19 +23,20 @@ plugins {
     id 'application'
     id 'checkstyle'
     id 'com.github.ben-manes.versions' version '0.27.0'
+    id 'com.jfrog.bintray' version '1.8.4'
+    id 'info.solidsoft.pitest' version '1.4.6'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'jacoco'
-    id 'org.owasp.dependencycheck' version '5.2.2'
-    id 'com.jfrog.bintray' version '1.8.4'
     id 'org.flywaydb.flyway' version '5.2.4'
+    id 'org.owasp.dependencycheck' version '5.2.4'
     id 'org.sonarqube' version '2.8'
     id 'org.springframework.boot' version '2.1.2.RELEASE'
-    id 'info.solidsoft.pitest' version '1.4.5'
 }
 
 def versions = [
-        awaitility                   : '4.0.1',
+        awaitility                   : '4.0.2',
         bcpkixJdk15on                : '1.64',
+        bspCommonLib                 : '0.0.13',
         ccdStoreClient               : '4.6.4',
         commonsBeanUtils             : '1.9.4',
         commonsIo                    : '2.6',
@@ -43,62 +44,60 @@ def versions = [
         commonsMath3                 : '3.6.1',
         divCommonLib                 : '1.0.7',
         dumbster                     : '1.7.1',
-        elasticsearch                : '7.4.1',
-        feignHttpClient              : '10.2.0',
+        elasticsearch                : '7.5.1',
+        feignHttpClient              : '10.3.0',
         flyway                       : '5.2.4',
-        gradlePitest                 : '1.4.5',
-        guava                        : '28.1-jre',
-        hibernateTypes               : '2.4.0',
+        gradlePitest                 : '1.4.6',
+        guava                        : '28.2-jre',
+        hibernateTypes               : '2.4.4',
         hmctsNotify                  : '3.14.1-RELEASE',
-        idamClient                   : '1.2.2',
+        idamClient                   : '1.3.0',
         jackson                      : '2.10.0',
         jacksonDatatypeJsr           : '2.10.0',
+        javaxMail                    : '1.4',
         javaxWsRs                    : '2.1.1',
+        jdbi                         : '2.78',
         jsonAssert                   : '1.2.3',
         jsonPathAssert               : '2.2.0',
         lombok                       : '1.16.16',
         pitest                       : '1.4.10',
-        postgresql                   : '42.2.8',
-        puppyCrawl                   : '8.25',
+        postgresql                   : '42.2.9',
+        puppyCrawl                   : '8.28',
         quartz                       : '2.3.2',
-        reformHealth                 : '0.0.3',
+        reformHealth                 : '0.0.5',
         reformPropertiesVolume       : '0.0.4',
         reformsJavaLogging           : '5.1.1',
-        reformSpringBootAutoConfigure: '1.1.0',
+        reformSpringBootAutoConfigure: '2.0.0',
         restAssured                  : '3.0.3',
-        sendLetterClient             : '2.1.1',
-        serenity                     : '2.0.81',
-        serenityCucumber             : '1.9.46',
+        sendLetterClient             : '2.2.0',
+        serenity                     : '2.0.91',
+        serenityCucumber             : '1.9.50',
         serviceTokenGenerator        : '3.0.0',
         sonarPitest                  : '0.5',
         springCloudDependencies      : '2.1.2.RELEASE',
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.0.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
-        tomcat                       : '9.0.27',
-        unirest                      : '1.4.9',
-        bspCommonLib                 : '0.0.13'
+        tomcat                       : '9.0.30',
+        unirest                      : '1.4.9'
 ]
 
 allprojects {
 
     def springBootVersion = '2.1.2.RELEASE'
-    def springCloudVersion = 'Finchley.RELEASE'
 
-    apply plugin: 'java'
     apply plugin: 'checkstyle'
-    apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'org.owasp.dependencycheck'
     apply plugin: 'com.github.ben-manes.versions'
+    apply plugin: 'io.spring.dependency-management'
     apply plugin: 'jacoco'
+    apply plugin: 'java'
+    apply plugin: 'org.owasp.dependencycheck'
 
     group = 'uk.gov.hmcts.reform.divorce'
     version = '0.0.1'
 
-
     checkstyle {
         maxWarnings = 0
-
         toolVersion = '8.21'
         // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
         configDir = new File(rootDir, './')
@@ -115,8 +114,6 @@ allprojects {
             assemblyEnabled = false
         }
     }
-
-    sourceCompatibility = 1.8
 
     repositories {
         mavenLocal()
@@ -264,35 +261,48 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
 
-    compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: versions.sendLetterClient
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
-    compile group: 'org.springframework.retry', name: 'spring-retry'
-    compile group: 'org.apache.commons', name: 'commons-math3', version: versions.commonsMath3
-
-    compile('org.springframework.boot:spring-boot-starter-actuator')
-    compile group: 'org.jdbi', name: 'jdbi', version: '2.78'
-    compile('org.springframework.boot:spring-boot-starter-web')
-
-    compile('org.elasticsearch.client:transport:7.1.1')
-
-    compile group: 'javax.mail', name: 'mail', version: '1.4'
-
+    compile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: versions.jsonPathAssert
+    compile group: 'com.github.kirviq', name: 'dumbster', version: versions.dumbster
     compile group: 'com.puppycrawl.tools', name: 'checkstyle', version: versions.puppyCrawl
+    compile group: 'com.vladmihalcea', name: 'hibernate-types-52', version: versions.hibernateTypes
     compile group: 'commons-io', name: 'commons-io', version: versions.commonsIo
+    compile group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
+    compile group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
+    compile group: 'javax.mail', name: 'mail', version: versions.javaxMail
     compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: versions.javaxWsRs
-    compile group: 'com.vladmihalcea', name: 'hibernate-types-52', version: versions.hibernateTypes
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
+    compile group: 'org.apache.commons', name: 'commons-math3', version: versions.commonsMath3
+    compile group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
+    compile group: 'org.elasticsearch', name: 'elasticsearch', version: versions.elasticsearch
+    compile group: 'org.elasticsearch.client', name: 'transport', version: versions.elasticsearch
+    compile group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
+    compile group: 'org.jdbi', name: 'jdbi', version: versions.jdbi
+    compile group: 'org.pitest', name: 'pitest', version: versions.pitest
     compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
+    compile group: 'org.springframework', name: 'spring-context-support'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: versions.springBoot
-    compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: versions.javaxWsRs
-    compile (group: 'org.quartz-scheduler', name:'quartz', version: versions.quartz) {
-        force = true
-    }
-    compile group: 'org.springframework', name: 'spring-context-support'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    compile group: 'org.springframework.retry', name: 'spring-retry'
+    compile group: 'uk.gov.hmcts.reform', name: 'bsp-common-lib', version: versions.bspCommonLib
+    compile group: 'uk.gov.hmcts.reform', name: 'div-common-lib', version: versions.divCommonLib
+    compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
+    compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformsJavaLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformsJavaLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'logging-httpcomponents', version: versions.reformsJavaLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.reformsJavaLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: versions.reformHealth
+    compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: versions.reformSpringBootAutoConfigure
+    compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: versions.reformPropertiesVolume
+    compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.serviceTokenGenerator
+    compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: versions.sendLetterClient
+    compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
+
     compile(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
             {
                 exclude group: 'io.reactivex', module: 'io.reactivex'
@@ -301,28 +311,9 @@ dependencies {
                 exclude group: 'io.reactivex', module: 'rxnetty-servo'
             }
 
-    compile group: 'org.elasticsearch', name: 'elasticsearch', version: versions.elasticsearch
-    compile group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
-    compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: versions.reformSpringBootAutoConfigure
-    compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: versions.reformHealth
-    compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: versions.reformPropertiesVolume
-
-    compile group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
-    compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
-    compile group: 'uk.gov.hmcts.reform', name: 'bsp-common-lib', version: versions.bspCommonLib
-    compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformsJavaLogging
-    compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformsJavaLogging
-    compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
-    compile group: 'uk.gov.hmcts.reform', name: 'logging-httpcomponents', version: versions.reformsJavaLogging
-    compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.reformsJavaLogging
-    compile group: 'uk.gov.hmcts.reform', name: 'div-common-lib', version: versions.divCommonLib
-    compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.serviceTokenGenerator
-    compile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: versions.jsonPathAssert
-    compile group: 'org.pitest', name: 'pitest', version: versions.pitest
-    compile group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
-    compile group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
-
-    compile group: 'com.github.kirviq', name: 'dumbster', version: versions.dumbster
+    compile(group: 'commons-beanutils', name: 'commons-beanutils', version: versions.commonsBeanUtils) {
+        force = true
+    }
 
     compile(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson) {
         force = true
@@ -356,23 +347,24 @@ dependencies {
         force = true
     }
 
-    compile(group: 'commons-beanutils', name: 'commons-beanutils', version: versions.commonsBeanUtils) {
+    compile(group: 'org.quartz-scheduler', name:'quartz', version: versions.quartz) {
         force = true
     }
 
     runtime('org.springframework.boot:spring-boot-devtools')
 
+    testCompile group: 'org.awaitility', name:'awaitility', version: versions.awaitility
+    testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: versions.springCloudDependencies
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
         exclude(module: 'android-json')
     }
-    testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: versions.springCloudDependencies
-
-    testCompile group: 'org.awaitility', name:'awaitility', version: versions.awaitility
 
     //integration test
     integrationTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    integrationTestCompile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jacksonDatatypeJsr
     integrationTestCompile group: 'com.mashape.unirest', name: 'unirest-java', version: versions.unirest
+    integrationTestCompile group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
     integrationTestCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
     integrationTestCompile group: 'junit', name: 'junit', version: versions.junit
     integrationTestCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
@@ -381,9 +373,17 @@ dependencies {
     integrationTestCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
     integrationTestCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     integrationTestCompile group: 'org.apache.commons', name: 'commons-lang3', version: versions.commonsLang3
-    integrationTestCompile group: 'org.skyscreamer', name: 'jsonassert', version: versions.jsonAssert
-    integrationTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
     integrationTestCompile group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    integrationTestCompile group: 'org.skyscreamer', name: 'jsonassert', version: versions.jsonAssert
+    integrationTestCompile group: 'org.springframework', name: 'spring-context-support'
+    integrationTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    integrationTestCompile(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
+            {
+                exclude group: 'io.reactivex', module: 'io.reactivex'
+                exclude group: 'io.reactivex', module: 'rxnetty'
+                exclude group: 'io.reactivex', module: 'rxnetty-contexts'
+                exclude group: 'io.reactivex', module: 'rxnetty-servo'
+            }
     integrationTestCompile(group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: versions.ccdStoreClient)
             {
                 exclude group: 'io.reactivex', module: 'io.reactivex'
@@ -398,18 +398,7 @@ dependencies {
                 exclude group: 'io.reactivex', module: 'rxnetty-contexts'
                 exclude group: 'io.reactivex', module: 'rxnetty-servo'
             }
-    integrationTestCompile group: 'org.springframework', name: 'spring-context-support'
-    integrationTestCompile(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
-            {
-                exclude group: 'io.reactivex', module: 'io.reactivex'
-                exclude group: 'io.reactivex', module: 'rxnetty'
-                exclude group: 'io.reactivex', module: 'rxnetty-contexts'
-                exclude group: 'io.reactivex', module: 'rxnetty-servo'
-            }
-    integrationTestCompile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jacksonDatatypeJsr
-    integrationTestCompile group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
 }
-
 
 dependencies {
     integrationTestCompile(sourceSets.test.output)
@@ -467,6 +456,7 @@ def sonarExclusions = [
         '**uk/gov/hmcts/reform/divorce/orchestration/OrchestrationServiceApplication.java',
         '**uk/gov/hmcts/reform/divorce/orchestration/client/**',
         '**uk/gov/hmcts/reform/divorce/orchestration/event/**/*',
+        '**uk/gov/hmcts/reform/divorce/orchestration/service/bulk/scan/**/*',
         '**uk/gov/hmcts/reform/divorce/orchestration/framework/workflow/task/DefaultTaskContext.java',
         '**uk/gov/hmcts/reform/divorce/scheduler/model/*',
         '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*'

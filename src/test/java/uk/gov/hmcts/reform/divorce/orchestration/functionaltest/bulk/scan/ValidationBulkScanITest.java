@@ -41,7 +41,7 @@ public class ValidationBulkScanITest {
 
     private static final String SUCCESS_STATUS = "SUCCESS";
     private static final String WARNINGS_STATUS = "WARNINGS";
-    private static final String FULL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/fullD8Form.json";
+    private static final String FULL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/d8/fullD8Form.json";
 
     private static String VALID_BODY;
 
@@ -99,7 +99,7 @@ public class ValidationBulkScanITest {
 
     @Test
     public void shouldReturnFailureResponseForValidationEndpoint() throws Exception {
-        String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/validation/incompleteForm.json");
+        String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/d8/validation/incompleteForm.json");
 
         mockMvc.perform(
             post("/forms/{form-type}/validate-ocr", D8_FORM)
@@ -131,7 +131,7 @@ public class ValidationBulkScanITest {
 
     @Test
     public void shouldReturnWarningResponseForValidationEndpoint() throws Exception {
-        String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/validation/warningsD8Form.json");
+        String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/d8/validation/warningsD8Form.json");
 
         mockMvc.perform(post("/forms/{form-type}/validate-ocr", D8_FORM)
             .contentType(APPLICATION_JSON)

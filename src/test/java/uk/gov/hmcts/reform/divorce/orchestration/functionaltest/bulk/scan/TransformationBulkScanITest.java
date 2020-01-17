@@ -45,8 +45,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.
 @RunWith(SpringRunner.class)
 public class TransformationBulkScanITest {
 
-    private static final String FULL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/fullD8Form.json";
-    private static final String PARTIAL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/partialD8Form.json";
+    private static final String FULL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/d8/fullD8Form.json";
+    private static final String PARTIAL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/d8/partialD8Form.json";
     private static final String TRANSFORMATION_URL = "/transform-exception-record";
 
     private static String VALID_BODY;
