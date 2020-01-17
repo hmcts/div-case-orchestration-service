@@ -74,7 +74,6 @@ public class D8FormValidator extends BulkScanFormValidator {
         "D8LegalProceedings",
         "D8AppliesForStatementOfTruth",
         "D8DivorceClaimFrom",
-        "D8FinancialOrderStatementOfTruth",
         "D8FullNameStatementOfTruth",
         "D8StatementofTruthSignature",
         "D8StatementofTruthDate",
@@ -104,7 +103,7 @@ public class D8FormValidator extends BulkScanFormValidator {
             "separation-5-years"));
         ALLOWED_VALUES_PER_FIELD.put("D8LegalProceedings", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8AppliesForStatementOfTruth", asList("marriage", "dissolution", "separation"));
-        ALLOWED_VALUES_PER_FIELD.put("D8DivorceClaimFrom", asList("respondent", "corespondent", "respondent, corespondent"));//TODO - test both together
+        ALLOWED_VALUES_PER_FIELD.put("D8DivorceClaimFrom", asList("respondent", "corespondent", "respondent, corespondent"));
         ALLOWED_VALUES_PER_FIELD.put("D8StatementofTruthSignature", asList(YES_VALUE));
     }
 
@@ -165,14 +164,15 @@ public class D8FormValidator extends BulkScanFormValidator {
     }
 
     private static List<String> validateD8FinancialOrderFor(Map<String, String> fieldsMap) {
-        List<String> validationMessages = validateFieldsAreNotEmptyOnlyFor(YES_VALUE, "D8FinancialOrder", singletonList("D8FinancialOrderFor"), fieldsMap);
+        List<String> validationMessages =
+            validateFieldsAreNotEmptyOnlyFor(YES_VALUE, "D8FinancialOrder", singletonList("D8FinancialOrderFor"), fieldsMap);
 
-        String financialOrderFor = fieldsMap.getOrDefault("D8FinancialOrderFor", "").replace("myself", "petitioner").replace("my children", "children");
-        if (StringUtils.isNotBlank(financialOrderFor)) {//TODO - for now, I'll only evaluate this if D8FinancialOrderFor is not blank. Jeremy needs to confirm this behaviour before we can finish this story.
-            String financialOrderStatementOfTruth = fieldsMap.getOrDefault("D8FinancialOrderStatementOfTruth", "");
-            if (!financialOrderFor.equals(financialOrderStatementOfTruth)) {
-                validationMessages.add("Fields selected for \"D8FinancialOrderStatementOfTruth\" need to be consistent with \"D8FinancialOrderFor\"");
-            }
+        String financialOrderFor = fieldsMap.getOrDefault("D8FinancialOrderFor", "")
+            .replace("myself", "petitioner")
+            .replace("my children", "children");
+        String financialOrderStatementOfTruth = fieldsMap.getOrDefault("D8FinancialOrderStatementOfTruth", "");
+        if (!financialOrderFor.equals(financialOrderStatementOfTruth)) {
+            validationMessages.add("Fields selected for \"D8FinancialOrderStatementOfTruth\" need to be consistent with \"D8FinancialOrderFor\"");
         }
 
         return validationMessages;
