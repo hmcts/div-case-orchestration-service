@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations;
+package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformation;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;

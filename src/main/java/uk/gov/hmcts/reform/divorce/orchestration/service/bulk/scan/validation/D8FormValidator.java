@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.bsp.common.error.FormFieldValidationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.BulkScanValidationPatterns.CCD_EMAIL_REGEX;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.BulkScanValidationPatterns.CCD_PHONE_NUMBER_REGEX;
 import static uk.gov.hmcts.reform.bsp.common.service.PostcodeValidator.validatePostcode;
@@ -71,7 +71,13 @@ public class D8FormValidator extends BulkScanFormValidator {
         "D8MarriageCertificateCorrect",
         "D8FinancialOrder",
         "D8ReasonForDivorce",
-        "D8LegalProceedings"
+        "D8LegalProceedings",
+        "D8AppliesForStatementOfTruth",
+        "D8DivorceClaimFrom",
+        "D8FullNameStatementOfTruth",
+        "D8StatementofTruthSignature",
+        "D8StatementofTruthDate",
+        "D8SolicitorsFirmStatementOfTruth"
     );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
@@ -91,11 +97,14 @@ public class D8FormValidator extends BulkScanFormValidator {
         ALLOWED_VALUES_PER_FIELD.put("D8MarriedInUk", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8ApplicationToIssueWithoutCertificate", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8MarriageCertificateCorrect", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrder", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrder", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrderFor", asList("myself", "my children", "myself, my children", BLANK));
         ALLOWED_VALUES_PER_FIELD.put("D8ReasonForDivorce", asList("unreasonable-behaviour", "adultery", "desertion", "separation-2-years",
             "separation-5-years"));
-        ALLOWED_VALUES_PER_FIELD.put("D8LegalProceedings", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("D8LegalProceedings", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("D8AppliesForStatementOfTruth", asList("marriage", "dissolution", "separation"));
+        ALLOWED_VALUES_PER_FIELD.put("D8DivorceClaimFrom", asList("respondent", "corespondent", "respondent, corespondent"));
+        ALLOWED_VALUES_PER_FIELD.put("D8StatementofTruthSignature", asList(YES_VALUE));
     }
 
     public List<String> getMandatoryFields() {
@@ -132,22 +141,41 @@ public class D8FormValidator extends BulkScanFormValidator {
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
 
-
-        try {
-            Optional.ofNullable(fieldsMap.get("D8ReasonForDivorceSeparationDate"))
-                .ifPresent(formDate -> transformFormDateIntoLocalDate("D8ReasonForDivorceSeparationDate", formDate));
-        } catch (FormFieldValidationException exception) {
-            errorMessages.add(exception.getMessage());
-        }
+        validateDateFromGivenField(fieldsMap, "D8ReasonForDivorceSeparationDate").ifPresent(errorMessages::add);
+        validateDateFromGivenField(fieldsMap, "D8StatementofTruthDate").ifPresent(errorMessages::add);
 
         return errorMessages;
     }
 
+    /**
+     * Validates that value from given field is a valid date and returns an optional validation message.
+     */
+    private Optional<String> validateDateFromGivenField(Map<String, String> fieldsMap, String fieldName) {
+        Optional<String> validationMessage = Optional.empty();
+
+        try {
+            Optional.ofNullable(fieldsMap.get(fieldName))
+                .ifPresent(formDate -> transformFormDateIntoLocalDate(fieldName, formDate));
+        } catch (FormFieldValidationException exception) {
+            validationMessage = Optional.of(exception.getMessage());
+        }
+
+        return validationMessage;
+    }
+
     private static List<String> validateD8FinancialOrderFor(Map<String, String> fieldsMap) {
-        List<String> fieldsToCheck = Arrays.asList(
-            "D8FinancialOrderFor"
-        );
-        return validateFieldsAreNotEmptyOnlyFor(YES_VALUE, "D8FinancialOrder", fieldsToCheck, fieldsMap);
+        List<String> validationMessages =
+            validateFieldsAreNotEmptyOnlyFor(YES_VALUE, "D8FinancialOrder", singletonList("D8FinancialOrderFor"), fieldsMap);
+
+        String financialOrderFor = fieldsMap.getOrDefault("D8FinancialOrderFor", "")
+            .replace("myself", "petitioner")
+            .replace("my children", "children");
+        String financialOrderStatementOfTruth = fieldsMap.getOrDefault("D8FinancialOrderStatementOfTruth", "");
+        if (!financialOrderFor.equals(financialOrderStatementOfTruth)) {
+            validationMessages.add("Fields selected for \"D8FinancialOrderStatementOfTruth\" need to be consistent with \"D8FinancialOrderFor\"");
+        }
+
+        return validationMessages;
     }
 
     private static List<String> validateD8PetitionerCorrespondenceAddress(Map<String, String> fieldsMap) {
@@ -290,7 +318,7 @@ public class D8FormValidator extends BulkScanFormValidator {
             .orElse(false);
 
         if (!allDateComponentsPresent) {
-            return Collections.singletonList("Not all date components are present");
+            return singletonList("Not all date components are present");
         }
 
         return validateDateComponents(fieldsMap, dayKey, monthKey, yearKey);
