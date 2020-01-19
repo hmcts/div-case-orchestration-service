@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.bsp.common.service.AuthService;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulkscan.BulkScanEvents;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanService;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -154,14 +154,36 @@ public class BulkScanController {
 
         authService.assertIsServiceAllowedToUpdate(s2sAuthToken);
 
-        SuccessfulUpdateResponse callbackResponse = SuccessfulUpdateResponse.builder()
-            .caseUpdateDetails(
-                new CaseUpdateDetails(
-                    CASE_TYPE_ID,
-                    request.getCaseData()))
-            .warnings(Collections.emptyList())
-            .build();
+        ResponseEntity<SuccessfulUpdateResponse> updateControllerResponse;
 
-        return ResponseEntity.ok(callbackResponse);
+        try {
+            ExceptionRecord recievedER = request.getExceptionRecord();
+
+            // Validation
+            OcrValidationResult ocrValidationResult =
+                bulkScanService.validateBulkScanForm(recievedER.getFormType(), recievedER.getOcrDataFields());
+
+            OcrValidationResponse ocrValidationResponse = new OcrValidationResponse(ocrValidationResult);
+            List validationStageWarnings = ocrValidationResponse.getWarnings();
+
+            // Transformation + append data together
+            Map<String, Object> transformedCaseData = bulkScanService.transformBulkScanForm(recievedER);
+            Map<String, Object> originalCaseDataRecieved = request.getCaseData();
+            originalCaseDataRecieved.putAll(transformedCaseData);
+
+            SuccessfulUpdateResponse callbackResponse = SuccessfulUpdateResponse.builder()
+                .caseUpdateDetails(
+                    new CaseUpdateDetails(
+                        CASE_TYPE_ID,
+                        originalCaseDataRecieved))
+                .warnings(validationStageWarnings)
+                .build();
+
+            updateControllerResponse = ok(callbackResponse);
+        } catch (UnsupportedFormTypeException exception) {
+            updateControllerResponse = ResponseEntity.unprocessableEntity().build();
+        }
+
+        return updateControllerResponse;
     }
 }

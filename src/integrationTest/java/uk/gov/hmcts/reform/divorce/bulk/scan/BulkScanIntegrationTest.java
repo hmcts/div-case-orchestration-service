@@ -32,6 +32,7 @@ public class BulkScanIntegrationTest extends IntegrationTest {
 
 
     private static final String FULL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/d8/fullD8Form.json";
+    private static final String AOS_OFFLINE_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/aos/aosPackOfflineForm.json";
     private static String VALID_BODY;
     private static String VALIDATION_END_POINT = "/forms/{form-type}/validate-ocr";
     private static String TRANSFORMATION_END_POINT = "/transform-exception-record";
@@ -44,10 +45,8 @@ public class BulkScanIntegrationTest extends IntegrationTest {
 
         Response forValidationEndpoint = responseForValidationEndpoint(token,VALIDATION_END_POINT, D8_FORM);
 
-
         assert forValidationEndpoint.getStatusCode() == 200 : "Service is not authorised to OCR validation "
             + forValidationEndpoint.getStatusCode();
-
     }
 
     @Test
@@ -67,11 +66,10 @@ public class BulkScanIntegrationTest extends IntegrationTest {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanTransformationAndUpdateMicroService);
 
         VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
-        Response forTransformationEndpoint = responseForEndpoint(token,TRANSFORMATION_END_POINT);
+        Response forTransformationEndpoint = responseForTransformationEndpoint(token,TRANSFORMATION_END_POINT);
 
         assert forTransformationEndpoint.getStatusCode() == 200 : "Service is not authorised to transform OCR data to case"
             + forTransformationEndpoint.getStatusCode();
-
     }
 
     @Test
@@ -80,7 +78,7 @@ public class BulkScanIntegrationTest extends IntegrationTest {
 
         VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
 
-        Response forTransformationEndpoint = responseForEndpoint(token,TRANSFORMATION_END_POINT);
+        Response forTransformationEndpoint = responseForTransformationEndpoint(token,TRANSFORMATION_END_POINT);
 
         assert forTransformationEndpoint.getStatusCode() == 403 : "Not matching with expected error Code "
             + forTransformationEndpoint.getStatusCode();
@@ -90,34 +88,23 @@ public class BulkScanIntegrationTest extends IntegrationTest {
     public void shouldGetSuccessfulResponsesWhenUsingWhitelistedServiceForUpdateEndPoint()  throws Exception {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanTransformationAndUpdateMicroService);
 
-        VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
-        Response forUpdateEndpoint = responseForEndpoint(token,UPDATE_END_POINT);
+        VALID_BODY = loadResourceAsString(AOS_OFFLINE_FORM_JSON_PATH);
+        Response forUpdateEndpoint = responseForUpdateEndpoint(token, UPDATE_END_POINT);
 
-        assert forUpdateEndpoint.getStatusCode() == 200 : "Service is not authorised to transform OCR data to case"
+        assert forUpdateEndpoint.getStatusCode() == 200 : "Service is not authorised to transform OCR data to case "
             + forUpdateEndpoint.getStatusCode();
-
     }
 
     @Test
     public void shouldGetServiceDeniedWhenUsingNonWhitelistedServiceForUpdateEndPoint()  throws Exception {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanValidationMicroService);
 
-        VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
+        VALID_BODY = loadResourceAsString(AOS_OFFLINE_FORM_JSON_PATH);
 
-        Response forUpdateEndpoint = responseForEndpoint(token,UPDATE_END_POINT);
+        Response forUpdateEndpoint = responseForUpdateEndpoint(token, UPDATE_END_POINT);
 
-        assert forUpdateEndpoint.getStatusCode() == 403 : "Not matching with expected error Code " + forUpdateEndpoint.getStatusCode();
-    }
-
-    private Response responseForEndpoint(String token, String endpointName) {
-
-        Response  response = SerenityRest.given()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTHORISATION_HEADER, token)
-            .relaxedHTTPSValidation()
-            .body(VALID_BODY)
-            .post(cosBaseURL + endpointName);
-        return response;
+        assert forUpdateEndpoint.getStatusCode() == 403 : "Not matching with expected error Code "
+            + forUpdateEndpoint.getStatusCode();
     }
 
     private Response responseForValidationEndpoint(String token, String endpointName, String formType) {
@@ -128,6 +115,28 @@ public class BulkScanIntegrationTest extends IntegrationTest {
             .relaxedHTTPSValidation()
             .body(VALID_BODY)
             .post(cosBaseURL + endpointName, formType);
+        return response;
+    }
+
+    private Response responseForTransformationEndpoint(String token, String endpointName) {
+
+        Response  response = SerenityRest.given()
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .header(SERVICE_AUTHORISATION_HEADER, token)
+            .relaxedHTTPSValidation()
+            .body(VALID_BODY)
+            .post(cosBaseURL + endpointName);
+        return response;
+    }
+
+    private Response responseForUpdateEndpoint(String token, String endpointName) {
+
+        Response  response = SerenityRest.given()
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .header(SERVICE_AUTHORISATION_HEADER, token)
+            .relaxedHTTPSValidation()
+            .body(VALID_BODY)
+            .post(cosBaseURL + endpointName);
         return response;
     }
 }
