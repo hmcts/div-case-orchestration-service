@@ -112,15 +112,27 @@ public class AosPackOfflineCaseValidator extends BulkScanFormValidator {
         String respJurisdictionAgreeField = fieldsMap.getOrDefault("RespJurisdictionAgree", "");
         String respJurisdictionDisagreeReasonField = fieldsMap.getOrDefault("RespJurisdictionDisagreeReason", "");
 
-        if (respJurisdictionAgreeField.equals(YES_VALUE) && !respJurisdictionDisagreeReasonField.isEmpty()) {
-                validationWarningMessages.add(RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE);
+        if (didAgreeRespJurisdictionButProvidedReasonWhyTheyDisagree(respJurisdictionAgreeField, respJurisdictionDisagreeReasonField)) {
+            validationWarningMessages.add(RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE);
         }
 
-        if (respJurisdictionAgreeField.equals(NO_VALUE) && respJurisdictionDisagreeReasonField.isEmpty()) {
+        if (didNotAgreeWithRespJurisdictionButDidNotProvideReasonWhyTheyDisagree(respJurisdictionAgreeField, respJurisdictionDisagreeReasonField)) {
             validationWarningMessages.add(RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE);
         }
 
         return validationWarningMessages;
+    }
+
+    private static Boolean didAgreeRespJurisdictionButProvidedReasonWhyTheyDisagree(String respJurisdictionAgreeField,
+                                                                                    String respJurisdictionDisagreeReasonField) {
+
+        return (respJurisdictionAgreeField.equals(YES_VALUE) && !respJurisdictionDisagreeReasonField.isEmpty());
+    }
+
+    private static Boolean didNotAgreeWithRespJurisdictionButDidNotProvideReasonWhyTheyDisagree(String respJurisdictionAgreeField,
+                                                                                                String respJurisdictionDisagreeReasonField) {
+
+        return (respJurisdictionAgreeField.equals(NO_VALUE) && respJurisdictionDisagreeReasonField.isEmpty());
     }
 
     private static List<String> validateRespLegalProceedingsDescription(Map<String, String> fieldsMap) {
