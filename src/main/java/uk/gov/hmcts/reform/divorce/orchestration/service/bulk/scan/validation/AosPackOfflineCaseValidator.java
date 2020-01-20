@@ -112,23 +112,11 @@ public class AosPackOfflineCaseValidator extends BulkScanFormValidator {
         String respJurisdictionAgreeField = fieldsMap.getOrDefault("RespJurisdictionAgree", "");
         String respJurisdictionDisagreeReasonField = fieldsMap.getOrDefault("RespJurisdictionDisagreeReason", "");
 
-        if (respJurisdictionDisagreeReasonField.isEmpty()) {
-            if (respJurisdictionAgreeField.equals(NO_VALUE)) {
-
+        if (respJurisdictionAgreeField.equals(YES_VALUE) && !respJurisdictionDisagreeReasonField.isEmpty()) {
                 validationWarningMessages.add(RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE);
-            }
-        } else {
-            if (respJurisdictionAgreeField.equals(YES_VALUE)) {
-
-                validationWarningMessages.add(RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE);
-            }
         }
 
-        if (respJurisdictionAgreeField.equals(YES_VALUE) && !respJurisdictionDisagreeReasonField.isEmpty()) {
-
-            validationWarningMessages.add(RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE);
-        } else if (respJurisdictionAgreeField.equals(NO_VALUE) && respJurisdictionDisagreeReasonField.isEmpty()) {
-
+        if (respJurisdictionAgreeField.equals(NO_VALUE) && respJurisdictionDisagreeReasonField.isEmpty()) {
             validationWarningMessages.add(RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE);
         }
 
