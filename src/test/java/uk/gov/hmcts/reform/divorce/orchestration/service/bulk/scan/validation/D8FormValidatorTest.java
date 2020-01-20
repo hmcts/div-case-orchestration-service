@@ -239,11 +239,12 @@ public class D8FormValidatorTest {
             "D8RespondentSolicitorAddressPostCode",
             "D8LegalProceedingsDetailsCaseNumber",
             "D8LegalProceedingsDetails"
-        )
-            .map(emptyValueOcrDataField)
-            .collect(Collectors.toList());
+        ).map(emptyValueOcrDataField).collect(Collectors.toList());
 
-        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(createMergedList(mandatoryFieldsWithValues, nonMandatoryFieldsWithEmptyValues));
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(
+            createMergedList(mandatoryFieldsWithValues, nonMandatoryFieldsWithEmptyValues)
+        );
+
         assertThat(validationResult.getStatus(), is(SUCCESS));
         assertThat(validationResult.getWarnings(), is(emptyList()));
         assertThat(validationResult.getErrors(), is(emptyList()));
