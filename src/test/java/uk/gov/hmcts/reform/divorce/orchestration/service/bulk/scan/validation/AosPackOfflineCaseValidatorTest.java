@@ -100,10 +100,6 @@ public class AosPackOfflineCaseValidatorTest {
         ));
     }
 
-    /*
-        ALLOWED_VALUES_PER_FIELD.put("RespStatementOfTruth", asList(YES_VALUE, null));
-     */
-
     @Test
     public void shouldFailFieldsHavingInvalidValues() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
