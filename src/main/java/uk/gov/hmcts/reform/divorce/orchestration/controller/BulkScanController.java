@@ -157,25 +157,25 @@ public class BulkScanController {
         ResponseEntity<SuccessfulUpdateResponse> updateControllerResponse;
 
         try {
-            ExceptionRecord recievedER = request.getExceptionRecord();
+            ExceptionRecord receivedER = request.getExceptionRecord();
 
             // Validation
             OcrValidationResult ocrValidationResult =
-                bulkScanService.validateBulkScanForm(recievedER.getFormType(), recievedER.getOcrDataFields());
+                bulkScanService.validateBulkScanForm(receivedER.getFormType(), receivedER.getOcrDataFields());
 
             OcrValidationResponse ocrValidationResponse = new OcrValidationResponse(ocrValidationResult);
             List validationStageWarnings = ocrValidationResponse.getWarnings();
 
             // Transformation + append data together
-            Map<String, Object> transformedCaseData = bulkScanService.transformBulkScanForm(recievedER);
-            Map<String, Object> originalCaseDataRecieved = request.getCaseData();
-            originalCaseDataRecieved.putAll(transformedCaseData);
+            Map<String, Object> transformedCaseData = bulkScanService.transformBulkScanForm(receivedER);
+            Map<String, Object> originalCaseDataReceived = request.getCaseData();
+            originalCaseDataReceived.putAll(transformedCaseData);
 
             SuccessfulUpdateResponse callbackResponse = SuccessfulUpdateResponse.builder()
                 .caseUpdateDetails(
                     new CaseUpdateDetails(
                         CASE_TYPE_ID,
-                        originalCaseDataRecieved))
+                        originalCaseDataReceived))
                 .warnings(validationStageWarnings)
                 .build();
 
