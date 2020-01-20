@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation;
 
+import com.google.common.collect.ImmutableMap;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -660,6 +661,77 @@ public class D8FormValidatorTest {
             not(hasItem("If D8MarriageCertificateCorrect is \"No\", then D8MarriageCertificateCorrectExplain should not be empty")
             ))
         );
+    }
+
+    @Test
+    public void shouldProduceWarningsForD8PetitionerNameChangedHowOtherDetailsIfPrerequsiteCombinationsAreInvalid() {
+        Map<String, String> nameChangedHowNoAndNoDetails = ImmutableMap.of("D8PetitionerNameChangedHow", "No",
+            "D8PetitionerNameChangedHowOtherDetails", "");
+
+        Map<String, String> nameChangedHowNoAndNullDetails = ImmutableMap.of("D8PetitionerNameChangedHow", "No");
+
+        List<Map<String, String>> invalidNameChangedHowOptions =
+            asList(nameChangedHowNoAndNoDetails, nameChangedHowNoAndNullDetails);
+
+        for (Map<String, String> invalidCombination : invalidNameChangedHowOptions) {
+
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+                new OcrDataField("D8PetitionerNameChangedHow", invalidCombination.get("D8PetitionerNameChangedHow")),
+                new OcrDataField("D8PetitionerNameChangedHowOtherDetails", invalidCombination.get("D8PetitionerNameChangedHowOtherDetails"))
+            ));
+
+            assertThat(validationResult.getStatus(), is(WARNINGS));
+            assertThat(validationResult.getErrors(), is(emptyList()));
+            assertThat(validationResult.getWarnings(), hasItem(
+                "If D8PetitionerNameChangedHow is \"No\", then D8PetitionerNameChangedHowOtherDetails should not be empty"
+            ));
+        }
+    }
+
+    @Test
+    public void shouldProduceWarningsForNonEmptyD8PetitionerNameChangedHowOtherDetailsIfNameChangedHowYes() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+            new OcrDataField("D8PetitionerNameChangedHow", "Yes"),
+            new OcrDataField("D8PetitionerNameChangedHowOtherDetails", "new name who dis")
+        ));
+
+        assertThat(validationResult.getStatus(), is(WARNINGS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), allOf(
+            hasItem("If D8PetitionerNameChangedHow is \"Yes\", then D8PetitionerNameChangedHowOtherDetails should be empty"),
+            not(hasItem("If D8PetitionerNameChangedHow is \"No\", then D8PetitionerNameChangedHowOtherDetails should not be empty")
+            ))
+        );
+    }
+
+    @Test
+    public void shouldNotProduceWarningsForD8PetitionerNameChangedHowOtherDetailsIfPrerequsiteCombinationsAreValid() {
+        Map<String, String> nameChangedHowNoAndDetails = ImmutableMap.of("D8PetitionerNameChangedHow", "No",
+            "D8PetitionerNameChangedHowOtherDetails", "Reason for changing one's name here");
+
+        Map<String, String> nameChangedHowYesAndNoDetails = ImmutableMap.of("D8PetitionerNameChangedHow", "Yes",
+            "D8PetitionerNameChangedHowOtherDetails", "");
+
+        Map<String, String> nameChangedHowYesAndNullDetails = ImmutableMap.of("D8PetitionerNameChangedHow", "Yes");
+
+        List<Map<String, String>> validNameChangedHowOptions =
+            asList(nameChangedHowNoAndDetails, nameChangedHowYesAndNoDetails, nameChangedHowYesAndNullDetails);
+
+        for (Map<String, String> validCombination : validNameChangedHowOptions) {
+
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
+                new OcrDataField("D8PetitionerNameChangedHow", validCombination.get("D8PetitionerNameChangedHow")),
+                new OcrDataField("D8PetitionerNameChangedHowOtherDetails", validCombination.get("D8PetitionerNameChangedHowOtherDetails"))
+            ));
+
+            assertThat(validationResult.getStatus(), is(WARNINGS));
+            assertThat(validationResult.getErrors(), is(emptyList()));
+            assertThat(validationResult.getWarnings(), not(hasItems(
+                "If D8PetitionerNameChangedHow is \"No\", then D8PetitionerNameChangedHowOtherDetails should not be empty",
+                "If D8PetitionerNameChangedHow is \"Yes\", then D8PetitionerNameChangedHowOtherDetails should be empty"
+                ))
+            );
+        }
     }
 
     @Test

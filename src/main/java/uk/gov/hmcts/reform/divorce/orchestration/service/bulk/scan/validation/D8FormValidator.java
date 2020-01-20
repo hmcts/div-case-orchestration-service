@@ -133,7 +133,8 @@ public class D8FormValidator extends BulkScanFormValidator {
             validatePostcode(fieldsMap, "D8RespondentSolicitorAddressPostCode"),
             validatePayment(fieldsMap),
             validatePlaceOfMarriage(fieldsMap),
-            validateMarriageCertificateCorrect(fieldsMap),
+            validateTextFieldDependentOnYesNoValue(fieldsMap, "D8MarriageCertificateCorrect", "D8MarriageCertificateCorrectExplain"),
+            validateTextFieldDependentOnYesNoValue(fieldsMap, "D8PetitionerNameChangedHow", "D8PetitionerNameChangedHowOtherDetails"),
             validateDateSplitIntoComponents(fieldsMap, "D8MarriageDateDay", "D8MarriageDateMonth", "D8MarriageDateYear"),
             validateD8PetitionerCorrespondenceAddress(fieldsMap),
             validateD8FinancialOrderFor(fieldsMap)
@@ -292,20 +293,21 @@ public class D8FormValidator extends BulkScanFormValidator {
         return validationWarningMessages;
     }
 
-    private static List<String> validateMarriageCertificateCorrect(Map<String, String> fieldsMap) {
+    private static List<String> validateTextFieldDependentOnYesNoValue(Map<String, String> fieldsMap, String mainYesNoField,
+                                                                       String dependentTextField) {
         List<String> validationWarningMessages = new ArrayList<>();
 
-        String d8MarriageCertificateCorrectExplain = fieldsMap.getOrDefault("D8MarriageCertificateCorrectExplain", "");
+        String dependentTextFieldValue = fieldsMap.getOrDefault(dependentTextField, "");
 
-        if (fieldsMap.containsKey("D8MarriageCertificateCorrect")) {
-            String d8MarriageCertificateCorrect = fieldsMap.get("D8MarriageCertificateCorrect");
-            if (d8MarriageCertificateCorrect.equals(NO_VALUE) && StringUtils.isEmpty(d8MarriageCertificateCorrectExplain)) {
+        if (fieldsMap.containsKey(mainYesNoField)) {
+            String mainYesNoFieldValue = fieldsMap.get(mainYesNoField);
+            if (mainYesNoFieldValue.equals(NO_VALUE) && StringUtils.isEmpty(dependentTextFieldValue)) {
                 validationWarningMessages.add(
-                    "If D8MarriageCertificateCorrect is \"No\", then D8MarriageCertificateCorrectExplain should not be empty");
+                    String.format("If %s is \"No\", then %s should not be empty", mainYesNoField, dependentTextField));
             }
-            if (d8MarriageCertificateCorrect.equals(YES_VALUE) && StringUtils.isNotEmpty(d8MarriageCertificateCorrectExplain)) {
+            if (mainYesNoFieldValue.equals(YES_VALUE) && StringUtils.isNotEmpty(dependentTextFieldValue)) {
                 validationWarningMessages.add(
-                    "If D8MarriageCertificateCorrect is \"Yes\", then D8MarriageCertificateCorrectExplain should be empty");
+                    String.format("If %s is \"Yes\", then %s should be empty", mainYesNoField, dependentTextField));
             }
         }
         return validationWarningMessages;
