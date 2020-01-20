@@ -6,10 +6,12 @@ import net.serenitybdd.rest.SerenityRest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 
+import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.BulkScanController.SERVICE_AUTHORISATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
@@ -43,10 +45,9 @@ public class BulkScanIntegrationTest extends IntegrationTest {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanValidationMicroService);
         validBody = loadResourceAsString(FULL_D_8_FORM_JSON_PATH);
 
-        Response forValidationEndpoint = validationEndpointRequest(token,VALIDATION_END_POINT, D8_FORM);
+        Response validationResponse = validationEndpointRequest(token,VALIDATION_END_POINT, D8_FORM);
 
-        assert forValidationEndpoint.getStatusCode() == 200 : "Service is not authorised to OCR validation "
-            + forValidationEndpoint.getStatusCode();
+        assertEquals(HttpStatus.OK.value(), validationResponse.getStatusCode());
     }
 
     @Test
@@ -54,10 +55,9 @@ public class BulkScanIntegrationTest extends IntegrationTest {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanTransformationAndUpdateMicroService);
         validBody = loadResourceAsString(FULL_D_8_FORM_JSON_PATH);
 
-        Response forValidationEndpoint = validationEndpointRequest(token,VALIDATION_END_POINT, D8_FORM);
+        Response validationResponse = validationEndpointRequest(token,VALIDATION_END_POINT, D8_FORM);
 
-        assert forValidationEndpoint.getStatusCode() == 403 : "Not matching with expected Error code "
-            + forValidationEndpoint.getStatusCode();
+        assertEquals(HttpStatus.FORBIDDEN.value(), validationResponse.getStatusCode());
     }
 
     @Test
@@ -65,10 +65,9 @@ public class BulkScanIntegrationTest extends IntegrationTest {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanTransformationAndUpdateMicroService);
         validBody = loadResourceAsString(FULL_D_8_FORM_JSON_PATH);
 
-        Response forTransformationEndpoint = transformationAndUpdateEndpointRequest(token,TRANSFORMATION_END_POINT);
+        Response transformationResponse = transformationAndUpdateEndpointRequest(token,TRANSFORMATION_END_POINT);
 
-        assert forTransformationEndpoint.getStatusCode() == 200 : "Service is not authorised to transform OCR data to case"
-            + forTransformationEndpoint.getStatusCode();
+        assertEquals(HttpStatus.OK.value(), transformationResponse.getStatusCode());
     }
 
     @Test
@@ -76,10 +75,9 @@ public class BulkScanIntegrationTest extends IntegrationTest {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanValidationMicroService);
         validBody = loadResourceAsString(FULL_D_8_FORM_JSON_PATH);
 
-        Response forTransformationEndpoint = transformationAndUpdateEndpointRequest(token,TRANSFORMATION_END_POINT);
+        Response transformationResponse = transformationAndUpdateEndpointRequest(token,TRANSFORMATION_END_POINT);
 
-        assert forTransformationEndpoint.getStatusCode() == 403 : "Not matching with expected error Code "
-            + forTransformationEndpoint.getStatusCode();
+        assertEquals(HttpStatus.FORBIDDEN.value(), transformationResponse.getStatusCode());
     }
 
     @Test
@@ -87,10 +85,9 @@ public class BulkScanIntegrationTest extends IntegrationTest {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanTransformationAndUpdateMicroService);
         validBody = loadResourceAsString(AOS_OFFLINE_FORM_JSON_PATH);
 
-        Response forUpdateEndpoint = transformationAndUpdateEndpointRequest(token, UPDATE_END_POINT);
+        Response updateResponse = transformationAndUpdateEndpointRequest(token, UPDATE_END_POINT);
 
-        assert forUpdateEndpoint.getStatusCode() == 200 : "Service is not authorised to transform OCR data to case "
-            + forUpdateEndpoint.getStatusCode();
+        assertEquals(HttpStatus.OK.value(), updateResponse.getStatusCode());
     }
 
     @Test
@@ -98,10 +95,9 @@ public class BulkScanIntegrationTest extends IntegrationTest {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanValidationMicroService);
         validBody = loadResourceAsString(AOS_OFFLINE_FORM_JSON_PATH);
 
-        Response forUpdateEndpoint = transformationAndUpdateEndpointRequest(token, UPDATE_END_POINT);
+        Response updateResponse = transformationAndUpdateEndpointRequest(token, UPDATE_END_POINT);
 
-        assert forUpdateEndpoint.getStatusCode() == 403 : "Not matching with expected error Code "
-            + forUpdateEndpoint.getStatusCode();
+        assertEquals(HttpStatus.FORBIDDEN.value(), updateResponse.getStatusCode());
     }
 
     private Response validationEndpointRequest(String token, String endpointName, String formType) {
