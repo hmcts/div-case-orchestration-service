@@ -19,6 +19,7 @@ import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.BulkScanValidationPatterns.CCD_EMAIL_REGEX;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.BulkScanValidationPatterns.CCD_PHONE_NUMBER_REGEX;
 import static uk.gov.hmcts.reform.bsp.common.service.PostcodeValidator.validatePostcode;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformFormDateIntoLocalDate;
@@ -26,19 +27,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper
 
 @Component
 public class D8FormValidator extends BulkScanFormValidator {
-
-    private static final String EMPTY_PAYMENT_METHOD_ERROR_MESSAGE =
-        "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value";
-    private static final String MULTIPLE_PAYMENT_METHODS_ERROR_MESSAGE =
-        "D8PaymentMethod and D8HelpWithFeesReferenceNumber should not both be populated";
-    private static final String HWF_WRONG_LENGTH_ERROR_MESSAGE =
-        "D8HelpWithFeesReferenceNumber is usually 6 digits";
-    private static final String EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE =
-        "\"%s\" should not be empty if \"%s\" is \"%s\"";
-    private static final String NOT_EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE =
-        "\"%s\" should be empty if \"%s\" is \"%s\"";
-
-    private static final int HELP_WITH_FEES_LENGTH = 6;
 
     private static final List<String> MANDATORY_FIELDS = asList(
         "D8PetitionerFirstName",
@@ -86,10 +74,10 @@ public class D8FormValidator extends BulkScanFormValidator {
         List<String> yesNoValues = asList(YES_VALUE, NO_VALUE);
         ALLOWED_VALUES_PER_FIELD.put("D8LegalProcess", asList("Divorce", "Dissolution", "Judicial (separation)"));
         ALLOWED_VALUES_PER_FIELD.put("D8ScreenHasMarriageCert", asList(TRUE));
-        ALLOWED_VALUES_PER_FIELD.put("D8CertificateInEnglish", asList(TRUE, BLANK));
+        ALLOWED_VALUES_PER_FIELD.put("D8CertificateInEnglish", asList(TRUE, EMPTY_STRING));
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameChangedHow", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerContactDetailsConfidential", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("Cheque", "Debit/Credit Card", BLANK));
+        ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("Cheque", "Debit/Credit Card", EMPTY_STRING));
         ALLOWED_VALUES_PER_FIELD.put("PetitionerSolicitor", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerCorrespondenceUseHomeAddress", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameDifferentToMarriageCert", yesNoValues);
@@ -98,7 +86,7 @@ public class D8FormValidator extends BulkScanFormValidator {
         ALLOWED_VALUES_PER_FIELD.put("D8ApplicationToIssueWithoutCertificate", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8MarriageCertificateCorrect", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrder", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrderFor", asList("myself", "my children", "myself, my children", BLANK));
+        ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrderFor", asList("myself", "my children", "myself, my children", EMPTY_STRING));
         ALLOWED_VALUES_PER_FIELD.put("D8ReasonForDivorce", asList("unreasonable-behaviour", "adultery", "desertion", "separation-2-years",
             "separation-5-years"));
         ALLOWED_VALUES_PER_FIELD.put("D8LegalProceedings", yesNoValues);
@@ -245,7 +233,7 @@ public class D8FormValidator extends BulkScanFormValidator {
             validationWarningMessages.add(MULTIPLE_PAYMENT_METHODS_ERROR_MESSAGE);
         }
 
-        if (d8PaymentMethod.isEmpty() && !isHelpWithFeesValid(hwfReferenceNumber)) {
+        if (StringUtils.isEmpty(d8PaymentMethod) && !isHelpWithFeesValid(hwfReferenceNumber)) {
             validationWarningMessages.add(HWF_WRONG_LENGTH_ERROR_MESSAGE);
         }
 

@@ -26,7 +26,7 @@ public class AosOffline2YrSepFormToCaseTransformer extends BulkScanFormTransform
     @Override
     Map<String, Object> runFormSpecificTransformation(List<OcrDataField> ocrDataFields) {
 
-        // returning an empty map as we currently have no formSpecificTransformation for AOS Pack 2
+        // returning an empty map as we currently have no formSpecificTransformation for AOS Pack 2: 2 Year Separation
         return Collections.emptyMap();
     }
 

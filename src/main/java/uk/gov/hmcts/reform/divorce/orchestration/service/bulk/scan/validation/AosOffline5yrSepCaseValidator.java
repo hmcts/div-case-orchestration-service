@@ -18,17 +18,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class AosOffline5yrSepCaseValidator extends BulkScanFormValidator {
 
-    private static final String DATE_RESP_RECEIVED_DIV_APP_WRONG_LENGTH_ERROR_MESSAGE =
-        "DateRespReceivedDivorceApplication must be a valid 8 digit date";
-    private static final String RESP_STATEMENT_OF_TRUTH_WRONG_LENGTH_ERROR_MESSAGE =
-        "RespStatementofTruthSignedDate must be a valid 8 digit date";
-    private static final String RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE =
-        "RespJurisdictionDisagreeReason must not be empty if 'RespJurisdictionAgree' is 'No";
-    private static final String RESP_LEGAL_PROCEEDINGS_ERROR_MESSAGE =
-        "RespLegalProceedingsDescription must not be empty if 'RespLegalProceedingsExist' is 'No";
-
-    private static final int AOS_FORM_DATE_LENGTH = 8;
-
     private static final List<String> MANDATORY_FIELDS = asList(
         "CaseNumber",
         "AOSReasonForDivorce",
@@ -78,19 +67,16 @@ public class AosOffline5yrSepCaseValidator extends BulkScanFormValidator {
     }
 
     private static List<String> validateDatesRelevantToAosApplication(Map<String, String> fieldsMap) {
-
         List<String> validationWarningMessages = new ArrayList<>();
 
         String dateRespReceivedDivorceApplication = fieldsMap.getOrDefault("DateRespReceivedDivorceApplication", "");
         String respStatementOfTruthSignedDate = fieldsMap.getOrDefault("RespStatementofTruthSignedDate", "");
 
-        // DateRespReceivedDivorceApplication is always validated as it is a required field
         if (!isApplicationDateValid(dateRespReceivedDivorceApplication)) {
             validationWarningMessages.add(DATE_RESP_RECEIVED_DIV_APP_WRONG_LENGTH_ERROR_MESSAGE);
         }
 
-        // RespStatementofTruthSignedDate should only be validated if it is present
-        if (!respStatementOfTruthSignedDate.isEmpty()) {
+        if (StringUtils.isNotEmpty(respStatementOfTruthSignedDate)) {
             if (!isApplicationDateValid(respStatementOfTruthSignedDate)) {
                 validationWarningMessages.add(RESP_STATEMENT_OF_TRUTH_WRONG_LENGTH_ERROR_MESSAGE);
             }
@@ -105,7 +91,6 @@ public class AosOffline5yrSepCaseValidator extends BulkScanFormValidator {
     }
 
     private static List<String> validateRespJurisdictionDisagreeReason(Map<String, String> fieldsMap) {
-
         List<String> validationWarningMessages = new ArrayList<>();
 
         String respJurisdictionAgreeField = fieldsMap.getOrDefault("RespJurisdictionAgree", "");
@@ -125,27 +110,26 @@ public class AosOffline5yrSepCaseValidator extends BulkScanFormValidator {
     private static Boolean didAgreeRespJurisdictionButProvidedReasonWhyTheyDisagree(String respJurisdictionAgreeField,
                                                                                     String respJurisdictionDisagreeReasonField) {
 
-        return (respJurisdictionAgreeField.equals(YES_VALUE) && !respJurisdictionDisagreeReasonField.isEmpty());
+        return (respJurisdictionAgreeField.equals(YES_VALUE) && StringUtils.isNotEmpty(respJurisdictionDisagreeReasonField));
     }
 
     private static Boolean didNotAgreeWithRespJurisdictionButDidNotProvideReasonWhyTheyDisagree(String respJurisdictionAgreeField,
                                                                                                 String respJurisdictionDisagreeReasonField) {
 
-        return (respJurisdictionAgreeField.equals(NO_VALUE) && respJurisdictionDisagreeReasonField.isEmpty());
+        return (respJurisdictionAgreeField.equals(NO_VALUE) && StringUtils.isEmpty(respJurisdictionDisagreeReasonField));
     }
 
     private static List<String> validateRespLegalProceedingsDescription(Map<String, String> fieldsMap) {
-
         List<String> validationWarningMessages = new ArrayList<>();
 
         String respLegalProceedingsExistField = fieldsMap.getOrDefault("RespLegalProceedingsExist", "");
         String respLegalProceedingsDescriptionField = fieldsMap.getOrDefault("RespLegalProceedingsDescription", "");
 
-        if (respLegalProceedingsExistField.equals(YES_VALUE) && respLegalProceedingsDescriptionField.isEmpty()) {
+        if (respLegalProceedingsExistField.equals(YES_VALUE) && StringUtils.isEmpty(respLegalProceedingsDescriptionField)) {
 
             validationWarningMessages.add(RESP_LEGAL_PROCEEDINGS_ERROR_MESSAGE);
 
-        } else if (respLegalProceedingsExistField.equals(NO_VALUE) && !respLegalProceedingsDescriptionField.isEmpty()) {
+        } else if (respLegalProceedingsExistField.equals(NO_VALUE) && StringUtils.isNotEmpty(respLegalProceedingsDescriptionField)) {
 
             validationWarningMessages.add(RESP_LEGAL_PROCEEDINGS_ERROR_MESSAGE);
         }
