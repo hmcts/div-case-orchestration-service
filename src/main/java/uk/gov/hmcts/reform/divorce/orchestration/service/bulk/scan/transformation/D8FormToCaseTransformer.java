@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations;
+package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformation;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
@@ -64,6 +64,11 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         transformedCaseData.replace("D8FinancialOrderFor", "myself", "petitioner");
         transformedCaseData.replace("D8FinancialOrderFor", "my children", "children");
         transformedCaseData.replace("D8FinancialOrderFor", "myself, my children", "petitioner, children");
+
+        Optional.ofNullable(transformedCaseData.get("D8DivorceClaimFrom"))
+            .map(String.class::cast)
+            .map(value -> value.replace("corespondent", "correspondent"))
+            .ifPresent(value -> transformedCaseData.replace("D8DivorceClaimFrom", value));
 
         return transformedCaseData;
     }
@@ -160,6 +165,15 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         // Section 10 - Dividing your money and property – Orders which are sought
         erToCcdFieldsMap.put("D8FinancialOrder", "D8FinancialOrder");
         erToCcdFieldsMap.put("D8FinancialOrderFor", "D8FinancialOrderFor");
+
+        // Section 11 - Statement of truth
+        erToCcdFieldsMap.put("D8AppliesForStatementOfTruth", "D8AppliesForStatementOfTruth");
+        erToCcdFieldsMap.put("D8DivorceClaimFrom", "D8DivorceClaimFrom");
+        erToCcdFieldsMap.put("D8FinancialOrderStatementOfTruth", "D8FinancialOrderStatementOfTruth");
+        erToCcdFieldsMap.put("D8FullNameStatementOfTruth", "D8FullNameStatementOfTruth");
+        erToCcdFieldsMap.put("D8StatementofTruthSignature", "D8StatementOfTruthSignature");
+        erToCcdFieldsMap.put("D8StatementofTruthDate", "D8StatementOfTruthDate");
+        erToCcdFieldsMap.put("D8SolicitorsFirmStatementOfTruth", "D8SolicitorsFirmStatementOfTruth");
 
         return erToCcdFieldsMap;
     }

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
-public class AosPackOfflineCaseValidator extends BulkScanFormValidator {
+public class AosOffline2yrSepCaseValidator extends BulkScanFormValidator {
 
     private static final String DATE_RESP_RECEIVED_DIV_APP_WRONG_LENGTH_ERROR_MESSAGE =
         "DateRespReceivedDivorceApplication must be a valid 8 digit date";
@@ -112,27 +113,27 @@ public class AosPackOfflineCaseValidator extends BulkScanFormValidator {
         String respJurisdictionAgreeField = fieldsMap.getOrDefault("RespJurisdictionAgree", "");
         String respJurisdictionDisagreeReasonField = fieldsMap.getOrDefault("RespJurisdictionDisagreeReason", "");
 
-        if (respJurisdictionDisagreeReasonField.isEmpty()) {
-            if (respJurisdictionAgreeField.equals(NO_VALUE)) {
-
-                validationWarningMessages.add(RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE);
-            }
-        } else {
-            if (respJurisdictionAgreeField.equals(YES_VALUE)) {
-
-                validationWarningMessages.add(RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE);
-            }
+        if (didAgreeRespJurisdictionButProvidedReasonWhyTheyDisagree(respJurisdictionAgreeField, respJurisdictionDisagreeReasonField)) {
+            validationWarningMessages.add(RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE);
         }
 
-        if (respJurisdictionAgreeField.equals(YES_VALUE) && !respJurisdictionDisagreeReasonField.isEmpty()) {
-
-            validationWarningMessages.add(RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE);
-        } else if (respJurisdictionAgreeField.equals(NO_VALUE) && respJurisdictionDisagreeReasonField.isEmpty()) {
-
+        if (didNotAgreeWithRespJurisdictionButDidNotProvideReasonWhyTheyDisagree(respJurisdictionAgreeField, respJurisdictionDisagreeReasonField)) {
             validationWarningMessages.add(RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE);
         }
 
         return validationWarningMessages;
+    }
+
+    private static Boolean didAgreeRespJurisdictionButProvidedReasonWhyTheyDisagree(String respJurisdictionAgreeField,
+                                                                                    String respJurisdictionDisagreeReasonField) {
+
+        return (respJurisdictionAgreeField.equals(YES_VALUE) && !respJurisdictionDisagreeReasonField.isEmpty());
+    }
+
+    private static Boolean didNotAgreeWithRespJurisdictionButDidNotProvideReasonWhyTheyDisagree(String respJurisdictionAgreeField,
+                                                                                                String respJurisdictionDisagreeReasonField) {
+
+        return (respJurisdictionAgreeField.equals(NO_VALUE) && respJurisdictionDisagreeReasonField.isEmpty());
     }
 
     private static List<String> validateRespLegalProceedingsDescription(Map<String, String> fieldsMap) {

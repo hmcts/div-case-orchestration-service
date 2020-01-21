@@ -82,6 +82,13 @@
     { "name": "D8RespondentSolicitorAddressCounty", "value": "Higher Midlands" },
     { "name": "SeparationLivedTogetherAsCoupleAgain", "value": "Yes" },
     { "name": "SeparationLivedTogetherAsCoupleAgainDetails", "value": "moved in for a month" },
-    { "name": "D8ReasonForDivorceDetails", "value": "not putting the bin out" }
+    { "name": "D8ReasonForDivorceDetails", "value": "not putting the bin out" },
+    { "name": "D8AppliesForStatementOfTruth", "value": "marriage" },
+    { "name": "D8DivorceClaimFrom", "value": "corespondent" },
+    { "name": "D8FinancialOrderStatementOfTruth", "value": "petitioner, children" },
+    { "name": "D8FullNameStatementOfTruth", "value": "Peter F. Griffin" },
+    { "name": "D8StatementofTruthSignature", "value": "Yes" },
+    { "name": "D8StatementofTruthDate", "value": "16/01/2020" },
+    { "name": "D8SolicitorsFirmStatementOfTruth", "value": "Quahog Solicitors Ltd." }
   ]
 }

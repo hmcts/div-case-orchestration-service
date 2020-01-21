@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformations;
+package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformation;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
-public class AosPackOfflineFormToCaseTransformer extends BulkScanFormTransformer {
+public class AosOffline2YrSepFormToCaseTransformer extends BulkScanFormTransformer {
 
     private static final Map<String, String> ocrToCCDMapping;
 
