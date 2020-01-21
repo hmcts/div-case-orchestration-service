@@ -883,5 +883,4 @@ public class D8FormValidatorTest {
     }
 
     private Function<String, OcrDataField> emptyValueOcrDataField = fieldName -> new OcrDataField(fieldName, "");
-
 }
