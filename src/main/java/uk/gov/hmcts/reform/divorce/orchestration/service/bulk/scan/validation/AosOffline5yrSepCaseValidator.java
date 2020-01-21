@@ -34,7 +34,6 @@ public class AosOffline5yrSepCaseValidator extends BulkScanFormValidator {
         "AOSReasonForDivorce",
         "RespConfirmReadPetition",
         "DateRespReceivedDivorceApplication",
-        "RespAOS2yrConsent",
         "RespWillDefendDivorce",
         "RespConsiderFinancialSituation",
         "RespJurisdictionAgree",
