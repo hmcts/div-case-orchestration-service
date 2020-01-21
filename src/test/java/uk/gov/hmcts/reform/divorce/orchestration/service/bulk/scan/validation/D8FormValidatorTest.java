@@ -53,7 +53,6 @@ public class D8FormValidatorTest {
             new OcrDataField("D8ReasonForDivorceSeparationDate", "20/11/2008"),
             new OcrDataField("D8PetitionerPostCode", "HD7 5UZ"),
             new OcrDataField("PetitionerSolicitor", "Yes"),
-            new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", "Yes"),
             new OcrDataField("D8PetitionerHomeAddressStreet", "19 West Park Road"),
             new OcrDataField("D8PetitionerHomeAddressTown", "Smethwick"),
             new OcrDataField("D8PetitionerHomeAddressCounty", "West Midlands"),
@@ -186,7 +185,7 @@ public class D8FormValidatorTest {
             postcodeIsUsually6or7CharactersLong("PetitionerSolicitorAddressPostCode"),
             notInAValidFormat("PetitionerSolicitorPhone"),
             notInAValidFormat("PetitionerSolicitorEmail"),
-            mustBeYesOrNo("D8PetitionerCorrespondenceUseHomeAddress"),
+            "D8PetitionerCorrespondenceUseHomeAddress must be \"Yes\", \"No\" or left blank",
             postcodeIsUsually6or7CharactersLong("D8PetitionerCorrespondencePostcode"),
             postcodeIsUsually6or7CharactersLong("D8ReasonForDivorceAdultery3rdPartyPostCode"),
             mustBeYesOrNo("D8PetitionerNameDifferentToMarriageCert"),
@@ -240,12 +239,12 @@ public class D8FormValidatorTest {
             "D8RespondentSolicitorAddressPostCode",
             "D8LegalProceedingsDetailsCaseNumber",
             "D8LegalProceedingsDetails"
-        )
-            .map(emptyValueOcrDataField)
-            .collect(Collectors.toList());
+        ).map(emptyValueOcrDataField).collect(Collectors.toList());
 
-        mandatoryFieldsWithValues.addAll(nonMandatoryFieldsWithEmptyValues);
-        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(mandatoryFieldsWithValues);
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(
+            createMergedList(mandatoryFieldsWithValues, nonMandatoryFieldsWithEmptyValues)
+        );
+
         assertThat(validationResult.getStatus(), is(SUCCESS));
         assertThat(validationResult.getWarnings(), is(emptyList()));
         assertThat(validationResult.getErrors(), is(emptyList()));
@@ -276,8 +275,9 @@ public class D8FormValidatorTest {
 
     @Test
     public void shouldFailIfUsingMultipleValidPaymentMethods() {
-        mandatoryFieldsWithValues.add(new OcrDataField("D8HelpWithFeesReferenceNumber", "123456"));
-        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(mandatoryFieldsWithValues);
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(createMergedList(mandatoryFieldsWithValues, asList(
+            new OcrDataField("D8HelpWithFeesReferenceNumber", "123456")
+        )));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
         assertThat(validationResult.getWarnings(), hasItem(
@@ -303,12 +303,11 @@ public class D8FormValidatorTest {
         String[] validPhoneNumbers = {"07231334455", "+44 20 8356 3333", "01213334444", "0909 8790000",
             "(0131) 496 0645", "0044 117496 0813", "07700 90 09 99"};
         for (String validPhoneNumber : validPhoneNumbers) {
-            List<OcrDataField> mandatoryFieldsCopy = new ArrayList<>(mandatoryFieldsWithValues);
-            mandatoryFieldsCopy.add(new OcrDataField("D8PetitionerPhoneNumber", validPhoneNumber));
-            mandatoryFieldsCopy.add(new OcrDataField("D8RespondentPhoneNumber", validPhoneNumber));
-            mandatoryFieldsCopy.add(new OcrDataField("PetitionerSolicitorPhone", validPhoneNumber));
-
-            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(mandatoryFieldsCopy);
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(createMergedList(mandatoryFieldsWithValues, asList(
+                new OcrDataField("D8PetitionerPhoneNumber", validPhoneNumber),
+                new OcrDataField("D8RespondentPhoneNumber", validPhoneNumber),
+                new OcrDataField("PetitionerSolicitorPhone", validPhoneNumber)
+            )));
 
             assertThat(validationResult.getStatus(), is(SUCCESS));
             assertThat(validationResult.getWarnings(), is(emptyList()));
@@ -320,12 +319,11 @@ public class D8FormValidatorTest {
     public void shouldFailPhoneNumberNotMatchingCustomValidationRules() {
         String[] invalidPhoneNumbers = {"0723155", "+44 2083", "044(121)", "newphonewhodis", "se14Tp"};
         for (String invalidPhoneNumber : invalidPhoneNumbers) {
-            List<OcrDataField> mandatoryFieldsCopy = new ArrayList<>(mandatoryFieldsWithValues);
-            mandatoryFieldsCopy.add(new OcrDataField("D8PetitionerPhoneNumber", invalidPhoneNumber));
-            mandatoryFieldsCopy.add(new OcrDataField("D8RespondentPhoneNumber", invalidPhoneNumber));
-            mandatoryFieldsCopy.add(new OcrDataField("PetitionerSolicitorPhone", invalidPhoneNumber));
-
-            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(mandatoryFieldsCopy);
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(createMergedList(mandatoryFieldsWithValues, asList(
+                new OcrDataField("D8PetitionerPhoneNumber", invalidPhoneNumber),
+                new OcrDataField("D8RespondentPhoneNumber", invalidPhoneNumber),
+                new OcrDataField("PetitionerSolicitorPhone", invalidPhoneNumber)
+            )));
 
             assertThat(validationResult.getStatus(), is(WARNINGS));
             assertThat(validationResult.getWarnings(), hasItems(
@@ -341,12 +339,11 @@ public class D8FormValidatorTest {
     public void shouldPassEmailsMatchingCustomValidationRules() {
         String[] validEmailAddresses = {"aaa@gmail.com", "john.doe@mail.pl", "akjl2489.rq23@a.co.uk"};
         for (String validEmailAddress : validEmailAddresses) {
-            List<OcrDataField> mandatoryFieldsCopy = new ArrayList<>(mandatoryFieldsWithValues);
-            mandatoryFieldsCopy.add(new OcrDataField("D8PetitionerEmail", validEmailAddress));
-            mandatoryFieldsCopy.add(new OcrDataField("PetitionerSolicitorEmail", validEmailAddress));
-            mandatoryFieldsCopy.add(new OcrDataField("D8RespondentEmailAddress", validEmailAddress));
-
-            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(mandatoryFieldsCopy);
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(createMergedList(mandatoryFieldsWithValues, asList(
+                new OcrDataField("D8PetitionerEmail", validEmailAddress),
+                new OcrDataField("PetitionerSolicitorEmail", validEmailAddress),
+                new OcrDataField("D8RespondentEmailAddress", validEmailAddress)
+            )));
 
             assertThat(validationResult.getStatus(), is(SUCCESS));
             assertThat(validationResult.getWarnings(), is(emptyList()));
@@ -358,12 +355,11 @@ public class D8FormValidatorTest {
     public void shouldFailEmailsNotMatchingCustomValidationRules() {
         String[] invalidEmailAddresses = {"aaa@gmail.", "john.doe@mai", "akjl2489.rq23@", " @ ", "adada@sfwe"};
         for (String invalidEmailAddress : invalidEmailAddresses) {
-            List<OcrDataField> mandatoryFieldsCopy = new ArrayList<>(mandatoryFieldsWithValues);
-            mandatoryFieldsCopy.add(new OcrDataField("D8PetitionerEmail", invalidEmailAddress));
-            mandatoryFieldsCopy.add(new OcrDataField("PetitionerSolicitorEmail", invalidEmailAddress));
-            mandatoryFieldsCopy.add(new OcrDataField("D8RespondentEmailAddress", invalidEmailAddress));
-
-            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(mandatoryFieldsCopy);
+            OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(createMergedList(mandatoryFieldsWithValues, asList(
+                new OcrDataField("D8PetitionerEmail", invalidEmailAddress),
+                new OcrDataField("PetitionerSolicitorEmail", invalidEmailAddress),
+                new OcrDataField("D8RespondentEmailAddress", invalidEmailAddress)
+            )));
 
             assertThat(validationResult.getStatus(), is(WARNINGS));
             assertThat(validationResult.getWarnings(), hasItems(
@@ -739,6 +735,21 @@ public class D8FormValidatorTest {
             "\"D8PetitionerCorrespondenceAddressCounty\" should be empty if \"D8PetitionerCorrespondenceUseHomeAddress\" is \"Yes\"",
             "\"D8PetitionerCorrespondencePostcode\" should be empty if \"D8PetitionerCorrespondenceUseHomeAddress\" is \"Yes\""
         ));
+    }
+
+    @Test
+    public void shouldPassIfD8PetitionerCorrespondenceUseHomeAddressIsEmptyRegardlessOfCorrespondenceAddress() {
+        OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(createMergedList(mandatoryFieldsWithValues, asList(
+            new OcrDataField("D8PetitionerCorrespondenceUseHomeAddress", ""),
+            new OcrDataField("D8PetitionerCorrespondenceAddressStreet", "20 correspondence road"),
+            new OcrDataField("D8PetitionerCorrespondenceAddressTown", ""),
+            new OcrDataField("D8PetitionerCorrespondenceAddressCounty", "South Midlands"),
+            new OcrDataField("D8PetitionerCorrespondencePostcode", "")
+        )));
+
+        assertThat(validationResult.getStatus(), is(SUCCESS));
+        assertThat(validationResult.getErrors(), is(emptyList()));
+        assertThat(validationResult.getWarnings(), is(emptyList()));
     }
 
     @Test

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.error.FormFieldValidationException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.BulkScanValidationPatterns.CCD_EMAIL_REGEX;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.BulkScanValidationPatterns.CCD_PHONE_NUMBER_REGEX;
@@ -41,7 +41,6 @@ public class D8FormValidator extends BulkScanFormValidator {
         "D8PetitionerContactDetailsConfidential",
         "D8PetitionerPostCode",
         "PetitionerSolicitor",
-        "D8PetitionerCorrespondenceUseHomeAddress",
         "D8PetitionerHomeAddressStreet",
         "D8PetitionerHomeAddressTown",
         "D8PetitionerHomeAddressCounty",
@@ -79,7 +78,7 @@ public class D8FormValidator extends BulkScanFormValidator {
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerContactDetailsConfidential", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("Cheque", "Debit/Credit Card", EMPTY_STRING));
         ALLOWED_VALUES_PER_FIELD.put("PetitionerSolicitor", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerCorrespondenceUseHomeAddress", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerCorrespondenceUseHomeAddress", asList(YES_VALUE, NO_VALUE, BLANK));
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameDifferentToMarriageCert", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8RespondentCorrespondenceSendToSol", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8MarriedInUk", yesNoValues);
@@ -167,13 +166,18 @@ public class D8FormValidator extends BulkScanFormValidator {
     }
 
     private static List<String> validateD8PetitionerCorrespondenceAddress(Map<String, String> fieldsMap) {
-        List<String> fieldsToCheck = Arrays.asList(
-            "D8PetitionerCorrespondenceAddressStreet",
-            "D8PetitionerCorrespondenceAddressTown",
-            "D8PetitionerCorrespondenceAddressCounty",
-            "D8PetitionerCorrespondencePostcode"
-        );
-        return validateFieldsAreNotEmptyOnlyFor(NO_VALUE, "D8PetitionerCorrespondenceUseHomeAddress", fieldsToCheck, fieldsMap);
+        List<String> validationMessages = emptyList();
+
+        if (fieldsMap.get("D8PetitionerCorrespondenceUseHomeAddress") != null) {
+            validationMessages = validateFieldsAreNotEmptyOnlyFor(NO_VALUE, "D8PetitionerCorrespondenceUseHomeAddress", asList(
+                "D8PetitionerCorrespondenceAddressStreet",
+                "D8PetitionerCorrespondenceAddressTown",
+                "D8PetitionerCorrespondenceAddressCounty",
+                "D8PetitionerCorrespondencePostcode"
+            ), fieldsMap);
+        }
+
+        return validationMessages;
     }
 
     private static List<String> validateFieldsAreNotEmptyOnlyFor(String valueForWhichFieldsShouldNotBeEmpty, String conditionField,
