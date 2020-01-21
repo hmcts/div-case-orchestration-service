@@ -4,6 +4,10 @@ public class BulkScanForms {
 
     public static final String D8_FORM = "d8Form";
 
-    // TODO: Confirm with Jeremy if this matches with the form name in BSP configuration spreadsheet
-    public static final String AOS_PACK_OFFLINE = "aosPackOffline";
+    // TODO: Confirm with Jeremy if these matches with the form names in BSP configuration spreadsheet
+    public static final String AOS_OFFLINE_2_YR_SEP = "aosPackOffline2YearSeparation";
+    public static final String AOS_OFFLINE_5_YR_SEP = "aosPackOffline5YearSeparation";
+    public static final String AOS_OFFLINE_BEHAVIOUR = "aosPackOfflineBehaviour";
+    public static final String AOS_OFFLINE_ADULTERY = "aosPackOfflineAdultery";
+    public static final String AOS_OFFLINE_CO_RESP = "aosPackOfflineCoResp";
 }

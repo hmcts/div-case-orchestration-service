@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
-public class AosPackOfflineFormToCaseTransformer extends BulkScanFormTransformer {
+public class AosOffline2YrSepFormToCaseTransformer extends BulkScanFormTransformer {
 
     private static final Map<String, String> ocrToCCDMapping;
 
