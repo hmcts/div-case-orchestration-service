@@ -78,7 +78,7 @@ def versions = [
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.0.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
-        tomcat                       : '9.0.27',
+        tomcat                       : '9.0.30',
         unirest                      : '1.4.9'
 ]
 
@@ -467,7 +467,7 @@ sonarqube {
     properties {
         property "sonar.exclusions", sonarExclusions.join(", ")
         property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/apiTest.exec"
-        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/jacoco/test/jacocoTestReport.xml"
         property "sonar.projectKey", "div-case-orchestration-service"
         property "sonar.projectName", "Divorce :: div-case-orchestration-service"
         property "sonar.pitest.mode", "reuseReport"
