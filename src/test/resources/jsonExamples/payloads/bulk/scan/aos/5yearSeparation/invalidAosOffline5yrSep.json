@@ -5,11 +5,10 @@
   "form_type": "aosPackOffline5YearSeparation",
   "ocr_data_fields": [
     { "name": "CaseNumber", "value": "1234123412341234" },
-    { "name": "AOSReasonForDivorce", "value": "5 years separation with consent" },
-    { "name": "RespAOS2yrConsent", "value": "Not a valid answer to this q" },
+    { "name": "AOSReasonForDivorce", "value": "5 years separation" },
     { "name": "RespConfirmReadPetition", "value": "Yes" },
     { "name": "DateRespReceivedDivorceApplication", "value": "10102019" },
-    { "name": "RespAdmitOrConsentToFact", "value": "Yes" },
+    { "name": "RespHardshipDefenseResponse", "value": "Yes" },
     { "name": "RespWillDefendDivorce", "value": "Proceed" },
     { "name": "RespJurisdictionAgree", "value": "No" },
     { "name": "RespJurisdictionDisagreeReason", "value": "Some Jurisdiction disagree reason" },
@@ -20,9 +19,7 @@
     { "name": "RespEmailAddress", "value": "est@somemail.com" },
     { "name": "RespPhoneNumber", "value": "1234123412341234" },
     { "name": "RespStatementOfTruth", "value": "Yes" },
-    { "name": "RespConsentToEmail", "value": "No" },
-    { "name": "RespHardshipDefenseResponse", "value": "No" },
-    { "name": "RespHardshipDescription", "value": "Some Hardship Description goes here" },
+    { "name": "RespConsentToEmail", "value": "No" }
     { "name": "RespStatementofTruthSignedDate", "value": "10th January 2020" }
   ]
 },

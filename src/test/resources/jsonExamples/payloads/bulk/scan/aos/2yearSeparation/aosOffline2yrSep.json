@@ -22,9 +22,7 @@
     { "name": "RespPhoneNumber", "value": "1234123412341234" },
     { "name": "RespStatementOfTruth", "value": "Yes" },
     { "name": "RespConsentToEmail", "value": "No" },
-    { "name": "RespConsiderFinancialSituation", "value": "No" },
-    { "name": "RespHardshipDefenseResponse", "value": "No" },
-    { "name": "RespHardshipDescription", "value": "Some Hardship Description goes here" }
+    { "name": "RespConsiderFinancialSituation", "value": "No" }
   ]
 },
   "case_details": {

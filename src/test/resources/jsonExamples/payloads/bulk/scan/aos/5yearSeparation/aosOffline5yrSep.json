@@ -5,11 +5,10 @@
   "form_type": "aosPackOffline5YearSeparation",
   "ocr_data_fields": [
     { "name": "CaseNumber", "value": "1234123412341234" },
-    { "name": "AOSReasonForDivorce", "value": "5 years separation with consent" },
-    { "name": "RespAOS2yrConsent", "value": "Yes" },
+    { "name": "AOSReasonForDivorce", "value": "5 years separation" },
     { "name": "RespConfirmReadPetition", "value": "Yes" },
     { "name": "DateRespReceivedDivorceApplication", "value": "10102019" },
-    { "name": "RespAdmitOrConsentToFact", "value": "No" },
+    { "name": "RespHardshipDefenseResponse", "value": "Yes" },
     { "name": "RespWillDefendDivorce", "value": "Proceed" },
     { "name": "RespJurisdictionAgree", "value": "No" },
     { "name": "RespJurisdictionDisagreeReason", "value": "Some Jurisdiction disagree reason" },
@@ -22,9 +21,7 @@
     { "name": "RespPhoneNumber", "value": "1234123412341234" },
     { "name": "RespStatementOfTruth", "value": "Yes" },
     { "name": "RespConsentToEmail", "value": "No" },
-    { "name": "RespConsiderFinancialSituation", "value": "No" },
-    { "name": "RespHardshipDefenseResponse", "value": "No" },
-    { "name": "RespHardshipDescription", "value": "Some Hardship Description goes here" }
+    { "name": "RespConsiderFinancialSituation", "value": "No" }
   ]
 },
   "case_details": {
