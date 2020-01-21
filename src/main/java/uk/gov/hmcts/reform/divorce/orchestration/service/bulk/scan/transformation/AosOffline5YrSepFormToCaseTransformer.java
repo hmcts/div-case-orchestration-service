@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
-public class AosOffline2YrSepFormToCaseTransformer extends BulkScanFormTransformer {
+public class AosOffline5YrSepFormToCaseTransformer extends BulkScanFormTransformer {
 
     private static final Map<String, String> ocrToCCDMapping;
 
@@ -26,7 +26,7 @@ public class AosOffline2YrSepFormToCaseTransformer extends BulkScanFormTransform
     @Override
     Map<String, Object> runFormSpecificTransformation(List<OcrDataField> ocrDataFields) {
 
-        // returning an empty map as we currently have no formSpecificTransformation for AOS Pack 2: 2 Year Separation
+        // returning an empty map as we currently have no formSpecificTransformation for AOS Pack 2: 5 Year Separation
         return Collections.emptyMap();
     }
 
@@ -48,7 +48,7 @@ public class AosOffline2YrSepFormToCaseTransformer extends BulkScanFormTransform
 
         erToCcdFieldsMap.put("RespConfirmReadPetition", "RespConfirmReadPetition");
         erToCcdFieldsMap.put("DateRespReceivedDivorceApplication", "DateRespReceivedDivorceApplication");
-        erToCcdFieldsMap.put("RespAOS2yrConsent", "RespAOS2yrConsent");
+        erToCcdFieldsMap.put("RespHardshipDefenseResponse", "RespHardshipDefenseResponse");
         erToCcdFieldsMap.put("RespWillDefendDivorce", "RespWillDefendDivorce");
         erToCcdFieldsMap.put("RespConsiderFinancialSituation", "RespConsiderFinancialSituation");
         erToCcdFieldsMap.put("RespJurisdictionAgree", "RespJurisdictionAgree");

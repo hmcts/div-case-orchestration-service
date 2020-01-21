@@ -17,14 +17,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
-public class AosOffline2yrSepCaseValidator extends BulkScanFormValidator {
+public class AosOffline5yrSepCaseValidator extends BulkScanFormValidator {
 
     private static final List<String> MANDATORY_FIELDS = asList(
         "CaseNumber",
         "AOSReasonForDivorce",
         "RespConfirmReadPetition",
         "DateRespReceivedDivorceApplication",
-        "RespAOS2yrConsent",
         "RespWillDefendDivorce",
         "RespConsiderFinancialSituation",
         "RespJurisdictionAgree",
@@ -35,9 +34,9 @@ public class AosOffline2yrSepCaseValidator extends BulkScanFormValidator {
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
 
     static {
-        ALLOWED_VALUES_PER_FIELD.put("AOSReasonForDivorce", asList("2 years separation with consent"));
+        ALLOWED_VALUES_PER_FIELD.put("AOSReasonForDivorce", asList("5 years separation"));
         ALLOWED_VALUES_PER_FIELD.put("RespConfirmReadPetition", asList(YES_VALUE, NO_VALUE));
-        ALLOWED_VALUES_PER_FIELD.put("RespAOS2yrConsent", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("RespHardshipDefenseResponse", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("RespWillDefendDivorce", asList("Proceed", "Defend"));
         ALLOWED_VALUES_PER_FIELD.put("RespConsiderFinancialSituation", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("RespJurisdictionAgree", asList(YES_VALUE, NO_VALUE));
@@ -68,7 +67,6 @@ public class AosOffline2yrSepCaseValidator extends BulkScanFormValidator {
     }
 
     private static List<String> validateDatesRelevantToAosApplication(Map<String, String> fieldsMap) {
-
         List<String> validationWarningMessages = new ArrayList<>();
 
         String dateRespReceivedDivorceApplication = fieldsMap.getOrDefault("DateRespReceivedDivorceApplication", "");
@@ -93,7 +91,6 @@ public class AosOffline2yrSepCaseValidator extends BulkScanFormValidator {
     }
 
     private static List<String> validateRespJurisdictionDisagreeReason(Map<String, String> fieldsMap) {
-
         List<String> validationWarningMessages = new ArrayList<>();
 
         String respJurisdictionAgreeField = fieldsMap.getOrDefault("RespJurisdictionAgree", "");
@@ -123,7 +120,6 @@ public class AosOffline2yrSepCaseValidator extends BulkScanFormValidator {
     }
 
     private static List<String> validateRespLegalProceedingsDescription(Map<String, String> fieldsMap) {
-
         List<String> validationWarningMessages = new ArrayList<>();
 
         String respLegalProceedingsExistField = fieldsMap.getOrDefault("RespLegalProceedingsExist", "");

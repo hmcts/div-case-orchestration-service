@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformati
 import org.junit.Test;
 import uk.gov.hmcts.reform.bsp.common.model.transformation.in.ExceptionRecord;
 import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformation.AosOffline2YrSepFormToCaseTransformer;
 
 import java.util.List;
 import java.util.Map;
@@ -15,9 +14,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.collection.IsMapWithSize.aMapWithSize;
 
-public class AosOffline2YrSepFormToCaseTransformerTest {
+public class AosOffline5YrSepFormToCaseTransformerTest {
 
-    private final AosOffline2YrSepFormToCaseTransformer classUnderTest = new AosOffline2YrSepFormToCaseTransformer();
+    private final AosOffline5YrSepFormToCaseTransformer classUnderTest = new AosOffline5YrSepFormToCaseTransformer();
 
     @Test
     public void shouldNotReturnUnexpectedField() {
@@ -31,12 +30,13 @@ public class AosOffline2YrSepFormToCaseTransformerTest {
         ));
     }
 
+
     @Test
     public void verifyDataIsCorrectlyTransformed() {
         ExceptionRecord exceptionRecord = createExceptionRecord(asList(
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
-            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespHardshipDefenseResponse", "Yes"),
             new OcrDataField("RespWillDefendDivorce", "No"),
             new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "Yes"),
@@ -54,7 +54,7 @@ public class AosOffline2YrSepFormToCaseTransformerTest {
         assertThat(transformedCaseData, allOf(
             hasEntry("RespConfirmReadPetition", "Yes"),
             hasEntry("DateRespReceivedDivorceApplication", "10102019"),
-            hasEntry("RespAOS2yrConsent", "Yes"),
+            hasEntry("RespHardshipDefenseResponse", "Yes"),
             hasEntry("RespWillDefendDivorce", "No"),
             hasEntry("RespConsiderFinancialSituation", "No"),
             hasEntry("RespJurisdictionAgree", "Yes"),
