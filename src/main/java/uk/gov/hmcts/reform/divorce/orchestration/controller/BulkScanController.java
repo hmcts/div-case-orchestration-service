@@ -20,14 +20,15 @@ import uk.gov.hmcts.reform.bsp.common.model.transformation.output.CaseUpdateDeta
 import uk.gov.hmcts.reform.bsp.common.model.transformation.output.SuccessfulTransformationResponse;
 import uk.gov.hmcts.reform.bsp.common.model.update.in.BulkScanCaseUpdateRequest;
 import uk.gov.hmcts.reform.bsp.common.model.update.output.SuccessfulUpdateResponse;
+import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
 import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResponse;
-import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResult;
 import uk.gov.hmcts.reform.bsp.common.service.AuthService;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulkscan.BulkScanEvents;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanService;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -74,9 +75,7 @@ public class BulkScanController {
         ResponseEntity<OcrValidationResponse> response;
 
         try {
-            OcrValidationResult ocrValidationResult = bulkScanService
-                .validateBulkScanForm(formType, request.getOcrDataFields());
-            OcrValidationResponse ocrValidationResponse = new OcrValidationResponse(ocrValidationResult);
+            OcrValidationResponse ocrValidationResponse = validateExceptionRecord(formType, request.getOcrDataFields());
             response = ok().body(ocrValidationResponse);
         } catch (UnsupportedFormTypeException unsupportedFormTypeException) {
             log.error(unsupportedFormTypeException.getMessage(), unsupportedFormTypeException);
@@ -111,16 +110,27 @@ public class BulkScanController {
 
         ResponseEntity<SuccessfulTransformationResponse> controllerResponse;
         try {
+            OcrValidationResponse ocrValidationResponse = validateExceptionRecord(
+                exceptionRecord.getFormType(), exceptionRecord.getOcrDataFields()
+            );
+
+            if (!ocrValidationResponse.getErrors().isEmpty()) {
+                return ResponseEntity.unprocessableEntity().build();
+            }
+
             Map<String, Object> transformedCaseData = bulkScanService.transformBulkScanForm(exceptionRecord);
 
             SuccessfulTransformationResponse callbackResponse = SuccessfulTransformationResponse.builder()
+                .warnings(ocrValidationResponse.getWarnings())
                 .caseCreationDetails(
                     new CaseCreationDetails(
                         CASE_TYPE_ID,
                         BulkScanEvents.CREATE.getEventName(),
                         transformedCaseData
                     )
-                ).build();
+                )
+
+                .build();
 
             controllerResponse = ok(callbackResponse);
         } catch (UnsupportedFormTypeException exception) {
@@ -163,5 +173,9 @@ public class BulkScanController {
             .build();
 
         return ResponseEntity.ok(callbackResponse);
+    }
+
+    private OcrValidationResponse validateExceptionRecord(String formType, List<OcrDataField> ocrDataFields) {
+        return new OcrValidationResponse(bulkScanService.validateBulkScanForm(formType, ocrDataFields));
     }
 }

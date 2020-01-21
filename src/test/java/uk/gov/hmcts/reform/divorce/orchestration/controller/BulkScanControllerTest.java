@@ -28,6 +28,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -92,7 +93,8 @@ public class BulkScanControllerTest {
 
     @Test
     public void shouldReturnTransformerServiceResults() {
-        ExceptionRecord exceptionRecord = ExceptionRecord.builder().build();
+        ExceptionRecord exceptionRecord = ExceptionRecord.builder().formType(TEST_FORM_TYPE).build();
+        when(bulkScanService.validateBulkScanForm(eq(TEST_FORM_TYPE), any())).thenReturn(OcrValidationResult.builder().build());
         when(bulkScanService.transformBulkScanForm(exceptionRecord)).thenReturn(singletonMap("testKey", "testValue"));
 
         ResponseEntity<SuccessfulTransformationResponse> response =
@@ -110,7 +112,8 @@ public class BulkScanControllerTest {
 
     @Test
     public void shouldReturnErrorForUnsupportedFormType_ForTransformation() {
-        ExceptionRecord exceptionRecord = ExceptionRecord.builder().build();
+        ExceptionRecord exceptionRecord = ExceptionRecord.builder().formType(TEST_FORM_TYPE).build();
+        when(bulkScanService.validateBulkScanForm(eq(TEST_FORM_TYPE), any())).thenReturn(OcrValidationResult.builder().build());
         when(bulkScanService.transformBulkScanForm(exceptionRecord)).thenThrow(UnsupportedFormTypeException.class);
 
         ResponseEntity response = bulkScanController.transformExceptionRecordIntoCase(TEST_SERVICE_TOKEN, exceptionRecord);
