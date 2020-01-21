@@ -39,9 +39,9 @@ public class UpdateBulkScanITest {
 
     private static final String UPDATE_URL = "/update-case";
     private static final String AOS_PACK_OFFLINE_FORM_JSON_PATH
-        = "jsonExamples/payloads/bulk/scan/aos/aosPackOfflineForm.json";
+        = "jsonExamples/payloads/bulk/scan/aos/2yearSeparation/aosOffline2yrSep.json";
     private static final String INVALID_AOS_PACK_OFFLINE_FORM_JSON_PATH
-        = "jsonExamples/payloads/bulk/scan/aos/invalidAosPackOfflineForm.json";
+        = "jsonExamples/payloads/bulk/scan/aos/2yearSeparation/invalidAosOffline2yrSep.json";
 
     private String validBody;
     private String invalidBody;

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
-public class AosPackOfflineCaseValidator extends BulkScanFormValidator {
+public class AosOffline2yrSepCaseValidator extends BulkScanFormValidator {
 
     private static final String DATE_RESP_RECEIVED_DIV_APP_WRONG_LENGTH_ERROR_MESSAGE =
         "DateRespReceivedDivorceApplication must be a valid 8 digit date";

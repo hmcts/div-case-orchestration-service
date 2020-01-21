@@ -34,7 +34,7 @@ public class BulkScanIntegrationTest extends IntegrationTest {
 
 
     private static final String FULL_D_8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/d8/fullD8Form.json";
-    private static final String AOS_OFFLINE_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/aos/aosPackOfflineForm.json";
+    private static final String AOS_OFFLINE_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/aos/2yearSeparation/aosOffline2yrSep.json";
     private static String VALIDATION_END_POINT = "/forms/{form-type}/validate-ocr";
     private static String TRANSFORMATION_END_POINT = "/transform-exception-record";
     private static String UPDATE_END_POINT = "/update-case";
