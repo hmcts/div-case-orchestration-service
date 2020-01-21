@@ -133,8 +133,8 @@ public class D8FormValidator extends BulkScanFormValidator {
             validatePostcode(fieldsMap, "D8RespondentSolicitorAddressPostCode"),
             validatePayment(fieldsMap),
             validatePlaceOfMarriage(fieldsMap),
-            validateTextFieldDependentOnYesNoValue(fieldsMap, "D8MarriageCertificateCorrect", "D8MarriageCertificateCorrectExplain"),
-            validateTextFieldDependentOnYesNoValue(fieldsMap, "D8PetitionerNameChangedHow", "D8PetitionerNameChangedHowOtherDetails"),
+            validateFieldIsEmptyForNo_AndNotEmptyForYes(fieldsMap, "D8MarriageCertificateCorrect", "D8MarriageCertificateCorrectExplain"),
+            validateFieldIsEmptyForNo_AndNotEmptyForYes(fieldsMap, "D8PetitionerNameChangedHow", "D8PetitionerNameChangedHowOtherDetails"),
             validateDateSplitIntoComponents(fieldsMap, "D8MarriageDateDay", "D8MarriageDateMonth", "D8MarriageDateYear"),
             validateD8PetitionerCorrespondenceAddress(fieldsMap),
             validateD8FinancialOrderFor(fieldsMap)
@@ -293,21 +293,21 @@ public class D8FormValidator extends BulkScanFormValidator {
         return validationWarningMessages;
     }
 
-    private static List<String> validateTextFieldDependentOnYesNoValue(Map<String, String> fieldsMap, String mainYesNoField,
-                                                                       String dependentTextField) {
+    private static List<String> validateFieldIsEmptyForNo_AndNotEmptyForYes(Map<String, String> fieldsMap, String mainYesNoField,
+                                                                            String fieldToValidate) {
         List<String> validationWarningMessages = new ArrayList<>();
 
-        String dependentTextFieldValue = fieldsMap.getOrDefault(dependentTextField, "");
+        String dependentTextFieldValue = fieldsMap.getOrDefault(fieldToValidate, "");
 
         if (fieldsMap.containsKey(mainYesNoField)) {
             String mainYesNoFieldValue = fieldsMap.get(mainYesNoField);
             if (mainYesNoFieldValue.equals(NO_VALUE) && StringUtils.isEmpty(dependentTextFieldValue)) {
                 validationWarningMessages.add(
-                    String.format("If %s is \"No\", then %s should not be empty", mainYesNoField, dependentTextField));
+                    String.format("If %s is \"No\", then %s should not be empty", mainYesNoField, fieldToValidate));
             }
             if (mainYesNoFieldValue.equals(YES_VALUE) && StringUtils.isNotEmpty(dependentTextFieldValue)) {
                 validationWarningMessages.add(
-                    String.format("If %s is \"Yes\", then %s should be empty", mainYesNoField, dependentTextField));
+                    String.format("If %s is \"Yes\", then %s should be empty", mainYesNoField, fieldToValidate));
             }
         }
         return validationWarningMessages;
