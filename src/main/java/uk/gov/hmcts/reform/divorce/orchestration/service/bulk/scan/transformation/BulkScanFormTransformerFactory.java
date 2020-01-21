@@ -14,6 +14,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkSc
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_5_YR_SEP;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
 
+<<<<<<<HEAD
+=======
+    >>>>>>>master
+
 @Component
 public class BulkScanFormTransformerFactory {
 

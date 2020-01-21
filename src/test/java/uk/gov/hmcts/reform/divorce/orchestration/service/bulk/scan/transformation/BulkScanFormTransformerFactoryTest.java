@@ -54,5 +54,4 @@ public class BulkScanFormTransformerFactoryTest {
 
         bulkScanFormTransformerFactory.getTransformer("unsupportedFormType");
     }
-
 }
