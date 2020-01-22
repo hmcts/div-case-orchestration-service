@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.bsp.common.service.AuthService;
 import uk.gov.hmcts.reform.divorce.orchestration.event.bulkscan.BulkScanEvents;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanService;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -164,15 +163,34 @@ public class BulkScanController {
 
         authService.assertIsServiceAllowedToUpdate(s2sAuthToken);
 
-        SuccessfulUpdateResponse callbackResponse = SuccessfulUpdateResponse.builder()
-            .caseUpdateDetails(
-                new CaseUpdateDetails(
-                    CASE_TYPE_ID,
-                    request.getCaseData()))
-            .warnings(Collections.emptyList())
-            .build();
+        ResponseEntity<SuccessfulUpdateResponse> updateControllerResponse;
 
-        return ResponseEntity.ok(callbackResponse);
+        try {
+            ExceptionRecord receivedER = request.getExceptionRecord();
+
+            OcrValidationResponse ocrValidationResponse = validateExceptionRecord(
+                receivedER.getFormType(), receivedER.getOcrDataFields()
+            );
+
+            Map<String, Object> transformedCaseData = bulkScanService.transformBulkScanForm(receivedER);
+            Map<String, Object> originalCaseDataReceived = request.getCaseData();
+            originalCaseDataReceived.putAll(transformedCaseData);
+
+            SuccessfulUpdateResponse callbackResponse = SuccessfulUpdateResponse.builder()
+                .caseUpdateDetails(
+                    new CaseUpdateDetails(
+                        CASE_TYPE_ID,
+                        originalCaseDataReceived
+                    )
+                ).warnings(ocrValidationResponse.getWarnings())
+                .build();
+
+            updateControllerResponse = ok(callbackResponse);
+        } catch (UnsupportedFormTypeException exception) {
+            updateControllerResponse = ResponseEntity.unprocessableEntity().build();
+        }
+
+        return updateControllerResponse;
     }
 
     private OcrValidationResponse validateExceptionRecord(String formType, List<OcrDataField> ocrDataFields) {

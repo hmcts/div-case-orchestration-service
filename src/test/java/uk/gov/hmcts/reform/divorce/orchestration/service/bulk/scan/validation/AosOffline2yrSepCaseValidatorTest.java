@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
 import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResult;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.AosOffline2yrSepCaseValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,9 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.out.ValidationStatus.SUCCESS;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.out.ValidationStatus.WARNINGS;
 
-public class AosPackOfflineCaseValidatorTest {
+public class AosOffline2yrSepCaseValidatorTest {
 
-    private final AosPackOfflineCaseValidator classUnderTest = new AosPackOfflineCaseValidator();
+    private final AosOffline2yrSepCaseValidator classUnderTest = new AosOffline2yrSepCaseValidator();
     private List<OcrDataField> listOfAllMandatoryFields;
 
     @Before

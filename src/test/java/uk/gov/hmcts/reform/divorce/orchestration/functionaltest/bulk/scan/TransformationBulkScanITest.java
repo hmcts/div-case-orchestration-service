@@ -93,6 +93,8 @@ public class TransformationBulkScanITest {
 
     @Test
     public void shouldReturnSuccessResponseForTransformationEndpointWhenUsingFullDataSet() throws Exception {
+        when(bulkScanFormValidator.validateBulkScanForm(any())).thenReturn(OcrValidationResult.builder().build());
+
         mockMvc.perform(
             post(TRANSFORMATION_URL)
                 .contentType(APPLICATION_JSON)

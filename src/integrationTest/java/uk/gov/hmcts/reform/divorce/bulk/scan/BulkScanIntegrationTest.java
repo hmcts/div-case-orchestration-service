@@ -6,10 +6,12 @@ import net.serenitybdd.rest.SerenityRest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 
+import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.BulkScanController.SERVICE_AUTHORISATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
@@ -31,103 +33,92 @@ public class BulkScanIntegrationTest extends IntegrationTest {
     private String cosBaseURL;
 
 
-    private static final String FULL_D8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/d8/fullD8Form.json";
-    private static String VALID_BODY;
+    private static final String FULL_D_8_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/d8/fullD8Form.json";
+    private static final String AOS_OFFLINE_FORM_JSON_PATH = "jsonExamples/payloads/bulk/scan/aos/2yearSeparation/aosOffline2yrSep.json";
     private static String VALIDATION_END_POINT = "/forms/{form-type}/validate-ocr";
     private static String TRANSFORMATION_END_POINT = "/transform-exception-record";
     private static String UPDATE_END_POINT = "/update-case";
+    private String validBody;
 
     @Test
     public void shouldGetSuccessfulResponsesWhenUsingWhitelistedServiceForValidationEndPoint()  throws Exception {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanValidationMicroService);
-        VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
+        validBody = loadResourceAsString(FULL_D_8_FORM_JSON_PATH);
 
-        Response forValidationEndpoint = responseForValidationEndpoint(token,VALIDATION_END_POINT, D8_FORM);
+        Response validationResponse = validationEndpointRequest(token,VALIDATION_END_POINT, D8_FORM);
 
-
-        assert forValidationEndpoint.getStatusCode() == 200 : "Service is not authorised to OCR validation "
-            + forValidationEndpoint.getStatusCode();
-
+        assertEquals(HttpStatus.OK.value(), validationResponse.getStatusCode());
     }
 
     @Test
     public void shouldGetServiceDeniedWhenUsingNonWhitelistedServiceForValidationEndPoint()  throws Exception {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanTransformationAndUpdateMicroService);
+        validBody = loadResourceAsString(FULL_D_8_FORM_JSON_PATH);
 
-        VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
+        Response validationResponse = validationEndpointRequest(token,VALIDATION_END_POINT, D8_FORM);
 
-        Response forValidationEndpoint = responseForValidationEndpoint(token,VALIDATION_END_POINT, D8_FORM);
-
-        assert forValidationEndpoint.getStatusCode() == 403 : "Not matching with expected Error code "
-            + forValidationEndpoint.getStatusCode();
+        assertEquals(HttpStatus.FORBIDDEN.value(), validationResponse.getStatusCode());
     }
 
     @Test
     public void shouldGetSuccessfulResponsesWhenUsingWhitelistedServiceForTransformationEndPoint()  throws Exception {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanTransformationAndUpdateMicroService);
+        validBody = loadResourceAsString(FULL_D_8_FORM_JSON_PATH);
 
-        VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
-        Response forTransformationEndpoint = responseForEndpoint(token,TRANSFORMATION_END_POINT);
+        Response transformationResponse = transformationAndUpdateEndpointRequest(token,TRANSFORMATION_END_POINT);
 
-        assert forTransformationEndpoint.getStatusCode() == 200 : "Service is not authorised to transform OCR data to case"
-            + forTransformationEndpoint.getStatusCode();
-
+        assertEquals(HttpStatus.OK.value(), transformationResponse.getStatusCode());
     }
 
     @Test
     public void shouldGetServiceDeniedWhenUsingNonWhitelistedServiceForTransformationEndPoint()  throws Exception {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanValidationMicroService);
+        validBody = loadResourceAsString(FULL_D_8_FORM_JSON_PATH);
 
-        VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
+        Response transformationResponse = transformationAndUpdateEndpointRequest(token,TRANSFORMATION_END_POINT);
 
-        Response forTransformationEndpoint = responseForEndpoint(token,TRANSFORMATION_END_POINT);
-
-        assert forTransformationEndpoint.getStatusCode() == 403 : "Not matching with expected error Code "
-            + forTransformationEndpoint.getStatusCode();
+        assertEquals(HttpStatus.FORBIDDEN.value(), transformationResponse.getStatusCode());
     }
 
     @Test
     public void shouldGetSuccessfulResponsesWhenUsingWhitelistedServiceForUpdateEndPoint()  throws Exception {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanTransformationAndUpdateMicroService);
+        validBody = loadResourceAsString(AOS_OFFLINE_FORM_JSON_PATH);
 
-        VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
-        Response forUpdateEndpoint = responseForEndpoint(token,UPDATE_END_POINT);
+        Response updateResponse = transformationAndUpdateEndpointRequest(token, UPDATE_END_POINT);
 
-        assert forUpdateEndpoint.getStatusCode() == 200 : "Service is not authorised to transform OCR data to case"
-            + forUpdateEndpoint.getStatusCode();
-
+        assertEquals(HttpStatus.OK.value(), updateResponse.getStatusCode());
     }
 
     @Test
     public void shouldGetServiceDeniedWhenUsingNonWhitelistedServiceForUpdateEndPoint()  throws Exception {
         String token = idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService(bulkScanValidationMicroService);
+        validBody = loadResourceAsString(AOS_OFFLINE_FORM_JSON_PATH);
 
-        VALID_BODY = loadResourceAsString(FULL_D8_FORM_JSON_PATH);
+        Response updateResponse = transformationAndUpdateEndpointRequest(token, UPDATE_END_POINT);
 
-        Response forUpdateEndpoint = responseForEndpoint(token,UPDATE_END_POINT);
-
-        assert forUpdateEndpoint.getStatusCode() == 403 : "Not matching with expected error Code " + forUpdateEndpoint.getStatusCode();
+        assertEquals(HttpStatus.FORBIDDEN.value(), updateResponse.getStatusCode());
     }
 
-    private Response responseForEndpoint(String token, String endpointName) {
+    private Response validationEndpointRequest(String token, String endpointName, String formType) {
 
         Response  response = SerenityRest.given()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .header(SERVICE_AUTHORISATION_HEADER, token)
             .relaxedHTTPSValidation()
-            .body(VALID_BODY)
-            .post(cosBaseURL + endpointName);
+            .body(validBody)
+            .post(cosBaseURL + endpointName, formType);
         return response;
     }
 
-    private Response responseForValidationEndpoint(String token, String endpointName, String formType) {
+    private Response transformationAndUpdateEndpointRequest(String token, String endpointName) {
 
         Response  response = SerenityRest.given()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .header(SERVICE_AUTHORISATION_HEADER, token)
             .relaxedHTTPSValidation()
-            .body(VALID_BODY)
-            .post(cosBaseURL + endpointName, formType);
+            .body(validBody)
+            .post(cosBaseURL + endpointName);
         return response;
     }
 }
