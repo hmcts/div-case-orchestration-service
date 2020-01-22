@@ -9,5 +9,5 @@ public class BulkScanForms {
     public static final String AOS_OFFLINE_5_YR_SEP = "aosPackOffline5YearSeparation";
     public static final String AOS_OFFLINE_BEHAVIOUR = "aosPackOfflineBehaviour";
     public static final String AOS_OFFLINE_ADULTERY = "aosPackOfflineAdultery";
-    public static final String AOS_OFFLINE_CO_RESP = "aosPackOfflineCoResp";
+    public static final String AOS_OFFLINE_ADULTERY_CO_RESP = "aosPackOfflineAdulteryCoResp";
 }
