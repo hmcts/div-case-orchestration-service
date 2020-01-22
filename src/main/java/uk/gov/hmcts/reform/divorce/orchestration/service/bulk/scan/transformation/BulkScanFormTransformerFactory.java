@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_2_YR_SEP;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_5_YR_SEP;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_ADULTERY_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
 
 @Component
@@ -26,6 +27,9 @@ public class BulkScanFormTransformerFactory {
     @Autowired
     private AosOffline5YrSepFormToCaseTransformer aosOffline5YrSepFormToCaseTransformer;
 
+    @Autowired
+    private AosOfflineAdulteryCoRespFormToCaseTransformer aosOfflineAdulteryCoRespFormToCaseTransformer;
+
     private static Map<String, BulkScanFormTransformer> bulkScanFormTransformerMap = new HashMap<>();
 
     @PostConstruct
@@ -33,6 +37,7 @@ public class BulkScanFormTransformerFactory {
         bulkScanFormTransformerMap.put(D8_FORM, d8FormToCaseTransformer);
         bulkScanFormTransformerMap.put(AOS_OFFLINE_2_YR_SEP, aosOffline2YrSepFormToCaseTransformer);
         bulkScanFormTransformerMap.put(AOS_OFFLINE_5_YR_SEP, aosOffline5YrSepFormToCaseTransformer);
+        bulkScanFormTransformerMap.put(AOS_OFFLINE_ADULTERY_CO_RESP, aosOfflineAdulteryCoRespFormToCaseTransformer);
     }
 
     public BulkScanFormTransformer getTransformer(String formType) {

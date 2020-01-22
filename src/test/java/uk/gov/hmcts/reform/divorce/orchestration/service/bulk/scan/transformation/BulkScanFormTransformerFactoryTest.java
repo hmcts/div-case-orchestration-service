@@ -15,6 +15,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_2_YR_SEP;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_5_YR_SEP;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_ADULTERY_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,6 +33,9 @@ public class BulkScanFormTransformerFactoryTest {
     @Mock
     private AosOffline5YrSepFormToCaseTransformer aosOffline5YrSepFormToCaseTransformer;
 
+    @Mock
+    private AosOfflineAdulteryCoRespFormToCaseTransformer aosOfflineAdulteryCoRespFormToCaseTransformer;
+
     @InjectMocks
     private BulkScanFormTransformerFactory bulkScanFormTransformerFactory;
 
@@ -45,6 +49,7 @@ public class BulkScanFormTransformerFactoryTest {
         assertThat(bulkScanFormTransformerFactory.getTransformer(D8_FORM), is(d8FormToCaseTransformer));
         assertThat(bulkScanFormTransformerFactory.getTransformer(AOS_OFFLINE_2_YR_SEP), is(aosOffline2YrSepFormToCaseTransformer));
         assertThat(bulkScanFormTransformerFactory.getTransformer(AOS_OFFLINE_5_YR_SEP), is(aosOffline5YrSepFormToCaseTransformer));
+        assertThat(bulkScanFormTransformerFactory.getTransformer(AOS_OFFLINE_ADULTERY_CO_RESP), is(aosOfflineAdulteryCoRespFormToCaseTransformer));
     }
 
     @Test
