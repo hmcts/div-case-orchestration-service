@@ -450,6 +450,33 @@ pitest {
     mutationThreshold = 80
 }
 
+jacocoTestReport {
+    executionData(test)
+
+    reports {
+        xml {
+            enabled true
+            destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+        }
+
+        html {
+            enabled true
+        }
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.9
+            }
+        }
+    }
+}
+
+project.tasks['sonarqube'].dependsOn jacocoTestReport
+
 def sonarExclusions = [
         '**uk/gov/hmcts/reform/divorce/orchestration/domain/**/*',
         '**uk/gov/hmcts/reform/divorce/orchestration/**/config/**/*',
@@ -472,30 +499,6 @@ sonarqube {
         property "sonar.projectName", "Divorce :: div-case-orchestration-service"
         property "sonar.pitest.mode", "reuseReport"
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    }
-}
-
-jacocoTestReport {
-    executionData(test)
-
-    reports {
-        xml {
-            enabled true
-        }
-
-        html {
-            enabled true
-        }
-    }
-}
-
-jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                minimum = 0.9
-            }
-        }
     }
 }
 
