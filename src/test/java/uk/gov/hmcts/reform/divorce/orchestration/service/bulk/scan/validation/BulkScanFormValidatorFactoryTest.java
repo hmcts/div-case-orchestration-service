@@ -27,6 +27,15 @@ public class BulkScanFormValidatorFactoryTest {
     @Mock
     private AosOffline2yrSepCaseValidator aosOffline2yrSepCaseValidator;
 
+    @Mock
+    private AosOffline5yrSepCaseValidator aosOffline5yrSepCaseValidator;
+
+    @Mock
+    private AosOfflineBehaviourDesertionCaseValidator aosOfflineBehaviourDesertionCaseValidator;
+
+    @Mock
+    private AosOfflineAdulteryCoRespCaseValidator aosOfflineAdulteryCoRespCaseValidator;
+
     @InjectMocks
     private BulkScanFormValidatorFactory classUnderTest;
 
@@ -49,6 +58,30 @@ public class BulkScanFormValidatorFactoryTest {
 
         assertThat(validator, is(instanceOf(AosOffline2yrSepCaseValidator.class)));
         assertThat(validator, is(aosOffline2yrSepCaseValidator));
+    }
+
+    @Test
+    public void shouldReturnValidatorForAosOffline5YearSeparationForm() {
+        BulkScanFormValidator validator = classUnderTest.getValidator("aosPackOffline5YearSeparation");
+
+        assertThat(validator, is(instanceOf(AosOffline5yrSepCaseValidator.class)));
+        assertThat(validator, is(aosOffline5yrSepCaseValidator));
+    }
+
+    @Test
+    public void shouldReturnValidatorForAosOfflineBehaviourDesertionSeparationForm() {
+        BulkScanFormValidator validator = classUnderTest.getValidator("aosPackOfflineBehaviourDesertion");
+
+        assertThat(validator, is(instanceOf(AosOfflineBehaviourDesertionCaseValidator.class)));
+        assertThat(validator, is(aosOfflineBehaviourDesertionCaseValidator));
+    }
+
+    @Test
+    public void shouldReturnValidatorForAosOfflineAdulteryCoRespSeparationForm() {
+        BulkScanFormValidator validator = classUnderTest.getValidator("aosPackOfflineAdulteryCoResp");
+
+        assertThat(validator, is(instanceOf(AosOfflineAdulteryCoRespCaseValidator.class)));
+        assertThat(validator, is(aosOfflineAdulteryCoRespCaseValidator));
     }
 
     @Test
