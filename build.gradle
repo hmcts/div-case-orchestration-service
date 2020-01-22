@@ -454,14 +454,10 @@ jacocoTestReport {
     executionData(test)
 
     reports {
-        xml {
-            enabled true
-            destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
-        }
-
-        html {
-            enabled true
-        }
+        xml.enabled = true
+        csv.enabled = false
+        html.enabled = true
+        xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     }
 }
 
