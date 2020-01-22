@@ -113,10 +113,6 @@ public class BulkScanController {
                 exceptionRecord.getFormType(), exceptionRecord.getOcrDataFields()
             );
 
-            if (!ocrValidationResponse.getErrors().isEmpty()) {
-                return ResponseEntity.unprocessableEntity().build();
-            }
-
             Map<String, Object> transformedCaseData = bulkScanService.transformBulkScanForm(exceptionRecord);
 
             SuccessfulTransformationResponse callbackResponse = SuccessfulTransformationResponse.builder()
@@ -128,7 +124,6 @@ public class BulkScanController {
                         transformedCaseData
                     )
                 )
-
                 .build();
 
             controllerResponse = ok(callbackResponse);
@@ -173,7 +168,7 @@ public class BulkScanController {
             );
 
             Map<String, Object> transformedCaseData = bulkScanService.transformBulkScanForm(receivedER);
-            Map<String, Object> originalCaseDataReceived = request.getCaseData();
+            Map<String, Object> originalCaseDataReceived = request.getCaseDetails().getCaseData();
             originalCaseDataReceived.putAll(transformedCaseData);
 
             SuccessfulUpdateResponse callbackResponse = SuccessfulUpdateResponse.builder()
