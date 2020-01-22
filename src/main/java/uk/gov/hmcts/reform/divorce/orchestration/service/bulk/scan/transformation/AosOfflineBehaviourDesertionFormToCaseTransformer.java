@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 public class AosOfflineBehaviourDesertionFormToCaseTransformer extends BulkScanFormTransformer {
@@ -26,7 +25,7 @@ public class AosOfflineBehaviourDesertionFormToCaseTransformer extends BulkScanF
     @Override
     Map<String, Object> runFormSpecificTransformation(List<OcrDataField> ocrDataFields) {
 
-        // returning an empty map as we currently have no formSpecificTransformation for AOS Pack 2: 2 Year Separation
+        // returning an empty map as we currently have no formSpecificTransformation for AOS Pack 2: Behaviour/Desertion
         return Collections.emptyMap();
     }
 
@@ -36,21 +35,12 @@ public class AosOfflineBehaviourDesertionFormToCaseTransformer extends BulkScanF
         return transformedCaseData;
     }
 
-    private Optional<String> getValueFromOcrDataFields(String fieldName, List<OcrDataField> ocrDataFields) {
-        return ocrDataFields.stream()
-            .filter(f -> f.getName().equals(fieldName))
-            .map(OcrDataField::getValue)
-            .findFirst();
-    }
-
     private static Map<String, String> aosPackOfflineExceptionRecordToCcdMap() {
         Map<String, String> erToCcdFieldsMap = new HashMap<>();
 
         erToCcdFieldsMap.put("RespConfirmReadPetition", "RespConfirmReadPetition");
         erToCcdFieldsMap.put("DateRespReceivedDivorceApplication", "DateRespReceivedDivorceApplication");
-        erToCcdFieldsMap.put("RespAOS2yrConsent", "RespAOS2yrConsent");
         erToCcdFieldsMap.put("RespWillDefendDivorce", "RespWillDefendDivorce");
-        erToCcdFieldsMap.put("RespConsiderFinancialSituation", "RespConsiderFinancialSituation");
         erToCcdFieldsMap.put("RespJurisdictionAgree", "RespJurisdictionAgree");
         erToCcdFieldsMap.put("RespJurisdictionDisagreeReason", "RespJurisdictionDisagreeReason");
         erToCcdFieldsMap.put("RespLegalProceedingsExist", "RespLegalProceedingsExist");

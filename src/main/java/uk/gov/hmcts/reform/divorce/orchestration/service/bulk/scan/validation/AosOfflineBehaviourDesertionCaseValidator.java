@@ -24,9 +24,7 @@ public class AosOfflineBehaviourDesertionCaseValidator extends BulkScanFormValid
         "AOSReasonForDivorce",
         "RespConfirmReadPetition",
         "DateRespReceivedDivorceApplication",
-        "RespAOS2yrConsent",
         "RespWillDefendDivorce",
-        "RespConsiderFinancialSituation",
         "RespJurisdictionAgree",
         "RespLegalProceedingsExist",
         "RespAgreeToCosts"
@@ -35,11 +33,9 @@ public class AosOfflineBehaviourDesertionCaseValidator extends BulkScanFormValid
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
 
     static {
-        ALLOWED_VALUES_PER_FIELD.put("AOSReasonForDivorce", asList("2 years separation with consent"));
+        ALLOWED_VALUES_PER_FIELD.put("AOSReasonForDivorce", asList("Behaviour", "Desertion"));
         ALLOWED_VALUES_PER_FIELD.put("RespConfirmReadPetition", asList(YES_VALUE, NO_VALUE));
-        ALLOWED_VALUES_PER_FIELD.put("RespAOS2yrConsent", asList(YES_VALUE, NO_VALUE));
-        ALLOWED_VALUES_PER_FIELD.put("RespWillDefendDivorce", asList("Proceed", "Defend"));
-        ALLOWED_VALUES_PER_FIELD.put("RespConsiderFinancialSituation", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("RespWillDefendDivorce", asList("Proceed", "Defend", "NoNoAdmission"));
         ALLOWED_VALUES_PER_FIELD.put("RespJurisdictionAgree", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("RespLegalProceedingsExist", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("RespAgreeToCosts", asList(YES_VALUE, NO_VALUE));

@@ -30,14 +30,24 @@ public class AosOfflineBehaviourDesertionFormToCaseTransformerTest {
         ));
     }
 
+    /*
+
+
+    UPDATE ME
+
+
+
+
+
+
+     */
+
     @Test
     public void verifyDataIsCorrectlyTransformed() {
         ExceptionRecord exceptionRecord = createExceptionRecord(asList(
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
-            new OcrDataField("RespAOS2yrConsent", "Yes"),
             new OcrDataField("RespWillDefendDivorce", "No"),
-            new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "Yes"),
             new OcrDataField("RespJurisdictionDisagreeReason", ""),
             new OcrDataField("RespLegalProceedingsExist", "Yes"),
@@ -53,9 +63,7 @@ public class AosOfflineBehaviourDesertionFormToCaseTransformerTest {
         assertThat(transformedCaseData, allOf(
             hasEntry("RespConfirmReadPetition", "Yes"),
             hasEntry("DateRespReceivedDivorceApplication", "10102019"),
-            hasEntry("RespAOS2yrConsent", "Yes"),
             hasEntry("RespWillDefendDivorce", "No"),
-            hasEntry("RespConsiderFinancialSituation", "No"),
             hasEntry("RespJurisdictionAgree", "Yes"),
             hasEntry("RespJurisdictionDisagreeReason", ""),
             hasEntry("RespLegalProceedingsExist", "Yes"),

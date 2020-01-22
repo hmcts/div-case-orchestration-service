@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 public class AosOffline5YrSepFormToCaseTransformer extends BulkScanFormTransformer {
@@ -34,13 +33,6 @@ public class AosOffline5YrSepFormToCaseTransformer extends BulkScanFormTransform
     Map<String, Object> runPostMappingModification(Map<String, Object> transformedCaseData) {
 
         return transformedCaseData;
-    }
-
-    private Optional<String> getValueFromOcrDataFields(String fieldName, List<OcrDataField> ocrDataFields) {
-        return ocrDataFields.stream()
-            .filter(f -> f.getName().equals(fieldName))
-            .map(OcrDataField::getValue)
-            .findFirst();
     }
 
     private static Map<String, String> aosPackOfflineExceptionRecordToCcdMap() {

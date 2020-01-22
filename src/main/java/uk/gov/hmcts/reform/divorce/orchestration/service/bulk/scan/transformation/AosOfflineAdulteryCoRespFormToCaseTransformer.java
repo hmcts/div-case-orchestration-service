@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 public class AosOfflineAdulteryCoRespFormToCaseTransformer extends BulkScanFormTransformer {
@@ -26,7 +25,7 @@ public class AosOfflineAdulteryCoRespFormToCaseTransformer extends BulkScanFormT
     @Override
     Map<String, Object> runFormSpecificTransformation(List<OcrDataField> ocrDataFields) {
 
-        // returning an empty map as we currently have no formSpecificTransformation for AOS Pack 2: 2 Year Separation
+        // returning an empty map as we currently have no formSpecificTransformation for AOS Pack 2: Adultery Co Resp
         return Collections.emptyMap();
     }
 
@@ -34,13 +33,6 @@ public class AosOfflineAdulteryCoRespFormToCaseTransformer extends BulkScanFormT
     Map<String, Object> runPostMappingModification(Map<String, Object> transformedCaseData) {
 
         return transformedCaseData;
-    }
-
-    private Optional<String> getValueFromOcrDataFields(String fieldName, List<OcrDataField> ocrDataFields) {
-        return ocrDataFields.stream()
-            .filter(f -> f.getName().equals(fieldName))
-            .map(OcrDataField::getValue)
-            .findFirst();
     }
 
     private static Map<String, String> aosPackOfflineExceptionRecordToCcdMap() {
