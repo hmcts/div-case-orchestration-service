@@ -1,11 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformation;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -20,19 +17,6 @@ public class AosOffline5YrSepFormToCaseTransformer extends BulkScanFormTransform
     @Override
     protected Map<String, String> getOcrToCCDMapping() {
         return ocrToCCDMapping;
-    }
-
-    @Override
-    Map<String, Object> runFormSpecificTransformation(List<OcrDataField> ocrDataFields) {
-
-        // returning an empty map as we currently have no formSpecificTransformation for AOS Pack 2: 5 Year Separation
-        return Collections.emptyMap();
-    }
-
-    @Override
-    Map<String, Object> runPostMappingModification(Map<String, Object> transformedCaseData) {
-
-        return transformedCaseData;
     }
 
     private static Map<String, String> aosPackOfflineExceptionRecordToCcdMap() {

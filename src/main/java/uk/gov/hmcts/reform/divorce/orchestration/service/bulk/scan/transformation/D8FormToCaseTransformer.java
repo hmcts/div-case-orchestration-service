@@ -59,7 +59,7 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
     }
 
     @Override
-    Map<String, Object> runPostMappingModification(Map<String, Object> transformedCaseData) {
+    protected Map<String, Object> runPostMappingModification(Map<String, Object> transformedCaseData) {
         transformedCaseData.replace("D8PaymentMethod", "Debit/Credit Card", "Card");
         transformedCaseData.replace("D8FinancialOrderFor", "myself", "petitioner");
         transformedCaseData.replace("D8FinancialOrderFor", "my children", "children");

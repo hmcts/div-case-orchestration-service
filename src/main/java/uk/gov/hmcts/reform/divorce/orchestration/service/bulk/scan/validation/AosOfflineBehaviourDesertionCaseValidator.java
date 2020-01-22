@@ -89,7 +89,6 @@ public class AosOfflineBehaviourDesertionCaseValidator extends BulkScanFormValid
     }
 
     private static List<String> validateRespJurisdictionDisagreeReason(Map<String, String> fieldsMap) {
-
         List<String> validationWarningMessages = new ArrayList<>();
 
         String respJurisdictionAgreeField = fieldsMap.getOrDefault("RespJurisdictionAgree", "");
