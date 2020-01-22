@@ -49,6 +49,10 @@ public class UpdateBulkScanITest {
     private static final String INVALID_AOS_OFFLINE_5_YEAR_SEP_JSON_PATH
         = "jsonExamples/payloads/bulk/scan/aos/5yearSeparation/invalidAosOffline5yrSep.json";
 
+    /*
+    Create integration tests for behaviour and desertion
+     */
+
     private static final String AOS_OFFLINE_ADULTERY_CO_RESP_JSON_PATH
         = "jsonExamples/payloads/bulk/scan/aos/AdulteryCoResp/aosOfflineAdulteryCoResp.json";
     private static final String INVALID_AOS_OFFLINE_ADULTERY_CO_RESP_JSON_PATH

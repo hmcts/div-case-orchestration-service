@@ -2,7 +2,7 @@
   "case_type_id": "DIVORCE",
   "id": "LV481297",
   "po_box": "PO 17",
-  "form_type": "aosPackOfflineAdulteryCoResp",
+  "form_type": "DAOS5",
   "ocr_data_fields": [
     { "name": "CaseNumber", "value": "1234123412341234" },
     { "name": "AOSReasonForDivorce", "value": "Adultery" },
