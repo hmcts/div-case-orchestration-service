@@ -158,6 +158,8 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8ApplicationToIssueWithoutCertificate", is("No")),
                             hasJsonPath("D8MarriagePlaceOfMarriage", is("Slough")),
                             hasJsonPath("D8MarriageDate", is("1998-01-07")),
+                            hasJsonPath("D8MentalSeparationDate", is("2005-04-15")),
+                            hasJsonPath("D8PhysicalSeparationDate", is("2006-10-01")),
                             hasJsonPath("D8MarriageCertificateCorrect", is("No")),
                             hasJsonPath("D8MarriageCertificateCorrectExplain", is("Providing a scanned copy from registry office.")),
                             hasJsonPath("D8FinancialOrder", is("Yes")),
@@ -166,9 +168,6 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8LegalProceedings", is("Yes")),
                             hasJsonPath("D8LegalProceedingsDetailsCaseNumber", is("case1234")),
                             hasJsonPath("D8LegalProceedingsDetails", is("details of previous cases")),
-
-                            ///
-
                             hasJsonPath("D8RespondentHomeAddress", allOf(
                                 hasJsonPath("AddressLine1", is("18 West Park Road")),
                                 hasJsonPath("County", is("West Midlands")),
@@ -179,17 +178,19 @@ public class TransformationBulkScanITest {
                             hasJsonPath("RespNameDifferentToMarriageCertExplain", is("Dog ate the homework")),
                             hasJsonPath("D8RespondentEmailAddress", is("jack@daily.mail.com")),
                             hasJsonPath("D8RespondentCorrespondenceSendToSol", is("Yes")),
-
                             hasJsonPath("D8RespondentSolicitorName", is("Judge Law")),
                             hasJsonPath("D8RespondentSolicitorReference", is("JL007")),
                             hasJsonPath("D8RespondentSolicitorCompany", is("A-Team")),
-
                             hasJsonPath("D8RespondentSolicitorAddress", allOf(
                                 hasJsonPath("AddressLine1", is("50 Licitor")),
                                 hasJsonPath("County", is("Higher Midlands")),
                                 hasJsonPath("PostCode", is("SO2 7OR")),
                                 hasJsonPath("PostTown", is("Lawyerpool"))
                             )),
+                            hasJsonPath("D8LegalProceedingsDetails", is("details of previous cases")),
+                            hasJsonPath("SeparationLivedTogetherAsCoupleAgain", is("Yes")),
+                            hasJsonPath("SeparationLivedTogetherAsCoupleAgainDetails", is("moved in for a month")),
+                            hasJsonPath("D8ReasonForDivorceDetails", is("not putting the bin out")),
 
                             ///
 
@@ -200,7 +201,6 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8StatementOfTruthSignature", is("Yes")),
                             hasJsonPath("D8StatementOfTruthDate", is("16/01/2020")),
                             hasJsonPath("D8SolicitorsFirmStatementOfTruth", is("Quahog Solicitors Ltd."))
-
                         ))
                     ))
                 )));
