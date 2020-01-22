@@ -55,10 +55,17 @@ public class D8FormValidator extends BulkScanFormValidator {
         "D8MarriageDateDay",
         "D8MarriageDateMonth",
         "D8MarriageDateYear",
+        "D8MentalSeparationDateDay",
+        "D8MentalSeparationDateMonth",
+        "D8MentalSeparationDateYear",
+        "D8PhysicalSeparationDateDay",
+        "D8PhysicalSeparationDateMonth",
+        "D8PhysicalSeparationDateYear",
         "D8MarriageCertificateCorrect",
         "D8FinancialOrder",
         "D8ReasonForDivorce",
         "D8LegalProceedings",
+        "SeparationLivedTogetherAsCoupleAgain",
         "D8AppliesForStatementOfTruth",
         "D8DivorceClaimFrom",
         "D8FullNameStatementOfTruth",
@@ -89,6 +96,7 @@ public class D8FormValidator extends BulkScanFormValidator {
         ALLOWED_VALUES_PER_FIELD.put("D8ReasonForDivorce", asList("unreasonable-behaviour", "adultery", "desertion", "separation-2-years",
             "separation-5-years"));
         ALLOWED_VALUES_PER_FIELD.put("D8LegalProceedings", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("SeparationLivedTogetherAsCoupleAgain", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8AppliesForStatementOfTruth", asList("marriage", "dissolution", "separation"));
         ALLOWED_VALUES_PER_FIELD.put("D8DivorceClaimFrom", asList("respondent", "corespondent", "respondent, corespondent"));
         ALLOWED_VALUES_PER_FIELD.put("D8StatementofTruthSignature", asList(YES_VALUE));
@@ -121,7 +129,9 @@ public class D8FormValidator extends BulkScanFormValidator {
             validatePayment(fieldsMap),
             validatePlaceOfMarriage(fieldsMap),
             validateMarriageCertificateCorrect(fieldsMap),
-            validateDateSplitIntoComponents(fieldsMap, "D8MarriageDateDay", "D8MarriageDateMonth", "D8MarriageDateYear"),
+            validateDateField(fieldsMap, "D8MarriageDate"),
+            validateDateField(fieldsMap, "D8MentalSeparationDate"),
+            validateDateField(fieldsMap, "D8PhysicalSeparationDate"),
             validateD8PetitionerCorrespondenceAddress(fieldsMap),
             validateD8FinancialOrderFor(fieldsMap)
         )
@@ -301,6 +311,10 @@ public class D8FormValidator extends BulkScanFormValidator {
             }
         }
         return validationWarningMessages;
+    }
+
+    private static List<String> validateDateField(Map<String, String> fieldsMap, String field) {
+        return validateDateSplitIntoComponents(fieldsMap, field + "Day", field + "Month", field + "Year");
     }
 
     private static List<String> validateDateSplitIntoComponents(Map<String, String> fieldsMap, String dayKey, String monthKey, String yearKey) {
