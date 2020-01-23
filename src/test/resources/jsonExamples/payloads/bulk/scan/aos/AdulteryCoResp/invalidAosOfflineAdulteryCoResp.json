@@ -2,13 +2,14 @@
   "case_type_id": "DIVORCE",
   "id": "LV481297",
   "po_box": "PO 17",
-  "form_type": "DAOS2",
+  "form_type": "DAOS5",
   "ocr_data_fields": [
     { "name": "CaseNumber", "value": "1234123412341234" },
-    { "name": "AOSReasonForDivorce", "value": "5 years separation" },
+    { "name": "AOSReasonForDivorce", "value": "Adultery" },
+    { "name": "CoRespAdmitAdultery", "value": "I refuse to admit this" },
     { "name": "RespConfirmReadPetition", "value": "Yes" },
     { "name": "DateRespReceivedDivorceApplication", "value": "10102019" },
-    { "name": "RespHardshipDefenseResponse", "value": "Yes" },
+    { "name": "RespAdmitOrConsentToFact", "value": "No" },
     { "name": "RespWillDefendDivorce", "value": "Proceed" },
     { "name": "RespJurisdictionAgree", "value": "No" },
     { "name": "RespJurisdictionDisagreeReason", "value": "Some Jurisdiction disagree reason" },
@@ -20,8 +21,8 @@
     { "name": "RespEmailAddress", "value": "est@somemail.com" },
     { "name": "RespPhoneNumber", "value": "1234123412341234" },
     { "name": "RespStatementOfTruth", "value": "Yes" },
-    { "name": "RespConsentToEmail", "value": "No" },
-    { "name": "RespConsiderFinancialSituation", "value": "No" }
+    { "name": "RespStatementofTruthSignedDate", "value": "10102010" },
+    { "name": "RespConsentToEmail", "value": "No" }
   ]
 },
   "case_details": {

@@ -27,6 +27,15 @@ public class BulkScanFormValidatorFactoryTest {
     @Mock
     private AosOffline2yrSepCaseValidator aosOffline2yrSepCaseValidator;
 
+    @Mock
+    private AosOffline5yrSepCaseValidator aosOffline5yrSepCaseValidator;
+
+    @Mock
+    private AosOfflineBehaviourDesertionCaseValidator aosOfflineBehaviourDesertionCaseValidator;
+
+    @Mock
+    private AosOfflineAdulteryCoRespCaseValidator aosOfflineAdulteryCoRespCaseValidator;
+
     @InjectMocks
     private BulkScanFormValidatorFactory classUnderTest;
 
@@ -37,7 +46,7 @@ public class BulkScanFormValidatorFactoryTest {
 
     @Test
     public void shouldReturnValidatorForD8Form() {
-        BulkScanFormValidator validator = classUnderTest.getValidator("d8Form");
+        BulkScanFormValidator validator = classUnderTest.getValidator("D8");
 
         assertThat(validator, is(instanceOf(D8FormValidator.class)));
         assertThat(validator, is(d8FormValidator));
@@ -45,10 +54,34 @@ public class BulkScanFormValidatorFactoryTest {
 
     @Test
     public void shouldReturnValidatorForAosOffline2YearSeparationForm() {
-        BulkScanFormValidator validator = classUnderTest.getValidator("aosPackOffline2YearSeparation");
+        BulkScanFormValidator validator = classUnderTest.getValidator("DAOS1");
 
         assertThat(validator, is(instanceOf(AosOffline2yrSepCaseValidator.class)));
         assertThat(validator, is(aosOffline2yrSepCaseValidator));
+    }
+
+    @Test
+    public void shouldReturnValidatorForAosOffline5YearSeparationForm() {
+        BulkScanFormValidator validator = classUnderTest.getValidator("DAOS2");
+
+        assertThat(validator, is(instanceOf(AosOffline5yrSepCaseValidator.class)));
+        assertThat(validator, is(aosOffline5yrSepCaseValidator));
+    }
+
+    @Test
+    public void shouldReturnValidatorForAosOfflineBehaviourDesertionSeparationForm() {
+        BulkScanFormValidator validator = classUnderTest.getValidator("DAOS3");
+
+        assertThat(validator, is(instanceOf(AosOfflineBehaviourDesertionCaseValidator.class)));
+        assertThat(validator, is(aosOfflineBehaviourDesertionCaseValidator));
+    }
+
+    @Test
+    public void shouldReturnValidatorForAosOfflineAdulteryCoRespSeparationForm() {
+        BulkScanFormValidator validator = classUnderTest.getValidator("DAOS5");
+
+        assertThat(validator, is(instanceOf(AosOfflineAdulteryCoRespCaseValidator.class)));
+        assertThat(validator, is(aosOfflineAdulteryCoRespCaseValidator));
     }
 
     @Test
