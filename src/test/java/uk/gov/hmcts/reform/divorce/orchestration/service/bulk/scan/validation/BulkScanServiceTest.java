@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
+import uk.gov.hmcts.reform.bsp.common.model.shared.CaseDetails;
 import uk.gov.hmcts.reform.bsp.common.model.shared.in.ExceptionRecord;
 import uk.gov.hmcts.reform.bsp.common.model.shared.in.OcrDataField;
 import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResult;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformatio
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformation.BulkScanFormTransformerFactory;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -99,6 +101,37 @@ public class BulkScanServiceTest {
         when(factory.getValidator("unsupportedFormType")).thenThrow(UnsupportedFormTypeException.class);
 
         bulkScanService.transformBulkScanForm(exceptionRecord);
+    }
+
+    @Test
+    public void shouldThrowUnsupportedFormTypeExceptionFromFormTransformerFactory() {
+        expectedException.expect(UnsupportedFormTypeException.class);
+
+        ExceptionRecord exceptionRecord = ExceptionRecord.builder().formType("unsupportedFormType").build();
+        when(factory.getValidator("unsupportedFormType")).thenThrow(UnsupportedFormTypeException.class);
+
+        bulkScanService.transformExceptionRecordAndUpdateExistingCase(exceptionRecord, CaseDetails.builder().build());
+    }
+
+    @Test
+    public void shouldCallReturnedValidationAndTransformer() {
+        ExceptionRecord exceptionRecord = ExceptionRecord.builder()
+            .formType("testFormType")
+            .ocrDataFields(singletonList(new OcrDataField("myName", "myValue")))
+            .build();
+
+        OcrValidationResult resultFromValidator = OcrValidationResult.builder().build();
+        when(factory.getValidator("testFormType")).thenReturn(validator);
+        when(validator.validateBulkScanForm(any())).thenReturn(resultFromValidator);
+        when(bulkScanFormTransformerFactory.getTransformer("testFormType")).thenReturn(bulkScanFormTransformer);
+        when(bulkScanFormTransformer.transformIntoCaseData(exceptionRecord)).thenReturn(singletonMap("testKey", "testValue"));
+
+        bulkScanService.transformExceptionRecordAndUpdateExistingCase(exceptionRecord, CaseDetails.builder().caseData(new HashMap<>()).build());
+
+        verify(bulkScanFormTransformerFactory).getTransformer("testFormType");
+        verify(bulkScanFormTransformer).transformIntoCaseData(exceptionRecord);
+        verify(factory).getValidator("testFormType");
+        verify(validator).validateBulkScanForm(exceptionRecord.getOcrDataFields());
     }
 
 }

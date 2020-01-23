@@ -156,7 +156,7 @@ public class BulkScanController {
         ResponseEntity<SuccessfulUpdateResponse> updateControllerResponse;
 
         try {
-            CaseDetails updatedCase = bulkScanService.transformNewFormAndUpdateExistingCase(
+            CaseDetails updatedCase = bulkScanService.transformExceptionRecordAndUpdateExistingCase(
                 request.getExceptionRecord(), request.getCaseDetails()
             );
 

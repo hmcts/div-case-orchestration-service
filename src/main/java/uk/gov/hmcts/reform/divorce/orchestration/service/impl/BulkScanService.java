@@ -39,10 +39,8 @@ public class BulkScanService {
         return bulkScanFormTransformer.transformIntoCaseData(exceptionRecord);
     }
 
-    public CaseDetails transformNewFormAndUpdateExistingCase(ExceptionRecord exceptionRecord, CaseDetails existingCase)
+    public CaseDetails transformExceptionRecordAndUpdateExistingCase(ExceptionRecord exceptionRecord, CaseDetails existingCase)
         throws UnsupportedFormTypeException, InvalidDataException {
-        validate(exceptionRecord);
-
         Map<String, Object> transformedCaseData = transformBulkScanForm(exceptionRecord);
         existingCase.getCaseData().putAll(transformedCaseData);
 
