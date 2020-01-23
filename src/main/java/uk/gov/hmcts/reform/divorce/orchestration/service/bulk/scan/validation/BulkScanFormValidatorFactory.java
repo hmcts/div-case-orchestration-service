@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_2_YR_SEP;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_5_YR_SEP;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_ADULTERY_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_BEHAVIOUR_DESERTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
@@ -33,6 +34,9 @@ public class BulkScanFormValidatorFactory {
     @Autowired
     private AosOfflineAdulteryCoRespCaseValidator aosOfflineAdulteryCoRespCaseValidator;
 
+    @Autowired
+    private AosOfflineAdulteryRespCaseValidator aosOfflineAdulteryRespCaseValidator;
+
     private static Map<String, BulkScanFormValidator> validators;
 
     @PostConstruct
@@ -43,6 +47,7 @@ public class BulkScanFormValidatorFactory {
         validators.put(AOS_OFFLINE_5_YR_SEP, aosOffline5yrSepCaseValidator);
         validators.put(AOS_OFFLINE_BEHAVIOUR_DESERTION, aosOfflineBehaviourDesertionCaseValidator);
         validators.put(AOS_OFFLINE_ADULTERY_CO_RESP, aosOfflineAdulteryCoRespCaseValidator);
+        validators.put(AOS_OFFLINE_ADULTERY, aosOfflineAdulteryRespCaseValidator);
     }
 
     public BulkScanFormValidator getValidator(final String formType) throws UnsupportedFormTypeException {
