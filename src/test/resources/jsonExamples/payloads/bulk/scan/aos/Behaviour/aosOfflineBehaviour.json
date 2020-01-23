@@ -1,0 +1,34 @@
+{"exception_record": {
+  "case_type_id": "DIVORCE",
+  "id": "LV481297",
+  "po_box": "PO 17",
+  "form_type": "DAOS3",
+  "ocr_data_fields": [
+    { "name": "CaseNumber", "value": "1234123412341234" },
+    { "name": "AOSReasonForDivorce", "value": "Behaviour" },
+    { "name": "RespConfirmReadPetition", "value": "Yes" },
+    { "name": "DateRespReceivedDivorceApplication", "value": "10102019" },
+    { "name": "RespWillDefendDivorce", "value": "NoNoAdmission" },
+    { "name": "RespJurisdictionAgree", "value": "No" },
+    { "name": "RespJurisdictionDisagreeReason", "value": "Some Jurisdiction disagree reason" },
+    { "name": "RespLegalProceedingsExist", "value": "Yes" },
+    { "name": "RespLegalProceedingsDescription", "value": "Some Description" },
+    { "name": "RespAgreeToCosts", "value": "No" },
+    { "name": "RespCostsReason", "value": "1234123412341234" },
+    { "name": "RespStatementOfTruth", "value": "Yes" },
+    { "name": "RespStatementofTruthSignedDate", "value": "10102010" }
+  ]
+},
+  "case_details": {
+    "id": "1517833758870511",
+    "jurisdiction": "DIVORCE",
+    "state": "AosSubmitted",
+    "case_type_id": "DIVORCE",
+    "case_data": {
+      "D8RespondentFirstName": "Jane",
+      "D8RespondentLastName": "Jamed",
+      "D8PetitionerFirstName": "Gary",
+      "D8PetitionerLastName": "Smith"
+    }
+  }
+}

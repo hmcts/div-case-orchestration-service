@@ -49,14 +49,20 @@ public class UpdateBulkScanITest {
     private static final String INVALID_AOS_OFFLINE_5_YEAR_SEP_JSON_PATH
         = "jsonExamples/payloads/bulk/scan/aos/5yearSeparation/invalidAosOffline5yrSep.json";
 
+    private static final String AOS_OFFLINE_BEHAVIOUR_JSON_PATH
+        = "jsonExamples/payloads/bulk/scan/aos/Behaviour/aosOfflineBehaviour.json";
+    private static final String INVALID_AOS_OFFLINE_BEHAVIOUR_JSON_PATH
+        = "jsonExamples/payloads/bulk/scan/aos/Behaviour/invalidAosOfflineBehaviour.json";
+
+    private static final String AOS_OFFLINE_DESERTION_JSON_PATH
+        = "jsonExamples/payloads/bulk/scan/aos/Desertion/aosOfflineDesertion.json";
+    private static final String INVALID_AOS_OFFLINE_DESERTION_JSON_PATH
+        = "jsonExamples/payloads/bulk/scan/aos/Desertion/invalidAosOfflineDesertion.json";
+
     private static final String AOS_OFFLINE_ADULTERY_JSON_PATH
         = "jsonExamples/payloads/bulk/scan/aos/Adultery/aosOfflineAdultery.json";
     private static final String INVALID_AOS_OFFLINE_ADULTERY_JSON_PATH
         = "jsonExamples/payloads/bulk/scan/aos/Adultery/invalidAosOfflineAdultery.json";
-
-    /*
-    Create integration tests for behaviour and desertion
-     */
 
     private static final String AOS_OFFLINE_ADULTERY_CO_RESP_JSON_PATH
         = "jsonExamples/payloads/bulk/scan/aos/AdulteryCoResp/aosOfflineAdulteryCoResp.json";
@@ -96,43 +102,6 @@ public class UpdateBulkScanITest {
     }
 
     @Test
-    public void shouldReturnNoWarningsForUpdateEndpointWithValidDataForAdultery() throws Exception {
-
-        mockMvc.perform(
-            post(UPDATE_URL)
-                .contentType(APPLICATION_JSON)
-                .content(loadResourceAsString(AOS_OFFLINE_ADULTERY_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
-        ).andExpect(
-            matchAll(
-                status().isOk(),
-                content().string(allOf(
-                    hasJsonPath("$.warnings", equalTo(emptyList()))
-                ))
-            ));
-    }
-
-    @Test
-    public void shouldReturnFailureResponseForValidationEndpointForAdultery() throws Exception {
-        mockMvc.perform(
-            post(UPDATE_URL)
-                .contentType(APPLICATION_JSON)
-                .content(loadResourceAsString(INVALID_AOS_OFFLINE_ADULTERY_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
-        ).andExpect(matchAll(
-            status().isOk(),
-            content().string(allOf(
-                hasJsonPath("$.warnings", allOf(hasItems(
-                    mustBeYesOrNo("RespAOSAdultery"),
-                    "AOSReasonForDivorce must be \"Adultery\"",
-                    mandatoryFieldIsMissing("RespLegalProceedingsExist"),
-                    notAValidDate("RespStatementofTruthSignedDate")
-                )))
-            ))
-        ));
-    }
-
-    @Test
     public void shouldReturnNoWarningsForUpdateEndpointWithValidDataFor2YrSep() throws Exception {
         mockMvc.perform(
             post(UPDATE_URL)
@@ -149,7 +118,7 @@ public class UpdateBulkScanITest {
     }
 
     @Test
-    public void shouldReturnFailureResponseForValidationEndpointFor2YrSep() throws Exception {
+    public void shouldReturnFailureResponseForUpdateEndpointFor2YrSep() throws Exception {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
@@ -185,7 +154,7 @@ public class UpdateBulkScanITest {
     }
 
     @Test
-    public void shouldReturnFailureResponseForValidationEndpointFor5YrSep() throws Exception {
+    public void shouldReturnFailureResponseForUpdateEndpointFor5YrSep() throws Exception {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
@@ -200,6 +169,115 @@ public class UpdateBulkScanITest {
                     notAValidDate("RespStatementofTruthSignedDate"),
                     mustBeYesOrNo("RespHardshipDefenseResponse")
                 ))
+            ))
+        ));
+    }
+
+    @Test
+    public void shouldReturnNoWarningsForUpdateEndpointWithValidDataForBehaviour() throws Exception {
+
+        mockMvc.perform(
+            post(UPDATE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(loadResourceAsString(AOS_OFFLINE_BEHAVIOUR_JSON_PATH))
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(
+            matchAll(
+                status().isOk(),
+                content().string(allOf(
+                    hasJsonPath("$.warnings", equalTo(emptyList()))
+                ))
+            ));
+    }
+
+    @Test
+    public void shouldReturnFailureResponseForUpdateEndpointForBehaviour() throws Exception {
+        mockMvc.perform(
+            post(UPDATE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(loadResourceAsString(INVALID_AOS_OFFLINE_BEHAVIOUR_JSON_PATH))
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(matchAll(
+            status().isOk(),
+            content().string(allOf(
+                hasJsonPath("$.warnings", allOf(hasItems(
+                    "AOSReasonForDivorce must be \"Behaviour\" or \"Desertion\"",
+                    "RespWillDefendDivorce must be \"Proceed\", \"Defend\" or \"NoNoAdmission\"",
+                    notAValidDate("RespStatementofTruthSignedDate")
+                )))
+            ))
+        ));
+    }
+
+    @Test
+    public void shouldReturnNoWarningsForUpdateEndpointWithValidDataForDesertion() throws Exception {
+
+        mockMvc.perform(
+            post(UPDATE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(loadResourceAsString(AOS_OFFLINE_DESERTION_JSON_PATH))
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(
+            matchAll(
+                status().isOk(),
+                content().string(allOf(
+                    hasJsonPath("$.warnings", equalTo(emptyList()))
+                ))
+            ));
+    }
+
+    @Test
+    public void shouldReturnFailureResponseForUpdateEndpointForDesertion() throws Exception {
+        mockMvc.perform(
+            post(UPDATE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(loadResourceAsString(INVALID_AOS_OFFLINE_DESERTION_JSON_PATH))
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(matchAll(
+            status().isOk(),
+            content().string(allOf(
+                hasJsonPath("$.warnings", allOf(hasItems(
+                    "AOSReasonForDivorce must be \"Behaviour\" or \"Desertion\"",
+                    "RespWillDefendDivorce must be \"Proceed\", \"Defend\" or \"NoNoAdmission\"",
+                    notAValidDate("RespStatementofTruthSignedDate")
+                )))
+            ))
+        ));
+    }
+
+    @Test
+    public void shouldReturnNoWarningsForUpdateEndpointWithValidDataForAdultery() throws Exception {
+
+        mockMvc.perform(
+            post(UPDATE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(loadResourceAsString(AOS_OFFLINE_ADULTERY_JSON_PATH))
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(
+            matchAll(
+                status().isOk(),
+                content().string(allOf(
+                    hasJsonPath("$.warnings", equalTo(emptyList()))
+                ))
+            ));
+    }
+
+    @Test
+    public void shouldReturnFailureResponseForUpdateEndpointForAdultery() throws Exception {
+        mockMvc.perform(
+            post(UPDATE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(loadResourceAsString(INVALID_AOS_OFFLINE_ADULTERY_JSON_PATH))
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(matchAll(
+            status().isOk(),
+            content().string(allOf(
+                hasJsonPath("$.warnings", allOf(hasItems(
+                    mustBeYesOrNo("RespAOSAdultery"),
+                    "AOSReasonForDivorce must be \"Adultery\"",
+                    mandatoryFieldIsMissing("RespLegalProceedingsExist"),
+                    notAValidDate("RespStatementofTruthSignedDate")
+                )))
             ))
         ));
     }
@@ -222,7 +300,7 @@ public class UpdateBulkScanITest {
     }
 
     @Test
-    public void shouldReturnFailureResponseForValidationEndpointForAdulteryCoResp() throws Exception {
+    public void shouldReturnFailureResponseForUpdateEndpointForAdulteryCoResp() throws Exception {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
