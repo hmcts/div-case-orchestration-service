@@ -15,7 +15,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class AosOffline5yrSepCaseValidator extends AosFormValidator {
 
-    // TODO check RespAgreeToCosts and Reason are common
     private static final List<String> MANDATORY_FIELDS = asList(
         "RespHardshipDefenseResponse",
         "RespConsiderFinancialSituation"

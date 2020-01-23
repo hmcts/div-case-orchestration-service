@@ -122,9 +122,12 @@ public class UpdateBulkScanITest {
         ).andExpect(matchAll(
             status().isOk(),
             content().string(allOf(
-                hasJsonPath("$.warnings", hasItems(
-                    mustBeYesOrNo("RespAOSAdultery")
-                ))
+                hasJsonPath("$.warnings", allOf(hasItems(
+                    mustBeYesOrNo("RespAOSAdultery"),
+                    "AOSReasonForDivorce must be \"Adultery\"",
+                    mandatoryFieldIsMissing("RespLegalProceedingsExist"),
+                    notAValidDate("RespStatementofTruthSignedDate")
+                )))
             ))
         ));
     }

@@ -6,7 +6,7 @@
   "ocr_data_fields": [
     { "name": "CaseNumber", "value": "1234123412341234" },
     { "name": "AOSReasonForDivorce", "value": "Adultery" },
-    { "name": "CoRespAdmitAdultery", "value": "Yes" },
+    { "name": "RespAOSAdultery", "value": "Yes" },
     { "name": "RespConfirmReadPetition", "value": "Yes" },
     { "name": "DateRespReceivedDivorceApplication", "value": "10102019" },
     { "name": "RespAdmitOrConsentToFact", "value": "No" },
