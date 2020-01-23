@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class AosOffline2YrSepFormToCaseTransformer extends BulkScanFormTransformer {
+public class AosOfflineBehaviourDesertionFormToCaseTransformer extends BulkScanFormTransformer {
 
     private static final Map<String, String> ocrToCCDMapping;
 
@@ -24,9 +24,7 @@ public class AosOffline2YrSepFormToCaseTransformer extends BulkScanFormTransform
 
         erToCcdFieldsMap.put("RespConfirmReadPetition", "RespConfirmReadPetition");
         erToCcdFieldsMap.put("DateRespReceivedDivorceApplication", "DateRespReceivedDivorceApplication");
-        erToCcdFieldsMap.put("RespAOS2yrConsent", "RespAOS2yrConsent");
         erToCcdFieldsMap.put("RespWillDefendDivorce", "RespWillDefendDivorce");
-        erToCcdFieldsMap.put("RespConsiderFinancialSituation", "RespConsiderFinancialSituation");
         erToCcdFieldsMap.put("RespJurisdictionAgree", "RespJurisdictionAgree");
         erToCcdFieldsMap.put("RespJurisdictionDisagreeReason", "RespJurisdictionDisagreeReason");
         erToCcdFieldsMap.put("RespLegalProceedingsExist", "RespLegalProceedingsExist");

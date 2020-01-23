@@ -2,13 +2,13 @@
   "case_type_id": "DIVORCE",
   "id": "LV481297",
   "po_box": "PO 17",
-  "form_type": "aosPackOffline5YearSeparation",
+  "form_type": "DAOS2",
   "ocr_data_fields": [
     { "name": "CaseNumber", "value": "1234123412341234" },
     { "name": "AOSReasonForDivorce", "value": "5 years separation" },
     { "name": "RespConfirmReadPetition", "value": "Yes" },
     { "name": "DateRespReceivedDivorceApplication", "value": "10102019" },
-    { "name": "RespHardshipDefenseResponse", "value": "Yes" },
+    { "name": "RespHardshipDefenseResponse", "value": "I'm not sure" },
     { "name": "RespWillDefendDivorce", "value": "Proceed" },
     { "name": "RespJurisdictionAgree", "value": "No" },
     { "name": "RespJurisdictionDisagreeReason", "value": "Some Jurisdiction disagree reason" },
@@ -19,7 +19,7 @@
     { "name": "RespEmailAddress", "value": "est@somemail.com" },
     { "name": "RespPhoneNumber", "value": "1234123412341234" },
     { "name": "RespStatementOfTruth", "value": "Yes" },
-    { "name": "RespConsentToEmail", "value": "No" }
+    { "name": "RespConsentToEmail", "value": "No" },
     { "name": "RespStatementofTruthSignedDate", "value": "10th January 2020" }
   ]
 },
