@@ -37,7 +37,7 @@ public class BulkScanFormValidatorFactoryTest {
     private AosOfflineAdulteryCoRespCaseValidator aosOfflineAdulteryCoRespCaseValidator;
 
     @Mock
-    private AosOfflineAdulteryRespCaseValidator aosOfflineAdulteryRespCaseValidator;
+    private AosOfflineAdulteryCaseValidator aosOfflineAdulteryCaseValidator;
 
     @InjectMocks
     private BulkScanFormValidatorFactory classUnderTest;
@@ -83,8 +83,8 @@ public class BulkScanFormValidatorFactoryTest {
     public void shouldReturnValidatorForAosOfflineAdulteryRespondentForm() {
         BulkScanFormValidator validator = classUnderTest.getValidator("DAOS4");
 
-        assertThat(validator, is(instanceOf(AosOfflineAdulteryRespCaseValidator.class)));
-        assertThat(validator, is(aosOfflineAdulteryRespCaseValidator));
+        assertThat(validator, is(instanceOf(AosOfflineAdulteryCaseValidator.class)));
+        assertThat(validator, is(aosOfflineAdulteryCaseValidator));
     }
 
     @Test

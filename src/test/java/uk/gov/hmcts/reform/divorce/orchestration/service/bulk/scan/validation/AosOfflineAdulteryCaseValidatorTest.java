@@ -20,9 +20,9 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.out.ValidationStatus.SUCCESS;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.out.ValidationStatus.WARNINGS;
 
-public class AosOfflineAdulteryRespCaseValidatorTest {
+public class AosOfflineAdulteryCaseValidatorTest {
 
-    private final AosOfflineAdulteryRespCaseValidator classUnderTest = new AosOfflineAdulteryRespCaseValidator();
+    private final AosOfflineAdulteryCaseValidator classUnderTest = new AosOfflineAdulteryCaseValidator();
     private List<OcrDataField> listOfAllMandatoryFields;
 
     @Before

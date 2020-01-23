@@ -14,12 +14,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
-public class AosOfflineAdulteryRespCaseValidator extends AosFormValidator {
+public class AosOfflineAdulteryCaseValidator extends AosFormValidator {
 
     // TODO check RespAgreeToCosts and Reason are common
     private static final List<String> MANDATORY_FIELDS = asList(
-        "RespAOSAdultery",
-        "RespAgreeToCosts"
+        "RespAOSAdultery"
     );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();

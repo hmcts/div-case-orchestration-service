@@ -49,6 +49,11 @@ public class UpdateBulkScanITest {
     private static final String INVALID_AOS_OFFLINE_5_YEAR_SEP_JSON_PATH
         = "jsonExamples/payloads/bulk/scan/aos/5yearSeparation/invalidAosOffline5yrSep.json";
 
+    private static final String AOS_OFFLINE_ADULTERY_JSON_PATH
+        = "jsonExamples/payloads/bulk/scan/aos/Adultery/aosOfflineAdultery.json";
+    private static final String INVALID_AOS_OFFLINE_ADULTERY_JSON_PATH
+        = "jsonExamples/payloads/bulk/scan/aos/Adultery/invalidAosOfflineAdultery.json";
+
     /*
     Create integration tests for behaviour and desertion
      */
@@ -58,9 +63,6 @@ public class UpdateBulkScanITest {
     private static final String INVALID_AOS_OFFLINE_ADULTERY_CO_RESP_JSON_PATH
         = "jsonExamples/payloads/bulk/scan/aos/AdulteryCoResp/invalidAosOfflineAdulteryCoResp.json";
 
-    private String validBody;
-    private String invalidBody;
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -68,12 +70,9 @@ public class UpdateBulkScanITest {
     AuthTokenValidator authTokenValidator;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         when(authTokenValidator.getServiceName(ALLOWED_SERVICE_TOKEN)).thenReturn("bulk_scan_orchestrator");
         when(authTokenValidator.getServiceName(I_AM_NOT_ALLOWED_SERVICE_TOKEN)).thenReturn("don't let me do it!");
-
-        validBody = loadResourceAsString(AOS_OFFLINE_2_YEAR_SEP_JSON_PATH);
-        invalidBody = loadResourceAsString(INVALID_AOS_OFFLINE_2_YEAR_SEP_JSON_PATH);
     }
 
     @Test
@@ -81,7 +80,7 @@ public class UpdateBulkScanITest {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
-                .content(validBody)
+                .content(loadResourceAsString(AOS_OFFLINE_2_YEAR_SEP_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, I_AM_NOT_ALLOWED_SERVICE_TOKEN)
         ).andExpect(status().isForbidden());
     }
@@ -91,9 +90,43 @@ public class UpdateBulkScanITest {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
-                .content(validBody)
+                .content(loadResourceAsString(AOS_OFFLINE_2_YEAR_SEP_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, "")
         ).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void shouldReturnNoWarningsForUpdateEndpointWithValidDataForAdultery() throws Exception {
+
+        mockMvc.perform(
+            post(UPDATE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(loadResourceAsString(AOS_OFFLINE_ADULTERY_JSON_PATH))
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(
+            matchAll(
+                status().isOk(),
+                content().string(allOf(
+                    hasJsonPath("$.warnings", equalTo(emptyList()))
+                ))
+            ));
+    }
+
+    @Test
+    public void shouldReturnFailureResponseForValidationEndpointForAdultery() throws Exception {
+        mockMvc.perform(
+            post(UPDATE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(loadResourceAsString(INVALID_AOS_OFFLINE_ADULTERY_JSON_PATH))
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(matchAll(
+            status().isOk(),
+            content().string(allOf(
+                hasJsonPath("$.warnings", hasItems(
+                    mustBeYesOrNo("RespAOSAdultery")
+                ))
+            ))
+        ));
     }
 
     @Test
@@ -101,7 +134,7 @@ public class UpdateBulkScanITest {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
-                .content(validBody)
+                .content(loadResourceAsString(AOS_OFFLINE_2_YEAR_SEP_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(
             matchAll(
@@ -117,7 +150,7 @@ public class UpdateBulkScanITest {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
-                .content(invalidBody)
+                .content(loadResourceAsString(INVALID_AOS_OFFLINE_2_YEAR_SEP_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(
             status().isOk(),

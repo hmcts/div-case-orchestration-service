@@ -35,7 +35,7 @@ public class BulkScanFormValidatorFactory {
     private AosOfflineAdulteryCoRespCaseValidator aosOfflineAdulteryCoRespCaseValidator;
 
     @Autowired
-    private AosOfflineAdulteryRespCaseValidator aosOfflineAdulteryRespCaseValidator;
+    private AosOfflineAdulteryCaseValidator aosOfflineAdulteryCaseValidator;
 
     private static Map<String, BulkScanFormValidator> validators;
 
@@ -47,7 +47,7 @@ public class BulkScanFormValidatorFactory {
         validators.put(AOS_OFFLINE_5_YR_SEP, aosOffline5yrSepCaseValidator);
         validators.put(AOS_OFFLINE_BEHAVIOUR_DESERTION, aosOfflineBehaviourDesertionCaseValidator);
         validators.put(AOS_OFFLINE_ADULTERY_CO_RESP, aosOfflineAdulteryCoRespCaseValidator);
-        validators.put(AOS_OFFLINE_ADULTERY, aosOfflineAdulteryRespCaseValidator);
+        validators.put(AOS_OFFLINE_ADULTERY, aosOfflineAdulteryCaseValidator);
     }
 
     public BulkScanFormValidator getValidator(final String formType) throws UnsupportedFormTypeException {

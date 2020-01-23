@@ -17,8 +17,8 @@ public class AosOffline5yrSepCaseValidator extends AosFormValidator {
 
     // TODO check RespAgreeToCosts and Reason are common
     private static final List<String> MANDATORY_FIELDS = asList(
-        "RespConsiderFinancialSituation",
-        "RespAgreeToCosts"
+        "RespHardshipDefenseResponse",
+        "RespConsiderFinancialSituation"
     );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
