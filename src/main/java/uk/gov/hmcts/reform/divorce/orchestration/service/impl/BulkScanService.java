@@ -31,14 +31,25 @@ public class BulkScanService {
         return formValidator.validateBulkScanForm(ocrDataFields);
     }
 
-    public Map<String, Object> transformBulkScanForm(ExceptionRecord exceptionRecord) throws UnsupportedFormTypeException {
+    public Map<String, Object> transformBulkScanForm(ExceptionRecord exceptionRecord) throws UnsupportedFormTypeException, InvalidDataException {
+        validate(exceptionRecord);
+
         BulkScanFormTransformer bulkScanFormTransformer = bulkScanFormTransformerFactory.getTransformer(exceptionRecord.getFormType());
+        // we need to update state in transformIntoCaseData, I think we should also return CaseDetails object, not Map
         return bulkScanFormTransformer.transformIntoCaseData(exceptionRecord);
     }
 
     public CaseDetails transformNewFormAndUpdateExistingCase(ExceptionRecord exceptionRecord, CaseDetails existingCase)
         throws UnsupportedFormTypeException, InvalidDataException {
+        validate(exceptionRecord);
 
+        Map<String, Object> transformedCaseData = transformBulkScanForm(exceptionRecord);
+        existingCase.getCaseData().putAll(transformedCaseData);
+
+        return existingCase;
+    }
+
+    private void validate(ExceptionRecord exceptionRecord) throws UnsupportedFormTypeException {
         OcrValidationResult validationResult =  validateBulkScanForm(exceptionRecord.getFormType(), exceptionRecord.getOcrDataFields());
 
         if (!validationResult.getStatus().equals(ValidationStatus.SUCCESS)) {
@@ -48,13 +59,5 @@ public class BulkScanService {
                 validationResult.getErrors()
             );
         }
-
-        Map<String, Object> transformedCaseData = transformBulkScanForm(exceptionRecord);
-        existingCase.getCaseData().putAll(transformedCaseData);
-
-        // we need to update state here as well
-
-        return existingCase;
     }
-
 }

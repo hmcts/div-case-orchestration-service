@@ -109,14 +109,9 @@ public class BulkScanController {
 
         ResponseEntity<SuccessfulTransformationResponse> controllerResponse;
         try {
-            OcrValidationResponse ocrValidationResponse = validateExceptionRecord(
-                exceptionRecord.getFormType(), exceptionRecord.getOcrDataFields()
-            );
-
             Map<String, Object> transformedCaseData = bulkScanService.transformBulkScanForm(exceptionRecord);
 
             SuccessfulTransformationResponse callbackResponse = SuccessfulTransformationResponse.builder()
-                .warnings(ocrValidationResponse.getWarnings())
                 .caseCreationDetails(
                     new CaseCreationDetails(
                         CASE_TYPE_ID,

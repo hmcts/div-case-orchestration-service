@@ -24,6 +24,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.rules.ExpectedException.none;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -76,6 +77,10 @@ public class BulkScanServiceTest {
             .formType("testFormType")
             .ocrDataFields(singletonList(new OcrDataField("myName", "myValue")))
             .build();
+
+        OcrValidationResult resultFromValidator = OcrValidationResult.builder().build();
+        when(factory.getValidator("testFormType")).thenReturn(validator);
+        when(validator.validateBulkScanForm(any())).thenReturn(resultFromValidator);
         when(bulkScanFormTransformerFactory.getTransformer("testFormType")).thenReturn(bulkScanFormTransformer);
         when(bulkScanFormTransformer.transformIntoCaseData(exceptionRecord)).thenReturn(singletonMap("testKey", "testValue"));
 
@@ -91,7 +96,7 @@ public class BulkScanServiceTest {
         expectedException.expect(UnsupportedFormTypeException.class);
 
         ExceptionRecord exceptionRecord = ExceptionRecord.builder().formType("unsupportedFormType").build();
-        when(bulkScanFormTransformerFactory.getTransformer("unsupportedFormType")).thenThrow(UnsupportedFormTypeException.class);
+        when(factory.getValidator("unsupportedFormType")).thenThrow(UnsupportedFormTypeException.class);
 
         bulkScanService.transformBulkScanForm(exceptionRecord);
     }
