@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import uk.gov.hmcts.reform.bsp.common.error.InvalidDataException;
+import uk.gov.hmcts.reform.bsp.common.model.shared.out.BspErrorResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.ValidationException;
@@ -38,6 +40,20 @@ class GlobalExceptionHandler {
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(InvalidDataException.class)
+    ResponseEntity<Object> handleForbiddenException(InvalidDataException exception) {
+        log.warn(exception.getMessage(), exception);
+
+        return ResponseEntity
+            .status(HttpStatus.UNPROCESSABLE_ENTITY)
+            .body(
+                BspErrorResponse.builder()
+                    .warnings(exception.getWarnings())
+                    .errors(exception.getErrors())
+                    .build()
+            );
     }
 
     private ResponseEntity<Object> handleTaskException(TaskException taskException) {
