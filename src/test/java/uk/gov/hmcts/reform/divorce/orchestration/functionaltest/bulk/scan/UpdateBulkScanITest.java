@@ -197,13 +197,10 @@ public class UpdateBulkScanITest {
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_BEHAVIOUR_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(
-            status().isOk(),
+            status().isUnprocessableEntity(),
             content().string(allOf(
-                hasJsonPath("$.warnings", allOf(hasItems(
-                    "AOSReasonForDivorce must be \"Unreasonable behaviour\" or \"Desertion\"",
-                    "RespWillDefendDivorce must be \"Proceed\", \"Defend\" or \"NoNoAdmission\"",
-                    notAValidDate("RespStatementofTruthSignedDate")
-                )))
+                hasJsonPath("$.warnings"),
+                hasJsonPath("$.errors", equalTo(emptyList()))
             ))
         ));
     }
@@ -233,13 +230,10 @@ public class UpdateBulkScanITest {
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_DESERTION_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(
-            status().isOk(),
+            status().isUnprocessableEntity(),
             content().string(allOf(
-                hasJsonPath("$.warnings", allOf(hasItems(
-                    "AOSReasonForDivorce must be \"Unreasonable behaviour\" or \"Desertion\"",
-                    "RespWillDefendDivorce must be \"Proceed\", \"Defend\" or \"NoNoAdmission\"",
-                    notAValidDate("RespStatementofTruthSignedDate")
-                )))
+                hasJsonPath("$.warnings"),
+                hasJsonPath("$.errors", equalTo(emptyList()))
             ))
         ));
     }
@@ -269,14 +263,10 @@ public class UpdateBulkScanITest {
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_ADULTERY_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(
-            status().isOk(),
+            status().isUnprocessableEntity(),
             content().string(allOf(
-                hasJsonPath("$.warnings", allOf(hasItems(
-                    mustBeYesOrNo("RespAOSAdultery"),
-                    "AOSReasonForDivorce must be \"Adultery\"",
-                    mandatoryFieldIsMissing("RespLegalProceedingsExist"),
-                    notAValidDate("RespStatementofTruthSignedDate")
-                )))
+                hasJsonPath("$.warnings"),
+                hasJsonPath("$.errors", equalTo(emptyList()))
             ))
         ));
     }
