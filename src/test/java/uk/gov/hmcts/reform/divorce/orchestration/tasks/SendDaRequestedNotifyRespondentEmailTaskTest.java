@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -16,6 +17,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
@@ -45,6 +47,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -112,6 +115,7 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
         testData.put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP);
         testData.put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_GENDER);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "Yes");
 
         doThrow(new NotificationClientException(new Exception(TEST_ERROR)))
             .when(emailService)
@@ -119,7 +123,9 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
                 eq(TEST_RESPONDENT_EMAIL),
                 eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION.name()),
                 anyMap(),
-                eq(REQUESTED_BY_APPLICANT)
+                eq(REQUESTED_BY_APPLICANT),
+                eq(Optional.of(LanguagePreference.WELSH))
+
             );
 
         sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
@@ -133,6 +139,7 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
         testData.put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP);
         testData.put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_GENDER);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
 
         Map returnPayload = sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
 
@@ -144,7 +151,8 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
                     eq(TEST_RESPONDENT_EMAIL),
                     eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION.name()),
                     eq(expectedTemplateVars),
-                    eq(REQUESTED_BY_APPLICANT));
+                    eq(REQUESTED_BY_APPLICANT),
+                    eq(Optional.of(LanguagePreference.ENGLISH)));
         } catch (NotificationClientException e) {
             fail("exception occurred in test");
         }
@@ -160,6 +168,7 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_RESPONDENT_LAST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_RELATIONSHIP);
         testData.put(D8_RESPONDENT_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
         Map<String, String> expectedTempVars = prepareExpectedTemplateVarsForSolicitor(testData);
 
         Map returnPayload = sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
@@ -172,7 +181,8 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
                     eq(TEST_RESPONDENT_SOLICITOR_EMAIL),
                     eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR.name()),
                     eq(expectedTempVars),
-                    eq(REQUESTED_BY_SOLICITOR));
+                    eq(REQUESTED_BY_SOLICITOR),
+                    eq(Optional.of(LanguagePreference.ENGLISH)));
         } catch (NotificationClientException e) {
             fail("exception occurred in test");
         }

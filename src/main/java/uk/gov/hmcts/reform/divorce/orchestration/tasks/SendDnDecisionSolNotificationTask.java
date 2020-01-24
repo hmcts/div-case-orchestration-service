@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
@@ -15,6 +17,7 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
@@ -35,6 +38,7 @@ public class SendDnDecisionSolNotificationTask extends SolicitorEmailTask implem
         if (!isDnGranted(caseData) && solicitorEmail.isPresent()) {
             String petSolicitorEmail = getMandatoryPropertyValueAsString(caseData, PET_SOL_EMAIL);
             String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
+            Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
             Map<String, String> templateVars = buildEmailTemplateVars(petSolicitorEmail, caseId, caseData);
 
             try {
@@ -42,7 +46,8 @@ public class SendDnDecisionSolNotificationTask extends SolicitorEmailTask implem
                         petSolicitorEmail,
                         EmailTemplateNames.SOL_DN_DECISION_MADE.name(),
                         templateVars,
-                        SOL_PERSONAL_SERVICE_EMAIL
+                        SOL_PERSONAL_SERVICE_EMAIL,
+                        welshLanguagePreference
                 );
                 return caseData;
             } catch (NotificationClientException e) {

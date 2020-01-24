@@ -4,15 +4,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -23,6 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
@@ -84,6 +88,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
 
         String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
+        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
 
         Map<String, String> templateVars = new HashMap<>();
 
@@ -99,7 +104,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
             templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
 
             try {
-                sendSolicitorEmail(petSolEmail, eventId, templateVars);
+                sendSolicitorEmail(petSolEmail, eventId, templateVars, welshLanguagePreference);
             } catch (NotificationClientException e) {
                 log.error("Error sending AOS overdue notification email to solicitor", e);
                 throw new TaskException(e.getMessage(), e);
@@ -113,7 +118,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE));
 
             try {
-                sendPetitionerEmail(caseData, petEmail, eventId, templateVars);
+                sendPetitionerEmail(caseData, petEmail, eventId, templateVars, welshLanguagePreference);
             } catch (NotificationClientException e) {
                 log.error("Error sending AOS overdue notification email to petitioner", e);
                 throw new TaskException(e.getMessage(), e);
@@ -122,65 +127,77 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
         return caseData;
     }
 
-    private void sendSolicitorEmail(String petSolicitorEmail, String eventId, Map<String, String> templateVars) throws NotificationClientException {
+    private void sendSolicitorEmail(String petSolicitorEmail, String eventId, Map<String, String> templateVars,
+                                    Optional<LanguagePreference>  languagePreference) throws NotificationClientException {
         if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_RECVD_EVENT)) {
             emailService.sendEmailAndReturnExceptionIfFails(petSolicitorEmail,
                 EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED.name(),
                 templateVars,
-                SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC);
+                SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC,
+                languagePreference);
         } else if (isAosOverdueEvent(eventId)) {
             emailService.sendEmailAndReturnExceptionIfFails(petSolicitorEmail,
                 EmailTemplateNames.SOL_APPLICANT_RESP_NOT_RESPONDED.name(),
                 templateVars,
-                SOL_APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC);
+                SOL_APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC,
+                languagePreference);
         } else {
             emailService.sendEmailAndReturnExceptionIfFails(
                 petSolicitorEmail,
                 EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name(),
                 templateVars,
-                SOL_GENERIC_UPDATE_EMAIL_DESC);
+                SOL_GENERIC_UPDATE_EMAIL_DESC,
+                languagePreference);
         }
     }
 
     private void sendPetitionerEmail(Map<String, Object> caseData, String petitionerEmail,
-                                     String eventId, Map<String, String> templateVars) throws NotificationClientException {
+                                     String eventId, Map<String, String> templateVars,
+                                     Optional<LanguagePreference>  languagePreference) throws NotificationClientException {
         if (isAosOverdueEvent(eventId)) {
             emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
                 EmailTemplateNames.PETITIONER_RESP_NOT_RESPONDED.name(),
                 templateVars,
-                APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC);
+                APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC,
+                languagePreference);
         } else if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_RECVD_EVENT)) {
-            sendAosAnswerRecvdPetEmail(caseData, petitionerEmail, templateVars);
+            sendAosAnswerRecvdPetEmail(caseData, petitionerEmail, templateVars, languagePreference);
         } else {
             emailService.sendEmailAndReturnExceptionIfFails(
                 petitionerEmail,
                 EmailTemplateNames.GENERIC_UPDATE.name(),
-                templateVars, GENERIC_UPDATE_EMAIL_DESC);
+                templateVars, GENERIC_UPDATE_EMAIL_DESC,
+                languagePreference);
         }
     }
 
     private void sendAosAnswerRecvdPetEmail(Map<String, Object> caseData, String petitionerEmail,
-                                            Map<String, String> templateVars) throws NotificationClientException {
+                                            Map<String, String> templateVars,
+                                            Optional<LanguagePreference>  languagePreference) throws NotificationClientException {
         if (isAdulteryAndNoConsent(caseData)) {
             if (isCoRespNamedAndNotReplied(caseData)) {
                 emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
                     EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
-                    templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC);
+                    templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC,
+                    languagePreference);
             } else {
                 emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
                     EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
-                    templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC);
+                    templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC,
+                    languagePreference);
             }
         } else if (isSep2YrAndNoConsent(caseData)) {
             emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
                 EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
-                templateVars, AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC);
+                templateVars, AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC,
+                languagePreference);
 
         } else {
             emailService.sendEmailAndReturnExceptionIfFails(
                 petitionerEmail,
                 EmailTemplateNames.GENERIC_UPDATE.name(),
-                templateVars, GENERIC_UPDATE_EMAIL_DESC);
+                templateVars, GENERIC_UPDATE_EMAIL_DESC,
+                languagePreference);
         }
     }
 

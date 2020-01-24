@@ -403,4 +403,7 @@ public class OrchestrationConstants {
     // Case Data Formatter Meta Fields
     public static final String FORMATTER_CASE_DATA_KEY = "caseData";
     public static final String FORMATTER_DIVORCE_SESSION_KEY = "divorceSession";
+
+    // Language preference
+    public static final String LANGUAGE_PREFERENCE_WELSH = "LanguagePreferenceWelsh";
 }
