@@ -72,6 +72,7 @@ def versions = [
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.0.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
+        tomcat                       : '9.0.30',
         unirest                      : '1.4.9'
 ]
 
@@ -120,6 +121,7 @@ allprojects {
     }
 
     dependencyManagement {
+
         imports {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
         }
@@ -160,6 +162,12 @@ allprojects {
                 entry 'netty-transport'
             }
             dependency group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
+
+            dependencySet(group: 'org.apache.tomcat.embed', version: versions.tomcat) {
+                entry 'tomcat-embed-core'
+                entry 'tomcat-embed-websocket'
+                entry 'tomcat-embed-el'
+            }
         }
     }
 }
