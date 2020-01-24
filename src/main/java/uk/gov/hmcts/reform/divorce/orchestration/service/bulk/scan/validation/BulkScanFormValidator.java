@@ -24,14 +24,7 @@ public abstract class BulkScanFormValidator {
         "\"%s\" should not be empty if \"%s\" is \"%s\"";
     static final String NOT_EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE =
         "\"%s\" should be empty if \"%s\" is \"%s\"";
-    static final String DATE_RESP_RECEIVED_DIV_APP_WRONG_LENGTH_ERROR_MESSAGE =
-        "DateRespReceivedDivorceApplication must be a valid 8 digit date";
-    static final String RESP_STATEMENT_OF_TRUTH_WRONG_LENGTH_ERROR_MESSAGE =
-        "RespStatementofTruthSignedDate must be a valid 8 digit date";
-    static final String RESP_JURISDICTION_DISAGREE_REASON_ERROR_MESSAGE =
-        "RespJurisdictionDisagreeReason must not be empty if 'RespJurisdictionAgree' is 'No";
-    static final String RESP_LEGAL_PROCEEDINGS_ERROR_MESSAGE =
-        "RespLegalProceedingsDescription must not be empty if 'RespLegalProceedingsExist' is 'No";
+
 
     static final int AOS_FORM_DATE_LENGTH = 8;
     static final int HELP_WITH_FEES_LENGTH = 6;

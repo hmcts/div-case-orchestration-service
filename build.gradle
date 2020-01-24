@@ -121,6 +121,7 @@ allprojects {
     }
 
     dependencyManagement {
+
         imports {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
         }
@@ -161,6 +162,12 @@ allprojects {
                 entry 'netty-transport'
             }
             dependency group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
+
+            dependencySet(group: 'org.apache.tomcat.embed', version: versions.tomcat) {
+                entry 'tomcat-embed-core'
+                entry 'tomcat-embed-websocket'
+                entry 'tomcat-embed-el'
+            }
         }
     }
 }
@@ -326,18 +333,6 @@ dependencies {
     }
 
     compile(group: 'org.springframework.security', name: 'spring-security-crypto', version: versions.springSecurityCrypto) {
-        force = true
-    }
-
-    compile(group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: versions.tomcat) {
-        force = true
-    }
-
-    compile(group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: versions.tomcat) {
-        force = true
-    }
-
-    compile(group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: versions.tomcat) {
         force = true
     }
 

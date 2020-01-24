@@ -98,7 +98,7 @@ public class AosOfflineAdulteryCoRespCaseValidatorTest {
     @Test
     public void shouldFailFieldsHavingInvalidValues() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
-            new OcrDataField("AOSReasonForDivorce", "Behaviour"),
+            new OcrDataField("AOSReasonForDivorce", "Unreasonable behaviour"),
             new OcrDataField("RespConfirmReadPetition", "Que?"),
             new OcrDataField("CoRespAdmitAdultery", "Possibly"),
             new OcrDataField("RespWillDefendDivorce", "Yes"),

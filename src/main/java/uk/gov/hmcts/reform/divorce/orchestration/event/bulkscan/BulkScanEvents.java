@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.event.bulkscan;
 
 public enum BulkScanEvents {
 
-    CREATE("caseCreate");
+    CREATE("createCase");
 
     private String value;
 
@@ -13,4 +13,5 @@ public enum BulkScanEvents {
     public String getEventName() {
         return this.value;
     }
+
 }

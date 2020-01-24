@@ -123,6 +123,7 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         erToCcdFieldsMap.put("PetitionerSolicitorPhone", "PetitionerSolicitorPhone");
         erToCcdFieldsMap.put("PetitionerSolicitorEmail", "PetitionerSolicitorEmail");
         erToCcdFieldsMap.put("D8PetitionerCorrespondenceUseHomeAddress", "D8PetitionerCorrespondenceUseHomeAddress");
+        erToCcdFieldsMap.put("D8PetitionerNameChangedHowOtherDetails", "D8PetitionerNameChangedHowOtherDetails");
 
         // Section 3 - About your spouse/civil partner (the respondent)
         erToCcdFieldsMap.put("D8RespondentFirstName", "D8RespondentFirstName");

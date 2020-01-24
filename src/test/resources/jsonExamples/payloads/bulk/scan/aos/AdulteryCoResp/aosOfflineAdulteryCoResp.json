@@ -21,8 +21,7 @@
     { "name": "RespEmailAddress", "value": "est@somemail.com" },
     { "name": "RespPhoneNumber", "value": "1234123412341234" },
     { "name": "RespStatementOfTruth", "value": "Yes" },
-    { "name": "RespStatementofTruthSignedDate", "value": "10102010" },
-    { "name": "RespConsentToEmail", "value": "No" }
+    { "name": "RespStatementofTruthSignedDate", "value": "10102010" }
   ]
 },
   "case_details": {
