@@ -25,7 +25,7 @@ public class AosOfflineBehaviourDesertionCaseValidatorTest {
     public void setup() {
         List<OcrDataField> listOfAllMandatoryFieldsImmutable = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "Behaviour"),
+            new OcrDataField("AOSReasonForDivorce", "Unreasonable behaviour"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
@@ -128,7 +128,7 @@ public class AosOfflineBehaviourDesertionCaseValidatorTest {
         assertThat(validationResult.getStatus(), is(WARNINGS));
         assertThat(validationResult.getErrors(), is(emptyList()));
         assertThat(validationResult.getWarnings(), hasItems(
-            "AOSReasonForDivorce must be \"Behaviour\" or \"Desertion\"",
+            "AOSReasonForDivorce must be \"Unreasonable behaviour\" or \"Desertion\"",
             "RespConfirmReadPetition must be \"Yes\" or \"No\"",
             "DateRespReceivedDivorceApplication must be a valid 8 digit date",
             "RespWillDefendDivorce must be \"Proceed\", \"Defend\" or \"NoNoAdmission\"",
@@ -159,7 +159,7 @@ public class AosOfflineBehaviourDesertionCaseValidatorTest {
 
         List<OcrDataField> testFields = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "Behaviour"),
+            new OcrDataField("AOSReasonForDivorce", "Unreasonable behaviour"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
@@ -182,7 +182,7 @@ public class AosOfflineBehaviourDesertionCaseValidatorTest {
     public void shouldNotValidateRespStatementofTruthSignedDateIfNotPresent() {
         List<OcrDataField> testFields = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "Behaviour"),
+            new OcrDataField("AOSReasonForDivorce", "Unreasonable behaviour"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
@@ -203,7 +203,7 @@ public class AosOfflineBehaviourDesertionCaseValidatorTest {
 
         List<OcrDataField> fieldsUnderTest = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "Behaviour"),
+            new OcrDataField("AOSReasonForDivorce", "Unreasonable behaviour"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
@@ -240,7 +240,7 @@ public class AosOfflineBehaviourDesertionCaseValidatorTest {
 
         List<OcrDataField> fieldsUnderTest = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "Behaviour"),
+            new OcrDataField("AOSReasonForDivorce", "Unreasonable behaviour"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
@@ -263,7 +263,7 @@ public class AosOfflineBehaviourDesertionCaseValidatorTest {
 
         List<OcrDataField> fieldsUnderTest = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "Behaviour"),
+            new OcrDataField("AOSReasonForDivorce", "Unreasonable behaviour"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
@@ -287,7 +287,7 @@ public class AosOfflineBehaviourDesertionCaseValidatorTest {
 
         List<OcrDataField> fieldsUnderTest = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "Behaviour"),
+            new OcrDataField("AOSReasonForDivorce", "Unreasonable behaviour"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
@@ -310,7 +310,7 @@ public class AosOfflineBehaviourDesertionCaseValidatorTest {
 
         List<OcrDataField> fieldsUnderTest = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "Behaviour"),
+            new OcrDataField("AOSReasonForDivorce", "Unreasonable behaviour"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
@@ -332,7 +332,7 @@ public class AosOfflineBehaviourDesertionCaseValidatorTest {
 
         List<OcrDataField> fieldsUnderTest = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "Behaviour"),
+            new OcrDataField("AOSReasonForDivorce", "Unreasonable behaviour"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
@@ -355,7 +355,7 @@ public class AosOfflineBehaviourDesertionCaseValidatorTest {
 
         List<OcrDataField> fieldsUnderTest = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "Behaviour"),
+            new OcrDataField("AOSReasonForDivorce", "Unreasonable behaviour"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),

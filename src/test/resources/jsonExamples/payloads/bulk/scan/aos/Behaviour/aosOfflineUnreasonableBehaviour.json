@@ -5,7 +5,7 @@
   "form_type": "DAOS3",
   "ocr_data_fields": [
     { "name": "CaseNumber", "value": "1234123412341234" },
-    { "name": "AOSReasonForDivorce", "value": "Behaviour" },
+    { "name": "AOSReasonForDivorce", "value": "Unreasonable behaviour" },
     { "name": "RespConfirmReadPetition", "value": "Yes" },
     { "name": "DateRespReceivedDivorceApplication", "value": "10102019" },
     { "name": "RespWillDefendDivorce", "value": "NoNoAdmission" },

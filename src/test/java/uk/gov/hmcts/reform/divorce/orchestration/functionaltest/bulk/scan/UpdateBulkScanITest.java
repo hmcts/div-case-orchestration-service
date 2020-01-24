@@ -50,9 +50,9 @@ public class UpdateBulkScanITest {
         = "jsonExamples/payloads/bulk/scan/aos/5yearSeparation/invalidAosOffline5yrSep.json";
 
     private static final String AOS_OFFLINE_BEHAVIOUR_JSON_PATH
-        = "jsonExamples/payloads/bulk/scan/aos/Behaviour/aosOfflineBehaviour.json";
+        = "jsonExamples/payloads/bulk/scan/aos/Behaviour/aosOfflineUnreasonableBehaviour.json";
     private static final String INVALID_AOS_OFFLINE_BEHAVIOUR_JSON_PATH
-        = "jsonExamples/payloads/bulk/scan/aos/Behaviour/invalidAosOfflineBehaviour.json";
+        = "jsonExamples/payloads/bulk/scan/aos/Behaviour/invalidAosOfflineUnreasonableBehaviour.json";
 
     private static final String AOS_OFFLINE_DESERTION_JSON_PATH
         = "jsonExamples/payloads/bulk/scan/aos/Desertion/aosOfflineDesertion.json";
@@ -201,7 +201,7 @@ public class UpdateBulkScanITest {
             status().isOk(),
             content().string(allOf(
                 hasJsonPath("$.warnings", allOf(hasItems(
-                    "AOSReasonForDivorce must be \"Behaviour\" or \"Desertion\"",
+                    "AOSReasonForDivorce must be \"Unreasonable behaviour\" or \"Desertion\"",
                     "RespWillDefendDivorce must be \"Proceed\", \"Defend\" or \"NoNoAdmission\"",
                     notAValidDate("RespStatementofTruthSignedDate")
                 )))
@@ -237,7 +237,7 @@ public class UpdateBulkScanITest {
             status().isOk(),
             content().string(allOf(
                 hasJsonPath("$.warnings", allOf(hasItems(
-                    "AOSReasonForDivorce must be \"Behaviour\" or \"Desertion\"",
+                    "AOSReasonForDivorce must be \"Unreasonable behaviour\" or \"Desertion\"",
                     "RespWillDefendDivorce must be \"Proceed\", \"Defend\" or \"NoNoAdmission\"",
                     notAValidDate("RespStatementofTruthSignedDate")
                 )))

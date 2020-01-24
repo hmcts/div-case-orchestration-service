@@ -18,7 +18,7 @@ public class AosOfflineBehaviourDesertionCaseValidator extends AosFormValidator 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
 
     static {
-        ALLOWED_VALUES_PER_FIELD.put("AOSReasonForDivorce", asList("Behaviour", "Desertion"));
+        ALLOWED_VALUES_PER_FIELD.put("AOSReasonForDivorce", asList("Unreasonable behaviour", "Desertion"));
         ALLOWED_VALUES_PER_FIELD.put("RespConfirmReadPetition", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("RespWillDefendDivorce", asList("Proceed", "Defend", "NoNoAdmission"));
         ALLOWED_VALUES_PER_FIELD.put("RespJurisdictionAgree", asList(YES_VALUE, NO_VALUE));
