@@ -1,0 +1,40 @@
+{"exception_record": {
+  "case_type_id": "DIVORCE",
+  "id": "LV481297",
+  "po_box": "PO 17",
+  "form_type": "DAOS5",
+  "ocr_data_fields": [
+    { "name": "CaseNumber", "value": "1234123412341234" },
+    { "name": "AOSReasonForDivorce", "value": "Adultery" },
+    { "name": "CoRespAdmitAdultery", "value": "Yes" },
+    { "name": "RespConfirmReadPetition", "value": "Yes" },
+    { "name": "DateRespReceivedDivorceApplication", "value": "10102019" },
+    { "name": "RespAdmitOrConsentToFact", "value": "No" },
+    { "name": "RespWillDefendDivorce", "value": "Proceed" },
+    { "name": "RespJurisdictionAgree", "value": "No" },
+    { "name": "RespJurisdictionDisagreeReason", "value": "Some Jurisdiction disagree reason" },
+    { "name": "RespJurisdictionRespCountryOfResidence", "value": "UK" },
+    { "name": "RespLegalProceedingsExist", "value": "Yes" },
+    { "name": "RespLegalProceedingsDescription", "value": "Some Description" },
+    { "name": "RespAgreeToCosts", "value": "No" },
+    { "name": "RespCostsReason", "value": "1234123412341234" },
+    { "name": "RespEmailAddress", "value": "est@somemail.com" },
+    { "name": "RespPhoneNumber", "value": "1234123412341234" },
+    { "name": "RespStatementOfTruth", "value": "Yes" },
+    { "name": "RespStatementofTruthSignedDate", "value": "10102010" },
+    { "name": "RespConsentToEmail", "value": "No" }
+  ]
+},
+  "case_details": {
+    "id": "1517833758870511",
+    "jurisdiction": "DIVORCE",
+    "state": "AosSubmitted",
+    "case_type_id": "DIVORCE",
+    "case_data": {
+      "D8RespondentFirstName": "Jane",
+      "D8RespondentLastName": "Jamed",
+      "D8PetitionerFirstName": "Gary",
+      "D8PetitionerLastName": "Smith"
+    }
+  }
+}

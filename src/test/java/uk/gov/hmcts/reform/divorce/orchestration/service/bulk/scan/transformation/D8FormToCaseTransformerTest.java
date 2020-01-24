@@ -135,6 +135,42 @@ public class D8FormToCaseTransformerTest {
     }
 
     @Test
+    public void verifyD8MentalSeparationDateIsCorrectlyTransformedGivenSeparateComponents() {
+        ExceptionRecord exceptionRecord = createExceptionRecord(asList(
+            new OcrDataField("D8MentalSeparationDateDay", "06"),
+            new OcrDataField("D8MentalSeparationDateMonth", "5"),
+            new OcrDataField("D8MentalSeparationDateYear", "2007")
+        ));
+
+        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(exceptionRecord);
+
+        assertThat(transformedCaseData, allOf(
+            hasEntry("D8MentalSeparationDate", "2007-05-06"),
+            not(hasKey("D8MentalSeparationDay")),
+            not(hasEntry("D8MentalSeparationDate", "2007-5-6")),
+            not(hasEntry("D8MentalSeparationDate", "2007-06-05"))
+        ));
+    }
+
+    @Test
+    public void verifyD8PhysicalSeparationDateIsCorrectlyTransformedGivenSeparateComponents() {
+        ExceptionRecord exceptionRecord = createExceptionRecord(asList(
+            new OcrDataField("D8PhysicalSeparationDateDay", "06"),
+            new OcrDataField("D8PhysicalSeparationDateMonth", "5"),
+            new OcrDataField("D8PhysicalSeparationDateYear", "2007")
+        ));
+
+        Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(exceptionRecord);
+
+        assertThat(transformedCaseData, allOf(
+            hasEntry("D8PhysicalSeparationDate", "2007-05-06"),
+            not(hasKey("D8PhysicalSeparationDateDay")),
+            not(hasEntry("D8PhysicalSeparationDate", "2007-5-6")),
+            not(hasEntry("D8PhysicalSeparationDate", "2007-06-05"))
+        ));
+    }
+
+    @Test
     public void verifySection3RespondentIsTransformed() {
         ExceptionRecord exceptionRecord = createExceptionRecord(asList(
             new OcrDataField("D8PetitionerNameDifferentToMarriageCert", "Yes"),
@@ -249,8 +285,6 @@ public class D8FormToCaseTransformerTest {
             .getValue();
 
         Map parentField = (Map) transformedCaseData.getOrDefault(targetParentField, emptyMap());
-        sourceSuffixToTargetMap.entrySet().forEach(suffixToTarget ->
-            assertThat(parentField.get(suffixToTarget.getValue()), is(getValueForSuffix.apply(sourceFieldAndValueMap, suffixToTarget.getKey())))
-        );
+        sourceSuffixToTargetMap.forEach((key, value) -> assertThat(parentField.get(value), is(getValueForSuffix.apply(sourceFieldAndValueMap, key))));
     }
 }

@@ -5,13 +5,7 @@ buildscript {
         springBootVersion = '2.1.2.RELEASE'
     }
     repositories {
-        mavenLocal()
         mavenCentral()
-        jcenter()
-
-        maven {
-            url "https://dl.bintray.com/hmcts/hmcts-maven"
-        }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -36,7 +30,7 @@ plugins {
 def versions = [
         awaitility                   : '4.0.2',
         bcpkixJdk15on                : '1.64',
-        bspCommonLib                 : '0.0.13',
+        bspCommonLib                 : '0.0.15',
         ccdStoreClient               : '4.6.4',
         commonsBeanUtils             : '1.9.4',
         commonsIo                    : '2.6',
@@ -450,41 +444,13 @@ pitest {
     mutationThreshold = 80
 }
 
-def sonarExclusions = [
-        '**uk/gov/hmcts/reform/divorce/orchestration/domain/**/*',
-        '**uk/gov/hmcts/reform/divorce/orchestration/**/config/**/*',
-        '**uk/gov/hmcts/reform/divorce/orchestration/OrchestrationServiceApplication.java',
-        '**uk/gov/hmcts/reform/divorce/orchestration/client/**',
-        '**uk/gov/hmcts/reform/divorce/orchestration/event/**/*',
-        '**uk/gov/hmcts/reform/divorce/orchestration/service/bulk/scan/**/*',
-        '**uk/gov/hmcts/reform/divorce/orchestration/framework/workflow/task/DefaultTaskContext.java',
-        '**uk/gov/hmcts/reform/divorce/scheduler/model/*',
-        '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*'
-]
-
-sonarqube {
-    properties {
-        property "sonar.exclusions", sonarExclusions.join(", ")
-        property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/apiTest.exec"
-        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
-        property "sonar.projectKey", "div-case-orchestration-service"
-        property "sonar.projectName", "Divorce :: div-case-orchestration-service"
-        property "sonar.pitest.mode", "reuseReport"
-        property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    }
-}
-
 jacocoTestReport {
     executionData(test)
 
     reports {
-        xml {
-            enabled true
-        }
-
-        html {
-            enabled true
-        }
+        xml.enabled = true
+        csv.enabled = false
+        xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     }
 }
 
@@ -495,6 +461,32 @@ jacocoTestCoverageVerification {
                 minimum = 0.9
             }
         }
+    }
+}
+
+project.tasks['sonarqube'].dependsOn jacocoTestReport
+
+def sonarExclusions = [
+        '**uk/gov/hmcts/reform/divorce/orchestration/domain/**/*',
+        '**uk/gov/hmcts/reform/divorce/orchestration/**/config/**/*',
+        '**uk/gov/hmcts/reform/divorce/orchestration/OrchestrationServiceApplication.java',
+        '**uk/gov/hmcts/reform/divorce/orchestration/client/**',
+        '**uk/gov/hmcts/reform/divorce/orchestration/event/**/*',
+        '**uk/gov/hmcts/reform/divorce/orchestration/service/bulk/scan/**/*',
+        '**uk/gov/hmcts/reform/divorce/orchestration/controller/BulkScanController.java',
+        '**uk/gov/hmcts/reform/divorce/orchestration/framework/workflow/task/DefaultTaskContext.java',
+        '**uk/gov/hmcts/reform/divorce/scheduler/model/*',
+        '**uk/gov/hmcts/reform/divorce/scheduler/config/**/*'
+]
+
+sonarqube {
+    properties {
+        property "sonar.projectName", "Divorce :: div-case-orchestration-service"
+        property "sonar.projectKey", "div-case-orchestration-service"
+        property "sonar.exclusions", sonarExclusions.join(", ")
+        property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+        property "sonar.pitest.mode", "reuseReport"
+        property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     }
 }
 

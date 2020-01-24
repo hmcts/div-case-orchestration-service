@@ -9,7 +9,10 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_PACK_OFFLINE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_2_YR_SEP;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_5_YR_SEP;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_ADULTERY_CO_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_BEHAVIOUR_DESERTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
 
 @Component
@@ -19,7 +22,16 @@ public class BulkScanFormValidatorFactory {
     private D8FormValidator d8FormValidator;
 
     @Autowired
-    private AosPackOfflineCaseValidator aosPackOfflineCaseValidator;
+    private AosOffline2yrSepCaseValidator aosOffline2yrSepCaseValidator;
+
+    @Autowired
+    private AosOffline5yrSepCaseValidator aosOffline5yrSepCaseValidator;
+
+    @Autowired
+    private AosOfflineBehaviourDesertionCaseValidator aosOfflineBehaviourDesertionCaseValidator;
+
+    @Autowired
+    private AosOfflineAdulteryCoRespCaseValidator aosOfflineAdulteryCoRespCaseValidator;
 
     private static Map<String, BulkScanFormValidator> validators;
 
@@ -27,7 +39,10 @@ public class BulkScanFormValidatorFactory {
     public void initBean() {
         validators = new HashMap<>();
         validators.put(D8_FORM, d8FormValidator);
-        validators.put(AOS_PACK_OFFLINE, aosPackOfflineCaseValidator);
+        validators.put(AOS_OFFLINE_2_YR_SEP, aosOffline2yrSepCaseValidator);
+        validators.put(AOS_OFFLINE_5_YR_SEP, aosOffline5yrSepCaseValidator);
+        validators.put(AOS_OFFLINE_BEHAVIOUR_DESERTION, aosOfflineBehaviourDesertionCaseValidator);
+        validators.put(AOS_OFFLINE_ADULTERY_CO_RESP, aosOfflineAdulteryCoRespCaseValidator);
     }
 
     public BulkScanFormValidator getValidator(final String formType) throws UnsupportedFormTypeException {

@@ -51,22 +51,15 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         applyMappingsForRespondentHomeAddress(ocrDataFields, modifiedMap);
         applyMappingsForRespondentSolicitorAddress(ocrDataFields, modifiedMap);
 
-        Optional<String> d8MarriageDateDay = getValueFromOcrDataFields("D8MarriageDateDay", ocrDataFields);
-        Optional<String> d8MarriageDateMonth = getValueFromOcrDataFields("D8MarriageDateMonth", ocrDataFields);
-        Optional<String> d8MarriageDateYear = getValueFromOcrDataFields("D8MarriageDateYear", ocrDataFields);
-
-        if (d8MarriageDateDay.isPresent() && d8MarriageDateMonth.isPresent() && d8MarriageDateYear.isPresent()) {
-            String transformedMarriageDate = transformDateFromComponentsToCcdDate(d8MarriageDateDay.get(),
-                d8MarriageDateMonth.get(), d8MarriageDateYear.get());
-
-            modifiedMap.put("D8MarriageDate", transformedMarriageDate);
-        }
+        applyMappingForDate(ocrDataFields, modifiedMap, "D8MarriageDate");
+        applyMappingForDate(ocrDataFields, modifiedMap, "D8MentalSeparationDate");
+        applyMappingForDate(ocrDataFields, modifiedMap, "D8PhysicalSeparationDate");
 
         return modifiedMap;
     }
 
     @Override
-    Map<String, Object> runPostMappingModification(Map<String, Object> transformedCaseData) {
+    protected Map<String, Object> runPostMappingModification(Map<String, Object> transformedCaseData) {
         transformedCaseData.replace("D8PaymentMethod", "Debit/Credit Card", "Card");
         transformedCaseData.replace("D8FinancialOrderFor", "myself", "petitioner");
         transformedCaseData.replace("D8FinancialOrderFor", "my children", "children");
@@ -78,6 +71,23 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
             .ifPresent(value -> transformedCaseData.replace("D8DivorceClaimFrom", value));
 
         return transformedCaseData;
+    }
+
+    private void applyMappingForDate(List<OcrDataField> ocrDataFields, Map<String, Object> modifiedMap, String field) {
+        Optional.ofNullable(getDateFieldsAndConcatenate(ocrDataFields, field))
+            .ifPresent(date -> modifiedMap.put(field, date));
+    }
+
+    private String getDateFieldsAndConcatenate(List<OcrDataField> ocrDataFields, String prefix) {
+        Optional<String> day = getValueFromOcrDataFields(prefix + "Day", ocrDataFields);
+        Optional<String> month = getValueFromOcrDataFields(prefix + "Month", ocrDataFields);
+        Optional<String> year = getValueFromOcrDataFields(prefix + "Year", ocrDataFields);
+
+        if (day.isPresent() && month.isPresent() && year.isPresent()) {
+            return transformDateFromComponentsToCcdDate(day.get(), month.get(), year.get());
+        }
+
+        return null;
     }
 
     private Optional<String> getValueFromOcrDataFields(String fieldName, List<OcrDataField> ocrDataFields) {
@@ -138,6 +148,11 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
 
         // Section 6 - Give the reason for your divorce or dissolution (the facts)
         erToCcdFieldsMap.put("D8ReasonForDivorce", "D8ReasonForDivorce");
+
+        // Section 7 - Supporting information (Statement of case)
+        erToCcdFieldsMap.put("SeparationLivedTogetherAsCoupleAgain", "SeparationLivedTogetherAsCoupleAgain");
+        erToCcdFieldsMap.put("SeparationLivedTogetherAsCoupleAgainDetails", "SeparationLivedTogetherAsCoupleAgainDetails");
+        erToCcdFieldsMap.put("D8ReasonForDivorceDetails", "D8ReasonForDivorceDetails");
 
         // Section 8 - Details of the person your partner committed adultery with (co-respondent)
         erToCcdFieldsMap.put("D8ReasonForDivorceAdultery3rdPartyFName", "D8ReasonForDivorceAdultery3rdPartyFName");

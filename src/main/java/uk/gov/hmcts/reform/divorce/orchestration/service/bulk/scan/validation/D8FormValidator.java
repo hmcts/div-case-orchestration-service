@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.error.FormFieldValidationException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -15,10 +14,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.BulkScanValidationPatterns.CCD_EMAIL_REGEX;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.BulkScanValidationPatterns.CCD_PHONE_NUMBER_REGEX;
 import static uk.gov.hmcts.reform.bsp.common.service.PostcodeValidator.validatePostcode;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformFormDateIntoLocalDate;
@@ -26,19 +27,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper
 
 @Component
 public class D8FormValidator extends BulkScanFormValidator {
-
-    private static final String EMPTY_PAYMENT_METHOD_ERROR_MESSAGE =
-        "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value";
-    private static final String MULTIPLE_PAYMENT_METHODS_ERROR_MESSAGE =
-        "D8PaymentMethod and D8HelpWithFeesReferenceNumber should not both be populated";
-    private static final String HWF_WRONG_LENGTH_ERROR_MESSAGE =
-        "D8HelpWithFeesReferenceNumber is usually 6 digits";
-    private static final String EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE =
-        "\"%s\" should not be empty if \"%s\" is \"%s\"";
-    private static final String NOT_EMPTY_CONDITIONAL_MANDATORY_FIELD_ERROR_MESSAGE =
-        "\"%s\" should be empty if \"%s\" is \"%s\"";
-
-    private static final int HELP_WITH_FEES_LENGTH = 6;
 
     private static final List<String> MANDATORY_FIELDS = asList(
         "D8PetitionerFirstName",
@@ -53,7 +41,6 @@ public class D8FormValidator extends BulkScanFormValidator {
         "D8PetitionerContactDetailsConfidential",
         "D8PetitionerPostCode",
         "PetitionerSolicitor",
-        "D8PetitionerCorrespondenceUseHomeAddress",
         "D8PetitionerHomeAddressStreet",
         "D8PetitionerHomeAddressTown",
         "D8PetitionerHomeAddressCounty",
@@ -68,10 +55,17 @@ public class D8FormValidator extends BulkScanFormValidator {
         "D8MarriageDateDay",
         "D8MarriageDateMonth",
         "D8MarriageDateYear",
+        "D8MentalSeparationDateDay",
+        "D8MentalSeparationDateMonth",
+        "D8MentalSeparationDateYear",
+        "D8PhysicalSeparationDateDay",
+        "D8PhysicalSeparationDateMonth",
+        "D8PhysicalSeparationDateYear",
         "D8MarriageCertificateCorrect",
         "D8FinancialOrder",
         "D8ReasonForDivorce",
         "D8LegalProceedings",
+        "SeparationLivedTogetherAsCoupleAgain",
         "D8AppliesForStatementOfTruth",
         "D8DivorceClaimFrom",
         "D8FullNameStatementOfTruth",
@@ -86,22 +80,23 @@ public class D8FormValidator extends BulkScanFormValidator {
         List<String> yesNoValues = asList(YES_VALUE, NO_VALUE);
         ALLOWED_VALUES_PER_FIELD.put("D8LegalProcess", asList("Divorce", "Dissolution", "Judicial (separation)"));
         ALLOWED_VALUES_PER_FIELD.put("D8ScreenHasMarriageCert", asList(TRUE));
-        ALLOWED_VALUES_PER_FIELD.put("D8CertificateInEnglish", asList(TRUE, BLANK));
+        ALLOWED_VALUES_PER_FIELD.put("D8CertificateInEnglish", asList(TRUE, EMPTY_STRING));
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameChangedHow", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerContactDetailsConfidential", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("Cheque", "Debit/Credit Card", BLANK));
+        ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("Cheque", "Debit/Credit Card", EMPTY_STRING));
         ALLOWED_VALUES_PER_FIELD.put("PetitionerSolicitor", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerCorrespondenceUseHomeAddress", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerCorrespondenceUseHomeAddress", asList(YES_VALUE, NO_VALUE, EMPTY_STRING));
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameDifferentToMarriageCert", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8RespondentCorrespondenceSendToSol", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8MarriedInUk", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8ApplicationToIssueWithoutCertificate", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8MarriageCertificateCorrect", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrder", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrderFor", asList("myself", "my children", "myself, my children", BLANK));
+        ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrderFor", asList("myself", "my children", "myself, my children", EMPTY_STRING));
         ALLOWED_VALUES_PER_FIELD.put("D8ReasonForDivorce", asList("unreasonable-behaviour", "adultery", "desertion", "separation-2-years",
             "separation-5-years"));
         ALLOWED_VALUES_PER_FIELD.put("D8LegalProceedings", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("SeparationLivedTogetherAsCoupleAgain", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8AppliesForStatementOfTruth", asList("marriage", "dissolution", "separation"));
         ALLOWED_VALUES_PER_FIELD.put("D8DivorceClaimFrom", asList("respondent", "corespondent", "respondent, corespondent"));
         ALLOWED_VALUES_PER_FIELD.put("D8StatementofTruthSignature", asList(YES_VALUE));
@@ -135,7 +130,9 @@ public class D8FormValidator extends BulkScanFormValidator {
             validatePlaceOfMarriage(fieldsMap),
             validateFieldIsEmptyForNo_AndNotEmptyForYes(fieldsMap, "D8MarriageCertificateCorrect", "D8MarriageCertificateCorrectExplain"),
             validateFieldIsEmptyForNo_AndNotEmptyForYes(fieldsMap, "D8PetitionerNameChangedHow", "D8PetitionerNameChangedHowOtherDetails"),
-            validateDateSplitIntoComponents(fieldsMap, "D8MarriageDateDay", "D8MarriageDateMonth", "D8MarriageDateYear"),
+            validateDateField(fieldsMap, "D8MarriageDate"),
+            validateDateField(fieldsMap, "D8MentalSeparationDate"),
+            validateDateField(fieldsMap, "D8PhysicalSeparationDate"),
             validateD8PetitionerCorrespondenceAddress(fieldsMap),
             validateD8FinancialOrderFor(fieldsMap)
         )
@@ -180,13 +177,18 @@ public class D8FormValidator extends BulkScanFormValidator {
     }
 
     private static List<String> validateD8PetitionerCorrespondenceAddress(Map<String, String> fieldsMap) {
-        List<String> fieldsToCheck = Arrays.asList(
-            "D8PetitionerCorrespondenceAddressStreet",
-            "D8PetitionerCorrespondenceAddressTown",
-            "D8PetitionerCorrespondenceAddressCounty",
-            "D8PetitionerCorrespondencePostcode"
-        );
-        return validateFieldsAreNotEmptyOnlyFor(NO_VALUE, "D8PetitionerCorrespondenceUseHomeAddress", fieldsToCheck, fieldsMap);
+        List<String> validationMessages = emptyList();
+
+        if (fieldsMap.get("D8PetitionerCorrespondenceUseHomeAddress") != null) {
+            validationMessages = validateFieldsAreNotEmptyOnlyFor(NO_VALUE, "D8PetitionerCorrespondenceUseHomeAddress", asList(
+                "D8PetitionerCorrespondenceAddressStreet",
+                "D8PetitionerCorrespondenceAddressTown",
+                "D8PetitionerCorrespondenceAddressCounty",
+                "D8PetitionerCorrespondencePostcode"
+            ), fieldsMap);
+        }
+
+        return validationMessages;
     }
 
     private static List<String> validateFieldsAreNotEmptyOnlyFor(String valueForWhichFieldsShouldNotBeEmpty, String conditionField,
@@ -246,7 +248,7 @@ public class D8FormValidator extends BulkScanFormValidator {
             validationWarningMessages.add(MULTIPLE_PAYMENT_METHODS_ERROR_MESSAGE);
         }
 
-        if (d8PaymentMethod.isEmpty() && !isHelpWithFeesValid(hwfReferenceNumber)) {
+        if (StringUtils.isEmpty(d8PaymentMethod) && !isHelpWithFeesValid(hwfReferenceNumber)) {
             validationWarningMessages.add(HWF_WRONG_LENGTH_ERROR_MESSAGE);
         }
 
@@ -311,6 +313,10 @@ public class D8FormValidator extends BulkScanFormValidator {
             }
         }
         return validationWarningMessages;
+    }
+
+    private static List<String> validateDateField(Map<String, String> fieldsMap, String field) {
+        return validateDateSplitIntoComponents(fieldsMap, field + "Day", field + "Month", field + "Year");
     }
 
     private static List<String> validateDateSplitIntoComponents(Map<String, String> fieldsMap, String dayKey, String monthKey, String yearKey) {

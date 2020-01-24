@@ -16,19 +16,19 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.out.ValidationStatus.SUCCESS;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.out.ValidationStatus.WARNINGS;
 
-public class AosPackOfflineCaseValidatorTest {
+public class AosOffline5yrSepCaseValidatorTest {
 
-    private final AosPackOfflineCaseValidator classUnderTest = new AosPackOfflineCaseValidator();
+    private final AosOffline5yrSepCaseValidator classUnderTest = new AosOffline5yrSepCaseValidator();
     private List<OcrDataField> listOfAllMandatoryFields;
 
     @Before
     public void setup() {
         List<OcrDataField> listOfAllMandatoryFieldsImmutable = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("AOSReasonForDivorce", "5 years separation"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
-            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespHardshipDefenseResponse", "Yes"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
             new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "Yes"),
@@ -60,7 +60,6 @@ public class AosPackOfflineCaseValidatorTest {
             "Mandatory field \"AOSReasonForDivorce\" is missing",
             "Mandatory field \"RespConfirmReadPetition\" is missing",
             "Mandatory field \"DateRespReceivedDivorceApplication\" is missing",
-            "Mandatory field \"RespAOS2yrConsent\" is missing",
             "Mandatory field \"RespWillDefendDivorce\" is missing",
             "Mandatory field \"RespConsiderFinancialSituation\" is missing",
             "Mandatory field \"RespJurisdictionAgree\" is missing",
@@ -76,7 +75,7 @@ public class AosPackOfflineCaseValidatorTest {
             new OcrDataField("AOSReasonForDivorce", ""),
             new OcrDataField("RespConfirmReadPetition", ""),
             new OcrDataField("DateRespReceivedDivorceApplication", ""),
-            new OcrDataField("RespAOS2yrConsent", ""),
+            new OcrDataField("RespHardshipDefenseResponse", ""),
             new OcrDataField("RespWillDefendDivorce", ""),
             new OcrDataField("RespConsiderFinancialSituation", ""),
             new OcrDataField("RespJurisdictionAgree", ""),
@@ -91,7 +90,6 @@ public class AosPackOfflineCaseValidatorTest {
             "Mandatory field \"AOSReasonForDivorce\" is missing",
             "Mandatory field \"RespConfirmReadPetition\" is missing",
             "Mandatory field \"DateRespReceivedDivorceApplication\" is missing",
-            "Mandatory field \"RespAOS2yrConsent\" is missing",
             "Mandatory field \"RespWillDefendDivorce\" is missing",
             "Mandatory field \"RespConsiderFinancialSituation\" is missing",
             "Mandatory field \"RespJurisdictionAgree\" is missing",
@@ -105,7 +103,7 @@ public class AosPackOfflineCaseValidatorTest {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
             new OcrDataField("AOSReasonForDivorce", "Adultery"),
             new OcrDataField("RespConfirmReadPetition", "Que?"),
-            new OcrDataField("RespAOS2yrConsent", "Possibly"),
+            new OcrDataField("RespHardshipDefenseResponse", "Possibly"),
             new OcrDataField("RespWillDefendDivorce", "Yes"),
             new OcrDataField("RespConsiderFinancialSituation", "Possibly"),
             new OcrDataField("RespJurisdictionAgree", "Possibly"),
@@ -117,10 +115,10 @@ public class AosPackOfflineCaseValidatorTest {
         assertThat(validationResult.getStatus(), is(WARNINGS));
         assertThat(validationResult.getErrors(), is(emptyList()));
         assertThat(validationResult.getWarnings(), hasItems(
-            "AOSReasonForDivorce must be \"2 years separation with consent\"",
+            "AOSReasonForDivorce must be \"5 years separation\"",
             "RespConfirmReadPetition must be \"Yes\" or \"No\"",
             "DateRespReceivedDivorceApplication must be a valid 8 digit date",
-            "RespAOS2yrConsent must be \"Yes\" or \"No\"",
+            "RespHardshipDefenseResponse must be \"Yes\" or \"No\"",
             "RespWillDefendDivorce must be \"Proceed\" or \"Defend\"",
             "RespConsiderFinancialSituation must be \"Yes\" or \"No\"",
             "RespJurisdictionAgree must be \"Yes\" or \"No\"",
@@ -149,10 +147,10 @@ public class AosPackOfflineCaseValidatorTest {
 
         List<OcrDataField> testFields = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("AOSReasonForDivorce", "5 years separation"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
-            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespHardshipDefenseResponse", "Yes"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
             new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "Yes"),
@@ -174,10 +172,10 @@ public class AosPackOfflineCaseValidatorTest {
     public void shouldNotValidateRespStatementofTruthSignedDateIfNotPresent() {
         List<OcrDataField> testFields = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("AOSReasonForDivorce", "5 years separation"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
-            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespHardshipDefenseResponse", "Yes"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
             new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "Yes"),
@@ -197,10 +195,10 @@ public class AosPackOfflineCaseValidatorTest {
 
         List<OcrDataField> fieldsUnderTest = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("AOSReasonForDivorce", "5 years separation"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
-            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespHardshipDefenseResponse", "Yes"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
             new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "Yes"),
@@ -236,10 +234,10 @@ public class AosPackOfflineCaseValidatorTest {
 
         List<OcrDataField> fieldsUnderTest = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("AOSReasonForDivorce", "5 years separation"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
-            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespHardshipDefenseResponse", "Yes"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
             new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "No"),
@@ -261,10 +259,10 @@ public class AosPackOfflineCaseValidatorTest {
 
         List<OcrDataField> fieldsUnderTest = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("AOSReasonForDivorce", "5 years separation"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
-            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespHardshipDefenseResponse", "Yes"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
             new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "No"),
@@ -287,10 +285,10 @@ public class AosPackOfflineCaseValidatorTest {
 
         List<OcrDataField> fieldsUnderTest = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("AOSReasonForDivorce", "5 years separation"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
-            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespHardshipDefenseResponse", "Yes"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
             new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "Yes"),
@@ -312,10 +310,10 @@ public class AosPackOfflineCaseValidatorTest {
 
         List<OcrDataField> fieldsUnderTest = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("AOSReasonForDivorce", "5 years separation"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
-            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespHardshipDefenseResponse", "Yes"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
             new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "Yes"),
@@ -336,10 +334,10 @@ public class AosPackOfflineCaseValidatorTest {
 
         List<OcrDataField> fieldsUnderTest = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("AOSReasonForDivorce", "5 years separation"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
-            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespHardshipDefenseResponse", "Yes"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
             new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "Yes"),
@@ -361,10 +359,10 @@ public class AosPackOfflineCaseValidatorTest {
 
         List<OcrDataField> fieldsUnderTest = asList(
             new OcrDataField("CaseNumber", "1234123412341234"),
-            new OcrDataField("AOSReasonForDivorce", "2 years separation with consent"),
+            new OcrDataField("AOSReasonForDivorce", "5 years separation"),
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
-            new OcrDataField("RespAOS2yrConsent", "Yes"),
+            new OcrDataField("RespHardshipDefenseResponse", "Yes"),
             new OcrDataField("RespWillDefendDivorce", "Proceed"),
             new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "Yes"),

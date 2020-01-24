@@ -2,8 +2,11 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan;
 
 public class BulkScanForms {
 
-    public static final String D8_FORM = "d8Form";
+    public static final String D8_FORM = "D8";
 
-    // TODO: Confirm with Jeremy if this matches with the form name in BSP configuration spreadsheet
-    public static final String AOS_PACK_OFFLINE = "aosPackOffline";
+    public static final String AOS_OFFLINE_2_YR_SEP = "DAOS1";
+    public static final String AOS_OFFLINE_5_YR_SEP = "DAOS2";
+    public static final String AOS_OFFLINE_BEHAVIOUR_DESERTION = "DAOS3";
+    public static final String AOS_OFFLINE_ADULTERY = "DAOS4";
+    public static final String AOS_OFFLINE_ADULTERY_CO_RESP = "DAOS5";
 }

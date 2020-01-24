@@ -13,7 +13,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
+import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResult;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.D8FormValidator;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
@@ -23,6 +25,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -57,6 +60,9 @@ public class TransformationBulkScanITest {
     @MockBean
     AuthTokenValidator authTokenValidator;
 
+    @MockBean
+    D8FormValidator bulkScanFormValidator;
+
     @Before
     public void setup() throws Exception {
         when(authTokenValidator.getServiceName(ALLOWED_SERVICE_TOKEN)).thenReturn("bulk_scan_orchestrator");
@@ -87,6 +93,8 @@ public class TransformationBulkScanITest {
 
     @Test
     public void shouldReturnSuccessResponseForTransformationEndpointWhenUsingFullDataSet() throws Exception {
+        when(bulkScanFormValidator.validateBulkScanForm(any())).thenReturn(OcrValidationResult.builder().build());
+
         mockMvc.perform(
             post(TRANSFORMATION_URL)
                 .contentType(APPLICATION_JSON)
@@ -158,6 +166,8 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8ApplicationToIssueWithoutCertificate", is("No")),
                             hasJsonPath("D8MarriagePlaceOfMarriage", is("Slough")),
                             hasJsonPath("D8MarriageDate", is("1998-01-07")),
+                            hasJsonPath("D8MentalSeparationDate", is("2005-04-15")),
+                            hasJsonPath("D8PhysicalSeparationDate", is("2006-10-01")),
                             hasJsonPath("D8MarriageCertificateCorrect", is("No")),
                             hasJsonPath("D8MarriageCertificateCorrectExplain", is("Providing a scanned copy from registry office.")),
                             hasJsonPath("D8FinancialOrder", is("Yes")),
@@ -166,9 +176,6 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8LegalProceedings", is("Yes")),
                             hasJsonPath("D8LegalProceedingsDetailsCaseNumber", is("case1234")),
                             hasJsonPath("D8LegalProceedingsDetails", is("details of previous cases")),
-
-                            ///
-
                             hasJsonPath("D8RespondentHomeAddress", allOf(
                                 hasJsonPath("AddressLine1", is("18 West Park Road")),
                                 hasJsonPath("County", is("West Midlands")),
@@ -179,17 +186,19 @@ public class TransformationBulkScanITest {
                             hasJsonPath("RespNameDifferentToMarriageCertExplain", is("Dog ate the homework")),
                             hasJsonPath("D8RespondentEmailAddress", is("jack@daily.mail.com")),
                             hasJsonPath("D8RespondentCorrespondenceSendToSol", is("Yes")),
-
                             hasJsonPath("D8RespondentSolicitorName", is("Judge Law")),
                             hasJsonPath("D8RespondentSolicitorReference", is("JL007")),
                             hasJsonPath("D8RespondentSolicitorCompany", is("A-Team")),
-
                             hasJsonPath("D8RespondentSolicitorAddress", allOf(
                                 hasJsonPath("AddressLine1", is("50 Licitor")),
                                 hasJsonPath("County", is("Higher Midlands")),
                                 hasJsonPath("PostCode", is("SO2 7OR")),
                                 hasJsonPath("PostTown", is("Lawyerpool"))
                             )),
+                            hasJsonPath("D8LegalProceedingsDetails", is("details of previous cases")),
+                            hasJsonPath("SeparationLivedTogetherAsCoupleAgain", is("Yes")),
+                            hasJsonPath("SeparationLivedTogetherAsCoupleAgainDetails", is("moved in for a month")),
+                            hasJsonPath("D8ReasonForDivorceDetails", is("not putting the bin out")),
 
                             ///
 
@@ -200,7 +209,6 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8StatementOfTruthSignature", is("Yes")),
                             hasJsonPath("D8StatementOfTruthDate", is("16/01/2020")),
                             hasJsonPath("D8SolicitorsFirmStatementOfTruth", is("Quahog Solicitors Ltd."))
-
                         ))
                     ))
                 )));
@@ -209,6 +217,8 @@ public class TransformationBulkScanITest {
     @Test
     public void shouldReturnSuccessResponseForTransformationEndpointWhenUsingOnlyASubsetOfData() throws Exception {
         String formToTransform = loadResourceAsString(PARTIAL_D8_FORM_JSON_PATH);
+
+        when(bulkScanFormValidator.validateBulkScanForm(any())).thenReturn(OcrValidationResult.builder().build());
 
         mockMvc.perform(
             post(TRANSFORMATION_URL)
