@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.error.FormFieldValidationException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper
 
 @Component
 public class D8FormValidator extends BulkScanFormValidator {
+
+    private static final String D8_JURISDICTION_CONNECTION = "D8JurisdictionConnection";
 
     private static final List<String> MANDATORY_FIELDS = asList(
         "D8PetitionerFirstName",
@@ -71,35 +74,44 @@ public class D8FormValidator extends BulkScanFormValidator {
         "D8FullNameStatementOfTruth",
         "D8StatementofTruthSignature",
         "D8StatementofTruthDate",
-        "D8SolicitorsFirmStatementOfTruth"
+        "D8SolicitorsFirmStatementOfTruth",
+        D8_JURISDICTION_CONNECTION
     );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
 
     static {
-        List<String> yesNoValues = asList(YES_VALUE, NO_VALUE);
+        List<String> yesOrNo = asList(YES_VALUE, NO_VALUE);
+        List<String> trueOrEmpty = asList(TRUE, EMPTY_STRING);
         ALLOWED_VALUES_PER_FIELD.put("D8LegalProcess", asList("Divorce", "Dissolution", "Judicial (separation)"));
         ALLOWED_VALUES_PER_FIELD.put("D8ScreenHasMarriageCert", asList(TRUE));
-        ALLOWED_VALUES_PER_FIELD.put("D8CertificateInEnglish", asList(TRUE, EMPTY_STRING));
-        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameChangedHow", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerContactDetailsConfidential", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("D8CertificateInEnglish", trueOrEmpty);
+        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameChangedHow", yesOrNo);
+        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerContactDetailsConfidential", yesOrNo);
         ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("Cheque", "Debit/Credit Card", EMPTY_STRING));
-        ALLOWED_VALUES_PER_FIELD.put("PetitionerSolicitor", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("PetitionerSolicitor", yesOrNo);
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerCorrespondenceUseHomeAddress", asList(YES_VALUE, NO_VALUE, EMPTY_STRING));
-        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameDifferentToMarriageCert", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("D8RespondentCorrespondenceSendToSol", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("D8MarriedInUk", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("D8ApplicationToIssueWithoutCertificate", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("D8MarriageCertificateCorrect", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrder", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameDifferentToMarriageCert", yesOrNo);
+        ALLOWED_VALUES_PER_FIELD.put("D8RespondentCorrespondenceSendToSol", yesOrNo);
+        ALLOWED_VALUES_PER_FIELD.put("D8MarriedInUk", yesOrNo);
+        ALLOWED_VALUES_PER_FIELD.put("D8ApplicationToIssueWithoutCertificate", yesOrNo);
+        ALLOWED_VALUES_PER_FIELD.put("D8MarriageCertificateCorrect", yesOrNo);
+        ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrder", yesOrNo);
         ALLOWED_VALUES_PER_FIELD.put("D8FinancialOrderFor", asList("myself", "my children", "myself, my children", EMPTY_STRING));
         ALLOWED_VALUES_PER_FIELD.put("D8ReasonForDivorce", asList("unreasonable-behaviour", "adultery", "desertion", "separation-2-years",
             "separation-5-years"));
-        ALLOWED_VALUES_PER_FIELD.put("D8LegalProceedings", yesNoValues);
-        ALLOWED_VALUES_PER_FIELD.put("SeparationLivedTogetherAsCoupleAgain", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("D8LegalProceedings", yesOrNo);
+        ALLOWED_VALUES_PER_FIELD.put("SeparationLivedTogetherAsCoupleAgain", yesOrNo);
         ALLOWED_VALUES_PER_FIELD.put("D8AppliesForStatementOfTruth", asList("marriage", "dissolution", "separation"));
         ALLOWED_VALUES_PER_FIELD.put("D8DivorceClaimFrom", asList("respondent", "corespondent", "respondent, corespondent"));
         ALLOWED_VALUES_PER_FIELD.put("D8StatementofTruthSignature", asList(YES_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("D8JurisdictionNoEU", trueOrEmpty);
+        ALLOWED_VALUES_PER_FIELD.put("D8JurisdictionNoEUPetDom", trueOrEmpty);
+        ALLOWED_VALUES_PER_FIELD.put("D8JurisdictionNoEURespDom", trueOrEmpty);
+        ALLOWED_VALUES_PER_FIELD.put("D8JurisdictionMarriageSameSexCivilPartnershipRegulation", trueOrEmpty);
+        ALLOWED_VALUES_PER_FIELD.put("D8JurisdictionMarriageSameSexCivilPartnershipRegulationPetDom", trueOrEmpty);
+        ALLOWED_VALUES_PER_FIELD.put("D8JurisdictionMarriageSameSexCivilPartnershipRegulationRespDom", trueOrEmpty);
+        ALLOWED_VALUES_PER_FIELD.put("D8JurisdictionSameSexInterestofJustice", trueOrEmpty);
     }
 
     public List<String> getMandatoryFields() {
@@ -133,7 +145,8 @@ public class D8FormValidator extends BulkScanFormValidator {
             validateDateField(fieldsMap, "D8MentalSeparationDate"),
             validateDateField(fieldsMap, "D8PhysicalSeparationDate"),
             validateD8PetitionerCorrespondenceAddress(fieldsMap),
-            validateD8FinancialOrderFor(fieldsMap)
+            validateD8FinancialOrderFor(fieldsMap),
+            validateD8JurisdictionConnection(fieldsMap)
         )
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
@@ -311,6 +324,31 @@ public class D8FormValidator extends BulkScanFormValidator {
             }
         }
         return validationWarningMessages;
+    }
+
+    private static List<String> validateD8JurisdictionConnection(Map<String, String> fieldsMap) {
+        if (fieldsMap.containsKey(D8_JURISDICTION_CONNECTION)) {
+            List<String> allowedD8JurisdictionConnectionValues = asList(
+                "D8JurisdictionHabituallyResident",
+                "D8JurisdictionLastHabituallyResStillResides",
+                "D8JurisdictionRespondentHabituallyRes",
+                "D8JurisdictionPetitionerDomAndResLastYear",
+                "D8JurisdictionPetitionerDomAndResLast6Months",
+                "D8JurisdictionDomicile"
+            );
+            boolean allD8JurisdictionConnectionMembersAreValid = Arrays.stream(fieldsMap.get(D8_JURISDICTION_CONNECTION).split(","))
+                .map(String::trim)
+                .filter(StringUtils::isNotEmpty)
+                .allMatch(d8JurisdictionConnectionMember -> allowedD8JurisdictionConnectionValues.contains(d8JurisdictionConnectionMember));
+
+            if (!allD8JurisdictionConnectionMembersAreValid) {
+                return asList(D8_JURISDICTION_CONNECTION + " should contain one or more of \"D8JurisdictionHabituallyResident\", \"D8JurisdictionLastHabituallyResStillResides\", " +
+                    "\"D8JurisdictionRespondentHabituallyRes\", \"D8JurisdictionPetitionerDomAndResLastYear\", \"D8JurisdictionPetitionerDomAndResLast6Months\", " +
+                    "\"D8JurisdictionDomicile\"");
+            }
+        }
+
+        return emptyList();
     }
 
     private static List<String> validateDateField(Map<String, String> fieldsMap, String field) {

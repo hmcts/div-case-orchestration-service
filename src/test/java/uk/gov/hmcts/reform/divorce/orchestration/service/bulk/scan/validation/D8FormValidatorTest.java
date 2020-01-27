@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation;
 
+import com.google.common.collect.ImmutableMap;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -88,7 +89,9 @@ public class D8FormValidatorTest {
             new OcrDataField("D8FullNameStatementOfTruth", "Peter F. Griffin"),
             new OcrDataField("D8StatementofTruthSignature", "Yes"),
             new OcrDataField("D8StatementofTruthDate", "22/09/2018"),
-            new OcrDataField("D8SolicitorsFirmStatementOfTruth", "Quahog Family Solicitors")
+            new OcrDataField("D8SolicitorsFirmStatementOfTruth", "Quahog Family Solicitors"),
+
+            new OcrDataField("D8JurisdictionConnection", "D8JurisdictionHabituallyResident, D8JurisdictionRespondentHabituallyRes")
         ));
 
         mandatoryFields = mandatoryFieldsWithValues.stream().map(OcrDataField::getName).collect(Collectors.toList());
@@ -175,7 +178,15 @@ public class D8FormValidatorTest {
             new OcrDataField("D8AppliesForStatementOfTruth", "somethingElse"),
             new OcrDataField("D8DivorceClaimFrom", "somethingElse"),
             new OcrDataField("D8StatementofTruthSignature", "No"),
-            new OcrDataField("D8StatementofTruthDate", "29/02/2019")
+            new OcrDataField("D8StatementofTruthDate", "29/02/2019"),
+            new OcrDataField("D8JurisdictionConnection", "toss a coin to your witcher"),
+            new OcrDataField("D8JurisdictionNoEU", "False"),
+            new OcrDataField("D8JurisdictionNoEUPetDom", "False"),
+            new OcrDataField("D8JurisdictionNoEURespDom", "False"),
+            new OcrDataField("D8JurisdictionMarriageSameSexCivilPartnershipRegulation", "False"),
+            new OcrDataField("D8JurisdictionMarriageSameSexCivilPartnershipRegulationPetDom", "False"),
+            new OcrDataField("D8JurisdictionMarriageSameSexCivilPartnershipRegulationRespDom", "False"),
+            new OcrDataField("D8JurisdictionSameSexInterestofJustice", "False")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
@@ -183,13 +194,13 @@ public class D8FormValidatorTest {
         assertThat(validationResult.getWarnings(), hasItems(
             "D8LegalProcess must be \"Divorce\", \"Dissolution\" or \"Judicial (separation)\"",
             "D8ScreenHasMarriageCert must be \"True\"",
-            "D8CertificateInEnglish must be \"True\" or left blank",
+            mustBeTrueOrLeftBlank("D8CertificateInEnglish"),
             notInAValidFormat("D8PetitionerPhoneNumber"),
             mustBeYesOrNo("D8PetitionerNameChangedHow"),
             notInAValidFormat("D8PetitionerEmail"),
             postcodeIsUsually6or7CharactersLong("D8PetitionerPostCode"),
             mustBeYesOrNo("D8PetitionerContactDetailsConfidential"),
-            "D8CertificateInEnglish must be \"True\" or left blank",
+            mustBeTrueOrLeftBlank("D8CertificateInEnglish"),
             "D8ReasonForDivorceSeparationDate must be a valid date",
             notInAValidFormat("D8PetitionerPhoneNumber"),
             "D8PaymentMethod must be \"Cheque\", \"Debit/Credit Card\" or left blank",
@@ -216,7 +227,17 @@ public class D8FormValidatorTest {
             "D8AppliesForStatementOfTruth must be \"marriage\", \"dissolution\" or \"separation\"",
             "D8DivorceClaimFrom must be \"respondent\", \"corespondent\" or \"respondent, corespondent\"",
             "D8StatementofTruthSignature must be \"Yes\"",
-            "D8StatementofTruthDate must be a valid date"
+            "D8StatementofTruthDate must be a valid date",
+            "D8JurisdictionConnection should contain one or more of \"D8JurisdictionHabituallyResident\", \"D8JurisdictionLastHabituallyResStillResides\", " +
+                "\"D8JurisdictionRespondentHabituallyRes\", \"D8JurisdictionPetitionerDomAndResLastYear\", \"D8JurisdictionPetitionerDomAndResLast6Months\", " +
+                "\"D8JurisdictionDomicile\"",
+            mustBeTrueOrLeftBlank("D8JurisdictionNoEU"),
+            mustBeTrueOrLeftBlank("D8JurisdictionNoEUPetDom"),
+            mustBeTrueOrLeftBlank("D8JurisdictionNoEURespDom"),
+            mustBeTrueOrLeftBlank("D8JurisdictionMarriageSameSexCivilPartnershipRegulation"),
+            mustBeTrueOrLeftBlank("D8JurisdictionMarriageSameSexCivilPartnershipRegulationPetDom"),
+            mustBeTrueOrLeftBlank("D8JurisdictionMarriageSameSexCivilPartnershipRegulationRespDom"),
+            mustBeTrueOrLeftBlank("D8JurisdictionSameSexInterestofJustice")
         ));
     }
 
@@ -253,7 +274,14 @@ public class D8FormValidatorTest {
             "D8LegalProceedingsDetailsCaseNumber",
             "D8LegalProceedingsDetails",
             "SeparationLivedTogetherAsCoupleAgainDetails",
-            "D8ReasonForDivorceDetails"
+            "D8ReasonForDivorceDetails",
+            "D8JurisdictionNoEU",
+            "D8JurisdictionNoEUPetDom",
+            "D8JurisdictionNoEURespDom",
+            "D8JurisdictionMarriageSameSexCivilPartnershipRegulation",
+            "D8JurisdictionMarriageSameSexCivilPartnershipRegulationPetDom",
+            "D8JurisdictionMarriageSameSexCivilPartnershipRegulationRespDom",
+            "D8JurisdictionSameSexInterestofJustice"
         )
             .map(emptyValueOcrDataField)
             .collect(Collectors.toList());
@@ -453,22 +481,10 @@ public class D8FormValidatorTest {
 
     @Test
     public void shouldNotProduceWarningsForPlaceOfMarriageIfOnlyOnePrerequisiteIsNoOrNullAndPlaceOfMarriageExists() {
-        Map<String, String> notMarriedInUkOnly = new HashMap<String, String>() {
-            {
-                put("D8MarriedInUk", "No");
-            }
-        };
+        Map<String, String> notMarriedInUkOnly = ImmutableMap.of("D8MarriedInUk", "No");
+        Map<String, String> issueWithoutCertOnly = ImmutableMap.of("D8ApplicationToIssueWithoutCertificate", "Yes");
 
-        Map<String, String> issueWithoutCertOnly = new HashMap<String, String>() {
-            {
-                put("D8ApplicationToIssueWithoutCertificate", "Yes");
-            }
-        };
-
-        List<Map<String, String>> incompletePrerequisites = asList(notMarriedInUkOnly, issueWithoutCertOnly);
-
-        for (Map<String, String> incompleteCombination : incompletePrerequisites) {
-
+        Stream.of(notMarriedInUkOnly, issueWithoutCertOnly).forEach(incompleteCombination -> {
             OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
                 new OcrDataField("D8MarriedInUk", incompleteCombination.get("D8MarriedInUk")),
                 new OcrDataField("D8ApplicationToIssueWithoutCertificate", incompleteCombination.get("D8ApplicationToIssueWithoutCertificate")),
@@ -478,11 +494,10 @@ public class D8FormValidatorTest {
             assertThat(validationResult.getStatus(), is(WARNINGS));
             assertThat(validationResult.getErrors(), is(emptyList()));
             assertThat(validationResult.getWarnings(), not(hasItem(
-                "\"D8MarriagePlaceOfMarriage\" can't be empty for any values of \"D8MarriedInUk\" and "
-                    + "\"D8ApplicationToIssueWithoutCertificate\""
+                "\"D8MarriagePlaceOfMarriage\" can't be empty for any values of \"D8MarriedInUk\" and \"D8ApplicationToIssueWithoutCertificate\""
                 ))
             );
-        }
+        });
     }
 
     @Test
@@ -872,6 +887,10 @@ public class D8FormValidatorTest {
 
     private String mustBeYesOrNo(String fieldName) {
         return String.format("%s must be \"Yes\" or \"No\"", fieldName);
+    }
+
+    private String mustBeTrueOrLeftBlank(String fieldName) {
+        return String.format("%s must be \"True\" or left blank", fieldName);
     }
 
     private String postcodeIsUsually6or7CharactersLong(String fieldName) {
