@@ -18,7 +18,6 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.ResultMatcher.matchAll;
@@ -124,17 +123,17 @@ public class UpdateBulkScanITest {
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_2_YEAR_SEP_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
-        ).andExpect(matchAll(
-            status().isOk(),
-            content().string(allOf(
-                hasJsonPath("$.warnings", hasItems(
-                    mandatoryFieldIsMissing("RespLegalProceedingsExist"),
-                    mandatoryFieldIsMissing("RespConsiderFinancialSituation"),
-                    notAValidDate("RespStatementofTruthSignedDate"),
-                    mustBeYesOrNo("RespAOS2yrConsent")
-                ))
-            ))
-        ));
+        ).andExpect(
+            matchAll(
+                status().isUnprocessableEntity(),
+                content().string(
+                    allOf(
+                        hasJsonPath("$.warnings", equalTo(emptyList())),
+                        hasJsonPath("$.errors")
+                    )
+                )
+            )
+        );
     }
 
     @Test
@@ -160,17 +159,17 @@ public class UpdateBulkScanITest {
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_5_YEAR_SEP_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
-        ).andExpect(matchAll(
-            status().isOk(),
-            content().string(allOf(
-                hasJsonPath("$.warnings", hasItems(
-                    mandatoryFieldIsMissing("RespLegalProceedingsExist"),
-                    mandatoryFieldIsMissing("RespConsiderFinancialSituation"),
-                    notAValidDate("RespStatementofTruthSignedDate"),
-                    mustBeYesOrNo("RespHardshipDefenseResponse")
-                ))
-            ))
-        ));
+        ).andExpect(
+            matchAll(
+                status().isUnprocessableEntity(),
+                content().string(
+                    allOf(
+                        hasJsonPath("$.warnings", equalTo(emptyList())),
+                        hasJsonPath("$.errors")
+                    )
+                )
+            )
+        );
     }
 
     @Test
@@ -198,13 +197,10 @@ public class UpdateBulkScanITest {
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_BEHAVIOUR_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(
-            status().isOk(),
+            status().isUnprocessableEntity(),
             content().string(allOf(
-                hasJsonPath("$.warnings", allOf(hasItems(
-                    "AOSReasonForDivorce must be \"Unreasonable behaviour\" or \"Desertion\"",
-                    "RespWillDefendDivorce must be \"Proceed\", \"Defend\" or \"NoNoAdmission\"",
-                    notAValidDate("RespStatementofTruthSignedDate")
-                )))
+                hasJsonPath("$.warnings", equalTo(emptyList())),
+                hasJsonPath("$.errors")
             ))
         ));
     }
@@ -234,13 +230,10 @@ public class UpdateBulkScanITest {
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_DESERTION_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(
-            status().isOk(),
+            status().isUnprocessableEntity(),
             content().string(allOf(
-                hasJsonPath("$.warnings", allOf(hasItems(
-                    "AOSReasonForDivorce must be \"Unreasonable behaviour\" or \"Desertion\"",
-                    "RespWillDefendDivorce must be \"Proceed\", \"Defend\" or \"NoNoAdmission\"",
-                    notAValidDate("RespStatementofTruthSignedDate")
-                )))
+                hasJsonPath("$.warnings", equalTo(emptyList())),
+                hasJsonPath("$.errors")
             ))
         ));
     }
@@ -270,14 +263,10 @@ public class UpdateBulkScanITest {
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_ADULTERY_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(
-            status().isOk(),
+            status().isUnprocessableEntity(),
             content().string(allOf(
-                hasJsonPath("$.warnings", allOf(hasItems(
-                    mustBeYesOrNo("RespAOSAdultery"),
-                    "AOSReasonForDivorce must be \"Adultery\"",
-                    mandatoryFieldIsMissing("RespLegalProceedingsExist"),
-                    notAValidDate("RespStatementofTruthSignedDate")
-                )))
+                hasJsonPath("$.warnings", equalTo(emptyList())),
+                hasJsonPath("$.errors")
             ))
         ));
     }
@@ -306,25 +295,16 @@ public class UpdateBulkScanITest {
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_ADULTERY_CO_RESP_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
-        ).andExpect(matchAll(
-            status().isOk(),
-            content().string(allOf(
-                hasJsonPath("$.warnings", hasItems(
-                    mustBeYesOrNo("CoRespAdmitAdultery")
-                ))
-            ))
-        ));
-    }
-
-    private String mandatoryFieldIsMissing(String fieldName) {
-        return String.format("Mandatory field \"%s\" is missing", fieldName);
-    }
-
-    private String notAValidDate(String fieldName) {
-        return String.format("%s must be a valid 8 digit date", fieldName);
-    }
-
-    private String mustBeYesOrNo(String fieldName) {
-        return String.format("%s must be \"Yes\" or \"No\"", fieldName);
+        ).andExpect(
+            matchAll(
+                status().isUnprocessableEntity(),
+                content().string(
+                    allOf(
+                        hasJsonPath("$.warnings", equalTo(emptyList())),
+                        hasJsonPath("$.errors")
+                    )
+                )
+            )
+        );
     }
 }

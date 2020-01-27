@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformati
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
+import uk.gov.hmcts.reform.bsp.common.model.shared.in.OcrDataField;
 
 import java.util.HashMap;
 import java.util.List;
