@@ -19,7 +19,7 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.27.0'
     id 'com.jfrog.bintray' version '1.8.4'
     id 'info.solidsoft.pitest' version '1.4.6'
-    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'jacoco'
     id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.owasp.dependencycheck' version '5.2.4'
