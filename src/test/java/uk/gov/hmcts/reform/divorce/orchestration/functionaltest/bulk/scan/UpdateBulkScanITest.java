@@ -18,7 +18,6 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.ResultMatcher.matchAll;
@@ -49,17 +48,25 @@ public class UpdateBulkScanITest {
     private static final String INVALID_AOS_OFFLINE_5_YEAR_SEP_JSON_PATH
         = "jsonExamples/payloads/bulk/scan/aos/5yearSeparation/invalidAosOffline5yrSep.json";
 
-    /*
-    Create integration tests for behaviour and desertion
-     */
+    private static final String AOS_OFFLINE_BEHAVIOUR_JSON_PATH
+        = "jsonExamples/payloads/bulk/scan/aos/Behaviour/aosOfflineUnreasonableBehaviour.json";
+    private static final String INVALID_AOS_OFFLINE_BEHAVIOUR_JSON_PATH
+        = "jsonExamples/payloads/bulk/scan/aos/Behaviour/invalidAosOfflineUnreasonableBehaviour.json";
+
+    private static final String AOS_OFFLINE_DESERTION_JSON_PATH
+        = "jsonExamples/payloads/bulk/scan/aos/Desertion/aosOfflineDesertion.json";
+    private static final String INVALID_AOS_OFFLINE_DESERTION_JSON_PATH
+        = "jsonExamples/payloads/bulk/scan/aos/Desertion/invalidAosOfflineDesertion.json";
+
+    private static final String AOS_OFFLINE_ADULTERY_JSON_PATH
+        = "jsonExamples/payloads/bulk/scan/aos/Adultery/aosOfflineAdultery.json";
+    private static final String INVALID_AOS_OFFLINE_ADULTERY_JSON_PATH
+        = "jsonExamples/payloads/bulk/scan/aos/Adultery/invalidAosOfflineAdultery.json";
 
     private static final String AOS_OFFLINE_ADULTERY_CO_RESP_JSON_PATH
         = "jsonExamples/payloads/bulk/scan/aos/AdulteryCoResp/aosOfflineAdulteryCoResp.json";
     private static final String INVALID_AOS_OFFLINE_ADULTERY_CO_RESP_JSON_PATH
         = "jsonExamples/payloads/bulk/scan/aos/AdulteryCoResp/invalidAosOfflineAdulteryCoResp.json";
-
-    private String validBody;
-    private String invalidBody;
 
     @Autowired
     private MockMvc mockMvc;
@@ -68,12 +75,9 @@ public class UpdateBulkScanITest {
     AuthTokenValidator authTokenValidator;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         when(authTokenValidator.getServiceName(ALLOWED_SERVICE_TOKEN)).thenReturn("bulk_scan_orchestrator");
         when(authTokenValidator.getServiceName(I_AM_NOT_ALLOWED_SERVICE_TOKEN)).thenReturn("don't let me do it!");
-
-        validBody = loadResourceAsString(AOS_OFFLINE_2_YEAR_SEP_JSON_PATH);
-        invalidBody = loadResourceAsString(INVALID_AOS_OFFLINE_2_YEAR_SEP_JSON_PATH);
     }
 
     @Test
@@ -81,7 +85,7 @@ public class UpdateBulkScanITest {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
-                .content(validBody)
+                .content(loadResourceAsString(AOS_OFFLINE_2_YEAR_SEP_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, I_AM_NOT_ALLOWED_SERVICE_TOKEN)
         ).andExpect(status().isForbidden());
     }
@@ -91,7 +95,7 @@ public class UpdateBulkScanITest {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
-                .content(validBody)
+                .content(loadResourceAsString(AOS_OFFLINE_2_YEAR_SEP_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, "")
         ).andExpect(status().isUnauthorized());
     }
@@ -101,7 +105,7 @@ public class UpdateBulkScanITest {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
-                .content(validBody)
+                .content(loadResourceAsString(AOS_OFFLINE_2_YEAR_SEP_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(
             matchAll(
@@ -113,23 +117,23 @@ public class UpdateBulkScanITest {
     }
 
     @Test
-    public void shouldReturnFailureResponseForValidationEndpointFor2YrSep() throws Exception {
+    public void shouldReturnFailureResponseForUpdateEndpointFor2YrSep() throws Exception {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
-                .content(invalidBody)
+                .content(loadResourceAsString(INVALID_AOS_OFFLINE_2_YEAR_SEP_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
-        ).andExpect(matchAll(
-            status().isOk(),
-            content().string(allOf(
-                hasJsonPath("$.warnings", hasItems(
-                    mandatoryFieldIsMissing("RespLegalProceedingsExist"),
-                    mandatoryFieldIsMissing("RespConsiderFinancialSituation"),
-                    notAValidDate("RespStatementofTruthSignedDate"),
-                    mustBeYesOrNo("RespAOS2yrConsent")
-                ))
-            ))
-        ));
+        ).andExpect(
+            matchAll(
+                status().isUnprocessableEntity(),
+                content().string(
+                    allOf(
+                        hasJsonPath("$.warnings", equalTo(emptyList())),
+                        hasJsonPath("$.errors")
+                    )
+                )
+            )
+        );
     }
 
     @Test
@@ -149,21 +153,120 @@ public class UpdateBulkScanITest {
     }
 
     @Test
-    public void shouldReturnFailureResponseForValidationEndpointFor5YrSep() throws Exception {
+    public void shouldReturnFailureResponseForUpdateEndpointFor5YrSep() throws Exception {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_5_YEAR_SEP_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
-        ).andExpect(matchAll(
-            status().isOk(),
-            content().string(allOf(
-                hasJsonPath("$.warnings", hasItems(
-                    mandatoryFieldIsMissing("RespLegalProceedingsExist"),
-                    mandatoryFieldIsMissing("RespConsiderFinancialSituation"),
-                    notAValidDate("RespStatementofTruthSignedDate"),
-                    mustBeYesOrNo("RespHardshipDefenseResponse")
+        ).andExpect(
+            matchAll(
+                status().isUnprocessableEntity(),
+                content().string(
+                    allOf(
+                        hasJsonPath("$.warnings", equalTo(emptyList())),
+                        hasJsonPath("$.errors")
+                    )
+                )
+            )
+        );
+    }
+
+    @Test
+    public void shouldReturnNoWarningsForUpdateEndpointWithValidDataForBehaviour() throws Exception {
+
+        mockMvc.perform(
+            post(UPDATE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(loadResourceAsString(AOS_OFFLINE_BEHAVIOUR_JSON_PATH))
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(
+            matchAll(
+                status().isOk(),
+                content().string(allOf(
+                    hasJsonPath("$.warnings", equalTo(emptyList()))
                 ))
+            ));
+    }
+
+    @Test
+    public void shouldReturnFailureResponseForUpdateEndpointForBehaviour() throws Exception {
+        mockMvc.perform(
+            post(UPDATE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(loadResourceAsString(INVALID_AOS_OFFLINE_BEHAVIOUR_JSON_PATH))
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(matchAll(
+            status().isUnprocessableEntity(),
+            content().string(allOf(
+                hasJsonPath("$.warnings", equalTo(emptyList())),
+                hasJsonPath("$.errors")
+            ))
+        ));
+    }
+
+    @Test
+    public void shouldReturnNoWarningsForUpdateEndpointWithValidDataForDesertion() throws Exception {
+
+        mockMvc.perform(
+            post(UPDATE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(loadResourceAsString(AOS_OFFLINE_DESERTION_JSON_PATH))
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(
+            matchAll(
+                status().isOk(),
+                content().string(allOf(
+                    hasJsonPath("$.warnings", equalTo(emptyList()))
+                ))
+            ));
+    }
+
+    @Test
+    public void shouldReturnFailureResponseForUpdateEndpointForDesertion() throws Exception {
+        mockMvc.perform(
+            post(UPDATE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(loadResourceAsString(INVALID_AOS_OFFLINE_DESERTION_JSON_PATH))
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(matchAll(
+            status().isUnprocessableEntity(),
+            content().string(allOf(
+                hasJsonPath("$.warnings", equalTo(emptyList())),
+                hasJsonPath("$.errors")
+            ))
+        ));
+    }
+
+    @Test
+    public void shouldReturnNoWarningsForUpdateEndpointWithValidDataForAdultery() throws Exception {
+
+        mockMvc.perform(
+            post(UPDATE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(loadResourceAsString(AOS_OFFLINE_ADULTERY_JSON_PATH))
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(
+            matchAll(
+                status().isOk(),
+                content().string(allOf(
+                    hasJsonPath("$.warnings", equalTo(emptyList()))
+                ))
+            ));
+    }
+
+    @Test
+    public void shouldReturnFailureResponseForUpdateEndpointForAdultery() throws Exception {
+        mockMvc.perform(
+            post(UPDATE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(loadResourceAsString(INVALID_AOS_OFFLINE_ADULTERY_JSON_PATH))
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(matchAll(
+            status().isUnprocessableEntity(),
+            content().string(allOf(
+                hasJsonPath("$.warnings", equalTo(emptyList())),
+                hasJsonPath("$.errors")
             ))
         ));
     }
@@ -186,31 +289,22 @@ public class UpdateBulkScanITest {
     }
 
     @Test
-    public void shouldReturnFailureResponseForValidationEndpointForAdulteryCoResp() throws Exception {
+    public void shouldReturnFailureResponseForUpdateEndpointForAdulteryCoResp() throws Exception {
         mockMvc.perform(
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_ADULTERY_CO_RESP_JSON_PATH))
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
-        ).andExpect(matchAll(
-            status().isOk(),
-            content().string(allOf(
-                hasJsonPath("$.warnings", hasItems(
-                    mustBeYesOrNo("CoRespAdmitAdultery")
-                ))
-            ))
-        ));
-    }
-
-    private String mandatoryFieldIsMissing(String fieldName) {
-        return String.format("Mandatory field \"%s\" is missing", fieldName);
-    }
-
-    private String notAValidDate(String fieldName) {
-        return String.format("%s must be a valid 8 digit date", fieldName);
-    }
-
-    private String mustBeYesOrNo(String fieldName) {
-        return String.format("%s must be \"Yes\" or \"No\"", fieldName);
+        ).andExpect(
+            matchAll(
+                status().isUnprocessableEntity(),
+                content().string(
+                    allOf(
+                        hasJsonPath("$.warnings", equalTo(emptyList())),
+                        hasJsonPath("$.errors")
+                    )
+                )
+            )
+        );
     }
 }

@@ -2,24 +2,21 @@
   "case_type_id": "DIVORCE",
   "id": "LV481297",
   "po_box": "PO 17",
-  "form_type": "DAOS2",
+  "form_type": "DAOS3",
   "ocr_data_fields": [
     { "name": "CaseNumber", "value": "1234123412341234" },
-    { "name": "AOSReasonForDivorce", "value": "5 years separation" },
+    { "name": "AOSReasonForDivorce", "value": "Desertion of desserts" },
     { "name": "RespConfirmReadPetition", "value": "Yes" },
     { "name": "DateRespReceivedDivorceApplication", "value": "10102019" },
-    { "name": "RespHardshipDefenseResponse", "value": "I'm not sure" },
-    { "name": "RespWillDefendDivorce", "value": "Proceed" },
+    { "name": "RespWillDefendDivorce", "value": "Probably not" },
     { "name": "RespJurisdictionAgree", "value": "No" },
     { "name": "RespJurisdictionDisagreeReason", "value": "Some Jurisdiction disagree reason" },
-    { "name": "RespJurisdictionRespCountryOfResidence", "value": "UK" },
+    { "name": "RespLegalProceedingsExist", "value": "Yes" },
     { "name": "RespLegalProceedingsDescription", "value": "Some Description" },
     { "name": "RespAgreeToCosts", "value": "No" },
-    { "name": "RespCostsReason", "value": "Random reason" },
-    { "name": "RespEmailAddress", "value": "est@somemail.com" },
-    { "name": "RespPhoneNumber", "value": "1234123412341234" },
+    { "name": "RespCostsReason", "value": "1234123412341234" },
     { "name": "RespStatementOfTruth", "value": "Yes" },
-    { "name": "RespStatementofTruthSignedDate", "value": "10th January 2020" }
+    { "name": "RespStatementofTruthSignedDate", "value": "10th January 2019" }
   ]
 },
   "case_details": {

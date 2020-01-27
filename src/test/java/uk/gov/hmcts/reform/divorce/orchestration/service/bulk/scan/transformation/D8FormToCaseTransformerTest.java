@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformati
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
-import uk.gov.hmcts.reform.bsp.common.model.transformation.in.ExceptionRecord;
-import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
+import uk.gov.hmcts.reform.bsp.common.model.shared.in.ExceptionRecord;
+import uk.gov.hmcts.reform.bsp.common.model.shared.in.OcrDataField;
 
 import java.util.List;
 import java.util.Map;
@@ -205,7 +205,8 @@ public class D8FormToCaseTransformerTest {
             new OcrDataField("D8FullNameStatementOfTruth", "Peter F. Griffin"),
             new OcrDataField("D8StatementofTruthSignature", "Yes"),
             new OcrDataField("D8StatementofTruthDate", "17/01/2020"),
-            new OcrDataField("D8SolicitorsFirmStatementOfTruth", "Quahog Solicitors Ltd.")
+            new OcrDataField("D8SolicitorsFirmStatementOfTruth", "Quahog Solicitors Ltd."),
+            new OcrDataField("D8PetitionerNameChangedHowOtherDetails", "new name much change such detail")
         ));
 
         Map<String, Object> transformedCaseData = classUnderTest.transformIntoCaseData(exceptionRecord);
@@ -217,7 +218,8 @@ public class D8FormToCaseTransformerTest {
             hasEntry("D8FullNameStatementOfTruth", "Peter F. Griffin"),
             hasEntry("D8StatementOfTruthSignature", "Yes"),
             hasEntry("D8StatementOfTruthDate", "17/01/2020"),
-            hasEntry("D8SolicitorsFirmStatementOfTruth", "Quahog Solicitors Ltd.")
+            hasEntry("D8SolicitorsFirmStatementOfTruth", "Quahog Solicitors Ltd."),
+            hasEntry("D8PetitionerNameChangedHowOtherDetails", "new name much change such detail")
         ));
 
         //More granular tests

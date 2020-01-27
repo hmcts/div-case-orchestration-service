@@ -8,19 +8,25 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
-public class AosOfflineBehaviourDesertionCaseValidator extends AosFormValidator {
+public class AosOfflineAdulteryCaseValidator extends AosFormValidator {
+
+    private static final List<String> MANDATORY_FIELDS = singletonList(
+        "RespAOSAdultery"
+    );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();
 
     static {
-        ALLOWED_VALUES_PER_FIELD.put("AOSReasonForDivorce", asList("Unreasonable behaviour", "Desertion"));
+        ALLOWED_VALUES_PER_FIELD.put("AOSReasonForDivorce", singletonList("Adultery"));
         ALLOWED_VALUES_PER_FIELD.put("RespConfirmReadPetition", asList(YES_VALUE, NO_VALUE));
-        ALLOWED_VALUES_PER_FIELD.put("RespWillDefendDivorce", asList("Proceed", "Defend", "NoNoAdmission"));
+        ALLOWED_VALUES_PER_FIELD.put("RespAOSAdultery", asList(YES_VALUE, NO_VALUE));
+        ALLOWED_VALUES_PER_FIELD.put("RespWillDefendDivorce", asList("Proceed", "Defend"));
         ALLOWED_VALUES_PER_FIELD.put("RespJurisdictionAgree", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("RespLegalProceedingsExist", asList(YES_VALUE, NO_VALUE));
         ALLOWED_VALUES_PER_FIELD.put("RespAgreeToCosts", asList(YES_VALUE, NO_VALUE));
@@ -33,12 +39,12 @@ public class AosOfflineBehaviourDesertionCaseValidator extends AosFormValidator 
     }
 
     @Override
-    protected List<String> getAosOfflineSpecificMandatoryFields() {
+    protected List<String> getAosFormSpecificFieldValidation(Map<String, String> fieldsMap) {
         return emptyList();
     }
 
     @Override
-    protected List<String> getAosFormSpecificFieldValidation(Map<String, String> fieldsMap) {
-        return emptyList();
+    protected List<String> getAosOfflineSpecificMandatoryFields() {
+        return MANDATORY_FIELDS;
     }
 }

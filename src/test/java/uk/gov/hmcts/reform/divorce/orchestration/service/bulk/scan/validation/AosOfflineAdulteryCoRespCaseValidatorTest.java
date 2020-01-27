@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
+import uk.gov.hmcts.reform.bsp.common.model.shared.in.OcrDataField;
 import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResult;
 
 import java.util.ArrayList;
@@ -98,7 +98,7 @@ public class AosOfflineAdulteryCoRespCaseValidatorTest {
     @Test
     public void shouldFailFieldsHavingInvalidValues() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
-            new OcrDataField("AOSReasonForDivorce", "Behaviour"),
+            new OcrDataField("AOSReasonForDivorce", "Unreasonable behaviour"),
             new OcrDataField("RespConfirmReadPetition", "Que?"),
             new OcrDataField("CoRespAdmitAdultery", "Possibly"),
             new OcrDataField("RespWillDefendDivorce", "Yes"),

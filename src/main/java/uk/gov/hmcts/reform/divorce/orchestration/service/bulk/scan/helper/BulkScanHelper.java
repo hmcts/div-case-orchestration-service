@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import uk.gov.hmcts.reform.bsp.common.error.FormFieldValidationException;
-import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
+import uk.gov.hmcts.reform.bsp.common.model.shared.in.OcrDataField;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -101,5 +101,4 @@ public class BulkScanHelper {
 
         return validationWarningMessages;
     }
-
 }

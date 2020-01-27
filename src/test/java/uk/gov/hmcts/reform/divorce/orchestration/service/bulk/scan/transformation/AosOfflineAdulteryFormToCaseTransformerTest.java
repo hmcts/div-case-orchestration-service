@@ -14,9 +14,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.collection.IsMapWithSize.aMapWithSize;
 
-public class AosOffline5YrSepFormToCaseTransformerTest {
+public class AosOfflineAdulteryFormToCaseTransformerTest {
 
-    private final AosOffline5YrSepFormToCaseTransformer classUnderTest = new AosOffline5YrSepFormToCaseTransformer();
+    private final AosOfflineAdulteryFormToCaseTransformer classUnderTest = new AosOfflineAdulteryFormToCaseTransformer();
 
     @Test
     public void shouldNotReturnUnexpectedField() {
@@ -30,21 +30,19 @@ public class AosOffline5YrSepFormToCaseTransformerTest {
         ));
     }
 
-
     @Test
     public void verifyDataIsCorrectlyTransformed() {
         ExceptionRecord exceptionRecord = createExceptionRecord(asList(
             new OcrDataField("RespConfirmReadPetition", "Yes"),
             new OcrDataField("DateRespReceivedDivorceApplication", "10102019"),
-            new OcrDataField("RespHardshipDefenseResponse", "Yes"),
+            new OcrDataField("RespAOSAdultery", "Yes"),
             new OcrDataField("RespWillDefendDivorce", "No"),
-            new OcrDataField("RespConsiderFinancialSituation", "No"),
             new OcrDataField("RespJurisdictionAgree", "Yes"),
             new OcrDataField("RespJurisdictionDisagreeReason", ""),
             new OcrDataField("RespLegalProceedingsExist", "Yes"),
             new OcrDataField("RespLegalProceedingsDescription", "Some random disagree reason"),
             new OcrDataField("RespAgreeToCosts", "Yes"),
-            new OcrDataField("RespCostsReason", ""),
+            new OcrDataField("RespCostsReason", "I want ma money"),
             new OcrDataField("RespStatementOfTruth", "Yes"),
             new OcrDataField("RespStatementofTruthSignedDate", "11102019")
         ));
@@ -54,15 +52,14 @@ public class AosOffline5YrSepFormToCaseTransformerTest {
         assertThat(transformedCaseData, allOf(
             hasEntry("RespConfirmReadPetition", "Yes"),
             hasEntry("DateRespReceivedDivorceApplication", "10102019"),
-            hasEntry("RespHardshipDefenseResponse", "Yes"),
+            hasEntry("RespAOSAdultery", "Yes"),
             hasEntry("RespWillDefendDivorce", "No"),
-            hasEntry("RespConsiderFinancialSituation", "No"),
             hasEntry("RespJurisdictionAgree", "Yes"),
             hasEntry("RespJurisdictionDisagreeReason", ""),
             hasEntry("RespLegalProceedingsExist", "Yes"),
             hasEntry("RespLegalProceedingsDescription", "Some random disagree reason"),
             hasEntry("RespAgreeToCosts", "Yes"),
-            hasEntry("RespCostsReason", ""),
+            hasEntry("RespCostsReason", "I want ma money"),
             hasEntry("RespStatementOfTruth", "Yes"),
             hasEntry("RespStatementofTruthSignedDate", "11102019")
         ));
