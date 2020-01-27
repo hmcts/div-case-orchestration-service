@@ -70,8 +70,7 @@ public class D8FormValidator extends BulkScanFormValidator {
         "D8DivorceClaimFrom",
         "D8FullNameStatementOfTruth",
         "D8StatementofTruthSignature",
-        "D8StatementofTruthDate",
-        "D8SolicitorsFirmStatementOfTruth"
+        "D8StatementofTruthDate"
     );
 
     private static final Map<String, List<String>> ALLOWED_VALUES_PER_FIELD = new HashMap<>();

@@ -88,8 +88,7 @@ public class D8FormValidatorTest {
             new OcrDataField("D8DivorceClaimFrom", "respondent, corespondent"),
             new OcrDataField("D8FullNameStatementOfTruth", "Peter F. Griffin"),
             new OcrDataField("D8StatementofTruthSignature", "Yes"),
-            new OcrDataField("D8StatementofTruthDate", "22/09/2018"),
-            new OcrDataField("D8SolicitorsFirmStatementOfTruth", "Quahog Family Solicitors")
+            new OcrDataField("D8StatementofTruthDate", "22/09/2018")
         ));
 
         mandatoryFields = mandatoryFieldsWithValues.stream().map(OcrDataField::getName).collect(Collectors.toList());
