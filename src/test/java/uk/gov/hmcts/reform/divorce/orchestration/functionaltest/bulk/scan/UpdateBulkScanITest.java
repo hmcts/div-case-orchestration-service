@@ -128,8 +128,8 @@ public class UpdateBulkScanITest {
                 status().isUnprocessableEntity(),
                 content().string(
                     allOf(
-                        hasJsonPath("$.warnings"),
-                        hasJsonPath("$.errors", equalTo(emptyList()))
+                        hasJsonPath("$.warnings", equalTo(emptyList())),
+                        hasJsonPath("$.errors")
                     )
                 )
             )
@@ -164,8 +164,8 @@ public class UpdateBulkScanITest {
                 status().isUnprocessableEntity(),
                 content().string(
                     allOf(
-                        hasJsonPath("$.warnings"),
-                        hasJsonPath("$.errors", equalTo(emptyList()))
+                        hasJsonPath("$.warnings", equalTo(emptyList())),
+                        hasJsonPath("$.errors")
                     )
                 )
             )
@@ -199,8 +199,8 @@ public class UpdateBulkScanITest {
         ).andExpect(matchAll(
             status().isUnprocessableEntity(),
             content().string(allOf(
-                hasJsonPath("$.warnings"),
-                hasJsonPath("$.errors", equalTo(emptyList()))
+                hasJsonPath("$.warnings", equalTo(emptyList())),
+                hasJsonPath("$.errors")
             ))
         ));
     }
@@ -232,8 +232,8 @@ public class UpdateBulkScanITest {
         ).andExpect(matchAll(
             status().isUnprocessableEntity(),
             content().string(allOf(
-                hasJsonPath("$.warnings"),
-                hasJsonPath("$.errors", equalTo(emptyList()))
+                hasJsonPath("$.warnings", equalTo(emptyList())),
+                hasJsonPath("$.errors")
             ))
         ));
     }
@@ -265,8 +265,8 @@ public class UpdateBulkScanITest {
         ).andExpect(matchAll(
             status().isUnprocessableEntity(),
             content().string(allOf(
-                hasJsonPath("$.warnings"),
-                hasJsonPath("$.errors", equalTo(emptyList()))
+                hasJsonPath("$.warnings", equalTo(emptyList())),
+                hasJsonPath("$.errors")
             ))
         ));
     }
@@ -300,8 +300,8 @@ public class UpdateBulkScanITest {
                 status().isUnprocessableEntity(),
                 content().string(
                     allOf(
-                        hasJsonPath("$.warnings"),
-                        hasJsonPath("$.errors", equalTo(emptyList()))
+                        hasJsonPath("$.warnings", equalTo(emptyList())),
+                        hasJsonPath("$.errors")
                     )
                 )
             )

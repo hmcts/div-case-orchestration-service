@@ -14,6 +14,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.Validati
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 @ControllerAdvice
 @Slf4j
 class GlobalExceptionHandler {
@@ -50,8 +54,7 @@ class GlobalExceptionHandler {
             .status(HttpStatus.UNPROCESSABLE_ENTITY)
             .body(
                 BspErrorResponse.builder()
-                    .warnings(exception.getWarnings())
-                    .errors(exception.getErrors())
+                    .errors(mergeLists(exception.getWarnings(), exception.getErrors()))
                     .build()
             );
     }
@@ -84,5 +87,12 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(exception.status()).body(
             String.format("%s - %s", exception.getMessage(), exception.contentUTF8())
         );
+    }
+
+    private List<String> mergeLists(List<String> warn, List<String> errors) {
+        warn = Optional.ofNullable(warn).orElse(new ArrayList<>());
+        warn.addAll(errors);
+
+        return warn;
     }
 }
