@@ -43,7 +43,7 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidDataException.class)
-    ResponseEntity<Object> handleForbiddenException(InvalidDataException exception) {
+    ResponseEntity<Object> handleInvalidDataException(InvalidDataException exception) {
         log.warn(exception.getMessage(), exception);
 
         return ResponseEntity
