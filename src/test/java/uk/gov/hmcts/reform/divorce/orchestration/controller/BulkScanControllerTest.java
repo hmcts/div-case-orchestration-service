@@ -8,10 +8,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
-import uk.gov.hmcts.reform.bsp.common.model.transformation.in.ExceptionRecord;
+import uk.gov.hmcts.reform.bsp.common.model.shared.in.ExceptionRecord;
+import uk.gov.hmcts.reform.bsp.common.model.shared.in.OcrDataField;
 import uk.gov.hmcts.reform.bsp.common.model.transformation.output.CaseCreationDetails;
 import uk.gov.hmcts.reform.bsp.common.model.transformation.output.SuccessfulTransformationResponse;
-import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
 import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResponse;
 import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResult;
@@ -28,7 +28,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -94,7 +93,6 @@ public class BulkScanControllerTest {
     @Test
     public void shouldReturnTransformerServiceResults() {
         ExceptionRecord exceptionRecord = ExceptionRecord.builder().formType(TEST_FORM_TYPE).build();
-        when(bulkScanService.validateBulkScanForm(eq(TEST_FORM_TYPE), any())).thenReturn(OcrValidationResult.builder().build());
         when(bulkScanService.transformBulkScanForm(exceptionRecord)).thenReturn(singletonMap("testKey", "testValue"));
 
         ResponseEntity<SuccessfulTransformationResponse> response =
@@ -113,7 +111,6 @@ public class BulkScanControllerTest {
     @Test
     public void shouldReturnErrorForUnsupportedFormType_ForTransformation() {
         ExceptionRecord exceptionRecord = ExceptionRecord.builder().formType(TEST_FORM_TYPE).build();
-        when(bulkScanService.validateBulkScanForm(eq(TEST_FORM_TYPE), any())).thenReturn(OcrValidationResult.builder().build());
         when(bulkScanService.transformBulkScanForm(exceptionRecord)).thenThrow(UnsupportedFormTypeException.class);
 
         ResponseEntity response = bulkScanController.transformExceptionRecordIntoCase(TEST_SERVICE_TOKEN, exceptionRecord);
@@ -121,5 +118,4 @@ public class BulkScanControllerTest {
         assertThat(response.getStatusCode(), is(UNPROCESSABLE_ENTITY));
         verify(authService).assertIsServiceAllowedToUpdate(TEST_SERVICE_TOKEN);
     }
-
 }

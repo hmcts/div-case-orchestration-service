@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformation;
 
 import org.junit.Test;
-import uk.gov.hmcts.reform.bsp.common.model.transformation.in.ExceptionRecord;
-import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
+import uk.gov.hmcts.reform.bsp.common.model.shared.in.ExceptionRecord;
+import uk.gov.hmcts.reform.bsp.common.model.shared.in.OcrDataField;
 
 import java.util.List;
 import java.util.Map;

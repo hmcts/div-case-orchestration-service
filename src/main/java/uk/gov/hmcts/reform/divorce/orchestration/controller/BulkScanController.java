@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.bsp.common.config.BulkScanEndpoints;
 import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
-import uk.gov.hmcts.reform.bsp.common.model.transformation.in.ExceptionRecord;
+import uk.gov.hmcts.reform.bsp.common.model.shared.CaseDetails;
+import uk.gov.hmcts.reform.bsp.common.model.shared.in.ExceptionRecord;
+import uk.gov.hmcts.reform.bsp.common.model.shared.in.OcrDataField;
 import uk.gov.hmcts.reform.bsp.common.model.transformation.output.CaseCreationDetails;
 import uk.gov.hmcts.reform.bsp.common.model.transformation.output.SuccessfulTransformationResponse;
 import uk.gov.hmcts.reform.bsp.common.model.update.in.BulkScanCaseUpdateRequest;
-import uk.gov.hmcts.reform.bsp.common.model.update.in.CaseUpdateDetails;
 import uk.gov.hmcts.reform.bsp.common.model.update.output.SuccessfulUpdateResponse;
-import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataField;
 import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResponse;
 import uk.gov.hmcts.reform.bsp.common.service.AuthService;
@@ -109,14 +109,9 @@ public class BulkScanController {
 
         ResponseEntity<SuccessfulTransformationResponse> controllerResponse;
         try {
-            OcrValidationResponse ocrValidationResponse = validateExceptionRecord(
-                exceptionRecord.getFormType(), exceptionRecord.getOcrDataFields()
-            );
-
             Map<String, Object> transformedCaseData = bulkScanService.transformBulkScanForm(exceptionRecord);
 
             SuccessfulTransformationResponse callbackResponse = SuccessfulTransformationResponse.builder()
-                .warnings(ocrValidationResponse.getWarnings())
                 .caseCreationDetails(
                     new CaseCreationDetails(
                         CASE_TYPE_ID,
@@ -161,24 +156,18 @@ public class BulkScanController {
         ResponseEntity<SuccessfulUpdateResponse> updateControllerResponse;
 
         try {
-            ExceptionRecord receivedER = request.getExceptionRecord();
-
-            OcrValidationResponse ocrValidationResponse = validateExceptionRecord(
-                receivedER.getFormType(), receivedER.getOcrDataFields()
+            CaseDetails updatedCase = bulkScanService.transformExceptionRecordAndUpdateExistingCase(
+                request.getExceptionRecord(), request.getCaseDetails()
             );
 
-            Map<String, Object> transformedCaseData = bulkScanService.transformBulkScanForm(receivedER);
-            Map<String, Object> originalCaseDataReceived = request.getCaseDetails().getCaseData();
-            originalCaseDataReceived.putAll(transformedCaseData);
-
             SuccessfulUpdateResponse callbackResponse = SuccessfulUpdateResponse.builder()
-                .caseUpdateDetails(
-                    new CaseUpdateDetails(
-                        CASE_TYPE_ID,
-                        originalCaseDataReceived
-                    )
-                ).warnings(ocrValidationResponse.getWarnings())
-                .build();
+                .caseDetails(
+                    CaseDetails.builder()
+                        .caseTypeId(CASE_TYPE_ID)
+                        .caseData(updatedCase.getCaseData())
+                        // here we need to send new state to RBS. RBS hasn't implemented it yet
+                        .build()
+                ).build();
 
             updateControllerResponse = ok(callbackResponse);
         } catch (UnsupportedFormTypeException exception) {
