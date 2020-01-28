@@ -75,7 +75,8 @@ public class HttpConnectionConfiguration {
             new ByteArrayHttpMessageConverter(),
             new StringHttpMessageConverter()));
 
-        restTemplate.setRequestFactory(getClientHttpRequestFactory(healthHttpConnectTimeout, healthHttpConnectRequestTimeout, healthHttpMaxConnections));
+        restTemplate.setRequestFactory(getClientHttpRequestFactory(healthHttpConnectTimeout, healthHttpConnectRequestTimeout,
+            healthHttpMaxConnections));
 
         return restTemplate;
     }
