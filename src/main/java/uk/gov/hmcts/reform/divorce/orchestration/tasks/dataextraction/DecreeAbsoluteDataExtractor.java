@@ -39,7 +39,7 @@ public class DecreeAbsoluteDataExtractor implements CSVExtractor {
 
     @Override
     public String getHeaderLine() {
-        return "CaseReferenceNumber,DAApplicationDate,DNPronouncementDate,PartyApplyingForDA";
+        return "CaseReferenceNumber,DAGrantedDate,DNPronouncementDate,PartyApplyingForDA";
     }
 
     @Override
