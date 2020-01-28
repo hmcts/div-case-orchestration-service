@@ -168,6 +168,9 @@ allprojects {
                 entry 'tomcat-embed-websocket'
                 entry 'tomcat-embed-el'
             }
+
+            dependency group: 'commons-codec', name: 'commons-codec', version: '1.12'
+
         }
     }
 }
@@ -337,6 +340,10 @@ dependencies {
     }
 
     compile(group: 'org.quartz-scheduler', name:'quartz', version: versions.quartz) {
+        force = true
+    }
+
+    compile(group: 'commons-codec', name: 'commons-codec', version: '1.12') {
         force = true
     }
 
