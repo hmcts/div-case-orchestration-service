@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
@@ -64,7 +64,7 @@ public class SendRespondentGenericUpdateNotificationEmailTest {
     public void shouldNotCallEmailServiceForGenericUpdateIfRespEmailDoesNotExist() throws TaskException {
         sendRespondentGenericUpdateNotificationEmail.execute(context, testData);
 
-        verifyZeroInteractions(emailService);
+        verifyNoInteractions(emailService);
     }
 
     @Test

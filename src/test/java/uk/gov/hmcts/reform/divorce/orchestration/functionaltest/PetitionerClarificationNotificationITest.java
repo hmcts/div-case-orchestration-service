@@ -17,7 +17,7 @@ import java.util.Map;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -113,7 +113,7 @@ public class PetitionerClarificationNotificationITest extends MockedFunctionalTe
             .andExpect(status().isOk())
             .andExpect(content().string(expectedResponse));
 
-        verifyZeroInteractions(mockEmailClient);
+        verifyNoInteractions(mockEmailClient);
 
     }
 }

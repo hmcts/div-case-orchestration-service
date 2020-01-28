@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
@@ -121,7 +121,7 @@ public class BulkPrinterTest {
 
         classUnderTest.execute(context, emptyMap());
 
-        verifyZeroInteractions(bulkPrintService);
+        verifyNoInteractions(bulkPrintService);
     }
 
     @Test
@@ -133,7 +133,7 @@ public class BulkPrinterTest {
 
         classUnderTest.execute(context, emptyMap());
 
-        verifyZeroInteractions(bulkPrintService);
+        verifyNoInteractions(bulkPrintService);
     }
 
 }

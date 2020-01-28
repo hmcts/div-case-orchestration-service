@@ -17,9 +17,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.ResultMatcher.matchAll;
@@ -166,7 +167,7 @@ public class ValidationBulkScanITest {
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(
             status().isNotFound(),
-            content().string(isEmptyString())
+            content().string(is(emptyString()))
         ));
     }
 

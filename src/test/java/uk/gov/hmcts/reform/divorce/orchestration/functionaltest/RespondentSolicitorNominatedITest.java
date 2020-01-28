@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -142,7 +142,7 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
                 .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
                 .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
                 .willReturn(aResponse()
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withStatus(HttpStatus.OK.value())
                         .withBody(convertObjectToJsonString(response))));
     }
@@ -152,7 +152,7 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
                 .withRequestBody(equalToJson(convertObjectToJsonString(data)))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBody(convertObjectToJsonString(data))));
     }
 }

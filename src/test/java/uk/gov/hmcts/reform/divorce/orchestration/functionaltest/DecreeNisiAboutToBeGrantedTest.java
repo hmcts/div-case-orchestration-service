@@ -44,7 +44,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -476,7 +476,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
                 .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
                 .willReturn(aResponse()
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withStatus(HttpStatus.OK.value())
                         .withBody(convertObjectToJsonString(response))));
     }
@@ -486,7 +486,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
                 .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
                 .willReturn(aResponse()
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withStatus(HttpStatus.OK.value())
                         .withBody(convertObjectToJsonString(response))));
     }
@@ -495,7 +495,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         feesAndPaymentsServer.stubFor(WireMock.get(AMEND_PETITION_FEE_CONTEXT_PATH)
             .willReturn(aResponse()
                 .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(convertObjectToJsonString(feeResponse))));
     }
 

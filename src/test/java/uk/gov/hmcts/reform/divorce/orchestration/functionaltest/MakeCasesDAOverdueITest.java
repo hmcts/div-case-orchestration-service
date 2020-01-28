@@ -28,7 +28,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -167,7 +167,7 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
     private void stubCaseMaintenanceUpdateEndpoint(Map<String, Object> response) {
         maintenanceServiceServer.stubFor(WireMock.post(CASE_MAINTENANCE_CLIENT_UPDATE_URL)
             .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(response))));
     }
@@ -176,7 +176,7 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
         maintenanceServiceServer.stubFor(WireMock.post(CASE_MAINTENANCE_CLIENT_SEARCH_URL)
             .withRequestBody(equalTo(body))
             .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(response))));
     }
@@ -184,7 +184,7 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
     private void stubCaseMaintenanceSearchEndpointToReturnHttp500() {
         maintenanceServiceServer.stubFor(WireMock.post(CASE_MAINTENANCE_CLIENT_SEARCH_URL)
             .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())));
     }
 

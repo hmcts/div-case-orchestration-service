@@ -20,7 +20,7 @@ import static java.util.UUID.randomUUID;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 
@@ -82,7 +82,7 @@ public class CaseFormatterAddDocumentsTest {
 
         assertThat(response, is(payload));
 
-        verifyZeroInteractions(caseFormatterClient);
+        verifyNoInteractions(caseFormatterClient);
     }
 
     @Test
@@ -95,7 +95,7 @@ public class CaseFormatterAddDocumentsTest {
 
         assertThat(response, is(payload));
 
-        verifyZeroInteractions(caseFormatterClient);
+        verifyNoInteractions(caseFormatterClient);
     }
 
 }

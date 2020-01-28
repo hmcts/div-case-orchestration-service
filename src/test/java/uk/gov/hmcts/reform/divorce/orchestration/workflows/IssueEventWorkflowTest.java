@@ -29,7 +29,7 @@ import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -146,9 +146,9 @@ public class IssueEventWorkflowTest {
         //Then
         assertThat(response, is(payload));
 
-        verifyZeroInteractions(getPetitionIssueFee);
-        verifyZeroInteractions(coRespondentPinGenerator);
-        verifyZeroInteractions(coRespondentLetterGenerator);
+        verifyNoInteractions(getPetitionIssueFee);
+        verifyNoInteractions(coRespondentPinGenerator);
+        verifyNoInteractions(coRespondentLetterGenerator);
     }
 
     @Test
@@ -171,9 +171,9 @@ public class IssueEventWorkflowTest {
         //Then
         assertThat(response, is(payload));
 
-        verifyZeroInteractions(getPetitionIssueFee);
-        verifyZeroInteractions(coRespondentPinGenerator);
-        verifyZeroInteractions(coRespondentLetterGenerator);
+        verifyNoInteractions(getPetitionIssueFee);
+        verifyNoInteractions(coRespondentPinGenerator);
+        verifyNoInteractions(coRespondentLetterGenerator);
     }
 
     @Test
@@ -249,9 +249,9 @@ public class IssueEventWorkflowTest {
         //Then
         assertThat(response, is(payload));
 
-        verifyZeroInteractions(getPetitionIssueFee);
-        verifyZeroInteractions(coRespondentPinGenerator);
-        verifyZeroInteractions(coRespondentLetterGenerator);
+        verifyNoInteractions(getPetitionIssueFee);
+        verifyNoInteractions(coRespondentPinGenerator);
+        verifyNoInteractions(coRespondentLetterGenerator);
     }
 
     @Test
@@ -276,9 +276,9 @@ public class IssueEventWorkflowTest {
         //Then
         assertThat(response, is(payload));
 
-        verifyZeroInteractions(getPetitionIssueFee);
-        verifyZeroInteractions(coRespondentPinGenerator);
-        verifyZeroInteractions(coRespondentLetterGenerator);
+        verifyNoInteractions(getPetitionIssueFee);
+        verifyNoInteractions(coRespondentPinGenerator);
+        verifyNoInteractions(coRespondentLetterGenerator);
     }
 
     @Test
@@ -297,11 +297,11 @@ public class IssueEventWorkflowTest {
         //Then
         assertThat(response, is(payload));
 
-        verifyZeroInteractions(respondentPinGenerator);
-        verifyZeroInteractions(getPetitionIssueFee);
-        verifyZeroInteractions(coRespondentPinGenerator);
-        verifyZeroInteractions(respondentLetterGenerator);
-        verifyZeroInteractions(coRespondentLetterGenerator);
+        verifyNoInteractions(respondentPinGenerator);
+        verifyNoInteractions(getPetitionIssueFee);
+        verifyNoInteractions(coRespondentPinGenerator);
+        verifyNoInteractions(respondentLetterGenerator);
+        verifyNoInteractions(coRespondentLetterGenerator);
     }
 
     @Test
@@ -319,11 +319,11 @@ public class IssueEventWorkflowTest {
         //Then
         assertThat(response, is(payload));
 
-        verifyZeroInteractions(respondentPinGenerator);
-        verifyZeroInteractions(getPetitionIssueFee);
-        verifyZeroInteractions(coRespondentPinGenerator);
-        verifyZeroInteractions(respondentLetterGenerator);
-        verifyZeroInteractions(coRespondentLetterGenerator);
+        verifyNoInteractions(respondentPinGenerator);
+        verifyNoInteractions(getPetitionIssueFee);
+        verifyNoInteractions(coRespondentPinGenerator);
+        verifyNoInteractions(respondentLetterGenerator);
+        verifyNoInteractions(coRespondentLetterGenerator);
     }
 
     @After

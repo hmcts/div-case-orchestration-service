@@ -30,7 +30,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -63,8 +63,8 @@ public class BulkPrintServiceTest {
         when(featureToggleServiceClient.getToggle(FEATURE_TOGGLE_NAME)).thenReturn(featureToggle);
         classUnderTest.send("foo", "bar", emptyList());
 
-        verifyZeroInteractions(sendLetterApi);
-        verifyZeroInteractions(authTokenGenerator);
+        verifyNoInteractions(sendLetterApi);
+        verifyNoInteractions(authTokenGenerator);
     }
 
     @Test
@@ -75,8 +75,8 @@ public class BulkPrintServiceTest {
         when(featureToggleServiceClient.getToggle(FEATURE_TOGGLE_NAME)).thenReturn(featureToggle);
         classUnderTest.send("foo", "bar", emptyList());
 
-        verifyZeroInteractions(sendLetterApi);
-        verifyZeroInteractions(authTokenGenerator);
+        verifyNoInteractions(sendLetterApi);
+        verifyNoInteractions(authTokenGenerator);
 
     }
 

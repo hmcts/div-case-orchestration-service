@@ -51,7 +51,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.ALL_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -341,7 +340,7 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
             .withRequestBody(equalToJson(convertObjectToJsonString(documentRequest)))
             .withHeader(AUTHORIZATION, new EqualToPattern(USER_TOKEN))
             .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withStatus(OK.value())
                 .withBody(convertObjectToJsonString(documentInfo))));
     }
@@ -364,7 +363,7 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
 
         Map<String, Object> responseFromCFS = singletonMap(D8DOCUMENTS_GENERATED, documentsGenerated);
         formatterServiceServer.stubFor(mappingBuilder.willReturn(aResponse()
-            .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+            .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
             .withStatus(OK.value())
             .withBody(convertObjectToJsonString(responseFromCFS))));
     }
