@@ -32,11 +32,17 @@ public class HttpConnectionConfiguration {
     @Value("${http.connect.request.timeout}")
     private int httpConnectRequestTimeout;
 
+    @Value("${http.connect.max-connections:10}")
+    private int httpMaxConnections;
+
     @Value("${health.check.http.connect.timeout}")
     private int healthHttpConnectTimeout;
 
     @Value("${health.check.http.connect.request.timeout}")
     private int healthHttpConnectRequestTimeout;
+
+    @Value("${health.check.http.connect.max-connections:10}")
+    private int healthHttpMaxConnections;
 
     @Bean
     @Primary
@@ -56,7 +62,7 @@ public class HttpConnectionConfiguration {
             new ByteArrayHttpMessageConverter(),
             new StringHttpMessageConverter()));
 
-        restTemplate.setRequestFactory(getClientHttpRequestFactory(httpConnectTimeout, httpConnectRequestTimeout));
+        restTemplate.setRequestFactory(getClientHttpRequestFactory(httpConnectTimeout, httpConnectRequestTimeout, httpMaxConnections));
 
         return restTemplate;
     }
@@ -69,14 +75,12 @@ public class HttpConnectionConfiguration {
             new ByteArrayHttpMessageConverter(),
             new StringHttpMessageConverter()));
 
-        restTemplate.setRequestFactory(getClientHttpRequestFactory(healthHttpConnectTimeout,
-            healthHttpConnectRequestTimeout));
+        restTemplate.setRequestFactory(getClientHttpRequestFactory(healthHttpConnectTimeout, healthHttpConnectRequestTimeout, healthHttpMaxConnections));
 
         return restTemplate;
     }
 
-    private ClientHttpRequestFactory getClientHttpRequestFactory(
-        int httpConnectTimeout, int httpConnectRequestTimeout) {
+    private ClientHttpRequestFactory getClientHttpRequestFactory(int httpConnectTimeout, int httpConnectRequestTimeout, int maxConnections) {
         RequestConfig config = RequestConfig.custom()
             .setConnectTimeout(httpConnectTimeout)
             .setConnectionRequestTimeout(httpConnectRequestTimeout)
@@ -88,6 +92,8 @@ public class HttpConnectionConfiguration {
             .useSystemProperties()
             .addInterceptorFirst(new OutboundRequestIdSettingInterceptor())
             .setDefaultRequestConfig(config)
+            .setMaxConnPerRoute(maxConnections)
+            .setMaxConnTotal(maxConnections)
             .build();
 
         return new HttpComponentsClientHttpRequestFactory(client);
