@@ -42,4 +42,13 @@
         <cve>CVE-2015-2156</cve>
         <cve>CVE-2019-16869</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+           Spring update to 2.2.4.RELEASE causing failures in all health check
+           tests due to missing properties and possible incorrect configuration.
+           Potential solutions were investigated in PR #691 ]]>
+        </notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2020-5398</cve>
+    </suppress>
 </suppressions>
