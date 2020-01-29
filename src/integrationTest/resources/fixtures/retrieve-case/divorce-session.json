@@ -72,7 +72,7 @@
       "siteId":"AA04",
       "divorceCentreAddressName":"Liverpool Civil & Family Court",
       "postCode":"L2 2BX",
-      "openingHours":"Telephone Enquiries from: 8.30am to 5pm",
+      "openingHours": "Telephone Enquiries from: Monday - Friday 8am to 8pm, Saturday 8am to 2pm",
       "courtCity":"Liverpool",
       "email":"family@liverpool.countycourt.gsi.gov.uk"
     },
@@ -82,7 +82,7 @@
       "divorceCentre":"South West Regional Divorce Centre",
       "siteId":"AA03",
       "postCode":"SO15 9GG",
-      "openingHours":"Telephone Enquiries from: 8.30am to 5pm",
+      "openingHours": "Telephone Enquiries from: Monday - Friday 8am to 8pm, Saturday 8am to 2pm",
       "courtCity":"Southampton",
       "email":"sw-region-divorce@hmcts.gsi.gov.uk"
     },
@@ -92,7 +92,7 @@
       "divorceCentre":"West Midlands Regional Divorce Centre",
       "siteId":"AA02",
       "postCode":"ST4 9NH",
-      "openingHours":"Telephone Enquiries from: 8.30am to 5pm",
+      "openingHours": "Telephone Enquiries from: Monday - Friday 8am to 8pm, Saturday 8am to 2pm",
       "courtCity":"Stoke-on-Trent",
       "email":"westmidlandsdivorce@hmcts.gsi.gov.uk"
     },
@@ -102,7 +102,7 @@
       "divorceCentre":"East Midlands Regional Divorce Centre",
       "siteId":"AA01",
       "postCode":"NG2 9QN",
-      "openingHours":"Telephone Enquiries from: 8.30am to 5pm",
+      "openingHours": "Telephone Enquiries from: Monday - Friday 8am to 8pm, Saturday 8am to 2pm",
       "courtCity":"Nottingham",
       "email":"eastmidlandsdivorce@hmcts.gsi.gov.uk"
     },
@@ -113,7 +113,7 @@
       "divorceCentre":"HMCTS Digital Divorce",
       "siteId":"AA07",
       "postCode":"CM20 9QT",
-      "openingHours":"Telephone Enquiries from: 8.30am to 5pm",
+      "openingHours": "Telephone Enquiries from: Monday - Friday 8am to 8pm, Saturday 8am to 2pm",
       "courtCity":"Harlow",
       "email":"divorcecase@justice.gov.uk"
     }
