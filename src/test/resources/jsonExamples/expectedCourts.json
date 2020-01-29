@@ -4,7 +4,7 @@
     "courtCity": "Nottingham",
     "poBox": "PO Box 10447",
     "postCode": "NG2 9QN",
-    "openingHours": "Telephone Enquiries from: 8.30am to 5pm",
+    "openingHours": "Telephone Enquiries from: Monday - Friday 8am to 8pm, Saturday 8am to 2pm",
     "email": "eastmidlandsdivorce@hmcts.gsi.gov.uk",
     "phoneNumber": "0300 303 0642",
     "siteId": "AA01"
@@ -14,7 +14,7 @@
     "courtCity": "Stoke-on-Trent",
     "poBox": "PO Box 3650",
     "postCode": "ST4 9NH",
-    "openingHours": "Telephone Enquiries from: 8.30am to 5pm",
+    "openingHours": "Telephone Enquiries from: Monday - Friday 8am to 8pm, Saturday 8am to 2pm",
     "email": "westmidlandsdivorce@hmcts.gsi.gov.uk",
     "phoneNumber": "0300 303 0642",
     "siteId": "AA02"
@@ -24,7 +24,7 @@
     "courtCity": "Southampton",
     "poBox": "PO Box 1792",
     "postCode": "SO15 9GG",
-    "openingHours": "Telephone Enquiries from: 8.30am to 5pm",
+    "openingHours": "Telephone Enquiries from: Monday - Friday 8am to 8pm, Saturday 8am to 2pm",
     "email": "sw-region-divorce@hmcts.gsi.gov.uk",
     "phoneNumber": "0300 303 0642",
     "siteId": "AA03"
@@ -35,7 +35,7 @@
     "courtCity": "Liverpool",
     "street": "35 Vernon Street",
     "postCode": "L2 2BX",
-    "openingHours": "Telephone Enquiries from: 8.30am to 5pm",
+    "openingHours": "Telephone Enquiries from: Monday - Friday 8am to 8pm, Saturday 8am to 2pm",
     "email": "family@liverpool.countycourt.gsi.gov.uk",
     "phoneNumber": "0300 303 0642",
     "siteId": "AA04"
@@ -46,7 +46,7 @@
     "courtCity": "Harlow",
     "poBox": "PO Box 12706",
     "postCode": "CM20 9QT",
-    "openingHours": "Telephone Enquiries from: 8.30am to 5pm",
+    "openingHours": "Telephone Enquiries from: Monday - Friday 8am to 8pm, Saturday 8am to 2pm",
     "email": "divorcecase@justice.gov.uk",
     "phoneNumber": "0300 303 0642",
     "siteId": "AA07"
