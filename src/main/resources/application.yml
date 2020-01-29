@@ -347,6 +347,7 @@ http:
     timeout: 60000
     request:
       timeout: 60000
+    max-connections: 25
 
 health:
   check:
@@ -355,6 +356,7 @@ health:
         timeout: 5000
         request:
           timeout: 5000
+        max-connections: 25
 
 documentation:
   swagger:
