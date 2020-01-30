@@ -81,7 +81,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
             + "    \"id\": 123,"
             + "    \"case_data\": {"
             + "      \"D8caseReference\": \"CR12345\","
-            + "      \"DecreeAbsoluteApplicationDate\": \"2017-03-06T16:49:00.015\","
+            + "      \"DecreeAbsoluteGrantedDate\": \"2017-03-06T16:49:00.015\","
             + "      \"DecreeNisiGrantedDate\": \"2017-07-06\""
             + "    }"
             + "  }]"
@@ -160,7 +160,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
         verifyExtractionInteractions("DA",
             "da-extraction@divorce.gov.uk",
             DA_DESIRED_STATES,
-            "CaseReferenceNumber,DAApplicationDate,DNPronouncementDate,PartyApplyingForDA",
+            "CaseReferenceNumber,DAGrantedDate,DNPronouncementDate,PartyApplyingForDA",
             "CR12345,06/03/2017,06/07/2017,petitioner"
         );
         verifyExtractionInteractions("AOSDN",
