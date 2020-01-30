@@ -17,10 +17,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
@@ -130,7 +130,7 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         setUpEmailClientMockThrowsExceptionWith(templateName, testTemplateVars);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-                .data(testData).errors(asList("test exception")).build();
+                .data(testData).errors(Collections.singletonList("test exception")).build();
         expect(status().isOk(), expectedResponse);
         verifySendEmailIsCalledWithUserDataAnd(templateName);
     }
@@ -143,7 +143,7 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         setUpEmailClientMockThrowsExceptionWith(templateName, testTemplateVars);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-                .data(testData).errors(asList("test exception")).build();
+                .data(testData).errors(Collections.singletonList("test exception")).build();
         expect(status().isOk(), expectedResponse);
         verifySendEmailIsCalledWithUserDataAnd(templateName);
     }

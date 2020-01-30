@@ -72,7 +72,7 @@ public class PetitionGeneratorTest {
         petitionGenerator.execute(context, payload);
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection =
-            (LinkedHashSet<GeneratedDocumentInfo>)context.getTransientObject(DOCUMENT_COLLECTION);
+            context.getTransientObject(DOCUMENT_COLLECTION);
 
         assertThat(documentCollection, is(newLinkedHashSet(expectedPetition)));
 

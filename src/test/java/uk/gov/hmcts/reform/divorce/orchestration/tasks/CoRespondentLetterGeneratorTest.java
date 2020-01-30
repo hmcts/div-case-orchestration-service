@@ -90,7 +90,7 @@ public class CoRespondentLetterGeneratorTest {
         coRespondentLetterGenerator.execute(context, payload);
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection =
-            (LinkedHashSet<GeneratedDocumentInfo>)context.getTransientObject(DOCUMENT_COLLECTION);
+            context.getTransientObject(DOCUMENT_COLLECTION);
 
         assertThat(documentCollection, CoreMatchers.is(newLinkedHashSet(expectedCoRespondentInvitation)));
 

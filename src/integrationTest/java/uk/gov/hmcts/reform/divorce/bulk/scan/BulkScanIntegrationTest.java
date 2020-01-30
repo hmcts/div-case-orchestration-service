@@ -102,23 +102,21 @@ public class BulkScanIntegrationTest extends IntegrationTest {
 
     private Response validationEndpointRequest(String token, String endpointName, String formType) {
 
-        Response  response = SerenityRest.given()
+        return SerenityRest.given()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .header(SERVICE_AUTHORISATION_HEADER, token)
             .relaxedHTTPSValidation()
             .body(validBody)
             .post(cosBaseURL + endpointName, formType);
-        return response;
     }
 
     private Response transformationAndUpdateEndpointRequest(String token, String endpointName) {
 
-        Response  response = SerenityRest.given()
+        return SerenityRest.given()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .header(SERVICE_AUTHORISATION_HEADER, token)
             .relaxedHTTPSValidation()
             .body(validBody)
             .post(cosBaseURL + endpointName);
-        return response;
     }
 }

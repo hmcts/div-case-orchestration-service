@@ -14,7 +14,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -97,7 +97,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
 
         String inputJson = JSONObject.valueToString(CASE_DETAILS);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-            .errors(asList("test exception")).build();
+            .errors(singletonList("test exception")).build();
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)

@@ -25,7 +25,7 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static java.time.ZoneOffset.UTC;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.contains;
 import static org.mockito.Mockito.when;
@@ -100,7 +100,7 @@ public class EditBulkCaseITest extends MockedFunctionalTest {
 
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
-                .documents(asList(documentGenerationResponse))
+                .documents(singletonList(documentGenerationResponse))
                 .caseData(caseData)
                 .build();
 

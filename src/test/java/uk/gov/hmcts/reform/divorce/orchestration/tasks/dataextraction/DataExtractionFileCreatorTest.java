@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -98,7 +98,7 @@ public class DataExtractionFileCreatorTest {
 
         verify(cmsElasticSearchSupport).searchCMSCases(eq(0), eq(50), eq(TEST_AUTHORISATION_TOKEN),
             eq(QueryBuilders.termQuery("last_modified", testLastModifiedDate)),
-            eq(QueryBuilders.termsQuery("state", asList(TEST_RELEVANT_STATE.toLowerCase())))
+            eq(QueryBuilders.termsQuery("state", singletonList(TEST_RELEVANT_STATE.toLowerCase())))
         );
     }
 }

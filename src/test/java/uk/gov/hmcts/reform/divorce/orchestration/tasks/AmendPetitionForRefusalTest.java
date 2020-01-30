@@ -27,7 +27,6 @@ public class AmendPetitionForRefusalTest {
     @InjectMocks
     private CreateAmendPetitionDraftForRefusalTask classUnderTest;
 
-    @SuppressWarnings("unchecked")
     @Test
     public void givenUserTokenWithoutCase_whenExecuteAmendPetition_thenReturnEmpty() {
         TaskContext context = new DefaultTaskContext();

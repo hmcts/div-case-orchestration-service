@@ -41,6 +41,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 
 /**
  * This test uses the service (just like the scheduled job will).
@@ -52,7 +53,6 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
     private static final String DN_DESIRED_STATES = "[\"dnisrefused\", \"dnpronounced\"]";
 
     private static final DateTimeFormatter FILE_NAME_DATE_FORMAT = ofPattern("ddMMyyyy000000");
-    protected static final String TEST_AUTH_TOKEN = "testAuthToken";
 
     private String yesterday;
 
@@ -72,7 +72,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
     public void setUp() {
         maintenanceServiceServer.resetAll();
 
-        when(authUtil.getCaseworkerToken()).thenReturn(TEST_AUTH_TOKEN);
+        when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
         yesterday = LocalDate.now().minusDays(1).format(FILE_NAME_DATE_FORMAT);
 
         //Mock CMS to return a case like Elastic search will
@@ -181,7 +181,7 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
 
     private void stubJsonResponse(String desiredStates, String caseData) {
         maintenanceServiceServer.stubFor(WireMock.post("/casemaintenance/version/1/search")
-            .withHeader("Authorization", equalTo(TEST_AUTH_TOKEN))
+            .withHeader("Authorization", equalTo(AUTH_TOKEN))
             .withRequestBody(matchingJsonPath("$.query.bool.filter[*].terms.state[*]",
                 equalToJson(desiredStates, true, false)))
             .willReturn(okJson(caseData))

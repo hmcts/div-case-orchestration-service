@@ -51,7 +51,6 @@ public class ProcessPbaPayment implements Task<Map<String, Object>> {
         this.objectMapper = objectMapper;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         try {

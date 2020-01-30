@@ -59,7 +59,6 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
     @InjectMocks
     private SendPetitionerCoRespondentRespondedNotificationEmail sendPetitionerCoRespondentRespondedNotificationEmail;
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testSolicitorEmailIsSent_WhenCoRespondentSubmits()
         throws IOException, TaskException {
@@ -94,7 +93,6 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
             coRespRespondedSolicitorEmail);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasNot()
         throws IOException, TaskException {
@@ -125,7 +123,6 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
             coRespRespondedButRespHasNot);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasNotDefended()
         throws IOException, TaskException {
@@ -157,7 +154,6 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
             coRespRespondedWhenAosUndefended);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasIsDefending()
         throws IOException, TaskException {

@@ -72,8 +72,7 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
-        Map<String, Object> expectedData = new HashMap<>();
-        expectedData.putAll(divorceSession);
+        Map<String, Object> expectedData = new HashMap<>(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
 
@@ -90,8 +89,7 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
-        Map<String, Object> expectedData = new HashMap<>();
-        expectedData.putAll(divorceSession);
+        Map<String, Object> expectedData = new HashMap<>(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
 
@@ -113,8 +111,7 @@ public class SubmitRespondentAosCaseUTest {
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
-        Map<String, Object> expectedData = new HashMap<>();
-        expectedData.putAll(divorceSession);
+        Map<String, Object> expectedData = new HashMap<>(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
 
@@ -137,8 +134,7 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
-        Map<String, Object> expectedData = new HashMap<>();
-        expectedData.putAll(divorceSession);
+        Map<String, Object> expectedData = new HashMap<>(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
 
@@ -160,8 +156,7 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
-        Map<String, Object> expectedData = new HashMap<>();
-        expectedData.putAll(divorceSession);
+        Map<String, Object> expectedData = new HashMap<>(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
@@ -179,8 +174,7 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
-        Map<String, Object> expectedData = new HashMap<>();
-        expectedData.putAll(divorceSession);
+        Map<String, Object> expectedData = new HashMap<>(divorceSession);
         expectedData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         expectedData.put(RECEIVED_AOS_FROM_RESP_DATE, FIXED_DATE);
 

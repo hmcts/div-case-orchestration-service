@@ -66,7 +66,7 @@ public class SendPetitionerClarificationRequestEmail implements Task<Map<String,
             String respLastName = getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD);
             String solicitorName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
 
-            templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, (String) context.getTransientObject(CASE_ID_JSON_KEY));
+            templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, context.getTransientObject(CASE_ID_JSON_KEY));
             templateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
             templateVars.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
             templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);

@@ -27,7 +27,7 @@ public class CMSElasticSearchSupport {
         return searchCMSCases(start, pageSize, 0, authToken, builders);
     }
 
-    public Stream<CaseDetails> searchCMSCases(int start, int pageSize, int pagesReturned, String authToken, QueryBuilder... builders) {
+    private Stream<CaseDetails> searchCMSCases(int start, int pageSize, int pagesReturned, String authToken, QueryBuilder... builders) {
         SearchResult finalResult = SearchResult.builder()
             .total(0)
             .cases(new ArrayList<>())

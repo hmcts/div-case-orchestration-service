@@ -47,10 +47,9 @@ public class CreditAccountPaymentRequest {
     private String organisationName;
 
     public void setAmount(String amount) {
-        String value = Optional.ofNullable(amount)
+        this.amount = Optional.ofNullable(amount)
                 .map(Double::parseDouble).map(i -> i / 100)
                 .map(String::valueOf).orElse(amount);
-        this.amount = value;
     }
 
 }

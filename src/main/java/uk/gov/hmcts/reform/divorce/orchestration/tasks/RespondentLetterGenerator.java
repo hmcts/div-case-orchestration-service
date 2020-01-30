@@ -33,7 +33,6 @@ public class RespondentLetterGenerator implements Task<Map<String, Object>> {
     }
 
     @Override
-    @SuppressWarnings("Duplicates")
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
 

@@ -100,7 +100,7 @@ public class SearchAwaitingPronouncementCasesTest {
 
         Object actual = context.getTransientObject(SEARCH_RESULT_KEY);
 
-        assertThat(actual, is(Arrays.asList(cmsSearchResponse)));
+        assertThat(actual, is(Collections.singletonList(cmsSearchResponse)));
 
         int expectedIterations = 2;
 
@@ -145,8 +145,8 @@ public class SearchAwaitingPronouncementCasesTest {
 
         final SearchResult expectedCmsResponseTwo = SearchResult.builder()
                 .total(5)
-                .cases(Arrays.asList(
-                        CaseDetails.builder().caseId(TEST_CASE_ID_3).build()
+                .cases(Collections.singletonList(
+                    CaseDetails.builder().caseId(TEST_CASE_ID_3).build()
                 )).build();
 
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), contains("\"from\":0"))).thenReturn(cmsSearchResponse);

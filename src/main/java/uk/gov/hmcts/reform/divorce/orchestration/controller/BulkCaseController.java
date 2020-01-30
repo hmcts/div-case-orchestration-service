@@ -18,9 +18,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkCaseService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
+import java.util.Collections;
 import java.util.Map;
-
-import static java.util.Arrays.asList;
 
 @RestController
 @Slf4j
@@ -57,7 +56,7 @@ public class BulkCaseController {
         try {
             orchestrationService.processBulkCaseScheduleForHearing(ccdCallbackRequest, authorizationToken);
         } catch (WorkflowException exception) {
-            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
@@ -76,7 +75,7 @@ public class BulkCaseController {
         try {
             orchestrationService.validateBulkCaseListingData(ccdCallbackRequest.getCaseDetails().getCaseData());
         } catch (WorkflowException exception) {
-            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
@@ -103,7 +102,7 @@ public class BulkCaseController {
             ccdCallbackResponseBuilder.data(response);
         } catch (WorkflowException exception) {
             log.error("Error validating bulk case with BulkCaseId : {}", ccdCallbackRequest.getCaseDetails().getCaseId(), exception);
-            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
@@ -125,7 +124,7 @@ public class BulkCaseController {
             ccdCallbackResponseBuilder.data(orchestrationService
                     .updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails(), authorizationToken));
         } catch (WorkflowException exception) {
-            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
@@ -147,7 +146,7 @@ public class BulkCaseController {
             ccdCallbackResponseBuilder.data(orchestrationService
                 .updateBulkCaseAcceptedCases(ccdCallbackRequest.getCaseDetails(), authorizationToken));
         } catch (WorkflowException exception) {
-            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
@@ -168,7 +167,7 @@ public class BulkCaseController {
         try {
             ccdCallbackResponseBuilder.data(bulkCaseService.removeFromBulkListed(ccdCallbackRequest, authorizationToken));
         } catch (WorkflowException exception) {
-            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
@@ -190,7 +189,7 @@ public class BulkCaseController {
         try {
             orchestrationService.processCancelBulkCasePronouncement(ccdCallbackRequest, authorizationToken);
         } catch (WorkflowException exception) {
-            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());

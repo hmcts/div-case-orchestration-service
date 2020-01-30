@@ -20,7 +20,6 @@ public class DaAboutToBeGrantedTest extends IntegrationTest {
     @Autowired
     private CosApiClient cosApiClient;
 
-    @SuppressWarnings("unchecked")
     @Test
     public void givenValidCaseData_whenDaAboutToBeGranted_thenReturnDaAboutToBeGrantedData() {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, CcdCallbackRequest.class);

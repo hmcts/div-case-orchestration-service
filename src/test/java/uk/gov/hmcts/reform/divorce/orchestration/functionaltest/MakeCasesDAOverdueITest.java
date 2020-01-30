@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.service.SearchSourceFactory;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,13 +54,10 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
     private SearchResult searchResult;
     private List<String> caseIds = new ArrayList<>();
     private List<CaseDetails> cases = new ArrayList<>();
-    String expectedRequestBody;
+    private String expectedRequestBody;
 
     @Autowired
     private MockMvc webClient;
-
-    @Autowired
-    private CcdUtil ccdUtil;
 
     @Before
     public void setup() {

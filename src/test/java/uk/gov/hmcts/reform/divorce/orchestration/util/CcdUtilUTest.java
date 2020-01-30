@@ -21,6 +21,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE_FORMATTED;
@@ -73,19 +75,19 @@ public class CcdUtilUTest {
     @Test
     public void givenDateStringInPast_whenIsCcdDateTimeInThePast_thenReturnTrue() {
         String pastDate = LocalDateTime.now(clock).minusMonths(1).toString();
-        assertEquals(true, ccdUtil.isCcdDateTimeInThePast(pastDate));
+        assertTrue(ccdUtil.isCcdDateTimeInThePast(pastDate));
     }
 
     @Test
     public void givenDateStringIsToday_whenIsCcdDateTimeInThePast_thenReturnTrue() {
         String now = LocalDateTime.now(clock).toString();
-        assertEquals(true, ccdUtil.isCcdDateTimeInThePast(now));
+        assertTrue(ccdUtil.isCcdDateTimeInThePast(now));
     }
 
     @Test
     public void givenDateStringInFuture_whenIsCcdDateTimeInThePast_thenReturnFalse() {
         String futureDate = LocalDateTime.now(clock).plusMonths(1).toString();
-        assertEquals(false, ccdUtil.isCcdDateTimeInThePast(futureDate));
+        assertFalse(ccdUtil.isCcdDateTimeInThePast(futureDate));
     }
 
     @Test

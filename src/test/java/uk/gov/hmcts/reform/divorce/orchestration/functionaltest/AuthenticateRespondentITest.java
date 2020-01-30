@@ -62,7 +62,7 @@ public class AuthenticateRespondentITest extends IdamTestSupport {
     @Test
     public void givenUserDoesNotHaveLetterHolderRole_whenAuthenticateRespondent_thenReturnUnauthorized()
         throws Exception {
-        final String userDetailsResponse = getUserDetailsResponse(Arrays.asList("letter-loa1"));
+        final String userDetailsResponse = getUserDetailsResponse(Collections.singletonList("letter-loa1"));
 
         stubUserDetailsEndpoint(HttpStatus.OK, BEARER_AUTH_TOKEN, userDetailsResponse);
 

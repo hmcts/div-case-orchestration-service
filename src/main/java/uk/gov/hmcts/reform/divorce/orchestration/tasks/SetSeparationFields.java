@@ -33,10 +33,10 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
     @Autowired
     private Clock clock;
 
-    public static final Integer TWO = 2;
-    public static final Integer FIVE = 5;
-    public static final Integer SIX = 6;
-    public static final Integer SEVEN = 7;
+    private static final Integer TWO = 2;
+    private static final Integer FIVE = 5;
+    private static final Integer SIX = 6;
+    private static final Integer SEVEN = 7;
     public static final String FACT_CANT_USE = "Based on the given date, the selected fact cannot be used for this divorce application";
 
     @Override
@@ -139,7 +139,7 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
         Long timeTogetherWeeks = getLivingTogetherWeeks(caseData);
         Long timeTogetherDays = getLivingTogetherDays(caseData) % SEVEN;
 
-        StringBuilder permittedSepTime = new StringBuilder("");
+        StringBuilder permittedSepTime = new StringBuilder();
         if (timeTogetherMonths >= SIX) {
             permittedSepTime.append("6 months");
             return permittedSepTime.toString();

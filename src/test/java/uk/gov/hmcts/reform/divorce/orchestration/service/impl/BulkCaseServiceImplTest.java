@@ -152,7 +152,7 @@ public class BulkCaseServiceImplTest {
 
         BulkWorkflowExecutionResult result = BulkWorkflowExecutionResult.builder()
                 .successStatus(true)
-                .failedCases(Arrays.asList(caseDataOne))
+                .failedCases(Collections.singletonList(caseDataOne))
                 .removableCaseIds(ImmutableSet.of(TEST_CASE_ID_ONE))
                 .build();
         when(linkBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN)).thenReturn(result);
@@ -161,8 +161,8 @@ public class BulkCaseServiceImplTest {
         classToTest.handleBulkCaseCreateEvent(event);
 
         Map<String, Object> expectedUpdatePayload = ImmutableMap.of(
-                CASE_LIST_KEY, Arrays.asList(Collections.singletonMap(VALUE_KEY, caseDataTwo)),
-                BULK_CASE_ACCEPTED_LIST_KEY, Arrays.asList(Collections.singletonMap(VALUE_KEY, caseReferenceTwo))
+                CASE_LIST_KEY, Collections.singletonList(Collections.singletonMap(VALUE_KEY, caseDataTwo)),
+                BULK_CASE_ACCEPTED_LIST_KEY, Collections.singletonList(Collections.singletonMap(VALUE_KEY, caseReferenceTwo))
         );
 
         verify(linkBulkCaseWorkflow, times(1)).executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);

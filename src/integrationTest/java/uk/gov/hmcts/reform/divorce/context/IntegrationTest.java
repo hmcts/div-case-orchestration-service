@@ -177,14 +177,13 @@ public abstract class IntegrationTest {
 
             final String userId = idamTestSupportUtil.getUserId(authToken);
 
-            UserDetails userDetails = UserDetails.builder()
+            return UserDetails.builder()
                 .username(username)
                 .emailAddress(username)
                 .password(PASSWORD)
                 .authToken(authToken)
                 .id(userId)
                 .build();
-            return userDetails;
         }
     }
 

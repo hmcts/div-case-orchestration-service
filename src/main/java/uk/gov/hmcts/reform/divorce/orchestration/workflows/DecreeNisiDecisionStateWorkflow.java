@@ -21,15 +21,13 @@ public class DecreeNisiDecisionStateWorkflow extends DefaultWorkflow<Map<String,
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
 
-        Map<String, Object> payloadToReturn = this.execute(
+        return this.execute(
             new Task[]{
                 setDNDecisionStateTask
             },
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId())
             );
-
-        return payloadToReturn;
     }
 
 }
