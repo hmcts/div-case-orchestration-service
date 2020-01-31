@@ -18,14 +18,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkCaseService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
-import java.util.Collections;
 import java.util.Map;
+
+import static java.util.Arrays.asList;
 
 @RestController
 @Slf4j
 @AllArgsConstructor
 public class BulkCaseController {
-    
+
     private final CaseOrchestrationService orchestrationService;
 
     private final BulkCaseService bulkCaseService;
@@ -44,19 +45,19 @@ public class BulkCaseController {
     @PostMapping(path = "/bulk/schedule/listing")
     @ApiOperation(value = "Callback to begin processing cases in bulk case for the court hearing")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Bulk case processing has been initiated"),
-            @ApiResponse(code = 400, message = "Bad Request")})
+        @ApiResponse(code = 200, message = "Bulk case processing has been initiated"),
+        @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> scheduleBulkCaseForHearing(
-            @RequestHeader("Authorization")
-            @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+        @RequestHeader("Authorization")
+        @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
             orchestrationService.processBulkCaseScheduleForHearing(ccdCallbackRequest, authorizationToken);
         } catch (WorkflowException exception) {
-            ccdCallbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
@@ -65,17 +66,17 @@ public class BulkCaseController {
     @PostMapping(path = "/bulk/validate/listing")
     @ApiOperation(value = "Callback to validate bulk case data for listing")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Bulk case processing has been initiated"),
-            @ApiResponse(code = 400, message = "Bad Request")})
+        @ApiResponse(code = 200, message = "Bulk case processing has been initiated"),
+        @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> validateBulkCaseListingData(
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
             orchestrationService.validateBulkCaseListingData(ccdCallbackRequest.getCaseDetails().getCaseData());
         } catch (WorkflowException exception) {
-            ccdCallbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
@@ -102,7 +103,7 @@ public class BulkCaseController {
             ccdCallbackResponseBuilder.data(response);
         } catch (WorkflowException exception) {
             log.error("Error validating bulk case with BulkCaseId : {}", ccdCallbackRequest.getCaseDetails().getCaseId(), exception);
-            ccdCallbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
@@ -111,20 +112,20 @@ public class BulkCaseController {
     @PostMapping(path = "/bulk/pronounce/submit")
     @ApiOperation(value = "Callback to set required data on case when DN Pronounced")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Required pronouncement data has been set successfully"),
-            @ApiResponse(code = 400, message = "Bad Request")})
+        @ApiResponse(code = 200, message = "Required pronouncement data has been set successfully"),
+        @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> updateCaseDnPronounce(
-            @RequestHeader("Authorization")
-            @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestHeader("Authorization")
+        @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
             ccdCallbackResponseBuilder.data(orchestrationService
-                    .updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails(), authorizationToken));
+                .updateBulkCaseDnPronounce(ccdCallbackRequest.getCaseDetails(), authorizationToken));
         } catch (WorkflowException exception) {
-            ccdCallbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
@@ -146,7 +147,7 @@ public class BulkCaseController {
             ccdCallbackResponseBuilder.data(orchestrationService
                 .updateBulkCaseAcceptedCases(ccdCallbackRequest.getCaseDetails(), authorizationToken));
         } catch (WorkflowException exception) {
-            ccdCallbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
@@ -167,7 +168,7 @@ public class BulkCaseController {
         try {
             ccdCallbackResponseBuilder.data(bulkCaseService.removeFromBulkListed(ccdCallbackRequest, authorizationToken));
         } catch (WorkflowException exception) {
-            ccdCallbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
@@ -189,7 +190,7 @@ public class BulkCaseController {
         try {
             orchestrationService.processCancelBulkCasePronouncement(ccdCallbackRequest, authorizationToken);
         } catch (WorkflowException exception) {
-            ccdCallbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());

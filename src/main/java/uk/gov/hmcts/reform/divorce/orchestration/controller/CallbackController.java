@@ -32,6 +32,7 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_ANSWERS_LINK;
@@ -436,7 +437,7 @@ public class CallbackController {
 
         } catch (WorkflowException exception) {
             log.error("Co-respondent answer received failed. Case id:  {}", caseId, exception);
-            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
+            callbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
@@ -554,7 +555,7 @@ public class CallbackController {
             log.info("Co-respondent answer generated. Case id: {}", caseId);
         } catch (WorkflowException exception) {
             log.error("Co-respondent answer generation failed. Case id:  {}", caseId, exception);
-            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
+            callbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
@@ -583,7 +584,7 @@ public class CallbackController {
             log.info("Generating document {} for case {}.", documentType, caseId);
         } catch (WorkflowException exception) {
             log.error("Document generation failed. Case id:  {}", caseId, exception);
-            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
+            callbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
@@ -760,10 +761,10 @@ public class CallbackController {
             log.info("Processed case successfully. Case id: {}", caseId);
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format(FAILED_TO_EXECUTE_SERVICE_ERROR, caseId), exception);
-            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
+            callbackResponseBuilder.errors(asList(exception.getMessage()));
         } catch (Exception exception) {
             log.error(format(FAILED_TO_EXECUTE_SERVICE_ERROR, caseId), exception);
-            callbackResponseBuilder.errors(singletonList(GENERIC_ERROR_MESSAGE));
+            callbackResponseBuilder.errors(asList(GENERIC_ERROR_MESSAGE));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
@@ -789,10 +790,10 @@ public class CallbackController {
             callbackResponseBuilder.data(caseOrchestrationService.decreeNisiDecisionState(ccdCallbackRequest));
         } catch (WorkflowException exception) {
             log.error(format(FAILED_TO_EXECUTE_SERVICE_ERROR, caseId), exception);
-            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
+            callbackResponseBuilder.errors(asList(exception.getMessage()));
         } catch (Exception exception) {
             log.error(format(FAILED_TO_EXECUTE_SERVICE_ERROR, caseId), exception);
-            callbackResponseBuilder.errors(singletonList(GENERIC_ERROR_MESSAGE));
+            callbackResponseBuilder.errors(asList(GENERIC_ERROR_MESSAGE));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
@@ -887,7 +888,7 @@ public class CallbackController {
             log.info("Processed decree absolute grant callback request for case ID: {}", caseId);
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format(FAILED_TO_EXECUTE_SERVICE_ERROR, caseId), exception);
-            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
+            callbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());

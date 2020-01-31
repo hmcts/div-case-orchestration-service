@@ -30,7 +30,7 @@ public class SendClarificationSubmittedNotificationWorkflow extends DefaultWorkf
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
         return this.execute(
-            tasks.toArray(new Task[0]),
+            tasks.toArray(new Task[tasks.size()]),
             ccdCallbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
         );
