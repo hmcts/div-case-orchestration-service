@@ -84,7 +84,7 @@ public abstract class AosFormValidator extends BulkScanFormValidator {
         return (respJurisdictionAgreeField.equals(NO_VALUE) && StringUtils.isEmpty(respJurisdictionDisagreeReasonField));
     }
 
-    private final List<String> validateRespLegalProceedingsDescription(Map<String, String> fieldsMap) {
+    private List<String> validateRespLegalProceedingsDescription(Map<String, String> fieldsMap) {
         List<String> validationWarningMessages = new ArrayList<>();
 
         String respLegalProceedingsExistField = fieldsMap.getOrDefault("RespLegalProceedingsExist", "");

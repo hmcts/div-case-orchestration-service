@@ -168,7 +168,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     @Test
     public void givenSearchWithoutMinimumCases_whenCreateBulkCase_thenBulkCasesIsNotCreated() throws Exception {
         SearchResult result = SearchResult.builder()
-            .cases(Arrays.asList(prepareBulkCase()))
+            .cases(Collections.singletonList(prepareBulkCase()))
             .total(1)
             .build();
 

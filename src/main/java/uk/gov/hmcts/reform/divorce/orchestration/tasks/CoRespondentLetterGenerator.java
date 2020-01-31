@@ -38,7 +38,6 @@ public class CoRespondentLetterGenerator implements Task<Map<String, Object>> {
     }
 
     @Override
-    @SuppressWarnings("Duplicates")
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
 

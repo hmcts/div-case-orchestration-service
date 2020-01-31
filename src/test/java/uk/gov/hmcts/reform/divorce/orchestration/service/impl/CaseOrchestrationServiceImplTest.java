@@ -1595,7 +1595,7 @@ public class CaseOrchestrationServiceImplTest {
         when(sendClarificationSubmittedNotificationWorkflow.errors()).thenReturn(errorMap);
         assertThat(classUnderTest.sendClarificationSubmittedNotificationEmail(ccdCallbackRequest),
             is(CcdCallbackResponse.builder()
-                .errors(Arrays.asList("ErrorValue"))
+                .errors(Collections.singletonList("ErrorValue"))
                 .build()));
     }
 

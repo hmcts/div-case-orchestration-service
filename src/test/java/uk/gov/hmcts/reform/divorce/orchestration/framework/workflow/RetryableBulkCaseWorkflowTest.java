@@ -13,6 +13,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.BulkWorkflowExecutionResult;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.BulkUpdateException;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
@@ -109,7 +110,7 @@ public class RetryableBulkCaseWorkflowTest {
 
         verify(retryableBulkCaseWorkflow, times(MAX_RETRIES)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
-        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, asList(caseData1));
+        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
     }
 
     @Test
@@ -129,7 +130,7 @@ public class RetryableBulkCaseWorkflowTest {
 
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
-        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, asList(caseData1));
+        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
     }
 
     @Test
@@ -149,7 +150,7 @@ public class RetryableBulkCaseWorkflowTest {
 
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
-        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, asList(caseData1));
+        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
     }
 
     @Test
@@ -215,7 +216,7 @@ public class RetryableBulkCaseWorkflowTest {
 
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
-        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, asList(caseData1));
+        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
     }
 
     @Test
@@ -238,7 +239,7 @@ public class RetryableBulkCaseWorkflowTest {
 
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
-        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, asList(caseData1));
+        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
     }
 
     @Test
@@ -261,7 +262,7 @@ public class RetryableBulkCaseWorkflowTest {
 
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
-        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, asList(caseData1));
+        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
     }
 
     @Test

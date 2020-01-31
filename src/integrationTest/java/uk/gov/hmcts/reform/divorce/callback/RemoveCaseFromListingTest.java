@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMemb
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +72,7 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
         waitForIndividualCasesToUpdate(createCaseWorkerUser(), caseId2);
 
         // when
-        updateCase(bulkCaseId, REMOVE_FROM_BULK_LISTED_EVENT, true, Pair.of(BULK_CASE_ACCEPTED_LIST_KEY, asList(caseLink1)));
+        updateCase(bulkCaseId, REMOVE_FROM_BULK_LISTED_EVENT, true, Pair.of(BULK_CASE_ACCEPTED_LIST_KEY, Collections.singletonList(caseLink1)));
 
         CaseDetails bulkCase = retrieveCaseForCaseworker(createCaseWorkerUser(), bulkCaseId);
 

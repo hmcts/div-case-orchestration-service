@@ -18,8 +18,8 @@ import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -129,7 +129,7 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
 
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
-                .documents(asList(documentGenerationResponse))
+                .documents(singletonList(documentGenerationResponse))
                 .caseData(CASE_DATA)
                 .build();
 
@@ -181,7 +181,7 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
 
         final DocumentUpdateRequest documentUpdateRequest =
                 DocumentUpdateRequest.builder()
-                        .documents(asList(documentGenerationResponse))
+                        .documents(singletonList(documentGenerationResponse))
                         .caseData(caseData)
                         .build();
 

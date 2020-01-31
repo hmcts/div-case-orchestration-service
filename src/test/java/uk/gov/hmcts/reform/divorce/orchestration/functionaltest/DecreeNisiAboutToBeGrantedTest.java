@@ -35,7 +35,7 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.time.ZoneOffset.UTC;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.hamcrest.Matchers.allOf;
@@ -231,7 +231,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
-                .documents(asList(documentGenerationResponse))
+                .documents(singletonList(documentGenerationResponse))
                 .caseData(dataInput)
                 .build();
 
@@ -308,12 +308,12 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
-                .documents(asList(documentGenerationResponse))
+                .documents(singletonList(documentGenerationResponse))
                 .caseData(inputData)
                 .build();
 
         expectedCfsResponse.putAll(inputData.entrySet().stream()
-            .filter(x -> x.getKey() != "D8DocumentsGenerated")
+            .filter(x -> !x.getKey().equals("D8DocumentsGenerated"))
             .collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue())));
 
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().amount(TEST_FEE_AMOUNT).build());
@@ -419,7 +419,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
         final DocumentUpdateRequest documentUpdateRequest =
             DocumentUpdateRequest.builder()
-                .documents(asList(documentGenerationResponse))
+                .documents(singletonList(documentGenerationResponse))
                 .caseData(expectedRequestData)
                 .build();
 

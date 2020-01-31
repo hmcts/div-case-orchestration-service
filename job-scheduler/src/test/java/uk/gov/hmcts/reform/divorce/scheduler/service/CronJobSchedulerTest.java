@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.divorce.scheduler.config.SchedulerConfig;
 import uk.gov.hmcts.reform.divorce.scheduler.exception.JobException;
 import uk.gov.hmcts.reform.divorce.scheduler.model.Schedule;
 
+import java.util.Collections;
+
 import static java.util.Arrays.asList;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,7 +39,7 @@ public class CronJobSchedulerTest {
     public void whenReCreateScheduleIsFalse_thenDoNotCleanSchedules() {
         setEnableDelete(false);
         when(jobService.scheduleJob(any(), anyString())).thenReturn(new JobKey("name"));
-        when(schedulerConfig.getSchedules()).thenReturn(asList(Schedule.builder().enabled(true).cron("cron").build()));
+        when(schedulerConfig.getSchedules()).thenReturn(Collections.singletonList(Schedule.builder().enabled(true).cron("cron").build()));
 
         classToTest.scheduleCronJobs();
 
@@ -79,7 +81,7 @@ public class CronJobSchedulerTest {
         setEnableDelete(true);
 
         doThrow(new JobException("Error message", new Exception())).when(jobService).cleanSchedules(any());
-        when(schedulerConfig.getSchedules()).thenReturn(asList(Schedule.builder().enabled(true).cron("cron").build()));
+        when(schedulerConfig.getSchedules()).thenReturn(Collections.singletonList(Schedule.builder().enabled(true).cron("cron").build()));
 
         try {
             classToTest.scheduleCronJobs();
@@ -94,7 +96,7 @@ public class CronJobSchedulerTest {
     public void givenException_whenCreateSchedule_thenPropagateError() {
         setEnableDelete(true);
 
-        when(schedulerConfig.getSchedules()).thenReturn(asList(Schedule.builder().enabled(true).cron("cron").build()));
+        when(schedulerConfig.getSchedules()).thenReturn(Collections.singletonList(Schedule.builder().enabled(true).cron("cron").build()));
         when(jobService.scheduleJob(any(), anyString())).thenThrow(new JobException("Scheduler error", new Exception()));
 
         classToTest.scheduleCronJobs();

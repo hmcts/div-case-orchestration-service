@@ -74,7 +74,7 @@ public class AuthenticateRespondentUTest {
         Mockito.when(idamClient.getUserDetails(BEARER_AUTH_TOKEN))
             .thenReturn(
                 UserDetails.builder()
-                    .roles(Arrays.asList(
+                    .roles(Collections.singletonList(
                         "letter-loa1"
                     ))
                     .build());

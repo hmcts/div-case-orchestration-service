@@ -29,7 +29,6 @@ public class EditBulkCaseListingTest extends IntegrationTest {
     @Autowired
     private CosApiClient cosApiClient;
 
-    @SuppressWarnings("unchecked")
     @Test
     public void whenEditBulkListingWithJudge_thenReturnUpdatedBulkData() {
         String futureDateTime = LocalDateTime.now().plusWeeks(1).format(DateTimeFormatter.ISO_DATE_TIME);

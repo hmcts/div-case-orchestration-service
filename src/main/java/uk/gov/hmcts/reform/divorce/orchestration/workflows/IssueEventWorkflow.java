@@ -107,7 +107,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         tasks.add(resetCoRespondentLinkingFields);
 
         return this.execute(
-            tasks.toArray(new Task[tasks.size()]),
+            tasks.toArray(new Task[0]),
             caseData,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails)
@@ -121,7 +121,6 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
             || CourtEnum.SERVICE_CENTER.getId().equalsIgnoreCase(court);
     }
 
-    @SuppressWarnings("Duplicates")
     private boolean isAdulteryCaseWithCoRespondent(final Map<String, Object> caseData) {
         final String divorceReason = String.valueOf(caseData.getOrDefault(D_8_REASON_FOR_DIVORCE, EMPTY));
         final String coRespondentNamed = String.valueOf(caseData.getOrDefault(D_8_CO_RESPONDENT_NAMED, EMPTY));

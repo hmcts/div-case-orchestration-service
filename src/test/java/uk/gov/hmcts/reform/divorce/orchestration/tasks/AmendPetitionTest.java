@@ -27,7 +27,6 @@ public class AmendPetitionTest {
     @InjectMocks
     private CreateAmendPetitionDraft target;
 
-    @SuppressWarnings("unchecked")
     @Test
     public void givenUserTokenWithoutCase_whenExecuteAmendPetition_thenReturnEmpty() {
         TaskContext context = new DefaultTaskContext();

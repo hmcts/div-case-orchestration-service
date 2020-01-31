@@ -45,8 +45,7 @@ public class CalculateSeparationFieldsITest extends MockedFunctionalTest {
             D_8_MENTAL_SEP_DATE, pastDate5Yrs8Mnths,
             D_8_PHYSICAL_SEP_DAIE, pastDate5Yrs9Mnths);
 
-        Map<String, Object> expectedData = new HashMap<>();
-        expectedData.putAll(testCaseData);
+        Map<String, Object> expectedData = new HashMap<>(testCaseData);
         expectedData.put(D_8_SEP_TIME_TOGETHER_PERMITTED, "6 months");
         expectedData.put(D_8_REASON_FOR_DIVORCE_SEP_DATE, pastDate5Yrs8Mnths);
         expectedData.put(D_8_SEP_REF_DATE, pastDate5Yrs6Mnths);

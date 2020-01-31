@@ -28,9 +28,9 @@ import static uk.gov.hmcts.reform.bsp.common.model.validation.out.ValidationStat
 
 public class D8FormValidatorTest {
 
-    public static final String INVALID_POSTCODE = "SW15 5PUX";
-    public static final String INVALID_EMAIL = "nece28ssito@no.";
-    public static final String NOT_YES_OR_NO = "Tomato";
+    private static final String INVALID_POSTCODE = "SW15 5PUX";
+    private static final String INVALID_EMAIL = "nece28ssito@no.";
+    private static final String NOT_YES_OR_NO = "Tomato";
 
     private final D8FormValidator classUnderTest = new D8FormValidator();
     private List<OcrDataField> mandatoryFieldsWithValues;

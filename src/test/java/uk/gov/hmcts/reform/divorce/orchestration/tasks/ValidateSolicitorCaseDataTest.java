@@ -12,7 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_STATEMENT_OF_TRUTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATEMENT_OF_TRUTH;
@@ -40,7 +42,7 @@ public class ValidateSolicitorCaseDataTest {
         Map<String, Object> result = validateSolicitorCaseData.execute(context, caseData);
 
         assertEquals(result, caseData);
-        assertEquals(false, context.hasTaskFailed());
+        assertFalse(context.hasTaskFailed());
     }
 
     @Test
@@ -51,7 +53,7 @@ public class ValidateSolicitorCaseDataTest {
         Map<String, Object> result = validateSolicitorCaseData.execute(context, caseData);
 
         assertEquals(result, caseData);
-        assertEquals(true, context.hasTaskFailed());
+        assertTrue(context.hasTaskFailed());
         assertNotNull(context.getTransientObject(SOLICITOR_VALIDATION_ERROR_KEY));
     }
 
@@ -63,7 +65,7 @@ public class ValidateSolicitorCaseDataTest {
         Map<String, Object> result = validateSolicitorCaseData.execute(context, caseData);
 
         assertEquals(result, caseData);
-        assertEquals(true, context.hasTaskFailed());
+        assertTrue(context.hasTaskFailed());
         assertNotNull(context.getTransientObject(SOLICITOR_VALIDATION_ERROR_KEY));
     }
 
@@ -75,7 +77,7 @@ public class ValidateSolicitorCaseDataTest {
         Map<String, Object> result = validateSolicitorCaseData.execute(context, caseData);
 
         assertEquals(result, caseData);
-        assertEquals(true, context.hasTaskFailed());
+        assertTrue(context.hasTaskFailed());
         assertNotNull(context.getTransientObject(SOLICITOR_VALIDATION_ERROR_KEY));
     }
 }

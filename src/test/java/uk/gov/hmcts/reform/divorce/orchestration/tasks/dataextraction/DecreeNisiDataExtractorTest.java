@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.Is.is;
@@ -55,7 +56,7 @@ public class DecreeNisiDataExtractorTest {
     private static final String TEST_WHO_PAYS_COSTS_CCD_FIELD = "Respondent";
     private static final String TEST_COSTS_CLAIM_GRANTED = "Yes";
     private static final String TEST_DN_DECISION_DATE = "2020-12-15";
-    private static final List<Map<String, Object>> DATE_TIME_OF_HEARINGS = asList(singletonMap("value", ImmutableMap.of(
+    private static final List<Map<String, Object>> DATE_TIME_OF_HEARINGS = singletonList(singletonMap("value", ImmutableMap.of(
         DATE_OF_HEARING_CCD_FIELD, "2020-12-10",
         TIME_OF_HEARING_CCD_FIELD, "15:30"
     )));

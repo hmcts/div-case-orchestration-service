@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,7 +102,7 @@ public class GetInconsistentPaymentInfoUTest {
     @Test
     public void givenCaseWithoutSuccessfulPayment_whenSetPaymentRefOnSession_thenReturnSameData() throws Exception {
         Map<String, Object> testData = Maps.newHashMap(EXISTING_PAYMENTS,
-            Arrays.asList(ImmutableMap.of(
+            Collections.singletonList(ImmutableMap.of(
                 PAYMENT_REFERENCE, "ref1",
                 PAYMENT_STATUS, "nothing"
             )));
@@ -170,7 +170,7 @@ public class GetInconsistentPaymentInfoUTest {
 
         return ImmutableMap.of(
             IS_DRAFT_KEY, Boolean.FALSE.toString(),
-            D_8_PAYMENTS, Arrays.asList(ImmutableMap.of(
+            D_8_PAYMENTS, Collections.singletonList(ImmutableMap.of(
                 ID, PAYMENT_ID,
                 PAYMENT_VALUE, paymentObject
             )));

@@ -20,7 +20,7 @@ import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -70,7 +70,7 @@ public class GenerateCoRespondentAnswersITest extends MockedFunctionalTest {
 
         final DocumentUpdateRequest documentUpdateRequest =
                 DocumentUpdateRequest.builder()
-                        .documents(asList(generatedCoRespondentAnswersResponse))
+                        .documents(singletonList(generatedCoRespondentAnswersResponse))
                         .caseData(ccdCallbackRequest.getCaseDetails().getCaseData())
                         .build();
 

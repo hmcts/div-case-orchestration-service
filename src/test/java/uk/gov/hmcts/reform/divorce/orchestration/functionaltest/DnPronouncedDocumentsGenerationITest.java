@@ -20,8 +20,8 @@ import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -145,13 +145,13 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
 
         final DocumentUpdateRequest dnDocumentUpdateRequest =
             DocumentUpdateRequest.builder()
-                .documents(asList(dnDocumentGenerationResponse))
+                .documents(singletonList(dnDocumentGenerationResponse))
                 .caseData(CASE_DATA)
                 .build();
 
         final DocumentUpdateRequest costsOrderDocumentUpdateRequest =
                 DocumentUpdateRequest.builder()
-                        .documents(asList(costsOrderDocumentGenerationResponse))
+                        .documents(singletonList(costsOrderDocumentGenerationResponse))
                         .caseData(CASE_DATA)
                         .build();
 
@@ -204,7 +204,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
 
         final DocumentUpdateRequest dnDocumentUpdateRequest =
                 DocumentUpdateRequest.builder()
-                        .documents(asList(dnDocumentGenerationResponse))
+                        .documents(singletonList(dnDocumentGenerationResponse))
                         .caseData(caseData)
                         .build();
 
@@ -257,7 +257,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
 
         final DocumentUpdateRequest dnDocumentUpdateRequest =
                 DocumentUpdateRequest.builder()
-                        .documents(asList(dnDocumentGenerationResponse))
+                        .documents(singletonList(dnDocumentGenerationResponse))
                         .caseData(caseData)
                         .build();
 
