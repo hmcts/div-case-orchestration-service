@@ -18,7 +18,6 @@ public class DaRequestedNotifyRespondentTest extends IntegrationTest {
     @Autowired
     private CosApiClient cosApiClient;
 
-    @SuppressWarnings("unchecked")
     @Test
     public void givenValidCaseData_whenNotifyRespondentOfDARequested_thenReturnDaRequestedByApplicantData() {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, CcdCallbackRequest.class);

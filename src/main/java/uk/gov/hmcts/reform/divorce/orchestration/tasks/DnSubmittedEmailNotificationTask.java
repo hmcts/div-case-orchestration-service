@@ -55,8 +55,8 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
         String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
 
         Map<String, String> notificationTemplateVars = new HashMap<>();
-        String template = null;
-        String emailToBeSentTo = null;
+        String template;
+        String emailToBeSentTo;
 
         if (StringUtils.isNotBlank(petSolicitorEmail)) {
             String respFirstName = Objects.toString(data.get(RESP_FIRST_NAME_CCD_FIELD), null);

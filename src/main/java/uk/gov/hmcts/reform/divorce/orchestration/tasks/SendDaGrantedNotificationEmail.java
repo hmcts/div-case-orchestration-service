@@ -140,8 +140,8 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
         }
     }
 
-    public void sendEmail(String firstName, String lastName, String emailAddress,
-                          Map<String, Object> caseData, String ccdReference) throws NotificationClientException  {
+    private void sendEmail(String firstName, String lastName, String emailAddress,
+                           Map<String, Object> caseData, String ccdReference) throws NotificationClientException  {
 
         String daGrantedDataCcdField = (String) caseData.get(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD);
         LocalDate daGrantedDate = LocalDateTime.parse(daGrantedDataCcdField).toLocalDate();

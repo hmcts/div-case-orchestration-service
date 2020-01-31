@@ -74,8 +74,8 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
         LocalDate limitDateToContactCourt = dateOfHearing.minus(PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT);
 
         Map<String, String> templateParameters = new HashMap<>();
-        EmailTemplateNames template = null;
-        String emailToBeSentTo = null;
+        EmailTemplateNames template;
+        String emailToBeSentTo;
 
         templateParameters.put(DATE_OF_HEARING, formatDateWithCustomerFacingFormat(dateOfHearing));
         templateParameters.put(LIMIT_DATE_TO_CONTACT_COURT,

@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DecreeAbsoluteService;
 
 import javax.ws.rs.core.MediaType;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 @RestController
 @Slf4j
@@ -45,7 +45,7 @@ public class DecreeAbsoluteController {
             log.info("Emailed Respondent as applicant has requested DA for case {}.", caseId);
         } catch (WorkflowException exception) {
             log.error("Respondent notification email failed to send for applicant requesting DA. Case id: {}", caseId, exception);
-            callbackResponseBuilder.errors(asList(exception.getMessage()));
+            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
 
         }
         return ResponseEntity.ok(callbackResponseBuilder.build());
@@ -68,7 +68,7 @@ public class DecreeAbsoluteController {
             log.info("DA request for case id {} was valid.", caseId);
         } catch (WorkflowException exception) {
             log.error("DA request for case id {} was INVALID.", caseId, exception);
-            callbackResponseBuilder.errors(asList(exception.getMessage()));
+            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());

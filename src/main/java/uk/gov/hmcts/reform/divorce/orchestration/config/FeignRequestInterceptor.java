@@ -23,7 +23,7 @@ public class FeignRequestInterceptor implements RequestInterceptor {
         this(RequestIdGenerator::next);
     }
 
-    public FeignRequestInterceptor(Supplier<String> nextRequestId) {
+    private FeignRequestInterceptor(Supplier<String> nextRequestId) {
         this.nextRequestId = nextRequestId;
     }
 }

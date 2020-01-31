@@ -26,7 +26,6 @@ public class DnPronouncedDocumentsGeneratedTest extends IntegrationTest {
     @Autowired
     private CosApiClient cosApiClient;
 
-    @SuppressWarnings("unchecked")
     @Test
     public void givenCase_whenGenerateDnPronouncedDocumentsWithNoClaimCosts_thenReturnCallbackResponseWithDecreeNisiDocument() {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(BULK_CASE_LINK_CCD_CALLBACK_REQUEST, CcdCallbackRequest.class);
@@ -43,7 +42,6 @@ public class DnPronouncedDocumentsGeneratedTest extends IntegrationTest {
                 hasJsonPath("$.data.D8DocumentsGenerated", hasSize(1)));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void givenCase_whenGenerateDnPronouncedDocumentsWithClaimCosts_thenReturnCallbackResponseWithDecreeNisiDocumentAndCostsOrder() {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(COSTS_CLAIM_CCD_CALLBACK_REQUEST, CcdCallbackRequest.class);

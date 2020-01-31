@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -17,7 +17,7 @@ public class EnumeratedDistributionExplorationTest {
     @Test
     public void testUnallocatedPercentageBehaviour_ShouldNeverReturnNull() {
         EnumeratedDistribution<String> enumeratedDistribution =
-            new EnumeratedDistribution<>(asList(new Pair("test", 0.5)));
+            new EnumeratedDistribution<>(singletonList(new Pair("test", 0.5)));
 
         Map<String, Integer> courtAllocation = new HashMap<>();
         for (int i = 0; i < 1000000; i++) {

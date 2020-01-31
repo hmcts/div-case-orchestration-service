@@ -21,8 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @AllArgsConstructor
 public class RemoveBulkCaseLinkWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    static final String UN_LINK_BULK_CASE_EVENT = "unlinkBulkCaseReference";
-
+    private static final String UN_LINK_BULK_CASE_EVENT = "unlinkBulkCaseReference";
     private final UpdateCaseInCCD updateCaseInCCD;
     private final GetCaseWithIdTask getCaseWithId;
     private final ValidatedCaseLinkTask validateBulkCaseLinkTask;

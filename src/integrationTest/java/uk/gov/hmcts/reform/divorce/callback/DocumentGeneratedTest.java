@@ -24,7 +24,6 @@ public class DocumentGeneratedTest extends IntegrationTest {
     @Autowired
     private CosApiClient cosApiClient;
 
-    @SuppressWarnings("unchecked")
     @Test
     public void givenCase_whenGenerateDocumentForMiniPetition_thenReturnCallbackResponseWithMiniPetitionDocument() {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(CCD_CALLBACK_REQUEST, CcdCallbackRequest.class);

@@ -26,7 +26,7 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static java.time.ZoneOffset.UTC;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -125,7 +125,7 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
 
         final DocumentUpdateRequest daDocumentUpdateRequest =
             DocumentUpdateRequest.builder()
-                .documents(asList(daDocumentGenerationResponse))
+                .documents(singletonList(daDocumentGenerationResponse))
                 .caseData(CASE_DATA)
                 .build();
 

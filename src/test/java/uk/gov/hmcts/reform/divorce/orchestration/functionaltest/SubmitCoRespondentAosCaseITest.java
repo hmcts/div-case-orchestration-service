@@ -152,8 +152,7 @@ public class SubmitCoRespondentAosCaseITest extends MockedFunctionalTest {
 
     @Test
     public void dueDateIsRecalculatedWhenCoRespondentIsDefending() throws Exception {
-        final Map<String, Object> originalSubmissionData = new HashMap<>();
-        originalSubmissionData.putAll(getCoRespondentSubmitData());
+        final Map<String, Object> originalSubmissionData = new HashMap<>(getCoRespondentSubmitData());
         originalSubmissionData.put(CO_RESPONDENT_DEFENDS_DIVORCE, "YES");
         originalSubmissionData.put(CO_RESPONDENT_DUE_DATE, "01-01-2001");
 
@@ -164,8 +163,7 @@ public class SubmitCoRespondentAosCaseITest extends MockedFunctionalTest {
         final CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).state(AOS_AWAITING).build();
         stubMaintenanceServerEndpointForAosRetrieval(OK, convertObjectToJsonString(caseDetails));
 
-        final Map<String, Object> recalculatedSubmissionData = new HashMap<>();
-        recalculatedSubmissionData.putAll(getCoRespondentSubmitData());
+        final Map<String, Object> recalculatedSubmissionData = new HashMap<>(getCoRespondentSubmitData());
         recalculatedSubmissionData.put(CO_RESPONDENT_DEFENDS_DIVORCE, "YES");
         recalculatedSubmissionData.put(CO_RESPONDENT_DUE_DATE, today.plusDays(21).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         stubMaintenanceServerEndpointForAosUpdate(OK, recalculatedSubmissionData, caseDataString);

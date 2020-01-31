@@ -49,20 +49,20 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Slf4j
 public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, Object>> {
 
-    public static final String GENERIC_UPDATE_EMAIL_DESC = "Generic Update Notification - Petitioner";
-    public static final String AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC =
+    private static final String GENERIC_UPDATE_EMAIL_DESC = "Generic Update Notification - Petitioner";
+    private static final String AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC =
         "Resp does not admit adultery update notification";
-    public static final String AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC =
+    private static final String AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC =
         "Resp does not admit adultery update notification - no reply from co-resp";
-    public static final String AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC =
+    private static final String AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC =
         "Resp does not consent to 2 year separation update notification";
-    public static final String SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC =
+    private static final String SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC =
         "Resp response submission notification sent to solicitor";
-    public static final String SOL_APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC =
+    private static final String SOL_APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC =
         "Resp has not responded - notification sent to solicitor";
-    public static final String APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC =
+    private static final String APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC =
         "Resp has not responded - notification sent to petitioner";
-    public static final String SOL_GENERIC_UPDATE_EMAIL_DESC =
+    private static final String SOL_GENERIC_UPDATE_EMAIL_DESC =
         "Generic Update Notification - Petitioner solicitor";
 
     private static final String RESP_ANSWER_RECVD_EVENT = "answerReceived";
