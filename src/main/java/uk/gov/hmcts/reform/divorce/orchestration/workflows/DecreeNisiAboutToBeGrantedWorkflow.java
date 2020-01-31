@@ -74,12 +74,14 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
             tasksToRun.add(populateDocLink);
         }
 
-        return this.execute(
+        Map<String, Object> payloadToReturn = this.execute(
                 tasksToRun.stream().toArray(Task[]::new),
                 caseData,
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
                 ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails)
         );
+
+        return payloadToReturn;
     }
 
     private boolean isDNApproval(Map<String, Object> caseData) {
