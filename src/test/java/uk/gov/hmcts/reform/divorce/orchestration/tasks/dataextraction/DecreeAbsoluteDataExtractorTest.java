@@ -22,7 +22,7 @@ public class DecreeAbsoluteDataExtractorTest {
 
     @Test
     public void testBasicCsvExtractorValues() {
-        assertThat(classUnderTest.getHeaderLine(), is("CaseReferenceNumber,DAApplicationDate,DNPronouncementDate,PartyApplyingForDA"));
+        assertThat(classUnderTest.getHeaderLine(), is("CaseReferenceNumber,DAGrantedDate,DNPronouncementDate,PartyApplyingForDA"));
         assertThat(classUnderTest.getDestinationEmailAddress(), is("dest-email@divorce.gov.uk"));
         assertThat(classUnderTest.getFileNamePrefix(), is("DA"));
         List<String> relevantState = classUnderTest.getRelevantCaseStates().collect(Collectors.toList());
@@ -34,11 +34,11 @@ public class DecreeAbsoluteDataExtractorTest {
     public void shouldTransformCaseDetails() {
         Map<String, Object> firstCaseData = new HashMap<>();
         firstCaseData.put("D8caseReference", "TEST1");
-        firstCaseData.put("DecreeAbsoluteApplicationDate", "2018-06-12T16:49:00.015");
+        firstCaseData.put("DecreeAbsoluteGrantedDate", "2018-06-12T16:49:00.015");
         firstCaseData.put("DecreeNisiGrantedDate", "2017-08-17");
         Map<String, Object> secondCaseData = new HashMap<>();
         secondCaseData.put("D8caseReference", "TEST2");
-        secondCaseData.put("DecreeAbsoluteApplicationDate", "2018-06-24T16:49:00.015");
+        secondCaseData.put("DecreeAbsoluteGrantedDate", "2018-06-24T16:49:00.015");
         secondCaseData.put("DecreeNisiGrantedDate", "2017-08-26");
         CaseDetails firstCaseDetails = CaseDetails.builder().caseData(firstCaseData).build();
         CaseDetails secondCaseDetails = CaseDetails.builder().caseData(secondCaseData).build();
@@ -78,11 +78,11 @@ public class DecreeAbsoluteDataExtractorTest {
     @Test
     public void shouldNotAddCaseToFileWhenMandatoryFieldsAreNotPresent() {
         Map<String, Object> firstCaseData = new HashMap<>();
-        firstCaseData.put("DecreeAbsoluteApplicationDate", "2018-06-12T16:49:00.015");
+        firstCaseData.put("DecreeAbsoluteGrantedDate", "2018-06-12T16:49:00.015");
         firstCaseData.put("DecreeNisiGrantedDate", "2017-08-17");
         Map<String, Object> secondCaseData = new HashMap<>();
         secondCaseData.put("D8caseReference", "TEST2");
-        secondCaseData.put("DecreeAbsoluteApplicationDate", "2018-06-24T16:49:00.015");
+        secondCaseData.put("DecreeAbsoluteGrantedDate", "2018-06-24T16:49:00.015");
         secondCaseData.put("DecreeNisiGrantedDate", "2017-08-26");
         CaseDetails firstCaseDetails = CaseDetails.builder().caseData(firstCaseData).build();
         CaseDetails secondCaseDetails = CaseDetails.builder().caseData(secondCaseData).build();
