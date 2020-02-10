@@ -53,7 +53,7 @@ def versions = [
         jdbi                         : '2.78',
         jsonAssert                   : '1.2.3',
         jsonPathAssert               : '2.2.0',
-        lombok                       : '1.16.16',
+        lombok                       : '1.18.12',
         pitest                       : '1.4.10',
         postgresql                   : '42.2.9',
         puppyCrawl                   : '8.28',
