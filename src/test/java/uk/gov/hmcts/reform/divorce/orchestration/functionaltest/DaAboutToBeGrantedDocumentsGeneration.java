@@ -28,6 +28,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -131,7 +132,7 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
 
         stubDocumentGeneratorServerEndpoint(daDocumentGenerationRequest, daDocumentGenerationResponse);
         stubFormatterServerEndpoint(daDocumentUpdateRequest, CASE_DATA);
-        when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString()))
+        when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString(), any()))
                 .thenReturn(null);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
@@ -98,5 +99,13 @@ public class CaseDataUtils {
         return YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)))
             && !DN_COSTS_ENDCLAIM_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DN_COSTS_OPTIONS_CCD_FIELD)))
             && Objects.nonNull(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
+    }
+
+    public static Optional<LanguagePreference> getLanguagePreference(Object languagePreference) {
+        return Optional.of(Optional.ofNullable(languagePreference)
+            .map(String.class::cast)
+            .filter(language -> YES_VALUE.equalsIgnoreCase(language))
+            .map(languagePreferenceWelsh -> LanguagePreference.WELSH)
+            .orElse(LanguagePreference.ENGLISH));
     }
 }

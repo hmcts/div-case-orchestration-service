@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
@@ -49,12 +50,14 @@ public class TaskCommonsTest {
                 .sendEmailAndReturnExceptionIfFails("test@hmcts.net",
                     RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION.name(),
                     templateParameters,
-                    "test description");
+                    "test description",
+                    Optional.empty());
 
         taskCommons.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
                 "test description",
                 "test@hmcts.net",
-                templateParameters);
+                templateParameters,
+                Optional.empty());
     }
 
     @Test

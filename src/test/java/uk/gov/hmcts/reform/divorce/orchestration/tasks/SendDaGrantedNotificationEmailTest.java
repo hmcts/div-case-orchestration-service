@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -15,6 +16,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
@@ -51,6 +53,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -153,6 +156,7 @@ public class SendDaGrantedNotificationEmailTest {
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
         testData.put(NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE, TEST_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "Yes");
 
         try {
             sendDaGrantedNotificationEmail.execute(context, testData);
@@ -163,7 +167,8 @@ public class SendDaGrantedNotificationEmailTest {
                             eq(TEST_PETITIONER_EMAIL),
                             eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedPetitionerTemplateVars),
-                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC),
+                            eq(Optional.of(LanguagePreference.WELSH)));
 
             verifyNoMoreInteractions(emailService);
             assertThat(e.getMessage(), is(format("Could not evaluate value of mandatory property \"%s\"", "RespEmailAddress")));
@@ -180,6 +185,7 @@ public class SendDaGrantedNotificationEmailTest {
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
         testData.put(NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE, TEST_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
 
         Map returnPayload = sendDaGrantedNotificationEmail.execute(context, testData);
 
@@ -191,14 +197,16 @@ public class SendDaGrantedNotificationEmailTest {
                             eq(TEST_PETITIONER_EMAIL),
                             eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedPetitionerTemplateVars),
-                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC),
+                            eq(Optional.of(LanguagePreference.ENGLISH)));
 
             verify(emailService)
                     .sendEmailAndReturnExceptionIfFails(
                             eq(TEST_RESPONDENT_EMAIL),
                             eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedRespondentTemplateVars),
-                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC),
+                            eq(Optional.of(LanguagePreference.ENGLISH)));
         } catch (NotificationClientException e) {
             fail("Failed to throw task exception");
         }
@@ -214,6 +222,7 @@ public class SendDaGrantedNotificationEmailTest {
         testData.put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL);
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, null);
 
         Map returnPayload = sendDaGrantedNotificationEmail.execute(context, testData);
 
@@ -225,14 +234,16 @@ public class SendDaGrantedNotificationEmailTest {
                             eq(TEST_SOLICITOR_EMAIL),
                             eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedPetSolicitorTemplateVars),
-                            eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+                            eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
+                            eq(Optional.of(LanguagePreference.ENGLISH)));
 
             verify(emailService)
                     .sendEmailAndReturnExceptionIfFails(
                             eq(TEST_RESPONDENT_EMAIL),
                             eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedRespondentTemplateVars),
-                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC),
+                            eq(Optional.of(LanguagePreference.ENGLISH)));
         } catch (NotificationClientException e) {
             fail("Failed to throw task exception");
         }
@@ -250,6 +261,7 @@ public class SendDaGrantedNotificationEmailTest {
         testData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
 
         Map returnPayload = sendDaGrantedNotificationEmail.execute(context, testData);
 
@@ -261,14 +273,16 @@ public class SendDaGrantedNotificationEmailTest {
                             eq(TEST_PETITIONER_EMAIL),
                             eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedPetitionerTemplateVars),
-                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC),
+                            eq(Optional.of(LanguagePreference.ENGLISH)));
 
             verify(emailService)
                     .sendEmail(
                             eq(TEST_RESP_SOLICITOR_EMAIL),
                             eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedRespSolicitorTemplateVars),
-                            eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+                            eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
+                            eq(Optional.of(LanguagePreference.ENGLISH)));
         } catch (NotificationClientException e) {
             fail("Failed to throw task exception");
         }
@@ -285,6 +299,7 @@ public class SendDaGrantedNotificationEmailTest {
         testData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
 
         Map returnPayload = sendDaGrantedNotificationEmail.execute(context, testData);
 
@@ -296,14 +311,16 @@ public class SendDaGrantedNotificationEmailTest {
                             eq(TEST_PETITIONER_EMAIL),
                             eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedPetitionerTemplateVars),
-                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+                            eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC),
+                            eq(Optional.of(LanguagePreference.ENGLISH)));
 
             verify(emailService)
                     .sendEmail(
                             eq(TEST_RESP_SOLICITOR_EMAIL),
                             eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedRespSolicitorTemplateVars),
-                            eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+                            eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
+                            eq(Optional.of(LanguagePreference.ENGLISH)));
         } catch (NotificationClientException e) {
             fail("Failed to throw task exception");
         }
@@ -322,6 +339,7 @@ public class SendDaGrantedNotificationEmailTest {
         testData.put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL);
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
 
         Map returnPayload = sendDaGrantedNotificationEmail.execute(context, testData);
 
@@ -332,13 +350,15 @@ public class SendDaGrantedNotificationEmailTest {
                         eq(TEST_SOLICITOR_EMAIL),
                         eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                         eq(expectedPetSolicitorTemplateVars),
-                        eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+                        eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
+                        eq(Optional.of(LanguagePreference.ENGLISH)));
 
         verify(emailService)
                 .sendEmail(
                         eq(TEST_RESP_SOLICITOR_EMAIL),
                         eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                         eq(expectedRespSolicitorTemplateVars),
-                        eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC));
+                        eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
+                        eq(Optional.of(LanguagePreference.ENGLISH)));
     }
 }

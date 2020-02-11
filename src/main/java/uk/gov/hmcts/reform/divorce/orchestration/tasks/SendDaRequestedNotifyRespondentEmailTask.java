@@ -4,16 +4,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
@@ -21,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -87,26 +91,28 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
     private void sendEmailToRespondent(Map<String, Object> caseData) throws TaskException {
         Map<String, String> templateVars = prepareEmailTemplateVars(caseData);
         String emailAddress = (String) caseData.get(RESPONDENT_EMAIL_ADDRESS);
+        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
         templateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, emailAddress);
 
-        send(emailAddress, DECREE_ABSOLUTE_REQUESTED_NOTIFICATION, templateVars, REQUESTED_BY_APPLICANT);
+        send(emailAddress, DECREE_ABSOLUTE_REQUESTED_NOTIFICATION, templateVars, REQUESTED_BY_APPLICANT, welshLanguagePreference);
     }
 
     private void sendEmailToRespondentSolicitor(Map<String, Object> caseData, String caseId) throws TaskException {
         Map<String, String> templateVars = prepareEmailTemplateVarsForSol(caseData);
         String emailAddress = (String) caseData.get(RESPONDENT_SOLICITOR_EMAIL_ADDRESS);
+        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
         templateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, emailAddress);
         templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseId);
 
-        send(emailAddress, DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR, templateVars, REQUESTED_BY_SOLICITOR);
+        send(emailAddress, DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR, templateVars, REQUESTED_BY_SOLICITOR , welshLanguagePreference);
     }
 
     private void send(
-        String emailAddress, EmailTemplateNames emailTemplate, Map<String, String> templateVars, String description)
-        throws TaskException {
+        String emailAddress, EmailTemplateNames emailTemplate, Map<String, String> templateVars, String description,
+        Optional<LanguagePreference> welshLanguagePreference) throws TaskException {
         try {
             emailService.sendEmailAndReturnExceptionIfFails(
-                emailAddress, emailTemplate.name(), templateVars, description
+                emailAddress, emailTemplate.name(), templateVars, description, welshLanguagePreference
             );
         } catch (NotificationClientException e) {
             throw new TaskException(e.getMessage(), e);
