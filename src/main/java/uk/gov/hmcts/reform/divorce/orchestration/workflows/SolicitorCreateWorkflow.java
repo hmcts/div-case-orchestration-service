@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFrom;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +63,8 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private boolean isPetitionerClaimingCostsAndClaimCostsFromIsEmptyIn(CaseDetails caseDetails) {
         Map<String, Object> caseData = caseDetails.getCaseData();
         boolean isPetitionerClaimingCosts = YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)));
-        boolean claimCostsFromIsEmpty = StringUtils.isEmpty(caseData.get(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD));
+        boolean claimCostsFromIsEmpty = StringUtils.isEmpty(caseData.get(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD))
+            || CollectionUtils.isEmpty(Arrays.asList(caseData.get(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD)));
         return isPetitionerClaimingCosts && claimCostsFromIsEmpty;
     }
 }
