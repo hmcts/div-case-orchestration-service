@@ -36,6 +36,7 @@
         <property name="ignorePattern"
                   value="public.*given.+_when.+_then.+|^package.*|^import.*|a href|href|http://|https://|ftp://"/>
     </module>
+
     <module name="TreeWalker">
         <module name="SuppressWarningsHolder"/>
         <module name="OuterTypeFilename"/>
@@ -50,7 +51,6 @@
             <property name="allowByTailComment" value="true"/>
             <property name="allowNonPrintableEscapes" value="true"/>
         </module>
-
         <module name="AvoidStarImport"/>
         <module name="OneTopLevelClass"/>
         <module name="NoLineWrap"/>
