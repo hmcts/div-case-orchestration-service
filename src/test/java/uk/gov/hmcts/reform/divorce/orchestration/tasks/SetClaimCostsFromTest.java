@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_FROM_CCD_CODE_FOR_RESPONDENT;
@@ -26,6 +27,9 @@ public class SetClaimCostsFromTest {
 
         setClaimCostsFrom.execute(null, payload);
 
-        assertEquals(EXPECTED_VALUE, payload.get(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD));
+        List<Object> result = (List<Object>) payload.get(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD);
+
+        assertEquals(result.size(), 1);
+        assertEquals(EXPECTED_VALUE, result.get(0));
     }
 }
