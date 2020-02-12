@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.Map;
-
 import javax.validation.constraints.NotBlank;
 
 @Data

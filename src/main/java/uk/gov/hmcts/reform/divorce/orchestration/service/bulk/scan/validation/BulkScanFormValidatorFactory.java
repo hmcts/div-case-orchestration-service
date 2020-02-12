@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_2_YR_SEP;

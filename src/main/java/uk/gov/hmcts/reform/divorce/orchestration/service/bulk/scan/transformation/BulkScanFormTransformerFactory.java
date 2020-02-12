@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
 import static java.lang.String.format;

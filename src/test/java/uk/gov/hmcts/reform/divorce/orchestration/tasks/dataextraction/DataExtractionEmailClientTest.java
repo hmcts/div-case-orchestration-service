@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction.DataExtrac
 
 import java.io.File;
 import java.nio.file.Files;
-
 import javax.mail.MessagingException;
 
 import static org.hamcrest.Matchers.instanceOf;
