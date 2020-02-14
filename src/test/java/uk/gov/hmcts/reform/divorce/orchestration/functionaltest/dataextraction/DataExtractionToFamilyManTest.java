@@ -19,7 +19,6 @@ import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
 import javax.mail.MessagingException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;

@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.Month;
-
 import javax.mail.MessagingException;
 
 import static org.hamcrest.Matchers.instanceOf;
