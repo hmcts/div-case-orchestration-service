@@ -11,9 +11,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFrom;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -24,6 +26,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorCreateWorkflowTest {
@@ -36,6 +40,9 @@ public class SolicitorCreateWorkflowTest {
 
     @Mock
     SetSolicitorCourtDetailsTask setSolicitorCourtDetailsTask;
+
+    @Mock
+    SetClaimCostsFrom setClaimCostsFrom;
 
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
@@ -57,6 +64,31 @@ public class SolicitorCreateWorkflowTest {
 
         InOrder inOrder = inOrder(setSolicitorCourtDetailsTask, addMiniPetitionDraftTask, caseFormatterAddDocuments);
 
+        inOrder.verify(setSolicitorCourtDetailsTask).execute(context, payload);
+        inOrder.verify(addMiniPetitionDraftTask).execute(context, payload);
+        inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
+    }
+
+    @Test
+    public void runShouldSetClaimCostsFromWhenClaimCostsIsYesAndClaimCostsFromIsEmpty() throws Exception {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
+
+        TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+
+        when(setClaimCostsFrom.execute(any(), eq(payload))).thenReturn(payload);
+        when(setSolicitorCourtDetailsTask.execute(any(), eq(payload))).thenReturn(payload);
+        when(addMiniPetitionDraftTask.execute(any(), eq(payload))).thenReturn(payload);
+
+        assertEquals(Collections.emptyMap(), solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN));
+
+        InOrder inOrder = inOrder(setClaimCostsFrom, setSolicitorCourtDetailsTask, addMiniPetitionDraftTask, caseFormatterAddDocuments);
+
+        inOrder.verify(setClaimCostsFrom).execute(context, payload);
         inOrder.verify(setSolicitorCourtDetailsTask).execute(context, payload);
         inOrder.verify(addMiniPetitionDraftTask).execute(context, payload);
         inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
