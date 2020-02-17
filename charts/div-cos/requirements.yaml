@@ -2,3 +2,9 @@ dependencies:
   - name: java
     version: ~2.6.0
     repository: "@hmctspublic"
+  - name: div-emca
+    version: ~1.2.0
+    repository: "@hmctspublic"
+  - name: div-fps
+    version: ~1.2.1
+    repository: "@hmctspublic"
