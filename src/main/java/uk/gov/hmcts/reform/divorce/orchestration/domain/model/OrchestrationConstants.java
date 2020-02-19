@@ -283,7 +283,6 @@ public class OrchestrationConstants {
     public static final String DOCUMENT_TYPE_PETITION = "petition";
     public static final String RESPONDENT_INVITATION_FILE_NAME_FORMAT = "aosinvitation%s";
     public static final String MINI_PETITION_FILE_NAME_FORMAT = "d8petition%s";
-    public static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
     public static final String DRAFT_MINI_PETITION_TEMPLATE_NAME = "divorcedraftminipetition";
     public static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
     public static final String DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS = "coRespondentAnswers";
