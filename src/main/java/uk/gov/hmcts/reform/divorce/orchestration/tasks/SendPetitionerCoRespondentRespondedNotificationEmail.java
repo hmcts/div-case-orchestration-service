@@ -3,20 +3,24 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
@@ -54,6 +58,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
         String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
         String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
+        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
 
         Map<String, String> templateVars = new HashMap<>();
 
@@ -71,7 +76,8 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
             emailService.sendEmail(petSolicitorEmail,
                 EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
                 templateVars,
-                "co-respondent responded - notification to solicitor");
+                "co-respondent responded - notification to solicitor",
+                welshLanguagePreference);
 
         } else if (StringUtils.isNotBlank(petitionerEmail)) {
 
@@ -84,13 +90,15 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
                     emailService.sendEmail(petitionerEmail,
                         EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
                         templateVars,
-                        "co-respondent responded when aos is undefended");
+                        "co-respondent responded when aos is undefended",
+                        welshLanguagePreference);
                 }
             } else {
                 emailService.sendEmail(petitionerEmail,
                     EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
                     templateVars,
-                    "co-respondent responded but respondent has not");
+                    "co-respondent responded but respondent has not",
+                    welshLanguagePreference);
             }
         }
 

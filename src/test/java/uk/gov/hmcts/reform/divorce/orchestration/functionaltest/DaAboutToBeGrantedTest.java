@@ -20,6 +20,7 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static java.util.Collections.singletonMap;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -96,7 +97,7 @@ public class DaAboutToBeGrantedTest extends MockedFunctionalTest {
 
         stubDocumentGeneratorServerEndpoint(daDocumentGenerationResponse);
         stubFormatterServerEndpoint(daDocumentGenerationResponse, CASE_DATA);
-        when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString()))
+        when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString(), any()))
             .thenReturn(null);
 
         String inputJson = JSONObject.valueToString(CASE_DETAILS);

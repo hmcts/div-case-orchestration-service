@@ -3,19 +3,23 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
@@ -45,14 +49,17 @@ public class SendCoRespondentGenericUpdateNotificationEmail implements Task<Map<
             String coRespLastName =  getMandatoryPropertyValueAsString(caseData, D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME);
             String caseNumber =  getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
 
+
+
             Map<String, String> templateVars = new HashMap<>();
 
             templateVars.put(NOTIFICATION_EMAIL, coRespEmail);
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, coRespFirstName);
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, coRespLastName);
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseNumber);
-
-            emailService.sendEmail(coRespEmail, EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name(), templateVars, EMAIL_DESC);
+            Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
+            emailService.sendEmail(coRespEmail, EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name(), templateVars,
+                EMAIL_DESC, welshLanguagePreference);
         }
 
         return caseData;

@@ -5,12 +5,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -53,7 +55,8 @@ public class GenericEmailNotificationUTest {
                 .sendEmailAndReturnExceptionIfFails(TEST_USER_EMAIL,
                         RESPONDENT_SUBMISSION_CONSENT.name(),
                         vars,
-                        GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION);
+                        GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION,
+                        Optional.of(LanguagePreference.ENGLISH));
         assertEquals(taskResponse, data);
     }
 
@@ -73,7 +76,8 @@ public class GenericEmailNotificationUTest {
                 .when(emailService).sendEmailAndReturnExceptionIfFails(TEST_USER_EMAIL,
                     RESPONDENT_SUBMISSION_CONSENT.name(),
                     vars,
-                    GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION);
+                    GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION,
+                    Optional.of(LanguagePreference.ENGLISH));
 
         Map<String, Object> taskResponse = genericEmailNotification.execute(context, data);
 

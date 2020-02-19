@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.UNFORMATTED_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
@@ -74,6 +77,7 @@ public class SendRespondentGenericUpdateNotificationEmailTest {
         testData.put(RESPONDENT_EMAIL_ADDRESS, TEST_USER_EMAIL);
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_PETITIONER_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_PETITIONER_LAST_NAME);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "Yes");
 
         Map returnPayload = sendRespondentGenericUpdateNotificationEmail.execute(context, testData);
 
@@ -84,6 +88,7 @@ public class SendRespondentGenericUpdateNotificationEmailTest {
                         eq(TEST_USER_EMAIL),
                         eq(EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name()),
                         eq(expectedTemplateVars),
-                        any());
+                        any(),
+                        eq(Optional.of(LanguagePreference.WELSH)));
     }
 }

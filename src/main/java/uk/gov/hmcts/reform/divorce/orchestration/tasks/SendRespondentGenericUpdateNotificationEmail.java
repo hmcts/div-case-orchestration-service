@@ -3,16 +3,20 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
@@ -51,7 +55,10 @@ public class SendRespondentGenericUpdateNotificationEmail implements Task<Map<St
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, respLastName);
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseNumber);
 
-            emailService.sendEmail(respEmail, EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name(), templateVars, RESP_GENERIC_EMAIL_DESC);
+
+            Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
+            emailService.sendEmail(respEmail, EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name(), templateVars,
+                RESP_GENERIC_EMAIL_DESC, welshLanguagePreference);
         }
 
         return caseData;
