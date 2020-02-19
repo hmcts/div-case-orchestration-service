@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.Invocation;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.allOf;
@@ -39,6 +41,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -104,7 +107,8 @@ public class SendRespondentSubmissionNotificationEmailTest {
         verify(taskCommons).sendEmail(eq(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION),
             eq("respondent submission notification email - defended divorce"),
             eq("respondent@divorce.co.uk"),
-            templateParametersCaptor.capture());
+            templateParametersCaptor.capture(),
+            eq(Optional.of(LanguagePreference.ENGLISH)));
         Map<String, String> templateParameters = templateParametersCaptor.getValue();
         assertThat(templateParameters, hasEntry(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID));
         assertThat(templateParameters, allOf(
@@ -171,7 +175,8 @@ public class SendRespondentSubmissionNotificationEmailTest {
         verify(taskCommons).sendEmail(eq(RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION),
             eq("respondent submission notification email - undefended divorce"),
             eq("respondent@divorce.co.uk"),
-            templateParametersCaptor.capture());
+            templateParametersCaptor.capture(),
+            eq(Optional.of(LanguagePreference.ENGLISH)));
         Map<String, String> templateParameters = templateParametersCaptor.getValue();
         assertThat(templateParameters, hasEntry(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID));
         assertThat(templateParameters, allOf(
@@ -202,6 +207,8 @@ public class SendRespondentSubmissionNotificationEmailTest {
     }
 
     private void checkThatPropertiesAreCheckedBeforeBeingRetrieved(Map<String, Object> mockCaseData) {
+        mockCaseData.containsKey(LANGUAGE_PREFERENCE_WELSH);
+
         List<String> listOfMethodInvoked = mockingDetails(mockCaseData).getInvocations().stream()
             .map(Invocation::getMethod)
             .map(Method::getName)

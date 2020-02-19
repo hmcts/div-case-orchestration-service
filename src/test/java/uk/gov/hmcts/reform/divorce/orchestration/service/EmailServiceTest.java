@@ -8,8 +8,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.service.notify.NotificationClientException;
+
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -36,10 +39,27 @@ public class EmailServiceTest {
         emailService.sendEmail(EMAIL_ADDRESS,
             EmailTemplateNames.APPLIC_SUBMISSION.name(),
             null,
-            "submission notification");
+            "submission notification",
+            Optional.empty());
 
         verify(mockClient).sendEmail(
-            eq(emailTemplatesConfig.getTemplates().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+            eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.ENGLISH).get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+            eq(EMAIL_ADDRESS),
+            eq(emailTemplatesConfig.getTemplateVars().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+            anyString());
+    }
+
+    @Test
+    public void sendWeslhEmailForSubmissionConfirmationShouldCallTheEmailClientToSendAnEmail()
+        throws NotificationClientException {
+        emailService.sendEmail(EMAIL_ADDRESS,
+            EmailTemplateNames.APPLIC_SUBMISSION.name(),
+            null,
+            "submission notification",
+            Optional.of(LanguagePreference.WELSH));
+
+        verify(mockClient).sendEmail(
+            eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.WELSH).get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
             eq(EMAIL_ADDRESS),
             eq(emailTemplatesConfig.getTemplateVars().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
             anyString());
@@ -51,10 +71,27 @@ public class EmailServiceTest {
         emailService.sendEmail(EMAIL_ADDRESS,
             EmailTemplateNames.SAVE_DRAFT.name(),
             null,
-            "save draft");
+            "save draft",
+            Optional.empty());
 
         verify(mockClient).sendEmail(
-            eq(emailTemplatesConfig.getTemplates().get(EmailTemplateNames.SAVE_DRAFT.name())),
+            eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.ENGLISH).get(EmailTemplateNames.SAVE_DRAFT.name())),
+            eq(EMAIL_ADDRESS),
+            eq(emailTemplatesConfig.getTemplateVars().get(EmailTemplateNames.SAVE_DRAFT.name())),
+            anyString());
+    }
+
+    @Test
+    public void useWelshConfigTemplateVarsWhenAvailable()
+        throws NotificationClientException {
+        emailService.sendEmail(EMAIL_ADDRESS,
+            EmailTemplateNames.SAVE_DRAFT.name(),
+            null,
+            "save draft",
+            Optional.of(LanguagePreference.WELSH));
+
+        verify(mockClient).sendEmail(
+            eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.WELSH).get(EmailTemplateNames.SAVE_DRAFT.name())),
             eq(EMAIL_ADDRESS),
             eq(emailTemplatesConfig.getTemplateVars().get(EmailTemplateNames.SAVE_DRAFT.name())),
             anyString());
@@ -70,7 +107,8 @@ public class EmailServiceTest {
         emailService.sendEmail(EMAIL_ADDRESS,
                 EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
                 null,
-                "resp does not consent to 2 year separation update notification");
+                "resp does not consent to 2 year separation update notification",
+                Optional.of(LanguagePreference.WELSH));
     }
 
     @Test
@@ -79,13 +117,31 @@ public class EmailServiceTest {
         emailService.sendEmailAndReturnExceptionIfFails(EMAIL_ADDRESS,
                 EmailTemplateNames.APPLIC_SUBMISSION.name(),
                 null,
-                "submission notification");
+                "submission notification",
+                Optional.empty());
 
         verify(mockClient).sendEmail(
-                eq(emailTemplatesConfig.getTemplates().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+            eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.ENGLISH).get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
                 eq(EMAIL_ADDRESS),
                 eq(emailTemplatesConfig.getTemplateVars().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
                 anyString());
+    }
+
+
+    @Test
+    public void sendWelshEmailAndReturnExceptionShouldCallTheEmailClientToSendAnEmail()
+        throws NotificationClientException {
+        emailService.sendEmailAndReturnExceptionIfFails(EMAIL_ADDRESS,
+            EmailTemplateNames.APPLIC_SUBMISSION.name(),
+            null,
+            "submission notification",
+            Optional.of(LanguagePreference.WELSH));
+
+        verify(mockClient).sendEmail(
+            eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.WELSH).get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+            eq(EMAIL_ADDRESS),
+            eq(emailTemplatesConfig.getTemplateVars().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+            anyString());
     }
 
     @Test(expected = NotificationClientException.class)
@@ -97,6 +153,7 @@ public class EmailServiceTest {
         emailService.sendEmailAndReturnExceptionIfFails(EMAIL_ADDRESS,
                 EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
                 null,
-                "resp does not consent to 2 year separation update notification");
+                "resp does not consent to 2 year separation update notification",
+                Optional.empty());
     }
 }

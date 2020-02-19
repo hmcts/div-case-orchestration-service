@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -95,7 +97,8 @@ public class NotifyForRefusalOrderTaskTest {
                     hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, PETITIONER_LAST_NAME)
                 )
             )),
-            anyString()
+            anyString(),
+            eq(Optional.of(LanguagePreference.ENGLISH))
         );
     }
 
@@ -117,7 +120,8 @@ public class NotifyForRefusalOrderTaskTest {
                     hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING)
                 )
             )),
-            anyString()
+            anyString(),
+            eq(Optional.of(LanguagePreference.ENGLISH))
         );
     }
 
@@ -129,7 +133,8 @@ public class NotifyForRefusalOrderTaskTest {
         verify(emailService, never()).sendEmail(eq(PETITIONER_EMAIL),
             eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name()),
             anyMap(),
-            anyString()
+            anyString(),
+            eq(Optional.of(LanguagePreference.ENGLISH))
         );
     }
 
@@ -144,7 +149,8 @@ public class NotifyForRefusalOrderTaskTest {
         verify(emailService, never()).sendEmail(eq(PETITIONER_EMAIL),
             eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name()),
             anyMap(),
-            anyString()
+            anyString(),
+            eq(Optional.of(LanguagePreference.ENGLISH))
         );
     }
 
@@ -160,7 +166,8 @@ public class NotifyForRefusalOrderTaskTest {
         verify(emailService, never()).sendEmail(eq(PETITIONER_EMAIL),
             eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name()),
             anyMap(),
-            anyString()
+            anyString(),
+            eq(Optional.of(LanguagePreference.ENGLISH))
         );
     }
 }

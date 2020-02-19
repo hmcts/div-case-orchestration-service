@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailToSend;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMAIL_ERROR_KEY;
@@ -24,29 +26,36 @@ public class EmailService {
     @Autowired
     private EmailTemplatesConfig emailTemplatesConfig;
 
+
     public Map<String, Object> sendEmail(String destinationAddress,
                                          String templateName,
                                          Map<String, String> templateVars,
-                                         String emailDescription) {
+                                         String emailDescription,
+                                         Optional<LanguagePreference> languagePreference) {
 
-        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars, languagePreference);
         return sendEmailAndReturnErrorsInResponse(emailToSend, emailDescription);
     }
 
-    public void sendEmailAndReturnExceptionIfFails(String destinationAddress,
-                           String templateName,
-                           Map<String, String> templateVars,
-                           String emailDescription) throws NotificationClientException {
 
-        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+    public void sendEmailAndReturnExceptionIfFails(String destinationAddress,
+                                                   String templateName,
+                                                   Map<String, String> templateVars,
+                                                   String emailDescription,
+                                                   Optional<LanguagePreference> languagePreference) throws NotificationClientException {
+
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars, languagePreference);
         sendEmailUsingClient(emailToSend, emailDescription);
     }
 
     private EmailToSend generateEmail(String destinationAddress,
                                       String templateName,
-                                      Map<String, String> templateVars) {
+                                      Map<String, String> templateVars,
+                                      Optional<LanguagePreference> languagePreference) {
         String referenceId = UUID.randomUUID().toString();
-        String templateId = emailTemplatesConfig.getTemplates().get(templateName);
+        LanguagePreference language = languagePreference.orElse(LanguagePreference.ENGLISH);
+
+        String templateId = emailTemplatesConfig.getTemplates().get(language).get(templateName);
         Map<String, String> templateFields = (templateVars != null ? templateVars :
             emailTemplatesConfig.getTemplateVars().get(templateName));
 

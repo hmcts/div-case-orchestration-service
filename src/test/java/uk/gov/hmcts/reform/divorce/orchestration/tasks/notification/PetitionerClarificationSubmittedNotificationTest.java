@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
@@ -19,6 +20,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -103,7 +105,8 @@ public class PetitionerClarificationSubmittedNotificationTest {
                     hasEntry(COURT_NAME_TEMPLATE_ID, court.getDivorceCentreName())
                 )
             )),
-            anyString()
+            anyString(),
+            eq(Optional.of(LanguagePreference.ENGLISH))
         );
     }
 
@@ -117,7 +120,7 @@ public class PetitionerClarificationSubmittedNotificationTest {
         doThrow(new NotificationClientException("Notification Error"))
             .when(emailService).sendEmailAndReturnExceptionIfFails(eq(PETITIONER_EMAIL),
                 eq(EmailTemplateNames.DECREE_NISI_CLARIFICATION_SUBMISSION.name()),
-                anyMap(), anyString());
+                anyMap(), anyString(), eq(Optional.of(LanguagePreference.ENGLISH)));
 
         classToTest.execute(taskContext, incomingPayload);
 

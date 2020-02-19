@@ -50,6 +50,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
@@ -1239,6 +1241,34 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), is(DUMMY_CASE_DATA));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
+
+    @Test
+    public void testDefault_Language_Welsh_No() throws WorkflowException {
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(new HashMap<>()).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.defaultValue(TEST_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData().get(LANGUAGE_PREFERENCE_WELSH), is(NO_VALUE));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
+
+    @Test
+    public void testDefault_Language_Welsh_Yes() throws WorkflowException {
+
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.defaultValue(TEST_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData().get(LANGUAGE_PREFERENCE_WELSH), is(YES_VALUE));
         assertThat(response.getBody().getErrors(), is(nullValue()));
     }
 }

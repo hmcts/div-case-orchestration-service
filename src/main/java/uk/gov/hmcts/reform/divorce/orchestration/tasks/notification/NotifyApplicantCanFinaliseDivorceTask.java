@@ -4,20 +4,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -50,6 +54,7 @@ public class NotifyApplicantCanFinaliseDivorceTask implements Task<Map<String, O
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
         String petFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
+        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
         Map<String, String> templateVars = new HashMap<>();
 
         if (StringUtils.isNotBlank(solicitorEmail)) {
@@ -69,7 +74,8 @@ public class NotifyApplicantCanFinaliseDivorceTask implements Task<Map<String, O
                     solicitorEmail,
                     EmailTemplateNames.SOL_APPLICANT_DA_ELIGIBLE.name(),
                     templateVars,
-                    SOL_EMAIL_DESC
+                    SOL_EMAIL_DESC,
+                    welshLanguagePreference
             );
 
         } else if (StringUtils.isNotBlank(petitionerEmail)) {
@@ -85,7 +91,8 @@ public class NotifyApplicantCanFinaliseDivorceTask implements Task<Map<String, O
                     petitionerEmail,
                     APPLICANT_DA_ELIGIBLE.name(),
                     templateVars,
-                    EMAIL_DESC
+                    EMAIL_DESC,
+                    welshLanguagePreference
             );
         }
 

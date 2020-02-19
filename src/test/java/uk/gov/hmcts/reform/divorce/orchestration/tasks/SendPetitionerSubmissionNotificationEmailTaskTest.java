@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,6 +41,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
@@ -132,13 +135,16 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
                 eq(TEST_USER_EMAIL),
                 eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
                 eq(expectedTemplateVars),
-                any());
+                any(),
+                eq(Optional.of(LanguagePreference.ENGLISH)));
     }
 
     @Test
     public void shouldCallEmailService_WithServiceCentreName_WhenCaseIsAssignedToServiceCentre() throws TaskException {
         addTestData();
         testData.put(DIVORCE_UNIT_JSON_KEY, SERVICE_CENTRE_KEY);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "Yes");
+
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, SERVICE_CENTRE_DISPLAY_NAME);
 
@@ -150,12 +156,14 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
                 eq(TEST_USER_EMAIL),
                 eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
                 eq(expectedTemplateVars),
-                any());
+                any(),
+                eq(Optional.of(LanguagePreference.WELSH)));
     }
 
     @Test
     public void shouldCallEmailServiceWithNoCaseIdFormatWhenNoUnableToFormatIdForSubmission() throws TaskException {
         addTestData();
+        testData.put(LANGUAGE_PREFERENCE_WELSH,  null);
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, TEST_COURT_DISPLAY_NAME);
 
@@ -167,7 +175,8 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
                 eq(TEST_USER_EMAIL),
                 eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
                 eq(expectedTemplateVars),
-                any());
+                any(),
+                eq(Optional.of(LanguagePreference.ENGLISH)));
     }
 
     @Test
@@ -175,6 +184,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         addTestData();
         testData.put(DIVORCE_UNIT_JSON_KEY, SERVICE_CENTRE_KEY);
         testData.put(PREVIOUS_CASE_ID_CCD_KEY, Collections.singletonMap(CASE_REFERENCE_KEY, TEST_CASE_ID));
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, SERVICE_CENTRE_DISPLAY_NAME);
 
@@ -186,6 +196,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
             eq(TEST_USER_EMAIL),
             eq(EmailTemplateNames.APPLIC_SUBMISSION_AMEND.name()),
             eq(expectedTemplateVars),
-            any());
+            any(),
+            eq(Optional.of(LanguagePreference.ENGLISH)));
     }
 }

@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
@@ -45,6 +47,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
@@ -128,6 +131,7 @@ public class SendPetitionerUpdateNotificationEmailTest {
     }
 
     private void verifyCallsEmailTemplate(String emailTemplateName) throws Exception {
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
         Map returnPayload = sendPetitionerUpdateNotificationsEmail.execute(context, testData);
 
         assertEquals(testData, returnPayload);
@@ -136,7 +140,8 @@ public class SendPetitionerUpdateNotificationEmailTest {
                 eq(TEST_USER_EMAIL),
                 eq(emailTemplateName),
                 eq(expectedTemplateVars),
-                anyString());
+                anyString(),
+                eq(Optional.of(LanguagePreference.ENGLISH)));
     }
 
     @Test

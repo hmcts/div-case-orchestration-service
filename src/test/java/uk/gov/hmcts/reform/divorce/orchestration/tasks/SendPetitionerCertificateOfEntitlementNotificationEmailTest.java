@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
@@ -19,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -250,7 +252,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
                 fail("Should have caught TaskException, but got the following: " + throwable.getClass().getName());
             }
 
-            verify(taskCommons, never()).sendEmail(any(), any(), any(), any());
+            verify(taskCommons, never()).sendEmail(any(), any(), any(), any(), any());
         }
     }
 
@@ -273,7 +275,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
                 fail("Should have caught TaskException, but got the following: " + throwable.getClass().getName());
             }
 
-            verify(taskCommons, never()).sendEmail(any(), any(), any(), any());
+            verify(taskCommons, never()).sendEmail(any(), any(), any(), any(), any());
         }
     }
 
@@ -292,7 +294,8 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
                     hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019"),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
-            )));
+            )),
+            eq(Optional.of(LanguagePreference.ENGLISH)));
     }
 
     private void verifySolEmailParameters(Matcher<Map<? extends String, ?>> optionalTextParametersMatcher) throws TaskException {
@@ -311,7 +314,8 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
                     hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019"),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
-            )));
+            )),
+            eq(Optional.of(LanguagePreference.ENGLISH)));
     }
 
 }

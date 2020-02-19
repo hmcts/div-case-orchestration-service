@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -16,6 +17,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -36,6 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
@@ -113,6 +116,7 @@ public class SendDnDecisionSolNotificationTaskTest {
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_USER_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_USER_LAST_NAME);
         testData.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
 
         expectedTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME);
         expectedTemplateVars.put(NOTIFICATION_RESP_NAME, TEST_USER_FIRST_NAME + " " + TEST_USER_LAST_NAME);
@@ -127,7 +131,8 @@ public class SendDnDecisionSolNotificationTaskTest {
                 eq(TEST_USER_EMAIL),
                 eq(EmailTemplateNames.SOL_DN_DECISION_MADE.name()),
                 eq(expectedTemplateVars),
-                eq(SOLICITOR_PERSONAL_SERVICE_EMAIL)
+                eq(SOLICITOR_PERSONAL_SERVICE_EMAIL),
+                eq(Optional.of(LanguagePreference.ENGLISH))
         );
     }
 
@@ -145,7 +150,7 @@ public class SendDnDecisionSolNotificationTaskTest {
         expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         doThrow(new NotificationClientException("test"))
-                .when(emailService).sendEmailAndReturnExceptionIfFails(any(), any(), any(), any());
+                .when(emailService).sendEmailAndReturnExceptionIfFails(any(), any(), any(), any(), any());
 
         //when
         sendDnDecisionSolNotificationTask.execute(context, testData);
