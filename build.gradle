@@ -16,7 +16,7 @@ buildscript {
 plugins {
     id 'application'
     id 'checkstyle'
-    id 'com.github.ben-manes.versions' version '0.27.0'
+    id 'com.github.ben-manes.versions' version '0.28.0'
     id 'com.jfrog.bintray' version '1.8.4'
     id 'info.solidsoft.pitest' version '1.4.6'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
