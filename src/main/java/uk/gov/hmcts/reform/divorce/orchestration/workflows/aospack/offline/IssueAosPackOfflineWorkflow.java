@@ -173,9 +173,9 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
         List<DocumentGenerationRequest> documentGenerationRequestList = new ArrayList<>();
 
         if (divorceParty.equals(RESPONDENT)) {
-            documentGenerationRequestList = getRespondentDocumentGenerationRequests(reasonForDivorce, caseData, documentGenerationRequestList);
+            updateRespondentDocumentGenerationRequests(reasonForDivorce, caseData, documentGenerationRequestList);
         } else if (divorceParty.equals(CO_RESPONDENT) && ADULTERY.equals(reasonForDivorce)) {
-            getCoRespondentDocumentGenerationRequests(caseData, documentGenerationRequestList);
+            updateCORespondentDocumentGenerationRequests(caseData, documentGenerationRequestList);
         } else {
             documentGenerationRequestList = emptyList();
         }
@@ -183,7 +183,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
         return documentGenerationRequestList;
     }
 
-    private void getCoRespondentDocumentGenerationRequests(Map<String, Object> caseData,
+    private void updateCORespondentDocumentGenerationRequests(Map<String, Object> caseData,
                                                            List<DocumentGenerationRequest> documentGenerationRequestList) {
         String templateId = getTemplateId(documentTemplateService,
                 DocumentType.CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
@@ -202,7 +202,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
             AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME));
     }
 
-    private List<DocumentGenerationRequest> getRespondentDocumentGenerationRequests(String reasonForDivorce, Map<String, Object> caseData,
+    private void updateRespondentDocumentGenerationRequests(String reasonForDivorce, Map<String, Object> caseData,
                                                                                     List<DocumentGenerationRequest> documentGenerationRequestList) {
         String templateId = getTemplateId(documentTemplateService,
                 DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
@@ -217,8 +217,6 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
         documentGenerationRequestList.add(Optional.ofNullable(documentGenerator.get(reasonForDivorce))
                 .map(documentGen -> documentGen.getDocumentGenerationRequest(caseData))
                 .orElseThrow(() -> new IllegalArgumentException(String.format(ERROR_MESSAGE, reasonForDivorce))));
-
-        return documentGenerationRequestList;
     }
 
     @AllArgsConstructor

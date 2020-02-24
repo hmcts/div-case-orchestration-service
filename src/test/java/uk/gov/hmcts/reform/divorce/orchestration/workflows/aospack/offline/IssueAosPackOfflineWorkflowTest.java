@@ -36,6 +36,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -298,6 +299,17 @@ public class IssueAosPackOfflineWorkflowTest {
     }
 
     @Test
+    public void testTasksAreCalledWithTheCorrectParams_ForCoRespondent_WithouAdultery() throws WorkflowException,
+            TaskException {
+        Map<String, Object> returnedPayload = classUnderTest.run(testAuthToken, caseDetails, CO_RESPONDENT);
+        assertThat(returnedPayload, hasEntry("returnedKey5", "returnedValue5"));
+        verify(documentsGenerationTask).execute(taskContextArgumentCaptor.capture(), eq(caseDetails.getCaseData()));
+        TaskContext taskContext = taskContextArgumentCaptor.getValue();
+        List<DocumentGenerationRequest> documentGenerationRequestList = taskContext.getTransientObject(DOCUMENT_GENERATION_REQUESTS_KEY);
+        assertThat("list is empty ", documentGenerationRequestList, empty());
+    }
+
+    @Test
     public void testTasksAreCalledWithTheCorrectParams_ForCoRespondent_ForAdultery() throws WorkflowException, TaskException {
         caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
 
@@ -312,16 +324,16 @@ public class IssueAosPackOfflineWorkflowTest {
         assertThat(returnedPayload, hasEntry("returnedKey5", "returnedValue5"));
 
         List<DocumentGenerationRequest> expectedDocumentGenerationRequests = asList(
-            new DocumentGenerationRequest(
-                CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
-                CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE,
-                CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_FILENAME
-            ),
-            new DocumentGenerationRequest(
-                CO_RESPONDENT_ADULTERY_FORM_TEMPLATE_ID,
-                CO_RESPONDENT_ADULTERY_FORM_DOCUMENT_TYPE,
-                CO_RESPONDENT_ADULTERY_FORM_FILENAME
-            )
+                new DocumentGenerationRequest(
+                        CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
+                        CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE,
+                        CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_FILENAME
+                ),
+                new DocumentGenerationRequest(
+                        CO_RESPONDENT_ADULTERY_FORM_TEMPLATE_ID,
+                        CO_RESPONDENT_ADULTERY_FORM_DOCUMENT_TYPE,
+                        CO_RESPONDENT_ADULTERY_FORM_FILENAME
+                )
         );
         verifyDocumentGeneratorReceivesExpectedParameters(expectedDocumentGenerationRequests);
         verifyMarkJourneyAsOfflineReceivesExpectedParameterWithValueOf(CO_RESPONDENT);
@@ -329,7 +341,7 @@ public class IssueAosPackOfflineWorkflowTest {
         verifyModifyDueDateIsNotCalled();
 
         verifyBulkPrintIsCalledAsExpected(AOS_PACK_OFFLINE_CO_RESPONDENT_LETTER_TYPE,
-            asList(CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, CO_RESPONDENT_ADULTERY_FORM_DOCUMENT_TYPE));
+                asList(CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, CO_RESPONDENT_ADULTERY_FORM_DOCUMENT_TYPE));
     }
 
     private void verifyDocumentGeneratorReceivesExpectedParameters(List<DocumentGenerationRequest> expectedDocumentGenerationRequests)
