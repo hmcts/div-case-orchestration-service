@@ -6,11 +6,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.util.Sets.newLinkedHashSet;
 import static org.hamcrest.CoreMatchers.is;
@@ -38,9 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
@@ -59,9 +61,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGe
 public class DecreeNisiRefusalDocumentGeneratorTaskTest {
 
     private static final String FIXED_DATE = "2010-10-10";
+    private static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
+    private static final String DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00098.docx";
+
 
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
+
+    @Mock
+    private DocumentTemplateService documentTemplateService;
 
     @Mock
     private CcdUtil ccdUtil;
@@ -87,6 +95,10 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
             .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
             .build();
+
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID))
+                .thenReturn(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID);
 
         //given
         when(documentGeneratorClient
@@ -148,6 +160,11 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
                 caseDetails), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
+
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID))
+                .thenReturn(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID);
+
 
         //when
         decreeNisiRefusalDocumentGeneratorTask.execute(context, payload);
@@ -212,6 +229,11 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         when(documentGeneratorClient
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID, expectedCaseDetails), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
+
+
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID))
+                .thenReturn(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID);
 
         //when
         decreeNisiRefusalDocumentGeneratorTask.execute(context, payload);

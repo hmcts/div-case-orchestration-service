@@ -6,11 +6,14 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PersonalServiceValidationTask;
@@ -18,6 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.PersonalServiceValidation
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -33,7 +37,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssuePersonalServicePackWorkflowTest {
@@ -47,8 +50,13 @@ public class IssuePersonalServicePackWorkflowTest {
     @Mock
     CaseFormatterAddDocuments caseFormatterAddDocuments;
 
+    @Mock
+    private DocumentTemplateService documentTemplateService;
+
     @InjectMocks
     IssuePersonalServicePackWorkflow issuePersonalServicePackWorkflow;
+
+    private static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";
 
     @Test
     public void testRunExecutesExpectedTasksInOrder() throws WorkflowException, TaskException {
@@ -58,6 +66,10 @@ public class IssuePersonalServicePackWorkflowTest {
                 .caseId(TEST_CASE_ID)
                 .caseData(caseData)
                 .build();
+
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID))
+                .thenReturn(SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID);
 
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObjects(new HashMap<String, Object>() {

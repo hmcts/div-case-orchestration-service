@@ -9,12 +9,15 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentGenerationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
@@ -25,6 +28,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
@@ -116,6 +120,9 @@ public class IssueAosPackOfflineWorkflowTest {
     @Mock
     private MarkJourneyAsOffline markJourneyAsOffline;
 
+    @Mock
+    private DocumentTemplateService documentTemplateService;
+
     @InjectMocks
     private IssueAosPackOfflineWorkflow classUnderTest;
 
@@ -127,6 +134,7 @@ public class IssueAosPackOfflineWorkflowTest {
 
     @Before
     public void setUp() throws TaskException {
+        classUnderTest.populateDocumenGenerator();
         Map<String, Object> payload = new HashMap<>();
         payload.put("testKey", "testValue");
         when(documentsGenerationTask.execute(any(), any())).thenReturn(singletonMap("returnedKey1", "returnedValue1"));
@@ -141,6 +149,13 @@ public class IssueAosPackOfflineWorkflowTest {
     @Test
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForTwoYearSeparation() throws WorkflowException, TaskException {
         caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
+                .thenReturn(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID))
+                .thenReturn(RESPONDENT_TWO_YEAR_SEPARATION_AOS_OFFLINE_FORM_TEMPLATE_ID);
 
         Map<String, Object> returnedPayload = classUnderTest.run(testAuthToken, caseDetails, RESPONDENT);
         assertThat(returnedPayload, hasEntry("returnedKey6", "returnedValue6"));
@@ -165,6 +180,13 @@ public class IssueAosPackOfflineWorkflowTest {
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForFiveYearSeparation() throws WorkflowException, TaskException {
         caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS);
 
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
+                .thenReturn(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.AOS_OFFLINE_FIVE_YEAR_SEPARATION_TEMPLATE_ID))
+                .thenReturn(RESPONDENT_FIVE_YEAR_SEPARATION_FORM_TEMPLATE_ID);
+
         Map<String, Object> returnedPayload = classUnderTest.run(testAuthToken, caseDetails, RESPONDENT);
         assertThat(returnedPayload, hasEntry("returnedKey6", "returnedValue6"));
 
@@ -187,6 +209,14 @@ public class IssueAosPackOfflineWorkflowTest {
     @Test
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForDesertion() throws WorkflowException, TaskException {
         caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, DESERTION);
+
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
+                .thenReturn(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_TEMPLATE_ID))
+                .thenReturn(RESPONDENT_BEHAVIOUR_DESERTION_FORM_TEMPLATE_ID);
+
 
         Map<String, Object> returnedPayload = classUnderTest.run(testAuthToken, caseDetails, RESPONDENT);
         assertThat(returnedPayload, hasEntry("returnedKey6", "returnedValue6"));
@@ -211,6 +241,13 @@ public class IssueAosPackOfflineWorkflowTest {
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForUnreasonableBehaviour() throws WorkflowException, TaskException {
         caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
 
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
+                .thenReturn(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_TEMPLATE_ID))
+                .thenReturn(RESPONDENT_BEHAVIOUR_DESERTION_FORM_TEMPLATE_ID);
+
         Map<String, Object> returnedPayload = classUnderTest.run(testAuthToken, caseDetails, RESPONDENT);
         assertThat(returnedPayload, hasEntry("returnedKey6", "returnedValue6"));
 
@@ -234,6 +271,13 @@ public class IssueAosPackOfflineWorkflowTest {
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForAdultery() throws WorkflowException, TaskException {
         caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
 
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
+                .thenReturn(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.AOS_OFFLINE_ADULTERY_RESPONDENT_TEMPLATE_ID))
+                .thenReturn(RESPONDENT_ADULTERY_FORM_TEMPLATE_ID);
+
         Map<String, Object> returnedPayload = classUnderTest.run(testAuthToken, caseDetails, RESPONDENT);
         assertThat(returnedPayload, hasEntry("returnedKey6", "returnedValue6"));
 
@@ -256,6 +300,13 @@ public class IssueAosPackOfflineWorkflowTest {
     @Test
     public void testTasksAreCalledWithTheCorrectParams_ForCoRespondent_ForAdultery() throws WorkflowException, TaskException {
         caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
+                .thenReturn(CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID))
+                .thenReturn(CO_RESPONDENT_ADULTERY_FORM_TEMPLATE_ID);
 
         Map<String, Object> returnedPayload = classUnderTest.run(testAuthToken, caseDetails, CO_RESPONDENT);
         assertThat(returnedPayload, hasEntry("returnedKey5", "returnedValue5"));

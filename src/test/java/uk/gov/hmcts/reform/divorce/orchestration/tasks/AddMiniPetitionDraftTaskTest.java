@@ -6,16 +6,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.util.Sets.newLinkedHashSet;
@@ -29,7 +32,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DRAFT_MINI_PETITION_TEMPLATE_NAME;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AddMiniPetitionDraftTaskTest {
@@ -37,8 +39,13 @@ public class AddMiniPetitionDraftTaskTest {
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
 
+    @Mock
+    private DocumentTemplateService documentTemplateService;
+
     @InjectMocks
     private AddMiniPetitionDraftTask addMiniPetitionDraftTask;
+
+    private static final String DRAFT_MINI_PETITION_TEMPLATE_NAME = "divorcedraftminipetition";
 
     @Test
     public void callsAddMiniPetitionDraftAndStoresGeneratedDocument() {
@@ -65,6 +72,8 @@ public class AddMiniPetitionDraftTaskTest {
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedDocument);
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.DIVORCE_DRAFT_MINI_PETITION))
+                .thenReturn(DRAFT_MINI_PETITION_TEMPLATE_NAME);
 
         //when
         addMiniPetitionDraftTask.execute(context, payload);

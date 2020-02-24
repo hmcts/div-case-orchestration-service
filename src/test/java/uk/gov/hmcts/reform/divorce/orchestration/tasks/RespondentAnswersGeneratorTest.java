@@ -7,15 +7,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.util.Sets.newLinkedHashSet;
 import static org.hamcrest.CoreMatchers.is;
@@ -26,15 +30,19 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RespondentAnswersGeneratorTest {
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
 
+    @Mock
+    private DocumentTemplateService documentTemplateService;
+
     @InjectMocks
     private RespondentAnswersGenerator respondentAnswersGenerator;
+
+    private static final String DOCUMENT_TYPE_RESPONDENT_ANSWERS = "respondentAnswers";
 
     @Test
     public void callsDocumentGeneratorAndStoresGeneratedDocument() {
@@ -63,6 +71,9 @@ public class RespondentAnswersGeneratorTest {
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
             .thenReturn(expectedRespondentAnswers);
+
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.RESPONDENT_ANSWERS))
+                .thenReturn(DOCUMENT_TYPE_RESPONDENT_ANSWERS);
 
         //when
         respondentAnswersGenerator.execute(context, payload);

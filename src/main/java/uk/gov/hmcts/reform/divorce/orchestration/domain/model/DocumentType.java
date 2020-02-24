@@ -9,7 +9,6 @@ public enum DocumentType {
     AOS_INVITATION("aosInvitation"),
     CO_RESPONDENT_ANSWERS("coRespondentAnswers"),
     CO_RESPONDENT_INVITATION("coRespondentInvitation"),
-    DOCUMENT_TEMPLATE_ID("documentTemplateId"),
     COSTS_ORDER_TEMPLATE_ID("costsOrderTemplateId"),
     DECREE_NISI_TEMPLATE_ID("decreeNisiTemplateId"),
     DECREE_NISI_ANSWER_TEMPLATE_ID("decreeNisiAnswerTemplateId"),
@@ -23,8 +22,9 @@ public enum DocumentType {
     AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID("aosOfflineTwoYearSeparationTemplateId"),
     AOS_OFFLINE_FIVE_YEAR_SEPARATION_TEMPLATE_ID("aosOfflineFiveYearSeparationTemplateId"),
     AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_TEMPLATE_ID("aosOfflineUnreasonableBehaviourAndDesertionTemplateId"),
-    AOS_OFFLINE_ADULTERY_RESPONDENT_TEMPLATEI_D("aosOfflineAdulteryRespondentTemplateId"),
-    AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID("aosOfflineAdulteryCORespondentTemplateId");
+    AOS_OFFLINE_ADULTERY_RESPONDENT_TEMPLATE_ID("aosOfflineAdulteryRespondentTemplateId"),
+    AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID("aosOfflineAdulteryCORespondentTemplateId"),
+    RESPONDENT_ANSWERS("respondentAnswers");
     
 
     private final String templateName;
