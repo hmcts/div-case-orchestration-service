@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequ
 
 import java.util.EnumMap;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
 import static java.lang.String.format;
