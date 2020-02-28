@@ -102,7 +102,7 @@ public class CaseDataUtilsTest {
     public void getTestLanguagePreferenceWithValue_Yes() {
         HashMap<String, Object> caseData = new HashMap<>();
         caseData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         assertThat(languagePreference, is(Optional.of(LanguagePreference.WELSH)));
     }
 
@@ -110,14 +110,21 @@ public class CaseDataUtilsTest {
     public void getTestLanguagePreferenceWithValue_No() {
         HashMap<String, Object> caseData = new HashMap<>();
         caseData.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         assertThat(languagePreference, is(Optional.of(LanguagePreference.ENGLISH)));
     }
 
     @Test
     public void getTestLanguagePreferenceWithValue_NULL() {
         HashMap<String, Object> caseData = new HashMap<>();
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        assertThat(languagePreference, is(Optional.of(LanguagePreference.ENGLISH)));
+    }
+
+    @Test
+    public void getTestLanguagePreference_Null_CaseData() {
+        HashMap<String, Object> caseData = null;
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         assertThat(languagePreference, is(Optional.of(LanguagePreference.ENGLISH)));
     }
 }

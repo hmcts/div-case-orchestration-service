@@ -104,7 +104,7 @@ public class SubmitRespondentAosCaseUTest {
         final Map<String, Object> divorceSession = getCaseData(false, false);
 
         final Map<String, Object> existingCaseData = new HashMap<>();
-        existingCaseData.put(D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
+        existingCaseData.put(D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR.getValue());
 
         when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(
             CaseDetails.builder().caseId(TEST_CASE_ID).caseData(emptyMap()).build());
@@ -126,7 +126,7 @@ public class SubmitRespondentAosCaseUTest {
         final Map<String, Object> divorceSession = getCaseData(false, false);
 
         final Map<String, Object> existingCaseData = new HashMap<>();
-        existingCaseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        existingCaseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
 
         when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(
             CaseDetails.builder().caseId(TEST_CASE_ID).caseData(existingCaseData).build());
@@ -148,7 +148,7 @@ public class SubmitRespondentAosCaseUTest {
         final Map<String, Object> divorceSession = getCaseData(false, false);
 
         final Map<String, Object> existingCaseData = new HashMap<>();
-        existingCaseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+        existingCaseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
 
         when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(
             CaseDetails.builder().caseId(TEST_CASE_ID).caseData(existingCaseData).build());

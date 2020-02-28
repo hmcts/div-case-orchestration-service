@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_ENDCLAIM_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_OPTIONS_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsObject;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
@@ -101,11 +102,13 @@ public class CaseDataUtils {
             && Objects.nonNull(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
     }
 
-    public static Optional<LanguagePreference> getLanguagePreference(Object languagePreference) {
-        return Optional.of(Optional.ofNullable(languagePreference)
-            .map(String.class::cast)
-            .filter(language -> YES_VALUE.equalsIgnoreCase(language))
-            .map(languagePreferenceWelsh -> LanguagePreference.WELSH)
-            .orElse(LanguagePreference.ENGLISH));
+    public static Optional<LanguagePreference> getLanguagePreference(Map<String, Object> caseData) {
+        return Optional.of(Optional.ofNullable(caseData)
+                .map(data -> data.get(LANGUAGE_PREFERENCE_WELSH))
+                .filter(language -> language != null)
+                .map(String.class::cast)
+                .filter(language -> YES_VALUE.equalsIgnoreCase(language))
+                .map(languagePreferenceWelsh -> LanguagePreference.WELSH)
+                .orElse(LanguagePreference.ENGLISH));
     }
 }

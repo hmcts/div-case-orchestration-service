@@ -22,7 +22,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
@@ -82,9 +81,9 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
             emailToBeSentTo = petitionerEmail;
         }
         try {
-            Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(data.get(LANGUAGE_PREFERENCE_WELSH));
+            Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(data);
             emailService.sendEmailAndReturnExceptionIfFails(emailToBeSentTo,
-                template, notificationTemplateVars, "DN Submission", welshLanguagePreference);
+                template, notificationTemplateVars, "DN Submission", languagePreference);
         } catch (NotificationClientException e) {
             log.warn("Error sending email on DN submitted for case {}", ccdReference, e);
         }

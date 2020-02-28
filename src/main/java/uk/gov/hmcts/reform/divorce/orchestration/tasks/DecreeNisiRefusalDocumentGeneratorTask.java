@@ -30,8 +30,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
-//import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants
-// .DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSAL_DRAFT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
@@ -47,9 +45,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_TO_PAY_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
+
+//import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants
+// .DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
 
 @Component
 @AllArgsConstructor
@@ -91,7 +91,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
         if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {
             String templateId = getTemplateId(documentTemplateService,
                     DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
-                    caseData.get(LANGUAGE_PREFERENCE_WELSH));
+                    caseData);
 
             GeneratedDocumentInfo generatedDocumentInfo = generatePdfDocument(
                     templateId,
@@ -112,7 +112,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
 
             String templateId = getTemplateId(documentTemplateService,
                     DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID,
-                    caseData.get(LANGUAGE_PREFERENCE_WELSH));
+                    caseData);
 
             GeneratedDocumentInfo generatedDocumentInfo = generatePdfDocument(
                     templateId,

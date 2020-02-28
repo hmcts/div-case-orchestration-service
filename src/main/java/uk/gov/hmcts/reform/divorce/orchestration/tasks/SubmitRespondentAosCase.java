@@ -89,8 +89,8 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         );
 
         final String reasonForDivorce = (String) currentCaseDetails.getCaseData().get(D_8_REASON_FOR_DIVORCE);
-        return (ADULTERY.equalsIgnoreCase(reasonForDivorce)
-            || SEPARATION_TWO_YEARS.equalsIgnoreCase(reasonForDivorce))
+        return (ADULTERY.getValue().equalsIgnoreCase(reasonForDivorce)
+            || SEPARATION_TWO_YEARS.getValue().equalsIgnoreCase(reasonForDivorce))
             && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact);
     }
 }

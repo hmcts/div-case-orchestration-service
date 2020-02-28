@@ -38,7 +38,7 @@ public class IssueAosPackOfflineTest extends IntegrationTest {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(CCD_CALLBACK_REQUEST, CcdCallbackRequest.class);
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         String testCaseId = caseDetails.getCaseId();
-        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
 
         Map<String, Object> response = cosApiClient.issueAosPackOffline(createCaseWorkerUser().getAuthToken(),
             RESPONDENT.getDescription(),
@@ -59,7 +59,7 @@ public class IssueAosPackOfflineTest extends IntegrationTest {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(CCD_CALLBACK_REQUEST, CcdCallbackRequest.class);
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         String testCaseId = caseDetails.getCaseId();
-        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
 
         Map<String, Object> response = cosApiClient.issueAosPackOffline(createCaseWorkerUser().getAuthToken(),
             DivorceParty.CO_RESPONDENT.getDescription(),

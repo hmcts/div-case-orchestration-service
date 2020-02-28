@@ -20,7 +20,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_DN_ANSWERS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 
 @Component
 public class DecreeNisiAnswersGeneratorTask implements Task<Map<String, Object>> {
@@ -37,7 +36,7 @@ public class DecreeNisiAnswersGeneratorTask implements Task<Map<String, Object>>
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         CaseDetails caseDataForDoc = CaseDetails.builder().caseData(payload).build();
         final String templateId = getTemplateId(documentTemplateService, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID,
-                payload.get(LANGUAGE_PREFERENCE_WELSH));
+                payload);
 
         try {
             GeneratedDocumentInfo dnAnswers =

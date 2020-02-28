@@ -24,7 +24,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -59,14 +58,14 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
                 return payload;
             }
             String refusalReason = (String) payload.get(REFUSAL_DECISION_CCD_FIELD);
-            Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(payload.get(LANGUAGE_PREFERENCE_WELSH));
+            Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(payload);
             if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase(refusalReason)) {
                 emailService.sendEmail(
                     petitionerEmail,
                     EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name(),
                     personalisation,
                     "Decree Nisi Refusal Order - Clarification",
-                    welshLanguagePreference
+                    languagePreference
                 );
             } else if (DN_REFUSED_REJECT_OPTION.equalsIgnoreCase(refusalReason)) {
                 FeeResponse amendFee = context.getTransientObject(AMEND_PETITION_FEE_JSON_KEY);
@@ -80,7 +79,7 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
                     EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION.name(),
                     personalisation,
                     "Decree Nisi Refusal Order - Rejection",
-                    welshLanguagePreference
+                    languagePreference
                 );
             }
         }

@@ -179,7 +179,7 @@ public class IssueEventWorkflowTest {
     @Test
     public void givenCaseIsAdulteryWithNamedCoRespondentAndRespondentLetterCanBeGenerated_whenRun_thenProceedAsExpected() throws WorkflowException {
         payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
-        payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
         payload.put(D_8_CO_RESPONDENT_NAMED, "YES");
 
         //Given
@@ -205,7 +205,7 @@ public class IssueEventWorkflowTest {
     @Test
     public void givenCaseIsAdulteryWithNamedCoRespondentNottinghamRdcRespondentPackGen_whenRun_thenProceedAsExpected() throws WorkflowException {
         payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
-        payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
         payload.put(D_8_CO_RESPONDENT_NAMED_OLD, "YES");
 
         //Given
@@ -257,7 +257,7 @@ public class IssueEventWorkflowTest {
     @Test
     public void givenCaseIsAdulteryButCoRespondentNotNamedAndRespondentLetterCanBeGenerated_whenRun_thenCoRespondentLetterIsNotGenerated() throws WorkflowException {
         payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
-        payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
         payload.put(D_8_CO_RESPONDENT_NAMED, "No");
 
         //Given

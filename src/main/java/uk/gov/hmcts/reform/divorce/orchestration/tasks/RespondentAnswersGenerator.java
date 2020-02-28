@@ -18,7 +18,6 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 
 @Component
 public class RespondentAnswersGenerator implements Task<Map<String, Object>> {
@@ -36,7 +35,7 @@ public class RespondentAnswersGenerator implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
         CaseDetails caseDataForDoc = CaseDetails.builder().caseData(payload).build();
         String templateId = getTemplateId(documentTemplateService, DocumentType.RESPONDENT_ANSWERS,
-                payload.get(LANGUAGE_PREFERENCE_WELSH));
+                payload);
         GeneratedDocumentInfo respondentAnswers =
             documentGeneratorClient.generatePDF(
                 GenerateDocumentRequest.builder()

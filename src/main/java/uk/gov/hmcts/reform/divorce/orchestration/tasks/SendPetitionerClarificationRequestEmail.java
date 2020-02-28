@@ -21,7 +21,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -61,7 +60,7 @@ public class SendPetitionerClarificationRequestEmail implements Task<Map<String,
 
         String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
-        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
         Map<String, String> templateVars = new HashMap<>();
 
@@ -81,7 +80,7 @@ public class SendPetitionerClarificationRequestEmail implements Task<Map<String,
                 EmailTemplateNames.SOL_APPLICANT_MORE_INFO_REQUESTED.name(),
                 templateVars,
                 SOL_APPLICANT_MORE_INFO_REQUESTED_EMAIL_DESC,
-                welshLanguagePreference);
+                languagePreference);
 
         } else if (StringUtils.isNotBlank(petitionerEmail)) {
             String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
@@ -93,7 +92,7 @@ public class SendPetitionerClarificationRequestEmail implements Task<Map<String,
                 EmailTemplateNames.PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION.name(),
                 templateVars,
                 PETITIONER_CLARIFICATION_REQUEST_EMAIL_DESC,
-                welshLanguagePreference);
+                languagePreference);
         } else {
             log.warn("petitioner email address found to be empty for case {}", caseData.get(D_8_CASE_REFERENCE));
         }

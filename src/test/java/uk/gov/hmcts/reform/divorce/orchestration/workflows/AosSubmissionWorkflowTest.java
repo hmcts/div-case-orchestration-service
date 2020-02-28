@@ -336,7 +336,7 @@ public class AosSubmissionWorkflowTest {
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
         caseData.put(D_8_CO_RESPONDENT_NAMED, YES_VALUE);
         caseData.put(RECEIVED_AOS_FROM_CO_RESP, NO_VALUE);
-        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
         caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
         caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
@@ -369,7 +369,7 @@ public class AosSubmissionWorkflowTest {
         caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
         caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
-        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
         caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
         caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
@@ -401,7 +401,7 @@ public class AosSubmissionWorkflowTest {
         caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
         caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
-        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
         caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
         caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 

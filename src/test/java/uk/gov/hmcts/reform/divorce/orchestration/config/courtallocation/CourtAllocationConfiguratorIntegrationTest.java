@@ -35,11 +35,11 @@ public class CourtAllocationConfiguratorIntegrationTest {
     @Test
     public void shouldSetUpConfigurationObjectWithEnvironmentVariableContents() {
         assertThat(courtDistributionConfig.getDivorceCasesRatio(), allOf(
-            hasEntry(equalTo(UNREASONABLE_BEHAVIOUR), comparesEqualTo(new BigDecimal("0.30"))),
-            hasEntry(equalTo(SEPARATION_TWO_YEARS), comparesEqualTo(new BigDecimal("0.37"))),
-            hasEntry(equalTo(SEPARATION_FIVE_YEARS), comparesEqualTo(new BigDecimal("0.21"))),
-            hasEntry(equalTo(DESERTION), comparesEqualTo(new BigDecimal("0.01"))),
-            hasEntry(equalTo(ADULTERY), comparesEqualTo(new BigDecimal("0.11")))
+            hasEntry(equalTo(UNREASONABLE_BEHAVIOUR.getValue()), comparesEqualTo(new BigDecimal("0.30"))),
+            hasEntry(equalTo(SEPARATION_TWO_YEARS.getValue()), comparesEqualTo(new BigDecimal("0.37"))),
+            hasEntry(equalTo(SEPARATION_FIVE_YEARS.getValue()), comparesEqualTo(new BigDecimal("0.21"))),
+            hasEntry(equalTo(DESERTION.getValue()), comparesEqualTo(new BigDecimal("0.01"))),
+            hasEntry(equalTo(ADULTERY.getValue()), comparesEqualTo(new BigDecimal("0.11")))
         ));
         assertThat(courtDistributionConfig.getDistribution(), allOf(
             hasEntry(equalTo(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("1"))),
@@ -50,9 +50,11 @@ public class CourtAllocationConfiguratorIntegrationTest {
         ));
 
         assertThat(courtDistributionConfig.getFactAllocation(), allOf(
-            hasEntry(is(UNREASONABLE_BEHAVIOUR), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("0.20")))),
-            hasEntry(is(DESERTION), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("0.20")))),
-            hasEntry(is(SEPARATION_FIVE_YEARS), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("0.20"))))
+            hasEntry(is(UNREASONABLE_BEHAVIOUR.getValue()), hasEntry(is(SERVICE_CENTER.getId()),
+                    comparesEqualTo(new BigDecimal("0.20")))),
+            hasEntry(is(DESERTION.getValue()), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal("0.20")))),
+            hasEntry(is(SEPARATION_FIVE_YEARS.getValue()), hasEntry(is(SERVICE_CENTER.getId()), comparesEqualTo(new BigDecimal(
+                    "0.20"))))
         ));
     }
 

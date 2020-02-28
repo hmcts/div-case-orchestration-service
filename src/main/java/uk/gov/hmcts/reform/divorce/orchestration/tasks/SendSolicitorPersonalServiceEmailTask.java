@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
@@ -33,7 +32,7 @@ public class SendSolicitorPersonalServiceEmailTask extends SolicitorEmailTask im
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         String petSolicitorEmail = getMandatoryPropertyValueAsString(caseData, PET_SOL_EMAIL);
         String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
-        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         Map<String, String> templateVars = buildEmailTemplateVars(petSolicitorEmail, caseId, caseData);
 
         try {
@@ -42,7 +41,7 @@ public class SendSolicitorPersonalServiceEmailTask extends SolicitorEmailTask im
                     EmailTemplateNames.SOL_PERSONAL_SERVICE.name(),
                     templateVars,
                     SOL_PERSONAL_SERVICE_EMAIL,
-                    welshLanguagePreference
+                    languagePreference
             );
             return caseData;
         } catch (NotificationClientException e) {

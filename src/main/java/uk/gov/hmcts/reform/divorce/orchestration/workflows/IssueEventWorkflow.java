@@ -127,7 +127,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         final String coRespondentNamedOld = String.valueOf(caseData.getOrDefault(D_8_CO_RESPONDENT_NAMED_OLD, EMPTY));
 
         // we need to ensure older cases can be used before we fixed config in DIV-5068
-        return ADULTERY.equals(divorceReason)
+        return ADULTERY.getValue().equals(divorceReason)
             && ("YES".equalsIgnoreCase(coRespondentNamed) || "YES".equalsIgnoreCase(coRespondentNamedOld));
     }
 }

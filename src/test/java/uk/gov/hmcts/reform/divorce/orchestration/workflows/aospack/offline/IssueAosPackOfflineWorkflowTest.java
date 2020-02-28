@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline;
 
+import com.google.common.collect.ImmutableMap;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,10 +10,13 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.config.IssueAosPackOfflineDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentGenerationRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -24,6 +28,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter;
+import uk.gov.hmcts.reform.divorce.orchestration.util.DocumentGenerator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +49,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_FIVE_YEAR_SEPARATION_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_PARTY;
@@ -124,6 +132,9 @@ public class IssueAosPackOfflineWorkflowTest {
     @Mock
     private DocumentTemplateService documentTemplateService;
 
+    @Mock
+    private IssueAosPackOfflineDocuments issueAosPackOfflineDocuments;
+
     @InjectMocks
     private IssueAosPackOfflineWorkflow classUnderTest;
 
@@ -135,7 +146,6 @@ public class IssueAosPackOfflineWorkflowTest {
 
     @Before
     public void setUp() throws TaskException {
-        classUnderTest.populateDocumenGenerator();
         Map<String, Object> payload = new HashMap<>();
         payload.put("testKey", "testValue");
         when(documentsGenerationTask.execute(any(), any())).thenReturn(singletonMap("returnedKey1", "returnedValue1"));
@@ -144,12 +154,51 @@ public class IssueAosPackOfflineWorkflowTest {
         when(bulkPrinterTask.execute(any(), any())).thenReturn(singletonMap("returnedKey4", "returnedValue4"));
         when(markJourneyAsOffline.execute(any(), any())).thenReturn(singletonMap("returnedKey5", "returnedValue5"));
         when(modifyDueDate.execute(any(), any())).thenReturn(singletonMap("returnedKey6", "returnedValue6"));
+
+        ImmutableMap<DivorceFacts, DocumentGenerator> issueAosPackOffLine = ImmutableMap.of(
+                SEPARATION_TWO_YEARS,
+                getDocumentGenerator(DocumentType.AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
+                        AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE,
+                        AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME),
+
+                SEPARATION_FIVE_YEARS,
+                getDocumentGenerator(DocumentType.AOS_OFFLINE_FIVE_YEAR_SEPARATION_TEMPLATE_ID,
+                       AOS_OFFLINE_FIVE_YEAR_SEPARATION_DOCUMENT_TYPE,
+                       AOSPackOfflineConstants.AOS_OFFLINE_FIVE_YEAR_SEPARATION_FILENAME),
+
+                ADULTERY,
+                getDocumentGenerator(DocumentType.AOS_OFFLINE_ADULTERY_RESPONDENT_TEMPLATE_ID,
+                        AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_RESPONDENT_DOCUMENT_TYPE,
+                        AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_RESPONDENT_FILENAME),
+
+                UNREASONABLE_BEHAVIOUR,
+                getDocumentGenerator(DocumentType.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_TEMPLATE_ID,
+                        AOSPackOfflineConstants.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_DOCUMENT_TYPE,
+                        AOSPackOfflineConstants.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_FILENAME),
+
+                DESERTION,
+                getDocumentGenerator(DocumentType.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_TEMPLATE_ID,
+                        AOSPackOfflineConstants.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_DOCUMENT_TYPE,
+                        AOSPackOfflineConstants.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_FILENAME)
+                );
+
+        when(issueAosPackOfflineDocuments.getIssueAosPackOffLine()).thenReturn(issueAosPackOffLine);
         caseDetails = CaseDetails.builder().caseData(payload).build();
+    }
+
+    private DocumentGenerator getDocumentGenerator(DocumentType documentType, AOSPackOfflineConstants typeForm,
+                                                   AOSPackOfflineConstants fileName) {
+        DocumentGenerator documentGenerator = new DocumentGenerator();
+        documentGenerator.setDocumentType(documentType);
+        documentGenerator.setDocumentTypeForm(typeForm);
+        documentGenerator.setDocumentFileName(fileName);
+
+        return documentGenerator;
     }
 
     @Test
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForTwoYearSeparation() throws WorkflowException, TaskException {
-        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
 
         when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
                 DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
@@ -179,7 +228,7 @@ public class IssueAosPackOfflineWorkflowTest {
 
     @Test
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForFiveYearSeparation() throws WorkflowException, TaskException {
-        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS);
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS.getValue());
 
         when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
                 DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
@@ -209,7 +258,7 @@ public class IssueAosPackOfflineWorkflowTest {
 
     @Test
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForDesertion() throws WorkflowException, TaskException {
-        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, DESERTION);
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, DESERTION.getValue());
 
         when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
                 DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
@@ -240,7 +289,7 @@ public class IssueAosPackOfflineWorkflowTest {
 
     @Test
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForUnreasonableBehaviour() throws WorkflowException, TaskException {
-        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR.getValue());
 
         when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
                 DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
@@ -270,7 +319,7 @@ public class IssueAosPackOfflineWorkflowTest {
 
     @Test
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForAdultery() throws WorkflowException, TaskException {
-        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
 
         when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
                 DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
@@ -311,7 +360,7 @@ public class IssueAosPackOfflineWorkflowTest {
 
     @Test
     public void testTasksAreCalledWithTheCorrectParams_ForCoRespondent_ForAdultery() throws WorkflowException, TaskException {
-        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
 
         when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
                 DocumentType.CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
