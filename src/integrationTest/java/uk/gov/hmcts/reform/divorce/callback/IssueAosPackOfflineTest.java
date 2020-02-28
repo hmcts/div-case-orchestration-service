@@ -49,8 +49,10 @@ public class IssueAosPackOfflineTest extends IntegrationTest {
             jsonResponse,
             hasJsonPath("$.data.D8DocumentsGenerated", allOf(
                 hasSize(2),
-                hasJsonPath("[0].value.DocumentFileName", is(RESPONDENT_AOS_INVITATION_LETTER_FILENAME + testCaseId)),
-                hasJsonPath("[1].value.DocumentFileName", is(AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME + testCaseId))
+                hasJsonPath("[0].value.DocumentFileName",
+                        is(RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue() + testCaseId)),
+                hasJsonPath("[1].value.DocumentFileName",
+                        is(AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME.getValue() + testCaseId))
             )));
     }
 
@@ -70,8 +72,10 @@ public class IssueAosPackOfflineTest extends IntegrationTest {
             jsonResponse,
             hasJsonPath("$.data.D8DocumentsGenerated", allOf(
                 hasSize(2),
-                hasJsonPath("[0].value.DocumentFileName", is(CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME + testCaseId)),
-                hasJsonPath("[1].value.DocumentFileName", is(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME + testCaseId))
+                hasJsonPath("[0].value.DocumentFileName",
+                        is(CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue() + testCaseId)),
+                hasJsonPath("[1].value.DocumentFileName",
+                        is(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME.getValue() + testCaseId))
             )));
     }
 
