@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Setter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentGenerationRequest;
@@ -9,7 +10,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService
 
 import java.util.Map;
 
-@Data
+@Setter
+@EqualsAndHashCode
 public class DocumentGenerator implements Template {
     private DocumentType documentType;
     private AOSPackOfflineConstants documentTypeForm;

@@ -105,9 +105,9 @@ public class CaseDataUtils {
     public static Optional<LanguagePreference> getLanguagePreference(Map<String, Object> caseData) {
         return Optional.of(Optional.ofNullable(caseData)
                 .map(data -> data.get(LANGUAGE_PREFERENCE_WELSH))
-                .filter(language -> language != null)
+                .filter(Objects::nonNull)
                 .map(String.class::cast)
-                .filter(language -> YES_VALUE.equalsIgnoreCase(language))
+                .filter(YES_VALUE::equalsIgnoreCase)
                 .map(languagePreferenceWelsh -> LanguagePreference.WELSH)
                 .orElse(LanguagePreference.ENGLISH));
     }

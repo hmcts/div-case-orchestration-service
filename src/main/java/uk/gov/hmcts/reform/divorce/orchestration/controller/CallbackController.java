@@ -293,7 +293,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> defaultValue(
         @RequestHeader(value = "Authorization", required = false) String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         ccdCallbackRequest.getCaseDetails().getCaseData().computeIfAbsent(LANGUAGE_PREFERENCE_WELSH, value -> NO_VALUE);
 

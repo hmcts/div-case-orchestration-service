@@ -48,9 +48,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 
-//import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants
-// .DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
-
 @Component
 @AllArgsConstructor
 public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, Object>> {

@@ -117,7 +117,15 @@ public class CaseDataUtilsTest {
     @Test
     public void getTestLanguagePreferenceWithValue_NULL() {
         HashMap<String, Object> caseData = new HashMap<>();
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        caseData.put(LANGUAGE_PREFERENCE_WELSH, null);
+        Optional<LanguagePreference> languagePreference = DraftDataUtils.getLanguagePreference(caseData);
+        assertThat(languagePreference, is(Optional.of(LanguagePreference.ENGLISH)));
+    }
+
+    @Test
+    public void getTestLanguagePreferenceNotSet() {
+        HashMap<String, Object> caseData = new HashMap<>();
+        Optional<LanguagePreference> languagePreference = DraftDataUtils.getLanguagePreference(caseData);
         assertThat(languagePreference, is(Optional.of(LanguagePreference.ENGLISH)));
     }
 
