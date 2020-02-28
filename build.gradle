@@ -72,7 +72,7 @@ def versions = [
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.0.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
-        tomcat                       : '9.0.30',
+        tomcat                       : '9.0.31',
         unirest                      : '1.4.9'
 ]
 
