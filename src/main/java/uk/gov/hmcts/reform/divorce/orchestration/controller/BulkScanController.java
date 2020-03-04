@@ -29,8 +29,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanService;
 
 import java.util.List;
 import java.util.Map;
+
 import javax.validation.Valid;
 
+import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -122,6 +124,7 @@ public class BulkScanController {
 
             controllerResponse = ok(callbackResponse);
         } catch (UnsupportedFormTypeException exception) {
+            log.error(format("Error transforming exception record. Exception record id is %s", exceptionRecord.getId()), exception);
             controllerResponse = ResponseEntity.unprocessableEntity().build();
         }
 
