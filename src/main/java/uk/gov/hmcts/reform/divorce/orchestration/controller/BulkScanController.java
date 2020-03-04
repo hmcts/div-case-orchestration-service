@@ -106,7 +106,7 @@ public class BulkScanController {
         @Valid @RequestBody ExceptionRecord exceptionRecord
     ) {
         String exceptionRecordId = exceptionRecord.getId();
-        log.info("Transforming exception record to case. Id: " + exceptionRecordId);
+        log.info("Transforming exception record to case. Id: {}", exceptionRecordId);
         //TODO - I will remove this before we release this in production. Actually as soon as my story is done.
         ObjectMapper objectMapper = new ObjectMapper();
         try {
