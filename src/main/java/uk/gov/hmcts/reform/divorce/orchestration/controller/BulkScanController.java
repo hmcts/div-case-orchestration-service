@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanService;
 
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.Valid;
 
 import static java.lang.String.format;
