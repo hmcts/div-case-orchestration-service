@@ -134,7 +134,7 @@ uk:
   gov:
     notify:
       api:
-        key: ${UK_GOV_NOTIFY_API_KEY:dummy}
+        key: ${UK_GOV_NOTIFY_API_KEY:divorce_preprod_live_key-b86e6469-4927-4f50-a029-6ddb523330cf-2409ba37-b5e6-4f03-b052-7d0f0986888d}
         baseUrl: https://api.notifications.service.gov.uk
       email:
         templateVars:
@@ -360,8 +360,8 @@ dncourt:
 
 idam:
   client:
-    redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:4502/authenticated}
-    port: 4503
+    redirect_uri: ${IDAM_API_REDIRECT_URL:https://localhost:3000/authenticated}
+    port: 5000
     secret: ${IDAM_CLIENT_SECRET:dummysecret}
     id: divorce
     health:
@@ -370,8 +370,8 @@ idam:
     username: ${IDAM_CITIZEN_USERNAME:testusername@test.com}
     password: ${IDAM_CITIZEN_PASSWORD:Pa55word11}
   caseworker:
-    username: ${IDAM_CASEWORKER_USERNAME:divorce_as_caseworker_superuser@mailinator.com}
-    password: ${IDAM_CASEWORKER_PASSWORD:Pa55word11}
+    username: ${IDAM_CASEWORKER_USERNAME:TEST_CASE_WORKER_SUPERUSER@mailinator.com}
+    password: ${IDAM_CASEWORKER_PASSWORD:genericPassword123}
   s2s-auth:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4502}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
