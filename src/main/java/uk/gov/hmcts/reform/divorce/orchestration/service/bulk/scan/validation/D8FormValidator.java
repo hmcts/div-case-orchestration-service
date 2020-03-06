@@ -31,7 +31,7 @@ public class D8FormValidator extends BulkScanFormValidator {
     private static final List<String> MANDATORY_FIELDS = asList(
         "D8PetitionerFirstName",
         "D8PetitionerLastName",
-        "D8PetitionerNameChangedHow",
+        "D8PetitionerHasNameChanged",
         "D8LegalProcess",
         "D8ScreenHasMarriageCert",
         "D8RespondentFirstName",
@@ -80,7 +80,7 @@ public class D8FormValidator extends BulkScanFormValidator {
         ALLOWED_VALUES_PER_FIELD.put("D8LegalProcess", asList("Divorce", "Dissolution", "Judicial (separation)"));
         ALLOWED_VALUES_PER_FIELD.put("D8ScreenHasMarriageCert", asList(TRUE));
         ALLOWED_VALUES_PER_FIELD.put("D8CertificateInEnglish", asList(TRUE, EMPTY_STRING));
-        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerNameChangedHow", yesNoValues);
+        ALLOWED_VALUES_PER_FIELD.put("D8PetitionerHasNameChanged", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8PetitionerContactDetailsConfidential", yesNoValues);
         ALLOWED_VALUES_PER_FIELD.put("D8PaymentMethod", asList("Cheque", "Debit/Credit Card", EMPTY_STRING));
         ALLOWED_VALUES_PER_FIELD.put("PetitionerSolicitor", yesNoValues);
@@ -128,7 +128,7 @@ public class D8FormValidator extends BulkScanFormValidator {
             validatePayment(fieldsMap),
             validatePlaceOfMarriage(fieldsMap),
             validateFieldIsEmptyForNo_AndNotEmptyForYes(fieldsMap, "D8MarriageCertificateCorrect", "D8MarriageCertificateCorrectExplain"),
-            validateFieldIsEmptyForNo_AndNotEmptyForYes(fieldsMap, "D8PetitionerNameChangedHow", "D8PetitionerNameChangedHowOtherDetails"),
+            validateFieldIsEmptyForNo_AndNotEmptyForYes(fieldsMap, "D8PetitionerHasNameChanged", "D8PetitionerNameChangedHowOtherDetails"),
             validateDateField(fieldsMap, "D8MarriageDate"),
             validateDateField(fieldsMap, "D8MentalSeparationDate"),
             validateDateField(fieldsMap, "D8PhysicalSeparationDate"),
