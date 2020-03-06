@@ -24,7 +24,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -91,28 +90,28 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
     private void sendEmailToRespondent(Map<String, Object> caseData) throws TaskException {
         Map<String, String> templateVars = prepareEmailTemplateVars(caseData);
         String emailAddress = (String) caseData.get(RESPONDENT_EMAIL_ADDRESS);
-        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         templateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, emailAddress);
 
-        send(emailAddress, DECREE_ABSOLUTE_REQUESTED_NOTIFICATION, templateVars, REQUESTED_BY_APPLICANT, welshLanguagePreference);
+        send(emailAddress, DECREE_ABSOLUTE_REQUESTED_NOTIFICATION, templateVars, REQUESTED_BY_APPLICANT, languagePreference);
     }
 
     private void sendEmailToRespondentSolicitor(Map<String, Object> caseData, String caseId) throws TaskException {
         Map<String, String> templateVars = prepareEmailTemplateVarsForSol(caseData);
         String emailAddress = (String) caseData.get(RESPONDENT_SOLICITOR_EMAIL_ADDRESS);
-        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         templateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, emailAddress);
         templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseId);
 
-        send(emailAddress, DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR, templateVars, REQUESTED_BY_SOLICITOR , welshLanguagePreference);
+        send(emailAddress, DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR, templateVars, REQUESTED_BY_SOLICITOR , languagePreference);
     }
 
     private void send(
         String emailAddress, EmailTemplateNames emailTemplate, Map<String, String> templateVars, String description,
-        Optional<LanguagePreference> welshLanguagePreference) throws TaskException {
+        Optional<LanguagePreference> languagePreference) throws TaskException {
         try {
             emailService.sendEmailAndReturnExceptionIfFails(
-                emailAddress, emailTemplate.name(), templateVars, description, welshLanguagePreference
+                emailAddress, emailTemplate.name(), templateVars, description, languagePreference
             );
         } catch (NotificationClientException e) {
             throw new TaskException(e.getMessage(), e);

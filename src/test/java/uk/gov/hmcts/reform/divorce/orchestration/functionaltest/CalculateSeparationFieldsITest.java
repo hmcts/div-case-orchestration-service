@@ -41,7 +41,7 @@ public class CalculateSeparationFieldsITest extends MockedFunctionalTest {
         String pastDate5Yrs9Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now().minusYears(5).minusMonths(9));
         String pastDate5Yrs6Mnths = DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now().minusYears(5).minusMonths(6));
 
-        Map<String, Object> testCaseData = ImmutableMap.of(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS,
+        Map<String, Object> testCaseData = ImmutableMap.of(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS.getValue(),
             D_8_MENTAL_SEP_DATE, pastDate5Yrs8Mnths,
             D_8_PHYSICAL_SEP_DAIE, pastDate5Yrs9Mnths);
 

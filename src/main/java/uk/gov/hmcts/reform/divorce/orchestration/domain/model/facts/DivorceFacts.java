@@ -1,11 +1,27 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts;
 
-public class DivorceFacts {
+import lombok.Getter;
 
-    public static final String UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
-    public static final String SEPARATION_TWO_YEARS = "separation-2-years";
-    public static final String SEPARATION_FIVE_YEARS = "separation-5-years";
-    public static final String DESERTION = "desertion";
-    public static final String ADULTERY = "adultery";
+import java.util.Arrays;
 
+@Getter
+public enum DivorceFacts {
+    UNREASONABLE_BEHAVIOUR("unreasonable-behaviour"),
+    SEPARATION_TWO_YEARS("separation-2-years"),
+    SEPARATION_FIVE_YEARS("separation-5-years"),
+    DESERTION("desertion"),
+    ADULTERY("adultery");
+
+    private final String value;
+    private static final String error = "No divorce fact for %s";
+
+    DivorceFacts(String value) {
+        this.value = value;
+    }
+
+    public static DivorceFacts getDivorceFact(String reasonForDivorce) {
+        return Arrays.stream(DivorceFacts.values())
+                .filter(fact -> fact.getValue().equals(reasonForDivorce)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format(error, reasonForDivorce)));
+    }
 }

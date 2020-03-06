@@ -72,7 +72,7 @@ public class AosPackOfflineServiceImplTest {
 
     @Test
     public void shouldCallWorkflowForCoRespondentIfReasonIsAdultery() throws WorkflowException, CaseOrchestrationServiceException {
-        Map<String, Object> caseData = singletonMap(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        Map<String, Object> caseData = singletonMap(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
         caseDetails.setCaseData(caseData);
         when(issueAosPackOfflineWorkflow.run(any(), any(), any())).thenReturn(caseData);
 
@@ -85,9 +85,10 @@ public class AosPackOfflineServiceImplTest {
     @Test
     public void shouldNotCallWorkflowForCoRespondentIfReasonIsNotAdultery() throws CaseOrchestrationServiceException {
         expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectMessage(format("Co-respondent AOS pack (offline) cannot be issued for reason \"%s\"", SEPARATION_TWO_YEARS));
+        expectedException.expectMessage(format("Co-respondent AOS pack (offline) cannot be issued for reason \"%s\"",
+                SEPARATION_TWO_YEARS.getValue()));
 
-        caseDetails.setCaseData(singletonMap(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS));
+        caseDetails.setCaseData(singletonMap(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue()));
 
         classUnderTest.issueAosPackOffline(testAuthToken, caseDetails, CO_RESPONDENT);
     }

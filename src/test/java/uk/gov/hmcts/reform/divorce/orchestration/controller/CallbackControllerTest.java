@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -517,7 +518,8 @@ public class CallbackControllerTest {
             .build();
 
         when(caseOrchestrationService
-            .processSolDnDoc(incomingRequest, OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS, OrchestrationConstants.RESP_ANSWERS_LINK)
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(),
+                    OrchestrationConstants.RESP_ANSWERS_LINK)
         ).thenReturn(incomingPayload);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnRespAnswersDoc(incomingRequest);
@@ -526,7 +528,7 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
         assertThat(response.getBody().getErrors(), is(nullValue()));
         verify(caseOrchestrationService)
-            .processSolDnDoc(incomingRequest, OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS, OrchestrationConstants.RESP_ANSWERS_LINK);
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(), OrchestrationConstants.RESP_ANSWERS_LINK);
     }
 
     @Test
@@ -538,7 +540,7 @@ public class CallbackControllerTest {
             .build();
 
         when(caseOrchestrationService
-            .processSolDnDoc(incomingRequest, OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS, OrchestrationConstants.RESP_ANSWERS_LINK)
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(), OrchestrationConstants.RESP_ANSWERS_LINK)
         ).thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnRespAnswersDoc(incomingRequest);
@@ -547,7 +549,7 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
         verify(caseOrchestrationService)
-            .processSolDnDoc(incomingRequest, OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS, OrchestrationConstants.RESP_ANSWERS_LINK);
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(), OrchestrationConstants.RESP_ANSWERS_LINK);
     }
 
     @Test

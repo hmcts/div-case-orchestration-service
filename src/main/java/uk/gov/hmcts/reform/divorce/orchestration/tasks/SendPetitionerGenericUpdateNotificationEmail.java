@@ -20,7 +20,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
@@ -55,7 +54,7 @@ public class SendPetitionerGenericUpdateNotificationEmail implements Task<Map<St
 
         String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
-        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         Map<String, String> templateVars = new HashMap<>();
 
         if (StringUtils.isNotBlank(petSolicitorEmail)) {
@@ -71,7 +70,7 @@ public class SendPetitionerGenericUpdateNotificationEmail implements Task<Map<St
             templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
 
             emailService.sendEmail(petSolicitorEmail, EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name(), templateVars,
-                SOL_EMAIL_DESC, welshLanguagePreference);
+                SOL_EMAIL_DESC, languagePreference);
         } else if (StringUtils.isNotBlank(petitionerEmail)) {
 
             templateVars.put(NOTIFICATION_EMAIL, petitionerEmail);
@@ -79,7 +78,7 @@ public class SendPetitionerGenericUpdateNotificationEmail implements Task<Map<St
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE));
 
-            emailService.sendEmail(petitionerEmail, EmailTemplateNames.GENERIC_UPDATE.name(), templateVars, EMAIL_DESC, welshLanguagePreference);
+            emailService.sendEmail(petitionerEmail, EmailTemplateNames.GENERIC_UPDATE.name(), templateVars, EMAIL_DESC, languagePreference);
         }
 
         return caseData;

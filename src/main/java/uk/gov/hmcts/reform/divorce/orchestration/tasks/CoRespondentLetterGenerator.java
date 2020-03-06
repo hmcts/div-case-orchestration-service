@@ -4,12 +4,14 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -20,7 +22,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_INVITATION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
@@ -31,10 +32,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class CoRespondentLetterGenerator implements Task<Map<String, Object>> {
     private final DocumentGeneratorClient documentGeneratorClient;
+    private final DocumentTemplateService documentTemplateService;
 
     @Autowired
-    public CoRespondentLetterGenerator(DocumentGeneratorClient documentGeneratorClient) {
+    public CoRespondentLetterGenerator(DocumentGeneratorClient documentGeneratorClient, DocumentTemplateService documentTemplateService) {
         this.documentGeneratorClient = documentGeneratorClient;
+        this.documentTemplateService = documentTemplateService;
     }
 
     @Override
@@ -43,11 +46,13 @@ public class CoRespondentLetterGenerator implements Task<Map<String, Object>> {
 
         final NumberFormat poundsOnlyFormat = new DecimalFormat("#");
         final String petitionIssueFee = poundsOnlyFormat.format(((FeeResponse) context.getTransientObject(PETITION_ISSUE_FEE_JSON_KEY)).getAmount());
+        final String templateId = getTemplateId(documentTemplateService, DocumentType.CO_RESPONDENT_INVITATION,
+                caseData);
 
         GeneratedDocumentInfo coRespondentInvitation =
             documentGeneratorClient.generatePDF(
                 GenerateDocumentRequest.builder()
-                    .template(CO_RESPONDENT_INVITATION_TEMPLATE_NAME)
+                    .template(templateId)
                     .values(ImmutableMap.of(
                         DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails,
                         ACCESS_CODE, context.getTransientObject(CO_RESPONDENT_PIN),

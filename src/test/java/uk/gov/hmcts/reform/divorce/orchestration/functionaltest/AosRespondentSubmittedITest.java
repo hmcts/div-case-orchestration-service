@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
@@ -36,7 +37,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class AosRespondentSubmittedITest extends MockedFunctionalTest {
@@ -72,14 +72,14 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
 
         final GenerateDocumentRequest documentRequest =
             GenerateDocumentRequest.builder()
-                .template(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
+                .template(DocumentType.RESPONDENT_ANSWERS.getTemplateName())
                 .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, fullCase))
                 .build();
 
         final GeneratedDocumentInfo documentInfo =
             GeneratedDocumentInfo.builder()
-                .documentType(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
-                .fileName(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
+                .documentType(DocumentType.RESPONDENT_ANSWERS.getTemplateName())
+                .fileName(DocumentType.RESPONDENT_ANSWERS.getTemplateName())
                 .build();
 
         final Set<GeneratedDocumentInfo> documentsForFormatter = new HashSet<>();

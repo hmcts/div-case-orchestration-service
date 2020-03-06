@@ -92,7 +92,7 @@ public class SolicitorAosEventServiceImplUTest {
         // Set RespAdmitOrConsentToFact = "Yes" and RespWillDefendDivorce = "No"
         final Map<String, Object> caseData = new HashMap<>();
         caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
-        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
         caseData.put(RESP_AOS_2_YR_CONSENT, YES_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
@@ -115,7 +115,7 @@ public class SolicitorAosEventServiceImplUTest {
         // Set RespAdmitOrConsentToFact = "Yes" and RespWillDefendDivorce = "No"
         final Map<String, Object> caseData = new HashMap<>();
         caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
-        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
         caseData.put(RESP_AOS_ADMIT_ADULTERY, YES_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
@@ -171,7 +171,7 @@ public class SolicitorAosEventServiceImplUTest {
     @Test
     public void givenDoesNotConsentTo2YearSepAndDefends_whenEventTriggered_solAosReceivedNoAdConStartedEventFired() {
         final Map<String, Object> caseData = buildSolicitorResponse();
-        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
         caseData.put(RESP_AOS_2_YR_CONSENT, NO_VALUE);
         caseData.put(UI_ONLY_RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
@@ -192,7 +192,7 @@ public class SolicitorAosEventServiceImplUTest {
     @Test
     public void giveConsentTo2YearSep_whenEventTriggered_assumeNotDefended() {
         final Map<String, Object> caseData = buildSolicitorResponse();
-        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
         caseData.put(RESP_AOS_2_YR_CONSENT, YES_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
@@ -212,7 +212,7 @@ public class SolicitorAosEventServiceImplUTest {
     @Test
     public void giveAdulteryCaseDoesConsent_whenEventTriggered_assumeNotDefended() {
         final Map<String, Object> caseData = buildSolicitorResponse();
-        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
         caseData.put(RESP_AOS_ADMIT_ADULTERY, YES_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
@@ -232,7 +232,7 @@ public class SolicitorAosEventServiceImplUTest {
     @Test
     public void givenDoesNotAdmitAdulteryAndDoesDefend_whenEventTriggered_SolAosReceivedNoAdConStartedAndValuesMapped() {
         final Map<String, Object> caseData = buildSolicitorResponse();
-        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
         caseData.put(RESP_AOS_ADMIT_ADULTERY, NO_VALUE);
         caseData.put(UI_ONLY_RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
         caseData.put(RESP_WILL_DEFEND_DIVORCE, null);
@@ -254,7 +254,7 @@ public class SolicitorAosEventServiceImplUTest {
     @Test
     public void given5yrSeparationAndDoesDefend_whenEventTriggered_triggersDefendEventMapsData() {
         final Map<String, Object> caseData = buildSolicitorResponse();
-        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS);
+        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS.getValue());
         caseData.put(UI_ONLY_RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 
@@ -273,7 +273,7 @@ public class SolicitorAosEventServiceImplUTest {
     @Test
     public void given5yrSeparationAndDoesNotDefend_whenEventTriggered_triggersUndefendedEventMapsData() {
         final Map<String, Object> caseData = buildSolicitorResponse();
-        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS);
+        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS.getValue());
         caseData.put(UI_ONLY_RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
         TASK_CONTEXT.setTransientObject(CCD_CASE_DATA, caseData);
 

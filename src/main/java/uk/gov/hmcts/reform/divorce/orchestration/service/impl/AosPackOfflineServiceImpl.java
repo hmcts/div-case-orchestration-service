@@ -33,7 +33,7 @@ public class AosPackOfflineServiceImpl implements AosPackOfflineService {
 
         if (divorceParty.equals(DivorceParty.CO_RESPONDENT)) {
             String reasonForDivorce = (String) caseDetails.getCaseData().get(D_8_REASON_FOR_DIVORCE);
-            if (!ADULTERY.equals(reasonForDivorce)) {
+            if (!ADULTERY.getValue().equals(reasonForDivorce)) {
                 throw new CaseOrchestrationServiceException(
                     format("Co-respondent AOS pack (offline) cannot be issued for reason \"%s\"", reasonForDivorce));
             }

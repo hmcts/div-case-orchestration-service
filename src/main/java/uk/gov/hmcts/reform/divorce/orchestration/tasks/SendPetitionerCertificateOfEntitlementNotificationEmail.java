@@ -28,7 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LIMIT_DATE_TO_CONTACT_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
@@ -70,7 +69,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
         String petitionerFirstName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_LAST_NAME);
         String courtName = getMandatoryPropertyValueAsString(payload, COURT_NAME_CCD_FIELD);
-        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(payload.get(LANGUAGE_PREFERENCE_WELSH));
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(payload);
         EmailTemplateNames template = null;
         String emailToBeSentTo = null;
 
@@ -124,7 +123,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
                 EMAIL_DESCRIPTION,
                 emailToBeSentTo,
                 templateParameters,
-                welshLanguagePreference);
+                languagePreference);
             log.info("Petitioner notification sent for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));
         } catch (TaskException exception) {
             log.error("Failed to send petitioner notification for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));

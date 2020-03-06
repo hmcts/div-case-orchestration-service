@@ -26,7 +26,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
@@ -88,7 +87,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
 
         String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
-        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
         Map<String, String> templateVars = new HashMap<>();
 
@@ -104,7 +103,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
             templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
 
             try {
-                sendSolicitorEmail(petSolEmail, eventId, templateVars, welshLanguagePreference);
+                sendSolicitorEmail(petSolEmail, eventId, templateVars, languagePreference);
             } catch (NotificationClientException e) {
                 log.error("Error sending AOS overdue notification email to solicitor", e);
                 throw new TaskException(e.getMessage(), e);
@@ -118,7 +117,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE));
 
             try {
-                sendPetitionerEmail(caseData, petEmail, eventId, templateVars, welshLanguagePreference);
+                sendPetitionerEmail(caseData, petEmail, eventId, templateVars, languagePreference);
             } catch (NotificationClientException e) {
                 log.error("Error sending AOS overdue notification email to petitioner", e);
                 throw new TaskException(e.getMessage(), e);
@@ -204,7 +203,8 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
     private boolean isAdulteryAndNoConsent(Map<String, Object> caseData) {
         String reasonForDivorce = getFieldAsStringOrNull(caseData, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseData, RESP_ADMIT_OR_CONSENT_TO_FACT);
-        return StringUtils.equalsIgnoreCase(ADULTERY, reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
+        return StringUtils.equalsIgnoreCase(ADULTERY.getValue(), reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE,
+                respAdmitOrConsentToFact);
     }
 
     private boolean isAosOverdueEvent(String eventId) {
@@ -216,7 +216,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
     private boolean isSep2YrAndNoConsent(Map<String, Object> caseData) {
         String reasonForDivorce = getFieldAsStringOrNull(caseData, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseData, RESP_ADMIT_OR_CONSENT_TO_FACT);
-        return SEPARATION_TWO_YEARS.equalsIgnoreCase(reasonForDivorce) && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact);
+        return SEPARATION_TWO_YEARS.getValue().equalsIgnoreCase(reasonForDivorce) && NO_VALUE.equalsIgnoreCase(respAdmitOrConsentToFact);
     }
 
     private boolean isCoRespNamedAndNotReplied(Map<String, Object> caseData) {

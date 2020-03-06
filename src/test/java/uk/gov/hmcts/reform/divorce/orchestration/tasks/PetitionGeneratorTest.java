@@ -6,15 +6,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.util.Sets.newLinkedHashSet;
@@ -29,7 +33,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 
@@ -38,8 +41,12 @@ public class PetitionGeneratorTest {
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
 
+    @Mock
+    private DocumentTemplateService documentTemplateService;
+
     @InjectMocks
     private PetitionGenerator petitionGenerator;
+    private static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
 
     @Test
     public void callsDocumentGeneratorAndStoresGeneratedDocument() {
@@ -67,7 +74,8 @@ public class PetitionGeneratorTest {
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedPetition);
-
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+                DocumentType.DIVORCE_MINI_PETITION)).thenReturn(MINI_PETITION_TEMPLATE_NAME);
         //when
         petitionGenerator.execute(context, payload);
 

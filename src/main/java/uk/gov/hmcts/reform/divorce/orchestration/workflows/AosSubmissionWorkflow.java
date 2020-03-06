@@ -220,13 +220,14 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
     private boolean isAdulteryAndNoConsent(CaseDetails caseDetails) {
         String reasonForDivorce = getFieldAsStringOrNull(caseDetails, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseDetails, RESP_ADMIT_OR_CONSENT_TO_FACT);
-        return StringUtils.equalsIgnoreCase(ADULTERY, reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
+        return StringUtils.equalsIgnoreCase(ADULTERY.getValue(), reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE,
+                respAdmitOrConsentToFact);
     }
 
     private boolean isSep2YrAndNoConsent(CaseDetails caseDetails) {
         String reasonForDivorce = getFieldAsStringOrNull(caseDetails, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseDetails, RESP_ADMIT_OR_CONSENT_TO_FACT);
-        return StringUtils.equalsIgnoreCase(SEPARATION_TWO_YEARS, reasonForDivorce)
+        return StringUtils.equalsIgnoreCase(SEPARATION_TWO_YEARS.getValue(), reasonForDivorce)
             && StringUtils.equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
     }
 

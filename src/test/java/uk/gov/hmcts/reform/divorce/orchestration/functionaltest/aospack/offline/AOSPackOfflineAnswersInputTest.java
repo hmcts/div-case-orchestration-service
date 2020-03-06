@@ -62,7 +62,7 @@ public class AOSPackOfflineAnswersInputTest {
 
     @Test
     public void shouldReturnNewStateAndAutomaticFields_ForRespondent_ForAdultery() throws Exception {
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
         ccdCallbackRequest.getCaseDetails().getCaseData().put(RESP_AOS_ADMIT_ADULTERY, YES_VALUE);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", "respondent")
@@ -81,7 +81,7 @@ public class AOSPackOfflineAnswersInputTest {
 
     @Test
     public void shouldReturnOnlyAutomaticFields_ForCoRespondent_ForAdultery() throws Exception {
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", CO_RESPONDENT.getDescription())
             .contentType(MediaType.APPLICATION_JSON)
             .content(convertObjectToJsonString(ccdCallbackRequest)))
@@ -97,7 +97,8 @@ public class AOSPackOfflineAnswersInputTest {
 
     @Test
     public void shouldReturnNewStateAndAutomaticFieldsIfDefended_ForUnreasonableBehaviour() throws Exception {
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
+        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE,
+                UNREASONABLE_BEHAVIOUR.getValue());
         ccdCallbackRequest.getCaseDetails().getCaseData().put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", RESPONDENT.getDescription())
@@ -116,7 +117,7 @@ public class AOSPackOfflineAnswersInputTest {
 
     @Test
     public void shouldReturnNewStateAndAutomaticFieldsIfUndefended_ForUnreasonableBehaviour() throws Exception {
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
+        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR.getValue());
         ccdCallbackRequest.getCaseDetails().getCaseData().put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", RESPONDENT.getDescription())

@@ -52,7 +52,7 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
         String sepReferenceDate = DateUtils.formatDateWithCustomerFacingFormat(getSeparationReferenceDate(caseData));
         String mostRecentSeperationDate = getReasonForDivorceSeparationDate(caseData);
 
-        if (StringUtils.equalsIgnoreCase(DESERTION, reasonForDivorce)) {
+        if (StringUtils.equalsIgnoreCase(DESERTION.getValue(), reasonForDivorce)) {
             caseData.put(D_8_DESERTION_TIME_TOGETHER_PERMITTED, separationTimeTogetherPermitted);
         } else {
             caseData.put(D_8_SEP_TIME_TOGETHER_PERMITTED, separationTimeTogetherPermitted);
@@ -68,7 +68,7 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
 
     private int getSepYears(Map<String, Object> caseData) throws TaskException {
         String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
-        if (StringUtils.equalsIgnoreCase(SEPARATION_FIVE_YEARS, reasonForDivorce)) {
+        if (StringUtils.equalsIgnoreCase(SEPARATION_FIVE_YEARS.getValue(), reasonForDivorce)) {
             return FIVE;
         }
         return TWO;
@@ -79,7 +79,7 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
      */
     private String getReasonForDivorceSeparationDate(Map<String, Object> caseData) throws TaskException {
         String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
-        if (StringUtils.equalsIgnoreCase(DESERTION, reasonForDivorce)) {
+        if (StringUtils.equalsIgnoreCase(DESERTION.getValue(), reasonForDivorce)) {
             String reasonForDivorceDesertionDate = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE_DESERTION_DAIE);
             return reasonForDivorceDesertionDate;
         }

@@ -29,7 +29,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -108,14 +107,14 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
         templateVars.put(NOTIFICATION_PET_NAME, petFirstName + " " + petLastName);
         templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
 
-        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         
         emailService.sendEmail(
                 solicitorEmail,
                 EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name(),
                 templateVars,
                 SOL_EMAIL_DESC,
-                welshLanguagePreference);
+                languagePreference);
     }
 
     private void sendEmailToPetitioner(Map<String, Object> caseData) throws TaskException {
@@ -154,7 +153,7 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
         String daGrantedDataCcdField = (String) caseData.get(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD);
         LocalDate daGrantedDate = LocalDateTime.parse(daGrantedDataCcdField).toLocalDate();
         String daLimitDownloadDate = formatDateWithCustomerFacingFormat(daGrantedDate.plusYears(1));
-        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
 
         if (StringUtils.isNotBlank(emailAddress)) {
@@ -171,7 +170,7 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
                     EmailTemplateNames.DA_GRANTED_NOTIFICATION.name(),
                     templateVars,
                     EMAIL_DESC,
-                    welshLanguagePreference);
+                    languagePreference);
         }
     }
 

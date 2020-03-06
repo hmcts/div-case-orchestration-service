@@ -21,7 +21,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -54,7 +53,7 @@ public class NotifyApplicantCanFinaliseDivorceTask implements Task<Map<String, O
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
         String petFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
-        Optional<LanguagePreference> welshLanguagePreference = CaseDataUtils.getLanguagePreference(caseData.get(LANGUAGE_PREFERENCE_WELSH));
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         Map<String, String> templateVars = new HashMap<>();
 
         if (StringUtils.isNotBlank(solicitorEmail)) {
@@ -75,7 +74,7 @@ public class NotifyApplicantCanFinaliseDivorceTask implements Task<Map<String, O
                     EmailTemplateNames.SOL_APPLICANT_DA_ELIGIBLE.name(),
                     templateVars,
                     SOL_EMAIL_DESC,
-                    welshLanguagePreference
+                    languagePreference
             );
 
         } else if (StringUtils.isNotBlank(petitionerEmail)) {
@@ -92,7 +91,7 @@ public class NotifyApplicantCanFinaliseDivorceTask implements Task<Map<String, O
                     APPLICANT_DA_ELIGIBLE.name(),
                     templateVars,
                     EMAIL_DESC,
-                    welshLanguagePreference
+                    languagePreference
             );
         }
 

@@ -8,16 +8,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.util.Sets.newLinkedHashSet;
 import static org.hamcrest.CoreMatchers.is;
@@ -26,7 +30,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_ANSWERS_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS;
@@ -37,8 +40,13 @@ public class CoRespondentAnswersGeneratorTest {
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
 
+    @Mock
+    private DocumentTemplateService documentTemplateService;
+
     @InjectMocks
     private CoRespondentAnswersGenerator coRespondentAnswersGenerator;
+
+    public static final String CO_RESPONDENT_ANSWERS_TEMPLATE_NAME = "co-respondent-answers";
 
     @Test
     public void callsDocumentGeneratorAndStoresGeneratedDocument() throws TaskException {
@@ -67,6 +75,8 @@ public class CoRespondentAnswersGeneratorTest {
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
                 .thenReturn(expectedRespondentAnswers);
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.CO_RESPONDENT_ANSWERS))
+                .thenReturn(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME);
 
         //when
         coRespondentAnswersGenerator.execute(context, payload);
@@ -99,6 +109,8 @@ public class CoRespondentAnswersGeneratorTest {
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
                 .thenThrow(FeignException.class);
+        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.CO_RESPONDENT_ANSWERS))
+                .thenReturn(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME);
 
         //when
         coRespondentAnswersGenerator.execute(context, payload);

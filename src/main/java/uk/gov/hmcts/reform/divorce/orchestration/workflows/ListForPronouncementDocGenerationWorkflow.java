@@ -4,10 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
@@ -29,7 +32,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private static final String LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID = "FL-DIV-GNO-ENG-00059.docx";
     private static final String LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE = "caseListForPronouncement";
     private static final String LIST_FOR_PRONOUNCEMENT_FILE_NAME = "caseListForPronouncement";
 
@@ -42,10 +44,17 @@ public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<M
     private final SyncBulkCaseListTask syncBulkCaseListTask;
 
     private final UpdateDivorceCaseRemovePronouncementDetailsWithinBulkTask removePronouncementDetailsTask;
+    private final DocumentTemplateService documentTemplateService;
 
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        Map<String, Object> caseData = caseDetails.getCaseData();
 
-        String judgeName = (String) ccdCallbackRequest.getCaseDetails().getCaseData().get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
+        String judgeName = (String) caseData.get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
+        final String templateId = getTemplateId(documentTemplateService,
+                DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID,
+                caseData);
+
         List<Task> taskList = new ArrayList<>();
         taskList.add(syncBulkCaseListTask);
         // Existing Judge name means Pronouncement List has already been generated and should be regenerated.
@@ -63,7 +72,7 @@ public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<M
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),
             ImmutablePair.of(DOCUMENT_TYPE, LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE),
-            ImmutablePair.of(DOCUMENT_TEMPLATE_ID, LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID),
+            ImmutablePair.of(DOCUMENT_TEMPLATE_ID, templateId),
             ImmutablePair.of(DOCUMENT_FILENAME, LIST_FOR_PRONOUNCEMENT_FILE_NAME)
         );
     }
