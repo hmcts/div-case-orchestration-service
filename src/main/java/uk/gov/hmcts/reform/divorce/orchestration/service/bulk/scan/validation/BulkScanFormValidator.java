@@ -28,7 +28,7 @@ public abstract class BulkScanFormValidator {
 
     static final int AOS_FORM_DATE_LENGTH = 8;
     static final int HELP_WITH_FEES_LENGTH = 6;
-    static final String TRUE = "True";
+    public static final String TRUE = "True";
 
     protected abstract List<String> getMandatoryFields();
 
