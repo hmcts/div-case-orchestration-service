@@ -23,6 +23,7 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_DAY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.ALLOWED_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.I_AM_NOT_ALLOWED_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
@@ -112,19 +114,19 @@ public class TransformationBulkScanITest {
                         hasJsonPath("event_id", is("createCase")),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),
-                            hasJsonPath("D8PaymentMethod", is("Card")),
+                            hasJsonPath("D8PaymentMethod", is("card")),
                             hasJsonPath(D_8_PETITIONER_FIRST_NAME, is("Christopher")),
                             hasJsonPath(D_8_PETITIONER_LAST_NAME, is("O'John")),
                             hasJsonPath("D8PetitionerPhoneNumber", is("1111111111")),
                             hasJsonPath("D8PetitionerEmail", is("test.testerson@mailinator.com")),
                             hasJsonPath("D8LegalProcess", is("Divorce")),
-                            hasJsonPath("D8ScreenHasMarriageCert", is("True")),
-                            hasJsonPath("D8CertificateInEnglish", is("True")),
+                            hasJsonPath("D8ScreenHasMarriageCert", is(YES_VALUE)),
+                            hasJsonPath("D8CertificateInEnglish", is(YES_VALUE)),
                             hasJsonPath("D8RespondentFirstName", is("Jane")),
                             hasJsonPath("D8RespondentLastName", is("Doe")),
                             hasJsonPath("D8RespondentPhoneNumber", is("22222222222")),
-                            hasJsonPath("D8PetitionerNameChangedHow", is("Yes")),
-                            hasJsonPath("D8PetitionerContactDetailsConfidential", is("No")),
+                            hasJsonPath("D8PetitionerHasNameChanged", is(YES_VALUE)),
+                            hasJsonPath("D8PetitionerContactDetailsConfidential", is("share")),
                             hasJsonPath("D8PetitionerHomeAddress", allOf(
                                 hasJsonPath("AddressLine1", is("19 West Park Road")),
                                 hasJsonPath("County", is("West Midlands")),
@@ -171,7 +173,7 @@ public class TransformationBulkScanITest {
                             hasJsonPath("D8MarriageCertificateCorrect", is("No")),
                             hasJsonPath("D8MarriageCertificateCorrectExplain", is("Providing a scanned copy from registry office.")),
                             hasJsonPath("D8FinancialOrder", is("Yes")),
-                            hasJsonPath("D8FinancialOrderFor", is("petitioner, children")),
+                            hasJsonPath("D8FinancialOrderFor", hasItems("petitioner", "children")),
                             hasJsonPath("D8ReasonForDivorce", is("desertion")),
                             hasJsonPath("D8LegalProceedings", is("Yes")),
                             hasJsonPath("D8LegalProceedingsDetailsCaseNumber", is("case1234")),
@@ -202,12 +204,12 @@ public class TransformationBulkScanITest {
 
                             ///
 
-                            hasJsonPath("D8AppliesForStatementOfTruth", is("marriage")),
-                            hasJsonPath("D8DivorceClaimFrom", is("correspondent")),
-                            hasJsonPath("D8FinancialOrderStatementOfTruth", is("petitioner, children")),
+                            hasJsonPath("D8AppliesForStatementOfTruth", hasItems("marriage")),
+                            hasJsonPath("D8DivorceClaimFrom", hasItems("respondent", "correspondent")),
+                            hasJsonPath("D8FinancialOrderStatementOfTruth", hasItems("petitioner", "children")),
                             hasJsonPath("D8FullNameStatementOfTruth", is("Peter F. Griffin")),
                             hasJsonPath("D8StatementOfTruthSignature", is("Yes")),
-                            hasJsonPath("D8StatementOfTruthDate", is("16/01/2020")),
+                            hasJsonPath("D8StatementOfTruthDate", is("2020-01-16")),
                             hasJsonPath("D8SolicitorsFirmStatementOfTruth", is("Quahog Solicitors Ltd."))
                         ))
                     ))
@@ -238,13 +240,13 @@ public class TransformationBulkScanITest {
                         hasJsonPath("case_data.*", hasSize(10)),
                         hasJsonPath("case_data", allOf(
                             hasJsonPath("bulkScanCaseReference", is("LV481297")),
-                            hasJsonPath("D8PaymentMethod", is("Card")),
+                            hasJsonPath("D8PaymentMethod", is("card")),
                             hasJsonPath(D_8_PETITIONER_FIRST_NAME, is("Christopher")),
                             hasJsonPath(D_8_PETITIONER_LAST_NAME, is("O'John")),
                             hasJsonPath("D8PetitionerPhoneNumber", is("07456 78 90 11")),
                             hasJsonPath("D8PetitionerEmail", is("test.testerson@mailinator.com")),
                             hasJsonPath("D8LegalProcess", is("Divorce")),
-                            hasJsonPath("D8PetitionerContactDetailsConfidential", is("Yes")),
+                            hasJsonPath("D8PetitionerContactDetailsConfidential", is("keep")),
                             hasJsonPath("D8MarriagePetitionerName", is("Christopher O'John")),
                             hasJsonPath("D8MarriageRespondentName", is("Jane Doe")),
                             hasNoJsonPath("D8CertificateInEnglish"),

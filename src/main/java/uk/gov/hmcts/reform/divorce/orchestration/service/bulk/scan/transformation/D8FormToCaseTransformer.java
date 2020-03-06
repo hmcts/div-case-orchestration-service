@@ -1,19 +1,27 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformation;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.model.shared.in.OcrDataField;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_DAY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformDateFromComponentsToCcdDate;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformFormDateIntoLocalDate;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.BulkScanFormValidator.TRUE;
 
 @Component
 public class D8FormToCaseTransformer extends BulkScanFormTransformer {
@@ -31,46 +39,88 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
 
     @Override
     protected Map<String, Object> runFormSpecificTransformation(List<OcrDataField> ocrDataFields) {
-        Map<String, Object> modifiedMap = new HashMap<>();
+        Map<String, Object> transformedCaseData = new HashMap<>();
 
-        ocrDataFields.stream()
-            .filter(f -> f.getName().equals("D8ReasonForDivorceSeparationDate"))
-            .map(OcrDataField::getValue)
+        getValueFromOcrDataFields("D8ReasonForDivorceSeparationDate", ocrDataFields)
             .map(formDate -> transformFormDateIntoLocalDate("D8ReasonForDivorceSeparationDate", formDate))
-            .findFirst()
             .ifPresent(localDate -> {
-                modifiedMap.put(D_8_REASON_FOR_DIVORCE_SEPARATION_DAY, String.valueOf(localDate.getDayOfMonth()));
-                modifiedMap.put(D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH, String.valueOf(localDate.getMonthValue()));
-                modifiedMap.put(D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR, String.valueOf(localDate.getYear()));
+                transformedCaseData.put(D_8_REASON_FOR_DIVORCE_SEPARATION_DAY, String.valueOf(localDate.getDayOfMonth()));
+                transformedCaseData.put(D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH, String.valueOf(localDate.getMonthValue()));
+                transformedCaseData.put(D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR, String.valueOf(localDate.getYear()));
             });
 
-        applyMappingsForPetitionerHomeAddress(ocrDataFields, modifiedMap);
-        applyMappingsForPetitionerSolicitorAddress(ocrDataFields, modifiedMap);
-        applyMappingsForPetitionerCorrespondenceAddress(ocrDataFields, modifiedMap);
-        applyMappingsForDivorceAdultery3rdPartyAddress(ocrDataFields, modifiedMap);
-        applyMappingsForRespondentHomeAddress(ocrDataFields, modifiedMap);
-        applyMappingsForRespondentSolicitorAddress(ocrDataFields, modifiedMap);
+        applyMappingsForPetitionerHomeAddress(ocrDataFields, transformedCaseData);
+        applyMappingsForPetitionerSolicitorAddress(ocrDataFields, transformedCaseData);
+        applyMappingsForPetitionerCorrespondenceAddress(ocrDataFields, transformedCaseData);
+        applyMappingsForDivorceAdultery3rdPartyAddress(ocrDataFields, transformedCaseData);
+        applyMappingsForRespondentHomeAddress(ocrDataFields, transformedCaseData);
+        applyMappingsForRespondentSolicitorAddress(ocrDataFields, transformedCaseData);
 
-        applyMappingForDate(ocrDataFields, modifiedMap, "D8MarriageDate");
-        applyMappingForDate(ocrDataFields, modifiedMap, "D8MentalSeparationDate");
-        applyMappingForDate(ocrDataFields, modifiedMap, "D8PhysicalSeparationDate");
+        applyMappingForDate(ocrDataFields, transformedCaseData, "D8MarriageDate");
+        applyMappingForDate(ocrDataFields, transformedCaseData, "D8MentalSeparationDate");
+        applyMappingForDate(ocrDataFields, transformedCaseData, "D8PhysicalSeparationDate");
 
-        return modifiedMap;
+        getValueFromOcrDataFields("D8PetitionerContactDetailsConfidential", ocrDataFields)
+            .ifPresent(value -> {
+                if (YES_VALUE.equalsIgnoreCase(value)) {
+                    transformedCaseData.put("D8PetitionerContactDetailsConfidential", "keep");
+                } else if (NO_VALUE.equalsIgnoreCase(value)) {
+                    transformedCaseData.put("D8PetitionerContactDetailsConfidential", "share");
+                }
+            });
+
+        transformTrueOrFalseValuesIntoYesOrNo(ocrDataFields, "D8ScreenHasMarriageCert", transformedCaseData);
+        transformTrueOrFalseValuesIntoYesOrNo(ocrDataFields, "D8CertificateInEnglish", transformedCaseData);
+
+        return transformedCaseData;
     }
 
     @Override
     protected Map<String, Object> runPostMappingModification(Map<String, Object> transformedCaseData) {
-        transformedCaseData.replace("D8PaymentMethod", "Debit/Credit Card", "Card");
-        transformedCaseData.replace("D8FinancialOrderFor", "myself", "petitioner");
-        transformedCaseData.replace("D8FinancialOrderFor", "my children", "children");
-        transformedCaseData.replace("D8FinancialOrderFor", "myself, my children", "petitioner, children");
+        Map<String, Object> modifiedCaseData = new HashMap<>(transformedCaseData);
 
-        Optional.ofNullable(transformedCaseData.get("D8DivorceClaimFrom"))
+        modifiedCaseData.replace("D8PaymentMethod", "Debit/Credit Card", "card");
+        modifiedCaseData.replace("D8PaymentMethod", "Cheque", "cheque");
+
+        modifiedCaseData.replace("D8FinancialOrderFor", "myself", asList("petitioner"));
+        modifiedCaseData.replace("D8FinancialOrderFor", "my children", asList("children"));
+        modifiedCaseData.replace("D8FinancialOrderFor", "myself, my children", asList("petitioner", "children"));
+
+        Optional.ofNullable(modifiedCaseData.get("D8DivorceClaimFrom"))
             .map(String.class::cast)
             .map(value -> value.replace("corespondent", "correspondent"))
-            .ifPresent(value -> transformedCaseData.replace("D8DivorceClaimFrom", value));
+            .ifPresent(value -> modifiedCaseData.replace("D8DivorceClaimFrom", value));
 
-        return transformedCaseData;
+        transformCommaSeparatedStringIntoList(modifiedCaseData, "D8AppliesForStatementOfTruth");
+        transformCommaSeparatedStringIntoList(modifiedCaseData, "D8DivorceClaimFrom");
+        transformCommaSeparatedStringIntoList(modifiedCaseData, "D8FinancialOrderStatementOfTruth");
+
+        transformDateIntoIsoFormat(modifiedCaseData, "D8StatementOfTruthDate");
+
+        return modifiedCaseData;
+    }
+
+    private void transformCommaSeparatedStringIntoList(Map<String, Object> transformedCaseData, String fieldName) {
+        Optional.ofNullable(transformedCaseData.get(fieldName))
+            .map(String.class::cast)
+            .map(value -> value.split(","))
+            .flatMap(valuesArray -> Optional.of(Arrays.stream(valuesArray).map(String::trim).collect(toList())))
+            .ifPresent(listOfValues -> transformedCaseData.put(fieldName, listOfValues));
+    }
+
+    private void transformTrueOrFalseValuesIntoYesOrNo(List<OcrDataField> ocrDataFields, String fieldName, Map<String, Object> transformedCaseData) {
+        getValueFromOcrDataFields(fieldName, ocrDataFields)
+            .map(value -> StringUtils.isEmpty(value) ? null : value)
+            .map(TRUE::equalsIgnoreCase)
+            .map(valueEqualsTrue -> valueEqualsTrue ? YES_VALUE : NO_VALUE)
+            .ifPresent(transformedValue -> transformedCaseData.put(fieldName, transformedValue));
+    }
+
+    private void transformDateIntoIsoFormat(Map<String, Object> transformedCaseData, String fieldName) {
+        Optional.ofNullable(transformedCaseData.get(fieldName))
+            .map(String.class::cast)
+            .map(value -> BulkScanHelper.transformFormDateIntoLocalDate(fieldName, value))
+            .ifPresent(date -> transformedCaseData.put(fieldName, date.toString()));
     }
 
     private void applyMappingForDate(List<OcrDataField> ocrDataFields, Map<String, Object> modifiedMap, String field) {
@@ -114,7 +164,7 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         erToCcdFieldsMap.put("D8PetitionerLastName", "D8PetitionerLastName");
         erToCcdFieldsMap.put("D8PetitionerPhoneNumber", "D8PetitionerPhoneNumber");
         erToCcdFieldsMap.put("D8PetitionerEmail", "D8PetitionerEmail");
-        erToCcdFieldsMap.put("D8PetitionerNameChangedHow", "D8PetitionerNameChangedHow");
+        erToCcdFieldsMap.put("D8PetitionerHasNameChanged", "D8PetitionerHasNameChanged");
         erToCcdFieldsMap.put("D8PetitionerContactDetailsConfidential", "D8PetitionerContactDetailsConfidential");
         erToCcdFieldsMap.put("PetitionerSolicitor", "PetitionerSolicitor");
         erToCcdFieldsMap.put("PetitionerSolicitorName", "PetitionerSolicitorName");

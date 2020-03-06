@@ -112,7 +112,7 @@ public class ValidationBulkScanITest {
                 hasJsonPath("$.warnings", hasItems(
                     mandatoryFieldIsMissing("D8PetitionerFirstName"),
                     "D8PaymentMethod or D8HelpWithFeesReferenceNumber must contain a value",
-                    mandatoryFieldIsMissing("D8PetitionerNameChangedHow"),
+                    mandatoryFieldIsMissing("D8PetitionerHasNameChanged"),
                     mandatoryFieldIsMissing("D8MarriedInUk"),
                     mandatoryFieldIsMissing("D8ApplicationToIssueWithoutCertificate"),
                     mandatoryFieldIsMissing("D8MarriageCertificateCorrect"),

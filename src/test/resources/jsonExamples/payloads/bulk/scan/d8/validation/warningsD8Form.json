@@ -15,7 +15,7 @@
     { "name": "D8RespondentFirstName", "value": "Jane" },
     { "name": "D8RespondentLastName", "value": "Doe" },
     { "name": "D8RespondentPhoneNumber", "value": "22222222222" },
-    { "name": "D8PetitionerNameChangedHow", "value": "Yes" },
+    { "name": "D8PetitionerNameHasChanged", "value": "Yes" },
     { "name": "PetitionerSolicitor", "value": "No" },
     { "name": "D8SolicitorReference", "value": "" },
     { "name": "PetitionerSolicitorFirm", "value": "anything here" },
