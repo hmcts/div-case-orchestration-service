@@ -86,6 +86,10 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         modifiedCaseData.replace("D8FinancialOrderFor", "my children", asList("children"));
         modifiedCaseData.replace("D8FinancialOrderFor", "myself, my children", asList("petitioner", "children"));
 
+        modifiedCaseData.replace("D8legalProcess", "Divorce", "divorce");
+        modifiedCaseData.replace("D8legalProcess", "Dissolution", "dissolution");
+        modifiedCaseData.replace("D8legalProcess", "Judicial (separation)", "judicialSeparation");
+
         Optional.ofNullable(modifiedCaseData.get("D8DivorceClaimFrom"))
             .map(String.class::cast)
             .map(value -> value.replace("corespondent", "correspondent"))
