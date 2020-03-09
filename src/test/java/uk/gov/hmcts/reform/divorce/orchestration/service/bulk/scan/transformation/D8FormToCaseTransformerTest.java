@@ -319,6 +319,24 @@ public class D8FormToCaseTransformerTest {
         assertThat(transformedCaseDataWithNoValue, hasEntry("D8PetitionerContactDetailsConfidential", "share"));
     }
 
+    @Test
+    public void shouldTransformD8LegalProcessIntoValidValues() {
+        Map<String, Object> transformedCaseDataWithDivorceValue = classUnderTest.transformIntoCaseData(createExceptionRecord(asList(
+            new OcrDataField("D8LegalProcess", "Divorce")
+        )));
+        assertThat(transformedCaseDataWithDivorceValue, hasEntry("D8legalProcess", "divorce"));
+
+        Map<String, Object> transformedCaseDataWithDissolutionValue = classUnderTest.transformIntoCaseData(createExceptionRecord(asList(
+            new OcrDataField("D8LegalProcess", "Dissolution")
+        )));
+        assertThat(transformedCaseDataWithDissolutionValue, hasEntry("D8legalProcess", "dissolution"));
+
+        Map<String, Object> transformedCaseDataWithJudicialSeparationValue = classUnderTest.transformIntoCaseData(createExceptionRecord(asList(
+            new OcrDataField("D8LegalProcess", "Judicial (separation)")
+        )));
+        assertThat(transformedCaseDataWithJudicialSeparationValue, hasEntry("D8legalProcess", "judicialSeparation"));
+    }
+
     private void assertValueMatchesIterableMatcher(Map<String, Object> transformedCaseData, String fieldName, Matcher iterableMatcher) {
         assertThat(transformedCaseData.get(fieldName), iterableMatcher);
     }
