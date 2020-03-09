@@ -155,7 +155,7 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         erToCcdFieldsMap.put("D8PaymentMethod", "D8PaymentMethod");
 
         // Section 1 - Your application (known as a petition in divorce and judicial separation)
-        erToCcdFieldsMap.put("D8LegalProcess", "D8LegalProcess");
+        erToCcdFieldsMap.put("D8LegalProcess", "D8legalProcess");
         erToCcdFieldsMap.put("D8ScreenHasMarriageCert", "D8ScreenHasMarriageCert");
         erToCcdFieldsMap.put("D8CertificateInEnglish", "D8CertificateInEnglish");
 
