@@ -270,4 +270,18 @@ public class TransformationBulkScanITest {
         ).andExpect(status().isUnprocessableEntity());
     }
 
+    @Test
+    public void shouldReturnErrorResponseForInvalidData() throws Exception {
+        String formToTransform = loadResourceAsString(PARTIAL_D8_FORM_JSON_PATH);
+
+        when(bulkScanFormValidator.validateBulkScanForm(any())).thenReturn(OcrValidationResult.builder().addWarning("warn!").build());
+
+        mockMvc.perform(
+            post(TRANSFORMATION_URL)
+                .contentType(APPLICATION_JSON)
+                .content(formToTransform)
+                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+        ).andExpect(status().isUnprocessableEntity());
+    }
+
 }
