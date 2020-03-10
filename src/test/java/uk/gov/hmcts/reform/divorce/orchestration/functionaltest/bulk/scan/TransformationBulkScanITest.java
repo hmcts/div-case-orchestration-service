@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +17,8 @@ import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResult;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation.D8FormValidator;
+
+import java.util.Arrays;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
@@ -273,15 +276,22 @@ public class TransformationBulkScanITest {
     @Test
     public void shouldReturnErrorResponseForInvalidData() throws Exception {
         String formToTransform = loadResourceAsString(PARTIAL_D8_FORM_JSON_PATH);
+        String warningMsg = "warn!";
 
-        when(bulkScanFormValidator.validateBulkScanForm(any())).thenReturn(OcrValidationResult.builder().addWarning("warn!").build());
+        when(bulkScanFormValidator.validateBulkScanForm(any())).thenReturn(OcrValidationResult.builder().addWarning(warningMsg).build());
 
         mockMvc.perform(
             post(TRANSFORMATION_URL)
                 .contentType(APPLICATION_JSON)
                 .content(formToTransform)
                 .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
-        ).andExpect(status().isUnprocessableEntity());
+        )
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(content().string(hasErrorWithMessageCopiedFromWarning(warningMsg)));
+    }
+
+    private Matcher<String> hasErrorWithMessageCopiedFromWarning(String warningMsg) {
+        return allOf(isJson(), hasJsonPath("$.errors", equalTo(Arrays.asList(warningMsg))));
     }
 
 }
