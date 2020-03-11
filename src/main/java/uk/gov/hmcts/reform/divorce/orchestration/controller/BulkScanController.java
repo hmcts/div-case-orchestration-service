@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -107,13 +105,6 @@ public class BulkScanController {
     ) {
         String exceptionRecordId = exceptionRecord.getId();
         log.info("Transforming exception record to case. Id: {}", exceptionRecordId);
-        //TODO - I will remove this before we release this in production. Actually as soon as my story is done.
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            log.info("Exception record [ID {}]. Body is: {}", exceptionRecordId, objectMapper.writeValueAsString(exceptionRecord));
-        } catch (JsonProcessingException e) {
-            log.error("Could not transform object into JSON. Exception record id: " + exceptionRecordId, e);
-        }
 
         authService.assertIsServiceAllowedToUpdate(s2sAuthToken);
 
@@ -130,14 +121,6 @@ public class BulkScanController {
                     )
                 )
                 .build();
-
-            //TODO - I will remove this before we release this in production. Actually as soon as my story is done.
-            try {
-                log.info("Returning successfully transformed response for exception record [id {}]",
-                    objectMapper.writeValueAsString(callbackResponse));
-            } catch (JsonProcessingException e) {
-                log.error("Could not transformed object into JSON. Exception record id: " + exceptionRecordId, e);
-            }
 
             controllerResponse = ok(callbackResponse);
         } catch (UnsupportedFormTypeException exception) {
