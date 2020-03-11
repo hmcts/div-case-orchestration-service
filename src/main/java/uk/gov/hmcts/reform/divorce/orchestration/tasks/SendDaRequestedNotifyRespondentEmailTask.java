@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -41,6 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.Email
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getWelshRelationshipTermByGender;
 
 @Component
 @Slf4j
@@ -126,11 +128,13 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
         String d8Reference = (String) caseData.get(D_8_CASE_REFERENCE);
         String petitionerInferredGender = getMandatoryPropertyValueAsString(caseData, D_8_INFERRED_PETITIONER_GENDER);
         String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
+        String welshPetitionerRelationshipToRespondent = getWelshRelationshipTermByGender(petitionerInferredGender);
 
         templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, firstName);
         templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, lastName);
         templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, d8Reference);
         templateVars.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
+        templateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshPetitionerRelationshipToRespondent);
 
         return templateVars;
     }

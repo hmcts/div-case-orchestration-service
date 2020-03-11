@@ -23,12 +23,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getWelshRelationshipTermByGender;
 
 @Component
 @Slf4j
@@ -49,6 +51,8 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
         String petitionerInferredGender = getMandatoryPropertyValueAsString(caseDataPayload,
                 D_8_INFERRED_PETITIONER_GENDER);
         String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
+        String welshPetitionerRelationshipToRespondent = getWelshRelationshipTermByGender(petitionerInferredGender);
+
         String divorceUnitKey = getMandatoryPropertyValueAsString(caseDataPayload, DIVORCE_UNIT_JSON_KEY);
         Court court = taskCommons.getCourt(divorceUnitKey);
 
@@ -59,6 +63,8 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
         templateFields.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, respondentLastName);
         templateFields.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
         templateFields.put(NOTIFICATION_RDC_NAME_KEY, court.getIdentifiableCentreName());
+        templateFields.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshPetitionerRelationshipToRespondent);
+
 
         Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseDataPayload);
 

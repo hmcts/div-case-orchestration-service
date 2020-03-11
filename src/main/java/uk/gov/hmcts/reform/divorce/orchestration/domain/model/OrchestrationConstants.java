@@ -237,6 +237,7 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_ADDRESSEE_LAST_NAME_KEY = "last name";
     public static final String NOTIFICATION_EMAIL_ADDRESS_KEY = "email address";
     public static final String NOTIFICATION_HUSBAND_OR_WIFE = "husband or wife";
+    public static final String NOTIFICATION_WELSH_HUSBAND_OR_WIFE = "welsh husband or wife";
     public static final String NOTIFICATION_FEES_KEY = "fees";
     public static final String NOTIFICATION_RELATIONSHIP_KEY = "relationship";
     public static final String NOTIFICATION_CCD_REFERENCE_KEY = "CCD reference";

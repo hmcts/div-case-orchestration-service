@@ -62,6 +62,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
@@ -249,7 +250,8 @@ public class AosSubmissionWorkflowTest {
             NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME,
             NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TestConstants.TEST_USER_LAST_NAME,
             NOTIFICATION_RELATIONSHIP_KEY, "husband",
-            NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID
+            NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID,
+            NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION
         );
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
         verify(emailNotificationTask, times(1))
@@ -508,6 +510,7 @@ public class AosSubmissionWorkflowTest {
             expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME);
             expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TestConstants.TEST_USER_LAST_NAME);
             expectedTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, "husband");
+            expectedTemplateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION);
             expectedTemplateVars.put(NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID);
 
             expectedContext.setTransientObjects(ImmutableMap

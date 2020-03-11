@@ -39,6 +39,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
@@ -49,6 +51,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
@@ -118,9 +121,10 @@ public class SendRespondentSubmissionNotificationEmailTest {
             hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "wife"),
             hasEntry(NOTIFICATION_RDC_NAME_KEY, testCourt.getIdentifiableCentreName()),
             hasEntry(NOTIFICATION_COURT_ADDRESS_KEY, testCourt.getFormattedAddress()),
-            hasEntry("form submission date limit", FORM_SUBMISSION_DUE_DATE)
+            hasEntry("form submission date limit", FORM_SUBMISSION_DUE_DATE),
+            hasEntry(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_FEMALE_GENDER_IN_RELATION)
         ));
-        assertThat(templateParameters.size(), equalTo(8));
+        assertThat(templateParameters.size(), equalTo(9));
         checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);
     }
 
@@ -184,9 +188,10 @@ public class SendRespondentSubmissionNotificationEmailTest {
             hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Sarah"),
             hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones"),
             hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "husband"),
-            hasEntry(NOTIFICATION_RDC_NAME_KEY, testCourt.getIdentifiableCentreName())
+            hasEntry(NOTIFICATION_RDC_NAME_KEY, testCourt.getIdentifiableCentreName()),
+            hasEntry(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION)
         ));
-        assertThat(templateParameters.size(), equalTo(6));
+        assertThat(templateParameters.size(), equalTo(7));
         checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);
     }
 

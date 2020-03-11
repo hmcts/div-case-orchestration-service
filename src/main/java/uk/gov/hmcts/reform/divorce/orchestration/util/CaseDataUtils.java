@@ -38,6 +38,8 @@ public class CaseDataUtils {
     private static final String FEMALE_GENDER = "female";
     private static final String MALE_GENDER_IN_RELATION = "husband";
     private static final String FEMALE_GENDER_IN_RELATION = "wife";
+    private static final String WELSH_MALE_GENDER_IN_RELATION = "gŵr";
+    private static final String WELSH_FEMALE_GENDER_IN_RELATION = "gwraig";
 
     public static String getRelationshipTermByGender(final String gender) {
         if (gender == null) {
@@ -53,6 +55,23 @@ public class CaseDataUtils {
                 return null;
         }
     }
+
+    public static String getWelshRelationshipTermByGender(final String gender) {
+        String relation = null;
+        final Optional<String> genderValue = Optional.ofNullable(gender);
+
+        if (genderValue.isPresent()
+                && !genderValue.filter(String::isEmpty).isPresent()) {
+            relation = genderValue
+                    .map(String::toLowerCase)
+                    .filter(MALE_GENDER::equals)
+                    .map(male -> WELSH_MALE_GENDER_IN_RELATION)
+                    .orElse(WELSH_FEMALE_GENDER_IN_RELATION);
+        }
+        return relation;
+    }
+
+
 
     public static String formatCaseIdToReferenceNumber(String referenceId) {
         try {

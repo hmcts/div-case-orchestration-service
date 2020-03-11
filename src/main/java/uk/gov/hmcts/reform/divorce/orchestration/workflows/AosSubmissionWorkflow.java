@@ -45,6 +45,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_DEFENDING_NOT_ADMITTING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
@@ -59,6 +60,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getWelshRelationshipTermByGender;
 
 @Component
 @Slf4j
@@ -112,6 +114,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         Map<String, Object> caseData = caseDetails.getCaseData();
 
         final String relationship = getRespondentRelationship(caseDetails);
+        final String welshRelationship = getWelshRespondentRelationship(caseDetails);
 
         String petSolicitorEmail = getFieldAsStringOrNull(caseDetails, PET_SOL_EMAIL);
         String petitionerEmail = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_EMAIL);
@@ -146,6 +149,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
                 notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
                 notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
                 notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
+                notificationTemplateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshRelationship);
                 notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, ref);
 
                 tasks.add(emailNotificationTask);
@@ -189,6 +193,11 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
     private String getRespondentRelationship(CaseDetails caseDetails) {
         String gender = getFieldAsStringOrNull(caseDetails, D_8_INFERRED_RESPONDENT_GENDER);
         return getRelationshipTermByGender(gender);
+    }
+
+    private String getWelshRespondentRelationship(CaseDetails caseDetails) {
+        String gender = getFieldAsStringOrNull(caseDetails, D_8_INFERRED_RESPONDENT_GENDER);
+        return getWelshRelationshipTermByGender(gender);
     }
 
     private String getFieldAsStringOrNull(final CaseDetails caseDetails, String fieldKey) {

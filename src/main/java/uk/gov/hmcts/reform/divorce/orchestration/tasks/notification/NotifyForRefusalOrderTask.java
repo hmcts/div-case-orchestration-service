@@ -29,12 +29,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getWelshRelationshipTermByGender;
 
 @Slf4j
 @Component
@@ -72,8 +74,12 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
                 String petitionerInferredGender = getMandatoryPropertyValueAsString(payload,
                     D_8_INFERRED_PETITIONER_GENDER);
                 String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
+                String welshPetitionerRelationshipToRespondent = getWelshRelationshipTermByGender(petitionerInferredGender);
+
                 personalisation.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
                 personalisation.put(NOTIFICATION_FEES_KEY, amendFee.getFormattedFeeAmount());
+                personalisation.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshPetitionerRelationshipToRespondent);
+
                 emailService.sendEmail(
                     petitionerEmail,
                     EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION.name(),
