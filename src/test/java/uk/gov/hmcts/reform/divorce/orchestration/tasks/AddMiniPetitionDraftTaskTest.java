@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;

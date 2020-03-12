@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtract
 import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DN;
 
 /**
- * This class provides endpoint so trigger the data extraction process on demand.
+ * This class provides endpoint to trigger the data extraction process on demand.
  */
 @RestController
 @RequiredArgsConstructor
@@ -29,9 +29,9 @@ public class DataExtractionController {
     private final DataExtractionRequestListener listener;
 
     @PostMapping(path = "/cases/data-extraction/family-man")
-    @ApiOperation(value = "Starts data extraction for family man for the day before today. This is meant to only be used as a testing tool.")
+    @ApiOperation(value = "Starts data extraction for FamilyMan for the day before today. This is meant to only be used as a testing tool.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Data extraction process started"),
+        @ApiResponse(code = 200, message = "Data Extraction Process Started"),
         @ApiResponse(code = 400, message = "Bad Request")})
     public void startDataExtractionToFamilyMan() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
@@ -41,7 +41,7 @@ public class DataExtractionController {
     }
 
     @PostMapping(path = "/cases/data-extraction/family-man/status/{status}/lastModifiedDate/{lastModifiedDate}")
-    @ApiOperation(value = "Starts data extraction for family man for given status and given date.")
+    @ApiOperation(value = "Starts data extraction for FamilyMan for given status and given date.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Data extraction process started"),
         @ApiResponse(code = 400, message = "Bad Request")})
@@ -53,5 +53,4 @@ public class DataExtractionController {
             LocalDate lastModifiedDate) {
         listener.onApplicationEvent(new DataExtractionRequest(this, status, lastModifiedDate));
     }
-
 }

@@ -30,7 +30,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ISSUE_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.REASON_FOR_DIVORCE_KEY;
 
 public class AmendPetitionTest extends CcdSubmissionSupport {
@@ -42,18 +47,12 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
     private static final String PREVIOUS_ISSUE_DATE_KEY = "previousIssueDate";
     private static final String PREVIOUS_REASONS_KEY = "previousReasonsForDivorce";
 
-    private static final String ISSUE_DATE = "IssueDate";
-    private static final String D8_REASON_DIVORCE = "D8ReasonForDivorce";
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/amend-petition/";
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
     private static final String AOS_RECEIVED_NO_ADMIT_EVENT_ID = "aosReceivedNoAdConStarted";
-    private static final String AMEND_PETITION_STATE = "AmendPetition";
-    private static final String CASE_ID_KEY = "caseId";
     private static final String REASON_FOR_DIVORCE_BEHAVIOUR_DETAILS = "reasonForDivorceBehaviourDetails";
     private static final String CLAIMS_COSTS = "claimsCosts";
     private static final String CONFIRM_PRAYER = "confirmPrayer";
-
-    private static final String YES_VALUE = "Yes";
 
     @Autowired
     private CcdClientSupport ccdClientSupport;
@@ -95,13 +94,13 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
         uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails oldCase;
         oldCase = cmsClient.retrievePetitionById(citizenUser.getAuthToken(), caseId);
         List<Object> previousReasons = (List<Object>) newDraftDocument.get(PREVIOUS_REASONS_KEY);
-        assertThat(previousReasons, hasItem(oldCase.getCaseData().get(D8_REASON_DIVORCE)));
+        assertThat(previousReasons, hasItem(oldCase.getCaseData().get(D_8_REASON_FOR_DIVORCE)));
         assertThat(oldCase.getCaseId(), equalTo(newDraftDocument.get(PREVIOUS_CASE_ID_KEY)));
         assertThat((String) newDraftDocument.get(PREVIOUS_ISSUE_DATE_KEY), allOf(
             is(notNullValue()),
             startsWith(testIssueDate)
         ));
-        assertThat(oldCase.getState(), equalTo(AMEND_PETITION_STATE));
+        assertThat(oldCase.getState(), equalTo(AMEND_PETITION_EVENT));
 
         //Fill in mandatory data that's removed from original case
         newDraftDocument.put(REASON_FOR_DIVORCE_KEY, "unreasonable-behaviour");
@@ -111,7 +110,7 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
 
         //Submit amended case
         Map<String, Object> submittedCase = cosApiClient.submitCase(citizenUser.getAuthToken(), newDraftDocument);
-        assertThat(submittedCase.get(CASE_ID_KEY), is(notNullValue()));
+        assertThat(submittedCase.get(CASE_ID_JSON_KEY), is(notNullValue()));
     }
 
     private Response amendPetition(String userToken, String caseId) {
@@ -129,5 +128,4 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
             new HashMap<>()
         );
     }
-
 }

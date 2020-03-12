@@ -16,9 +16,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DecreeAbsoluteService;
 
-import javax.ws.rs.core.MediaType;
-
 import static java.util.Collections.singletonList;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 
 @RestController
 @Slf4j
@@ -27,14 +27,14 @@ public class DecreeAbsoluteController {
 
     private final DecreeAbsoluteService decreeAbsoluteService;
 
-    @PostMapping(path = "/da-requested-by-applicant", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handle email notification to respondent")
+    @PostMapping(path = "/da-requested-by-applicant", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Trigger email to Respondent as Applicant has requested Decree Absolute")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "email sent.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> notifyRespondentOfDARequested(
-        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
@@ -51,7 +51,7 @@ public class DecreeAbsoluteController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/validate-da-request", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @PostMapping(path = "/validate-da-request", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Validate if user selected a valid value")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "input validated - check errors list", response = CcdCallbackResponse.class),

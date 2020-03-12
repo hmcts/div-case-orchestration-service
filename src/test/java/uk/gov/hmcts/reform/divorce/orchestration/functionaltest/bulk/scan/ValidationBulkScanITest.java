@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.ResultMatcher.matchAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.divorce.orchestration.controller.BulkScanController.SERVICE_AUTHORISATION_HEADER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.ALLOWED_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.I_AM_NOT_ALLOWED_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
@@ -65,7 +65,7 @@ public class ValidationBulkScanITest {
             post("/forms/{form-type}/validate-ocr", D8_FORM)
                 .contentType(APPLICATION_JSON)
                 .content(VALID_BODY)
-                .header(SERVICE_AUTHORISATION_HEADER, I_AM_NOT_ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, I_AM_NOT_ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(status().isForbidden()));
     }
 
@@ -75,7 +75,7 @@ public class ValidationBulkScanITest {
             post("/forms/{form-type}/validate-ocr", D8_FORM)
                 .contentType(APPLICATION_JSON)
                 .content(VALID_BODY)
-                .header(SERVICE_AUTHORISATION_HEADER, "")
+                .header(SERVICE_AUTHORIZATION_HEADER, "")
         ).andExpect(matchAll(status().isUnauthorized()));
     }
 
@@ -85,7 +85,7 @@ public class ValidationBulkScanITest {
             post("/forms/{form-type}/validate-ocr", D8_FORM)
                 .contentType(APPLICATION_JSON)
                 .content(VALID_BODY)
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(
             matchAll(
                 status().isOk(),
@@ -105,7 +105,7 @@ public class ValidationBulkScanITest {
             post("/forms/{form-type}/validate-ocr", D8_FORM)
                 .contentType(APPLICATION_JSON)
                 .content(formToValidate)
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(
             status().isOk(),
             content().string(allOf(
@@ -136,7 +136,7 @@ public class ValidationBulkScanITest {
         mockMvc.perform(post("/forms/{form-type}/validate-ocr", D8_FORM)
             .contentType(APPLICATION_JSON)
             .content(formToValidate)
-            .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+            .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(
             status().isOk(),
             content().string(allOf(
@@ -163,7 +163,7 @@ public class ValidationBulkScanITest {
             post("/forms/{form-type}/validate-ocr", "unsupportedFormType")
                 .contentType(APPLICATION_JSON)
                 .content(VALID_BODY)
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(
             status().isNotFound(),
             content().string(isEmptyString())

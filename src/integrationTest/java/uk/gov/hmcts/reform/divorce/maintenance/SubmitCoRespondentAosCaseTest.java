@@ -23,8 +23,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_STARTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_SUBMITTED_AWAITING_ANSWER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DEFENDED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_RECEIVED_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.util.DateConstants.CCD_DATE_FORMATTER;
@@ -43,10 +46,6 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     private static final String AOS_DEFEND_CONSENT_JSON_FILE_PATH = "aos-defend-consent.json";
     private static final String CO_RESP_ANSWERS_JSON_FILE_PATH = "co-respondent-answers.json";
     private static final String CO_RESP_DEFENDED_ANSWERS_JSON_FILE_PATH = "co-respondent-defended-answers.json";
-
-    private static final String STATE_KEY = "state";
-    private static final String ID = "id";
-
     private static final String CO_RESPONDENT_ANSWERS_JSON;
 
     static {
@@ -97,7 +96,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
     @Test
     @Category(ExtendedTest.class)
-    public void givenCaseIsAosAwaiting_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
+    public void givenCaseIsAosAwaiting_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() {
         final UserDetails userDetails = createCitizenUser();
 
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -110,13 +109,13 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
         final Response caseRetrieval = retrieveAosCase(userDetails.getAuthToken());
         assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
-        assertThat(caseRetrieval.path(CASE_ID_KEY), is(String.valueOf(caseDetails.getId())));
-        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(STATE_KEY), is(AOS_AWAITING));
+        assertThat(caseRetrieval.path(CASE_ID_JSON_KEY), is(String.valueOf(caseDetails.getId())));
+        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(CASE_STATE_JSON_KEY), is(AOS_AWAITING));
     }
 
     @Test
     @Category(ExtendedTest.class)
-    public void givenCaseIsAosStarted_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
+    public void givenCaseIsAosStarted_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() {
         final UserDetails userDetails = createCitizenUser();
 
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -129,8 +128,8 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
         final Response caseRetrieval = retrieveAosCase(userDetails.getAuthToken());
         assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
-        assertThat(caseRetrieval.path(CASE_ID_KEY), is(String.valueOf(caseDetails.getId())));
-        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(STATE_KEY), is(AOS_STARTED));
+        assertThat(caseRetrieval.path(CASE_ID_JSON_KEY), is(String.valueOf(caseDetails.getId())));
+        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(CASE_STATE_JSON_KEY), is(AOS_STARTED));
     }
 
     @Test
@@ -150,13 +149,14 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
         final Response caseRetrieval = retrieveAosCase(userDetails.getAuthToken());
         assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
-        assertThat(caseRetrieval.path(CASE_ID_KEY), is(String.valueOf(caseDetails.getId())));
-        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(STATE_KEY), is(AOS_SUBMITTED_AWAITING_ANSWER));
+        assertThat(caseRetrieval.path(CASE_ID_JSON_KEY), is(String.valueOf(caseDetails.getId())));
+        assertThat("The state should never change on co-respondent submission",
+            caseRetrieval.path(CASE_STATE_JSON_KEY), is(AOS_SUBMITTED_AWAITING_ANSWER));
     }
 
     @Test
     @Category(ExtendedTest.class)
-    public void givenCaseIsAosOverdue_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
+    public void givenCaseIsAosOverdue_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
             Pair.of(RESPONDENT_EMAIL_ADDRESS, userDetails.getEmailAddress()));
@@ -170,8 +170,8 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
         final Response caseRetrieval = retrieveAosCase(userDetails.getAuthToken());
         assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
-        assertThat(caseRetrieval.path(CASE_ID_KEY), is(String.valueOf(caseDetails.getId())));
-        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(STATE_KEY), is(AOS_OVERDUE));
+        assertThat(caseRetrieval.path(CASE_ID_JSON_KEY), is(String.valueOf(caseDetails.getId())));
+        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(CASE_STATE_JSON_KEY), is(AOS_OVERDUE));
     }
 
     @Test
@@ -180,7 +180,6 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
             Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
-
 
         log.info("Case " + caseDetails.getId() + " created.");
 
@@ -195,8 +194,8 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
         final Response caseRetrieval = retrieveAosCase(userDetails.getAuthToken());
         assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
-        assertThat(caseRetrieval.path(CASE_ID_KEY), is(String.valueOf(caseDetails.getId())));
-        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(STATE_KEY), is(DEFENDED));
+        assertThat(caseRetrieval.path(CASE_ID_JSON_KEY), is(String.valueOf(caseDetails.getId())));
+        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(CASE_STATE_JSON_KEY), is(DEFENDED));
     }
 
     /**
@@ -235,7 +234,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
         final Response cosResponse = retrieveAosCase(userDetails.getAuthToken());
         assertThat(cosResponse.getStatusCode(), is(OK.value()));
-        assertThat(cosResponse.path(CASE_ID_KEY), is(caseId));
+        assertThat(cosResponse.path(CASE_ID_JSON_KEY), is(caseId));
 
         String expectedCoRespondentAnswersJson = objectMapper
             .readTree(expectedAnswers.replaceAll(CO_RESPONDENT_DEFAULT_EMAIL, userDetails.getEmailAddress()))
@@ -250,5 +249,4 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
         JSONAssert.assertEquals(expectedCoRespondentAnswersJson, actualCoRespondentAnswersJson, false);
     }
-
 }

@@ -16,6 +16,7 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PRONOUNCEMENT_JUDGE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
@@ -36,7 +37,7 @@ public class EditBulkCaseListingTest extends IntegrationTest {
             .caseId(TEST_CASE_ID)
             .caseData(ImmutableMap.of(
                 COURT_HEARING_DATE_CCD_FIELD, futureDateTime,
-                PRONOUNCEMENT_JUDGE_CCD_FIELD, "District Judge"
+                PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_PRONOUNCEMENT_JUDGE
             )).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
         Map<String, Object> response = cosApiClient.editBulkListing(createCaseWorkerUser().getAuthToken(), ccdCallbackRequest,
