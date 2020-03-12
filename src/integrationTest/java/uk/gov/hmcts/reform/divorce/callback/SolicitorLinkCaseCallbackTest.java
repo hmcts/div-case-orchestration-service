@@ -90,7 +90,7 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
         );
         responseString = linkResponse.getBody().asString();
         assertThat(responseString, linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
-        assertThat(responseString,linkResponse.getBody().jsonPath().getList(ERRORS), hasItem("Case is already linked with CCD Case ID: " + caseId));
+        assertThat(responseString,linkResponse.getBody().jsonPath().getList(ERRORS), hasItem("Case is already linked to case with ID: " + caseId));
     }
 
     private Response linkSolicitor(String userToken, Long caseId, String pin) {

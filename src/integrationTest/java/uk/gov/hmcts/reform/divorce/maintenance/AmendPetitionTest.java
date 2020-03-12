@@ -30,7 +30,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
@@ -50,6 +49,7 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/amend-petition/";
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
     private static final String AOS_RECEIVED_NO_ADMIT_EVENT_ID = "aosReceivedNoAdConStarted";
+    private static final String AMEND_PETITION_STATE = "AmendPetition";
     private static final String REASON_FOR_DIVORCE_BEHAVIOUR_DETAILS = "reasonForDivorceBehaviourDetails";
     private static final String CLAIMS_COSTS = "claimsCosts";
     private static final String CONFIRM_PRAYER = "confirmPrayer";
@@ -70,7 +70,7 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
     public void givenValidCase_whenAmendPetition_newDraftPetitionIsReturned() {
         UserDetails citizenUser = createCitizenUser();
 
-        Map<String, Object> caseToIssue = ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "issued-case.json", Map.class);
+        Map caseToIssue = ResourceLoader.loadJsonToObject(PAYLOAD_CONTEXT_PATH + "issued-case.json", Map.class);
         caseToIssue.put(D_8_PETITIONER_EMAIL, citizenUser.getEmailAddress());
         CaseDetails issuedCase = ccdClientSupport.submitCase(
             caseToIssue,
@@ -100,7 +100,7 @@ public class AmendPetitionTest extends CcdSubmissionSupport {
             is(notNullValue()),
             startsWith(testIssueDate)
         ));
-        assertThat(oldCase.getState(), equalTo(AMEND_PETITION_EVENT));
+        assertThat(oldCase.getState(), equalTo(AMEND_PETITION_STATE));
 
         //Fill in mandatory data that's removed from original case
         newDraftDocument.put(REASON_FOR_DIVORCE_KEY, "unreasonable-behaviour");
