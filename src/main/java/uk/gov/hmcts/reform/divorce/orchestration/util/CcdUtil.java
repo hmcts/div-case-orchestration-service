@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
@@ -21,10 +22,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @AllArgsConstructor
 @Component
 public class CcdUtil {
-
     private static final String UK_HUMAN_READABLE_DATE_FORMAT = "dd/MM/yyyy";
 
     private final Clock clock;
+    @Autowired
+    private LocalDateToWelshStringConverter localDateToWelshStringConverter;
+
 
     public String getCurrentDateCcdFormat() {
         return LocalDate.now(clock).format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT));
@@ -52,9 +55,18 @@ public class CcdUtil {
     }
 
     public String getFormattedDueDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {
-        String dateAsString = getMandatoryPropertyValueAsString(caseData, dateToFormat);
-        LocalDate dueDate = LocalDate.parse(dateAsString);
+        LocalDate dueDate = getLocalDate(caseData, dateToFormat);
         return DateUtils.formatDateWithCustomerFacingFormat(dueDate);
+    }
+
+    public String getWelshFormattedDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {
+        LocalDate localDate = getLocalDate(caseData, dateToFormat);
+        return localDateToWelshStringConverter.convert(localDate);
+    }
+
+    private LocalDate getLocalDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {
+        String dateAsString = getMandatoryPropertyValueAsString(caseData, dateToFormat);
+        return LocalDate.parse(dateAsString);
     }
 
     public boolean isCcdDateTimeInThePast(String date) {
@@ -90,4 +102,5 @@ public class CcdUtil {
     public LocalDateTime getCurrentLocalDateTime() {
         return LocalDateTime.now(clock);
     }
+
 }

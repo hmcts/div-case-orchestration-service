@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.divorce.orchestration.config;
 
-
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 
 import java.util.Map;
 import javax.validation.Valid;
@@ -15,8 +13,8 @@ import javax.validation.Valid;
 @Setter
 @Component
 @Validated
-@ConfigurationProperties()
-public class TemplateConfig {
+@ConfigurationProperties("welsh")
+public class WelshMonthTranslation {
     @Valid
-    private Map<String, Map<LanguagePreference,  Map<String, String>>> template;
+    private Map<Integer, String> months;
 }

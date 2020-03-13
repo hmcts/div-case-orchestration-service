@@ -20,6 +20,8 @@ public class TemplateConfigTest {
     private TemplateConfig templateConfig;
     private Map<String, String> relations;
 
+    public static final String MONTHS = "months";
+
     @Test
     public void en_hustband() {
         relations = templateConfig.getTemplate().get(TEMPLATE_RELATION).get(LanguagePreference.ENGLISH);
@@ -42,5 +44,12 @@ public class TemplateConfigTest {
     public void welsh__wife() {
         relations = templateConfig.getTemplate().get(TEMPLATE_RELATION).get(LanguagePreference.WELSH);
         Assert.assertEquals("gwraig", relations.get("female"));
+    }
+
+    @Test
+    public void welsh_month() {
+        String novMonth =  templateConfig.getTemplate().get(MONTHS)
+                .get(LanguagePreference.WELSH).get("11");
+        Assert.assertEquals("Tachwedd", novMonth);
     }
 }

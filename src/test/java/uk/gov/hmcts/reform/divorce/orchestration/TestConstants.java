@@ -12,6 +12,7 @@ public class TestConstants {
     public static final String TEST_PIN = "abcd1234";
     public static final String TEST_EXPECTED_DUE_DATE = "2020-10-20";
     public static final String TEST_EXPECTED_DUE_DATE_FORMATTED = "20 October 2020";
+    public static final String TEST_FORM_WESLH_SUBMISSION_DUE_DATE = "20 Hydref 2020";
     public static final String TEST_DECREE_ABSOLUTE_GRANTED_DATE = "2019-06-30T10:00:00.000";
     public static final String TEST_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE = "2021-10-20";
     public static final String TEST_CUSTOMER_FACING_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE = "30 June 2020";

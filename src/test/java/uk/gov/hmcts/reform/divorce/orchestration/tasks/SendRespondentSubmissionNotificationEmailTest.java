@@ -34,7 +34,9 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -54,8 +56,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_COURT_ADDRESS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION;
@@ -65,6 +69,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class SendRespondentSubmissionNotificationEmailTest {
 
     private static final String FORM_SUBMISSION_DUE_DATE = "20 September 2018";
+    private static final String FORM_WESLH_SUBMISSION_DUE_DATE = "20 Medi 2018";
 
     @Rule
     public ExpectedException expectedException = none();
@@ -92,6 +97,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
     @Before
     public void setUp() throws TaskException {
         when(ccdUtil.getFormattedDueDate(any(), any())).thenReturn(FORM_SUBMISSION_DUE_DATE);
+        when(ccdUtil.getWelshFormattedDate(isA(Map.class), anyString())).thenReturn(FORM_WESLH_SUBMISSION_DUE_DATE);
         testCourt = new Court();
         testCourt.setDivorceCentreName("West Midlands Regional Divorce Centre");
         testCourt.setPoBox("PO Box 3650");
@@ -132,10 +138,11 @@ public class SendRespondentSubmissionNotificationEmailTest {
             hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "wife"),
             hasEntry(NOTIFICATION_RDC_NAME_KEY, testCourt.getIdentifiableCentreName()),
             hasEntry(NOTIFICATION_COURT_ADDRESS_KEY, testCourt.getFormattedAddress()),
-            hasEntry("form submission date limit", FORM_SUBMISSION_DUE_DATE),
+            hasEntry(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, FORM_SUBMISSION_DUE_DATE),
+            hasEntry(NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY, FORM_WESLH_SUBMISSION_DUE_DATE),
             hasEntry(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_FEMALE_GENDER_IN_RELATION)
         ));
-        assertThat(templateParameters.size(), equalTo(9));
+        assertThat(templateParameters.size(), equalTo(10));
         checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);
     }
 

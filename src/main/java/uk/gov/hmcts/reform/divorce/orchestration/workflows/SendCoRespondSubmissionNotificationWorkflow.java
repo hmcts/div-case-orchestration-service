@@ -36,6 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY;
 
 @Component
 @AllArgsConstructor
@@ -75,8 +76,10 @@ public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow
                 Court assignedCourt = taskCommons.getCourt(rdcName);
                 templateVars.put(NOTIFICATION_RDC_NAME_KEY, assignedCourt.getIdentifiableCentreName());
                 String formSubmissionDateLimit = ccdUtil.getFormattedDueDate(caseData, CO_RESPONDENT_DUE_DATE);
+                String formWelshSubmissionDateLimit = ccdUtil.getWelshFormattedDate(caseData, CO_RESPONDENT_DUE_DATE);
 
                 templateVars.put(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, formSubmissionDateLimit);
+                templateVars.put(NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY, formWelshSubmissionDateLimit);
                 templateVars.put(NOTIFICATION_COURT_ADDRESS_KEY, assignedCourt.getFormattedAddress());
                 template = EmailTemplateNames.CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
             } catch (TaskException e) {

@@ -435,15 +435,15 @@ documents:
       respondentAnswers: "respondentAnswersWelsh"
 
 template:
-  english:
-    relation:
+  relation:
+    english:
       "male": "husband"
       "female": "wife"
-  welsh:
-    relation:
+    welsh:
       "male": "gŵr"
       "female": "gwraig"
-    months:
+  months:
+    welsh:
       1: "Ionawr"
       2: "Chwefror"
       3: "Mawrth"
