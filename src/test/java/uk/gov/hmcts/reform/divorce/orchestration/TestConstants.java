@@ -49,9 +49,11 @@ public class TestConstants {
     public static final String TEST_USER_FIRST_NAME = "user first name";
     public static final String TEST_USER_LAST_NAME = "user last name";
     public static final String TEST_RELATIONSHIP = "wife";
+    public static final String TEST_RELATIONSHIP_HUSBAND = "husband";
     public static final String TEST_WELSH_FEMALE_GENDER_IN_RELATION = "gwraig";
     public static final String TEST_WELSH_MALE_GENDER_IN_RELATION = "gŵr";
     public static final String TEST_INFERRED_GENDER = "female";
+    public static final String TEST_INFERRED_MALE_GENDER = "male";
     public static final String TEST_RESPONDENT_FIRST_NAME = "First";
     public static final String TEST_RESPONDENT_LAST_NAME = "Last";
     public static final String TEST_RESPONDENT_EMAIL = "testRespondent@email.com";
