@@ -18,7 +18,6 @@ import static org.junit.Assert.assertNotNull;
 
 public class CoRespondentGenerateAnswersTest extends IntegrationTest {
 
-    private static final String DATA_KEY = "data";
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/issue-petition/";
 
     @Value("${case.orchestration.co-respondent-generate-answers.context-path}")
@@ -38,7 +37,7 @@ public class CoRespondentGenerateAnswersTest extends IntegrationTest {
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
 
-        Map<String, Object> responseData = response.getBody().path(DATA_KEY);
+        Map<String, Object> responseData = response.getBody().path(DATA);
 
         assertNotNull(responseData.get("D8DocumentsGenerated"));
     }

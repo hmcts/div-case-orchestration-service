@@ -31,10 +31,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     private static final String DRAFT_PART_2_FILE = "draft/draft-part2.json";
     private static final String DRAFT_PART_2_RESPONSE_FILE = "draft/draft-part2-response.json";
     private static final String DRAFT_WITH_DIVORCE_FORMAT_FILE = "draft/draft-with-divorce-format.json";
-
     private static final String BASE_CASE_TO_SUBMIT = "draft/basic-case.json";
-
-    private static final String CMS_DATA_KEY = "data";
 
     @Autowired
     private DraftsSubmissionSupport draftsSubmissionSupport;
@@ -101,7 +98,7 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         draftsSubmissionSupport.submitCase(user, BASE_CASE_TO_SUBMIT).get(CASE_ID_JSON_KEY);
 
         Map<String, Object> draftFromCMS = cmsClientSupport.getDrafts(user);
-        List response = (List) draftFromCMS.get(CMS_DATA_KEY);
+        List response = (List) draftFromCMS.get(DATA);
         assertEquals(0, response.size());
     }
 

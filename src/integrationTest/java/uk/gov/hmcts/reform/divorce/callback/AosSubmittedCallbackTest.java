@@ -17,8 +17,7 @@ import static org.junit.Assert.assertTrue;
 public class AosSubmittedCallbackTest extends IntegrationTest {
 
     private static final String BASE_CASE_RESPONSE = "fixtures/respond-to-a-divorce/ccd-callback-aos-submitted.json";
-    private static final String ERROR_CASE_RESPONSE =
-            "fixtures/respond-to-a-divorce/ccd-callback-aos-submitted-error.json";
+    private static final String ERROR_CASE_RESPONSE = "fixtures/respond-to-a-divorce/ccd-callback-aos-submitted-error.json";
 
     @Autowired
     private CosApiClient cosApiClient;

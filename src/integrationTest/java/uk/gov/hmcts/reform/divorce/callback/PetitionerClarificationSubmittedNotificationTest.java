@@ -19,7 +19,6 @@ import static org.junit.Assert.assertThat;
 
 public class PetitionerClarificationSubmittedNotificationTest extends IntegrationTest {
 
-    private static final String DATA_KEY = "data";
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/legal-advisor/";
 
     @Value("${case.orchestration.clarification-submitted.notification.context-path}")
@@ -38,7 +37,7 @@ public class PetitionerClarificationSubmittedNotificationTest extends Integratio
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
 
-        final Map<String, Object> responseData = response.getBody().path(DATA_KEY);
+        final Map<String, Object> responseData = response.getBody().path(DATA);
 
         assertThat(responseData, is(notNullValue()));
     }

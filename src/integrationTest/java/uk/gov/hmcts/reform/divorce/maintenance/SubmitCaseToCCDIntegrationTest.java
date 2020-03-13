@@ -21,11 +21,12 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
 
-    private static final String CASE_ID_KEY = "caseId";
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit/";
+    private static final String DIVORCE_SESSION_WITH_COURT_SELECTED_JSON_PATH = "divorce-session-with-court-selected.json";
     private static final String ALLOCATED_COURT_ID_KEY = "allocatedCourt.courtId";
 
     @Value("${case.orchestration.maintenance.submit.context-path}")
@@ -34,11 +35,11 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
     @Test
     public void givenDivorceSession_WithNoCourt_whenSubmitIsCalled_CaseIsCreated() throws Exception {
         UserDetails userDetails = createCitizenUser();
-        Response submissionResponse = submitCase(userDetails, "divorce-session-with-court-selected.json");
+        Response submissionResponse = submitCase(userDetails, DIVORCE_SESSION_WITH_COURT_SELECTED_JSON_PATH);
 
         ResponseBody caseCreationResponseBody = submissionResponse.getBody();
         assertThat(submissionResponse.getStatusCode(), is(HttpStatus.OK.value()));
-        assertThat(caseCreationResponseBody.path(CASE_ID_KEY), is(not("0")));
+        assertThat(caseCreationResponseBody.path(CASE_ID_JSON_KEY), is(not("0")));
         String allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
         assertThat(allocatedCourt, is(notNullValue()));
 
@@ -50,11 +51,11 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
     @Category(ExtendedTest.class)
     public void givenAnExistingCase_whenSubmitIsCalled_aNewCaseIsNotCreated() throws Exception {
         UserDetails userDetails = createCitizenUser();
-        Response submissionResponse = submitCase(userDetails, "divorce-session-with-court-selected.json");
+        Response submissionResponse = submitCase(userDetails, DIVORCE_SESSION_WITH_COURT_SELECTED_JSON_PATH);
 
         ResponseBody caseCreationResponseBody = submissionResponse.getBody();
         assertThat(submissionResponse.getStatusCode(), is(HttpStatus.OK.value()));
-        String existingCaseId = caseCreationResponseBody.path(CASE_ID_KEY);
+        String existingCaseId = caseCreationResponseBody.path(CASE_ID_JSON_KEY);
         assertThat(existingCaseId, is(not("0")));
         String allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
         assertThat(allocatedCourt, is(notNullValue()));
@@ -62,9 +63,9 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
         ResponseBody retrieveCaseResponseBody = retrieveCase(userDetails.getAuthToken()).body();
         assertThat(retrieveCaseResponseBody.path(RETRIEVED_DATA_COURT_ID_KEY), is(allocatedCourt));
 
-        submissionResponse = submitCase(userDetails, "divorce-session-with-court-selected.json");
+        submissionResponse = submitCase(userDetails, DIVORCE_SESSION_WITH_COURT_SELECTED_JSON_PATH);
         caseCreationResponseBody = submissionResponse.getBody();
-        assertThat(caseCreationResponseBody.path(CASE_ID_KEY), is(existingCaseId));
+        assertThat(caseCreationResponseBody.path(CASE_ID_JSON_KEY), is(existingCaseId));
         allocatedCourt = caseCreationResponseBody.path(ALLOCATED_COURT_ID_KEY);
         assertThat(allocatedCourt, is(notNullValue()));
     }
@@ -88,5 +89,4 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
                 body
         );
     }
-
 }

@@ -18,7 +18,6 @@ import static org.junit.Assert.assertNotNull;
 
 public class PetitionSubmissionNotificationTest extends IntegrationTest {
 
-    private static final String DATA_KEY = "data";
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/issue-petition/";
 
     @Value("${case.orchestration.petition-submission.notification.context-path}")
@@ -38,9 +37,7 @@ public class PetitionSubmissionNotificationTest extends IntegrationTest {
         // Will fail if email fails to send
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
 
-        Map<String, Object> responseData = response.getBody().path(DATA_KEY);
-
+        Map<String, Object> responseData = response.getBody().path(DATA);
         assertNotNull(responseData);
     }
-
 }

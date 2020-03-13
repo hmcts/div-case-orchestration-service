@@ -71,7 +71,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
                 body.asString(),
                 isJson()
         );
-        String result = ((Map) body.jsonPath().get("data")).get("dueDate").toString();
+        String result = ((Map) body.jsonPath().get(DATA)).get("dueDate").toString();
         assertEquals(LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
     }
 
@@ -86,7 +86,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
 
         CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(CaseDetails.builder().caseData(
-            (Map) response.get("data")).caseId("1517833758870511").state("Issued").build()
+            (Map) response.get(DATA)).caseId("1517833758870511").state("Issued").build()
         );
         ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders,
             ccdCallbackRequest).getBody();
@@ -94,7 +94,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
             body.asString(),
             isJson()
         );
-        String result = ((Map) body.jsonPath().get("data")).get("dueDate").toString();
+        String result = ((Map) body.jsonPath().get(DATA)).get("dueDate").toString();
         assertEquals(LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
     }
 }
