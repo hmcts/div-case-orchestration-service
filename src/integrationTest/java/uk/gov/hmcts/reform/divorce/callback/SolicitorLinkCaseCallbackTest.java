@@ -43,10 +43,8 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
 
     @Test
     public void givenAosAwaitingState_whenSolicitorLinksCase_thenCaseShouldBeLinked() {
-        //given
 
         final UserDetails petitionerUserDetails = createCitizenUser();
-
         final PinResponse pinResponse = idamTestSupportUtil.generatePin(
                 PIN_USER_FIRST_NAME,
                 PIN_USER_LAST_NAME,
@@ -70,7 +68,6 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
 
         UserDetails solicitorUser = createSolicitorUser();
 
-        //when
         Response linkResponse = linkSolicitor(
                         solicitorUser.getAuthToken(),
                         caseDetails.getId(),
@@ -79,7 +76,7 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
 
         String responseString = linkResponse.getBody().asString();
         assertThat(responseString, linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
-        assertThat(responseString,linkResponse.getBody().jsonPath().get("data"), is(notNullValue()));
+        assertThat(responseString,linkResponse.getBody().jsonPath().get(DATA), is(notNullValue()));
         caseDetails = ccdClientSupport.retrieveCaseForCaseworker(solicitorUser, caseId);
         assertThat(caseDetails.getData(), is(notNullValue()));
 
@@ -93,7 +90,7 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
         );
         responseString = linkResponse.getBody().asString();
         assertThat(responseString, linkResponse.getStatusCode(), is(HttpStatus.OK.value()));
-        assertThat(responseString,linkResponse.getBody().jsonPath().getList(ERRORS), hasItem("Case is already linked - ID " + caseId));
+        assertThat(responseString,linkResponse.getBody().jsonPath().getList(ERRORS), hasItem("Case is already linked to case with ID: " + caseId));
     }
 
     private Response linkSolicitor(String userToken, Long caseId, String pin) {

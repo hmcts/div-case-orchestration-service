@@ -84,7 +84,7 @@ public class AmendPetitionForRefusalTest extends CcdSubmissionSupport {
         submitDnCase(citizenUser.getAuthToken(), issuedCase.getId(), "dn-submit.json");
         updateCaseWithSuperuser(caseId, null, SUPERUSER_DN_REFUSED_EVENT,
             ImmutablePair.of(REASONS_FOR_REFUSAL_REJECTION_KEY, REASONS_FOR_REFUSAL_REJECTION_VALUES));
-        
+
         Response cosResponse = amendPetition(citizenUser.getAuthToken(), caseId);
         assertThat(cosResponse.getStatusCode(), is(HttpStatus.OK.value()));
         Map<String, Object> newDraftDocument = cosResponse.getBody().as(Map.class);

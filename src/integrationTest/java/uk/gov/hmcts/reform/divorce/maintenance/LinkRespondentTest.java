@@ -22,6 +22,7 @@ import java.util.Map;
 
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
@@ -97,7 +98,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
         Response caseResponse = retrieveAosCase(respondentUserDetails.getAuthToken());
-        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
+        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_JSON_KEY));
         assertCaseDetailsRespondent(respondentUserDetails, String.valueOf(caseDetails.getId()));
     }
 
@@ -136,7 +137,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
         Response caseResponse = retrieveAosCase(respondentUserDetails.getAuthToken());
-        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
+        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_JSON_KEY));
         assertCaseDetailsRespondent(respondentUserDetails, String.valueOf(caseDetails.getId()));
     }
 
@@ -174,7 +175,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
         Response caseResponse = retrieveAosCase(coRespondentUserDetails.getAuthToken());
-        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
+        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_JSON_KEY));
         assertCaseDetailsCoRespondent(coRespondentUserDetails, String.valueOf(caseDetails.getId()));
     }
 
@@ -212,7 +213,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         assertEquals(HttpStatus.OK.value(), linkResponse.getStatusCode());
         Response caseResponse = retrieveAosCase(coRespondentUserDetails.getAuthToken());
-        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_KEY));
+        assertEquals(String.valueOf(caseDetails.getId()), caseResponse.path(CASE_ID_JSON_KEY));
         assertCaseDetailsCoRespondent(coRespondentUserDetails, String.valueOf(caseDetails.getId()));
 
         linkResponse =

@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class RetrieveAosCaseSupport extends CcdSubmissionSupport {
-    protected static final String CASE_ID_KEY = "caseId";
 
     @Value("${case.orchestration.maintenance.retrieve-aos-case.context-path}")
     private String contextPathAos;
@@ -28,5 +27,4 @@ public abstract class RetrieveAosCaseSupport extends CcdSubmissionSupport {
             headers
         );
     }
-
 }

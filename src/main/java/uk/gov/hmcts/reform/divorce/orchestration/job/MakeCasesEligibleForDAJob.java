@@ -23,7 +23,7 @@ public class MakeCasesEligibleForDAJob implements Job {
         try {
             log.info("Starting MakeCasesEligibleForDA Job...");
             decreeAbsoluteService.enableCaseEligibleForDecreeAbsolute(authUtil.getCaseworkerToken());
-            log.info("MakeCasesEligibleForDA Job executed");
+            log.info("MakeCasesEligibleForDA Job successfully executed");
         } catch (WorkflowException e) {
             throw new JobExecutionException("Enable cases eligible for DA service failed", e);
         }

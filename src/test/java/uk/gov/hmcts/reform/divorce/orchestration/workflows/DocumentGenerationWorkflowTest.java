@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -57,7 +58,7 @@ public class DocumentGenerationWorkflowTest {
             .build();
 
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, "auth");
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(DOCUMENT_TEMPLATE_ID, "a");
         context.setTransientObject(DOCUMENT_TYPE, "b");
         context.setTransientObject(DOCUMENT_FILENAME, "c");
@@ -68,8 +69,7 @@ public class DocumentGenerationWorkflowTest {
         when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
 
-        final Map<String, Object> result = documentGenerationWorkflow.run(ccdCallbackRequest, "auth", "a", "b",
-            "c");
+        final Map<String, Object> result = documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
 
         assertThat(result, is(payload));
 
@@ -79,5 +79,4 @@ public class DocumentGenerationWorkflowTest {
         inOrder.verify(documentGenerationTask).execute(context, payload);
         inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
     }
-
 }

@@ -35,12 +35,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.divorce.orchestration.controller.BulkScanController.SERVICE_AUTHORISATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_DAY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.ALLOWED_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.I_AM_NOT_ALLOWED_SERVICE_TOKEN;
@@ -82,7 +82,7 @@ public class TransformationBulkScanITest {
             post(TRANSFORMATION_URL)
                 .contentType(APPLICATION_JSON)
                 .content(jsonPayload)
-                .header(SERVICE_AUTHORISATION_HEADER, I_AM_NOT_ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, I_AM_NOT_ALLOWED_SERVICE_TOKEN)
         ).andExpect(status().isForbidden());
     }
 
@@ -92,7 +92,7 @@ public class TransformationBulkScanITest {
             post(TRANSFORMATION_URL)
                 .contentType(APPLICATION_JSON)
                 .content(jsonPayload)
-                .header(SERVICE_AUTHORISATION_HEADER, "")
+                .header(SERVICE_AUTHORIZATION_HEADER, "")
         ).andExpect(status().isUnauthorized());
     }
 
@@ -104,7 +104,7 @@ public class TransformationBulkScanITest {
             post(TRANSFORMATION_URL)
                 .contentType(APPLICATION_JSON)
                 .content(jsonPayload)
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         )
             .andExpect(status().isOk())
             .andExpect(content().string(
@@ -229,7 +229,7 @@ public class TransformationBulkScanITest {
             post(TRANSFORMATION_URL)
                 .contentType(APPLICATION_JSON)
                 .content(formToTransform)
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         )
             .andExpect(status().isOk())
             .andExpect(content().string(
@@ -269,7 +269,7 @@ public class TransformationBulkScanITest {
             post(TRANSFORMATION_URL)
                 .contentType(APPLICATION_JSON)
                 .content(jsonToTransform)
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(status().isUnprocessableEntity());
     }
 
@@ -284,7 +284,7 @@ public class TransformationBulkScanITest {
             post(TRANSFORMATION_URL)
                 .contentType(APPLICATION_JSON)
                 .content(formToTransform)
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         )
             .andExpect(status().isUnprocessableEntity())
             .andExpect(content().string(hasErrorWithMessageCopiedFromWarning(warningMsg)));

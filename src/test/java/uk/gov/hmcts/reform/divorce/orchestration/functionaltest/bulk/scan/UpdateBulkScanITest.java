@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.ResultMatcher.matchAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.divorce.orchestration.controller.BulkScanController.SERVICE_AUTHORISATION_HEADER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.ALLOWED_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan.S2SAuthTokens.I_AM_NOT_ALLOWED_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
@@ -86,7 +86,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(AOS_OFFLINE_2_YEAR_SEP_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, I_AM_NOT_ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, I_AM_NOT_ALLOWED_SERVICE_TOKEN)
         ).andExpect(status().isForbidden());
     }
 
@@ -96,7 +96,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(AOS_OFFLINE_2_YEAR_SEP_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, "")
+                .header(SERVICE_AUTHORIZATION_HEADER, "")
         ).andExpect(status().isUnauthorized());
     }
 
@@ -106,7 +106,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(AOS_OFFLINE_2_YEAR_SEP_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(
             matchAll(
                 status().isOk(),
@@ -122,7 +122,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_2_YEAR_SEP_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(
             matchAll(
                 status().isUnprocessableEntity(),
@@ -142,7 +142,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(AOS_OFFLINE_5_YEAR_SEP_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(
             matchAll(
                 status().isOk(),
@@ -158,7 +158,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_5_YEAR_SEP_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(
             matchAll(
                 status().isUnprocessableEntity(),
@@ -179,7 +179,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(AOS_OFFLINE_BEHAVIOUR_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(
             matchAll(
                 status().isOk(),
@@ -195,7 +195,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_BEHAVIOUR_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(
             status().isUnprocessableEntity(),
             content().string(allOf(
@@ -212,7 +212,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(AOS_OFFLINE_DESERTION_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(
             matchAll(
                 status().isOk(),
@@ -228,7 +228,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_DESERTION_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(
             status().isUnprocessableEntity(),
             content().string(allOf(
@@ -245,7 +245,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(AOS_OFFLINE_ADULTERY_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(
             matchAll(
                 status().isOk(),
@@ -261,7 +261,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_ADULTERY_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(matchAll(
             status().isUnprocessableEntity(),
             content().string(allOf(
@@ -278,7 +278,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(AOS_OFFLINE_ADULTERY_CO_RESP_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(
             matchAll(
                 status().isOk(),
@@ -294,7 +294,7 @@ public class UpdateBulkScanITest {
             post(UPDATE_URL)
                 .contentType(APPLICATION_JSON)
                 .content(loadResourceAsString(INVALID_AOS_OFFLINE_ADULTERY_CO_RESP_JSON_PATH))
-                .header(SERVICE_AUTHORISATION_HEADER, ALLOWED_SERVICE_TOKEN)
+                .header(SERVICE_AUTHORIZATION_HEADER, ALLOWED_SERVICE_TOKEN)
         ).andExpect(
             matchAll(
                 status().isUnprocessableEntity(),

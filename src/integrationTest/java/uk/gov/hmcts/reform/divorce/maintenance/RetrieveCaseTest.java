@@ -12,15 +12,17 @@ import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.cos.RetrieveCaseSupport;
 
 import static org.junit.Assert.assertEquals;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
 public class RetrieveCaseTest extends RetrieveCaseSupport {
-    private static final String CASE_ID_KEY = "caseId";
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/retrieve-case/";
     private static final String COURTS_KEY = "courts";
-    private static final String STATE_KEY = "state";
     private static final String DATA_KEY = "data";
     @Autowired
     private ObjectMapper objectMapper;
@@ -35,9 +37,9 @@ public class RetrieveCaseTest extends RetrieveCaseSupport {
         Response cosResponse = retrieveCase(userDetails.getAuthToken());
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertEquals(String.valueOf(caseDetails.getId()), cosResponse.path(CASE_ID_KEY));
-        assertEquals("serviceCentre", cosResponse.path(COURTS_KEY));
-        assertEquals("AwaitingPayment", cosResponse.path(STATE_KEY));
+        assertEquals(String.valueOf(caseDetails.getId()), cosResponse.path(CASE_ID_JSON_KEY));
+        assertEquals(TEST_COURT, cosResponse.path(COURTS_KEY));
+        assertEquals(AWAITING_PAYMENT, cosResponse.path(STATE_CCD_FIELD));
         String responseJson = cosResponse.getBody().asString();
         String responseJsonData = objectMapper.readTree(responseJson)
             .get(DATA_KEY)
@@ -62,5 +64,4 @@ public class RetrieveCaseTest extends RetrieveCaseSupport {
         assertEquals(HttpStatus.MULTIPLE_CHOICES.value(), cosResponse.getStatusCode());
         assertEquals(cosResponse.getBody().asString(), "");
     }
-
 }

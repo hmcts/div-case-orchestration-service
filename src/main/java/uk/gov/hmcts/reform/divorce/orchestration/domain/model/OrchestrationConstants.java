@@ -27,6 +27,7 @@ public class OrchestrationConstants {
     public static final String CODE = "code";
     public static final String LOCATION_HEADER = "Location";
     public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
+    public static final String AUTHORIZATION_HEADER = "Authorization";
 
     //Issue Petition
     public static final String GENERATE_AOS_INVITATION = "generateAosInvitation";
@@ -384,7 +385,6 @@ public class OrchestrationConstants {
     public static final String CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT = "casesEligibleForDAProcessedCount";
     public static final String CASES_OVERDUE_FOR_DA_PROCESSED_COUNT = "casesOverdueForDAProcessedCount";
 
-
     // Validation
     public static final String ERROR_STATUS = "error";
     public static final String FORM_ID = "case-progression";
@@ -405,4 +405,7 @@ public class OrchestrationConstants {
     // Case Data Formatter Meta Fields
     public static final String FORMATTER_CASE_DATA_KEY = "caseData";
     public static final String FORMATTER_DIVORCE_SESSION_KEY = "divorceSession";
+
+    // Bulk Scan
+    public static final String CASE_TYPE_ID = "DIVORCE";
 }

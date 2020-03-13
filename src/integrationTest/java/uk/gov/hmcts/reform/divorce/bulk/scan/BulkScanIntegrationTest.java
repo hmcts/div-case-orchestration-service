@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 
 import static org.junit.Assert.assertEquals;
-import static uk.gov.hmcts.reform.divorce.orchestration.controller.BulkScanController.SERVICE_AUTHORISATION_HEADER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.D8_FORM;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
@@ -104,7 +104,7 @@ public class BulkScanIntegrationTest extends IntegrationTest {
 
         return SerenityRest.given()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTHORISATION_HEADER, token)
+            .header(SERVICE_AUTHORIZATION_HEADER, token)
             .relaxedHTTPSValidation()
             .body(validBody)
             .post(cosBaseURL + endpointName, formType);
@@ -114,7 +114,7 @@ public class BulkScanIntegrationTest extends IntegrationTest {
 
         return SerenityRest.given()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTHORISATION_HEADER, token)
+            .header(SERVICE_AUTHORIZATION_HEADER, token)
             .relaxedHTTPSValidation()
             .body(validBody)
             .post(cosBaseURL + endpointName);
