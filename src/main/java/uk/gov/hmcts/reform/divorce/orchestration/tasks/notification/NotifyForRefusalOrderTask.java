@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.notification;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
@@ -35,15 +36,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getWelshRelationshipTermByGender;
 
 @Slf4j
+@AllArgsConstructor
 @Component
 public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
 
-    @Autowired
     private EmailService emailService;
+    private TemplateConfigService templateConfigService;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
@@ -73,12 +73,11 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
                 FeeResponse amendFee = context.getTransientObject(AMEND_PETITION_FEE_JSON_KEY);
                 String petitionerInferredGender = getMandatoryPropertyValueAsString(payload,
                     D_8_INFERRED_PETITIONER_GENDER);
-                String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
-                String welshPetitionerRelationshipToRespondent = getWelshRelationshipTermByGender(petitionerInferredGender);
-
-                personalisation.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
+                String petRelToRespondent = templateConfigService.getRelationshipTermByGender(petitionerInferredGender, LanguagePreference.ENGLISH);
+                String welshPetRelToRespondent = templateConfigService.getRelationshipTermByGender(petitionerInferredGender,LanguagePreference.WELSH);
+                personalisation.put(NOTIFICATION_HUSBAND_OR_WIFE, petRelToRespondent);
                 personalisation.put(NOTIFICATION_FEES_KEY, amendFee.getFormattedFeeAmount());
-                personalisation.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshPetitionerRelationshipToRespondent);
+                personalisation.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshPetRelToRespondent);
 
                 emailService.sendEmail(
                     petitionerEmail,

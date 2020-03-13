@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +30,9 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFERRED_MALE_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP_HUSBAND;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
@@ -63,6 +67,9 @@ public class NotifyForRefusalOrderTaskTest {
 
     private Map<String, Object> incomingPayload;
     private TaskContext taskContext;
+
+    @Mock
+    TemplateConfigService templateConfigService;
 
     @Mock
     private EmailService emailService;
@@ -108,6 +115,10 @@ public class NotifyForRefusalOrderTaskTest {
     public void testNotificationServiceIsCalledWithExpectedParametersWhenRefusalDecisionIsRejection() throws TaskException {
         incomingPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
         incomingPayload.put(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
+            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
+            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
         Map returnedPayload = notifyForRefusalOrderTask.execute(taskContext, incomingPayload);
 
         assertThat(returnedPayload, equalTo(incomingPayload));

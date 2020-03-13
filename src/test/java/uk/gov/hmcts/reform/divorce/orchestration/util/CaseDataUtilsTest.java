@@ -22,11 +22,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 public class CaseDataUtilsTest {
-    private static final String MALE_GENDER = "male";
-    private static final String FEMALE_GENDER = "female";
-    private static final String WELSH_MALE_GENDER_IN_RELATION = "gŵr";
-    private static final String WELSH_FEMALE_GENDER_IN_RELATION = "gwraig";
-
     private static final String FIELD_NAME = "TestField";
     private static final String LINK_ID = "LinkId";
 
@@ -38,8 +33,7 @@ public class CaseDataUtilsTest {
 
     @Test
     public void givenFieldNoExist_whenGetCaseLinkValue_thenReturnNull() {
-        Map<String, Object> caseLinkData = DUMMY_CASE_DATA;
-        assertThat(CaseDataUtils.getCaseLinkValue(caseLinkData, FIELD_NAME), nullValue()) ;
+        assertThat(CaseDataUtils.getCaseLinkValue(DUMMY_CASE_DATA, FIELD_NAME), nullValue()) ;
     }
 
     @Test
@@ -50,8 +44,7 @@ public class CaseDataUtilsTest {
 
     @Test
     public void givenNonExistValue_whenGetFieldAsStringObjectMap_thenReturnNull() {
-        Map<String, Object> input =  DUMMY_CASE_DATA;
-        assertThat(CaseDataUtils.getFieldAsStringObjectMap(input, FIELD_NAME), is(nullValue()));
+        assertThat(CaseDataUtils.getFieldAsStringObjectMap(DUMMY_CASE_DATA, FIELD_NAME), is(nullValue()));
     }
 
     @Test(expected = ClassCastException.class)
@@ -138,29 +131,5 @@ public class CaseDataUtilsTest {
         HashMap<String, Object> caseData = null;
         Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         assertThat(languagePreference, is(Optional.of(LanguagePreference.ENGLISH)));
-    }
-
-    @Test
-    public void getTestWelshMaleRelationshipTermByGender() {
-        String welshMaleGender = CaseDataUtils.getWelshRelationshipTermByGender(MALE_GENDER);
-        assertThat(welshMaleGender, is(WELSH_MALE_GENDER_IN_RELATION));
-    }
-
-    @Test
-    public void getTestWelshFemaleRelationshipTermByGender() {
-        String welshMaleGender = CaseDataUtils.getWelshRelationshipTermByGender(FEMALE_GENDER);
-        assertThat(welshMaleGender, is(WELSH_FEMALE_GENDER_IN_RELATION));
-    }
-
-    @Test
-    public void getTestWelshNullRelationshipTermByGender() {
-        String welshMaleGender = CaseDataUtils.getWelshRelationshipTermByGender(null);
-        assertThat(welshMaleGender, nullValue());
-    }
-
-    @Test
-    public void getTestWelshEmptyRelationshipTermByGender() {
-        String welshMaleGender = CaseDataUtils.getWelshRelationshipTermByGender("");
-        assertThat(welshMaleGender, nullValue());
     }
 }

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
@@ -26,9 +27,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECREE_ABSOLUTE_GRANTED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
@@ -71,6 +74,9 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
 
     @Mock
     EmailService emailService;
+
+    @Mock
+    TemplateConfigService templateConfigService;
 
     @InjectMocks
     SendDaRequestedNotifyRespondentEmailTask sendDaRequestedNotifyRespondentEmailTask;
@@ -120,6 +126,11 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
         testData.put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_GENDER);
         testData.put(LANGUAGE_PREFERENCE_WELSH, "Yes");
 
+        when(templateConfigService.getRelationshipTermByGender(same(TEST_INFERRED_GENDER),eq(LanguagePreference.ENGLISH)))
+            .thenReturn(TEST_RELATIONSHIP);
+        when(templateConfigService.getRelationshipTermByGender(same(TEST_INFERRED_GENDER),eq(LanguagePreference.WELSH)))
+            .thenReturn(TEST_WELSH_FEMALE_GENDER_IN_RELATION);
+
         doThrow(new NotificationClientException(new Exception(TEST_ERROR)))
             .when(emailService)
             .sendEmailAndReturnExceptionIfFails(
@@ -143,6 +154,11 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
         testData.put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP);
         testData.put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_GENDER);
         testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
+
+        when(templateConfigService.getRelationshipTermByGender(same(TEST_INFERRED_GENDER),eq(LanguagePreference.ENGLISH)))
+            .thenReturn(TEST_RELATIONSHIP);
+        when(templateConfigService.getRelationshipTermByGender(same(TEST_INFERRED_GENDER),eq(LanguagePreference.WELSH)))
+            .thenReturn(TEST_WELSH_FEMALE_GENDER_IN_RELATION);
 
         Map returnPayload = sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
 

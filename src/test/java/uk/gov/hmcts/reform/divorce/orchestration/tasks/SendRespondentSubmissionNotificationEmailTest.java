@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.io.IOException;
@@ -39,6 +40,10 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFERRED_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFERRED_MALE_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP_HUSBAND;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -70,6 +75,9 @@ public class SendRespondentSubmissionNotificationEmailTest {
     @Mock
     private CcdUtil ccdUtil;
 
+    @Mock
+    TemplateConfigService templateConfigService;
+
     @Captor
     private ArgumentCaptor<Map<String, String>> templateParametersCaptor;
 
@@ -99,11 +107,14 @@ public class SendRespondentSubmissionNotificationEmailTest {
         throws TaskException, IOException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
             "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CcdCallbackRequest.class);
-        Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
+        final Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
-
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_GENDER),eq(LanguagePreference.ENGLISH)))
+            .thenReturn(TEST_RELATIONSHIP);
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_GENDER),eq(LanguagePreference.WELSH)))
+            .thenReturn(TEST_WELSH_FEMALE_GENDER_IN_RELATION);
         Map<String, Object> returnedPayload = defendedDivorceNotificationEmailTask.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
@@ -168,10 +179,14 @@ public class SendRespondentSubmissionNotificationEmailTest {
         throws TaskException, IOException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
             "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CcdCallbackRequest.class);
-        Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
+        final Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
+            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
+            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
 
         Map<String, Object> returnedPayload = undefendedDivorceNotificationEmailTask.execute(context, caseData);
 

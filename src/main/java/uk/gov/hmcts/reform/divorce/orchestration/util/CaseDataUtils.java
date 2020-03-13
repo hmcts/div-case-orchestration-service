@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,44 +33,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 public class CaseDataUtils {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final String MALE_GENDER = "male";
-    private static final String FEMALE_GENDER = "female";
-    private static final String MALE_GENDER_IN_RELATION = "husband";
-    private static final String FEMALE_GENDER_IN_RELATION = "wife";
-    private static final String WELSH_MALE_GENDER_IN_RELATION = "gŵr";
-    private static final String WELSH_FEMALE_GENDER_IN_RELATION = "gwraig";
-
-    public static String getRelationshipTermByGender(final String gender) {
-        if (gender == null) {
-            return null;
-        }
-
-        switch (gender.toLowerCase(Locale.ENGLISH)) {
-            case MALE_GENDER:
-                return MALE_GENDER_IN_RELATION;
-            case FEMALE_GENDER:
-                return FEMALE_GENDER_IN_RELATION;
-            default:
-                return null;
-        }
-    }
-
-    public static String getWelshRelationshipTermByGender(final String gender) {
-        String relation = null;
-        final Optional<String> genderValue = Optional.ofNullable(gender);
-
-        if (genderValue.isPresent()
-                && !genderValue.filter(String::isEmpty).isPresent()) {
-            relation = genderValue
-                    .map(String::toLowerCase)
-                    .filter(MALE_GENDER::equals)
-                    .map(male -> WELSH_MALE_GENDER_IN_RELATION)
-                    .orElse(WELSH_FEMALE_GENDER_IN_RELATION);
-        }
-        return relation;
-    }
-
-
 
     public static String formatCaseIdToReferenceNumber(String referenceId) {
         try {

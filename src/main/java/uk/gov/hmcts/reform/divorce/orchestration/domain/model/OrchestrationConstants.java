@@ -396,4 +396,5 @@ public class OrchestrationConstants {
 
     // Language preference
     public static final String LANGUAGE_PREFERENCE_WELSH = "LanguagePreferenceWelsh";
+    public static final String TEMPLATE_RELATION = "relation";
 }
