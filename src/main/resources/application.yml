@@ -442,6 +442,8 @@ template:
     welsh:
       "male": "gŵr"
       "female": "gwraig"
+      "husband": "gŵr"
+      "wife": "gwraig"
   months:
     welsh:
       1: "Ionawr"

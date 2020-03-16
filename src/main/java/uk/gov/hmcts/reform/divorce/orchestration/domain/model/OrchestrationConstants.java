@@ -240,6 +240,7 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_WELSH_HUSBAND_OR_WIFE = "welsh husband or wife";
     public static final String NOTIFICATION_FEES_KEY = "fees";
     public static final String NOTIFICATION_RELATIONSHIP_KEY = "relationship";
+    public static final String NOTIFICATION_WELSH_RELATIONSHIP_KEY = "welsh relationship";
     public static final String NOTIFICATION_CCD_REFERENCE_KEY = "CCD reference";
     public static final String NOTIFICATION_REFERENCE_KEY = "ref";
     public static final String NOTIFICATION_CASE_NUMBER_KEY = "case number";
