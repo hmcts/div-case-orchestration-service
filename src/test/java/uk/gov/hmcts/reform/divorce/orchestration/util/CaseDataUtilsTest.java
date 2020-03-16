@@ -22,7 +22,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 public class CaseDataUtilsTest {
-
     private static final String FIELD_NAME = "TestField";
     private static final String LINK_ID = "LinkId";
 
@@ -34,8 +33,7 @@ public class CaseDataUtilsTest {
 
     @Test
     public void givenFieldNoExist_whenGetCaseLinkValue_thenReturnNull() {
-        Map<String, Object> caseLinkData = DUMMY_CASE_DATA;
-        assertThat(CaseDataUtils.getCaseLinkValue(caseLinkData, FIELD_NAME), nullValue()) ;
+        assertThat(CaseDataUtils.getCaseLinkValue(DUMMY_CASE_DATA, FIELD_NAME), nullValue()) ;
     }
 
     @Test
@@ -46,8 +44,7 @@ public class CaseDataUtilsTest {
 
     @Test
     public void givenNonExistValue_whenGetFieldAsStringObjectMap_thenReturnNull() {
-        Map<String, Object> input =  DUMMY_CASE_DATA;
-        assertThat(CaseDataUtils.getFieldAsStringObjectMap(input, FIELD_NAME), is(nullValue()));
+        assertThat(CaseDataUtils.getFieldAsStringObjectMap(DUMMY_CASE_DATA, FIELD_NAME), is(nullValue()));
     }
 
     @Test(expected = ClassCastException.class)

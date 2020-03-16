@@ -1,10 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.GenericEmail
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.QueueAosSolicitorSubmitTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
@@ -45,6 +47,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_DEFENDING_NOT_ADMITTING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
@@ -58,11 +61,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
+
 
 @Component
+@AllArgsConstructor
 @Slf4j
-@RequiredArgsConstructor
 public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final GenericEmailNotification emailNotificationTask;
@@ -73,8 +76,9 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
     private final SendRespondentSubmissionNotificationForUndefendedDivorceEmail
         sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
 
-    private final QueueAosSolicitorSubmitTask
-        queueAosSolicitorSubmitTask;
+    private final QueueAosSolicitorSubmitTask queueAosSolicitorSubmitTask;
+    private TemplateConfigService templateConfigService;
+
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         final List<Task> tasks = new ArrayList<>();
@@ -112,6 +116,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         Map<String, Object> caseData = caseDetails.getCaseData();
 
         final String relationship = getRespondentRelationship(caseDetails);
+        final String welshRelationship = getWelshRespondentRelationship(caseDetails);
 
         String petSolicitorEmail = getFieldAsStringOrNull(caseDetails, PET_SOL_EMAIL);
         String petitionerEmail = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_EMAIL);
@@ -146,6 +151,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
                 notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
                 notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
                 notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
+                notificationTemplateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshRelationship);
                 notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, ref);
 
                 tasks.add(emailNotificationTask);
@@ -188,7 +194,12 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
     private String getRespondentRelationship(CaseDetails caseDetails) {
         String gender = getFieldAsStringOrNull(caseDetails, D_8_INFERRED_RESPONDENT_GENDER);
-        return getRelationshipTermByGender(gender);
+        return templateConfigService.getRelationshipTermByGender(gender, LanguagePreference.ENGLISH);
+    }
+
+    private String getWelshRespondentRelationship(CaseDetails caseDetails) {
+        String gender = getFieldAsStringOrNull(caseDetails, D_8_INFERRED_RESPONDENT_GENDER);
+        return templateConfigService.getRelationshipTermByGender(gender, LanguagePreference.WELSH);
     }
 
     private String getFieldAsStringOrNull(final CaseDetails caseDetails, String fieldKey) {

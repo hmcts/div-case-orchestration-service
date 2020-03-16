@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -33,6 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -40,9 +42,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
 
 @Component
+@AllArgsConstructor
 @Slf4j
 public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String, Object>> {
 
@@ -52,11 +54,9 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
         "Decree Absolute Requested Notification - Solicitor Requested Decree Absolute";
 
     private final EmailService emailService;
+    private TemplateConfigService templateConfigService;
 
-    @Autowired
-    public SendDaRequestedNotifyRespondentEmailTask(EmailService emailService) {
-        this.emailService = emailService;
-    }
+
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
@@ -120,17 +120,17 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
 
     private Map<String, String> prepareEmailTemplateVars(Map<String, Object> caseData) throws TaskException {
         Map<String, String> templateVars = new HashMap<>();
-
         String firstName = (String) caseData.get(RESP_FIRST_NAME_CCD_FIELD);
         String lastName = (String) caseData.get(RESP_LAST_NAME_CCD_FIELD);
         String d8Reference = (String) caseData.get(D_8_CASE_REFERENCE);
         String petitionerInferredGender = getMandatoryPropertyValueAsString(caseData, D_8_INFERRED_PETITIONER_GENDER);
-        String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
-
+        String petitionerRToResp = templateConfigService.getRelationshipTermByGender(petitionerInferredGender, LanguagePreference.ENGLISH);
+        String welshpetitionerRToResp = templateConfigService.getRelationshipTermByGender(petitionerInferredGender,LanguagePreference.WELSH);
         templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, firstName);
         templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, lastName);
         templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, d8Reference);
-        templateVars.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
+        templateVars.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRToResp);
+        templateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshpetitionerRToResp);
 
         return templateVars;
     }

@@ -237,8 +237,10 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_ADDRESSEE_LAST_NAME_KEY = "last name";
     public static final String NOTIFICATION_EMAIL_ADDRESS_KEY = "email address";
     public static final String NOTIFICATION_HUSBAND_OR_WIFE = "husband or wife";
+    public static final String NOTIFICATION_WELSH_HUSBAND_OR_WIFE = "welsh husband or wife";
     public static final String NOTIFICATION_FEES_KEY = "fees";
     public static final String NOTIFICATION_RELATIONSHIP_KEY = "relationship";
+    public static final String NOTIFICATION_WELSH_RELATIONSHIP_KEY = "welsh relationship";
     public static final String NOTIFICATION_CCD_REFERENCE_KEY = "CCD reference";
     public static final String NOTIFICATION_REFERENCE_KEY = "ref";
     public static final String NOTIFICATION_CASE_NUMBER_KEY = "case number";
@@ -253,6 +255,7 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_PET_NAME = "petitioner name";
     public static final String NOTIFICATION_RESP_NAME = "respondent name";
     public static final String NOTIFICATION_SOLICITOR_NAME = "solicitor name";
+    public static final String NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY = "welsh form submission date limit";
 
     // CCD Respondent Fields
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
@@ -395,4 +398,6 @@ public class OrchestrationConstants {
 
     // Language preference
     public static final String LANGUAGE_PREFERENCE_WELSH = "LanguagePreferenceWelsh";
+    public static final String TEMPLATE_RELATION = "relation";
+    public static final String TEMPLATE_MONTHS = "months";
 }

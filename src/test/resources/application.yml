@@ -434,6 +434,31 @@ documents:
       aosOfflineAdulteryCORespondentTemplateId: "FL-DIV-APP-WEL-00250.docx"
       respondentAnswers: "respondentAnswersWelsh"
 
+template:
+  relation:
+    english:
+      "male": "husband"
+      "female": "wife"
+    welsh:
+      "male": "gŵr"
+      "female": "gwraig"
+      "husband": "gŵr"
+      "wife": "gwraig"
+  months:
+    welsh:
+      1: "Ionawr"
+      2: "Chwefror"
+      3: "Mawrth"
+      4: "Ebrill"
+      5: "Mai"
+      6: "Mehefin"
+      7: "Gorffennaf"
+      8: "Awst"
+      9: "Medi"
+      10: "Hydref"
+      11: "Tachwedd"
+      12: "Rhagfyr"
+
 issueAosPackOffLine:
   SEPARATION_TWO_YEARS:
     documentType: AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID

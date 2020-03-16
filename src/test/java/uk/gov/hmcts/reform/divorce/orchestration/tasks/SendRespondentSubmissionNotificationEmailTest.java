@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.io.IOException;
@@ -33,12 +34,20 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFERRED_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFERRED_MALE_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP_HUSBAND;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
@@ -47,8 +56,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_COURT_ADDRESS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
@@ -57,6 +69,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class SendRespondentSubmissionNotificationEmailTest {
 
     private static final String FORM_SUBMISSION_DUE_DATE = "20 September 2018";
+    private static final String FORM_WESLH_SUBMISSION_DUE_DATE = "20 Medi 2018";
 
     @Rule
     public ExpectedException expectedException = none();
@@ -66,6 +79,9 @@ public class SendRespondentSubmissionNotificationEmailTest {
 
     @Mock
     private CcdUtil ccdUtil;
+
+    @Mock
+    TemplateConfigService templateConfigService;
 
     @Captor
     private ArgumentCaptor<Map<String, String>> templateParametersCaptor;
@@ -81,6 +97,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
     @Before
     public void setUp() throws TaskException {
         when(ccdUtil.getFormattedDueDate(any(), any())).thenReturn(FORM_SUBMISSION_DUE_DATE);
+        when(ccdUtil.getWelshFormattedDate(isA(Map.class), anyString())).thenReturn(FORM_WESLH_SUBMISSION_DUE_DATE);
         testCourt = new Court();
         testCourt.setDivorceCentreName("West Midlands Regional Divorce Centre");
         testCourt.setPoBox("PO Box 3650");
@@ -96,11 +113,14 @@ public class SendRespondentSubmissionNotificationEmailTest {
         throws TaskException, IOException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
             "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CcdCallbackRequest.class);
-        Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
+        final Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
-
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_GENDER),eq(LanguagePreference.ENGLISH)))
+            .thenReturn(TEST_RELATIONSHIP);
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_GENDER),eq(LanguagePreference.WELSH)))
+            .thenReturn(TEST_WELSH_FEMALE_GENDER_IN_RELATION);
         Map<String, Object> returnedPayload = defendedDivorceNotificationEmailTask.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
@@ -118,9 +138,11 @@ public class SendRespondentSubmissionNotificationEmailTest {
             hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "wife"),
             hasEntry(NOTIFICATION_RDC_NAME_KEY, testCourt.getIdentifiableCentreName()),
             hasEntry(NOTIFICATION_COURT_ADDRESS_KEY, testCourt.getFormattedAddress()),
-            hasEntry("form submission date limit", FORM_SUBMISSION_DUE_DATE)
+            hasEntry(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, FORM_SUBMISSION_DUE_DATE),
+            hasEntry(NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY, FORM_WESLH_SUBMISSION_DUE_DATE),
+            hasEntry(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_FEMALE_GENDER_IN_RELATION)
         ));
-        assertThat(templateParameters.size(), equalTo(8));
+        assertThat(templateParameters.size(), equalTo(10));
         checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);
     }
 
@@ -164,10 +186,14 @@ public class SendRespondentSubmissionNotificationEmailTest {
         throws TaskException, IOException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
             "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CcdCallbackRequest.class);
-        Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
+        final Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
+            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
+            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
 
         Map<String, Object> returnedPayload = undefendedDivorceNotificationEmailTask.execute(context, caseData);
 
@@ -184,9 +210,10 @@ public class SendRespondentSubmissionNotificationEmailTest {
             hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Sarah"),
             hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones"),
             hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "husband"),
-            hasEntry(NOTIFICATION_RDC_NAME_KEY, testCourt.getIdentifiableCentreName())
+            hasEntry(NOTIFICATION_RDC_NAME_KEY, testCourt.getIdentifiableCentreName()),
+            hasEntry(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION)
         ));
-        assertThat(templateParameters.size(), equalTo(6));
+        assertThat(templateParameters.size(), equalTo(7));
         checkThatPropertiesAreCheckedBeforeBeingRetrieved(caseData);
     }
 
