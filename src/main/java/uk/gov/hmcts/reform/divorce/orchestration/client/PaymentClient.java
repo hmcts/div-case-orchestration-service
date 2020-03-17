@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.client;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 
@@ -17,13 +18,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @FeignClient(name = "payment-client", url = "${payment.service.api.baseurl}")
 public interface PaymentClient {
 
-    @RequestMapping(method = RequestMethod.POST, value = "/credit-account-payments")
+    @ApiOperation("Handles Solicitor Payment By Account (PBA) Payments")
+    @PostMapping(value = "/credit-account-payments")
     ResponseEntity<CreditAccountPaymentResponse> creditAccountPayment(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
             @RequestHeader(SERVICE_AUTHORIZATION_HEADER) String serviceAuthorisation,
             CreditAccountPaymentRequest creditAccountPaymentRequest);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/card-payments/{paymentRef}")
+    @ApiOperation("Returns payment information for given payment reference")
+    @GetMapping(value = "/card-payments/{paymentRef}")
     Map<String, Object> checkPayment(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
             @RequestHeader(SERVICE_AUTHORIZATION_HEADER) String serviceAuthorisation,
