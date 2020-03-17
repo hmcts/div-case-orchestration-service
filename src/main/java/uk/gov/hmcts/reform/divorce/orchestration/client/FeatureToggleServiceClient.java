@@ -11,8 +11,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @FeignClient(name = "feature-toggle-service-client", url = "${feature-toggle.service.api.baseurl}")
 public interface FeatureToggleServiceClient {
 
-    @GetMapping(
-        value = "/api/ff4j/store/features/{feature_name}",
+    @GetMapping(value = "/api/ff4j/store/features/{feature_name}",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE
     )
     FeatureToggle getToggle(@PathVariable("feature_name") String featureName);
