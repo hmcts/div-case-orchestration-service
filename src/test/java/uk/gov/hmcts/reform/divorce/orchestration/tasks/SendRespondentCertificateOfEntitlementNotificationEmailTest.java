@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
@@ -15,8 +16,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.LocalDateToWelshStringConverter;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -35,11 +38,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FORM_WESLH_SUBMISSION_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFERRED_MALE_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP_HUSBAND;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION;
@@ -68,6 +73,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_DATE_OF_HEARING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_LIMIT_DATE_TO_CONTACT_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_RESP_COE_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
@@ -83,6 +90,9 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
 
     @Mock
     TemplateConfigService templateConfigService;
+
+    @Mock
+    private LocalDateToWelshStringConverter localDateToWelshStringConverter;
 
     @InjectMocks
     private SendRespondentCertificateOfEntitlementNotificationEmail sendRespondentCertificateOfEntitlementNotificationEmail;
@@ -113,6 +123,9 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
         DnCourt dnCourt = new DnCourt();
         dnCourt.setName("Court Name");
         when(taskCommons.getDnCourt(anyString())).thenReturn(dnCourt);
+
+        when(localDateToWelshStringConverter.convert(isA(LocalDate.class)))
+                .thenReturn(TestConstants.TEST_FORM_WESLH_SUBMISSION_DUE_DATE);
     }
 
     @Test
@@ -246,6 +259,8 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
                     hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019"),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name"),
+                    hasEntry(WELSH_LIMIT_DATE_TO_CONTACT_COURT, TEST_FORM_WESLH_SUBMISSION_DUE_DATE),
+                    hasEntry(WELSH_DATE_OF_HEARING, TEST_FORM_WESLH_SUBMISSION_DUE_DATE),
                     hasEntry(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION)
                 )
             )),
@@ -266,7 +281,9 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
                     optionalTextParametersMatcher,
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
                     hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019"),
-                    hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
+                    hasEntry(WELSH_LIMIT_DATE_TO_CONTACT_COURT, TEST_FORM_WESLH_SUBMISSION_DUE_DATE),
+                    hasEntry(WELSH_DATE_OF_HEARING, TEST_FORM_WESLH_SUBMISSION_DUE_DATE),
+                hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
             )),
             eq(Optional.of(LanguagePreference.ENGLISH)));

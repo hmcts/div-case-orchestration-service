@@ -221,7 +221,9 @@ public class OrchestrationConstants {
     public static final String COSTS_CLAIM_GRANTED = "costs claim granted";
     public static final String COSTS_CLAIM_NOT_GRANTED = "costs claim not granted";
     public static final String DATE_OF_HEARING = "date of hearing";
+    public static final String WELSH_DATE_OF_HEARING = "welsh date of hearing";
     public static final String LIMIT_DATE_TO_CONTACT_COURT = "limit date to contact court";
+    public static final String WELSH_LIMIT_DATE_TO_CONTACT_COURT = "welsh limit date to contact court";
     public static final Period PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT = Period.ofWeeks(2);
 
     // Case state
@@ -348,7 +350,7 @@ public class OrchestrationConstants {
     public static final String PAYMENT_REFERENCE = "PaymentReference";
     public static final String PAYMENT_STATUS = "PaymentStatus";
     public static final String STATUS_FROM_PAYMENT = "status";
-    public static final String PAYMENT_VALUE = "value";
+    public static final String PAYMENT_VALUE = "vgit alue";
     public static final String PAYMENT_SERVICE_AMOUNT_KEY = "amount";
     public static final String SUCCESS_PAYMENT_STATUS = "success";
     public static final String INITIATED_PAYMENT_STATUS = "Initiated";
