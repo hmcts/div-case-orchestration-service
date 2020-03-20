@@ -350,7 +350,7 @@ public class OrchestrationConstants {
     public static final String PAYMENT_REFERENCE = "PaymentReference";
     public static final String PAYMENT_STATUS = "PaymentStatus";
     public static final String STATUS_FROM_PAYMENT = "status";
-    public static final String PAYMENT_VALUE = "vgit alue";
+    public static final String PAYMENT_VALUE = "value";
     public static final String PAYMENT_SERVICE_AMOUNT_KEY = "amount";
     public static final String SUCCESS_PAYMENT_STATUS = "success";
     public static final String INITIATED_PAYMENT_STATUS = "Initiated";
