@@ -156,9 +156,9 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
 
         String daGrantedDataCcdField = (String) caseData.get(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD);
         LocalDate daGrantedDate = LocalDateTime.parse(daGrantedDataCcdField).toLocalDate();
-        LocalDate daLmitDonwloadDate = daGrantedDate.plusYears(1);
-        String daLimitDownloadDate = formatDateWithCustomerFacingFormat(daLmitDonwloadDate);
-        String welshDaLimitDownloadDate = localDateToWelshStringConverter.convert(daLmitDonwloadDate);
+        LocalDate daLmitDownloadDate = daGrantedDate.plusYears(1);
+        String daLimitDownloadDateStr = formatDateWithCustomerFacingFormat(daLmitDownloadDate);
+        String welshDaLimitDownloadDate = localDateToWelshStringConverter.convert(daLmitDownloadDate);
 
         Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
@@ -170,7 +170,7 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, firstName);
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, lastName);
             templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, ccdReference);
-            templateVars.put(NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE, daLimitDownloadDate);
+            templateVars.put(NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE, daLimitDownloadDateStr);
             templateVars.put(NOTIFICATION_WELSH_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE,
                     welshDaLimitDownloadDate);
 
