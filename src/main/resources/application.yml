@@ -412,11 +412,11 @@ documents:
       aosOfflineAdulteryCORespondentTemplateId: "FL-DIV-APP-ENG-00084.docx"
       respondentAnswers: "respondentAnswers"
     welsh:
-      divorceMiniPetition: "divorceminipetitionWelsh"
-      divorceDraftMiniPetition: "divorcedraftminipetitionWelsh"
-      aosInvitation:  "aosinvitationWelsh"
-      coRespondentAnswers: "co-respondent-answers-Welsh"
-      coRespondentInvitation: "co-respondentinvitation-Welsh"
+      divorceMiniPetition: "FL-DIV-GNO-WEL-00256.docx"
+      divorceDraftMiniPetition: "FL-DIV-GNO-WEL-00256.docx"
+      aosInvitation:  "FL-DIV-LET-WEL-00257.docx"
+      coRespondentAnswers: "FL-DIV-LET-WEL-00258.docx"
+      coRespondentInvitation: "FL-DIV-LET-WEL-00259.docx"
       costsOrderTemplateId: "FL-DIV-DEC-WEL-00240.docx"
       decreeNisiTemplateId: "FL-DIV-GNO-WEL-00239.docx"
       decreeNisiAnswerTemplateId: "FL-DIV-APP-WEL-00253.docx"
@@ -432,7 +432,7 @@ documents:
       aosOfflineUnreasonableBehaviourAndDesertionTemplateId: "FL-DIV-APP-WEL-00248.docx"
       aosOfflineAdulteryRespondentTemplateId: "FL-DIV-APP-WEL-00249.docx"
       aosOfflineAdulteryCORespondentTemplateId: "FL-DIV-APP-WEL-00250.docx"
-      respondentAnswers: "respondentAnswersWelsh"
+      respondentAnswers: "FL-DIV-LET-WEL-00260.docx"
 
 template:
   relation:

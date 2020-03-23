@@ -89,7 +89,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
     private TaskCommons taskCommons;
 
     @Mock
-    TemplateConfigService templateConfigService;
+    private TemplateConfigService templateConfigService;
 
     @Mock
     private LocalDateToWelshStringConverter localDateToWelshStringConverter;
@@ -283,7 +283,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmailTest {
                     hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019"),
                     hasEntry(WELSH_LIMIT_DATE_TO_CONTACT_COURT, TEST_FORM_WESLH_SUBMISSION_DUE_DATE),
                     hasEntry(WELSH_DATE_OF_HEARING, TEST_FORM_WESLH_SUBMISSION_DUE_DATE),
-                hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
+                    hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
             )),
             eq(Optional.of(LanguagePreference.ENGLISH)));
