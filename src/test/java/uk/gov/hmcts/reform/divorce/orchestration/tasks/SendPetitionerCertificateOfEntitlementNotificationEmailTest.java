@@ -42,7 +42,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FORM_WESLH_SUBMISSION_DUE_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WESLH_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
@@ -116,7 +116,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
         DnCourt dnCourt = new DnCourt();
         dnCourt.setName("Court Name");
         when(taskCommons.getDnCourt(anyString())).thenReturn(dnCourt);
-        when(localDateToWelshStringConverter.convert(isA(LocalDate.class))).thenReturn(TEST_FORM_WESLH_SUBMISSION_DUE_DATE);
+        when(localDateToWelshStringConverter.convert(isA(LocalDate.class))).thenReturn(TEST_WESLH_DATE);
     }
 
     @Test
@@ -301,8 +301,8 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
                     optionalTextParametersMatcher,
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
                     hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019"),
-                    hasEntry(WELSH_LIMIT_DATE_TO_CONTACT_COURT, TEST_FORM_WESLH_SUBMISSION_DUE_DATE),
-                    hasEntry(WELSH_DATE_OF_HEARING, TEST_FORM_WESLH_SUBMISSION_DUE_DATE),
+                    hasEntry(WELSH_LIMIT_DATE_TO_CONTACT_COURT, TEST_WESLH_DATE),
+                    hasEntry(WELSH_DATE_OF_HEARING, TEST_WESLH_DATE),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
             )),
@@ -323,8 +323,8 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
                     optionalTextParametersMatcher,
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
                     hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019"),
-                    hasEntry(WELSH_LIMIT_DATE_TO_CONTACT_COURT, TEST_FORM_WESLH_SUBMISSION_DUE_DATE),
-                    hasEntry(WELSH_DATE_OF_HEARING, TEST_FORM_WESLH_SUBMISSION_DUE_DATE),
+                    hasEntry(WELSH_LIMIT_DATE_TO_CONTACT_COURT, TEST_WESLH_DATE),
+                    hasEntry(WELSH_DATE_OF_HEARING, TEST_WESLH_DATE),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
             )),

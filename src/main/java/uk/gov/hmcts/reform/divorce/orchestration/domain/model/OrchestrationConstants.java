@@ -254,6 +254,8 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
     public static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
     public static final String NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE = "limit date to download certificate";
+    public static final String NOTIFICATION_WELSH_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE
+                = "welsh limit date to download certificate";
     public static final String NOTIFICATION_PET_NAME = "petitioner name";
     public static final String NOTIFICATION_RESP_NAME = "respondent name";
     public static final String NOTIFICATION_SOLICITOR_NAME = "solicitor name";

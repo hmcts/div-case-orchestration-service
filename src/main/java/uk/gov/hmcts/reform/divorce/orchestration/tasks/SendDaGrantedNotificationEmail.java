@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
+import uk.gov.hmcts.reform.divorce.orchestration.util.LocalDateToWelshStringConverter;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
@@ -57,10 +59,12 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
     private static final String SOL_EMAIL_DESC = "Decree Absolute Notification To Solicitor - Decree Absolute Granted";
 
     private final EmailService emailService;
+    private final LocalDateToWelshStringConverter localDateToWelshStringConverter;
 
     @Autowired
-    public SendDaGrantedNotificationEmail(EmailService emailService) {
+    public SendDaGrantedNotificationEmail(EmailService emailService, LocalDateToWelshStringConverter localDateToWelshStringConverter) {
         this.emailService = emailService;
+        this.localDateToWelshStringConverter = localDateToWelshStringConverter;
     }
 
     @Override
@@ -152,7 +156,10 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
 
         String daGrantedDataCcdField = (String) caseData.get(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD);
         LocalDate daGrantedDate = LocalDateTime.parse(daGrantedDataCcdField).toLocalDate();
-        String daLimitDownloadDate = formatDateWithCustomerFacingFormat(daGrantedDate.plusYears(1));
+        LocalDate daLmitDonwloadDate = daGrantedDate.plusYears(1);
+        String daLimitDownloadDate = formatDateWithCustomerFacingFormat(daLmitDonwloadDate);
+        String welshDaLimitDownloadDate = localDateToWelshStringConverter.convert(daLmitDonwloadDate);
+
         Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
 
@@ -164,6 +171,8 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, lastName);
             templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, ccdReference);
             templateVars.put(NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE, daLimitDownloadDate);
+            templateVars.put(NOTIFICATION_WELSH_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE,
+                    welshDaLimitDownloadDate);
 
             emailService.sendEmailAndReturnExceptionIfFails(
                     emailAddress,
