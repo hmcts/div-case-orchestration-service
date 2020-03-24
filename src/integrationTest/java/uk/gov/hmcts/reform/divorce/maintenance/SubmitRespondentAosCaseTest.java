@@ -14,9 +14,12 @@ import java.time.format.DateTimeFormatter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.springframework.http.HttpStatus.OK;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_SUBMITTED_AWAITING_ANSWER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -26,12 +29,13 @@ import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-aos/";
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
-    private static final String ID = "id";
-    private static final String STATE = "state";
-    private static final String AOS_AWAITING_SOL = "AosAwaitingSol";
     private static final String AOS_DEFEND_CONSENT_JSON = "aos-defend-consent.json";
     private static final String AOS_DEFEND_NO_CONSENT_JSON = "aos-defend-no-consent.json";
     private static final String AOS_NO_DEFEND_CONSENT_JSON = "aos-no-defend-consent.json";
+    private static final String AOS_SOLICITOR_REPRESENTATION_JSON = "aos-solicitor-representation.json";
+    private static final String SUBMIT_COMPLETE_CASE_JSON = "submit-unlinked-case.json";
+    private static final String SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON = "submit-complete-case-reason-adultery.json";
+    private static final String SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON = "submit-complete-case-reason-2yearSep.json";
     private static final String AOS_NO_DEFEND_NO_CONSENT_JSON;
 
     static {
@@ -42,11 +46,6 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
         }
     }
 
-    private static final String AOS_SOLICITOR_REPRESENTATION_JSON = "aos-solicitor-representation.json";
-
-    private static final String SUBMIT_COMPLETE_CASE_JSON = "submit-unlinked-case.json";
-    private static final String SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON = "submit-complete-case-reason-adultery.json";
-    private static final String SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON = "submit-complete-case-reason-2yearSep.json";
 
     @Test
     public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
@@ -63,8 +62,8 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
             loadJson(PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON));
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
-        assertEquals(caseDetails.getId(), cosResponse.path(ID));
-        assertEquals(AOS_SUBMITTED_AWAITING_ANSWER, cosResponse.path(STATE));
+        assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
+        assertEquals(AOS_SUBMITTED_AWAITING_ANSWER, cosResponse.path(CASE_STATE_JSON_KEY));
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
     }
 
@@ -84,8 +83,8 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
             loadJson(PAYLOAD_CONTEXT_PATH + AOS_DEFEND_NO_CONSENT_JSON));
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
-        assertEquals(caseDetails.getId(), cosResponse.path(ID));
-        assertEquals(AOS_SUBMITTED_AWAITING_ANSWER, cosResponse.path(STATE));
+        assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
+        assertEquals(AOS_SUBMITTED_AWAITING_ANSWER, cosResponse.path(CASE_STATE_JSON_KEY));
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
     }
 
@@ -105,14 +104,14 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
             loadJson(PAYLOAD_CONTEXT_PATH + AOS_NO_DEFEND_CONSENT_JSON));
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
-        assertEquals(caseDetails.getId(), cosResponse.path(ID));
-        assertEquals(AWAITING_DECREE_NISI, cosResponse.path(STATE));
+        assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
+        assertEquals(AWAITING_DECREE_NISI, cosResponse.path(CASE_STATE_JSON_KEY));
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
     }
 
     @Test
     @Category(ExtendedTest.class)
-    public void givenNoConsentAndNoDefendAndReasonIsNotAdultery_thenProceedAsExpected() throws Exception {
+    public void givenNoConsentAndNoDefendAndReasonIsNotAdultery_thenProceedAsExpected() {
         final UserDetails userDetails = createCitizenUser();
 
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
@@ -126,15 +125,15 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
             AOS_NO_DEFEND_NO_CONSENT_JSON);
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
-        assertEquals(caseDetails.getId(), cosResponse.path(ID));
-        assertEquals(AWAITING_DECREE_NISI, cosResponse.path(STATE));
+        assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
+        assertEquals(AWAITING_DECREE_NISI, cosResponse.path(CASE_STATE_JSON_KEY));
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
 
     }
 
     @Test
     @Category(ExtendedTest.class)
-    public void givenNoConsentAndNoDefendAndReasonIsAdultery_thenProceedAsExpected() throws Exception {
+    public void givenNoConsentAndNoDefendAndReasonIsAdultery_thenProceedAsExpected() {
         final UserDetails petitioner = createCitizenUser();
 
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON, petitioner);
@@ -148,8 +147,8 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
                 AOS_NO_DEFEND_NO_CONSENT_JSON);
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
-        assertEquals(caseDetails.getId(), cosResponse.path(ID));
-        assertEquals(AOS_COMPLETED, cosResponse.path(STATE));
+        assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
+        assertEquals(AOS_COMPLETED, cosResponse.path(CASE_STATE_JSON_KEY));
 
         assertAosSubmittedData(petitioner, caseDetails.getId().toString());
 
@@ -157,7 +156,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
 
     @Test
     @Category(ExtendedTest.class)
-    public void givenNoConsentAndNoDefendAndReasonIs2YearSeparation_thenProceedAsExpected() throws Exception {
+    public void givenNoConsentAndNoDefendAndReasonIs2YearSeparation_thenProceedAsExpected() {
         final UserDetails userDetails = createCitizenUser();
 
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON, userDetails);
@@ -171,8 +170,8 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
             AOS_NO_DEFEND_NO_CONSENT_JSON);
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
-        assertEquals(caseDetails.getId(), cosResponse.path(ID));
-        assertEquals(AOS_COMPLETED, cosResponse.path(STATE));
+        assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
+        assertEquals(AOS_COMPLETED, cosResponse.path(CASE_STATE_JSON_KEY));
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
     }
 
@@ -191,8 +190,8 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
                 loadJson(PAYLOAD_CONTEXT_PATH + AOS_SOLICITOR_REPRESENTATION_JSON));
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
-        assertEquals(caseDetails.getId(), cosResponse.path(ID));
-        assertEquals(AOS_AWAITING_SOL, cosResponse.path(STATE));
+        assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
+        assertEquals(AOS_AWAITING_SOLICITOR, cosResponse.path(CASE_STATE_JSON_KEY));
         assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
         assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE));
     }

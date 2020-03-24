@@ -34,6 +34,8 @@ import javax.ws.rs.core.MediaType;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS;
@@ -46,16 +48,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
-/**
- * Controller class for callback endpoints.
- */
 @RestController
 @Slf4j
 public class CallbackController {
 
     private static final String GENERIC_ERROR_MESSAGE = "An error happened when processing this request.";
-    private static final String FAILED_TO_PROCESS_SOL_DN_ERROR = "Failed to process solicitor DN review petition for Case ID: %s";
-    private static final String FAILED_TO_EXECUTE_SERVICE_ERROR = "Failed to execute service. Case id:  %s";
+    private static final String FAILED_TO_PROCESS_SOL_DN_ERROR = "Failed to process Solicitor DN review petition for case ID: %s";
+    private static final String FAILED_TO_EXECUTE_SERVICE_ERROR = "Failed to execute service for case ID:  %s";
 
     @Autowired
     private CaseOrchestrationService caseOrchestrationService;
@@ -64,9 +63,9 @@ public class CallbackController {
     private AosPackOfflineService aosPackOfflineService;
 
     @PostMapping(path = "/request-clarification-petitioner")
-    @ApiOperation(value = "Request clarification from petitioner via notification ")
+    @ApiOperation(value = "Trigger notification email to request clarification from Petitioner")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "clarification request sent successful"),
+        @ApiResponse(code = 200, message = "Petitioner clarification request sent successfully"),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> requestClarificationFromPetitioner(
         @RequestBody @ApiParam("CaseData") final CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
@@ -78,13 +77,13 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/dn-submitted")
-    @ApiOperation(value = "Decree nisi submitted confirmation notification")
+    @ApiOperation(value = "Trigger notification email to Petitioner that their Decree Nisi submitted successfully")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Notification sent successful"),
+        @ApiResponse(code = 200, message = "DN Submitted notification sent successful"),
         @ApiResponse(code = 401, message = "User Not Authenticated"),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> dnSubmitted(
-        @RequestHeader("Authorization")
+        @RequestHeader(AUTHORIZATION_HEADER)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.dnSubmitted(ccdCallbackRequest, authorizationToken));
@@ -93,7 +92,7 @@ public class CallbackController {
     @PostMapping(path = "/handle-post-dn-submitted")
     @ApiOperation(value = "Callback to run after DN Submit event has finished")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback processed")})
+        @ApiResponse(code = 200, message = "DN Submitted callback processed")})
     public ResponseEntity<CcdCallbackResponse> handleDnSubmitted(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
@@ -102,16 +101,13 @@ public class CallbackController {
             .build());
     }
 
-    @PostMapping(path = "/dn-pronounced",
-        consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Generate/dispatch a notification email to the petitioner and respondent when the Decree Nisi has been pronounced")
+    @PostMapping(path = "/dn-pronounced", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Trigger notification email to Petitioner and Respondent when the Decree Nisi has been pronounced")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> dnPronounced(
-        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         caseOrchestrationService.sendDnPronouncedNotificationEmail(ccdCallbackRequest);
         return ResponseEntity.ok(CcdCallbackResponse.builder()
@@ -119,31 +115,28 @@ public class CallbackController {
             .build());
     }
 
-    @PostMapping(path = "/clarification-submitted",
-        consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Generate/dispatch a notification email to the petitioner when the clarification has been submitted")
+    @PostMapping(path = "/clarification-submitted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Trigger notification email to Petitioner when their clarification has been submitted")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> clarificationSubmitted(
-        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         CcdCallbackResponse workflowResponse = caseOrchestrationService.sendClarificationSubmittedNotificationEmail(ccdCallbackRequest);
         return ResponseEntity.ok(workflowResponse);
     }
 
     @PostMapping(path = "/petition-issue-fees",
-        consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Return a order summary for petition issue")
+        consumes = APPLICATION_JSON,
+        produces = APPLICATION_JSON)
+    @ApiOperation(value = "Return an Order Summary for Petition Issue")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Petition issue fee amount is send to CCD as callback response",
+        @ApiResponse(code = 200, message = "Petition issue fee amount is sent to CCD as callback response",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> getPetitionIssueFees(
-        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         final CcdCallbackResponse response = caseOrchestrationService.setOrderSummaryAssignRole(ccdCallbackRequest, authorizationToken);
 
@@ -151,15 +144,14 @@ public class CallbackController {
     }
 
     @SuppressWarnings("unchecked")
-    @PostMapping(path = "/process-pba-payment", consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Solicitor pay callback")
+    @PostMapping(path = "/process-pba-payment", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to receive payment from the Solicitor")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback to receive payment from the solicitor",
+        @ApiResponse(code = 200, message = "Solicitor Pay callback successfully triggered",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> processPbaPayment(
-        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         Map<String, Object> response = caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, authorizationToken);
 
@@ -173,50 +165,42 @@ public class CallbackController {
         return ResponseEntity.ok(CcdCallbackResponse.builder().data(response).build());
     }
 
-    @PostMapping(path = "/solicitor-create", consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Solicitor pay callback")
+    @PostMapping(path = "/solicitor-create", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to populate missing requirement fields when creating solicitor cases.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback to populate missing requirement fields when "
-            + "creating solicitor cases.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 200, message = "Callback to populate missing requirement fields when creating solicitor cases.",
+            response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> solicitorCreate(
-        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER, required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(caseOrchestrationService.solicitorCreate(ccdCallbackRequest, authorizationToken))
             .build());
     }
 
-    @PostMapping(
-        path = "/solicitor-update",
-        consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
+    @PostMapping(path = "/solicitor-update", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Solicitor updated a case callback")
     @ApiResponses(value = {
-        @ApiResponse(
-            code = 200,
-            message = "Callback to populate missing requirement fields when creating solicitor cases.",
+        @ApiResponse(code = 200, message = "Successfully handled Solicitor case update",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> solicitorUpdate(
-        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER, required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(caseOrchestrationService.solicitorUpdate(ccdCallbackRequest, authorizationToken))
             .build());
     }
 
-    @PostMapping(path = "/aos-submitted",
-        consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Generate/dispatch a notification email to the respondent when their AOS is submitted")
+    @PostMapping(path = "/aos-submitted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Trigger notification email to Respondent that their AOS has been submitted")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
+        @ApiResponse(code = 200, message = "Email sent to Respondent for AOS Submitted",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> respondentAOSSubmitted(
-        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER, required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.info("/aos-submitted endpoint called for caseId {}", caseId);
@@ -235,17 +219,30 @@ public class CallbackController {
             .build());
     }
 
-    @PostMapping(path = "/petition-updated",
-        consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Generate/dispatch a notification email to the petitioner when the application is updated")
+    @PostMapping(path = "/petition-submitted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Trigger notification email to Petitioner when their application is submitted")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
+        @ApiResponse(code = 200, message = "Email sent to Petitioner that their application has been submitted",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> petitionSubmitted(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest);
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
+            .build());
+    }
+
+    @PostMapping(path = "/petition-updated", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Trigger notification email to Petitioner when their application is updated")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Email sent to Petitioner that their application has been updated",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> petitionUpdated(
-        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.info("/petition-updated endpoint called for caseId {}", caseId);
 
@@ -264,10 +261,8 @@ public class CallbackController {
             .build());
     }
 
-    @PostMapping(path = "/petition-submitted",
-        consumes = MediaType.APPLICATION_JSON,
-        produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Generate/dispatch a notification email to the petitioner when the application is submitted")
+    @PostMapping(path = "/confirm-service", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Caseworker confirm personal service from CCD")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
             response = CcdCallbackResponse.class),
@@ -308,11 +303,12 @@ public class CallbackController {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Callback was processed "
         + "successfully or in case of an error message is "
         + "attached to the case",
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is attached to the case",
         response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> confirmPersonalService(
-        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         Map<String, Object> response = caseOrchestrationService.ccdCallbackConfirmPersonalService(ccdCallbackRequest,
@@ -334,17 +330,15 @@ public class CallbackController {
                 .build());
     }
 
-    @PostMapping(path = "/bulk-print",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @PostMapping(path = "/bulk-print", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Handles bulk print callback from CCD")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Callback was processed "
-        + "successfully or in case of an error message is "
-        + "attached to the case",
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is attached to the case",
         response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> bulkPrint(
-        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         try {
@@ -375,17 +369,15 @@ public class CallbackController {
         }
     }
 
-    @PostMapping(path = "/petition-issued",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @PostMapping(path = "/petition-issued", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Handles Issue event callback from CCD")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is "
-            + "attached to the case",
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is attached to the case",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> petitionIssuedCallback(
-        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestParam(value = GENERATE_AOS_INVITATION, required = false)
         @ApiParam(GENERATE_AOS_INVITATION) boolean generateAosInvitation,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
@@ -405,12 +397,10 @@ public class CallbackController {
                 .build());
     }
 
-    @PostMapping(path = "/case-linked-for-hearing",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles actions that need to happen once the case has been linked for hearing (been given a hearing date).")
+    @PostMapping(path = "/case-linked-for-hearing", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Handle actions that need to happen once the case has been linked for hearing (been given a hearing date).")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
-            + "attached to the case",
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is attached to the case",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
@@ -434,12 +424,10 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/co-respondent-answered",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Set co-respondent answer received fields on divorce case.")
+    @PostMapping(path = "/co-respondent-answered", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Set co-respondent answer received fields on Divorce case.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
-            + "attached to the case",
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is attached to the case",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
@@ -463,17 +451,17 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/sol-dn-review-petition",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @PostMapping(path = "/sol-dn-review-petition", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Populates fields for solicitor DN journey")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 200, message = "Successfully populated fields for solicitor DN journey",
+            response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> solDnReviewPetition(@RequestBody CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-        log.debug("Processing solicitor DN review petition for Case ID: {}", caseId);
+        log.debug("Processing Solicitor DN review petition for Case ID: {}", caseId);
 
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
@@ -493,11 +481,11 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/sol-dn-resp-answers-doc",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @PostMapping(path = "/sol-dn-resp-answers-doc", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Populates Respondent Answers doc for solicitor DN journey")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 200, message = "Successfully populated Respondent Answers doc for solicitor DN journey",
+            response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> solDnRespAnswersDoc(@RequestBody CcdCallbackRequest ccdCallbackRequest) {
@@ -522,11 +510,11 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/sol-dn-co-resp-answers-doc",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @PostMapping(path = "/sol-dn-co-resp-answers-doc", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Populates Co-Respondent Answers doc for solicitor DN journey")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 200, message = "Successfully populated Co-Respondent Answers doc for solicitor DN journey",
+            response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> solDnCoRespAnswersDoc(@RequestBody CcdCallbackRequest ccdCallbackRequest) {
@@ -552,8 +540,7 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/co-respondent-generate-answers",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @PostMapping(path = "/co-respondent-generate-answers", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Generates the Co-Respondent Answers PDF Document for the case")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Co-Respondent answers generated and attached to case",
@@ -561,7 +548,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> generateCoRespondentAnswers(
-        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
@@ -580,14 +567,14 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/generate-document", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Generates the document and attaches it to the case")
+    @PostMapping(path = "/generate-document", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Generate given document and attach it to the Divorce case")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Document has been attached to the case", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> generateDocument(
-        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestParam(value = "templateId") @ApiParam("templateId") String templateId,
         @RequestParam(value = "documentType") @ApiParam("documentType") String documentType,
         @RequestParam(value = "filename") @ApiParam("filename") String filename,
@@ -609,14 +596,14 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/generate-dn-pronouncement-documents", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Generates the documents for Decree Nisi Pronouncement and attaches it to the case")
+    @PostMapping(path = "/generate-dn-pronouncement-documents", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Generate the documents for Decree Nisi Pronouncement and attach them to the case")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Document has been attached to the case", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 200, message = "DN Pronouncement documents have been attached to the case", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> generateDnDocuments(
-        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
@@ -626,34 +613,34 @@ public class CallbackController {
         try {
             callbackResponseBuilder.data(caseOrchestrationService
                 .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, authorizationToken));
-            log.info("Generated decree nisi documents for case {}.", caseId);
+            log.info("Generated DN documents for Case ID: {}.", caseId);
         } catch (WorkflowException exception) {
-            log.error("Document generation failed. Case id: {}", caseId, exception);
+            log.error("DN document generation failed for Case ID: {}", caseId, exception);
             callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/da-about-to-be-granted", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handle generating Decree Absolute certificate and email notifications to petitioner and respondent")
+    @PostMapping(path = "/da-about-to-be-granted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Generate Decree Absolute Certificate and email notifications to Petitioner and Respondent")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Decree Absolute certificate generated and emails sent.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 200,message = "DA Certificate generated and emails sent to Petitioner and Respondent",
+            response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> daAboutToBeGranted(
-        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
             callbackResponseBuilder.data(caseOrchestrationService.handleGrantDACallback(ccdCallbackRequest, authorizationToken));
-            log.info("Generated decree absolute documents for case {}.", caseId);
+            log.info("Generated DA documents for case ID: {}.", caseId);
         } catch (WorkflowException exception) {
-            log.error("Document generation failed. Case id: {}", caseId, exception);
+            log.error("DA document generation failed for case ID: {}", caseId, exception);
             callbackResponseBuilder.errors(singletonList(exception.getMessage()));
         }
 
@@ -663,7 +650,7 @@ public class CallbackController {
     @PostMapping(path = "/handle-post-da-granted")
     @ApiOperation(value = "Callback to run after DA Grant event has finished")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback processed")})
+        @ApiResponse(code = 200, message = "DA Granted callback processed")})
     public ResponseEntity<CcdCallbackResponse> handleDaGranted(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
@@ -673,45 +660,42 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/aos-received")
-    @ApiOperation(value = "Respondent confirmation notification ")
+    @ApiOperation(value = "Trigger notification email to Respondent to confirm they have successfully submitted their AOS")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Notification sent successful"),
+        @ApiResponse(code = 200, message = "Notification email to Respondent for AOS Received sent successful"),
         @ApiResponse(code = 401, message = "User Not Authenticated"),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> aosReceived(
-        @RequestHeader("Authorization")
-        @ApiParam(value = "JWT authorisation token issued by IDAM",
-            required = true) final String authorizationToken,
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.aosReceived(ccdCallbackRequest, authorizationToken));
     }
 
     @PostMapping(path = "/co-respondent-received")
-    @ApiOperation(value = "Co-Respondent confirmation notification ")
+    @ApiOperation(value = "Trigger notification email to Co-Respondent to confirm they have successfully submitted their version of AOS")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Notification sent successful"),
+        @ApiResponse(code = 200, message = "Notification email to Co-Respondent for AOS Received sent successful"),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> corespReceived(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.sendCoRespReceivedNotificationEmail(ccdCallbackRequest));
     }
 
-    @PostMapping(path = "/aos-solicitor-nominated",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles actions that need to happen once a respondent nominates a solicitor.")
+    @PostMapping(path = "/aos-solicitor-nominated", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Handles actions that need to happen once a Respondent nominates a Solicitor.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
-            + "attached to the case",
+        @ApiResponse(code = 200, message = "Respondent successfully nominated their Solicitor",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> aosSolicitorNominated(
-        @RequestHeader(value = "Authorization") String authToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authToken,
         @RequestBody @ApiParam("CaseData")
             CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-        log.debug("Processing AOS solicitor nominated callback. Case ID: {}", caseId);
+        log.debug("Processing AOS Solicitor nominated callback. Case ID: {}", caseId);
 
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
@@ -719,26 +703,22 @@ public class CallbackController {
             callbackResponseBuilder.data(
                 caseOrchestrationService.processAosSolicitorNominated(ccdCallbackRequest, authToken));
         } catch (CaseOrchestrationServiceException exception) {
-            log.error(format("Failed processing AOS solicitor callback. Case ID:  %s", caseId),
-                exception);
+            log.error(format("Failed processing AOS solicitor callback. Case ID:  %s", caseId), exception);
             callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/calculate-separation-fields",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Callback to calculate ccd separation fields based on provided separation dates.")
+    @PostMapping(path = "/calculate-separation-fields", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to calculate CCD separation fields based on provided separation dates.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
-            + "attached to the case",
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is attached to the case",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> calculateSeparationFields(
-        @RequestBody @ApiParam("CaseData")
-            CcdCallbackRequest ccdCallbackRequest) {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
@@ -758,26 +738,23 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/dn-about-to-be-granted",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @PostMapping(path = "/dn-about-to-be-granted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Handles CCD case data just before Decree Nisi is granted")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
-            + "attached to the case",
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is attached to the case",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> dnAboutToBeGranted(
-        @RequestHeader(value = "Authorization") String authToken,
-        @RequestBody @ApiParam("CaseData")
-            CcdCallbackRequest ccdCallbackRequest) {
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
         try {
             callbackResponseBuilder.data(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest, authToken));
-            log.info("Processed case successfully. Case id: {}", caseId);
+            log.info("Processed case successfully for case ID: {}", caseId);
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format(FAILED_TO_EXECUTE_SERVICE_ERROR, caseId), exception);
             callbackResponseBuilder.errors(asList(exception.getMessage()));
@@ -789,12 +766,10 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
-    @PostMapping(path = "/dn-about-to-be-granted-state",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @PostMapping(path = "/dn-about-to-be-granted-state", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Handles case data state just before Decree Nisi is granted")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is "
-            + "attached to the case",
+        @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error, message is attached to the case",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
@@ -819,19 +794,19 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/solicitor-link-case")
-    @ApiOperation(value = "Authorize the solicitor's respondent to the case")
+    @ApiOperation(value = "Authorize the Respondent's Solicitor to the case")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Solicitor authenticated"),
+        @ApiResponse(code = 200, message = "Respondent Solicitor Authenticated"),
         @ApiResponse(code = 400, message = "Bad request"),
         @ApiResponse(code = 401, message = "Not authorised"),
         @ApiResponse(code = 404, message = "Case not found")})
     public ResponseEntity<CcdCallbackResponse> solicitorLinkCase(
-        @RequestHeader("Authorization")
+        @RequestHeader(AUTHORIZATION_HEADER)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-        log.debug("Processing solicitor link case callback. Case ID: {}", caseId);
+        log.debug("Processing solicitor link case callback for case ID: {}", caseId);
 
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
@@ -848,21 +823,21 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/clean-state")
-    @ApiOperation(value = "Clear state from case data")
+    @ApiOperation(value = "Clear state from CCD Case Data")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback processed"),
+        @ApiResponse(code = 200, message = "Successfully clearer State from case data"),
         @ApiResponse(code = 401, message = "Not authorised"),
         @ApiResponse(code = 404, message = "Case not found")})
     public ResponseEntity<CcdCallbackResponse> clearStateCallback(
-        @RequestHeader("Authorization")
+        @RequestHeader(AUTHORIZATION_HEADER)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData")CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         callbackResponseBuilder.data(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, authorizationToken));
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-        log.debug("Cleared case state. Case ID: {}", caseId);
+        log.debug("Cleared case state from CCD for case ID: {}", caseId);
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
@@ -874,25 +849,26 @@ public class CallbackController {
         @ApiResponse(code = 401, message = "Not authorised"),
         @ApiResponse(code = 404, message = "Case not found")})
     public ResponseEntity<CcdCallbackResponse> dnDecisionMadeCallback(
-        @RequestHeader("Authorization")
+        @RequestHeader(AUTHORIZATION_HEADER)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.info("DN Decision made - Notifying refusal order. Case ID: {}", caseId);
         caseOrchestrationService.notifyForRefusalOrder(ccdCallbackRequest);
 
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
-        log.info("DN Decision made - cleaning state. Case ID: {}", caseId);
+        log.info("DN Decision made - cleaning state for case ID: {}", caseId);
         callbackResponseBuilder.data(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, authorizationToken));
 
-        log.info("DN Decision made - process other tasks. Case ID: {}", caseId);
+        log.info("DN Decision made - process other tasks for case ID: {}", caseId);
         caseOrchestrationService.processDnDecisionMade(ccdCallbackRequest);
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
     @PostMapping(path = "/process-applicant-da-eligibility")
-    @ApiOperation(value = "Callback to be called when case is about to become eligible for DA (for applicant).")
+    @ApiOperation(value = "Callback to be called when case is about to become eligible for DA (for Petitioner).")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed"),
         @ApiResponse(code = 401, message = "Not authorised"),
@@ -914,7 +890,7 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/handle-post-make-case-eligible-for-da-submitted")
-    @ApiOperation(value = "Callback to run after Make Case Eligible For DA event has finished")
+    @ApiOperation(value = "Callback to run after 'Make Case Eligible For DA' event has finished")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed")})
     public ResponseEntity<CcdCallbackResponse> handleMakeCaseEligibleForDaSubmitted(
@@ -926,7 +902,7 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/remove-bulk-link")
-    @ApiOperation(value = "Callback to set bulk link to null")
+    @ApiOperation(value = "Set bulk link to null")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed")})
     public ResponseEntity<CcdCallbackResponse> removeBulkLinkFromCase(
@@ -935,17 +911,17 @@ public class CallbackController {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
         callbackResponseBuilder.data(caseOrchestrationService.removeBulkLink(ccdCallbackRequest));
-        log.info("Remove bulk link for case ID: {}", caseId);
+        log.info("Removed bulk link for case ID: {}", caseId);
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
     @PostMapping(path = "/issue-aos-pack-offline/parties/{party}")
-    @ApiOperation(value = "Callback to issue AOS pack (offline)")
+    @ApiOperation(value = "Issue AOS pack offline to Respondent or Co-Respondent")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed")})
     public ResponseEntity<CcdCallbackResponse> issueAosPackOffline(
-        @RequestHeader(name = "Authorization")
+        @RequestHeader(name = AUTHORIZATION_HEADER)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) String authToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
         @PathVariable("party") @ApiParam("Party in divorce (respondent or co-respondent") DivorceParty party) {
@@ -957,34 +933,33 @@ public class CallbackController {
             response = CcdCallbackResponse.builder()
                 .data(aosPackOfflineService.issueAosPackOffline(authToken, caseDetails, party))
                 .build();
-            log.info("Issued AOS pack (offline) for case id [{}]", caseDetails.getCaseId());
+            log.info("Issued offline AOS pack for case ID: {}", caseDetails.getCaseId());
         } catch (CaseOrchestrationServiceException exception) {
             response = CcdCallbackResponse.builder()
                 .errors(singletonList(exception.getMessage()))
                 .build();
-            log.error("Error issuing AOS pack (offline) for case id [{}]", caseDetails.getCaseId());
+            log.error("Error issuing offline AOS pack for case ID: {}", caseDetails.getCaseId());
         }
 
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(path = "/processAosOfflineAnswers/parties/{party}")
-    @ApiOperation(value = "Callback to issue AOS pack (offline)")
+    @ApiOperation(value = "Process offline AOS Answers for Respondent or Co-Respondent")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback processed")})
+        @ApiResponse(code = 200, message = "Successfully processed offline AOS Answers")})
     public ResponseEntity<CcdCallbackResponse> processAosPackOfflineAnswers(
-        @RequestBody @ApiParam("CaseData")
-            CcdCallbackRequest ccdCallbackRequest,
-        @PathVariable("party") @ApiParam("Party in divorce (respondent or co-respondent")
-            DivorceParty party) {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
+        @PathVariable("party") @ApiParam("Party in divorce (respondent or co-respondent") DivorceParty party) {
 
         CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
         try {
-            CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
             responseBuilder.data(aosPackOfflineService.processAosPackOfflineAnswers(caseDetails.getCaseData(), party));
             log.info("Processed AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());
         } catch (CaseOrchestrationServiceException exception) {
+            log.info("Error processing AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());
             log.error(exception.getMessage(), exception);
             responseBuilder.errors(singletonList(exception.getMessage()));
         }
@@ -995,7 +970,7 @@ public class CallbackController {
     @PostMapping(path = "/listing/remove-bulk-link")
     @ApiOperation(value = "Callback to unlink case from bulk case listed")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback processed")})
+        @ApiResponse(code = 200, message = "Case unlinked from bulk case listed")})
     public ResponseEntity<CcdCallbackResponse> removeBulkLinkFromCaseListed(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
@@ -1008,9 +983,9 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/remove-dn-outcome-case-flag")
-    @ApiOperation(value = "Callback to remove the DnOutcomeCase flag.")
+    @ApiOperation(value = "Callback to remove the DnOutcomeCase flag")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback processed.")})
+        @ApiResponse(code = 200, message = "Successfully removed the DnOutcomeCase flag")})
     public ResponseEntity<CcdCallbackResponse> removeDnOutcomeCaseFlag(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
@@ -1021,7 +996,7 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/remove-la-make-decision-fields")
-    @ApiOperation(value = "Callback to remove the fields set by the legal advsior when they make a decision.")
+    @ApiOperation(value = "Callback to remove the fields set by the Legal Advisor when they make a decision.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed.")})
     public ResponseEntity<CcdCallbackResponse> removeLegalAdvisorMakeDecisionFields(
@@ -1034,7 +1009,7 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/pronouncement/cancel")
-    @ApiOperation(value = "Callback to cancel dn pronouncement.")
+    @ApiOperation(value = "Callback to cancel DN pronouncement.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed.")})
     public ResponseEntity<CcdCallbackResponse> removeDNGrantedDocuments(
@@ -1045,19 +1020,17 @@ public class CallbackController {
         try {
             response.data(caseOrchestrationService.removeDNGrantedDocuments(ccdCallbackRequest))
                 .build();
-            log.info("Delete DN granted documents for case id [{}]", ccdCallbackRequest.getCaseDetails().getCaseId());
+            log.info("Delete DN granted documents for case ID: {}", ccdCallbackRequest.getCaseDetails().getCaseId());
         } catch (WorkflowException exception) {
             response.errors(singletonList(exception.getMessage()))
                 .build();
-            log.error("Delete DN granted documents for case id [{}]", ccdCallbackRequest.getCaseDetails().getCaseId(), exception);
+            log.error("Failed to delete DN granted documents for case ID: {}", ccdCallbackRequest.getCaseDetails().getCaseId(), exception);
         }
         return ResponseEntity.ok(response.build());
     }
-
 
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();
     }
-
 }

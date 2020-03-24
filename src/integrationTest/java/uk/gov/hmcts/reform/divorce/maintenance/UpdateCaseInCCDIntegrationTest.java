@@ -17,10 +17,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
 
-    private static final String CASE_ID_KEY = "caseId";
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/update/";
 
     @Autowired
@@ -41,7 +41,7 @@ public class UpdateCaseInCCDIntegrationTest extends IntegrationTest {
         Response updateResponse = updateCase(citizenUser.getAuthToken(), caseId, "payments-update.json");
 
         assertEquals(HttpStatus.OK.value(), updateResponse.getStatusCode());
-        assertEquals(caseId, updateResponse.path(CASE_ID_KEY));
+        assertEquals(caseId, updateResponse.path(CASE_ID_JSON_KEY));
     }
 
     private Response updateCase(String userToken, String caseId, String fileName) throws Exception {

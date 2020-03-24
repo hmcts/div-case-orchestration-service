@@ -32,18 +32,20 @@ public class ExtractedDataPublisher implements Task<Void> {
         Status status = context.getTransientObject("status");
         log.info("Ready to publish csv file for {}", status.name());
         CSVExtractor csvExtractor = csvExtractorFactory.getCSVExtractorForStatus(status);
+        String csvExtractorPrefix = csvExtractor.getFileNamePrefix();
         String dateToProcess = getDateToProcess(context);
-        String attachmentFileName = String.format("%s_%s.csv", csvExtractor.getFileNamePrefix(), dateToProcess);
+        String attachmentFileName = String.format("%s_%s.csv", csvExtractorPrefix, dateToProcess);
 
         try {
             String destinationEmailAddress = csvExtractor.getDestinationEmailAddress();
-            log.info("Will send csv file to {}", destinationEmailAddress);
+            log.info("Will send {} csv file to {}", csvExtractorPrefix, destinationEmailAddress);
             emailClient.sendEmailWithAttachment(destinationEmailAddress,
                 attachmentFileName,
                 context.getTransientObject(FILE_TO_PUBLISH));
-            log.info("Sent extracted data to {}", destinationEmailAddress);
+            // This log is used for azure alerts as can be seen here: https://github.com/hmcts/div-shared-infrastructure/blob/master/alerts.tf#L86
+            log.info("Sent extracted data to {} robot using email: {}", csvExtractorPrefix, destinationEmailAddress);
         } catch (MessagingException e) {
-            throw new TaskException("Error sending e-mail with data extraction file.", e);
+            throw new TaskException("Error sending e-mail with " + csvExtractorPrefix + " data extraction file.", e);
         }
 
         return payload;

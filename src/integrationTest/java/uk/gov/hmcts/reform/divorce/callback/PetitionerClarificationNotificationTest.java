@@ -19,7 +19,6 @@ import static org.junit.Assert.assertThat;
 
 public class PetitionerClarificationNotificationTest extends IntegrationTest {
 
-    private static final String DATA_KEY = "data";
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/legal-advisor/";
 
     @Value("${case.orchestration.petitioner-clarification.notification.context-path}")
@@ -39,7 +38,7 @@ public class PetitionerClarificationNotificationTest extends IntegrationTest {
         // Will fail if email fails to send
         assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
 
-        final Map<String, Object> responseData = response.getBody().path(DATA_KEY);
+        final Map<String, Object> responseData = response.getBody().path(DATA);
 
         assertThat(responseData, is(notNullValue()));
     }

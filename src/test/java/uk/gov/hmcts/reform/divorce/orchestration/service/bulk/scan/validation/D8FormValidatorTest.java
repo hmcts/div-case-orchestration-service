@@ -47,7 +47,7 @@ public class D8FormValidatorTest {
             new OcrDataField("D8ScreenHasMarriageCert", "True"),
             new OcrDataField("D8RespondentFirstName", "Louis"),
             new OcrDataField("D8RespondentLastName", "Griffin"),
-            new OcrDataField("D8PetitionerNameChangedHow", "Yes"),
+            new OcrDataField("D8PetitionerHasNameChanged", "Yes"),
             new OcrDataField("D8PetitionerContactDetailsConfidential", "No"),
             new OcrDataField("D8MarriagePetitionerName", "Peter Griffin"),
             new OcrDataField("D8MarriageRespondentName", "Louis Griffin"),
@@ -145,7 +145,7 @@ public class D8FormValidatorTest {
             new OcrDataField("D8ScreenHasMarriageCert", "Que?"),
             new OcrDataField("D8CertificateInEnglish", "What?"),
             new OcrDataField("D8PaymentMethod", "Bitcoin"),
-            new OcrDataField("D8PetitionerNameChangedHow", "Si"),
+            new OcrDataField("D8PetitionerHasNameChanged", "Si"),
             new OcrDataField("D8PetitionerPhoneNumber", "01213344"),
             new OcrDataField("D8PetitionerEmail", "aa@a"),
             new OcrDataField("D8PetitionerContactDetailsConfidential", "check"),
@@ -185,7 +185,7 @@ public class D8FormValidatorTest {
             "D8ScreenHasMarriageCert must be \"True\"",
             "D8CertificateInEnglish must be \"True\" or left blank",
             notInAValidFormat("D8PetitionerPhoneNumber"),
-            mustBeYesOrNo("D8PetitionerNameChangedHow"),
+            mustBeYesOrNo("D8PetitionerHasNameChanged"),
             notInAValidFormat("D8PetitionerEmail"),
             postcodeIsUsually6or7CharactersLong("D8PetitionerPostCode"),
             mustBeYesOrNo("D8PetitionerContactDetailsConfidential"),
@@ -676,11 +676,11 @@ public class D8FormValidatorTest {
     }
 
     @Test
-    public void shouldProduceWarningsForD8PetitionerNameChangedHowOtherDetailsIfPrerequsiteCombinationsAreInvalid() {
-        Map<String, String> nameChangedHowNoAndNoDetails = ImmutableMap.of("D8PetitionerNameChangedHow", "No",
+    public void shouldProduceWarningsForD8PetitionerNameChangedHowOtherDetailsIfPrerequisiteCombinationsAreInvalid() {
+        Map<String, String> nameChangedHowNoAndNoDetails = ImmutableMap.of("D8PetitionerHasNameChanged", "No",
             "D8PetitionerNameChangedHowOtherDetails", "");
 
-        Map<String, String> nameChangedHowNoAndNullDetails = ImmutableMap.of("D8PetitionerNameChangedHow", "No");
+        Map<String, String> nameChangedHowNoAndNullDetails = ImmutableMap.of("D8PetitionerHasNameChanged", "No");
 
         List<Map<String, String>> invalidNameChangedHowOptions =
             asList(nameChangedHowNoAndNoDetails, nameChangedHowNoAndNullDetails);
@@ -688,14 +688,14 @@ public class D8FormValidatorTest {
         for (Map<String, String> invalidCombination : invalidNameChangedHowOptions) {
 
             OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
-                new OcrDataField("D8PetitionerNameChangedHow", invalidCombination.get("D8PetitionerNameChangedHow")),
+                new OcrDataField("D8PetitionerHasNameChanged", invalidCombination.get("D8PetitionerHasNameChanged")),
                 new OcrDataField("D8PetitionerNameChangedHowOtherDetails", invalidCombination.get("D8PetitionerNameChangedHowOtherDetails"))
             ));
 
             assertThat(validationResult.getStatus(), is(WARNINGS));
             assertThat(validationResult.getErrors(), is(emptyList()));
             assertThat(validationResult.getWarnings(), hasItem(
-                "If D8PetitionerNameChangedHow is \"No\", then D8PetitionerNameChangedHowOtherDetails should not be empty"
+                "If D8PetitionerHasNameChanged is \"No\", then D8PetitionerNameChangedHowOtherDetails should not be empty"
             ));
         }
     }
@@ -703,28 +703,28 @@ public class D8FormValidatorTest {
     @Test
     public void shouldProduceWarningsForNonEmptyD8PetitionerNameChangedHowOtherDetailsIfNameChangedHowYes() {
         OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
-            new OcrDataField("D8PetitionerNameChangedHow", "Yes"),
+            new OcrDataField("D8PetitionerHasNameChanged", "Yes"),
             new OcrDataField("D8PetitionerNameChangedHowOtherDetails", "new name who dis")
         ));
 
         assertThat(validationResult.getStatus(), is(WARNINGS));
         assertThat(validationResult.getErrors(), is(emptyList()));
         assertThat(validationResult.getWarnings(), allOf(
-            hasItem("If D8PetitionerNameChangedHow is \"Yes\", then D8PetitionerNameChangedHowOtherDetails should be empty"),
-            not(hasItem("If D8PetitionerNameChangedHow is \"No\", then D8PetitionerNameChangedHowOtherDetails should not be empty")
+            hasItem("If D8PetitionerHasNameChanged is \"Yes\", then D8PetitionerNameChangedHowOtherDetails should be empty"),
+            not(hasItem("If D8PetitionerHasNameChanged is \"No\", then D8PetitionerNameChangedHowOtherDetails should not be empty")
             ))
         );
     }
 
     @Test
-    public void shouldNotProduceWarningsForD8PetitionerNameChangedHowOtherDetailsIfPrerequsiteCombinationsAreValid() {
-        Map<String, String> nameChangedHowNoAndDetails = ImmutableMap.of("D8PetitionerNameChangedHow", "No",
+    public void shouldNotProduceWarningsForD8PetitionerNameChangedHowOtherDetailsIfPrerequisiteCombinationsAreValid() {
+        Map<String, String> nameChangedHowNoAndDetails = ImmutableMap.of("D8PetitionerHasNameChanged", "No",
             "D8PetitionerNameChangedHowOtherDetails", "Reason for changing one's name here");
 
-        Map<String, String> nameChangedHowYesAndNoDetails = ImmutableMap.of("D8PetitionerNameChangedHow", "Yes",
+        Map<String, String> nameChangedHowYesAndNoDetails = ImmutableMap.of("D8PetitionerHasNameChanged", "Yes",
             "D8PetitionerNameChangedHowOtherDetails", "");
 
-        Map<String, String> nameChangedHowYesAndNullDetails = ImmutableMap.of("D8PetitionerNameChangedHow", "Yes");
+        Map<String, String> nameChangedHowYesAndNullDetails = ImmutableMap.of("D8PetitionerHasNameChanged", "Yes");
 
         List<Map<String, String>> validNameChangedHowOptions =
             asList(nameChangedHowNoAndDetails, nameChangedHowYesAndNoDetails, nameChangedHowYesAndNullDetails);
@@ -732,15 +732,15 @@ public class D8FormValidatorTest {
         for (Map<String, String> validCombination : validNameChangedHowOptions) {
 
             OcrValidationResult validationResult = classUnderTest.validateBulkScanForm(asList(
-                new OcrDataField("D8PetitionerNameChangedHow", validCombination.get("D8PetitionerNameChangedHow")),
+                new OcrDataField("D8PetitionerHasNameChanged", validCombination.get("D8PetitionerHasNameChanged")),
                 new OcrDataField("D8PetitionerNameChangedHowOtherDetails", validCombination.get("D8PetitionerNameChangedHowOtherDetails"))
             ));
 
             assertThat(validationResult.getStatus(), is(WARNINGS));
             assertThat(validationResult.getErrors(), is(emptyList()));
             assertThat(validationResult.getWarnings(), not(hasItems(
-                "If D8PetitionerNameChangedHow is \"No\", then D8PetitionerNameChangedHowOtherDetails should not be empty",
-                "If D8PetitionerNameChangedHow is \"Yes\", then D8PetitionerNameChangedHowOtherDetails should be empty"
+                "If D8PetitionerHasNameChanged is \"No\", then D8PetitionerNameChangedHowOtherDetails should not be empty",
+                "If D8PetitionerHasNameChanged is \"Yes\", then D8PetitionerNameChangedHowOtherDetails should be empty"
                 ))
             );
         }

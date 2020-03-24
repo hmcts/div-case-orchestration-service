@@ -31,8 +31,9 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Map;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.MediaType;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
@@ -45,12 +46,10 @@ public class OrchestrationController {
     @Autowired
     private CaseOrchestrationService orchestrationService;
 
-    @PutMapping(path = "/payment-update",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles payment update callbacks")
+    @PutMapping(path = "/payment-update", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Handles Payment Update callbacks")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Payment update callback was processed successfully and updated "
-            + " to the case",
+        @ApiResponse(code = 200, message = "Payment update callback was processed successfully and updated to the case",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
@@ -60,15 +59,14 @@ public class OrchestrationController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(path = "/submit",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles submit called from petition frontend")
+    @PostMapping(path = "/submit", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Create case in CCD - called by Petitioner Frontend")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Submit was successful and case was created in CCD",
+        @ApiResponse(code = 200, message = "Submit was successful and a case was created in CCD",
             response = CaseCreationResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CaseCreationResponse> submit(
-        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("Divorce Session") Map<String, Object> payload) throws WorkflowException {
 
         ResponseEntity<CaseCreationResponse> endpointResponse;
@@ -92,15 +90,14 @@ public class OrchestrationController {
         return endpointResponse;
     }
 
-    @PostMapping(path = "/updateCase/{caseId}",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles update called from petition frontend")
+    @PostMapping(path = "/updateCase/{caseId}", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Update case in CCD - called by Frontend applications")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
             response = CaseResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CaseResponse> update(
-        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @PathVariable String caseId,
         @RequestBody @ApiParam("Divorce Session") Map<String, Object> payload) throws WorkflowException {
 
@@ -111,14 +108,14 @@ public class OrchestrationController {
                 .build());
     }
 
-    @GetMapping(path = "/draftsapi/version/1", produces = MediaType.APPLICATION_JSON)
+    @GetMapping(path = "/draftsapi/version/1", produces = APPLICATION_JSON)
     @ApiOperation(value = "Retrieves a divorce case draft")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "A draft exists. The draft content is in the response body"),
         @ApiResponse(code = 404, message = "Draft does not exist")})
     public ResponseEntity<Map<String, Object>> retrieveDraft(
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
-        @RequestHeader("Authorization") final String authorizationToken)
+        @RequestHeader(AUTHORIZATION_HEADER) final String authorizationToken)
         throws WorkflowException {
 
         Map<String, Object> response = orchestrationService.getDraft(authorizationToken);
@@ -128,14 +125,14 @@ public class OrchestrationController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping(path = "/draftsapi/version/1", consumes = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Saves or updates a draft to draft store")
+    @PutMapping(path = "/draftsapi/version/1", consumes = APPLICATION_JSON)
+    @ApiOperation(value = "Saves or updates a draft case to Draft Store")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Draft saved")})
     public ResponseEntity<Map<String, Object>> saveDraft(
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true)
         @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorizationToken,
-        @ApiParam(value = "The case draft", required = true)
+        @ApiParam(value = "The draft case", required = true)
         @RequestBody
         @NotNull Map<String, Object> payload,
         @RequestParam(value = "sendEmail", required = false)
@@ -147,19 +144,18 @@ public class OrchestrationController {
     }
 
     @DeleteMapping(path = "/draftsapi/version/1")
-    @ApiOperation(value = "Deletes a divorce case draft")
+    @ApiOperation(value = "Deletes a Divorce draft case")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "The divorce draft has been deleted successfully")})
-    public ResponseEntity<Map<String, Object>> deleteDraft(@RequestHeader("Authorization")
-                                                           @ApiParam(value = "JWT authorisation token issued by IDAM",
-                                                               required = true) final String authorizationToken)
-        throws WorkflowException {
+        @ApiResponse(code = 200, message = "The Divorce draft case has been deleted successfully")})
+    public ResponseEntity<Map<String, Object>> deleteDraft(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken) throws WorkflowException {
 
         return ResponseEntity.ok(orchestrationService.deleteDraft(authorizationToken));
     }
 
-    @GetMapping(path = "/retrieve-aos-case", produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Provides case details to front end")
+    @GetMapping(path = "/retrieve-aos-case", produces = APPLICATION_JSON)
+    @ApiOperation(value = "Provides case details to Frontend Applications")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Case details fetched successfully",
             response = CaseDataResponse.class),
@@ -171,8 +167,8 @@ public class OrchestrationController {
             authorizationToken));
     }
 
-    @GetMapping(path = "/retrieve-case", produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Provides case details to front end")
+    @GetMapping(path = "/retrieve-case", produces = APPLICATION_JSON)
+    @ApiOperation(value = "Provides case details to Frontend Applications")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Case details fetched successfully",
             response = CaseDataResponse.class),
@@ -216,9 +212,9 @@ public class OrchestrationController {
         @ApiResponse(code = 404, message = "Case Not found")})
     public ResponseEntity<UserDetails> linkRespondent(
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationToken,
-        @ApiParam("Unique identifier of the session that was submitted to CCD")
+        @ApiParam("Unique ID of the session that was submitted to CCD")
         @PathVariable("caseId") String caseId,
-        @ApiParam(value = "Pin", required = true)
+        @ApiParam(value = "Respondent Pin Code", required = true)
         @PathVariable("pin") String pin) throws WorkflowException {
 
         UserDetails linkRespondent = orchestrationService.linkRespondent(authorizationToken, caseId, pin);
@@ -230,47 +226,44 @@ public class OrchestrationController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @PostMapping(path = "/submit-aos/{caseId}",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles respondent AOS submission")
+    @PostMapping(path = "/submit-aos/{caseId}", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Submit AOS answers and update original Divorce case with new data")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
+        @ApiResponse(code = 200, message = "AOS successfully submitted and original case was updated in CCD",
             response = CaseResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<Map<String, Object>> submitRespondentAos(
-        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @PathVariable String caseId,
-        @RequestBody @ApiParam("Complete Divorce Session / partial Aos data ") Map<String, Object> payload)
+        @RequestBody @ApiParam("Complete Divorce Session / partial AoS data ") Map<String, Object> payload)
         throws WorkflowException {
 
         return ResponseEntity.ok(
             orchestrationService.submitRespondentAosCase(payload, authorizationToken, caseId));
     }
 
-    @PostMapping(path = "/submit-co-respondent-aos",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles Co-Respondent AOS submission")
+    @PostMapping(path = "/submit-co-respondent-aos", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Submit Co-Respondents AOS answers and update original Divorce case with new data")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
+        @ApiResponse(code = 200, message = "AOS successfully submitted for Co-Respondent and original case was updated in CCD",
             response = CaseResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<Map<String, Object>> submitCoRespondentAos(
-        @RequestHeader(value = "Authorization") String authorizationToken,
-        @RequestBody @ApiParam("Co-respondent AOS data ") Map<String, Object> payload)
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestBody @ApiParam("Co-Respondent AOS data") Map<String, Object> payload)
         throws WorkflowException {
 
         return ResponseEntity.ok(orchestrationService.submitCoRespondentAosCase(payload, authorizationToken));
     }
 
-    @PostMapping(path = "/submit-dn/{caseId}",
-        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles DN update")
+    @PostMapping(path = "/submit-dn/{caseId}", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Submit Decree Nisi answers and update original Divorce case with new data")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
+        @ApiResponse(code = 200, message = "DN successfully submitted and case was updated in CCD",
             response = CaseResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<Map<String, Object>> submitDn(
-        @RequestHeader(value = "Authorization") String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @PathVariable String caseId,
         @RequestBody @ApiParam("Complete Divorce Session / partial DN data ") Map<String, Object> divorceSession)
         throws WorkflowException {
@@ -279,15 +272,14 @@ public class OrchestrationController {
             orchestrationService.submitDnCase(divorceSession, authorizationToken, caseId));
     }
 
-    @PostMapping(path = "/submit-da/{caseId}",
-            consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Handles Decree Absolute update")
+    @PostMapping(path = "/submit-da/{caseId}", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Submit Decree Absolute answers and update original Divorce case with new data")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Update was successful and case was updated in CCD",
+            @ApiResponse(code = 200, message = "DN successfully submitted and case was updated in CCD",
                     response = CaseResponse.class),
             @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<Map<String, Object>> submitDa(
-            @RequestHeader(value = "Authorization") String authorizationToken,
+            @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
             @PathVariable String caseId,
             @RequestBody @ApiParam("Decree Absolute Data as required") Map<String, Object> divorceSession)
             throws WorkflowException {
@@ -301,12 +293,11 @@ public class OrchestrationController {
         value = "Creates a new draft copy of user's old case to be amended, updates old case to AmendPetition state")
     @ApiResponses(value = {
         @ApiResponse(code = 200,
-            message = "The amended petition draft has been created successfully. "
-                + "The previous case has been updated to case state: AmendPetition"),
+            message = "The amended petition draft has been created successfully. The previous case has been updated to case state: AmendPetition"),
         @ApiResponse(code = 404,
             message = "No draft was created as no existing case found.")})
     public ResponseEntity<Map<String, Object>> amendPetition(
-            @RequestHeader("Authorization")
+            @RequestHeader(AUTHORIZATION_HEADER)
             @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
             @PathVariable String caseId)
             throws WorkflowException {
@@ -319,12 +310,11 @@ public class OrchestrationController {
         value = "Creates a new draft copy of user's old case to be amended for DN Refusal Rejection, updates old case to AmendPetition state")
     @ApiResponses(value = {
         @ApiResponse(code = 200,
-            message = "The amended petition draft has been created successfully. "
-                + "The previous case has been updated to case state: AmendPetition"),
+            message = "The amended petition draft has been created successfully. The previous case has been updated to case state: AmendPetition"),
         @ApiResponse(code = 404,
             message = "No draft was created as no existing case found.")})
     public ResponseEntity<Map<String, Object>> amendPetitionForRefusal(
-            @RequestHeader("Authorization")
+            @RequestHeader(AUTHORIZATION_HEADER)
             @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
             @PathVariable String caseId)
             throws WorkflowException {

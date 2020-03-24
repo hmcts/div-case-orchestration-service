@@ -72,7 +72,7 @@ def versions = [
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.0.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
-        tomcat                       : '9.0.30',
+        tomcat                       : '9.0.31',
         unirest                      : '1.4.9'
 ]
 
@@ -152,7 +152,7 @@ allprojects {
             }
 
             // solves CVE-2014-3488, CVE-2015-2156, CVE-2019-16869
-            dependencySet(group: 'io.netty', version: '4.1.45.Final') {
+            dependencySet(group: 'io.netty', version: '4.1.46.Final') {
                 entry 'netty-buffer'
                 entry 'netty-codec'
                 entry 'netty-codec-http'
@@ -212,18 +212,6 @@ distributions {
         contents {
             from(file("$projectDir/lib/AI-Agent.xml")) {
                 into "lib"
-            }
-        }
-    }
-}
-
-// make build fail on Checkstyle issues (https://github.com/gradle/gradle/issues/881)
-tasks.withType(Checkstyle).each { checkstyleTask ->
-    checkstyleTask.doLast {
-        reports.all { report ->
-            def outputFile = report.destination
-            if (outputFile.exists() && outputFile.text.contains("<error ")) {
-                throw new GradleException("There were checkstyle warnings! For more info check $outputFile")
             }
         }
     }

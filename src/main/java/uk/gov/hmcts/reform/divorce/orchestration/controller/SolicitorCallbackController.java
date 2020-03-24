@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import static java.util.Collections.singletonList;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -39,7 +40,7 @@ public class SolicitorCallbackController {
                     response = CaseResponse.class),
             @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> issuePersonalServicePack(
-            @RequestHeader(value = "Authorization") String authorizationToken,
+            @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
             @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         Map<String, Object> response;

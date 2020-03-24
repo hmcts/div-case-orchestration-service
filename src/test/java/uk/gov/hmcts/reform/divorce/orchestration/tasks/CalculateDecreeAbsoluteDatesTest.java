@@ -33,12 +33,12 @@ public class CalculateDecreeAbsoluteDatesTest {
 
     @Test
     public void testDecreeAbsoluteDatesAreReturned() throws TaskException {
-        Map<String, ?> returnedPayload = calculateDecreeAbsoluteDates.execute(null, singletonMap(DECREE_NISI_GRANTED_DATE_CCD_FIELD, "2019-07-11"));
+        Map<String, ?> returnedPayload = calculateDecreeAbsoluteDates.execute(null, singletonMap(DECREE_NISI_GRANTED_DATE_CCD_FIELD, "2020-01-09"));
 
         assertThat(returnedPayload, allOf(
-            hasEntry(DECREE_NISI_GRANTED_DATE_CCD_FIELD, "2019-07-11"),
-            hasEntry(DATE_RESPONDENT_ELIGIBLE_FOR_DA, "2019-11-23"),
-            hasEntry(DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA, "2020-07-11")
+            hasEntry(DECREE_NISI_GRANTED_DATE_CCD_FIELD, "2020-01-09"),
+            hasEntry(DATE_RESPONDENT_ELIGIBLE_FOR_DA, "2020-05-21"),
+            hasEntry(DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA, "2021-01-09")
         ));
     }
 

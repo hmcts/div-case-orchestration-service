@@ -126,7 +126,6 @@ public class PetitionIssueTest extends IntegrationTest {
 
             assertThat(cosResponse.path(AOS_LETTER_HOLDER_ID), is(notNullValue()));
 
-
         } else {
             assertThat(cosResponse.path(D8_AOS_INVITATION_DOCUMENT_BINARY_URL_PATH), is(nullValue()));
         }

@@ -10,12 +10,12 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
 
 public class DaAboutToBeGrantedTest extends IntegrationTest {
 
     private static final String BASE_CASE_RESPONSE = "fixtures/da-about-to-be-granted/da-about-to-be-granted.json";
-    private static final String DA_GRANTED_DATE = "DecreeAbsoluteGrantedDate";
-    private static final String DOCUMENTS_GENERATED = "D8DocumentsGenerated";
 
     @Autowired
     private CosApiClient cosApiClient;
@@ -26,7 +26,7 @@ public class DaAboutToBeGrantedTest extends IntegrationTest {
         Map<String, Object> response = cosApiClient.daAboutToBeGranted(
                 createCaseWorkerUser().getAuthToken(),
                 ccdCallbackRequest);
-        assertNotNull(((Map)response.get(DATA)).get(DA_GRANTED_DATE));
-        assertNotNull(((Map)response.get(DATA)).get(DOCUMENTS_GENERATED));
+        assertNotNull(((Map)response.get(DATA)).get(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD));
+        assertNotNull(((Map)response.get(DATA)).get(D8DOCUMENTS_GENERATED));
     }
 }
