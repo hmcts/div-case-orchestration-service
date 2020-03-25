@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
+import uk.gov.hmcts.reform.divorce.orchestration.util.LocalDateToWelshStringConverter;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -44,6 +45,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_DATE_OF_HEARING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_LIMIT_DATE_TO_CONTACT_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
@@ -56,6 +59,9 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
 
     @Autowired
     private TaskCommons taskCommons;
+
+    @Autowired
+    private LocalDateToWelshStringConverter localDateToWelshStringConverter;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
@@ -73,9 +79,9 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
         EmailTemplateNames template = null;
         String emailToBeSentTo = null;
 
-        LocalDate dateOfHearing = CaseDataUtils.getLatestCourtHearingDateFromCaseData(payload);
+        final LocalDate dateOfHearing = CaseDataUtils.getLatestCourtHearingDateFromCaseData(payload);
 
-        LocalDate limitDateToContactCourt = dateOfHearing.minus(PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT);
+        final LocalDate limitDateToContactCourt = dateOfHearing.minus(PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT);
 
         Map<String, String> templateParameters = new HashMap<>();
 
@@ -100,8 +106,12 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
             emailToBeSentTo = petitionerEmail;
         }
         templateParameters.put(DATE_OF_HEARING, formatDateWithCustomerFacingFormat(dateOfHearing));
+        templateParameters.put(WELSH_DATE_OF_HEARING, localDateToWelshStringConverter.convert(dateOfHearing));
+
         templateParameters.put(LIMIT_DATE_TO_CONTACT_COURT,
             formatDateWithCustomerFacingFormat(limitDateToContactCourt));
+        templateParameters.put(WELSH_LIMIT_DATE_TO_CONTACT_COURT,
+                localDateToWelshStringConverter.convert(limitDateToContactCourt));
 
         if (wasDivorceCostsClaimed(payload)) {
             if (wasCostsClaimGranted(payload)) {
