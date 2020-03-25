@@ -261,23 +261,6 @@ public class CallbackController {
             .build());
     }
 
-    @PostMapping(path = "/confirm-service", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
-    @ApiOperation(value = "Caseworker confirm personal service from CCD")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
-            response = CcdCallbackResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> petitionSubmitted(
-        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-
-        caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest);
-
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
-            .build());
-    }
-
     @PostMapping(path = "/default-values",
         consumes = MediaType.APPLICATION_JSON,
         produces = MediaType.APPLICATION_JSON)
@@ -300,9 +283,7 @@ public class CallbackController {
     @PostMapping(path = "/confirm-service",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Caseworker confirm personal service from CCD")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "Callback was processed "
-        + "successfully or in case of an error message is "
-        + "attached to the case",
+    @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is attached to the case",
         response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
