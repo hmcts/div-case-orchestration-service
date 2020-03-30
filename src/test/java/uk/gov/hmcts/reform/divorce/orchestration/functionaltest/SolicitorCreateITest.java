@@ -42,7 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class SolicitorCreateITest extends MockedFunctionalTest {
     private static final String API_URL_CREATE = "/solicitor-create";
 
-    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
+    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generateDraftPDF";
     private static final String FORMAT_ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String DRAFT_MINI_PETITION_TEMPLATE_NAME = "divorcedraftminipetition";
 

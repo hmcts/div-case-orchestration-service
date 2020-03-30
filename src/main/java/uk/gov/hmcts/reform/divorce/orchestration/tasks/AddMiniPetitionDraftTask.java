@@ -42,9 +42,8 @@ public class AddMiniPetitionDraftTask implements Task<Map<String, Object>> {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         final String templateId = getTemplateId(documentTemplateService, DocumentType.DIVORCE_DRAFT_MINI_PETITION,
                 caseData);
-
         final GeneratedDocumentInfo generatedDocumentInfo =
-            documentGeneratorClient.generatePDF(
+            documentGeneratorClient.generateDraftPDF(
                 GenerateDocumentRequest.builder()
                     .template(templateId)
                     .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))

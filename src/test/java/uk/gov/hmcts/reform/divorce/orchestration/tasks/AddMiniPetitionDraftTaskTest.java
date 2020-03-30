@@ -71,7 +71,7 @@ public class AddMiniPetitionDraftTaskTest {
                 .build();
 
         //given
-        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedDocument);
+        when(documentGeneratorClient.generateDraftPDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedDocument);
         when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.DIVORCE_DRAFT_MINI_PETITION))
                 .thenReturn(DRAFT_MINI_PETITION_TEMPLATE_NAME);
 
@@ -82,7 +82,7 @@ public class AddMiniPetitionDraftTaskTest {
 
         assertThat(documentCollection, is(newLinkedHashSet(expectedDocument)));
 
-        verify(documentGeneratorClient).generatePDF(generateDocumentRequest, AUTH_TOKEN);
+        verify(documentGeneratorClient).generateDraftPDF(generateDocumentRequest, AUTH_TOKEN);
     }
 
 }
