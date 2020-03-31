@@ -36,8 +36,6 @@ withPipeline(type, product, component) {
         enableDbMigration('div')
     }
     installCharts()
-    // enableDockerBuild()
-    // enableDeployToAKS()
     loadVaultSecrets(secrets)
     enableAksStagingDeployment()
     disableLegacyDeployment()
