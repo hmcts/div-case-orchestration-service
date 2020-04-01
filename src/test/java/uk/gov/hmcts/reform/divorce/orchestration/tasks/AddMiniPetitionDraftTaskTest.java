@@ -19,6 +19,7 @@ import java.util.Map;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.util.Sets.newLinkedHashSet;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,7 +70,7 @@ public class AddMiniPetitionDraftTaskTest {
         addMiniPetitionDraftTask.execute(context, payload);
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
-
+        assertNotNull(documentCollection);
         assertThat(documentCollection, is(newLinkedHashSet(expectedDocument)));
 
         verify(documentGeneratorClient).generatePDF(generateDocumentRequest, AUTH_TOKEN);
